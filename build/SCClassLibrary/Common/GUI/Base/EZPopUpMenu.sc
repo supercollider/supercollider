@@ -1,49 +1,58 @@
 EZPopUpMenu{
-	var   <>globalAction, <>labelView, <items, <menu, <view, <gap, labelSize;
+	var   <>globalAction, <>labelView, <items, <widget, <view, <gap, <labelPosition, labelSize;
 	
-	*new { arg parentView, bounds= 160@20, label,items, globalAction, initVal=0, 
-			initAction=false, labelWidth=80, gap=4;
+	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
+			initAction=false, labelWidth=80, labelHeight=20, labelPosition=\left, gap=4;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
-			initAction, labelWidth, gap);
+			initAction, labelWidth,labelHeight,labelPosition, gap);
 			}
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
-			initAction, labelWidth, argGap;
-			
-		var labelBounds,menuBounds,w;
-		
-		bounds=bounds.asRect;
-		labelSize=labelWidth@bounds.height;
+			initAction, labelWidth, labelHeight, arglabelPosition,  argGap;
+		var labelBounds, listBounds,w, winBounds;
+		labelPosition=arglabelPosition;
+		labelSize=labelWidth@labelHeight;
 		gap=argGap;
 		
-		parentView.isNil.if{	
-			
-				w = GUI.window.new("",Rect(200,Window.screenBounds.height-bounds.height-100,
-					bounds.width+8,bounds.height+28));
-				w.view.decorator=FlowLayout(w.view.bounds);
+		parentView.isNil.if{
+				bounds.isNil.if{bounds= 160@44};
+				if (bounds.class==Point){
+					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+					bounds.x,bounds.y)
+					}{winBounds=bounds};
+				w = GUI.window.new("",winBounds);
 				parentView=w.asView;
 				w.front;
-			};
-			
-		view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		
-		# labelBounds,menuBounds = this.prSubViewBounds(bounds, label.notNil);
+				bounds=bounds.asRect;
+				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
+				view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(2);
+			}{
+			bounds.isNil.if{bounds= 160@20};
+			bounds=bounds.asRect;
+			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+		};
 
+		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
+		
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view,labelBounds);
+			if (labelPosition==\top){
+				labelView = GUI.staticText.new(view, labelBounds).resize_(2);
+				labelView.align = \left;
+				}{
+				labelView = GUI.staticText.new(view, labelBounds);
+				labelView.align = \right;
+				};
 			labelView.string = label;
-			labelView.align = \right;
 		};
 				
-		menu = GUI.popUpMenu.new(view, menuBounds);
+		widget = GUI.popUpMenu.new(view, listBounds).resize_(5);
 		
 		this.items=argItems ? [];
 		
-		
 		globalAction=argGlobalAction;
 		
-		menu.action={arg obj;
+		widget.action={arg obj;
 			items.at(obj.value).value.value(obj);
 			globalAction.value(obj);
 			};		
@@ -53,21 +62,22 @@ EZPopUpMenu{
 		items.notNil.if{
 			if(initAction){
 					items.at(initVal).value.value(this); // You must do this like this
-					globalAction.value(this);	// since menu's array is not accessible yet
+					globalAction.value(this);	// since listView's array is not accessible yet
 				}
 			{this.value_(initVal)};
 		};
 	}	
 	
-	value{ ^menu.value }
+	menu {^ widget}
+	value{ ^widget.value }
 	
-	value_{|val| menu.value_(val)}
+	value_{|val| widget.value_(val)}
 	
 	valueAction_{|val| this.value_(val); this.doAction}
 	
 	items_{arg assocArray; 
 		items=assocArray;
-		menu.items=assocArray.collect({|item| item.key});
+		widget.items=assocArray.collect({|item| item.key});
 	}	
 		
 	addItem{arg name, action;
@@ -90,13 +100,20 @@ EZPopUpMenu{
 	doAction {items.at(this.value).value.value(this); globalAction.value}
 
 	label_{ arg string;
+	
 		labelView.isNil.if{
-			labelSize=80@view.bounds.height;
-			labelView = GUI.staticText.new(view, 80 @ labelSize.x);
+			labelSize=80@20;
+			if(labelPosition==\top, {
+				labelView = GUI.staticText.new(view, view.bounds.width@ labelSize.y);
+				labelView.align = \left;
+			},{
+				labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
+				labelView.align = \right;
+			});
 			labelView.string = string;
-			labelView.align = \right;
-	 		this.bounds=view.bounds;
+	 		this.bounds_(view.bounds); //recalculate bounds
 		}{
+		
 	 	labelView.string_(string)
 	 	};
 	 	
@@ -109,28 +126,53 @@ EZPopUpMenu{
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
-	enabled {  ^menu.enabled } 
-	enabled_ { |bool| menu.enabled_(bool) }
+	enabled {  ^widget.enabled } 
+	enabled_ { |bool| widget.enabled_(bool) }
 	
-	remove { [menu, labelView].do(_.remove) }
+	remove { [widget, labelView].do(_.remove) }
 	
 	bounds{^view.bounds}
+	
 	bounds_{arg rect;
-		var labelBounds, menuBounds;
+		var labelBounds, listBounds;
 		view.bounds=rect;
-		# labelBounds,menuBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
+		# labelBounds,listBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
 		
 		labelView.notNil.if{labelView.bounds=labelBounds};
-		menu.bounds=menuBounds;
+		widget.bounds=listBounds;
 	
 	}
 	
+	labelHeight{
+		^ labelSize.y
+	}
+	
+	labelHeight_{arg height;
+		labelSize.y=height;
+		this.bounds_(view.bounds); 	
+	}
 	labelWidth{
 		^ labelSize.x
 	}
 	
 	labelWidth_{arg width;
 		labelSize.x=width;
+		this.bounds_(view.bounds); 	
+	}
+	
+	labelPosition_{arg pos;
+		labelPosition=pos;
+		labelSize=80@20;
+		labelView.notNil.if{
+			(labelPosition==\top).if{
+			labelView.align=\left;
+			labelView.resize_(2);
+			}{
+			labelView.align=\right;
+			labelView.resize_(4);
+			};
+		};
+		
 		this.bounds_(view.bounds); 	
 	}
 	
@@ -141,21 +183,33 @@ EZPopUpMenu{
 	}
 	
 	prSubViewBounds{arg rect, hasLabel=true;
-		var menuBounds,labelBounds, tempGap;
+		var listBounds,labelBounds, tempGap;
 		tempGap=gap;	
-		
 		hasLabel.not.if{tempGap=0; labelSize=0@0};
 		
-		menuBounds= Rect(
-				labelSize.x+tempGap,
-				0,
-				view.bounds.width-labelSize.x-tempGap,  
-				view.bounds.height
-				);
-		labelBounds=Rect(0,0, labelSize.x ,menuBounds.height );
+		if (labelPosition==\top,{
+			listBounds= Rect(
+					0,
+					labelSize.y+tempGap,
+					view.bounds.width,  
+					view.bounds.height-labelSize.y-tempGap
+					);
+			labelBounds=Rect(0,0,listBounds.width,labelSize.y);
+		},{
+			listBounds= Rect(
+					labelSize.x+tempGap,
+					0,
+					view.bounds.width-labelSize.x-tempGap,  
+					view.bounds.height
+					);
+			labelBounds=Rect(0,0, labelSize.x ,listBounds.height );
+		});
 		
-		^[labelBounds, menuBounds]
+		^[labelBounds, listBounds]
 	}
+	
+	
+	
 	
 }
 
