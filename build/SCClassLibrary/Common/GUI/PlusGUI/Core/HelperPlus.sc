@@ -4,7 +4,7 @@
 	var template, tfile, classesArray, path;
 	path= path ? "Help/GUI/stubs/";
 	
-	tfile=File(path++"StubTemplate.html","r");  // read the html tmaplat file
+	tfile=File(path++"StubTemplate.html","r");  // read the html template file
 	template=tfile.readAllString;
 	tfile.close;
 	
@@ -17,7 +17,7 @@
 		
 		file=File(path++class.name.asString++".html", "w"); //create the stub file
 		
-		GUI.schemes.do{arg scheme;  // for each registerd schme
+		GUI.schemes.do{arg scheme;  // for each registerd scheme
 			var nm, helpFilePath="";
 			try{  // if this fails, then there is no gui class in the kit for this redirect.
 			
@@ -28,7 +28,7 @@
 					//if you can't find the helpfile path, then just create a file name
 			
 				links=links++(("<p class=\"p1\"><b>%:<span class=\"Apple-tab-span\">     </span>"
-					 ++"</b><a href=\"%\">%</a></p><p class=\"p1\"></p>")
+					 ++"</b> <a href=\"%\">%</a></p>\n<br>\n")
 					.format(scheme ,helpFilePath,nm)); // create the html link
 			};
 		};
