@@ -197,7 +197,7 @@ AutoCompMethodBrowser {
 						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63232) }
 							{ listView.value = (listView.value - 1) % reducedList.size }
 						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63233) }
-							{ listView.value = (listView.value + 1) % reducedList.size }					{ char.ascii == 13 } { GUI.use( gui, {Êthis.finish })}
+							{ listView.value = (listView.value + 1) % reducedList.size }					{ char.ascii == 13 } { GUI.use( gui, {this.finish })}
 						{ char.ascii == 27 } { this.free }
 				});
 	
@@ -214,7 +214,7 @@ AutoCompMethodBrowser {
 						this.restrictList(txt.string);
 					};
 			})
-				.action_({ GUI.use( gui, {Êthis.finish })})
+				.action_({ GUI.use( gui, {this.finish })})
 				.focus;
 			w.front;
 		});

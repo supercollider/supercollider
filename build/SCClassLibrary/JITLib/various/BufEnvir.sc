@@ -13,7 +13,7 @@ BufEnvir : EnvironmentRedirect {
 	updateInfo { envir.do(_.updateInfo) }
 	
 	clear { arg removeReferences = false;
-		this.do { |buf|Êbuf.free };
+		this.do { |buf| buf.free };
 		if(removeReferences) { super.clear };
 	}
 	

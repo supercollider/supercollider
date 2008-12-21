@@ -22,14 +22,14 @@ Helper(Helper)
 //
 Helper(SinOsc, "/Users/andreavalle/Library/Application\ Support/SuperCollider/Extensions/Help/mine/SinOsc.html")
 Helper(SinOsc)
-// In this case SinOsc has already a help file, so Helper opens that one 
+// In this case SinOsc has already a help file, so Helper opens that one
 // as it calls SinOsc.openHelpFile
 //
 Helper("On_Helper", "/Users/andreavalle/Library/Application\ Support/SuperCollider/Extensions/Help/mine/On_Helper.html")
 Helper("On_Helper")
 // it's a bit boring to repeat the class or the topic name with html as a path
 // but I don't see a way to propose to GUI save dialog a fileName, so in that case you would have
-// to specify it the same. 
+// to specify it the same.
 // Document was indeed more flexible
 // 
 // or with an Help extension:
