@@ -176,13 +176,13 @@ Env {
 	circle { arg timeFromLastToFirst = 0.0, curve = 'lin';
 		var first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
 		if(releaseNode.isNil) {
-			levels = [0.0]Ê++ levels ++ 0.0;
-			curves = [curve]Ê++ curves.asArray.wrapExtend(times.size) ++ 'lin';
+			levels = [0.0]++ levels ++ 0.0;
+			curves = [curve]++ curves.asArray.wrapExtend(times.size) ++ 'lin';
 			times  = [first0Then1 * timeFromLastToFirst] ++ times ++ inf;
 			releaseNode = levels.size - 2;
 		} {
-			levels = [0.0]Ê++ levels;
-			curves = [curve]Ê++ curves.asArray.wrapExtend(times.size);
+			levels = [0.0]++ levels;
+			curves = [curve]++ curves.asArray.wrapExtend(times.size);
 			times  = [first0Then1 * timeFromLastToFirst] ++ times;
 			releaseNode = releaseNode + 1;
 		};
