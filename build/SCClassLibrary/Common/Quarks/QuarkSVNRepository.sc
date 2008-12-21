@@ -18,7 +18,7 @@ QuarkSVNRepository
 	
 	*new { | url, local |
 		if(svnpath.isNil) {
-			Post 
+			Post
 			<< 	"\tSVN not found! Quarks placed in the directory"
 			<<	"\n\n\t\t" << Platform.userAppSupportDir << "/quarks"
 			<< 	"\n\n\t" << "will be available, but you need svn to checkout updated versions."
@@ -98,7 +98,7 @@ QuarkSVNRepository
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
 	svn { | cmd ... args |
-		if (svnpath.isNil) { 
+		if (svnpath.isNil) {
 			Error("SVN is not installed! Quarks cannot be updated.").throw;
 		};
 		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
@@ -111,12 +111,12 @@ QuarkSVNRepository
 				("echo " ++ $" ++ "
 --------------------------------------------------------------
 
-  SuperCollider Quarks: accessing remote repository.
+ SuperCollider Quarks: accessing remote repository.
 
-  If this is the first time, you may be asked to accept a
-  security certificate. Please do so!
+ If this is the first time, you may be asked to accept a
+ security certificate. Please do so!
 
-  The command being run is:
+ The command being run is:
 " ++ cmd.escapeChar($") ++ "
 
 --------------------------------------------------------------
