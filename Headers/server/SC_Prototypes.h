@@ -115,6 +115,8 @@ void Graph_SetControl(struct Graph* inGraph, uint32 inIndex, float inValue);
 void Graph_SetControl(struct Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, float inValue);
 void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
 void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
+void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
+void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Graph_Trace(Graph *inGraph);
 void Graph_RemoveID(World* inWorld, Graph *inGraph);
 
