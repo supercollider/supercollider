@@ -23,7 +23,7 @@ CocoaMenuItem {
 	}
 	
 	*add { |names, action|
-		if(default.isNil) {Êthis.initDefaultMenu };
+		if(default.isNil) {this.initDefaultMenu };
 		^this.deepNew(default, default.lastIndex, names, action)
 	}
 	
