@@ -1,5 +1,14 @@
-Pair : Collection { var <>linkDown, <>linkAcross; 
-	// LISP-like two element cells
+// LISP-like two element cells
+
+Pair : Collection { 
+
+	var <>linkDown, <>linkAcross; 
+
+	*new { arg linkDown, linkAcross;
+		^super.newCopyArgs(linkDown, linkAcross)
+	}
+	
+	
 	size { var i = 0, link;
 		link = linkAcross;
 		while ({ link.respondsTo('linkAcross') },{
