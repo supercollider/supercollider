@@ -1,7 +1,7 @@
 EZListView{
-	var   <>globalAction, <>labelView, <items, <listView, <view, <gap, <labelPosition, labelSize;
+	var   <>globalAction, <>labelView, <items, widget, <view, <gap, <labelPosition, labelSize;
 	
-	*new { arg parentView, bounds= 160@200, label,items, globalAction, initVal=0, 
+	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
 			initAction=false, labelWidth=80, labelHeight=20, labelPosition=\top, gap=4;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
@@ -10,44 +10,49 @@ EZListView{
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, labelHeight, arglabelPosition,  argGap;
-		var labelBounds, listBounds,w;
-		
-		bounds=bounds.asRect;
+		var labelBounds, listBounds,w, winBounds;
+		bounds.isNil.if{bounds= 160@200};
 		labelPosition=arglabelPosition;
 		labelSize=labelWidth@labelHeight;
 		gap=argGap;
 		
-		parentView.isNil.if{	
-			
-				w = GUI.window.new("",Rect(200,Window.screenBounds.height-bounds.height-100,
-					bounds.width+8,bounds.height+28));
-				w.view.decorator=FlowLayout(w.view.bounds);
+		parentView.isNil.if{
+				if (bounds.class==Point){
+					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+					bounds.x,bounds.y)
+					}{winBounds=bounds};
+				w = GUI.window.new("",winBounds);
 				parentView=w.asView;
 				w.front;
-			};
+				bounds=bounds.asRect;
+				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
+				view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(5);
+			}{
 			
-		view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+			bounds=bounds.asRect;
+			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+		};
 
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
 		
 		label.notNil.if{ //only add a label if desired
 			if (labelPosition==\top){
-				labelView = GUI.staticText.new(view, labelBounds);
+				labelView = GUI.staticText.new(view, labelBounds).resize_(2);
 				labelView.align = \left;
 				}{
-				labelView = GUI.staticText.new(view, labelBounds);
+				labelView = GUI.staticText.new(view, labelBounds).resize_(4);
 				labelView.align = \right;
 				};
 			labelView.string = label;
 		};
 				
-		listView = GUI.listView.new(view, listBounds);
+		widget = GUI.listView.new(view, listBounds).resize_(5);
 		
 		this.items=argItems ? [];
 		
 		globalAction=argGlobalAction;
 		
-		listView.action={arg obj;
+		widget.action={arg obj;
 			items.at(obj.value).value.value(obj);
 			globalAction.value(obj);
 			};		
@@ -63,15 +68,17 @@ EZListView{
 		};
 	}	
 	
-	value{ ^listView.value }
+	listView{^widget}
 	
-	value_{|val| listView.value_(val)}
+	value{ ^widget.value }
+	
+	value_{|val| widget.value_(val)}
 	
 	valueAction_{|val| this.value_(val); this.doAction}
 	
 	items_{arg assocArray; 
 		items=assocArray;
-		listView.items=assocArray.collect({|item| item.key});
+		widget.items=assocArray.collect({|item| item.key});
 	}	
 		
 	addItem{arg name, action;
@@ -120,10 +127,10 @@ EZListView{
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
-	enabled {  ^listView.enabled } 
-	enabled_ { |bool| listView.enabled_(bool) }
+	enabled {  ^widget.enabled } 
+	enabled_ { |bool| widget.enabled_(bool) }
 	
-	remove { [listView, labelView].do(_.remove) }
+	remove { [widget, labelView].do(_.remove) }
 	
 	bounds{^view.bounds}
 	
@@ -133,7 +140,7 @@ EZListView{
 		# labelBounds,listBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
 		
 		labelView.notNil.if{labelView.bounds=labelBounds};
-		listView.bounds=listBounds;
+		widget.bounds=listBounds;
 	
 	}
 	
@@ -160,8 +167,10 @@ EZListView{
 		labelView.notNil.if{
 			(labelPosition==\top).if{
 			labelView.align=\left;
+			labelView.resize_(2);
 			}{
 			labelView.align=\right;
+			labelView.resize_(4);
 			};
 		};
 		
