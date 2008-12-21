@@ -23,11 +23,11 @@ z.free;
 
 Volume {
 
-	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window,Ê<volume, spec;Ê
+	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window,<volume, spec;
 	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
 	
-	*new {Ê arg server, startBus = 0, numChans, min = -90, max = 6, persist = false;
+	*new { arg server, startBus = 0, numChans, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
 	}
 
@@ -206,7 +206,7 @@ VolumeGui{
 			.value_(model.volume) ;
 		slider = GUI.slider.new(window, Rect(10, 40, 60, 280))
 			.value_(spec.unmap(model.volume)) ;
-		slider.action_({ arg item ;Ê
+		slider.action_({ arg item ;
 			model.volume_(spec.map(item.value));
 		}) ;
 		box.action_({ arg item ;

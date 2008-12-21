@@ -246,9 +246,9 @@ Event : Environment {
 //				},
 //								
 				schedBundle: #{ |lag, offset, server ...bundle |
-				thisThread.clock.sched ( offset, {Ê
+				thisThread.clock.sched ( offset, {
 					if (lag !=0 ) {
-						SystemClock.sched( lag, { server.sendBundle(server.latency, *bundle)Ê })
+						SystemClock.sched( lag, { server.sendBundle(server.latency, *bundle) })
 					} {
 						server.sendBundle(server.latency, *bundle)
 					}
