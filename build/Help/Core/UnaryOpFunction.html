@@ -5,21 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0033f1}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #832519; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0047e4}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {font: 12.0px Helvetica}
-span.s4 {font: 12.0px Helvetica; color: #0000ff}
-span.s5 {color: #003eea}
-span.s6 {color: #001bb9}
-span.s7 {color: #2c7014}
+span.s3 {font: 12.0px Helvetica; color: #0021e7}
+span.s4 {font: 12.0px Helvetica; color: #0024f8}
+span.s5 {font: 12.0px Helvetica; color: #0047e4}
+span.s6 {font: 12.0px Helvetica; color: #0000ff}
+span.s7 {color: #0000bf}
+span.s8 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -39,16 +41,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="s2">a.value; </span>// again, with a different value.</p>
 <p class="p5"><br></p>
 <p class="p6"><span class="s2">see also: <a href="BinaryOpFunction.html"><span class="s3">BinaryOpFunction</span></a>, <a href="NAryOpFunction.html"><span class="s4">NAryOpFunction</span></a></span></p>
-<p class="p1">related: <a href="../Streams-Patterns-Events/UnaryOpStream.html"><span class="s5">UnaryOpStream</span></a>, Punop</p>
+<p class="p7"><span class="s2">related: <a href="../Streams-Patterns-Events/UnaryOpStream.html"><span class="s5">UnaryOpStream</span></a>, <a href="../Streams-Patterns-Events/Punop.html"><span class="s6">Punop</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">// sound example</p>
 <p class="p4">(</p>
-<p class="p4"><span class="s6">var</span> a = { 19.rand };</p>
-<p class="p4"><span class="s6">var</span> b = a.sqrt;</p>
+<p class="p4"><span class="s7">var</span> a = { 19.rand };</p>
+<p class="p4"><span class="s7">var</span> b = a.sqrt;</p>
 <p class="p4">fork {</p>
 <p class="p4"><span class="Apple-tab-span">	</span>15.do {</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: <span class="s7">\default</span>, note: [a.value, b.value]).play;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: <span class="s8">\default</span>, note: [a.value, b.value]).play;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.3.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
 <p class="p4">}</p>
