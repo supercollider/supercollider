@@ -1,5 +1,4 @@
-Semaphore
-{
+Semaphore {
 	var <count, waitingThreads;
 
 	*new { | count=1 |
@@ -12,12 +11,12 @@ Semaphore
 		if (count > 0) {
 			count = count - 1;
 		} {
-			waitingThreads = waitingThreads.add(thisThread);
+			waitingThreads.add(thisThread);
 			nil.yield;
 		};
 	}
 	signal {
-		var thread, time;
+		var thread;
 		count = count + 1;
 		thread = waitingThreads.popFirst;
 		if (thread.notNil) {
