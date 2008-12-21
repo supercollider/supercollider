@@ -625,7 +625,7 @@ Pprotect : FilterPattern {
 	storeArgs { ^[ pattern, func ] }
 	asStream {
 		var rout = Routine(pattern.embedInStream(_));
-		rout.exceptionHandler = { |error|Ê
+		rout.exceptionHandler = { |error|
 			func.value(error, rout); 
 			nil.handleError(error) 
 		};

@@ -397,7 +397,7 @@ Quarks
 		window.view.decorator.nextLine;
 		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );		window.view.decorator.nextLine;
 
-		flowLayout.margin_( 0 @Ê0 ).gap_( 0Ê@Ê0 );
+		flowLayout.margin_( 0 @0 ).gap_( 0@0 );
 		scrollview = GUI.scrollView.new(window, 500 @ (height - 132))
 			.resize_( 5 )
 			.autohidesScrollers_(true);
