@@ -1,5 +1,11 @@
 EZListView : EZlists{
-	
+		*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
+			initAction=false, labelWidth=80, labelHeight=20, labelPosition=\top, gap=4;
+			
+		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
+			initAction, labelWidth,labelHeight,labelPosition, gap);
+			}
+
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, labelHeight, arglabelPosition,  argGap;
