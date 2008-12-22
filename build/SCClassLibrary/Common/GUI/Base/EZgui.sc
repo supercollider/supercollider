@@ -124,12 +124,6 @@ EZgui{
 EZlists : EZgui{
 	var <items, <>globalAction ; 
 	
-	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
-			initAction=false, labelWidth=80, labelHeight=20, labelPosition=\top, gap=4;
-			
-		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
-			initAction, labelWidth,labelHeight,labelPosition, gap);
-			}
 	
 	value{ ^widget.value }
 	
