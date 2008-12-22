@@ -14,7 +14,7 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-h
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {text-decoration: underline ; color: #0021e7}
 span.s3 {text-decoration: underline ; color: #002fe0}
@@ -45,32 +45,50 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>size</b></p>
 <p class="p2"><br></p>
+<p class="p1">return the size when linking across</p>
+<p class="p2"><br></p>
 <p class="p1"><b>depth</b></p>
+<p class="p2"><br></p>
+<p class="p1">return the size when linking down</p>
 <p class="p2"><br></p>
 <p class="p1"><b>do(function)</b></p>
 <p class="p2"><br></p>
+<p class="p1">iterate over the two elements</p>
+<p class="p2"><br></p>
 <p class="p1"><b>traverse(function)</b></p>
 <p class="p2"><br></p>
+<p class="p1">same like: depthFirstPreOrderTraversal</p>
+<p class="p2"><br></p>
 <p class="p1"><b>depthFirstPreOrderTraversal(function)</b></p>
+<p class="p2"><b></b><br></p>
+<p class="p1">traverse the data structure first link down, then across (see example).</p>
 <p class="p2"><br></p>
 <p class="p1"><b>depthFirstPostOrderTraversal(function)</b></p>
+<p class="p2"><br></p>
+<p class="p1">traverse the data structure from bottom up (see example)</p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
 <p class="p5">// example</p>
 <p class="p6"><br></p>
 <p class="p7">a = <span class="s4">Pair</span>(<span class="s4">Pair</span>(<span class="s4">Pair</span>(1, 2), 4), <span class="s4">Pair</span>(5, 6));</p>
 <p class="p6"><br></p>
+<p class="p6"><br></p>
 <p class="p7">a.size;</p>
 <p class="p7">a.depth;</p>
 <p class="p7">a.do { <span class="s4">|x|</span> x.postln };</p>
 <p class="p7">a.traverse { <span class="s4">|x|</span> x.postln };</p>
+<p class="p8">a.depthFirstPreOrderTraversal { <span class="s4">|x|</span> x.postln };</p>
+<p class="p8">a.depthFirstPostOrderTraversal { <span class="s4">|x|</span> x.postln };</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">// alternative instantiations:</p>
 <p class="p6"><br></p>
 <p class="p7"><span class="s4">Pair</span>.newFrom([1, [2, [[4, 5], 6]]]);</p>
 <p class="p6"><br></p>
 <p class="p7">[1, [2, [[4, 5], 6]]].as(<span class="s4">Pair</span>); <span class="s5">// equivalent.</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p8"><br></p>
-<p class="p8"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
