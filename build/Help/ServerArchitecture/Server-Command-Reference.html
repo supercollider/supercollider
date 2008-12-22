@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,16 +14,16 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #894738}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #7e493b}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #571f4a}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #4e224a}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0030dd}
+span.s3 {color: #0a36d9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -184,6 +184,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Takes a list of pairs of control indices and values and sets the controls to those values. If the node is a group, then it sets the controls of every node in the group.</p>
 <p class="p2"><br></p>
+<p class="p3">This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.<span class="Apple-converted-space">  </span>Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control). <span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
 <p class="p3"><b>/n_setn<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set ranges of a node's control value(s)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>int - node ID</p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
@@ -281,6 +283,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">If you send <b>/s_new</b> with a synth ID of -1, then the server will generate an ID for you. The server reserves all negative IDs. Since you don't know what the ID is, you cannot talk to this node directly later. So this is useful for nodes that are of finite duration and that get the control information they need from arguments and buses or messages directed to their group. In addition no notifications are sent when there are changes of state for this node, such as /go, /end, /on, /off.</p>
 <p class="p2"><br></p>
 <p class="p3">If you use a node ID of -1 for any other command, such as <b>/n_map</b>, then it refers to the most recently created node by <b>/s_new</b> (auto generated ID or not). This is how you can map<span class="Apple-converted-space">  </span>the controls of a node with an auto generated ID. In a multi-client situation, the only way you can be sure what node -1 refers to is to put the messages in a bundle.</p>
+<p class="p2"><br></p>
+<p class="p3">This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.<span class="Apple-converted-space">  </span>Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control). <span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>/s_get<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>get control value(s)</b></p>
