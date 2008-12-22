@@ -8,6 +8,15 @@ Pair : Collection {
 		^super.newCopyArgs(linkDown, linkAcross)
 	}
 	
+	// create from nested array
+	*newFrom { arg collection;
+		var linkDown = collection.at(0);
+		var linkAcross = collection.at(1);
+		if(linkDown.isKindOf(Collection)) { linkDown = this.newFrom(linkDown) };
+		if(linkAcross.isKindOf(Collection)) { linkAcross = this.newFrom(linkAcross) };
+		^this.new(linkDown, linkAcross)
+	}
+	
 	
 	size { var i = 0, link;
 		link = linkAcross;
@@ -50,10 +59,13 @@ Pair : Collection {
 		link = linkAcross;
 		while ({ link.notNil },{
 			function.value(link);
-			if ( link.linkDown.respondsTo('depthFirstPreOrderTraversal'), {
-				link.linkDown.depthFirstPreOrderTraversal(function);
+			if (link.respondsTo(\linkDown) and:
+				{ link.linkDown.respondsTo('depthFirstPreOrderTraversal') }, {
+					link.linkDown.depthFirstPreOrderTraversal(function);
 			});
-			link = link.linkAcross;
+			if(link.respondsTo('linkAcross')) {
+				link = link.linkAcross;
+			} { link = nil };
 		});
 	}
 	depthFirstPostOrderTraversal { arg function;
@@ -65,13 +77,26 @@ Pair : Collection {
 		// iterate linkAcross to conserve stack depth
 		link = linkAcross;
 		while ({ link.notNil },{
-			if ( link.linkDown.respondsTo('depthFirstPostOrderTraversal'), {
+			if (link.respondsTo(\linkDown) and:
+				{ link.linkDown.respondsTo('depthFirstPostOrderTraversal') }, {
 				link.linkDown.depthFirstPostOrderTraversal(function);
 			});
 			function.value(link);
-			link = link.linkAcross;
+			if(link.respondsTo('linkAcross')) {
+				link = link.linkAcross;
+			} { link = nil };
 		});
 	}
 	
+	storeArgs { arg stream;
+		^[linkDown, linkAcross]
+	}
+	
+	printOn { arg stream;
+		stream << this.class.name << "(" <<* this.storeArgs << ")"
+	}
+	storeOn { arg stream;
+		stream << this.class.name << "(" <<<* this.storeArgs << ")"
+	}
 }
 
