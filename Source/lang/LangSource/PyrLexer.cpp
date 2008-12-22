@@ -165,7 +165,8 @@ double sc_strtof(const char *str, int n, int base)
 		else if (c >= 'A' && c <= 'A' + sc_min(36,base) - 11) z = z * base + c - 'A' + 10;
 		else if (c == '.') decptpos = i;
 	}
-	z = z / pow((double)base, n - decptpos); 
+	//calculation previously included decimal point in count of columns (was n-decptpos); there are 1 less than n characters which are columns in the number contribution
+	z = z / pow((double)base, n -1- decptpos); 
 	return z;
 }
 
