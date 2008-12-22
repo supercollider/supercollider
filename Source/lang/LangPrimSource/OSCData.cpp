@@ -383,7 +383,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	
     int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (aSocket == -1) {
-        post("\nCould not create socket\n");
+        //post("\nCould not create socket\n");
 		return errFailed;
 	}
 	
@@ -393,7 +393,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 #else
   if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
 #endif
-    post("\nCould not setsockopt TCP_NODELAY\n");
+    //post("\nCould not setsockopt TCP_NODELAY\n");
 #ifdef SC_WIN32
 		closesocket(aSocket);
 #else
@@ -405,7 +405,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
     if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
     {
-        post("\nCould not connect socket\n");
+        //post("\nCould not connect socket\n");
 #ifdef SC_WIN32
 		    closesocket(aSocket);
 #else
