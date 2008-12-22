@@ -5,35 +5,88 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>IdentityDictionary</b></p>
+<p class="p1"><span class="s1"><b>IdentityDictionary<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>faster version of Dictionary</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Superclass: Dictionary</b></p>
+<p class="p1">An IdentityDictionary is an associative collection mapping keys to values.<span class="Apple-converted-space"> </span></p>
+<p class="p1">Keys match only if they are identical objects.<span class="Apple-converted-space">  </span>(In Dictionary, keys match if they are equal valued.)<span class="Apple-converted-space"> </span></p>
+<p class="p1">The contents of a Dictionary are unordered.<span class="Apple-converted-space">  </span>You must not depend on the order of items in a Dictionary.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>instance variables</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>parent - nil or an IdentityDictionary</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>proto - nil or an IdentityDictionary</b></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3">An IdentityDictionary is an associative collection mapping keys to values.</p>
-<p class="p3">Two keys match only if they are identical.</p>
+<p class="p1"><b>Inherits from: Object : Collection : Set : Dictionary</b></p>
 <p class="p2"><br></p>
-<p class="p3">The contents of an IdentityDictionary are unordered.<span class="Apple-converted-space"> </span></p>
-<p class="p3">You must not depend on the order of items in a IdentityDictionary.</p>
+<p class="p3"><b>Creation / Class Methods</b></p>
+<p class="p4"><br></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>*new (n, proto, parent, know)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The <b>parent</b> and <b>proto</b> instance variables allow additional IdentityDictionary's to provide<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>default values. The precedence order for determining the value of a key is the IdentityDictionary,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>its prototype, its parent.</p>
 <p class="p2"><br></p>
-<p class="p3">Often IdentityDictionaries are used with Symbols as the keys since</p>
-<p class="p3">Symbols are guaranteed to be identical if they have the same character representation</p>
-<p class="p3">(i.e. they are equal). Two equal Strings on the other hand might not be identical.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>When the instance variable <b>know </b>is <b>true</b>, the IdentityDictionary responds to unknown messages<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>by looking up the selector and evaluating the result with the dictionary as an argument.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>For example:</p>
 <p class="p2"><br></p>
-<p class="p3">Default values can be provided by a parent and/or proto dictionary.<span class="Apple-converted-space">  </span>The precedence order</p>
-<p class="p3">is the IdentityDictionary, its prototype, its parent.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = IdentityDictionary(know: true);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.put(\foo, { | x | ("the argument is:" + x).postln });</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.foo;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><br></p>
+<p class="p8"><b>Accessing Instance Variables</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>proto_(IdentityDictionary)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>proto</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>parent_(IdentityDictionary)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>parent</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>know_(flag)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>know</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b>Methods</b></p>
+<p class="p9"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>IdentityDictionary reimplements the following methods of <b>Dictionary</b>:</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>at (key)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>put (key, value)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>includesKey (key)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>findKeyForValue (argValue)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>scanFor (argKey)</b></p>
+<p class="p6"><b></b><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>putGet (key, newValue)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>sets key to newValue, returns the previous value of key</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.cleanUpMethod;</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>The following three methods provide support for <b>Quant</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>nextTimeOnGrid (clock)</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>asQuant</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span>timingOffset</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p8"><b>Examples</b></p>
+<p class="p6"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>IdentityDictionary is often used to assign names to instances of a particular class.<span class="Apple-converted-space">  </span>For example,</p>
+<p class="p5"><span class="Apple-tab-span">	</span>the proxy classes (Pdef, Pdefn, Tdef, Ndef, Fdef), SynthDefLib, and NodeWatcher all have class</p>
+<p class="p5"><span class="Apple-tab-span">	</span>variables named <b>all </b>implemented as IdentityDictionary's.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
 </body>
 </html>
