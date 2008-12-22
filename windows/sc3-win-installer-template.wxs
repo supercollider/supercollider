@@ -37,12 +37,12 @@
 <DirectoryRef Id="SC3INSTALLLOCATION">
 	
 	<Component Id="ProductComponent" Guid="CF69B856-C79D-11DD-84EF-AD7E56D89593">
-		<File Id="scsynthExecutable" Name="scsynth.exe"
-								Source="../build/scsynth.exe" DiskId="1">
-		</File>
 		<!-- Note: python scripts build Psycollider.exe but here we rename it to SuperCollider.exe -->
 		<File Id="sclangExecutable" Name="SuperCollider.exe"
 								Source="../Psycollider/Psycollider/dist/Psycollider.exe" DiskId="1">
+		</File>
+		<File Id="scsynthExecutable" Name="scsynth.exe"
+								Source="../build/scsynth.exe" DiskId="1">
 		</File>
 		<File Id="w9xpopen" Name="w9xpopen.exe"
 								Source="../Psycollider/Psycollider/dist/w9xpopen.exe" DiskId="1">
@@ -77,8 +77,6 @@
 					Value='[SC3INSTALLLOCATION]' />
 		<Environment Id='ScPluginPath'    Name='SC_PLUGIN_PATH'   Action='set' System='yes' Part='all'
 					Value='[SC3INSTALLLOCATION]plugins' />
-		<Environment Id='ScSynthdefPath' Name='SC_SYNTHDEF_PATH' Action='set' System='yes' Part='all'
-					Value='[SC3INSTALLLOCATION]synthdefs' />
 
 		
 		<!-- filetype associations -->
@@ -106,11 +104,13 @@
 	</Component>
 </DirectoryRef>
 
+<!-- NO, don't create this. The SC synthdefs folder should be user-specific - allow the lang to create it
 <DirectoryRef Id="SCsynthdefsFolder">
 	<Component Id="SCsynthdefs" Guid="3A2D01E8-C839-11DD-BDF4-3D6556D89593">
 		<CreateFolder/>
 	</Component>
 </DirectoryRef>
+-->
 
 <DirectoryRef Id="ApplicationProgramsFolder">
 	<Component Id="ApplicationShortcut" Guid="7511071E-C90B-11DD-BB90-C59D55D89593">
@@ -127,7 +127,7 @@
 <Feature Id="ProductFeature" Title="SuperCollider" Description="SuperCollider 3 for Windows (with Psycollider IDE)" Level="1">
 	<ComponentRef Id="ProductComponent" />
 	<ComponentRef Id="SCextensions" />
-	<ComponentRef Id="SCsynthdefs" />
+	<!-- RM <ComponentRef Id="SCsynthdefs" /> -->
 	<ComponentRef Id="ApplicationShortcut" />
 </Feature>
 

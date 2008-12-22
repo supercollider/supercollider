@@ -927,6 +927,13 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 	
 	return errNone;
 }
+#else   // is windows
+int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
+int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
+{
+	// no-op. Better to have this than to overwrite in lang.
+	return errNone;
+}
 #endif
 //#ifndef SC_WIN32
 
@@ -1029,8 +1036,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
 #ifndef SC_WIN32
   definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
-	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
 #endif
+	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	

@@ -260,9 +260,13 @@ Server : Model {
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		set = Set.new;
-		internal = Server.new(\internal, NetAddr.new);
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		program = "cd % && exec ./scsynth".format(String.scDir.quote);
+		Platform.switch(\windows, {
+			program = "scsynth.exe";
+		}, {
+			internal = Server.new(\internal, NetAddr.new);
+			program = "cd % && exec ./scsynth".format(String.scDir.quote);
+		});
 	}
 	
 	*fromName { arg name;

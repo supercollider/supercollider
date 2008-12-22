@@ -249,11 +249,7 @@ void World_LoadGraphDefs(World* world)
 	if(getenv("SC_SYNTHDEF_PATH")){
 		if(world->mVerbosity > 0)
 			printf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
-#ifdef SC_WIN32
-		SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ';');
-#else
-		SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), ':');
-#endif
+		SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), SC_STRPARSE_PATHDELIMITER);
 		while (!sp.AtEnd()) {
 			GraphDef *list = 0;
 			char *path = const_cast<char *>(sp.NextToken());
