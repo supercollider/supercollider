@@ -12,11 +12,5 @@
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.openWinTextFile(selectionStart, selectionLength);
 	}
-		// make pathmatch on win conform to unix behavior.
-	pathMatch { var res;
-		res = this.prPathMatch;
-		^if (res.isKindOf(String), [], res);
-	}
-
-	prPathMatch { _StringPathMatch ^this.primitiveFailed } // orig
 }
+   

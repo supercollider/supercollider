@@ -26,7 +26,11 @@ SynthDef {
 	
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
-		("mkdir -p"+synthDefDir.quote).systemCmd; // Ensure exists
+                // Ensure exists:
+		("mkdir"
+			+ Platform.case(\windows, {""}, {"-p"}) // -p option doesn't exist on win
+			+ synthDefDir.quote
+		).systemCmd;
 	}
 	
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;

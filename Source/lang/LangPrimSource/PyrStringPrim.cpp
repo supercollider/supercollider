@@ -335,8 +335,12 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
     nbPaths = 0;
   }
 
-	if (hFind == INVALID_HANDLE_VALUE) 
+  if (hFind == INVALID_HANDLE_VALUE) {
+	// This is what happens when no matches. So we create an empty array to return.
+    PyrObject* array = newPyrArray(g->gc, 0, 0, true);
+	SetObject(a, array);
     return errNone;
+  }
     
   do {
     nbPaths++;
@@ -349,10 +353,11 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
     nbPaths = 0;
   }
 
-	PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
-	SetObject(a, array);
-	if (hFind == INVALID_HANDLE_VALUE) 
+  PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
+  SetObject(a, array);
+  if (hFind == INVALID_HANDLE_VALUE) {
     return errNone;
+  }
     
   int i = 0;
   do {
