@@ -23,7 +23,7 @@ Help {
 	*initClass {
 		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
-			Control, OutputProxy, AbstractOut, AbstractIn, Object, SCImageFilter, Class];
+			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
 		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads" ];
 	}
 	
@@ -185,16 +185,20 @@ Help {
 
 
 *gui { |sysext=true,userext=true|
-	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
+	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
 	
 	// Now for a GUI
-	win = GUI.window.new("Help browser", Rect(128, 264, 1040, 564)); // SCWindow
+	screenBounds = GUI.window.screenBounds;
+	bounds = Rect(128, 264, 1040, 564);
+	bounds = bounds.center_(screenBounds.center);
+	bounds = bounds.sect(screenBounds.insetBy(15));
+	win = GUI.window.new("Help browser", bounds); // SCWindow
 	scrollView = GUI.scrollView.new(win, Rect(5, 0, 425, 529)).hasBorder_(true);
-	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, 504));
-	textView = GUI.textView.new(win, Rect(435, 0, 620, 554))
+	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, /*504*/ bounds.height-60));
+	textView = GUI.textView.new(win, Rect(435, 0, /*620*/bounds.width-420, /*554*/ bounds.height-10))
 		.hasVerticalScroller_(true)
 		.hasHorizontalScroller_(true)
 		.autohidesScrollers_(false)
@@ -252,7 +256,7 @@ Help {
 	
 	// SCListView
 	listviews = (0..numcols-1).collect({ arg index; var view;
-		view = GUI.listView.new( compView, Rect( 5 + (index * 200), 4, 190, 504 ));
+		view = GUI.listView.new( compView, Rect( 5 + (index * 200), 4, 190, /* 504 */ bounds.height - 60 ));
 		//view.items = []; // trick me into drawing correctly in scrollview
 		if( view.respondsTo( \allowsDeselection ), {
 			view.allowsDeselection_( true ).value_( nil );
@@ -364,31 +368,31 @@ Help {
 	});
 	
 //	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
-	GUI.button.new( win, Rect( 5, 534, 110, 20 ))
+	GUI.button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Open Help File", Color.black, Color.clear]])
 		.action_({{ selecteditem.openHelpFile }.defer;});
-	classButt = GUI.button.new( win, Rect( 119, 534, 110, 20 ))
+	classButt = GUI.button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Open Class File", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
 			});
 		});
-	browseButt = GUI.button.new( win, Rect( 233, 534, 110, 20 ))
+	browseButt = GUI.button.new( win, Rect( 233, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Browse Class", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.browse }.defer;
 			});
 		});
-	bwdButt = GUI.button.new( win, Rect( 347, 534, 30, 20 ))
+	bwdButt = GUI.button.new( win, Rect( 347, /* 534 */ bounds.height - 30, 30, 20 ))
 		.states_([[ "<" ]])
 		.action_({
 			if( historyIdx > 0, {
 				fHistoryMove.value( -1 );
 			});
 		});
-	fwdButt = GUI.button.new( win, Rect( 380, 534, 30, 20 ))
+	fwdButt = GUI.button.new( win, Rect( 380, /* 534 */ bounds.height - 30, 30, 20 ))
 		.states_([[ ">" ]])
 		.action_({
 			if( historyIdx < (history.size - 1), {
@@ -446,9 +450,13 @@ Help {
 	Help.searchGUI
 	*/
 	*searchGUI {
-		var win, qbox, resultsview, results, winwidth=600, statictextloc;
+		var win, qbox, resultsview, results, winwidth=600, statictextloc, screenBounds, bounds;
 		
-		win = GUI.window.new("<< Search SC Help >>", Rect(100, 400, winwidth, 600));
+		screenBounds = GUI.window.screenBounds;
+		bounds = Rect(100, 400, winwidth, 600);
+		bounds = bounds.center_(screenBounds.center);
+		bounds = bounds.sect(screenBounds.insetBy(15));
+		win = GUI.window.new("<< Search SC Help >>", bounds);
 		
 		statictextloc = Rect(10, 10, winwidth-20, 200);
 		
