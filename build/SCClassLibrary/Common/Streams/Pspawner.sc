@@ -84,7 +84,7 @@ Spawner : Pattern {
 	}
 
 }
-	
+
 Pspawner : Proutine {
 
 	asStream { 
@@ -96,7 +96,47 @@ Pspawner : Proutine {
 			
 	}
 	
-}	
+}
+
+Pspawn : FilterPattern {
+	var	<>spawnProtoEvent;
+
+	*new { |pattern, spawnProtoEvent|
+		^super.new(pattern)
+			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default/*.put(\type, \spawn)*/ });
+	}
+	
+	embedInStream { |inevent, cleanup|
+		^Spawner({ |sp|
+			var	event, stream = pattern.asStream,
+				child;
+			while { (event = stream.next(spawnProtoEvent.copy.put(\spawner, sp))).notNil } {
+				case
+					{ event.method == \wait } {
+						event.spawner.wait(event.delta)
+					}
+					{ #[seq, par].includes(event.method) } {
+						child = event.pattern;
+						if(child.isKindOf(Symbol)) {
+							child = (event[\dict] ? Pdef).at(child);
+						};
+						event.spawner.perform(event.method, child.value);
+						if(event.delta > 0) {
+							event.spawner.wait(event.delta)
+						}
+					}
+						// suspend requires access to the specific stream
+						// don't know how to get it... maybe implement later
+					{ event.method == \suspendAll } {
+						event.spawner.suspendAll
+					}
+					{ "Unrecognized method % in spawner event."
+						.format(event.method.asCompileString).warn;
+					}
+			};
+		}).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new })
+	}
+}
 
 /*
 (	
