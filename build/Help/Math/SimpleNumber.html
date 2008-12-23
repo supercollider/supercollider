@@ -14,22 +14,21 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0000ff}
-span.s3 {color: #0033f1}
+span.s2 {color: #0024f8}
+span.s3 {color: #003eea}
 span.s4 {color: #000000}
-span.s5 {color: #0026b4}
+span.s5 {color: #002eaf}
 span.s6 {color: #606060}
 span.s7 {font: 9.0px Monaco}
 span.s8 {font: 12.0px Helvetica}
-span.s9 {color: #6d321f}
-span.s10 {color: #1742a6}
-span.s11 {color: #bf0000}
-span.s12 {color: #0000bf}
-span.s13 {color: #0024b3}
+span.s9 {color: #663321}
+span.s10 {color: #1c46a2}
+span.s11 {color: #ad140d}
+span.s12 {color: #001bb9}
+span.s13 {color: #002dae}
 span.s14 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -463,7 +462,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>N-ary Operations</b></p>
 <p class="p2"><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>degreeToKey(scale, stepsPerOctave)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>the value is truncated to an integer and used as an index into an octave repeating table of note values.</p>
@@ -533,9 +532,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>return true if receiver is closer to <b>that</b> than <b>precision</b>. (default for precision: 0.0001)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span>3.1.equalWithPrecision(3.0, 0.05); <span class="s11">// false</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.1); <span class="s11">// false</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.11); <span class="s11">// true</span></p>
+<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>3.1.equalWithPrecision(3.0, 0.05); <span class="s11">// false</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.1); <span class="s11">// false</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.11); <span class="s11">// true</span></p>
 <p class="p6"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>quantize(quantum, tolerance, strength)</b></p>
@@ -555,16 +554,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span></span>(0..10).collect { <span class="s12">|num|</span> num.linlin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>(0..10).linlin(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..10).collect { <span class="s12">|num|</span> num.linlin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..10).linlin(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
 <p class="p6"><br></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>linexp(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
 <p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to an exponential output range (outMin..outMax).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The output range must not include zero.<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span> If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(0..10).collect { <span class="s12">|num|</span> num.linexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
@@ -580,7 +579,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s12">|num|</span> num.explin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>(1..10).explin(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
 <p class="p3"><b>expexp(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
@@ -621,18 +620,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s14"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
-<p class="p8"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">var</span> center = 0.5, ctlCenter;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>(<span class="s6">"biexp"</span>, <span class="s12">Rect</span>(100, 100, 200, 100)).front;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value + 0.05 };</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = (a.value + 0.1).biexp(ctlCenter, 0.1, 1.1, center, 0, 1);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p8"><span class="Apple-tab-span">	</span>)</p>
+<p class="p9"><span class="s14"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
+<p class="p5"><span class="Apple-tab-span">	</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">var</span> center = 0.5, ctlCenter;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>(<span class="s6">"biexp"</span>, <span class="s12">Rect</span>(100, 100, 200, 100)).front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value + 0.05 };</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = (a.value + 0.1).biexp(ctlCenter, 0.1, 1.1, center, 0, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>lcurve(a, m, n, tau)</b></p>
 <p class="p2"><br></p>
