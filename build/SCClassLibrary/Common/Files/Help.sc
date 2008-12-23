@@ -101,7 +101,7 @@ Help {
 					if ( helppath == Platform.userExtensionDir,
 						{
 							helpRootLen = "~/".absolutePath.size; // + 1;
-							subc = path[helpRootLen..].split(Platform.pathSeparators);
+							subc = path[helpRootLen..].split(Platform.pathSeparator);
 							subc = [ "UserExtensions" ] ++ subc;
 							// check for common superfluous names that may confuse the categorisation;
 							filterUserDirEntries.do{ |spath|
