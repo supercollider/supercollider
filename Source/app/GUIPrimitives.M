@@ -3724,16 +3724,19 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-		}
+		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
 		if([parentItem hasSubmenu]) {
 			//NSLog(@"Parent has submenu");
 			parentMenu = [parentItem submenu];
-		} else {
-			return errFailed;
 		}
-	} else return errWrongType;
+	} 
+	
+	if(!parentMenu) {
+		[label release];
+		return errWrongType;
+	}
 	
 	// protect against bad indices
 	int parentSize = [parentMenu numberOfItems];
