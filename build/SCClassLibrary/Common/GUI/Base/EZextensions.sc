@@ -1,4 +1,4 @@
-EZSliderXX 
+EZSlider
 {
 	var <>labelView, <>sliderView, <>numberView, <>controlSpec, <>action, <value;
 	var <>round = 0.001;
@@ -87,7 +87,7 @@ EZSliderXX
 
 
 
-EZNumberXX
+EZNumber
 {
 	var <>labelView, <>numberView, <>controlSpec, <>action, <value;
 	var <>round = 0.001;

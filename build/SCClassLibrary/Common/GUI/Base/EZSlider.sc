@@ -1,6 +1,6 @@
 
 
-EZSlider : EZGui {
+EZSliderSC : EZGui {
 
 	var  <>sliderView, <>numberView, <>controlSpec, <>action, <value, numSize;
 	var <>round = 0.001;
