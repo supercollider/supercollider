@@ -38,7 +38,7 @@ typedef struct URegularExpression URegularExpression;
 #include "PyrKernel.h"
 #include "GC.h"
 
-#define MAXREGEXFIND 100;
+#define MAXREGEXFIND 256;
 
 
 struct SCRegExRegion {
@@ -56,14 +56,17 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;     // offset
 		
 	if (!isKindOfSlot(b, class_string) || (c->utag != tagInt)) return errWrongType;
+//	post("prString_FindRegexp\n");
 	int maxfind = MAXREGEXFIND;
 	int offset = c->ui;
 	int stringsize = a->uo->size + 1;
 	int patternsize =  b->uo->size + 1;
 	char *string = (char*)malloc(a->uo->size + 1);
 	err = slotStrVal(a, string, a->uo->size + 1);
-	if (err) return err;
-	
+	if (err){
+		free(string);
+		return err;
+	}
 	char *pattern = (char*)malloc(b->uo->size + 1);
 	err = slotStrVal(b, pattern, b->uo->size + 1);
 	if (err) return err;
@@ -77,6 +80,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	
 	ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
 	u_charsToUChars (string+offset, ustring, stringsize-offset);
+
 
 	unsigned flags = UREGEX_MULTILINE;
 	int groupNumber = 0;
@@ -135,7 +139,9 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 					int match_start =  what[i].start;
 					int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
-					char *match = (char*)malloc(match_length);
+//					char *match = (char*)malloc(match_length);
+					char match[match_length];
+
 					strncpy(match, string + offset + match_start, match_length);
 					match[match_length] = 0;
 					PyrObject *array = newPyrArray(g->gc, 2, 0, true);
@@ -154,17 +160,24 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		else
 		{
 			SetNil(a);
-			return errNone;
 		}
-	
+		 free(what);
+		 free(pattern);
+		 free(regexStr);
+		 free(ustring);	
+		 free(string);
 		SetObject(a, result_array);
 		g->gc->GCWrite(result_array,a);
-		free(what);
 		//uregex_close(expression);
 		return errNone;	
 	}
 
 		nilout:
+			free(string);
+			free(what);
+			free(pattern);
+			free(regexStr);
+			free(ustring);
 			SetNil(a);
 			return errNone;
 }
