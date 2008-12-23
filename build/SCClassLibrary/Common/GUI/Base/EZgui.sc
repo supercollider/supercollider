@@ -1,7 +1,5 @@
-EZgui{
-	var <>labelView, <widget, <view, <gap, <labelPosition, labelSize, value;
-
-	/////////////////////////
+EZGui{ // an abstract class
+	var <>labelView, <widget, <view, <gap, <labelPosition, labelSize, <>alwaysOnTop=true;
 	
 	label_{ arg string;
 	
@@ -23,8 +21,8 @@ EZgui{
 	 	
 	}
 	
-	label { arg label, items, globalAction;
-	 	labelView.string;
+	label {
+	 	^labelView.string;
 	}
 		
 	visible { ^view.getProperty(\visible) }
@@ -91,40 +89,75 @@ EZgui{
 		tempGap=gap;	
 		hasLabel.not.if{tempGap=0; labelSize=0@0};
 		
-		if (labelPosition==\top,{
-			listBounds= Rect(
+		if (labelPosition==\top)
+			{ listBounds= Rect(
 					0,
 					labelSize.y+tempGap,
 					view.bounds.width,  
 					view.bounds.height-labelSize.y-tempGap
 					);
-			labelBounds=Rect(0,0,listBounds.width,labelSize.y);
-		},{
-			listBounds= Rect(
+			labelBounds=Rect(0,0,listBounds.width,labelSize.y);}
+			{ listBounds= Rect(
 					labelSize.x+tempGap,
 					0,
 					view.bounds.width-labelSize.x-tempGap,  
 					view.bounds.height
 					);
-			labelBounds=Rect(0,0, labelSize.x ,listBounds.height );
-		});
+			labelBounds=Rect(0,0, labelSize.x ,listBounds.height )};
 		
 		^[labelBounds, listBounds]
 	}
 	
-
 	
-
-	
-	
-	/////////////////////////	
 }
 
 
-EZlists : EZgui{
-	var <items, <>globalAction ; 
+EZLists : EZGui{  // an abstract class
+
+	var <items, <>globalAction, value; 
 	
+	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
+			initAction=false, labelWidth, labelPosition, gap;
+			
+		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
+			initAction, labelWidth,labelPosition, gap);
+			}
+
+	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
+			initAction, labelWidth, labelPosition,  argGap;
+			
+		var	decorator = parentView.asView.tryPerform(\decorator);
+		
+		argGap.isNil.if
+			{gap = decorator.tryPerform(\gap).tryPerform(\x)}
+			{gap = argGap};
+		gap  = gap ? 2;
+		
+		this.initViews(  parentView, bounds, label, labelWidth,labelPosition );
+			
+		this.items=argItems ? [];
+		
+		globalAction=argGlobalAction;
+		
+		widget.action={arg obj;
+			items.at(obj.value).value.value(obj);
+			globalAction.value(obj);
+			};		
+			
+		this.value_(initVal);
+			
+		items.notNil.if{
+			if(initAction){
+					items.at(initVal).value.value(this); // You must do this like this
+					globalAction.value(this);	// since listView's array is not accessible yet
+				}
+			{this.value_(initVal)};
+		};
+	}	
 	
+	initViews{ arg parentView, bounds, label, labelWidth, labelHeight,argLabelPosition;
+			var labelBounds, listBounds,w, winBounds;
+	}
 	value{ ^widget.value }
 	
 	value_{|val| widget.value_(val)}
@@ -155,10 +188,5 @@ EZlists : EZgui{
 	
 	}
 
-
-}
-
-EZValues : EZgui{
- /// EZSlider, EZRanger EZNumber support
 
 }
