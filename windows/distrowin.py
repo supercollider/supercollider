@@ -26,9 +26,9 @@ for detectpath in ('../Psycollider/Psycollider/dist/Psycollider.exe', '../Psycol
                 print("ERROR:\n  Path %s not detected.\n  Generating executable (using py2exe) probably failed." % detectpath)
                 sys.exit(1)
 # Also copy PySCLang.pyd out of its "site-packages" location
-shutil.copy(os.getenv('PYTHONPATH', 'C:/python26') + '/Lib/site-packages/PySCLang.pyd', '../Psycollider/Psycollider/dist/')
+shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/PySCLang.pyd', '../Psycollider/Psycollider/dist/')
 # and a dll we need
-shutil.copy(os.getenv('PYTHONPATH', 'C:/python26') + '/Lib/site-packages/wx-2.8-msw-unicode/wx/gdiplus.dll', '../Psycollider/Psycollider/dist/')
+shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/wx-2.8-msw-unicode/wx/gdiplus.dll', '../Psycollider/Psycollider/dist/')
 
 
 ########################################

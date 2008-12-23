@@ -88,20 +88,20 @@ Help {
 
 			if ( helppath == Platform.helpDir,
 				{
-					subc = path[helpRootLen..].split($/);
+					subc = path[helpRootLen..].split(Platform.pathSeparator);
 					subc = subc[0..subc.size-2]; // Ignore "Help" and the filename at the end
 				},{
 					//helpRootLen = "~".standardizePath;
 					if ( helppath == Platform.systemExtensionDir,
 						{
-							subc = path[helpRootLen..].split($/);
+							subc = path[helpRootLen..].split(Platform.pathSeparator);
 							subc = [ "SystemExtensions" ] ++ subc;
 							//subc.postcs;
 						});
 					if ( helppath == Platform.userExtensionDir,
 						{
 							helpRootLen = "~/".absolutePath.size; // + 1;
-							subc = path[helpRootLen..].split($/);
+							subc = path[helpRootLen..].split(Platform.pathSeparators);
 							subc = [ "UserExtensions" ] ++ subc;
 							// check for common superfluous names that may confuse the categorisation;
 							filterUserDirEntries.do{ |spath|
@@ -537,6 +537,13 @@ Help {
 		results = results.sort;
 		
 		^results
+	}
+	// This iterates the Help.tree to find the file. Can be used instead of platform-specific approaches
+	*findHelpFile { |str|
+		var ret = nil;
+		str = str.asString;
+		block{|break| this.do{|key, val| if(key==str){ ret=val; break.value }}};
+		^ret;
 	}
 
 } // End class
