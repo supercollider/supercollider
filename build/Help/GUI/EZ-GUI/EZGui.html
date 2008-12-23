@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #001ee6}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0020f6}
+span.s3 {color: #000000}
+span.s4 {color: #3f4981}
+span.s5 {color: #5461ad}
+span.s6 {color: #576097}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>EZGui<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>an abstract superclass for EZ widget wrappers</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p3"><br></p>
+<p class="p1">Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="EZListView.html">EZListView</a>, <a href="EZPopUpMenu.html">EZPopUpMenu</a>, <a href="EZSlider.html">EZSlider</a>, <a href="EZNumber.html">EZNumber</a>, <a href="EZRanger.html">EZRanger</a></span></p>
+<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6"><b>Accessing Instance and Class Variables</b></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>view</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the enclosing compositeView.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>label</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>label_(string)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the label. Will add the label view if none was initially created.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="../../../../../../../../Users/fuo/Collections/String.html"><span class="s4">String</span></a>. </p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b>Accessing GUI options</b></p>
+<p class="p10"><br></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>alwaysOnTop_(boolean)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>alwaysOnTop</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Makse the popup window always on tiop.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Default value is true.</p>
+<p class="p7"><br></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>visible</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  views are visible.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../../../../../../../Users/fuo/Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>enabled</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets if the list  is enabled.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../../../../../../../Users/fuo/Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>visible</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  views are visible.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../../../../../../../Users/fuo/Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>bounds</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>bounds_(rect)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the bounds of view, and adjusts the components.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect </b>- An Instance of <a href="../../../../../../../../Users/fuo/Geometry/Rect.html"><span class="s5">Rect</span></a> or <a href="../../../../../../../../Users/fuo/Geometry/Point.html"><span class="s5">Point</span></a>;</p>
+<p class="p11"><br></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelPosition</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelPosition_(pos)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the label position.<span class="Apple-converted-space">  </span>The width and height of the label return to the defaults: 80@this.height or this.width@20;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>pos </b>- \left or \top</p>
+<p class="p11"><br></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelWidth</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelWidth_(width)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the width of the label to <b>width</b>, and adjusts the widget.bounds.. Does nothing if <b>labelPosition</b>=\top;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>width </b>- A number;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelHeight</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelHeight_(height)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the height of the label to <b>height</b>, and adjusts the widget.bounds. Does nothing if <b>labelPosition</b>=\left;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>height </b>- A number;</p>
+<p class="p11"><br></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>gap</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>gap_(int)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The vertical or horizontal<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>int </b>- by default, the view tries to get its parent's gap.x, otherwise it defaults to 4.<span class="Apple-converted-space">  </span>Setting it overrides these.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b>Accessing GUI components</b></p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>view</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the enclosing compositeView.</p>
+<p class="p7"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelView_(arg1)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>labelView</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An <a href="../../../../../../../../Users/fuo/Desktop/SCStaticText.html">SCStaticText</a><b> </b></span><span class="s6"> view</span></p>
+</body>
+</html>
