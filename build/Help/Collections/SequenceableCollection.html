@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.47">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,22 +14,26 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 6.0px Monaco; min-height: 9.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 6.0px Monaco; min-height: 9.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-span.s1 {color: #0024f8}
+span.s1 {color: #0047e4}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0037ac}
+span.s3 {color: #1845a0}
 span.s4 {font: 12.0px Helvetica}
-span.s5 {color: #822a17}
-span.s6 {color: #000000}
-span.s7 {color: #007300}
-span.s8 {color: #606060}
-span.s9 {color: #bf0000}
-span.s10 {color: #0042ea}
+span.s5 {color: #0033f1}
+span.s6 {color: #9d1c12}
+span.s7 {color: #000000}
+span.s8 {color: #00319b}
+span.s9 {color: #606060}
+span.s10 {color: #526736}
+span.s11 {color: #672f1f}
+span.s12 {color: #486b24}
+span.s13 {color: #8f2116}
+span.s14 {color: #1857d8}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -195,9 +199,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p3"><b>flop</b></p>
 <p class="p2"><br></p>
-<p class="p3">Invert rows and columns in a two dimensional collection.</p>
+<p class="p3">Invert rows and colums in a two dimensional Collection (turn inside out).</p>
+<p class="p3">See also: <a href="../Core/Kernel/Function.html"><span class="s5">Function</span></a>.</p>
+<p class="p6"><br></p>
+<p class="p5">[[1, 2, 3], [4, 5, 6]].flop;</p>
+<p class="p5">[[1, 2, 3], [4, 5, 6], [7, 8]].flop; <span class="s6">// shorter array wraps</span></p>
+<p class="p8"><span class="s7">[].flop; </span>// result is always 2-d.</p>
+<p class="p6"><br></p>
+<p class="p3"><b>lace(length)</b></p>
 <p class="p2"><br></p>
-<p class="p5">[[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12]].flop.postcs;</p>
+<p class="p3">Returns a new Collection whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size <b>length</b>. The receiver is unchanged.</p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5">x = [ [1, 2, 3], 6, <span class="s8">List</span>[<span class="s9">"foo"</span>, <span class="s10">'bar'</span>]];</p>
+<p class="p5">y = x.lace(12);</p>
+<p class="p5">x.postln;</p>
+<p class="p5">y.postln;</p>
+<p class="p5">)</p>
 <p class="p7"><br></p>
 <p class="p3"><b>choose</b></p>
 <p class="p2"><br></p>
@@ -220,11 +238,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">If the function is nil, the following default function is used.</p>
 <p class="p2"><br></p>
 <p class="p5">{ <span class="s3">arg</span> a, b; a &lt; b }</p>
-<p class="p8"><br></p>
 <p class="p9"><br></p>
+<p class="p10"><br></p>
 <p class="p5">[6, 2, 1, 7, 5].sort;</p>
 <p class="p6"><br></p>
-<p class="p5">[6, 2, 1, 7, 5].sort({ <span class="s3">arg</span> a, b; a &gt; b }); <span class="s5">// reverse sort</span></p>
+<p class="p5">[6, 2, 1, 7, 5].sort({ <span class="s3">arg</span> a, b; a &gt; b }); <span class="s11">// reverse sort</span></p>
 <p class="p7"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>swap(i, j)</b></p>
@@ -281,14 +299,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Applies the method named by operator to the first and second elements of the collection - then applies the method to the result and to the third element of the collection - then applies the method to the result and to the fourth element of the collection - and so on, until the end of the array.</p>
 <p class="p2"><br></p>
-<p class="p10"><span class="s6">[3,4,5,6].reduce(</span><span class="s7">'*'</span><span class="s6">); </span>// this is the same as [3,4,5,6].product</p>
-<p class="p10"><span class="s6">[3,4,5,6].reduce(</span><span class="s7">\lcm</span><span class="s6">); </span>// Lowest common multiple of the whole set of numbers</p>
-<p class="p11">[<span class="s8">"d"</span>, <span class="s8">"e"</span>, (0..9), <span class="s8">"h"</span>].reduce(<span class="s7">'++'</span>); <span class="s9">// concatenation</span></p>
+<p class="p11"><span class="s7">[3,4,5,6].reduce(</span><span class="s12">'*'</span><span class="s7">); </span>// this is the same as [3,4,5,6].product</p>
+<p class="p11"><span class="s7">[3,4,5,6].reduce(</span><span class="s12">\lcm</span><span class="s7">); </span>// Lowest common multiple of the whole set of numbers</p>
+<p class="p5">[<span class="s9">"d"</span>, <span class="s9">"e"</span>, (0..9), <span class="s9">"h"</span>].reduce(<span class="s12">'++'</span>); <span class="s13">// concatenation</span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>convertDigits(base)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Returns an integer resulting from interpreting the elements as digits to a given base (default 10).</p>
-<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s10">Integer</span></a> for the complementary method.</p>
+<p class="p3">See also <b>asDigits</b> in <a href="../Math/Integer.html"><span class="s14">Integer</span></a> for the complementary method.</p>
 <p class="p6"><br></p>
 <p class="p5">[1, 0, 0, 0].convertDigits;</p>
 <p class="p5">[1, 0, 0, 0].convertDigits(2);</p>
@@ -301,7 +319,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.</p>
 <p class="p7"><br></p>
 <p class="p5">[0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1])</p>
-<p class="p12">"SuperMan"<span class="s6">.hammingDistance(</span>"SuperCollider"<span class="s6">);</span></p>
+<p class="p12">"SuperMan"<span class="s7">.hammingDistance(</span>"SuperCollider"<span class="s7">);</span></p>
 <p class="p7"><br></p>
 <p class="p4"><b><span class="s2">Math Support</span></b></p>
 <p class="p2"><br></p>
