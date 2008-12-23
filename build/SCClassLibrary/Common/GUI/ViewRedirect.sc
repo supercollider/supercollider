@@ -58,3 +58,23 @@ TabletView : ViewRedirect { *key { ^\tabletView }}
 SoundFileView : ViewRedirect { *key { ^\soundFileView }}
 MovieView : ViewRedirect { *key { ^\movieView }}
 TextView : ViewRedirect  {	*key { ^\textView }}
+
+
+EZSlider : ViewRedirect  {
+	*new { arg parent, bounds, label, controlSpec, action, initVal, 
+			initAction=false, labelWidth=80, numberWidth = 80;
+		^this.implClass.new(parent, bounds, label, controlSpec, action, initVal, 
+			initAction, labelWidth, numberWidth)
+	}
+		*key { ^\ezSlider }}
+
+EZNumber : ViewRedirect  {
+
+	*new { arg parent, bounds, label, controlSpec, action, initVal, 
+			initAction=false, labelWidth=80, numberWidth = 80;
+		^this.implClass.new(parent, bounds, label, controlSpec, action, initVal, 
+			initAction, labelWidth, numberWidth)
+	}
+	*key { ^\ezNumber }
+}
+
