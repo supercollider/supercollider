@@ -131,6 +131,8 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl 
 		^this.primitiveFailed 
 	}
+	
+	//************** inconsistent argnames, see SequenceableColllection unlace!
 	unlace { arg clumpSize=2, numChan=1, clip=false;
 		^if(clip) { 
 			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
@@ -174,7 +176,7 @@ Array[slot] : ArrayedCollection {
 	}
 
 	shift { arg n;
-		var fill = Array.fill(n, 0.0);
+		var fill = Array.fill(n.abs, 0.0);
 		var remain = this.drop(n.neg);
 		^if (n<0) { remain ++ fill } { fill ++ remain }
 	}
