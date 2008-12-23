@@ -1,4 +1,5 @@
 + String { 
+/*
 		// used in methodReferences lookup
 	newTextWindow { arg title="Untitled", makeListener=false; 
 		var tempFile, path;
@@ -9,8 +10,9 @@
 		tempFile.close;
 		^path.openWinTextFile;
 	}
+*/
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.openWinTextFile(selectionStart, selectionLength);
 	}
 }
-   
+    

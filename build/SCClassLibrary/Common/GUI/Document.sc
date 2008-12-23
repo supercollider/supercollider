@@ -33,7 +33,7 @@ Document {
 	*open { arg path, selectionStart=0, selectionLength=0, envir;
 		var doc, env;
 		env = currentEnvironment;
-		this.current.restoreCurrentEnvironment;		
+		if(this.current.notNil){this.current.restoreCurrentEnvironment};		
 		doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
 		if (doc.notNil) {
 			doc.envir_(envir)
