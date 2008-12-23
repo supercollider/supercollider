@@ -609,8 +609,12 @@ SCImage {
 }
 
 SCImageFilter {
-	classvar <categories;
+	classvar categories;
 	var <name, <attributes, <values, <>enable=true;
+	
+	*filterCategories {
+		^categories;
+	}
 	
 	*initClass {
 		var categoryNames = [
