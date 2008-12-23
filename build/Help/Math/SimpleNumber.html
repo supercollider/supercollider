@@ -16,6 +16,7 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {text-decoration: underline}
 span.s2 {color: #0000ff}
 span.s3 {color: #0033f1}
@@ -28,6 +29,8 @@ span.s9 {color: #6d321f}
 span.s10 {color: #1742a6}
 span.s11 {color: #bf0000}
 span.s12 {color: #0000bf}
+span.s13 {color: #0024b3}
+span.s14 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -598,15 +601,39 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var center = 0.5, ctlCenter;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s13">Window</span>("bilin", Rect(100, 100, 200, 100)).front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s13">Slider</span>(w, <span class="s13">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s13">Slider</span>(w, <span class="s13">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value };</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = a.value.bilin(ctlCenter, 0, 1, center, 0, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p5"><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><br></p>
 <p class="p3"><b>biexp(inCenter, inMin, inMax, outCenter, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
 <p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed exponential input ranges (inMin..inCenter) and (inCenter..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to two linear output ranges (outMin..outCenter) and (outCenter..outMax).</p>
-<p class="p3"><span class="Apple-tab-span">	</span>Both input range and output range must not include zero.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>The input range must not include zero.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><br></p>
+<p class="p10"><span class="s14"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">var</span> center = 0.5, ctlCenter;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>(<span class="s6">"biexp"</span>, <span class="s12">Rect</span>(100, 100, 200, 100)).front;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value + 0.05 };</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = (a.value + 0.1).biexp(ctlCenter, 0.1, 1.1, center, 0, 1);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p8"><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>lcurve(a, m, n, tau)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>map the receiver onto an L-curve, using the formula: a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1).</p>
