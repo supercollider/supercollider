@@ -264,7 +264,7 @@ PrettyState {
 	}
 }
 
-PrettyEcho : PrettyState{
+PrettyEcho : PrettyState {
 	put { arg char; 
 		// echo chars until new line
 		if ((char == $\n) || (char == $\r), {
@@ -294,7 +294,7 @@ PrettyEcho : PrettyState{
 	}
 }
 
-PrettyEat : PrettyState{
+PrettyEat : PrettyState {
 	put { arg char;
 		if (char == ${, /*}*/ {
 			pretty.level.do({ pretty.out.put($\t) });
