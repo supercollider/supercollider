@@ -118,7 +118,7 @@ SimpleNumber : Number {
 	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
 	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
 	
-	equalWithPrecision { arg that,precision=0.0001;
+	equalWithPrecision { arg that, precision=0.0001;
 		^absdif(this, that) < precision
 	}
 
@@ -279,7 +279,7 @@ SimpleNumber : Number {
 
 	// scheduled Routine support
 	wait { ^this.yield }
-	waitUntil { ^(this - thisThread.beats).yield }
+	waitUntil { ^(this - thisThread.beats).max(0).yield }
 	sleep {
 		var thread = thisThread;
 		thread.clock.sched(this, { thread.next; nil });
