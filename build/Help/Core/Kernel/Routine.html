@@ -10,26 +10,23 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #952117}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #53382c}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #273e90}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #81281e}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-span.s1 {color: #1941e0}
-span.s2 {color: #273e90}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
+span.s1 {color: #1849da}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #2349db}
-span.s6 {color: #0e31f0}
-span.s7 {color: #0a24b3}
-span.s8 {color: #61633e}
-span.s9 {color: #0f2bad}
-span.s10 {color: #81281e}
-span.s11 {color: #0000ff}
+span.s5 {color: #2450d5}
+span.s6 {color: #003ce9}
+span.s7 {color: #007300}
+span.s8 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -161,10 +158,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>idle(time)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>within a routine, return values until this time is over. Time is measured relative to the thread's clock.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>(see <a href="Routine.html"><span class="s6">Routine</span></a>)</p>
-<p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// for 6 seconds, return 200, then continue</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// for 6 seconds, return 200, then continue</p>
 <p class="p4"><span class="Apple-tab-span">	</span>(</p>
-<p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s7">Routine</span> {</p>
+<p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s2">Routine</span> {</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>199.yield;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>189.yield;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>200.idle(6);</p>
@@ -180,12 +177,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
 <p class="p4"><span class="Apple-tab-span">	</span>);</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// the value can also be a stream or a function</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// the value can also be a stream or a function</p>
 <p class="p4"><span class="Apple-tab-span">	</span>(</p>
-<p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s7">Routine</span> {</p>
+<p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s2">Routine</span> {</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>199.yield;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>189.yield;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Routine</span> { 100.do { <span class="s7">|i|</span> i.yield } }.idle(6);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Routine</span> { 100.do { <span class="s2">|i|</span> i.yield } }.idle(6);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>199.yield;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>189.yield;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>};</p>
@@ -200,7 +197,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p8"><b>Accessible instance variables</b></p>
+<p class="p9"><b>Accessible instance variables</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -223,7 +220,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">(</p>
 <p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// thisThread refers to the routine.</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// thisThread refers to the routine.</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"beats: % seconds: % time: % \n"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">thisThread</span>.beats, <span class="s2">thisThread</span>.seconds, <span class="s2">Main</span>.elapsedTime</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -254,65 +251,80 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>inval = 99.yield;</p>
 <p class="p4">});</p>
 <p class="p6"><br></p>
-<p class="p4">outval = r.next(<span class="s8">'a'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'a'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s8">'b'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'b'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
 <p class="p4">r.reset; <span class="s4">"reset"</span>.postln;</p>
-<p class="p4">outval = r.next(<span class="s8">'c'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'c'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s8">'d'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'d'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s8">'e'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'e'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
-<p class="p4">outval = r.next(<span class="s8">'f'</span>);</p>
+<p class="p4">outval = r.next(<span class="s7">'f'</span>);</p>
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p6"><br></p>
+<p class="p8">// wait</p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
 <p class="p4"><span class="s2">var</span> r;</p>
-<p class="p4">r = <span class="s2">Routine</span>.new({</p>
+<p class="p10"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>10.do({ <span class="s2">arg</span> a;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Often you might see Wait being used to pause a routine</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// This waits for one second between each number</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Often you might see Wait being used to pause a routine</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// This waits for one second between each number</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>});</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
 <p class="p4"><span class="Apple-tab-span">	</span>0.5.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
-<p class="p4">});</p>
-<p class="p6"><br></p>
-<p class="p10">SystemClock<span class="s3">.play(r);</span></p>
+<p class="p4">}.play;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p6"><br></p>
-<p class="p11">// Using Routine to set button states on the fly.</p>
+<p class="p8">// waitUntil</p>
+<p class="p7"><br></p>
+<p class="p11">(</p>
+<p class="p11"><span class="s2">var</span> r;</p>
+<p class="p10"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>var times = { rrand(1.0, 10.0) }.dup(10) + thisThread.beats;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>times = times.sort;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>times.do({ <span class="s2">arg</span> a;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>waitUntil(a);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
+<p class="p11"><span class="Apple-tab-span">	</span>0.5.wait;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
+<p class="p11">}.play;</p>
+<p class="p11">)</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p8">// Using Routine to set button states on the fly.</p>
 <p class="p4">(</p>
-<p class="p4"><span class="s9">var</span> update, w, b;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>.new(<span class="s4">"State Window"</span>, <span class="s9">Rect</span>(150,<span class="s9">SCWindow</span>.screenBounds.height-140,380,60));</p>
+<p class="p4"><span class="s2">var</span> update, w, b;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>.new(<span class="s4">"State Window"</span>, <span class="s2">Rect</span>(150,<span class="s2">SCWindow</span>.screenBounds.height-140,380,60));</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update = {<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">|but, string|</span> but.states = [[string.asString, <span class="s9">Color</span>.black, <span class="s9">Color</span>.red]];<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">|but, string|</span> but.states = [[string.asString, <span class="s2">Color</span>.black, <span class="s2">Color</span>.red]];<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>but.refresh;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s9">SCButton</span>(w, <span class="s9">Rect</span>(10,10,360,40));</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.font_(<span class="s9">Font</span>(<span class="s4">"Impact"</span>, 24));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">SCButton</span>(w, <span class="s2">Rect</span>(10,10,360,40));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.font_(<span class="s2">Font</span>(<span class="s4">"Impact"</span>, 24));</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(b, </span>"there is only one state"<span class="s3">);</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
 <p class="p6"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action_(<span class="s9">Routine</span> { <span class="s9">|butt|</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(15, 45).do { <span class="s9">|i|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action_(<span class="s2">Routine</span> { <span class="s2">|butt|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(15, 45).do { <span class="s2">|i|</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(butt, <span class="s4">"%. there is still only 1 state"</span>.format(i + 2));</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield; <span class="s10">// stop here</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield; <span class="s8">// stop here</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.close;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
@@ -320,34 +332,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p7">// drawing in a window dynamcially with <a href="../../GUI/stubs/Pen.html"><span class="s11">Pen</span></a></p>
+<p class="p8">// drawing in a window dynamcially with <a href="../../GUI/stubs/Pen.html">Pen</a></p>
 <p class="p4">(</p>
-<p class="p4"><span class="s7">var</span> w, much = 0.02, string, synth;</p>
+<p class="p4"><span class="s2">var</span> w, much = 0.02, string, synth;</p>
 <p class="p6"><br></p>
-<p class="p4">w = <span class="s7">GUI</span>.window.new(<span class="s4">"swing"</span>, <span class="s7">Rect</span>(100, 100, 300, 500)).front;</p>
-<p class="p4">w.view.background_(<span class="s7">Color</span>.new255(153, 255, 102).vary);</p>
+<p class="p4">w = <span class="s2">GUI</span>.window.new(<span class="s4">"swing"</span>, <span class="s2">Rect</span>(100, 100, 300, 500)).front;</p>
+<p class="p4">w.view.background_(<span class="s2">Color</span>.new255(153, 255, 102).vary);</p>
 <p class="p6"><br></p>
 <p class="p4">string = <span class="s4">"swing "</span>.dup(24).join;</p>
 <p class="p6"><br></p>
-<p class="p4">w.drawHook = <span class="s7">Routine</span> {<span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s7">var</span> i = 0;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s7">var</span> size = 40;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s7">var</span> func = { <span class="s7">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s7">var</span> scale;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.font = <span class="s7">Font</span>(<span class="s4">"Helvetica-Bold"</span>, 40);</p>
+<p class="p4">w.drawHook = <span class="s2">Routine</span> {<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> i = 0;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> size = 40;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> func = { <span class="s2">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> scale;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.font = <span class="s2">Font</span>(<span class="s4">"Helvetica-Bold"</span>, 40);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop {<span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span><span class="s7">|char, j|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span><span class="s2">|char, j|</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale = func.value(i, j).dup(6);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillColor = <span class="s7">Color</span>.new255(0, 120, 120).vary;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.stringAtPoint(char.asString,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.fillColor = <span class="s2">Color</span>.new255(0, 120, 120).vary;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.stringAtPoint(char.asString,</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
 <p class="p4">};</p>
 <p class="p6"><br></p>
