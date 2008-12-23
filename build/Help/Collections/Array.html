@@ -5,27 +5,36 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982c23}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2f25}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982c23; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0024a4}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2f25; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002b9f}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
-span.s2 {color: #0000ff}
-span.s3 {color: #0024a4}
-span.s4 {color: #bf0000}
-span.s5 {color: #0024e4}
-span.s6 {color: #436b2e}
-span.s7 {color: #606060}
+span.s2 {color: #0024f8}
+span.s3 {color: #002b9f}
+span.s4 {color: #ad140d}
+span.s5 {color: #0031de}
+span.s6 {color: #4c6932}
+span.s7 {color: #0000bf}
+span.s8 {color: #606060}
+span.s9 {color: #0000ff}
+span.s10 {color: #bf0000}
+span.s11 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -151,9 +160,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p5">(</p>
 <p class="p5">10.do({ <span class="s3">arg</span> i;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>[1, 2, 3, 4].pyramid(i + 1).asCompileString.postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>[1, 2, 3, 4].pyramid(i + 1).postcs;</p>
 <p class="p5">});</p>
 <p class="p5">)</p>
+<p class="p9"><br></p>
+<p class="p4"><b>pyramidg</b></p>
+<p class="p2"><br></p>
+<p class="p4">Like pyramid, but keep the resulting values grouped in subarrays.</p>
+<p class="p2"><br></p>
+<p class="p10">// compare:</p>
+<p class="p11">[1, 2, 3, 4].pyramid(1).postln;</p>
+<p class="p11">[1, 2, 3, 4].pyramidg(1).postln;</p>
+<p class="p12"><br></p>
+<p class="p11">(</p>
+<p class="p11">10.do({ <span class="s7">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>[1, 2, 3, 4].pyramid(i + 1).postcs;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>[1, 2, 3, 4].pyramidg(i + 1).postcs;</p>
+<p class="p11">});</p>
+<p class="p11">)</p>
+<p class="p2"><br></p>
+<p class="p4"><b>sputter(probability, maxlen)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Return a new Array of length <b>maxlen</b> with the items partly repeated (random choice of given <b>probability</b>).</p>
+<p class="p2"><br></p>
+<p class="p10">// compare:</p>
+<p class="p5">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].sputter(0.5, 16).postln;</p>
+<p class="p5">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].sputter(0.8, 8).postln;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>lace(length)</b></p>
@@ -161,7 +193,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Returns a new Array whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size <b>length</b>. The receiver is unchanged.</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p5">x = [ [1, 2, 3], 6, <span class="s3">List</span>[<span class="s7">"foo"</span>, <span class="s6">'bar'</span>]];</p>
+<p class="p5">x = [ [1, 2, 3], 6, <span class="s3">List</span>[<span class="s8">"foo"</span>, <span class="s6">'bar'</span>]];</p>
 <p class="p5">y = x.lace(12);</p>
 <p class="p5">x.postln;</p>
 <p class="p5">y.postln;</p>
@@ -175,13 +207,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">x = [ 1, 2, 3];</p>
 <p class="p5">6.do({|i| x.permute(i).postln;});</p>
 <p class="p5">)</p>
+<p class="p9"><br></p>
+<p class="p4"><b>allTuples(maxTuples)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Returns a new Array whose elements contain all possible combinations of the receiver's subcollections.</p>
+<p class="p9"><br></p>
+<p class="p5">[[1, 2, 3, 4, 5], [10, 20, 30]].allTuples;</p>
+<p class="p5">[[1, 2, 3, 4, 5], [10, 20, 30], [5, 6]].allTuples;</p>
+<p class="p9"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>wrapExtend(length)</b></p>
 <p class="p2"><br></p>
 <p class="p4">Returns a new Array whose elements are repeated sequences of the receiver, up to size <b>length</b>. The receiver is unchanged.</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p5">x = [ 1, 2, 3, <span class="s7">"foo"</span>, <span class="s6">'bar'</span> ];</p>
+<p class="p5">x = [ 1, 2, 3, <span class="s8">"foo"</span>, <span class="s6">'bar'</span> ];</p>
 <p class="p5">y = x.wrapExtend(9);</p>
 <p class="p5">x.postln;</p>
 <p class="p5">y.postln;</p>
@@ -192,7 +232,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Same as <b>lace</b> but the sequences fold back on the list elements.</p>
 <p class="p9"><br></p>
 <p class="p5">(</p>
-<p class="p5">x = [ 1, 2, <span class="s7">"foo"</span>];</p>
+<p class="p5">x = [ 1, 2, <span class="s8">"foo"</span>];</p>
 <p class="p5">y = x.foldExtend(9);</p>
 <p class="p5">x.postln;</p>
 <p class="p5">y.postln;</p>
@@ -203,11 +243,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Return a new Array whose elements are repeated subsequences from the receiver.<span class="Apple-converted-space"> </span></p>
 <p class="p4">Easier to demonstrate than explain.</p>
 <p class="p2"><br></p>
-<p class="p5">[1, 2, 3, 4, 5, 6].slide(3, 1).asCompileString.postln;</p>
+<p class="p5">[1, 2, 3, 4, 5, 6].slide(3, 1).postcs;</p>
 <p class="p9"><br></p>
-<p class="p5">[1, 2, 3, 4, 5, 6].slide(3, 2).asCompileString.postln;</p>
+<p class="p5">[1, 2, 3, 4, 5, 6].slide(3, 2).postcs;</p>
 <p class="p9"><br></p>
-<p class="p5">[1, 2, 3, 4, 5, 6].slide(4, 1).asCompileString.postln;</p>
+<p class="p5">[1, 2, 3, 4, 5, 6].slide(4, 1).postcs;</p>
+<p class="p2"><br></p>
+<p class="p4"><b>shift(n)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Shift the values of the array n steps to the right (n positive) or to the left(n negative),<span class="Apple-converted-space"> </span></p>
+<p class="p4">dropping the excess and filling empty space with zero.</p>
+<p class="p2"><br></p>
+<p class="p5">[1, 2, 3, 4, 5, 6].shift(3).postln;</p>
+<p class="p9"><br></p>
+<p class="p5">[1, 2, 3, 4, 5, 6].shift(-3).postln;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>containsSeqColl</b></p>
@@ -235,10 +284,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">List[1, 2, 3].powerset</p>
 <p class="p9"><br></p>
 <p class="p5">(a: 1, b: 2, c: 3).powerset;</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p4"><b>envirPairs</b></p>
+<p class="p2"><br></p>
+<p class="p4">Given an array of symbols, this returns an array of pairs of (symbol, value) from the current environment.</p>
+<p class="p4">This can then be used as arguments for a <a href="../ServerArchitecture/Synth.html"><span class="s9">Synth</span></a>, or in an OSC message.</p>
+<p class="p9"><br></p>
+<p class="p5">(</p>
+<p class="p5">e = (freq: 340, amp: 0.001, strangeness: 0.85);</p>
+<p class="p5">e.use {</p>
+<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span>[</span>\amp<span class="s1">, </span>\taste<span class="s1">, </span>\strangeness<span class="s1">].envirPairs;</span></p>
+<p class="p5">}</p>
+<p class="p5">);</p>
+<p class="p9"><br></p>
+<p class="p4"><b>flop</b></p>
+<p class="p2"><br></p>
+<p class="p4">Invert rows and colums in a two dimensional Array (turn inside out).</p>
+<p class="p14"><span class="s1">See also: <a href="../Core/Kernel/Function.html">Function</a>, <a href="SequenceableCollection.html">SequenceableCollection</a>.</span></p>
+<p class="p9"><br></p>
+<p class="p11">[[1, 2, 3], [4, 5, 6]].flop;</p>
+<p class="p11">[[1, 2, 3], [4, 5, 6], [7, 8]].flop; <span class="s10">// shorter array wraps</span></p>
+<p class="p10"><span class="s1">[].flop; </span>// result is always 2-d.</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>multiChannelExpand</b></p>
 <p class="p2"><br></p>
-<p class="p4">Used by UGens to perform multi channel expansion.</p>
+<p class="p4">Used by UGens to perform multi channel expansion. Same as flop.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>source</b></p>
 <p class="p2"><br></p>
@@ -256,7 +330,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Used within <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a>s and assumes an array of functions, from which subroutines are created. The subroutines are played while the outer Routine carries on. The <b>join</b> parameter expresses after how many subroutines complete the outer Routine is allowed to go on. By default this happens after all subroutines have completed.</p>
 <p class="p2"><br></p>
-<p class="p10"><br></p>
+<p class="p15"><br></p>
 <p class="p6">// an array of routine functions:</p>
 <p class="p5">(</p>
 <p class="p5">a = [</p>
@@ -268,22 +342,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p6">// join after 0</p>
 <p class="p5">(</p>
-<p class="p11">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = 0."<span class="s1">.postcln;</span></p>
+<p class="p16">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p17"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = 0."<span class="s1">.postcln;</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a.fork(0); <span class="s6">\doneAll</span>.postln;</p>
 <p class="p5">}.play;</p>
 <p class="p5">)</p>
 <p class="p6">// join after 1</p>
 <p class="p5">(</p>
-<p class="p11">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = 1."<span class="s1">.postcln;</span></p>
+<p class="p16">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p17"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = 1."<span class="s1">.postcln;</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a.fork(1); <span class="s6">\doneAll</span>.postln;</p>
 <p class="p5">}.play;</p>
 <p class="p5">)</p>
 <p class="p6">// join after all</p>
 <p class="p5">(</p>
-<p class="p11">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = a.size (default)."<span class="s1">.postcln;</span></p>
+<p class="p16">Routine<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p17"><span class="s1"><span class="Apple-tab-span">	</span></span>"join = a.size (default)."<span class="s1">.postcln;</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a.fork; <span class="s6">\doneAll</span>.postln;</p>
 <p class="p5">}.play;</p>
 <p class="p5">)</p>
@@ -315,8 +389,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Returns true. Arrays are valid UGen inputs.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p4"><b>asRawOSC</b></p>
 <p class="p2"><br></p>
+<p class="p4">Returns the OSC measse as an Int8Array. Receiver must be a bundle.</p>
 <p class="p2"><br></p>
+<p class="p11">[0.1, [<span class="s11">\s_new</span>, <span class="s11">\default</span>, -1, 1, 1, <span class="s11">\freq</span>, 1961]].asRawOSC;</p>
 <p class="p2"><br></p>
 </body>
 </html>
