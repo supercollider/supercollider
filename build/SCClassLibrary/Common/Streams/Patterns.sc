@@ -374,9 +374,10 @@ Pseries : Pattern {	// arithmetic series
 
 	embedInStream { arg inval;
 		var outval, counter = 0;
-		var cur = start;
+		var cur = start.value;
+		var len = length.value;
 		var stepStr = step.asStream, stepVal;
-		while { counter < length } {
+		while { counter < len } {
 			stepVal = stepStr.next(inval);
 			if(stepVal.isNil) { ^inval };
 			outval = cur;
@@ -396,10 +397,11 @@ Pgeom : Pattern {	// geometric series
 	storeArgs { ^[start,grow,length] }
 	embedInStream { arg inval;
 		var outval, counter = 0;
-		var cur = start;
+		var cur = start.value;
+		var len = length.value;
 		var growStr = grow.asStream, growVal;
 		
-		while { counter < length } {
+		while { counter < len } {
 			growVal = growStr.next(inval);
 			if(growVal.isNil) { ^inval };
 			outval = cur;
