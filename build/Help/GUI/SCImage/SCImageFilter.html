@@ -12,21 +12,21 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0025e4; min-height: 14.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #1d700f}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0031d9; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #3a6d1d}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ba1100}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #001fbe}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a21e18}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0029b5}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #606060}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ba1100; min-height: 14.0px}
-span.s1 {color: #0025e4}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a21e18; min-height: 14.0px}
+span.s1 {color: #0031d9}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
-span.s4 {color: #001fbe}
-span.s5 {color: #1d700f}
-span.s6 {color: #ba1100}
+span.s4 {color: #0029b5}
+span.s5 {color: #3a6d1d}
+span.s6 {color: #a21e18}
 span.s7 {font: 12.0px Helvetica; color: #000000}
 span.s8 {color: #606060}
 span.s9 {font: 14.0px Helvetica}
@@ -57,28 +57,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// or you can do also Synth like style if you already know the attributes of this synth</p>
 <p class="p8"><span class="Apple-tab-span">	</span>f = <span class="s4">SCImageFilter</span>.new(<span class="s5">\CIStarShineGenerator</span>, [<span class="s5">\center</span>, [200,200], <span class="s5">\radius</span>, 200*0.05]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span>f.values; <span class="s6">// </span></span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>f.values; <span class="s6">// </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span></span><b>*categories</b></p>
+<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span></span><b>*filterCategories</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a Dictionary containing all the filters associated by categories.</p>
 <p class="p10"><span class="s7"><b><span class="Apple-tab-span">	</span></b></span>// getting filter categories (dictionary)</p>
 <p class="p8"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">SCImageFilter</span>.categories.keysDo({<span class="s4">|cat|</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">SCImageFilter</span>.filterCategories.keysDo({<span class="s4">|cat|</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>cat.postln;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">"ok"</span>.postln;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// getting Filters for a category - returns a SymbolArray</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SCImageFilter</span><span class="s3">.categories.at(</span>\CICategoryGeometryAdjustment<span class="s3">);</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SCImageFilter</span><span class="s3">.categories.at(</span>\CICategoryGenerator<span class="s3">);</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">SCImageFilter</span><span class="s3">.filterCategories.at(</span>\CICategoryGeometryAdjustment<span class="s3">);</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">SCImageFilter</span>.filterCategories.at(<span class="s5">\CICategoryGenerator</span>);</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="s7"><b><span class="Apple-tab-span">	</span></b></span>// finding Non Built In Plugins usually plugins loaded in (/Library/Graphics/Image Units/)</p>
 <p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// all plugins are loaded at startup</p>
 <p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// you can find free plugins at http://www.noiseindustries.com/products/</p>
 <p class="p8"><span class="Apple-tab-span">	</span>(</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">var</span> n = 0;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">SCImageFilter</span>.categories.do ({</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">SCImageFilter</span>.filterCategories.do ({</p>
 <p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>|symbolArray|</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>symbolArray.do ({<span class="s4">|pluginName|</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(pluginName.asString.beginsWith(<span class="s8">"CI"</span>).not, {</p>
@@ -168,7 +168,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p10">// thor's fast experimentation request</p>
 <p class="p10">// example with the filters array wich allows you to use filters without applying them in place</p>
-<p class="p10">// convenient for RT use / test or whatever... </span></p>
+<p class="p10">// convenient for RT use / test or whatever... </p>
 <p class="p9"><br></p>
 <p class="p10">// here scale down the image otherwise with the zoomblur it will take your computer</p>
 <p class="p10">// to its knees using addFilter and not applyFilter</p>
@@ -254,9 +254,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">h.amount_(50);</p>
 <p class="p9"><br></p>
 <p class="p10">// simple example control</p>
-<p class="p8">specs = [ </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossOpacity_</span>, [-8, 0].asSpec, -4], </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossAngle_</span>, [-pi, pi].asSpec, 0.0], </span></p>
+<p class="p8">specs = [ </p>
+<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossOpacity_</span>, [-8, 0].asSpec, -4], </p>
+<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossAngle_</span>, [-pi, pi].asSpec, 0.0], </p>
 <p class="p8"><span class="Apple-tab-span">	</span>[h, <span class="s5">\amount_</span>, [0, 200].asSpec, 50],</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s3">]; </span>// CIStarShine opacity, CIZoomBlur</p>
