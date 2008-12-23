@@ -1,5 +1,5 @@
 
-EZNumber : EZGui{
+EZNumberSC : EZGui{
 	var   <>controlSpec, <>action, <value;
 	var   <>round = 0.001;
 	
