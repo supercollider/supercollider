@@ -48,11 +48,11 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCCompositeView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>A view that contains other views</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCContainerView.html"><b>SCContainerView</b></a></span></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCContainerView.html"><b>SCContainerView</b></a></span></p>
 <p class="p4"><br></p>
 <p class="p1">A container for grouping other views and widgets. SCCompositeView inherits all of its methods from <a href="SCContainerView.html"><span class="s3">SCContainerView</span></a><span class="s4">. </span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b> <a href="../Libraries/crucial/Gui/FlowView.html"><span class="s5">FlowView</span></a><span class="s5">, <a href="FlowLayout.html"><span class="s6">FlowLayout</span></a></span></p>
+<p class="p1"><b>See also:</b> <a href="../../Libraries/crucial/Gui/FlowView.html"><span class="s5">FlowView</span></a><span class="s5">, <a href="../GUI-Tools/FlowLayout.html"><span class="s6">FlowLayout</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCContainerView</b></p>
 <p class="p2"><br></p>
@@ -63,7 +63,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s7">Rect</span></a>,  or  a <a href="../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>,  or  a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">(</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>.new;</p>
@@ -144,7 +144,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p13"><b>Decorators</b></p>
 <p class="p16"><br></p>
-<p class="p1">A 'decorator' object can be set to handle layout management.  All views added to the CompositeView will now be placed by the decorator.  Currently the only one existing is <a href="FlowLayout.html"><span class="s10">FlowLayout</span></a>. You can use the addFlowLayout method as a short cut to assigning FlowLayout to decorator.</p>
+<p class="p1">A 'decorator' object can be set to handle layout management.  All views added to the CompositeView will now be placed by the decorator.  Currently the only one existing is <a href="../GUI-Tools/FlowLayout.html"><span class="s10">FlowLayout</span></a>. You can use the addFlowLayout method as a short cut to assigning FlowLayout to decorator.</p>
 <p class="p4"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span>a = <span class="s9">SCWindow</span>.new;</p>
@@ -161,7 +161,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span>a.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>)</p>
 <p class="p18"><br></p>
-<p class="p1">If you set the CompositeView's relativeOrigin to true, the bounds that you give to the <a href="FlowLayout.html"><span class="s4">FlowLayout</span></a> should originate at (0,0). In this case, be careful not to put absolute origin CompositeViews inside a relative origin CompositeView that has a decorator.</p>
+<p class="p1">If you set the CompositeView's relativeOrigin to true, the bounds that you give to the <a href="../GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a> should originate at (0,0). In this case, be careful not to put absolute origin CompositeViews inside a relative origin CompositeView that has a decorator.</p>
 <p class="p2"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span>a = <span class="s9">SCWindow</span>.new;</p>
@@ -175,7 +175,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span>a.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
-<p class="p1">You can also use an empty composite view nicely as a spacer in  <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, or views that have a <a href="FlowLayout.html"><span class="s4">FlowLayout</span></a> as their decorator.</p>
+<p class="p1">You can also use an empty composite view nicely as a spacer in  <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, or views that have a <a href="../GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a> as their decorator.</p>
 <p class="p2"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span>(</p>
 <p class="p14"><span class="Apple-tab-span">	</span>a = <span class="s12">SCWindow</span>.new;</p>

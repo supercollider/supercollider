@@ -45,7 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCWindow<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Cocoa user interface window</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
 <p class="p1">A class representing a user interface window in the Cocoa gui system on OSX. </p>
 <p class="p2"><br></p>
@@ -53,26 +53,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">For modal versions of SCWindow see <a href="SCModalWindow.html"><span class="s4">SCModalWindow</span></a> and <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a><span class="s4">.</span></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s5"><b>See also: </b><a href="SCView.html"><span class="s6">SCView</span></a>, <a href="GUI.html"><span class="s6">GUI</span></a>, <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>, <a href="SCPen.html"><span class="s3">SCPen</span></a></span><span class="s7">, <a href="SCUserView.html"><span class="s8">SCUserView</span></a></span><span class="s8">, <a href="SCImage/SCImage.html"><span class="s9">SCImage</span></a></span><span class="s9">,</span><span class="s5"> <a href="SCModalWindow.html"><span class="s4">SCModalWindow</span></a>, <a href="SCModalSheet.html"><span class="s10">SCModalSheet</span></a></span></p>
+<p class="p4"><span class="s5"><b>See also: </b><a href="SCView.html"><span class="s6">SCView</span></a>, <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a>, <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>, <a href="SCPen.html"><span class="s3">SCPen</span></a></span><span class="s7">, <a href="SCUserView.html"><span class="s8">SCUserView</span></a></span><span class="s8">, <a href="SCImage/SCImage.html"><span class="s9">SCImage</span></a></span><span class="s9">,</span><span class="s5"> <a href="SCModalWindow.html"><span class="s4">SCModalWindow</span></a>, <a href="SCModalSheet.html"><span class="s10">SCModalSheet</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new(name, bounds, resizable, border, server, scroll)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCWindow instance. You will need to call <b>front</b> (see below) on it before it will be visible.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- The name that will be displayed in the title bar. An instance of <a href="../Collections/String.html"><span class="s2">String</span></a> or <a href="../Core/Symbol.html"><span class="s2">Symbol</span></a>. The default is 'panel'.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b> - A <a href="../Geometry/Rect.html"><span class="s2">Rect</span></a> specifying the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i><span class="Apple-tab-span">	</span>of the screen. This is different from view location, which is measured from the <i>upper left</i>  of the window (not including the title bar). The default is Rect(128, 64, 400, 400).</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is true.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="GUI.html"><span class="s2">GUI</span></a> for more details.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s2">SCScrollTopView</span></a>. The default is false.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- The name that will be displayed in the title bar. An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. The default is 'panel'.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b> - A <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> specifying the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i><span class="Apple-tab-span">	</span>of the screen. This is different from view location, which is measured from the <i>upper left</i>  of the window (not including the title bar). The default is Rect(128, 64, 400, 400).</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is true.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s2">GUI</span></a> for more details.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s2">SCScrollTopView</span></a>. The default is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s11">SCWindow</span>.new;</p>
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front; </span>// draw it and bring it to the front</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*allWindows</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns an <a href="../Collections/Array.html"><span class="s2">Array</span></a> of all open SCWindows.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns an <a href="../../Collections/Array.html"><span class="s2">Array</span></a> of all open SCWindows.</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*closeAll</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -80,7 +80,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*screenBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../Geometry/Rect.html"><span class="s2">Rect</span></a> indicating the bounds of the current screen in pixels.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> indicating the bounds of the current screen in pixels.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><br></p>
 <p class="p12"><b>Instance Methods</b></p>
@@ -88,18 +88,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>addFlowLayout(margin, gap)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience utility which sets view.decorator to FlowLayout and returens the decorator. See FlowLayout for examples.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../Geometry/Point.html"><span class="s12">Point</span></a></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../Geometry/Point.html"><span class="s12">Point</span></a></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../../Geometry/Point.html"><span class="s12">Point</span></a></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../../Geometry/Point.html"><span class="s12">Point</span></a></p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsClickThrough_(boolean)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsClickThrough</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether or not the window receives clicks when it is not front-most. The default is true.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether or not the window receives clicks when it is not front-most. The default is true.</p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsMouseOver_(boolean)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsMouseOver</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether or not the window receives mouseOver events. The default is false.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether or not the window receives mouseOver events. The default is false.</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>alpha_(alpha)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -108,12 +108,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>alwaysOnTop_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>alwaysOnTop</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether this window is always front-most. The default is false.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether this window is always front-most. The default is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds_(argBounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Geometry/Rect.html"><span class="s7">Rect</span></a> corresponding to the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i> of the screen. This is different from view location, which is measured from the <i>upper left</i> of the window (not including the title bar). Note that because of the way Cocoa applications work, setting the bounds doesn't complete until the application finishes its current application event cycle. Thus, if you check the bounds in the same chunk of code, the SCWindow will not yet return the updated values.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a> corresponding to the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i> of the screen. This is different from view location, which is measured from the <i>upper left</i> of the window (not including the title bar). Note that because of the way Cocoa applications work, setting the bounds doesn't complete until the application finishes its current application event cycle. Thus, if you check the bounds in the same chunk of code, the SCWindow will not yet return the updated values.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s11">SCWindow</span>.new(<span class="s13">"test"</span>);</p>
@@ -130,7 +130,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><b>drawHook_(function)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawHook</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a drawing <a href="../Core/Kernel/Function.html"><span class="s7">Function</span></a>. See <a href="SCPen.html"><span class="s7">Pen</span></a> for more information and many examples.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a drawing <a href="../../Core/Kernel/Function.html"><span class="s7">Function</span></a>. See <a href="SCPen.html"><span class="s7">Pen</span></a> for more information and many examples.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>front</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -151,7 +151,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>isClosed</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether this window has been closed.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../../Core/Boolean.html"><span class="s7">Boolean</span></a> indicating whether this window has been closed.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>minimize</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -165,7 +165,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>onClose_(val)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>onClose</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Kernel/Function.html"><span class="s7">Function</span></a> to be evaluated when the window is closed.<span class="s15"><span class="Apple-tab-span">	</span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Core/Kernel/Function.html"><span class="s7">Function</span></a> to be evaluated when the window is closed.<span class="s15"><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>refresh</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -178,7 +178,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>userCanClose_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>userCanClose</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether the user can close this window by clicking on its close button. The default is true.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> value indicating whether the user can close this window by clicking on its close button. The default is true.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>view</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>asView</b></p>

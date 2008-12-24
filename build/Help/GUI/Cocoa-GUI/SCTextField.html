@@ -42,19 +42,19 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCTextField<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a text field for entering text</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCStaticTextBase.html"><span class="s3"><b>SCStaticTextBase</b></span></a><b> : </b><a href="SCNumberBox.html"><span class="s2"><b>SCNumberBox</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCStaticTextBase.html"><span class="s3"><b>SCStaticTextBase</b></span></a><b> : </b><a href="SCNumberBox.html"><span class="s2"><b>SCNumberBox</b></span></a></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s4"><b>See also:</b> <a href="SCStaticText.html"><span class="s5">SCStaticText</span></a>, <a href="SCTextView.html"><span class="s5">SCTextView</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCTextField</b></p>
 <p class="p2"><br></p>
-<p class="p1">Does not allow copying and pasting. Does not handle composed character sequences ( é ø etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop accepts a any <a href="../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
+<p class="p1">Does not allow copying and pasting. Does not handle composed character sequences ( é ø etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop accepts a any <a href="../../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a>, or a <a href="../Geometry/Point.html"><span class="s8">Point</span></a> indicating width@height.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s8">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s8">Point</span></a> indicating width@height.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">(</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s10">SCWindow</span>.new.front;</p>
@@ -67,8 +67,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>string_ (s)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../Collections/String.html"><span class="s11">String</span></a> of the text field.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>s </b>- An instance of <a href="../Collections/String.html"><span class="s11">String</span></a>.</p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../../Collections/String.html"><span class="s11">String</span></a> of the text field.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>s </b>- An instance of <a href="../../Collections/String.html"><span class="s11">String</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p11"><b>Subclassing and Internal Methods </span></b></p>
 <p class="p12"><br></p>
@@ -97,7 +97,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCTextView will respond only to drags containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../Core/Object.html"><span class="s3">Object</span></a> does). </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCTextView will respond only to drags containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../../Core/Object.html"><span class="s3">Object</span></a> does). </span></p>
 <p class="p6"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>

@@ -36,7 +36,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCContainerView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>an abstract superclass for container views</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
 <p class="p3"><br></p>
 <p class="p1">Users will not normally directly create instances of SCContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views  </span>of various kinds, which are used for placing and grouping widgets in a window.</p>
 <p class="p2"><br></p>
@@ -51,14 +51,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span>decorator_(arg1)</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>decorator</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An automatic layout management for a container. Currently the only one existing is <a href="FlowLayout.html"><span class="s2">FlowLayout</span></a>.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(note: Crucial Library also has a useful layout tool called <a href="../Libraries/crucial/Gui/GridLayout.html"><span class="s7">GridLayout</span></a><span class="s7">.)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An automatic layout management for a container. Currently the only one existing is <a href="../GUI-Tools/FlowLayout.html"><span class="s2">FlowLayout</span></a>.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(note: Crucial Library also has a useful layout tool called <a href="../../Libraries/crucial/Gui/GridLayout.html"><span class="s7">GridLayout</span></a><span class="s7">.)</span></p>
 <p class="p9"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>addFlowLayout(margin, gap)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience utility which sets <b>decorator</b> to FlowLayout and returns the decorator. See FlowLayout for examples.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../Geometry/Point.html"><span class="s8">Point</span></a></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../Geometry/Point.html"><span class="s8">Point</span></a></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../../Geometry/Point.html"><span class="s8">Point</span></a></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../../Geometry/Point.html"><span class="s8">Point</span></a></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>children</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
@@ -68,7 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under  </span><a href="SCCompositeView.html"><span class="s9">SCCompositeView</span></a>.</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b>Adding and Removing Subviews</b></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>

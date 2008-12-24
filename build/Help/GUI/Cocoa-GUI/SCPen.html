@@ -48,43 +48,43 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCPen<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>draw on a SCWindow</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p3"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p2"><br></p>
 <p class="p3">A class which allows you to draw on a <a href="SCWindow.html"><span class="s3">SCWindow</span></a>. It has no instance methods.</p>
 <p class="p2"><br></p>
 <p class="p3">The following methods must be called within an SCWindow-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to SCWindow-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s4"><b>See also:</b> <a href="SCWindow.html"><span class="s5">SCWindow</span></a>, <a href="SCUserView.html"><span class="s5">SCUserView</span></a>, <a href="Color.html"><span class="s5">Color</span></a>, and <a href="../Collections/String.html"><span class="s5">String</span></a></span></p>
+<p class="p4"><span class="s4"><b>See also:</b> <a href="SCWindow.html"><span class="s5">SCWindow</span></a>, <a href="SCUserView.html"><span class="s5">SCUserView</span></a>, <a href="../GUI-Tools/Color.html"><span class="s5">Color</span></a>, and <a href="../../Collections/String.html"><span class="s5">String</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Drawing Methods</b></p>
 <p class="p2"><br></p>
 <p class="p3">The following methods define paths. You will need to call <b>*stroke</b> or <b>*fill</b> to actually draw them.</p>
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*moveTo (point)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Move the SCPen to <b>point</b>. <b>point</b> is an instance of <a href="../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Move the SCPen to <b>point</b>. <b>point</b> is an instance of <a href="../../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*lineTo (point)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draw a line (define a path) from the current position to <b>point</b>. <b>point</b> is an instance of <a href="../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draw a line (define a path) from the current position to <b>point</b>. <b>point</b> is an instance of <a href="../../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
 <p class="p2"> </span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*line (p1, p2)</b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draw a line (define a path) from p1 to p2. Current position will be p2. <b>p1</b> and <b>p2</b> are instances of <a href="../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draw a line (define a path) from p1 to p2. Current position will be p2. <b>p1</b> and <b>p2</b> are instances of <a href="../../Geometry/Point.html"><span class="s3">Point</span></a>.</p>
 <p class="p5"><br></p>
 <p class="p3"><span class="s6"><b><span class="Apple-tab-span">	</span></b></span><b>*curveTo(point, cpoint1, cpoint2)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>draws a cubic bezier curve from the current position to <b>point</b>. </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>cpoint1, cpoint2 </b>are control points determining the curves curvature.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point, cpoint1 </b>and<b> cpoint2 </b>are instances of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point, cpoint1 </b>and<b> cpoint2 </b>are instances of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s6"><b><span class="Apple-tab-span">	</span></b></span><b>*quadCurveTo(point, cpoint1)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>draws a quad bezier curve from the current position to <b>point</b>. </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>cpoint1 </b>is a control point determining the curves curvature.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point, cpoint1 </b>are instances of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point, cpoint1 </b>are instances of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
 <p class="p5"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*arcTo(point1, point2, radius)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>draws an arc of a circle using a radius and tangent points.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point1</b> is the end point of the first tangent line. Its start point is the current position.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point2</b> is the end point of the second tangent line. Its start point is <b>point1</b>.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>radius</b> is the radius of the arc.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point1, point2 </b>are instances of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point1, point2 </b>are instances of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">(</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">var</span> w = <span class="s9">SCWindow</span>(<span class="s10">"arcTo"</span>, <span class="s9">Rect</span>(100, 200, 300, 300)).front;</p>
@@ -278,7 +278,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">These methods do require separate calls to <b>*stroke</b> or <b>*fill</b>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*strokeRect(rect)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Strokes a rectangle into the window. <b>rect</b> is an instance of <a href="../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Strokes a rectangle into the window. <b>rect</b> is an instance of <a href="../../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">(</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>(<span class="s10">"strokeRect"</span>, <span class="s9">Rect</span>(128, 64, 360, 360));</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.drawHook = {</p>
@@ -291,13 +291,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*fillRect(rect)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draws a filled rectangle into the window. <b>rect</b> is an instance of <a href="../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draws a filled rectangle into the window. <b>rect</b> is an instance of <a href="../../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>*addOval(rect)</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds an Oval shape to the current path. <b>rect</b> is an instance of <a href="../Geometry/Rect.html"><span class="s7">Rect</span></a>.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds an Oval shape to the current path. <b>rect</b> is an instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>.</p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*strokeOval(rect)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Strokes an oval into the window. <b>rect</b> is an instance of <a href="../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Strokes an oval into the window. <b>rect</b> is an instance of <a href="../../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">(</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>(<span class="s10">"strokeOval"</span>, <span class="s9">Rect</span>(128, 64, 360, 360));</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.drawHook = {</p>
@@ -310,7 +310,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>*fillOval(rect)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draws a filled oval into the window. <b>rect</b> is an instance of <a href="../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Draws a filled oval into the window. <b>rect</b> is an instance of <a href="../../Geometry/Rect.html"><span class="s3">Rect</span></a>.</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="s8"><span class="Apple-tab-span">	</span></span><b>*fillAxialGradient(startPoint, endPoint, startColor, endColor)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Draws an Axial gradient.</p>

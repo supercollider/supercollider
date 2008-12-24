@@ -39,19 +39,19 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>FlowLayout<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a view decorator which autowraps the view contents</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. <a href="SCWindow.html"><span class="s3">SCWindow</span></a> and <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a> both have addFlowLayout methods which assign FlowLayout to their view decorators and return the decorator.</p>
+<p class="p1">FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. <a href="../Cocoa-GUI/SCWindow.html"><span class="s3">SCWindow</span></a> and <a href="../Cocoa-GUI/SCCompositeView.html"><span class="s4">SCCompositeView</span></a> both have addFlowLayout methods which assign FlowLayout to their view decorators and return the decorator.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s5"><b>See also: </b><a href="SCContainerView.html"><span class="s6">SCContainerView</span></a>, <a href="SCCompositeView.html"><span class="s6">CompositeView</span></a>, <a href="SCTopView.html"><span class="s6">SCTopView</span></a></span></p>
+<p class="p4"><span class="s5"><b>See also: </b><a href="../Cocoa-GUI/SCContainerView.html"><span class="s6">SCContainerView</span></a>, <a href="../Cocoa-GUI/SCCompositeView.html"><span class="s6">CompositeView</span></a>, <a href="../Cocoa-GUI/SCTopView.html"><span class="s6">SCTopView</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (bounds, margin, gap)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of Rect. Normally set to the parent.bounds.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin </b>- An instance of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>. The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- An instance of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>.  </span>The horizontal and vertical layout  </span>gap between the subviews.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.  </span>The horizontal and vertical layout  </span>gap between the subviews.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new.front;</p>
@@ -86,7 +86,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>indentedRemaining</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns and instance of <a href="../Geometry/Rect.html"><span class="s10">Rect</span></a>. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of <b>indentedRemaining, </span></b> is the full height remaining in the FlowLayout.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns and instance of <a href="../../Geometry/Rect.html"><span class="s10">Rect</span></a>. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of <b>indentedRemaining, </span></b> is the full height remaining in the FlowLayout.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//normally you will only use the width of indentedRemaining</p>
@@ -115,7 +115,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds_ (b)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The  </span>outer bounds in which the decorator places the subviews in the parent view</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b</b>  </span>-  </span>An instance of <a href="../Geometry/Rect.html"><span class="s11">Rect</span></a> .</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b</b>  </span>-  </span>An instance of <a href="../../Geometry/Rect.html"><span class="s11">Rect</span></a> .</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>innerBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -124,13 +124,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>gap_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>gap</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical layout  </span>gap between the subviews.</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>-<b>  </span></b>An instance of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>-<b>  </span></b>An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>margin_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>margin</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- An instance of <a href="../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><b>Subclassing and Internal Methods </span></b></p>
 <p class="p7"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
