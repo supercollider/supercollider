@@ -38,4 +38,8 @@
 - (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex ;
 - (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex; 
 - (void)setDefaultTabsTo:(float)value;
+- (IBAction)openCode:(id)sender;
+
+- (IBAction)methodTemplates: (id)sender;
+- (IBAction)methodReferences: (id)sender;
 @end

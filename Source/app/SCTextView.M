@@ -385,5 +385,21 @@ NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir); //
     return [super performDragOperation:sender];
 }
 
+
+- (IBAction)openCode:(id)sender
+{
+    [[self delegate] sendSelection: "openCodeFile"];
+}
+
+- (IBAction)methodTemplates: (id)sender
+{
+    [[self delegate] sendSelection: "methodTemplates"];
+}
+
+- (IBAction)methodReferences: (id)sender
+{
+    [[self delegate] sendSelection: "methodReferences"];
+}
+
 @end
 
