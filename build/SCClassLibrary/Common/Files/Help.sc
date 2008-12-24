@@ -198,7 +198,7 @@ Help {
 	win = GUI.window.new("Help browser", bounds); // SCWindow
 	scrollView = GUI.scrollView.new(win, Rect(5, 0, 425, 529)).hasBorder_(true);
 	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, /*504*/ bounds.height-60));
-	textView = GUI.textView.new(win, Rect(435, 0, /*620*/bounds.width-420, /*554*/ bounds.height-10))
+	textView = GUI.textView.new(win, Rect(435, 0, /*620*/bounds.width-435, /*554*/ bounds.height-10))
 		.hasVerticalScroller_(true)
 		.hasHorizontalScroller_(true)
 		.autohidesScrollers_(false)
@@ -611,3 +611,4 @@ HelpSearchResult {
 		Help.gui
 	}
 }
+   
