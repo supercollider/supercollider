@@ -355,7 +355,7 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 			mLayout.bounds = mBounds;
 		}
 		[mScrollView setFrame: SCtoNSRect(mLayout.bounds)];
-		[mTextView setFrame: SCtoNSRect(mLayout.bounds)]; // not needed - br
+		//[mTextView setFrame: SCtoNSRect(mLayout.bounds)]; // not needed - br
 
 	//	[mScrollView setBounds: SCtoNSRect(mBounds)];
 	//	[mTextView setBounds: SCtoNSRect(mBounds)];
