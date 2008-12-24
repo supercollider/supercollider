@@ -200,10 +200,10 @@ Help {
 	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, /*504*/ bounds.height-60));
 	textView = GUI.textView.new(win, Rect(435, 0, /*620*/bounds.width-435, /*554*/ bounds.height-10))
 		.hasVerticalScroller_(true)
-		.hasHorizontalScroller_(true)
+		.hasHorizontalScroller_(false)
 		.autohidesScrollers_(false)
 		.resize_(5)
-		.canFocus_(false);
+		.canFocus_(true);
 		
 	textView.bounds = textView.bounds; // hack to fix origin on first load
 	
