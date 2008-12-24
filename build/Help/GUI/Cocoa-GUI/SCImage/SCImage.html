@@ -66,7 +66,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCImage instance. multiple stands here for multiple arguments. </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>multiple  </span></b>- <span class="s4">May</span> be a </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="SC://Number"><span class="s5">Number</span></a> to create an <b>empty</b> image of size multiple as width and height</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="../../../Math/Number.html"><span class="s5">Number</span></a> to create an <b>empty</b> image of size multiple as width and height</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">i = </span><span class="s7">SCImage</span><span class="s2">.new(400);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Create a 400x400 pixels SCimage.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.dump;</p>
@@ -76,13 +76,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.dump;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.free;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="SC://Point"><span class="s4">Point</span></a> to create an <b>empty</b> image of size multiple.x as width and multiple.y as height</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="../../../Geometry/Point.html"><span class="s4">Point</span></a> to create an <b>empty</b> image of size multiple.x as width and multiple.y as height</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">i = </span><span class="s7">SCImage</span><span class="s2">.new(400@200);<span class="Apple-tab-span">	</span></span>// Create a 400x200 pixels SCimage.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.dump;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.free;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="SC://String"><span class="s9">String</span></a></span> to create an image from a <b>local file </b>or from an <span class="s4"><b>URL</b></span> (http://, ftp://, file:///)</p>
+<p class="p3"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="../../../Collections/String.html"><span class="s9">String</span></a></span> to create an image from a <b>local file </b>or from an <span class="s4"><b>URL</b></span> (http://, ftp://, file:///)</p>
 <p class="p2"><br></p>
 <p class="p13"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>Path string</p>
 <p class="p14"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">i = </span><span class="s7">SCImage</span><span class="s2">.new(</span>"/Library/Desktop Pictures/Ripples Blue.jpg"<span class="s2">);</span></p>
@@ -96,7 +96,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.free; </span></p>
 <p class="p12"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*color(multiple, color)</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCImage instance filled with the specified color. <b>multiple</b> stands here for multiple arguments. the last argument should be a valid <a href="SC://Color"><span class="s4">Color</span></a> </span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCImage instance filled with the specified color. <b>multiple</b> stands here for multiple arguments. the last argument should be a valid <a href="../../GUI-Tools/Color.html"><span class="s4">Color</span></a> </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>i = <span class="s7">SCImage</span>.color(400, 200, <span class="s7">Color</span>.blue(0.9,0.1));</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.plot(freeOnClose:<span class="s7">true</span>);</p>
@@ -128,7 +128,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>[i, j].do(<span class="s7">_</span>.free);</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span><b>*fromWindow(window, rect)</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="s8"><span class="Apple-tab-span">	</span></span>Creates a new SCImage from a portion of a <a href="SC://SCWindow"><span class="s12">SCWindow</span></a> . this can be used to capture either a window</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="s8"><span class="Apple-tab-span">	</span></span>Creates a new SCImage from a portion of a <a href="../SCWindow.html"><span class="s12">SCWindow</span></a> . this can be used to capture either a window</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or a specific SCView.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>window</b> - the SCWindow object.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - optional. the constrained rect to capture inside the SCWindow. By default, it is the window size.</p>
@@ -183,17 +183,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b>Class variables and attributes</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>*formats</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns all the valid image formats as an <a href="SC://Array"><span class="s4">Array</span></a></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns all the valid image formats as an <a href="../../../Collections/Array.html"><span class="s4">Array</span></a></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="s10"><span class="Apple-tab-span">	</span></span><span class="s7">SCImage</span>.formats;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>*compositingOperations</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns all the valid compositing operations you can use when drawing an <span class="s4">SCImage</span> as an <a href="SC://Array"><span class="s4">Array</span></a></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns all the valid compositing operations you can use when drawing an <span class="s4">SCImage</span> as an <a href="../../../Collections/Array.html"><span class="s4">Array</span></a></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="s10"><span class="Apple-tab-span">	</span></span><span class="s7">SCImage</span>.compositingOperations;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>*interpolations</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns an <a href="SC://Array"><span class="s4">Array</span></a> of the different levels of interpolation you can specify when drawing an <span class="s4">SCImage</span>.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>returns an <a href="../../../Collections/Array.html"><span class="s4">Array</span></a> of the different levels of interpolation you can specify when drawing an <span class="s4">SCImage</span>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="s10"><span class="Apple-tab-span">	</span></span><span class="s7">SCImage</span>.interpolations;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
@@ -349,7 +349,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b>rendering</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>plot ( name, bounds, freeOnClose, background )</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>plots the image in a <a href="SC://SCWindow"><span class="s4">SCWindow</span></a>.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>plots the image in a <a href="../SCWindow.html"><span class="s4">SCWindow</span></a>.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name</b> - the title of the SCWindow. may be nil.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</b> - the bounds of the SCWindow. may be nil.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>freeOnClose</b> - flag to tell if the SCWindow should free the SCImage when closed. false by default.</p>
@@ -364,7 +364,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s7">SCImage</span><span class="s2">.new(</span>"/Library/Desktop Pictures/Ripples Blue.jpg"<span class="s2">).plot(</span>"Hello"<span class="s2">, freeOnClose:</span><span class="s7">true</span><span class="s2">);</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>lockFocus</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>sets the receiver as the current graphic context. <span class="s4">So</span> you can use <a href="SC://Pen"><span class="s4">Pen</span></a> to draw inside of it.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>sets the receiver as the current graphic context. <span class="s4">So</span> you can use <a href="../../Main-GUI/Pen.html"><span class="s4">Pen</span></a> to draw inside of it.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>unlockFocus</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>restore the graphic context state. the receiver is not anymore the current graphic context.</p>
@@ -468,7 +468,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>drawAtPoint( point, fromRect, operation, fraction )</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>render the image or a portion of it in the current graphic context.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point</b> - the <a href="SC://Point"><span class="s4">Point</span></a> where to draw it</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>point</b> - the <a href="../../../Geometry/Point.html"><span class="s4">Point</span></a> where to draw it</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fromRect</b> - the portion of the <span class="s4">SCImage</span> to use</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>operation</b> - the compositing operation to use. 'sourceOver' is the default.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fraction</b> - the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)</p>
@@ -510,7 +510,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>drawInRect( rect, fromRect, operation, fraction )</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>render the image or a portion of it in a specified rectangle of the current graphic context. <span class="s4">This</span> may stretch the image depending on the destination rect.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - the <a href="SC://Rect"><span class="s4">Rect</span></a> where to draw it</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - the <a href="../../../Geometry/Rect.html"><span class="s4">Rect</span></a> where to draw it</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fromRect</b> - the portion of the <span class="s4">SCImage</span> to use</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>operation</b> - the compositing operation to use. 'sourceOver' is the default.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fraction</b> - the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)</p>
@@ -530,7 +530,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>tileInRect( rect, fromRect, operation, fraction )</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>tile the image or a portion of it in a specified rectangle of the current graphic context. <span class="s4">This</span> may stretch the image depending on the destination rect.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - the <a href="SC://Rect"><span class="s4">Rect</span></a> where to draw it</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - the <a href="../../../Geometry/Rect.html"><span class="s4">Rect</span></a> where to draw it</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fromRect</b> - the portion of the <span class="s4">SCImage</span> to use</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>operation</b> - the compositing operation to use. <span class="s17">'sourceOver'</span> is the default. </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <i>Compositing operations are currently disabled for tileInRect</i></p>
@@ -569,16 +569,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>fill the pixel located at x @ y with the specified <b>color</b>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>getColor( x, y )</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>retrieve the pixel value at x @ y as a <a href="SC://Color"><span class="s4">Color</span></a>.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>retrieve the pixel value at x @ y as a <a href="../../GUI-Tools/Color.html"><span class="s4">Color</span></a>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>pixels</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>retrieve all the pixels of the receiver. </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Carefull: the returned <span class="s4">Array</span> is a <a href="SC://Int32Array"><span class="s4">Int32Array</span></a> of size receiver.width * receiver.height containing all pixel values</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Carefull: the returned <span class="s4">Array</span> is a <a href="../../../Collections/Int32Array.html"><span class="s4">Int32Array</span></a> of size receiver.width * receiver.height containing all pixel values</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>as 32bit <span class="s4">Integer</span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>loadPixels(array)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>load all the pixels of the receiver in an array. it is better and faster to call this function instead of <b>pixels</b> if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array</b> - the array that will be filled. Should be an <a href="../../../../../../../../Collections/Int32Array.html"><span class="s18">Int32Array</span></a> of size receiver.width * receiver.height.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array</b> - the array that will be filled. Should be an <a href="../../../Collections/Int32Array.html"><span class="s18">Int32Array</span></a> of size receiver.width * receiver.height.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// exec one line at a time</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = <span class="s7">SCImage</span>.new(</p>
@@ -599,12 +599,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>pixels_(array)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set all the pixels of the receiver. </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>array - an <a href="SC://Int32Array"><span class="s4">Int32Array</span></a> of size receiver.width * receiver.height containing all pixel values</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>array - an <a href="../../../Collections/Int32Array.html"><span class="s4">Int32Array</span></a> of size receiver.width * receiver.height containing all pixel values</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>as 32bit <span class="s4">Integer</span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>setPixels( array, rect )</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the pixels in a specific portion of the receiver.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array</b> - an <a href="SC://Int32Array"><span class="s4">Int32Array</span></a> of size <b>rect</b>.width * <b>rect</b>.height containing all pixel values</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array</b> - an <a href="../../../Collections/Int32Array.html"><span class="s4">Int32Array</span></a> of size <b>rect</b>.width * <b>rect</b>.height containing all pixel values</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>as 32bit <span class="s4">Integer</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect</b> - a rectangle defining the portion to update in the receiver. <span class="s4">By</span> default <b>rect</b> is <span class="s4">nil</span>, meaning</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>full image size.</p>
@@ -793,7 +793,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>filters is the instance variable that holds the array of SCImageFilter attached to the receiver. This is a convenient for applying filters out place and changing</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the SCImageFilter's attributes. see <b>addFilter</b>, <b>removeFilter</b></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>see <a href="http://SCImageFilter.html/"><span class="s12">SCImageFilter</span></a> for an example on how to use the <b>filters </b>array.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>see <a href="SCImageFilter.html"><span class="s12">SCImageFilter</span></a> for an example on how to use the <b>filters </b>array.</p>
 <p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>addFilter ( filter )</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>filter</b> - a SCImageFilter to apply before rendering of the image</p>
@@ -806,7 +806,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><b>removeFilter( filter )</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>filter</b> - the SCImageFilter to remove from the rendering chain.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="http://SCImageFilter.html/"><span class="s12">SCImageFilter</span></a> for an example on how to use <b>removeFilter</b>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="SCImageFilter.html"><span class="s12">SCImageFilter</span></a> for an example on how to use <b>removeFilter</b>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>flatten</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if <b>filters</b> is not zero sized, this method will apply all those filters in place. </span></p>

@@ -36,7 +36,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCModalSheet<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a window modal version of SCWindow</b><span class="s1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCWindow.html"><span class="s2"><b>SCWindow</b></span></a><b> : SCAbstractModalWindow</b></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCWindow.html"><span class="s2"><b>SCWindow</b></span></a><b> : SCAbstractModalWindow</b></p>
 <p class="p3"><br></p>
 <p class="p1">SCModalSheet is an window modal version of SCWindow. A sheet is an accessory window which is attached  </span>to a parent window. SCModalSheet blocks all other user input to its parent window until it is dismissed. It is thus useful for alerts, preference panels and other situations which should limit user input.</p>
 <p class="p2"><br></p>
@@ -48,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><b>Blocking and Multiple Sheets on the Same Window</b></p>
 <p class="p6"><br></p>
-<p class="p1">Each window can have only sheet attached to it at any given time. (You can however have sheets attached to sheets.) If you attempt to create more than one at the same time all but the first will fail. If needed, you can check parent window's <b>currentSheet</b> method to see if a sheet is running. This will return the current sheet if it exists, and nil otherwise. If one is running, you can add a <a href="../Core/Kernel/Function.html"><span class="s5">Function</span></a> to its onClose in order to relaunch the additional sheet(s) if desired, or do any necessary testing.</p>
+<p class="p1">Each window can have only sheet attached to it at any given time. (You can however have sheets attached to sheets.) If you attempt to create more than one at the same time all but the first will fail. If needed, you can check parent window's <b>currentSheet</b> method to see if a sheet is running. This will return the current sheet if it exists, and nil otherwise. If one is running, you can add a <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> to its onClose in order to relaunch the additional sheet(s) if desired, or do any necessary testing.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p7"><br></p>
@@ -56,11 +56,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCModalSheet instance. You do not need to call <b>front</b> on it to make it visible.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>window </b>- An instance of <a href="SCWindow.html"><span class="s2">SCWindow</span></a> or one of its subclasses. This is the parent window to which the sheet will be attached.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </span></b> - A <a href="../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar. The default is true.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="GUI.html"><span class="s6">GUI</span></a> for more details.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>. The default is false.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar. The default is true.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a> for more details.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>. The default is false.</p>
 <p class="p7"><br></p>
 <p class="p11"><b>Examples</b></p>
 <p class="p3"><br></p>

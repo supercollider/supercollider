@@ -47,20 +47,20 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCNumberBox<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a box for displaying and editing numerical values</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCStaticTextBase.html"><b>SCStaticTextBase</b></a></span></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCStaticTextBase.html"><b>SCStaticTextBase</b></a></span></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s2"><b>See also:</b> <a href="SCTextField.html"><span class="s3">SCTextField</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCNumberBox </span></b></p>
 <p class="p2"><br></p>
-<p class="p5">Whatever is entered into the number box is converted to a <a href="../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../Math/Number.html"><span class="s5">Number</span></a>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s6">SCStaticTextBase</span></a>.</p>
+<p class="p5">Whatever is entered into the number box is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../../Math/Number.html"><span class="s5">Number</span></a>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s6">SCStaticTextBase</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s4">Rect</span></a>, or a <a href="../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s4">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">(</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>(<span class="s9">"SCNumberBox Example"</span>, <span class="s8">Rect</span>(100, 500, 400, 120));</p>
@@ -87,7 +87,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>step</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The size of the step for the <b>increment</b> and <b>decrement</b> methods.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An instance of <a href="../Math/Float.html"><span class="s4">Float</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An instance of <a href="../../Math/Float.html"><span class="s4">Float</span></a>.</p>
 <p class="p12"><br></p>
 <p class="p13"><b>Customizing Appearance</b></p>
 <p class="p7"><br></p>
@@ -95,19 +95,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>boxColor_ (color)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The background color of the number box. The default is Color.white.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of <a href="Color.html"><span class="s4">Color</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>normalColor_(arg1)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>normalColor</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The normal string color of the number box. The default is Color.black.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="Color.html"><span class="s4">Color</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>typingColor_(arg1)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>typingColor</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The string color while typing a new value in the number box. The default is Color.red.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="Color.html"><span class="s4">Color</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><b>Subclassing and Internal Methods </span></b></p>
 <p class="p5"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
@@ -123,7 +123,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>keyString_(arg1)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>keyString</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../Collections/String.html"><span class="s4">String</span></a> containing what the user types into the number box. It is converted to a <a href="../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. This also allows you to use exponential notation for entering a number, e.g. 2.1e-2 will be converted to 0.021 .</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A <a href="../../Collections/String.html"><span class="s4">String</span></a> containing what the user types into the number box. It is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. This also allows you to use exponential notation for entering a number, e.g. 2.1e-2 will be converted to 0.021 .</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -153,7 +153,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCNumberBox will respond only to drags where the drag contains a <a href="../Math/Number.html"><span class="s4">Number</span></a>. </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCNumberBox will respond only to drags where the drag contains a <a href="../../Math/Number.html"><span class="s4">Number</span></a>. </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>

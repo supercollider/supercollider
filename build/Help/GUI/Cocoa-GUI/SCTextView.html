@@ -44,22 +44,22 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCTextView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a view in which to display and edit text or code</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s3"><b>See also:</b> <a href="SCStaticText.html"><span class="s4">SCStaticText</span></a>, <a href="SCTextField.html"><span class="s4">SCTextField</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCTextView</b></p>
 <p class="p2"><br></p>
-<p class="p1">While SCTextView allows you to load  </span>and display formatted text, and while it understands rtf or html markup, you cannot save formatted text currently.  </span>You only have acces to the text-content of the view as a <a href="../Collections/String.html"><span class="s2">String</span></a>. </span></p>
+<p class="p1">While SCTextView allows you to load  </span>and display formatted text, and while it understands rtf or html markup, you cannot save formatted text currently.  </span>You only have acces to the text-content of the view as a <a href="../../Collections/String.html"><span class="s2">String</span></a>. </span></p>
 <p class="p2"><br></p>
-<p class="p5">By default, SCTextView will recieve  </span>drags  </span>containing any <a href="../Core/Object.html"><span class="s5">Object</span></a>, and insert them into the text  </span><b>asString</b>. If you drag a file from the finder onto an SCTextView, it will display the file path in quotation marks.</p>
+<p class="p5">By default, SCTextView will recieve  </span>drags  </span>containing any <a href="../../Core/Object.html"><span class="s5">Object</span></a>, and insert them into the text  </span><b>asString</b>. If you drag a file from the finder onto an SCTextView, it will display the file path in quotation marks.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s7">SCWindow</span>.new.front;</p>
@@ -73,12 +73,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>string_ (str)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The displayed content of the SCView, as a string. For more precise control of the string, see <b>setString</b> below.</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>str </b>- An instance of <a href="../Collections/String.html"><span class="s8">String</span></a>.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>str </b>- An instance of <a href="../../Collections/String.html"><span class="s8">String</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>open (path)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Opens a file from <b>path. </b>This will interpret rtf and html for display, but you cannot save formatting currently.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path </b>- An instance of <a href="../Collections/String.html"><span class="s2">String</span></a>. </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a>. </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>selectedString</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -95,20 +95,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>usesTabToFocusNextView_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Default is true. If false, then hitting tab will write a tab in the text view, rathern than jumping to the next view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>enterInterpretsSelection</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>enterInterpretsSelection_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Determines if a selection can be interpreted with the cmd-enter or ctrl-c .  </span>Default is true.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p9"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>enabled_ (bool)</b>  </span>same as <b>editable_(bool)</b></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>editable</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>editable_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Without setting <b>editable, </b>it returns nil, though the content will be editable. However, you can explicitly set <b>editable</b> to true or false, and it will make the view editable or otherwise.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><b>Customizing Appearance and Changing Content</b></p>
 <p class="p13"><br></p>
@@ -116,44 +116,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span>font_ (argFont)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <b>font</b> variable of the text view, and changes the Font of the entire text in the view.  </span>Default value is nil. If you loaded a text with <b>open</b>, then the font will still be nil. Changing the font of the content using OSX's cmd-T text formatter will not change the <b>font</b> variable. For more precise control of the font, see <b>setFont</b> below.</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argFont </span></b> - An instance of  </span><a href="Font.html"><span class="s6">Font</span></a>.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argFont </span></b> - An instance of  </span><a href="../GUI-Tools/Font.html"><span class="s6">Font</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>stringColor</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>stringColor_ (color)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <b>stringColor</b> variable of the text view,  </span>and changes the stringColor of the entire text in the view.  </span>Default value is nil. If you loaded a text with <b>open</b>, then the stringColor will be nil. Changing the stringColor of the content using OSX's cmd-T text formatter will not change the <b>font</b> variable. For more precise control of the string color, see <b>setStringColor</b> below.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An Instance of <a href="Color.html"><span class="s2">Color</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An Instance of <a href="../GUI-Tools/Color.html"><span class="s2">Color</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>autohidesScrollers_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Overrides <b>hasHorizontalScroller_ and hasVerticalScroller_ . </b>Default is false.</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>hasHorizontalScroller_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Is overriden by  </span><b>autohidesScrollers_. </b>Default is false.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>hasVerticalScroller_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Is overriden by  </span><b>autohidesScrollers_.</b> Default is false.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>setStringColor (color, rangeStart, rangeSize)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of  </span><a href="Color.html"><span class="s2">Color</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of  </span><a href="../GUI-Tools/Color.html"><span class="s2">Color</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeStart </b>- The beginning of a range of text in which to change the color.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeSize </b>- The length of a range of text in which to change the color.</p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>setFont (font, rangestart, rangesize)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An instance of  </span><a href="Font.html"><span class="s2">Font</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An instance of  </span><a href="../GUI-Tools/Font.html"><span class="s2">Font</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeStart </b>- The beginning of a range of text in which to change the font.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeSize </b>- The length of a range of text in which to change the font.</p>
 <p class="p6"><br></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>setString (string, rangestart, rangesize)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An instance of  </span><a href="../Collections/String.html"><span class="s2">String</span></a>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An instance of  </span><a href="../../Collections/String.html"><span class="s2">String</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeStart </b>- The beginning of a range of text in which to change the content.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangeSize </b>- The length of a range of text in which to change the content.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>

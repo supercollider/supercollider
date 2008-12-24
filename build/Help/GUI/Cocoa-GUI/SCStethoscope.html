@@ -43,11 +43,11 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCStethoscope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a wrapper for a window with an SCScope an control interface</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
 <p class="p1">A window containing a configurable <a href="SCScope.html"><span class="s3">SCScope</span></a>  </span>with  </span>an interface to navigate on buses.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s4"><b>See also:</b> <a href="SCScope.html"><span class="s5">SCScope</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s5">Server</span></a></span><span class="s2">, <a href="../ServerArchitecture/Bus.html"><span class="s6">Bus</span></a></span></p>
+<p class="p4"><span class="s4"><b>See also:</b> <a href="SCScope.html"><span class="s5">SCScope</span></a>, <a href="../../ServerArchitecture/Server.html"><span class="s5">Server</span></a></span><span class="s2">, <a href="../../ServerArchitecture/Bus.html"><span class="s6">Bus</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCStethoscope</b></p>
 <p class="p2"><br></p>
@@ -76,14 +76,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (server, numChannels, index, bufsize, zoom, rate, view, bufnum)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Short prose description of method.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server </b>- must be  </span><a href="../ServerArchitecture/Server.html"><span class="s2">Server</span></a>.internal.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server </b>- must be  </span><a href="../../ServerArchitecture/Server.html"><span class="s2">Server</span></a>.internal.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numChannels </b>- An integer. Default value is 2..</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- The offset index. An integer. Default is nil.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bufsize </b>- The size of the analysis buffer. Default value is 4096. .</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>zoom </b>- Horizontal maginification of the displayed wave. Default is 1.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rate </b>- <span class="s7">\audio</span> or <span class="s7">\control</span>. Default is Audio. </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>view </b>- The parent view of the scope. Default is nil. If nil, then it will open its own <a href="SCWindow.html"><span class="s2">SCWindow</span></a>.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bufnum </b>- The id number of the <a href="../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> to analyze. Default value is nil. If nil, then a <a href="../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> of size <b>bufSize</b> is allocated.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bufnum </b>- The id number of the <a href="../../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> to analyze. Default value is nil. If nil, then a <a href="../../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> of size <b>bufSize</b> is allocated.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Server</span>.default = s = <span class="s8">Server</span>.internal</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.boot</p>
@@ -214,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>*isValidServer (aServer)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Tests if a server is a valid server. Returns a n instanc of Boolean;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aServer </b>- An instance of <a href="../ServerArchitecture/Server.html"><span class="s3">Server</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aServer </b>- An instance of <a href="../../ServerArchitecture/Server.html"><span class="s3">Server</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>keyDown (char)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>spec</b></p>

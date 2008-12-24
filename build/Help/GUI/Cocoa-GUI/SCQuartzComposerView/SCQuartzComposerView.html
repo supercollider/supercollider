@@ -43,9 +43,9 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>SCQuartzComposerView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>view for rendering Quartz Composer Compositions</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="../SCView.html"><span class="s2"><b>SCView</b></span></a></p>
+<p class="p1"><b>Inherits from: </b><a href="../../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="../SCView.html"><span class="s2"><b>SCView</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">SCQuartzComposerView allows for the rendering of Quartz Composer Compositions within the standard OSX SC GUI system. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the OSX graphics system, and in general should be more efficient than <a href="../Pen.html"><span class="s3">Pen</span></a>. For more information on QC see: <span class="s4">http://developer.apple.com/documentation/GraphicsImaging/Conceptual/QuartzComposer/index.html</span></p>
+<p class="p1">SCQuartzComposerView allows for the rendering of Quartz Composer Compositions within the standard OSX SC GUI system. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the OSX graphics system, and in general should be more efficient than <a href="../../Main-GUI/Pen.html"><span class="s3">Pen</span></a>. For more information on QC see: <span class="s4">http://developer.apple.com/documentation/GraphicsImaging/Conceptual/QuartzComposer/index.html</span></p>
 <p class="p3"><br></p>
 <p class="p1">You can access input and output ports using the methods <b>setInputValue</b>, <b>getInputValue</b> and <b>getOutputValue</b>, or (do to a slight of hand in the implementation, using the port keys as getters and setters directly. The following two lines of code are thus equivalent:</p>
 <p class="p2"><br></p>
@@ -58,7 +58,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = </span><span class="s8">SCWindow</span><span class="s7">(</span>"Simple QC Test"<span class="s7">).front;</span></p>
@@ -76,8 +76,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>path</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>path_ (argpath)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the path of the currently loaded composition as a <a href="../../Collections/String.html"><span class="s2">String</span></a>, or loads a new QC composition from the file at the location specified by the String <b>argpath</b>.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argpath </b>- A file path as a <a href="../../Collections/String.html"><span class="s2">String</span></a>.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the path of the currently loaded composition as a <a href="../../../Collections/String.html"><span class="s2">String</span></a>, or loads a new QC composition from the file at the location specified by the String <b>argpath</b>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argpath </b>- A file path as a <a href="../../../Collections/String.html"><span class="s2">String</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>inputKeys</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
