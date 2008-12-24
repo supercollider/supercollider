@@ -185,7 +185,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>default, <>named, <>all, <>program;
+	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
 	
 	var <name, <>addr, <clientID=0;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -216,6 +216,9 @@ Server : Model {
 		^super.new.init(name, addr, options, clientID)
 	}
 	
+	*all { ^set }
+	*all_ { arg dict; set = dict }
+	
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName;
 		addr = argAddr;
@@ -227,7 +230,7 @@ Server : Model {
 		remoteControlled = isLocal;
 		serverRunning = false;
 		named.put(name, this);
-		all.add(this);
+		set.add(this);
 		this.newAllocators;
 		Server.changed(\serverAdded, this);
 		volume = Volume.new(server: this, persist: true);
@@ -260,7 +263,7 @@ Server : Model {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
-		all = Set.new;
+		set = Set.new;
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		Platform.switch(\windows, {
 			program = "scsynth.exe";
@@ -515,7 +518,7 @@ Server : Model {
 		^aliveThread.notNil and: {aliveThread.isPlaying}
 	}
 	*resumeThreads {
-		all.do({ arg server;
+		set.do({ arg server;
 			server.stopAliveThread;
 			server.startAliveThread(server.aliveThreadPeriod);
 		});
@@ -620,13 +623,13 @@ Server : Model {
 	}
 
 	*quitAll {
-		all.do({ arg server;
+		set.do({ arg server;
 			if ((server.sendQuit === true)
 				or: { server.sendQuit.isNil and: { server.remoteControlled }}) {
 				server.quit
 			};
 		})
-		//		all.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
+		//		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
@@ -644,17 +647,12 @@ Server : Model {
 		this.initTree;
 	}
 	*freeAll {
-		all.do({ arg server;
+		set.do({ arg server;
 			if(server.remoteControlled, { // debatable?
 				server.freeAll;
 			})
 		})
 	}
-	
-	// backwards compatibility
-	
-	*set { ^all }
-	*set_ { arg dict; all = dict }
 	
 	// bundling support
 	
