@@ -185,19 +185,19 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
+	classvar <>local, <>internal, <>default, <>named, <>all, <>program;
 	
 	var <name, <>addr, <clientID=0;
-	var <isLocal, <inProcess, <>sendQuit;
-	var <serverRunning = false, <serverBooting=false, bootNotifyFirst=false;
-	var <>options,<>latency = 0.2,<dumpMode=0, <notified=true;
+	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
+	var <>options, <>latency = 0.2, <dumpMode = 0, <notified=true;
 	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
 	var <syncThread, <syncTasks;
 
-	var <numUGens=0,<numSynths=0,<numGroups=0,<numSynthDefs=0;
+	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 	
@@ -224,9 +224,10 @@ Server : Model {
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.addr == 2130706433 };
+		remoteControlled = isLocal;
 		serverRunning = false;
 		named.put(name, this);
-		set.add(this);
+		all.add(this);
 		this.newAllocators;
 		Server.changed(\serverAdded, this);
 		volume = Volume.new(server: this, persist: true);
@@ -259,7 +260,7 @@ Server : Model {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
-		set = Set.new;
+		all = Set.new;
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		Platform.switch(\windows, {
 			program = "scsynth.exe";
@@ -514,7 +515,7 @@ Server : Model {
 		^aliveThread.notNil and: {aliveThread.isPlaying}
 	}
 	*resumeThreads {
-		set.do({ arg server;
+		all.do({ arg server;
 			server.stopAliveThread;
 			server.startAliveThread(server.aliveThreadPeriod);
 		});
@@ -542,7 +543,7 @@ Server : Model {
 				volume.play;
 				});
 		});
-		if (isLocal.not, { 
+		if (remoteControlled.not, { 
 			"You will have to manually boot remote server.".inform;
 		},{
 			this.bootServerApp;
@@ -619,13 +620,13 @@ Server : Model {
 	}
 
 	*quitAll {
-		set.do({ arg server;
+		all.do({ arg server;
 			if ((server.sendQuit === true)
-				or: {server.sendQuit.isNil and: {server.isLocal or: {server.inProcess}}}) {
+				or: { server.sendQuit.isNil and: { server.remoteControlled }}) {
 				server.quit
 			};
 		})
-		//		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
+		//		all.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
@@ -643,12 +644,17 @@ Server : Model {
 		this.initTree;
 	}
 	*freeAll {
-		set.do({ arg server;
-			if(server.isLocal,{ // debatable ?
+		all.do({ arg server;
+			if(server.remoteControlled, { // debatable?
 				server.freeAll;
 			})
 		})
 	}
+	
+	// backwards compatibility
+	
+	*set { ^all }
+	*set_ { arg dict; all = dict }
 	
 	// bundling support
 	
