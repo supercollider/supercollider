@@ -10,7 +10,7 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -20,11 +20,12 @@ p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #001ee6}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0020f6}
+span.s2 {color: #0c2eee}
 span.s3 {color: #000000}
-span.s4 {color: #3f4981}
-span.s5 {color: #5461ad}
-span.s6 {color: #576097}
+span.s4 {text-decoration: underline}
+span.s5 {color: #414a7e}
+span.s6 {color: #5763a9}
+span.s7 {color: #596194}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,7 +36,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also: </b><a href="EZListView.html">EZListView</a>, <a href="EZPopUpMenu.html">EZPopUpMenu</a>, <a href="EZSlider.html">EZSlider</a>, <a href="EZNumber.html">EZNumber</a>, <a href="EZRanger.html">EZRanger</a></span></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="EZListView.html"><span class="s4">EZListView</span></a>, <a href="EZPopUpMenu.html"><span class="s4">EZPopUpMenu</span></a>, <a href="EZSlider.html"><span class="s4">EZSlider</span></a>, <a href="EZNumber.html"><span class="s4">EZNumber</span></a>, <a href="EZRanger.html"><span class="s4">EZRanger</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><br></p>
 <p class="p6"><b>Accessing Instance and Class Variables</b></p>
@@ -47,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>label_(string)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the label. Will add the label view if none was initially created.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="../../Collections/String.html"><span class="s4">String</span></a>. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>. </p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b>Accessing GUI options</b></p>
 <p class="p10"><br></p>
@@ -61,25 +62,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  views are visible.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>enabled</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets if the list  is enabled.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>visible</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component  views are visible.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s5">Boolean</span></a>. Default is true;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>bounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>bounds_(rect)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the bounds of view, and adjusts the components.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect </b>- An Instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s5">Point</span></a>;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rect </b>- An Instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s6">Point</span></a>;</p>
 <p class="p11"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>labelPosition</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>labelPosition_(pos)</b></p>
@@ -114,6 +110,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>labelView_(arg1)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>labelView</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An <a href="../Cocoa-GUI/SCStaticText.html">SCStaticText</a><b> </b></span><span class="s6"> view</span></p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>An <a href="../Cocoa-GUI/SCStaticText.html"><span class="s4">SCStaticText</span></a><b> </b></span><span class="s7"> view</span></p>
 </body>
 </html>

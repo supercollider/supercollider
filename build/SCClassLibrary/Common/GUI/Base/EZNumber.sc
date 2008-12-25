@@ -21,6 +21,10 @@ EZNumberSC : EZGui{
 		
 		labelPosition.isNil.if{labelPosition = \left};
 		
+		if( labelPosition==\top){
+			numberWidth = numberWidth ? 80;
+		};
+		
 		// pop up window
 		parentView.isNil.if{
 				// if bounds is a point the place the window on screen

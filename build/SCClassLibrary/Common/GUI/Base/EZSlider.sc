@@ -2,7 +2,7 @@
 
 EZSliderSC : EZGui {
 
-	var  <>sliderView, <>numberView, <>controlSpec, <>action, <value, numSize;
+	var  <sliderView, <numberView, <>controlSpec, <>action, <value, numSize;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
@@ -24,7 +24,7 @@ EZSliderSC : EZGui {
 		
 		// pop up window
 		parentView.isNil.if{
-				bounds.isNil.if{bounds= 160@44};
+				bounds.isNil.if{bounds= 390@44};
 					//if its a point, then place the Window on the screen
 				if (bounds.class==Point){
 					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
@@ -100,7 +100,7 @@ EZSliderSC : EZGui {
 	doAction { action.value(this) }
 
 	set { arg label, spec, argAction, initVal, initAction=false;
-		labelView.string = label;
+		this.label_(label);
 		controlSpec = spec.asSpec;
 		action = argAction;
 		initVal = initVal ? controlSpec.default;
@@ -141,7 +141,7 @@ EZSliderSC : EZGui {
 				labelView.resize_(2);
 				};
 			numberView.resize_(3);
-			sliderView.resize_(2);
+			sliderView.resize_(5);
 			this.bounds_(view.bounds);
 			^this;
 		};
