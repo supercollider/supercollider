@@ -287,7 +287,11 @@
 					{
 						muteButton.value_(flag.binaryValue);
 					}.defer		
-				})				
+				})
+				.put(\ampRange, {|changer, what, min, max|
+					volSpec = [min, max, \db].asSpec;
+					volumeSlider.value_(volSpec.unmap(volume.volume));
+				})			
 					
 		}.value;
 		};
