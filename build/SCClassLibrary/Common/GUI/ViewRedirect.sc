@@ -29,7 +29,14 @@ Pen : ViewRedirect { *key { ^\pen }}
 Stethoscope : ViewRedirect { *key { ^\stethoscope }}
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
-FreqScope : ViewRedirect { *key { ^\freqScope }} // redirects to SCFreqScopeWindow
+
+FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
+	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
+		^this.implClass.new(width, height, busNum, scopeColor)
+		}
+	*key { ^\freqScope }
+} 
+
 Dialog : ViewRedirect { *key { ^\dialog }}
 View : ViewRedirect { *key { ^\view }}
 
