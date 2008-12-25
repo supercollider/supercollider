@@ -48,8 +48,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
 <p class="p6"><br></p>
 <p class="p10"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
@@ -69,7 +69,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span>clickCount - </b>double click, triple click ...</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>most relevant for the mouseDown, but still valid for the dragged and mouseUp</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>absoluteZ</b> - the wheel on the side of some mice</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rotation</b> - in degrees, only on the 4d mice </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rotation</b> - in degrees, only on the 4d mice</span></p>
 <p class="p6"><br></p>
 <p class="p10"><b>Examples</b></p>
 <p class="p11"><br></p>
@@ -94,7 +94,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>slider.setProperty(<span class="s9">\clipInBounds</span>,0)</p>
 <p class="p12">)</p>
 <p class="p11"><br></p>
-<p class="p13">// drag an drop Points </span></p>
+<p class="p13">// drag an drop Points</span></p>
 <p class="p12">(</p>
 <p class="p11"><br></p>
 <p class="p12">w = <span class="s7">SCWindow</span>(<span class="s8">"SC2DTabletSlider"</span>, <span class="s7">Rect</span>(100,100, 500 ,300));</p>
@@ -131,7 +131,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c=<span class="s7">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d=<span class="s7">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f=<span class="s7">LFNoise1</span>.kr(0.1,2);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p=<span class="s7">Pulse</span>.ar([ freq  </span>* int1.midiratio + f , freq, freq * int2.midiratio - f],</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p=<span class="s7">Pulse</span>.ar([ freq </span>* int1.midiratio + f , freq, freq * int2.midiratio - f],</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[c,d,c],0.2);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Out</span>.ar(0,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">RLPF</span>.ar(<span class="s7">Mix</span>.ar(p),freq * ffreqInterval.midiratio,rq)</p>
@@ -156,7 +156,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>};</p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>v.mouseDownAction = { <span class="s7">arg</span> view,x,y,pressure;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synth.set( </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synth.set(</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">\freq</span> , rrand(30,80).midicps,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">\gate</span>, pressure.postln</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>

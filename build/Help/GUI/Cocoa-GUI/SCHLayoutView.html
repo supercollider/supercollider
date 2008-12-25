@@ -43,22 +43,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCContainerView.html"><b>SCContainerView</b></a><b> : </b><a href="SCLayoutView.html"><b>SCLayoutView</b></a></span></p>
 <p class="p4"><br></p>
-<p class="p1">SCHLayoutView automatically arranges its sub-views in horizontal order, expanding their height to the bounds of the SCVLayoutView.  Only the bounds.width of the sub-view is relevant.  Its abstract superclass, <a href="SCLayoutView.html"><span class="s3">SCLayoutView</span></a>, provides some important formatting methods. </p>
+<p class="p1">SCHLayoutView automatically arranges its sub-views in horizontal order, expanding their height to the bounds of the SCVLayoutView. Only the bounds.width of the sub-view is relevant. Its abstract superclass, <a href="SCLayoutView.html"><span class="s3">SCLayoutView</span></a>, provides some important formatting methods.</p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s2"><b>See also:</b> <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCVLayoutView</b></p>
 <p class="p2"><br></p>
-<p class="p1">Although <b>relativeOrigin</b> can be set, it is irrelevant. SCHLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key strokes, it does not itself accept mouse clicks or drags.  </p>
+<p class="p1">Although <b>relativeOrigin</b> can be set, it is irrelevant. SCHLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key strokes, it does not itself accept mouse clicks or drags. </p>
 <p class="p2"><br></p>
-<p class="p1">SCHLayoutView responds to  the minWidth and maxWidth <b>properties</b> in its child views. This is useful when <b>resize</b> is set to 2, 5, or 8. See examples below. </p>
+<p class="p1">SCHLayoutView responds to the minWidth and maxWidth <b>properties</b> in its child views. This is useful when <b>resize</b> is set to 2, 5, or 8. See examples below.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>,  or  a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
 <p class="p10"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>.new;</p>
@@ -97,9 +97,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
 <p class="p12">h.background = <span class="s6">Color</span>.rand;</p>
-<p class="p12">h.resize = 5; <span class="s8">//    elastic</span></p>
+<p class="p12">h.resize = 5; <span class="s8">//  elastic</span></p>
 <p class="p16"><br></p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{  <span class="s6">arg</span> i;</p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{ <span class="s6">arg</span> i;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> s;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s = <span class="s6">SCSlider</span>(h,<span class="s6">Rect</span>(0,0,20,75)).background_(<span class="s6">Color</span>.grey.alpha_(0.4));</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
@@ -109,7 +109,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">w.front</p>
 <p class="p12">)</p>
 <p class="p16"><br></p>
-<p class="p15">// Stretching the layout view and the contents. </p>
+<p class="p15">// Stretching the layout view and the contents.</p>
 <p class="p15">// If all the contents are elastic, the widths of the contents are perfectly divided up:</p>
 <p class="p15">// in this example, the SCStaticText is not elastic in order to preserv its width.</p>
 <p class="p16"><br></p>
@@ -118,13 +118,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">w = <span class="s6">SCWindow</span>.new;</p>
 <p class="p16"><br></p>
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
-<p class="p12">h.resize = 5; <span class="s8">//    elastic</span></p>
+<p class="p12">h.resize = 5; <span class="s8">//  elastic</span></p>
 <p class="p12">h.background = <span class="s6">Color</span>.rand;</p>
 <p class="p16"><br></p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{  <span class="s6">arg</span> i;</p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{ <span class="s6">arg</span> i;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> s;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s = <span class="s6">SCSlider</span>(h,<span class="s6">Rect</span>(0,0,20,75));</p>
-<p class="p12"><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s8">//  elastic</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s8">// elastic</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s</p>
 <p class="p12">});</p>
@@ -135,7 +135,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p15">// set minWidth on contents</p>
-<p class="p15">// beware that if the layout view  width is smaller than the combined  width of all the contents, </p>
+<p class="p15">// beware that if the layout view width is smaller than the combined width of all the contents,</p>
 <p class="p15">// things might disappear when you try to handle them with the mouse.</p>
 <p class="p16"><br></p>
 <p class="p12">(</p>
@@ -144,17 +144,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
 <p class="p12">h.background = <span class="s6">Color</span>.rand;</p>
-<p class="p12">h.resize = 5; <span class="s8">//    elastic</span></p>
+<p class="p12">h.resize = 5; <span class="s8">//  elastic</span></p>
 <p class="p16"><br></p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{  <span class="s6">arg</span> i;</p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{ <span class="s6">arg</span> i;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> s;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s = <span class="s6">SCSlider</span>(h,<span class="s6">Rect</span>(0,0,20,75));</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>if(i &lt; 2,{</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s8">//  some elastic</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s8">// some elastic</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setProperty(<span class="s10">\minWidth</span>,20);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>},{</p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>//  some not elastic</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>// some not elastic</p>
 <p class="p12"><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s</p>
 <p class="p12">});</p>
@@ -168,9 +168,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">w = <span class="s6">SCWindow</span>.new;</p>
 <p class="p16"><br></p>
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
-<p class="p12">h.resize = 5; <span class="s8">//    elastic</span></p>
+<p class="p12">h.resize = 5; <span class="s8">//  elastic</span></p>
 <p class="p12">h.background = <span class="s6">Color</span>.rand;</p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{  <span class="s6">arg</span> i;</p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{ <span class="s6">arg</span> i;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> s;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s = <span class="s6">SCSlider</span>(h,<span class="s6">Rect</span>(0,0,20,75));</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
@@ -194,7 +194,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
 <p class="p12">h.resize = 5; <span class="s8">// elastic</span></p>
 <p class="p16"><br></p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{  <span class="s6">arg</span> i;</p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{ <span class="s6">arg</span> i;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> s;</p>
 <p class="p18"><span class="s2"><span class="Apple-tab-span">	</span>s = <span class="Apple-tab-span">	</span></span><span class="s6">SCStaticText</span><span class="s2">(h,120@20).string_(</span>"Some short text which wraps around"<span class="s2">);</span></p>
 <p class="p16"><br></p>
@@ -202,7 +202,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s10">\minWidth</span>,10);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s10">\maxWidth</span>,120);</p>
 <p class="p16"><br></p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>//  not working</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>// not working</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s10">\maxHeight</span>,10);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s10">\minHeight</span>,10);</p>
 <p class="p16"><br></p>
@@ -223,7 +223,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">h = <span class="s6">SCHLayoutView</span>(w,<span class="s6">Rect</span>(0,0,300,300));</p>
 <p class="p12">h.setProperty(<span class="s10">\spacing</span>,0);</p>
 <p class="p16"><br></p>
-<p class="p12"><span class="s6">Array</span>.fill(q,{ </p>
+<p class="p12"><span class="s6">Array</span>.fill(q,{</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s6">SCSlider</span>(h,<span class="s6">Rect</span>(0,0,20,75))</p>
 <p class="p12">});</p>
 <p class="p16"><br></p>

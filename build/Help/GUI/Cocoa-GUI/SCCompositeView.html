@@ -50,20 +50,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a><b> : </b><a href="SCView.html"><b>SCView</b></a><b> : </b><a href="SCContainerView.html"><b>SCContainerView</b></a></span></p>
 <p class="p4"><br></p>
-<p class="p1">A container for grouping other views and widgets. SCCompositeView inherits all of its methods from <a href="SCContainerView.html"><span class="s3">SCContainerView</span></a><span class="s4">. </span></p>
+<p class="p1">A container for grouping other views and widgets. SCCompositeView inherits all of its methods from <a href="SCContainerView.html"><span class="s3">SCContainerView</span></a><span class="s4">.</span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>See also:</b> <a href="../../Libraries/crucial/Gui/FlowView.html"><span class="s5">FlowView</span></a><span class="s5">, <a href="../GUI-Tools/FlowLayout.html"><span class="s6">FlowLayout</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCContainerView</b></p>
 <p class="p2"><br></p>
-<p class="p1">SCCompositeView is used for  grouping widgets  in a window. While it accept key actions, it does not accept mouse clicks or drags. </p>
+<p class="p1">SCCompositeView is used for grouping widgets in a window. While it accept key actions, it does not accept mouse clicks or drags.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>,  or  a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">(</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>.new;</p>
@@ -83,7 +83,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>.new;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c = </span><span class="s9">SCCompositeView</span><span class="s2">(w,</span><span class="s9">Rect</span><span class="s2">(50,0,300,300));  </span>// .relativeOrigin_(false), i.e. default</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c = </span><span class="s9">SCCompositeView</span><span class="s2">(w,</span><span class="s9">Rect</span><span class="s2">(50,0,300,300)); </span>// .relativeOrigin_(false), i.e. default</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>a = <span class="s9">SC2DSlider</span>(c,<span class="s9">Rect</span>(50,0,100,100));<span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>b = <span class="s9">SC2DSlider</span>(c,<span class="s9">Rect</span>(150,100,100,100));</p>
@@ -112,9 +112,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>)</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c.bounds_(</span><span class="s9">Rect</span><span class="s2">(100,0,300,300)); </span>// contents   adust since coords are relative</p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c.resize_(6); </span>// contents  adust since coords are relative</p>
-<p class="p7"> </p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c.bounds_(</span><span class="s9">Rect</span><span class="s2">(100,0,300,300)); </span>// contents  adust since coords are relative</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>c.resize_(6); </span>// contents adust since coords are relative</p>
+<p class="p7"></p>
 <p class="p1"><b>Note:</b> if you place a CompositeView with absolute coordinates (relativeOrigin = false) inside another CompositeView using relative coordinates (relativeOrigin = true), the child CompositeView's absolute coordinates override the relative position indicated by the parent. This is easily handled if you're specifying the coordinates yourself, but if you're using a decorator (see below), the child will display in the wrong place. When using a decorator on a relative origin CompositeView, you should not place absolute origin CompositeViews inside it.</p>
 <p class="p2"><br></p>
 <p class="p13"><b>Keydown Bubbling</b></p>
@@ -122,7 +122,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Key actions "bubble up" to the parent view if a view does not define one itself. In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action. d's parent is the SCTopView, which has no key down action. See also <a href="SCView.html"><span class="s4">SCView</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span>( </span>//Click on the different views and hit keys on the keyboard.</p>
-<p class="p11"> </p>
+<p class="p11"></p>
 <p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s9">SCWindow</span>.new;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>c = <span class="s9">SCCompositeView</span>(w,<span class="s9">Rect</span>(0,0,200,200)).background_(<span class="s9">Color</span>.grey.alpha_(0.3));</p>
@@ -136,7 +136,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"keydown bubbled up to c"<span class="s2">.postln;</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>};</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>//d is on window w,  not on composite view c</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>//d is on window w, not on composite view c</p>
 <p class="p11"><span class="Apple-tab-span">	</span>d = <span class="s9">SC2DSlider</span>(w,<span class="s9">Rect</span>(200,200,100,100));</p>
 <p class="p11"><span class="Apple-tab-span">	</span>d.background = <span class="s9">Color</span>.black;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>)</p>
@@ -144,14 +144,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p13"><b>Decorators</b></p>
 <p class="p16"><br></p>
-<p class="p1">A 'decorator' object can be set to handle layout management.  All views added to the CompositeView will now be placed by the decorator.  Currently the only one existing is <a href="../GUI-Tools/FlowLayout.html"><span class="s10">FlowLayout</span></a>. You can use the addFlowLayout method as a short cut to assigning FlowLayout to decorator.</p>
+<p class="p1">A 'decorator' object can be set to handle layout management. All views added to the CompositeView will now be placed by the decorator. Currently the only one existing is <a href="../GUI-Tools/FlowLayout.html"><span class="s10">FlowLayout</span></a>. You can use the addFlowLayout method as a short cut to assigning FlowLayout to decorator.</p>
 <p class="p4"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span>a = <span class="s9">SCWindow</span>.new;</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>b = <span class="s9">SCCompositeView</span>(a,<span class="s9">Rect</span>(0,0,500,500)).relativeOrigin_(<span class="s9">false</span>);</p>
 <p class="p11"><span class="Apple-tab-span">	</span>b.decorator = <span class="s9">FlowLayout</span>(b.bounds);</p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>// b.addFlowLayout;   // you can also write this for convenience</p>
+<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>// b.addFlowLayout;  // you can also write this for convenience</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>// adding views to b automatically use the decorator</p>
 <p class="p15"><span class="s2"><span class="Apple-tab-span">	</span></span>// no need to use parent.decorator.place</p>
@@ -175,7 +175,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span>a.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
-<p class="p1">You can also use an empty composite view nicely as a spacer in  <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, or views that have a <a href="../GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a> as their decorator.</p>
+<p class="p1">You can also use an empty composite view nicely as a spacer in <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, or views that have a <a href="../GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a> as their decorator.</p>
 <p class="p2"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span>(</p>
 <p class="p14"><span class="Apple-tab-span">	</span>a = <span class="s12">SCWindow</span>.new;</p>
@@ -184,13 +184,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span>b.decorator = <span class="s12">FlowLayout</span>(<span class="s12">Rect</span>(0, 0, 500, 500));</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);<span class="Apple-tab-span">	</span></p>
 <p class="p19"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s12">SCCompositeView</span><span class="s2">(b,</span><span class="s12">Rect</span><span class="s2">(0,0,70,100));<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//just used for spacing</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand); </p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand); </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);</p>
 <p class="p14"><span class="Apple-tab-span">	</span>b.decorator.nextLine;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand); </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);<span class="Apple-tab-span">	</span></p>
 <p class="p19"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s12">SCCompositeView</span><span class="s2">(b,</span><span class="s12">Rect</span><span class="s2">(0,0,70,100))<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>;</span>//just used for spacing</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand); </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="s12">SC2DSlider</span>(b,<span class="s12">Rect</span>(0,0,100,100)).background_(<span class="s12">Color</span>.rand);</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span>a.front;</p>
 <p class="p14"><span class="Apple-tab-span">	</span>)</p>
@@ -237,7 +237,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><b>Nested Example</b></p>
 <p class="p16"><br></p>
-<p class="p1">In this example,  the SCStaticText  accepts mouse clicks, since container views can't:</p>
+<p class="p1">In this example, the SCStaticText accepts mouse clicks, since container views can't:</p>
 <p class="p16"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span>(</p>
 <p class="p14"><span class="Apple-tab-span">	</span>w=<span class="s12">SCWindow</span>.new.front;</p>
@@ -245,13 +245,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span>v=<span class="s12">SCCompositeView</span>.new(w,w.view.bounds.insetBy(10)).background_(<span class="s12">Color</span>.rand);</p>
 <p class="p14"><span class="Apple-tab-span">	</span>v.decorator=<span class="s12">FlowLayout</span>(v.bounds);</p>
 <p class="p17"><span class="s2"><span class="Apple-tab-span">	</span>l=</span>"SUPERCOLLIDER"<span class="s2">.scramble;</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span>t=<span class="s12">Array</span>.fill(9,{<span class="s12">arg</span> i;  <span class="s12">var</span> n,r,q;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>t=<span class="s12">Array</span>.fill(9,{<span class="s12">arg</span> i; <span class="s12">var</span> n,r,q;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n=<span class="s12">SCCompositeView</span>.new(v,<span class="s12">Rect</span>(20,20,121,121)).background_(<span class="s12">Color</span>.rand);</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q=<span class="s12">SCStaticText</span>(n, n.bounds.insetBy(25)).string_(l[i]).align_(<span class="s14">\center</span>);</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.enabled=<span class="s12">true</span>;</p>
 <p class="p20"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=</span><span class="s12">Font</span>(<span class="s15">"Geneva"</span>,10)<span class="s8">;</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.background_(<span class="s12">Color</span>.rand);</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={ </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.background_(<span class="s12">Color</span>.rand);</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=q.font.size_(5+q.font.size+7%60)</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>

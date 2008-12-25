@@ -43,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">A window containing a configurable <a href="SCScope.html"><span class="s3">SCScope</span></a>  with  an interface to navigate on buses.</p>
+<p class="p1">A window containing a configurable <a href="SCScope.html"><span class="s3">SCScope</span></a> with an interface to navigate on buses.</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s4"><b>See also:</b> <a href="SCScope.html"><span class="s5">SCScope</span></a>, <a href="../../ServerArchitecture/Server.html"><span class="s5">Server</span></a></span><span class="s2">, <a href="../../ServerArchitecture/Bus.html"><span class="s6">Bus</span></a></span></p>
 <p class="p2"><br></p>
@@ -51,34 +51,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">the scope window can be controlled by the following keys:</p>
 <p class="p2"><br></p>
-<p class="p1"> J<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>one channel back</p>
-<p class="p1"> K<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch rate (audio vs. control)</p>
-<p class="p1"> L<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>one channel forward</p>
+<p class="p1">J<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>one channel back</p>
+<p class="p1">K<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch rate (audio vs. control)</p>
+<p class="p1">L<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>one channel forward</p>
 <p class="p2"><br></p>
 <p class="p1">O<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>jump to first hardware output channel and adjust numChannels to hardware</p>
-<p class="p1"> I<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>jump to first hardware input channel  and adjust numChannels to hardware</p>
+<p class="p1">I<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>jump to first hardware input channel and adjust numChannels to hardware</p>
 <p class="p2"><br></p>
 <p class="p1">space <span class="Apple-tab-span">	</span>run, if not running anyway.</p>
 <p class="p1">. (period)<span class="Apple-tab-span">	</span>stop.</p>
 <p class="p1">M<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>toggle screen size</p>
-<p class="p1"> </p>
-<p class="p1"> + / -<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>zoom horizontally</p>
+<p class="p1"></p>
+<p class="p1">+ / -<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>zoom horizontally</p>
 <p class="p1">* / _<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>zoom vertically</p>
-<p class="p1"> S<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>change style between parallel and overlay</p>
+<p class="p1">S<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>change style between parallel and overlay</p>
 <p class="p2"><br></p>
 <p class="p1">shift S <span class="Apple-tab-span">	</span>change style to lissajou (use only with fast computer and small buffer size)</p>
-<p class="p1">shift  A<span class="Apple-tab-span">	</span>allocate buffer size so it fills the screen (to next power of two) (this can be dangerous, might crash)</p>
+<p class="p1">shift A<span class="Apple-tab-span">	</span>allocate buffer size so it fills the screen (to next power of two) (this can be dangerous, might crash)</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (server, numChannels, index, bufsize, zoom, rate, view, bufnum)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server </b>- must be  <a href="../../ServerArchitecture/Server.html"><span class="s2">Server</span></a>.internal.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server </b>- must be <a href="../../ServerArchitecture/Server.html"><span class="s2">Server</span></a>.internal.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numChannels </b>- An integer. Default value is 2..</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- The offset index. An integer. Default is nil.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bufsize </b>- The size of the analysis buffer. Default value is 4096. .</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>zoom </b>- Horizontal maginification of the displayed wave. Default is 1.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rate </b>- <span class="s7">\audio</span> or <span class="s7">\control</span>. Default is Audio. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rate </b>- <span class="s7">\audio</span> or <span class="s7">\control</span>. Default is Audio.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>view </b>- The parent view of the scope. Default is nil. If nil, then it will open its own <a href="SCWindow.html"><span class="s2">SCWindow</span></a>.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bufnum </b>- The id number of the <a href="../../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> to analyze. Default value is nil. If nil, then a <a href="../../ServerArchitecture/Buffer.html"><span class="s2">Buffer</span></a> of size <b>bufSize</b> is allocated.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -195,8 +195,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b>.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- 1 = Separate channels, 2 = overlayed channels, 3= lissajou (use only with fast computer and small buffer size)</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p14"><b>Subclassing and Internal Methods </b></p>
-<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p14"><b>Subclassing and Internal Methods</b></p>
+<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*tileBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -204,7 +204,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*defaultServer</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCStethoscope's default server. <b> </b>Returns Server.internal</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCStethoscope's default server.<b> </b>Returns Server.internal</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*isValidServer (aServer)</b></p>
@@ -235,12 +235,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">s.boot;</p>
 <p class="p12">)</p>
 <p class="p12">(</p>
-<p class="p12">{ </p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">SinOsc</span>.ar([225, 450, 900], 0, 0.2) </p>
+<p class="p12">{</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">SinOsc</span>.ar([225, 450, 900], 0, 0.2)</p>
 <p class="p12"><span class="Apple-tab-span">	</span>+ <span class="s8">LPF</span>.ar(</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">LFPulse</span>.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2), </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">LFPulse</span>.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">MouseX</span>.kr(20, 10000, 1)</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>) </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p12">}.scope;</p>
 <p class="p12">)</p>
 <p class="p3"><br></p>

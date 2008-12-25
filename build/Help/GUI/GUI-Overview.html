@@ -69,7 +69,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">SuperCollider provides for using different gui kits, and also provides syntax for transparently writing kit and platform independent code. Two main classes control this mechnanism: the gui factory abstraction class, <a href="GUI-Tools/GUI.html"><span class="s4">GUI</span></a>, and the subclasses of <a href="GUI-Tools/ViewRedirect.html"><span class="s5">ViewRedirect</span></a>, which transparently uses the <a href="GUI-Tools/GUI.html"><span class="s6">GUI</span></a> class to redirect to the kit-specific gui class.</p>
 <p class="p4"><br></p>
-<p class="p5">For a table of all gui classes and their equivalents, see <a href="GUI-Classes.html"><span class="s7">GUI-Classes</span></a><span class="s4">. </span></p>
+<p class="p5">For a table of all gui classes and their equivalents, see <a href="GUI-Classes.html"><span class="s7">GUI-Classes</span></a><span class="s4">.</span></p>
 <p class="p5">For information on switching gui kits, see the documentation for <a href="GUI-Tools/GUI.html"><span class="s4">GUI</span></a>.</p>
 <p class="p4"><br></p>
 <p class="p6"><b>Basic usage: Kits and Syntax</b></p>
@@ -77,8 +77,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">(</span><span class="s9">"Test Window"</span><span class="s1">).front; </span>// Window is a subclass of ViewRedirect</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w.postln </span>// w now contains the class appropriate to the gui kit</p>
 <p class="p7"><br></p>
-<p class="p5">Kit-dependant gui classes have a prefix. For example, to make a window, the CocoaGUI kit uses <a href="Cocoa-GUI/SCWindow.html"><span class="s6">SCWindow</span></a><span class="s6">,</span> or the swing kit uses <a href="../SwingOSC/JSCWindow.html"><span class="s6">JSCWindow</span></a>. It is generally discouraged to use the kit-dependant classes directly. Instead, you simply use the subclasses of <a href="GUI-Tools/ViewRedirect.html"><span class="s4">ViewRedirect</span></a><span class="s4">. </span>In most cases this involves simply using the class base name without any prefix, like in the example above. Behind the scenes, the above technique actually automatically redirects to the appropriate GUI class method. For a table of all gui classes and their kit-dependent equivalents, see <a href="GUI-Classes.html"><span class="s7">GUI-Classes</span></a><span class="s4">. </span></p>
-<p class="p5"> </p>
+<p class="p5">Kit-dependant gui classes have a prefix. For example, to make a window, the CocoaGUI kit uses <a href="Cocoa-GUI/SCWindow.html"><span class="s6">SCWindow</span></a><span class="s6">,</span> or the swing kit uses <a href="../SwingOSC/JSCWindow.html"><span class="s6">JSCWindow</span></a>. It is generally discouraged to use the kit-dependant classes directly. Instead, you simply use the subclasses of <a href="GUI-Tools/ViewRedirect.html"><span class="s4">ViewRedirect</span></a><span class="s4">. </span>In most cases this involves simply using the class base name without any prefix, like in the example above. Behind the scenes, the above technique actually automatically redirects to the appropriate GUI class method. For a table of all gui classes and their kit-dependent equivalents, see <a href="GUI-Classes.html"><span class="s7">GUI-Classes</span></a><span class="s4">.</span></p>
+<p class="p5"></p>
 <p class="p5">Depending on the curent GUI.scheme the example above is equivalent to writing, for example:</p>
 <p class="p4"><br></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s8">SCWindow</span><span class="s1">(</span><span class="s9">"Test Window"</span><span class="s1">).front; </span>// cocoa version</p>
@@ -111,7 +111,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1">w.postln </span>//returns the window class for the current gui kit</p>
 <p class="p8"><span class="s1">b.postln </span>//returns the button class for the current gui kit</p>
 <p class="p7"><br></p>
-<p class="p5">In the above example, first a <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> was created. A <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> automatically has its own top level container, which is a subclass of <a href="Main-GUI/CompositeView.html"><span class="s4">CompositeView</span></a>. A <a href="Main-GUI/CompositeView.html"><span class="s13">CompositeView</span></a> can have a <b>decorator</b>, which automatically places the contents in a predetermined order. In this case it is a <a href="GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a>, which is the only one that currently exists. This is optional however. Try commenting out the decorator in the example above. </p>
+<p class="p5">In the above example, first a <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> was created. A <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> automatically has its own top level container, which is a subclass of <a href="Main-GUI/CompositeView.html"><span class="s4">CompositeView</span></a>. A <a href="Main-GUI/CompositeView.html"><span class="s13">CompositeView</span></a> can have a <b>decorator</b>, which automatically places the contents in a predetermined order. In this case it is a <a href="GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a>, which is the only one that currently exists. This is optional however. Try commenting out the decorator in the example above.</p>
 <p class="p4"><br></p>
 <p class="p5"><span class="s14"><a href="Cocoa-GUI/SCWindow.html">SCWindow</a></span> and <a href="Cocoa-GUI/SCCompositeView.html"><span class="s15">SCCompositeView</span></a> both have addFlowLayout utility methods which assign an instance of FlowLayout to their view decorators and return the decorator.</p>
 <p class="p7"><br></p>
@@ -147,7 +147,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b>Coordinates</b></p>
 <p class="p7"><br></p>
-<p class="p5">For views, the <b>absolute</b> bounds coordinates are measured from the <a href="Main-GUI/Window.html"><span class="s6">Window</span></a>'s <b>top</b> left corner. </p>
+<p class="p5">For views, the <b>absolute</b> bounds coordinates are measured from the <a href="Main-GUI/Window.html"><span class="s6">Window</span></a>'s <b>top</b> left corner.</p>
 <p class="p5">The bounds.rect is the following: Rect(left, <b>top</b>, width,height). Remember, to place views yourself, you will use no decorator.</p>
 <p class="p14"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
@@ -157,7 +157,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s8">Slider</span><span class="s1">(v, </span><span class="s8">Rect</span><span class="s1"> (50,50,220,20)) <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// so this is equivalent when Window is used as a parent</p>
 <p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>)</p>
 <p class="p4"><br></p>
-<p class="p5">For views, you can use <b>relative</b> bounds coordinates, which are measured from the parent <b>view's</b> top left corner. </p>
+<p class="p5">For views, you can use <b>relative</b> bounds coordinates, which are measured from the parent <b>view's</b> top left corner.</p>
 <p class="p4"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new.front;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use Rect for precise placement in a CompositeView</p>
@@ -170,18 +170,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">See CompositeView for details on using relative coordinates. Only <a href="Main-GUI/CompositeView.html"><span class="s6">CompositeView</span></a> and the <a href="Main-GUI/UserView.html"><span class="s6">UserView</span></a> can use relative origin for their contents.</p>
 <p class="p4"><br></p>
 <p class="p5">For a <a href="Main-GUI/Window.html"><span class="s6">Window</span></a>, the bounds coordinates are measured from the <b>bottom</b> left of the screen.</p>
-<p class="p5">The bounds.rect differs from that of views, and is the following: Rect(left, <b>bottom</b>, width,height). Typically, you will call Window.screenBounds to place a window precisely independently of the screen size you are working on. </p>
+<p class="p5">The bounds.rect differs from that of views, and is the following: Rect(left, <b>bottom</b>, width,height). Typically, you will call Window.screenBounds to place a window precisely independently of the screen size you are working on.</p>
 <p class="p4"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
 <p class="p15"><span class="s1"><span class="Apple-tab-span">	</span>w=</span><span class="s8">Window</span><span class="s1">.new(</span>"A Precisely Placed Window"<span class="s1">,</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Rect</span>(100, <span class="s8">Window</span>.screenBounds.height-300, 300, 200 ) </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Rect</span>(100, <span class="s8">Window</span>.screenBounds.height-300, 300, 200 )</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).front;</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>) </span>//since the window is 200 high and the bottom is at screenBounds.height-300, the top is 100 from the screen top</p>
 <p class="p14"><br></p>
 <p class="p6"><b>Resizing</b></p>
 <p class="p4"><br></p>
-<p class="p5">Views can resize or stretch according to nine differents states, according to the instance variable <b>resize</b>. For documentation and examples see <a href="GUI-Tools/resize.html"><span class="s7">resize</span></a>. </p>
+<p class="p5">Views can resize or stretch according to nine differents states, according to the instance variable <b>resize</b>. For documentation and examples see <a href="GUI-Tools/resize.html"><span class="s7">resize</span></a>.</p>
 <p class="p4"><br></p>
 <p class="p14"><br></p>
 <p class="p6"><b>Actions: Performing Things with a GUI Widget</b></p>
@@ -249,7 +249,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>(<span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n={<span class="s8">arg</span> freq=220; </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n={<span class="s8">arg</span> freq=220;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> out;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s8">SinOsc</span>.ar(freq,0,0.2);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>8.do{out = <span class="s8">AllpassN</span>.ar(out, 0.2,0.02+0.20.rand,8)};</p>
@@ -274,7 +274,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span>)</p>
 <p class="p4"><br></p>
-<p class="p5">Recieving values, however is asynchronous, and requires either using an OSCresponderNode, or polling values. </p>
+<p class="p5">Recieving values, however is asynchronous, and requires either using an OSCresponderNode, or polling values.</p>
 <p class="p5">In this example a Routine polls values:</p>
 <p class="p4"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
@@ -298,13 +298,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Out</span><span class="s1">.kr(b.index,freq); </span>// output the frequency to a control bus</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).play;</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r= <span class="s8">Routine</span>{ </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r= <span class="s8">Routine</span>{</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Set the value of the StaticText to the value in the control bus.</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Setting GUI values is asynchronous, so you must use .defer in the system clock.</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Also you must check if the window is still open, since Routine will continue for at least</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// one step after you close the window.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.get( {<span class="s8">arg</span> v; {w.isClosed.not.if{ a.string= <span class="s9">" Current Frequency: "</span>++v.round(0.01)}; }.defer} );</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// b.get sends query to the server, and waits for a response before it sets the StaticText.<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// b.get sends query to the server, and waits for a response before it sets the StaticText.<span class="Apple-converted-space"></span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.01.wait;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.loop</p>
@@ -330,14 +330,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">SendTrig</span><span class="s1">.kr(d, 0, 0.9); </span>// send message to lang</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arr=<span class="s8">Array</span>.fill(4, {<span class="s8">TRand</span>.kr(50+500.rand,1200+1200.rand,d)});</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s8">DynKlank</span>.ar(`[arr, <span class="s8">nil</span>, [1, 1, 1, 1]], <span class="s8">K2A</span>.ar(d)*0.1); </p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Limiter</span>.ar(out,0.5) </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s8">DynKlank</span>.ar(`[arr, <span class="s8">nil</span>, [1, 1, 1, 1]], <span class="s8">K2A</span>.ar(d)*0.1);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Limiter</span>.ar(out,0.5)</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// register to receive this message</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s8">OSCresponderNode</span>(s.addr, <span class="s19">'/tr'</span>, </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s8">OSCresponderNode</span>(s.addr, <span class="s19">'/tr'</span>,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ {w.view.background = <span class="s8">Gradient</span>(<span class="s8">Color</span>.rand, <span class="s8">Color</span>.rand)}.defer }).add; <span class="s12">// you must use defer here</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">CmdPeriod</span><span class="s1">.doOnce({w.close}); </span>//close window when sound is stopped</p>
@@ -350,19 +350,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b>Custom GUI: designing your own widgets using UserView</b></p>
 <p class="p7"><br></p>
 <p class="p5">UserView is generally speaking a view in which you can draw, and for which you can define mouse, key, and drag and drop actions. For documentation on all of these, see the <a href="Main-GUI/UserView.html"><span class="s21">UserView</span></a>, <a href="Main-GUI/View.html"><span class="s21">View</span></a>, and <a href="Main-GUI/Pen.html"><span class="s21">Pen</span></a> help files. The example below, however, will demonstrate a basic example of these techniques for designing a widget. The steps you need to take are the following:</p>
-<p class="p5">(<b>1) Create a User View (2) define a draw function (3) define an action (4) define mouse actions (5) define key actions (6) define drag and drop actions</b>. You can omit steps which you don't want. </p>
+<p class="p5">(<b>1) Create a User View (2) define a draw function (3) define an action (4) define mouse actions (5) define key actions (6) define drag and drop actions</b>. You can omit steps which you don't want.</p>
 <p class="p4"><br></p>
-<p class="p5">Caution, subclassing differs in many points from the example below. For a subclassing template and a quick tutorial on how to write a custom widget as a SCUserView subclass, see <a href="Cocoa-GUI/SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s22">SCUserView-Subclassing</span></a>. <span class="Apple-tab-span">	</span></p>
+<p class="p5">Caution, subclassing differs in many points from the example below. For a subclassing template and a quick tutorial on how to write a custom widget as a SCUserView subclass, see <a href="Cocoa-GUI/SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s22">SCUserView-Subclassing</span></a>.<span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s8">var</span> value = 0.5;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new.front;</p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// (1) create a user view</p>
-<p class="p12"><span class="Apple-tab-span">	</span>v = <span class="s8">UserView</span>(w,<span class="s8">Rect</span>(50,50,200,20)); </p>
+<p class="p12"><span class="Apple-tab-span">	</span>v = <span class="s8">UserView</span>(w,<span class="s8">Rect</span>(50,50,200,20));</p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// (2) define a drawing function for Pen</p>
-<p class="p12"><span class="Apple-tab-span">	</span>v.drawFunc = { </p>
+<p class="p12"><span class="Apple-tab-span">	</span>v.drawFunc = {</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.addRect(v.bounds);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.fillAxialGradient(</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((v.bounds.width*value)+10+v.bounds.left) @ v.bounds.top,</p>
@@ -374,7 +374,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// (3) set an action to the user view<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span>v.action = {value.postln; v.refresh}; </p>
+<p class="p12"><span class="Apple-tab-span">	</span>v.action = {value.postln; v.refresh};</p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// (4) define mouse actions</p>
 <p class="p12"><span class="Apple-tab-span">	</span>v.mouseDownAction = {<span class="s8">arg</span> view, x = 0.5,y, m;</p>
@@ -401,7 +401,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>// just for testing drag and drop</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(w,<span class="s8">Rect</span>(50,150,200,20)); </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(w,<span class="s8">Rect</span>(50,150,200,20));</p>
 <p class="p12"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
 <p class="p6"><b>Automatic GUI</b></p>
@@ -410,8 +410,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p12"><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">SynthDef</span>(<span class="s9">"test"</span>, { <span class="s8">arg</span> out, freq=330, amp=0.6; </p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(out, <span class="s8">SinOsc</span>.ar(freq,0,amp)) </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">SynthDef</span>(<span class="s9">"test"</span>, { <span class="s8">arg</span> out, freq=330, amp=0.6;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(out, <span class="s8">SinOsc</span>.ar(freq,0,amp))</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).store;</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span></p>
@@ -463,7 +463,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5">"Plus-GUI" methods are methods added to other classes such as <a href="../Collections/String.html"><span class="s26">String</span></a> or <a href="../ServerArchitecture/Server.html"><span class="s26">Server</span></a> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s27">GUI</span><span class="s25">.current</span> .</p>
 <p class="p4"><br></p>
-<p class="p20">.inspect </p>
+<p class="p20">.inspect</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Inspectors:</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s28">Server</span>.default.inspect;</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s28">Server</span>.inspect;</p>
@@ -475,7 +475,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p21">.makeWindow</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Server:</p>
-<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( s.window.notNil, { s.window.close });</p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( s.window.notNil, {s.window.close});</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.makeWindow;</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.scope;</p>
 <p class="p4"><br></p>

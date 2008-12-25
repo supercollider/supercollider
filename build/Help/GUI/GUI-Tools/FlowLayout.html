@@ -51,12 +51,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of Rect. Normally set to the parent.bounds.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.  </span>The horizontal and vertical layout  </span>gap between the subviews.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. </span>The horizontal and vertical layout </span>gap between the subviews.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new.front;</p>
 <p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//change the gaps and margins to see how they work</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s8">FlowLayout</span>( w.view.bounds, 10@10, 20@5 ); </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s8">FlowLayout</span>( w.view.bounds, 10@10, 20@5 );</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>16.do{ <span class="s8">Slider2D</span>( w.view,80@80 ).background_( <span class="s8">Color</span>.rand ) };</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">)</span></p>
 <p class="p6"><br></p>
@@ -77,7 +77,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q = w.addFlowLayout( 10@10, 20@5 ); </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q = w.addFlowLayout( 10@10, 20@5 );</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,140@140 ).background_( <span class="s8">Color</span>.rand );</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.nextLine;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,140@140 ).background_( <span class="s8">Color</span>.rand );</p>
@@ -86,7 +86,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>indentedRemaining</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns and instance of <a href="../../Geometry/Rect.html"><span class="s10">Rect</span></a>. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of <b>indentedRemaining, </span></b> is the full height remaining in the FlowLayout.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns and instance of <a href="../../Geometry/Rect.html"><span class="s10">Rect</span></a>. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of <b>indentedRemaining,</span></b> is the full height remaining in the FlowLayout.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//normally you will only use the width of indentedRemaining</p>
@@ -95,18 +95,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,150@150 ).background_( <span class="s8">Color</span>.rand );</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,150@150 ).background_( <span class="s8">Color</span>.rand );</p>
 <p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Slider</span><span class="s5">( w.view, d.indentedRemaining.width@150) </span>//fits this view perfeclty to the right innerBounds</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s8">Color</span>.rand );  </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s8">Color</span>.rand ); </span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">)</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Compare this with:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( </span>//here the third view is fit to both the right and bottom innerBounds  </span></p>
+<p class="p12"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( </span>//here the third view is fit to both the right and bottom innerBounds </span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = d = <span class="s8">FlowLayout</span>.new( w.view.bounds, 10@10, 20@5 );</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,140@140 ).background_( <span class="s8">Color</span>.rand );</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view,140@140 ).background_( <span class="s8">Color</span>.rand );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.nextLine;   </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.nextLine; </span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Slider2D</span>( w.view, d.indentedRemaining ).background_( <span class="s8">Color</span>.rand );</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">)</span></p>
@@ -114,8 +114,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>bounds_ (b)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The  </span>outer bounds in which the decorator places the subviews in the parent view</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b</b>  </span>-  </span>An instance of <a href="../../Geometry/Rect.html"><span class="s11">Rect</span></a> .</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The </span>outer bounds in which the decorator places the subviews in the parent view</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b</b> </span>- </span>An instance of <a href="../../Geometry/Rect.html"><span class="s11">Rect</span></a> .</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>innerBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -123,17 +123,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>gap_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>gap</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical layout  </span>gap between the subviews.</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>-<b>  </span></b>An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical layout </span>gap between the subviews.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>-<b> </span></b>An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>margin_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>margin</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The horizontal and vertical inner margins, within which the parent's subviews are placed.</p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>arg1 </b>- An instance of <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p7"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p13"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p7"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>left_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>left</b></p>
@@ -204,7 +204,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>currentBounds</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets a Rect with  </span><b>bounds</b>.width and height = <b>top</b> + <b>maxHeight</b>.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets a Rect with </span><b>bounds</b>.width and height = <b>top</b> + <b>maxHeight</b>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new;</p>
@@ -220,7 +220,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>used</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets a Rect with the  </span>space actually used.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets a Rect with the </span>space actually used.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new;</p>

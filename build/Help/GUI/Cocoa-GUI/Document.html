@@ -64,15 +64,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents. While it is an abstract class, you still use it to create a <b>new</b> Document. It simply passes on <b>new</b> to the appropriate document implementation, e.g. CocoaDocument.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also:</b> <a href="../../OSX/CocoaDocument.html"><span class="s4">CocoaDocument</span></a>, </span></p>
+<p class="p4"><span class="s3"><b>See also:</b> <a href="../../OSX/CocoaDocument.html"><span class="s4">CocoaDocument</span></a> </span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding Document</b></p>
 <p class="p2"><br></p>
-<p class="p1">Different text-editing environments can be used with SuperCollider. Therefore Document is an abstract class, meaning it doesn't provide all the functionality itself, but relies on subclasses to complete the functionality. Calls to Document.<b>new</b> or Document.<b>open</b> are actually passed down to the relevant class for the editor you're using, such as CocoaDocument (for most Mac users) or EmacsDocument. </p>
+<p class="p1">Different text-editing environments can be used with SuperCollider. Therefore Document is an abstract class, meaning it doesn't provide all the functionality itself, but relies on subclasses to complete the functionality. Calls to Document.<b>new</b> or Document.<b>open</b> are actually passed down to the relevant class for the editor you're using, such as CocoaDocument (for most Mac users) or EmacsDocument.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Setting the Environment</b></p>
 <p class="p6"><br></p>
-<p class="p1">By defualt <b>envir</b> it is set to the current <a href="../../Collections/Environment.html"><span class="s5">Environment</span></a>. However, you can make it use its own Environment also. Thus, e.g., if you were to set the Environment variable ~myVar=12 in the current Environment, you can create a new Document window in which that Environment variable is not set. </p>
+<p class="p1">By defualt <b>envir</b> it is set to the current <a href="../../Collections/Environment.html"><span class="s5">Environment</span></a>. However, you can make it use its own Environment also. Thus, e.g., if you were to set the Environment variable ~myVar=12 in the current Environment, you can create a new Document window in which that Environment variable is not set.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p7"><br></p>
@@ -81,17 +81,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>title </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. Default value is "Untitled".</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> . Default value is "". The contents of the document.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makeListener </b>- Makes this document the lisenter, i.e. the place where SC-lang posts messages. Default value is false. .</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>envir </b>- An instance of <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current Environment. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>envir </b>- An instance of <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current Environment.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">Document</span><span class="s3">.new(</span>"this is the title"<span class="s3">, </span>"this is the text"<span class="s3">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*open (path, selectionStart, selectionLength, envir)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Open a document from a path.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path </b>- The file system path to the document. An instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path </b>- The file system path to the document. An instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>selectionStart </b>-The beginning of the cursor seleciton of the file content. Default value is 0.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>selectionLength </b>- The length of the cursor seleciton of the file content. Default value is 0.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>envir </b>- An instance of <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current Environment. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>envir </b>- An instance of <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current Environment.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">Document</span><span class="s3">.open(</span><span class="s7">"README"</span><span class="s3">, 292,253); </span>// notice the selected text in the open document</p>
 <p class="p13"><br></p>
@@ -141,18 +141,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>*globalKeyDownAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A class variable. Get/set A global action to be performed when a key is pressed.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>.</p>
 <p class="p7"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*globalKeyUpAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*globalKeyUpAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A class variable. Get/set A global action to be performed when a key is released.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*initAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*initAction_(arg1)</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A class variable. Get/set A an action to be performed up openning or creating a Document.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s5">FunctionList</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*autoRun</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*autoRun_</b></p>
@@ -174,7 +174,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5"><b>Path Utilites</b></p>
 <p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span>Utilities and settings for dealing with documents such as super collider code files. By default the document directory is SuperCollider's application directory.</p>
-<p class="p8"> </p>
+<p class="p8"></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*dir</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*dir_ (path)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -217,7 +217,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a path relative to Document.dir, if the path is inside Document.dir.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path </b>- The file system path to the directory. An instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>.</p>
 <p class="p6"><br></p>
-<p class="p6"><br></p>
 <p class="p5"><b>General Document Properties</b></p>
 <p class="p6"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>bounds</b></p>
@@ -229,7 +228,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>path</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>path_ (apath)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the Document's <b>path</b>.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the Document's <b>path</b>.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>apath </b>- An instance of <a href="../../Collections/String.html"><span class="s10">String</span></a>. A files system path.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.path.postln;</p>
@@ -249,7 +248,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>editable</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>editable_(abool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the document is editable.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the document is editable.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Boolean.html"><span class="s10">Boolean</span></a>.</p>
 <p class="p7"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>name</b></p>
@@ -258,14 +257,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>title_ (argName)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the title.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aname/argName </b>- An instance of <a href="../../Collections/String.html"><span class="s10">String</span></a>. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aname/argName </b>- An instance of <a href="../../Collections/String.html"><span class="s10">String</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.name.postln</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s11"><span class="Apple-tab-span">	</span></span><b>background</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>background_ (color)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the Document's background color.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the the Document's background color.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -345,19 +344,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>onClose</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>onClose_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on closing the document.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on closing the document.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> </span>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>endFrontAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>endFrontAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed when the document becomes no longer the front document.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed when the document becomes no longer the front document.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> .</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>toFrontAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>toFrontAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed when the document become the front document.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed when the document become the front document.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> .</span></p>
 <p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>mouseDownAction</b></p>
@@ -365,14 +364,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>mouseUpAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>mouseUpAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on mouseDown or mouseUp.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on mouseDown or mouseUp.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> </span>The arguments passed to the function are.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>x, y, modifiers, buttonNumber, clickCount, clickPos</b></p>
 <p class="p7"><br></p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//add a mouse action to this document: </p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//add a mouse action to this document:</p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//example: easy button:</p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//when you click in front of a 17 a SinOsc will start up;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.waitForBoot({<span class="Apple-tab-span">	</span></p>
@@ -398,19 +397,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>keyUpAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>keyUpAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on keyDown or keyUp.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> </span>The arguments passed to the function are <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get / set the action to be performed on keyDown or keyUp.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s10">FunctionList</span></a><span class="s10"> </span>The arguments passed to the function are<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>char, modifiers, unicode,keycode</b></p>
 <p class="p10"><br></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.keyDownAction={<span class="s6">arg</span> ...args; args.postln};    </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.keyDownAction={<span class="s6">arg</span> ...args; args.postln};  </p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// now type some text</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.keyDownAction=<span class="s6">nil</span>; </p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.keyDownAction=<span class="s6">nil</span>;</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>makeWikiPage (wikiWord, extension, directory)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a wiki page .</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>wikiWord </b>- An instance of <a href="../../Collections/String.html"><span class="s18">String</span></a>. The name of the document.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>extension </b>- An instance of <a href="../../Collections/String.html"><span class="s18">String</span></a>. The file extension. Default value is ".rtf". </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>extension </b>- An instance of <a href="../../Collections/String.html"><span class="s18">String</span></a>. The file extension. Default value is ".rtf".</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>directory </b>- An instance of <a href="../../Collections/String.html"><span class="s18">String</span></a>. The directory in which to save the page.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Document</span>.current.makeWikiPage(<span class="s7">"test1"</span>);</p>
@@ -484,12 +483,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>removeUndo ??</b></p>
 <p class="p7"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>string (rangestart, rangesize)</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>string_ (string, rangestart, rangesize) </b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>string_ (string, rangestart, rangesize)</b></p>
 <p class="p7"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the string within a certain range.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- Explanation of string. Default value is nil. Other information.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangestart </b>- An integer. Default value is nil.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangesize </b>- An integer. Default value is 1. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangesize </b>- An integer. Default value is 1.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Select the following code in parentheses and execute it</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -504,7 +503,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the font within a certain range.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An instance of <a href="../GUI-Tools/Font.html"><span class="s18">Font</span></a>.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangestart </b>- An integer. Default value is -1. If rangestart = -1, the whole document is selected.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangesize </b>- An integer. Default value is 0. </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>rangesize </b>- An integer. Default value is 0.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Select the following code in parentheses and execute it</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -514,7 +513,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Watch me change font</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>stringColor </b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span>stringColor</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets the document's global string color.</p>
 <p class="p13"><br></p>
@@ -541,7 +540,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Underlines the current selection of a Document.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p23"><b>Auto-Completion </b></p>
+<p class="p23"><b>Auto-Completion</b></p>
 <p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span>OSX version only, currently. See <a href="DocumentAutoCompletion.html"><span class="s19">DocumentAutoCompletion</span></a></p>
 <p class="p6"><br></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*allowAutoComp</b></p>
@@ -553,8 +552,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span>autoComplete</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p23"><b>Subclassing and Internal Methods </b></p>
-<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p23"><b>Subclassing and Internal Methods</b></p>
+<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*startup</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span>*numberOfOpen</b></p>
@@ -658,15 +657,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p25">// http://tbt.dyne.org/?info=download</p>
 <p class="p24"><br></p>
 <p class="p25">// record: type some text</p>
-<p class="p26">( </p>
+<p class="p26">(</p>
 <p class="p26"><span class="s6">var</span> time = <span class="s6">Main</span>.elapsedTime;</p>
 <p class="p26">a = <span class="s6">List</span>.new;</p>
 <p class="p27"><span class="s3">r = </span>Routine<span class="s3"> { </span>|char|</p>
-<p class="p26">      loop {</p>
-<p class="p26">        a = a.add([char, <span class="s6">Main</span>.elapsedTime - time]);</p>
-<p class="p26">        char = 0.yield;</p>
-<p class="p26">      }</p>
-<p class="p26">    };</p>
+<p class="p26">   loop {</p>
+<p class="p26">    a = a.add([char, <span class="s6">Main</span>.elapsedTime - time]);</p>
+<p class="p26">    char = 0.yield;</p>
+<p class="p26">   }</p>
+<p class="p26">  };</p>
 <p class="p24"><br></p>
 <p class="p28"><span class="s6">Document</span><span class="s3">.new(</span>"type some text"<span class="s3">)</span></p>
 <p class="p26"><span class="Apple-tab-span">	</span>.bounds_(<span class="s6">Rect</span>(100,<span class="s6">SCWindow</span>.screenBounds.height-250,400,200))</p>
@@ -678,10 +677,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p28"><span class="s3">d=</span><span class="s6">Document</span><span class="s3">.new(</span>"type some text"<span class="s3">)</span></p>
 <p class="p26"><span class="Apple-tab-span">	</span>.bounds_(<span class="s6">Rect</span>(550,<span class="s6">SCWindow</span>.screenBounds.height-250,400,200));</p>
 <p class="p26">fork({</p>
-<p class="p26">  a.do { <span class="s6">|pair|</span></p>
-<p class="p26">    d.string = d.string ++ pair[0];</p>
-<p class="p26">    pair[1].wait;</p>
-<p class="p26">  }</p>
+<p class="p26"> a.do { <span class="s6">|pair|</span></p>
+<p class="p26">  d.string = d.string ++ pair[0];</p>
+<p class="p26">  pair[1].wait;</p>
+<p class="p26"> }</p>
 <p class="p27"><span class="s3">}, </span>AppClock<span class="s3">)</span></p>
 <p class="p26">)</p>
 <p class="p3"><br></p>

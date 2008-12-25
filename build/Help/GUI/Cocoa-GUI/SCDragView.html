@@ -40,14 +40,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="s2"><b>See also:</b> <a href="SCDragSource.html"><span class="s3">SCDragSource</span></a>, <a href="SCDragSink.html"><span class="s3">SCDragSink</span></a>, <a href="SCDragBoth.html"><span class="s3">SCDragBoth</span></a></span></p>
 <p class="p2"><br></p>
-<p class="p1">Users will not normally directly create instances of SCDragView, but only use it through its subclasses.  </span>The three subclasses, SCDragSource, SCDragSink, SCDragBoth, all function basically the same way: they are simple, graphically represented rectangles, which act as a drag-source, a drag target, or both. Their dragging behavior only differs from other GUI views, in that they do not require the cmd key to be held down for dragging. All other dragging functions are those defined by <a href="SCView.html"><span class="s4">SCView</span></a>. They inherit from <a href="SCStaticTextBase.html"><span class="s4">SCStaticTextBase</span></a>, and thus store their content in <b>object</b> and by default display their content  </span>using <b>asString</b>. You can keep  </span>their string independent of the content, if you set <b>setBoth</b>=false.  </span>You can also set a label to be displayed while dragging by using <b>dragLabel_()</b>.</p>
+<p class="p1">Users will not normally directly create instances of SCDragView, but only use it through its subclasses. </span>The three subclasses, SCDragSource, SCDragSink, SCDragBoth, all function basically the same way: they are simple, graphically represented rectangles, which act as a drag-source, a drag target, or both. Their dragging behavior only differs from other GUI views, in that they do not require the cmd key to be held down for dragging. All other dragging functions are those defined by <a href="SCView.html"><span class="s4">SCView</span></a>. They inherit from <a href="SCStaticTextBase.html"><span class="s4">SCStaticTextBase</span></a>, and thus store their content in <b>object</b> and by default display their content </span>using <b>asString</b>. You can keep </span>their string independent of the content, if you set <b>setBoth</b>=false. </span>You can also set a label to be displayed while dragging by using <b>dragLabel_()</b>.</p>
 <p class="p4"><br></p>
-<p class="p5"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p5"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag. Returns  </span><b>object</b> .</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag. Returns </span><b>object</b> .</p>
 <p class="p4"><br></p>
 <p class="p5"><b>Examples</b></p>
 <p class="p8"><br></p>
@@ -73,7 +73,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>// dragLabel_() is used for the label while dragging</p>
 <p class="p11"><span class="Apple-tab-span">	</span>d=<span class="s6">SCDragSource</span>(w,<span class="s6">Rect</span>(10,100,150,20)).align_(<span class="s7">\center</span>);</p>
 <p class="p11"><span class="Apple-tab-span">	</span>d.object={<span class="s6">var</span> n; s.waitForBoot({n=<span class="s6">Synth</span>(<span class="s7">\default</span>)});n};</p>
-<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span>d.dragLabel=</span>" I am a sound function.\n My dragLabel_() is set  </span>\n to inform you about that "<span class="s2">;</span></p>
+<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span>d.dragLabel=</span>" I am a sound function.\n My dragLabel_() is set </span>\n to inform you about that "<span class="s2">;</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>// A sound function source</p>
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>//here the string label is independent of the content type (Function)</p>
@@ -100,9 +100,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>// receive only functions, and try to play them</p>
 <p class="p11"><span class="Apple-tab-span">	</span>i=<span class="s6">SCDragSink</span>(w,<span class="s6">Rect</span>(170,100,200,20)).align_(<span class="s7">\center</span>);</p>
-<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span>i.string=</span>"I evaluate a (sound)  </span>function"<span class="s2">;</span></p>
+<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span>i.string=</span>"I evaluate a (sound) </span>function"<span class="s2">;</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="s8">i.</span>canReceiveDragHandler = {<span class="s6">SCView</span>.currentDrag.isKindOf(<span class="s6">Function</span>)};</p>
-<p class="p11"><span class="Apple-tab-span">	</span>i.receiveDragHandler={<span class="s6">arg</span> v; </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>i.receiveDragHandler={<span class="s6">arg</span> v;</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.object=<span class="s6">SCView</span>.currentDrag.value;</p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.string=</span>"click here for silence"<span class="s2">;</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.background_(<span class="s6">Color</span>.red)};</p>
@@ -110,7 +110,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="s6">SCStaticText</span>(w,<span class="s6">Rect</span>(10,200,380,50))</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.stringColor_(<span class="s6">Color</span>.white)</p>
-<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(</span>"Try dragging any item on the left   </span>-----&gt;   </span>to any item on the right"<span class="s2">);</span></p>
+<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(</span>"Try dragging any item on the left  </span>-----&gt;  </span>to any item on the right"<span class="s2">);</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11">});</p>
 <p class="p11">)</p>

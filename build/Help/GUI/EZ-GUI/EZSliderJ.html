@@ -30,7 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>EZSliderJ</b></span><span class="s2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>wrapper class for label, slider, number box</b></p>
 <p class="p2"><br></p>
-<p class="p3">CAUTION!!! This class will become <b>EZSlider</b> once it is swing compatible. Presently <b>EZSlider</b> will redirect to EZSliderSC<span class="Apple-converted-space">  </span>if you are running CocoaGUI,<span class="Apple-converted-space">  </span>and to EZSliderJ if you are running SwingGUI.<span class="Apple-converted-space"> </span></p>
+<p class="p3">CAUTION!!! This class will become <b>EZSlider</b> once it is swing compatible. Presently <b>EZSlider</b> will redirect to EZSliderSC<span class="Apple-converted-space"> </span>if you are running CocoaGUI,<span class="Apple-converted-space"> </span>and to EZSliderJ if you are running SwingGUI.<span class="Apple-converted-space"></span></p>
 <p class="p4"><br></p>
 <p class="p5"><b>Please use EZSlider in your Code</b></p>
 <p class="p2"><br></p>
@@ -53,7 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p1">Another useful instance variable is <b>round</b>, the rounding precision for the number box display. The default value for <b>round</b> is 0.001 .</p>
 <p class="p6"><br></p>
-<p class="p1">see also <b>EZNumber</b> and <b>EZRanger</b>. </p>
+<p class="p1">see also <b>EZNumber</b> and <b>EZRanger</b>.</p>
 <p class="p7"><br></p>
 <p class="p8">// Example:</p>
 <p class="p9">(</p>
@@ -93,8 +93,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">// define a synth</p>
 <p class="p9"><span class="s3">SynthDef</span>(<span class="s4">"window-test"</span>, { <span class="s3">arg</span> note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> x;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s3">Mix</span>.fill(4, { </p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFSaw</span>.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02) </p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s3">Mix</span>.fill(4, {</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFSaw</span>.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02)</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s3">RLPF</span>.ar(x, fc, rq).softclip;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s3">RLPF</span>.ar(x, fc, rq, amp).softclip;</p>
@@ -135,23 +135,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p8">// create controls for all parameters</p>
 <p class="p9">w.view.decorator.nextLine;</p>
-<p class="p9">noteControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Note"</span>, <span class="s3">ControlSpec</span>(24, 60, <span class="s7">\lin</span>, 1), </p>
+<p class="p9">noteControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Note"</span>, <span class="s3">ControlSpec</span>(24, 60, <span class="s7">\lin</span>, 1),</p>
 <p class="p9"><span class="Apple-tab-span">	</span>{<span class="s3">|ez|</span> node.set( <span class="s4">"note"</span>, ez.value )}, 36);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p9">w.view.decorator.nextLine;</p>
-<p class="p9">cutoffControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Cutoff"</span>, <span class="s3">ControlSpec</span>(200, 5000, <span class="s7">\exp</span>), </p>
+<p class="p9">cutoffControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Cutoff"</span>, <span class="s3">ControlSpec</span>(200, 5000, <span class="s7">\exp</span>),</p>
 <p class="p9"><span class="Apple-tab-span">	</span>{<span class="s3">|ez|</span> node.set( <span class="s4">"fc"</span>, ez.value )}, 1000);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p9">w.view.decorator.nextLine;</p>
-<p class="p9">resonControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Resonance"</span>, <span class="s3">ControlSpec</span>(0.1, 0.7), </p>
+<p class="p9">resonControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Resonance"</span>, <span class="s3">ControlSpec</span>(0.1, 0.7),</p>
 <p class="p9"><span class="Apple-tab-span">	</span>{<span class="s3">|ez|</span> node.set( <span class="s4">"rq"</span>, ez.value )}, 0.2);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p9">w.view.decorator.nextLine;</p>
-<p class="p9">balanceControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Balance"</span>, <span class="s7">\bipolar</span>, </p>
+<p class="p9">balanceControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Balance"</span>, <span class="s7">\bipolar</span>,</p>
 <p class="p9"><span class="Apple-tab-span">	</span>{<span class="s3">|ez|</span> node.set( <span class="s4">"bal"</span>, ez.value )}, 0);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p9">w.view.decorator.nextLine;</p>
-<p class="p9">ampControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Amp"</span>, <span class="s7">\db</span>, </p>
+<p class="p9">ampControl = <span class="s3">EZSlider</span>(w, 400 @ 20, <span class="s4">"Amp"</span>, <span class="s7">\db</span>,</p>
 <p class="p9"><span class="Apple-tab-span">	</span>{<span class="s3">|ez|</span> node.set( <span class="s4">"amp"</span>, ez.value.dbamp )}, -6);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><br></p>

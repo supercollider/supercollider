@@ -36,19 +36,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object</b></p>
 <p class="p3"><br></p>
-<p class="p1">SCFreqScopeWindow shows the frequency spectrum of the specified audio bus.  The scope will</p>
-<p class="p1">remain active after a command-period.  To turn it off you must either click off the 'Power'</p>
+<p class="p1">SCFreqScopeWindow shows the frequency spectrum of the specified audio bus. The scope will</p>
+<p class="p1">remain active after a command-period. To turn it off you must either click off the 'Power'</p>
 <p class="p1">button or close the window.</p>
 <p class="p2"><br></p>
 <p class="p1">Panel commands:</p>
-<p class="p1">Power - <span class="Apple-tab-span">	</span>Turns the scope on and off.  This is useful for freezing the signal on the display </p>
+<p class="p1">Power - <span class="Apple-tab-span">	</span>Turns the scope on and off. This is useful for freezing the signal on the display</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or for saving CPU.</p>
 <p class="p1">BusIn -<span class="Apple-tab-span">	</span>The audio bus to be analyzed.</p>
-<p class="p1">FrqScl -<span class="Apple-tab-span">	</span>Determines the mapping of frequencies on the x-axis.  Can be linear (lin) or</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>logarithmic (log).  Logarithmic is equal spacing per musical octave.</p>
+<p class="p1">FrqScl -<span class="Apple-tab-span">	</span>Determines the mapping of frequencies on the x-axis. Can be linear (lin) or</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>logarithmic (log). Logarithmic is equal spacing per musical octave.</p>
 <p class="p1">dbCut -<span class="Apple-tab-span">	</span>Determines the lowest decibel shown on the y-axis.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b>  <a href="SCFreqScope.html"><span class="s2">SCFreqScope</span></a></p>
+<p class="p1"><b>See also:</b> <a href="SCFreqScope.html"><span class="s2">SCFreqScope</span></a></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
@@ -73,13 +73,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s5">RLPF</span>.ar(<span class="s5">Saw</span>.ar(110, 0.2), <span class="s5">LFNoise2</span>.kr(1,1e4,1e4), <span class="s5">LFNoise2</span>.kr(1, 0.2, 0.22)) }.play(s);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// modulate phase</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s5">SinOsc</span>.ar(800, <span class="s5">SinOsc</span>.ar(<span class="s5">XLine</span>.kr(20,8000,10),0,2pi), 0.25) }.play(s); </p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s5">SinOsc</span>.ar(800, <span class="s5">SinOsc</span>.ar(<span class="s5">XLine</span>.kr(20,8000,10),0,2pi), 0.25) }.play(s);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// all harmonics</p>
 <p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ </span><span class="s5">Blip</span><span class="s4">.ar(</span>200,<span class="s6">Line</span>.kr(1,100,10),0.2) }.play(s);</p>
 <p class="p5"><br></p>
-<p class="p13"><b>Subclassing and Internal Methods </b></p>
-<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p13"><b>Subclassing and Internal Methods</b></p>
+<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>scopeOpen</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>

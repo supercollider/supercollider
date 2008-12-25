@@ -57,8 +57,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s6">Rect</span></a>,  </span>or  </span>a <a href="../../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s6">Rect</span></a>, </span>or </span>a <a href="../../../Geometry/Point.html"><span class="s6">Point</span></a> indicating width@height.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = </span><span class="s8">SCWindow</span><span class="s7">(</span>"Simple QC Test"<span class="s7">).front;</span></p>
@@ -97,7 +97,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>setInputValue (key, value)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set the value of an input port at key. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set the value of an input port at key.</span></p>
 <p class="p8"><br></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>key </b>- A String or Symbol matching the port's key.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>value </b>- The type of value must correspond to the type of the port, but Floats, Integers, and Booleans are converted if needed. (true = 1, false = 0)</p>
@@ -121,8 +121,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Open the currently loaded composition in Quartz Composer. You will need to reload the composition into the view before any saved changes take effect.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p14"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p14"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>doesNotUnderstand (selector, args)</b></p>
 <p class="p6"><br></p>
@@ -263,9 +263,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">// use mouse to set pan position</p>
 <p class="p11">(</p>
 <p class="p11">{</p>
-<p class="p11">loop({ </span></p>
-<p class="p11">{ <span class="s8">Pan2</span>.ar(<span class="s8">Saw</span>.ar(mul: 0.1) * <span class="s8">EnvGen</span>.ar(<span class="s8">Env</span>.perc, timeScale: 4, doneAction: 2), m.x_pos) }.play; </span></p>
-<p class="p11">1.wait; </span></p>
+<p class="p11">loop({</span></p>
+<p class="p11">{ <span class="s8">Pan2</span>.ar(<span class="s8">Saw</span>.ar(mul: 0.1) * <span class="s8">EnvGen</span>.ar(<span class="s8">Env</span>.perc, timeScale: 4, doneAction: 2), m.x_pos) }.play;</span></p>
+<p class="p11">1.wait;</span></p>
 <p class="p11">});</p>
 <p class="p11">}.fork(<span class="s8">AppClock</span>);</p>
 <p class="p11">)</p>
@@ -312,7 +312,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">m.setInputValue(<span class="s11">\framesPerView</span>, 50);</p>
 <p class="p11">a = { <span class="s8">var</span> colum;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>colum = <span class="s8">PlayBuf</span>.ar(1, c, <span class="s8">BufRateScale</span>.kr(c) * <span class="s8">Line</span>.kr(1, 3, 20), loop: 1);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">FFT</span>(b, colum); </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">FFT</span>(b, colum);</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>colum</p>
 <p class="p11">}.play;</p>
 <p class="p11">)</p>

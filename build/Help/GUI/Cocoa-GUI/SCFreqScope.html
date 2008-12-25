@@ -48,20 +48,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCScope.html"><span class="s2"><b>SCScope</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">SCFreqScope shows the frequency spectrum of a specified audio bus.  </span></p>
+<p class="p1">SCFreqScope shows the frequency spectrum of a specified audio bus. </span></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also:</b> <a href="SCScope.html"><span class="s4">SCScope</span></a>, <a href="SCFreqScopeWindow.html"><span class="s5">SCFreqScopeWindow</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>A Very Important Issue Regarding SCFreqScope:</b></p>
 <p class="p2"><br></p>
-<p class="p1">The scope will remain active after a command-period.  </span>To turn it off you must use the 'active' method.</p>
-<p class="p1"><b>Very important:</b>  </span>You must  </span>run <b>kill() </b>when the parent window is closed to avoid problems.</p>
+<p class="p1">The scope will remain active after a command-period. </span>To turn it off you must use the 'active' method.</p>
+<p class="p1"><b>Very important:</b> </span>You must </span>run <b>kill() </b>when the parent window is closed to avoid problems.</p>
 <p class="p1">It also frees the buffers that the scope allocated and stops the FFT analysis synth. So:</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">SCWindow</span>(<span class="s7">"My Analyzer"</span>, <span class="s6">Rect</span>(0, 0, 511, 300));</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s6">SCFreqScope</span>(w, w.view.bounds);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill });  </span><span class="s8">// YOU MUST HAVE THIS</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill }); </span><span class="s8">// YOU MUST HAVE THIS</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">)</span></p>
 <p class="p2"><br></p>
@@ -69,8 +69,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Start internal server</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s = <span class="s6">Server</span>.internal.boot;</p>
@@ -81,17 +81,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s6">SCFreqScope</span>(w, w.view.bounds);</p>
 <p class="p13"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.active_(</span><span class="s6">true</span><span class="s3">); <span class="Apple-tab-span">	</span></span>// turn it on the first time;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill });  </span><span class="s8">// you must have this</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill }); </span><span class="s8">// you must have this</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s6">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s);  </span><span class="s8">// start two sine waves</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s6">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s); </span><span class="s8">// start two sine waves</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p8"><br></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>*response (parent, bounds, bus1, bus2, freqMode)</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Create a scope in a special frequency-response mode. This uses FFT-based spectral division to estimate the frequency response of some effect, on the assumption that the signal to <b>bus1</b> is transformed to the signal at <b>bus2</b> by some linear time-invariant process.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bus1</b> - The bus on which the "pre" signal is found.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bus2</b> - The bus on which the "post" signal is found.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>freqMode</b> - linear (0) or log(1) frequency mode. Defaults to 1.</p>
@@ -114,13 +114,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// customize the parameters for more informative scoping</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s6">|in|</span> <span class="s6">MoogFF</span>.ar(in, freq: <span class="s6">MouseX</span>.kr(10, 10000, 1),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gain:<span class="s6">MouseY</span>.kr(4,0))}.scopeResponse </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gain:<span class="s6">MouseY</span>.kr(4,0))}.scopeResponse</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p16"><b>Instance Methods</b></p>
 <p class="p17"><br></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>kill</b></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Very important</b>.  </span>This must be run when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Very important</b>. </span>This must be run when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth.</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>active</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>active_ (bool)</b></p>
@@ -137,7 +137,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span>inBus_ (num)</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The bus to listen on.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>num </b>- an audio  </span><a href="../../ServerArchitecture/Bus.html"><span class="s2">Bus</span></a> number.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>num </b>- an audio </span><a href="../../ServerArchitecture/Bus.html"><span class="s2">Bus</span></a> number.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>dbRange</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>dbRange_ (db)</b></p>
@@ -151,12 +151,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>defname </b>- Name of the SynthDef you wish to use.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>extraArgs </b>- extra arguments that you may wish to pass to the synth.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p16"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p9"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p16"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p9"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span>*viewClass</b>  </span>Returns <span class="s14">SCScope</span>.  </span>See also Subclassing and Internal Methods in <a href="SCView.html"><span class="s2">SCView</span></a></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>*viewClass</b> </span>Returns <span class="s14">SCScope</span>. </span>See also Subclassing and Internal Methods in <a href="SCView.html"><span class="s2">SCView</span></a></p>
 <p class="p8"><br></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span>*initClass</b>  </span>Sets the classVar , <b>server</b> = Server.internal.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>*initClass</b> </span>Sets the classVar , <b>server</b> = Server.internal.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>server</b> - A classVar. must be Server.internal</p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>start</b></p>
@@ -183,9 +183,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">f = <span class="s6">SCFreqScope</span>(w, w.view.bounds);</p>
 <p class="p13"><span class="s3">f.active_(</span><span class="s6">true</span><span class="s3">); <span class="Apple-tab-span">	</span></span>// turn it on the first time;</p>
 <p class="p14"><br></p>
-<p class="p7">w.onClose_({ f.kill });  </span><span class="s8">// you must have this</span></p>
+<p class="p7">w.onClose_({ f.kill }); </span><span class="s8">// you must have this</span></p>
 <p class="p7">w.front;</p>
-<p class="p7">{ <span class="s6">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s);  </span><span class="s8">// start two sine waves</span></p>
+<p class="p7">{ <span class="s6">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s); </span><span class="s8">// start two sine waves</span></p>
 <p class="p14"><br></p>
 <p class="p7">)</p>
 <p class="p14"><br></p>
@@ -197,10 +197,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><span class="s3">f.active_(</span><span class="s6">true</span><span class="s3">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn it back on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
-<p class="p13">// Now press command-period.  </span>The scope is still running.</p>
+<p class="p13">// Now press command-period. </span>The scope is still running.</p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
-<p class="p7">{ <span class="s6">Mix</span>.ar(<span class="s6">SinOsc</span>.ar([500, 1200, 3000, 9000,12000], 0, [0.2,0.1,0.05,0.03,0.01])) }.play(s);  </span><span class="s8">// restart some sines</span></p>
+<p class="p7">{ <span class="s6">Mix</span>.ar(<span class="s6">SinOsc</span>.ar([500, 1200, 3000, 9000,12000], 0, [0.2,0.1,0.05,0.03,0.01])) }.play(s); </span><span class="s8">// restart some sines</span></p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
 <p class="p13">// Close window and scope is killed.</p>

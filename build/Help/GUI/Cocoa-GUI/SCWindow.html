@@ -47,7 +47,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">A class representing a user interface window in the Cocoa gui system on OSX. </p>
+<p class="p1">A class representing a user interface window in the Cocoa gui system on OSX.</p>
 <p class="p2"><br></p>
 <p class="p1">Besides providing a window in which to host <a href="SCView.html"><span class="s3">SCView</span></a>, SCWindow is also a canvas on which you can draw using Pen. See the <a href="SCPen.html"><span class="s3">SCPen</span></a> file for many examples.</p>
 <p class="p2"><br></p>
@@ -61,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCWindow instance. You will need to call <b>front</b> (see below) on it before it will be visible.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- The name that will be displayed in the title bar. An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. The default is 'panel'.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b> - A <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> specifying the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i><span class="Apple-tab-span">	</span>of the screen. This is different from view location, which is measured from the <i>upper left</i>  of the window (not including the title bar). The default is Rect(128, 64, 400, 400).</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</b> - A <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> specifying the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i><span class="Apple-tab-span">	</span>of the screen. This is different from view location, which is measured from the <i>upper left</i> of the window (not including the title bar). The default is Rect(128, 64, 400, 400).</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is true.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s2">GUI</span></a> for more details.</p>
@@ -173,7 +173,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>setInnerExtent(width,height)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Changes the size of this window while keeping the top left corner fixed.  This is the usual desired behavior, as by default Cocoa uses a flipped coordinate system.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Changes the size of this window while keeping the top left corner fixed. This is the usual desired behavior, as by default Cocoa uses a flipped coordinate system.</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span><b>userCanClose_(bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>userCanClose</b></p>
@@ -211,7 +211,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">w = <span class="s11">SCWindow</span>(<span class="s13">"my name is... panel"</span>, <span class="s11">Rect</span>(128, 64, 340, 360));</p>
 <p class="p16"><br></p>
 <p class="p14">w.view.decorator = <span class="s11">FlowLayout</span>(w.view.bounds);</p>
-<p class="p15">// w.addFlowLayout;   // you can als write this instead of the line above</p>
+<p class="p15">// w.addFlowLayout;  // you can als write this instead of the line above</p>
 <p class="p16"><br></p>
 <p class="p14">w.view.background = <span class="s11">Color</span>(0.6,0.8,0.8);</p>
 <p class="p14">32.do({ <span class="s11">arg</span> i;</p>
@@ -220,7 +220,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s13">"Stop "</span>++i, <span class="s11">Color</span>.white, <span class="s11">Color</span>.red]];</p>
 <p class="p14">});</p>
 <p class="p16"><br></p>
-<p class="p14">w.front; </p>
+<p class="p14">w.front;</p>
 <p class="p14">)</p>
 <p class="p16"><br></p>
 <p class="p15">// setting bounds</p>
@@ -230,9 +230,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">x = <span class="s11">SCWindow</span>.new(<span class="s13">"test"</span>, <span class="s11">Rect</span>(100,<span class="s11">SCWindow</span>.screenBounds.height-180,300,100));x.front;</p>
 <p class="p14">)</p>
 <p class="p16"><br></p>
-<p class="p15">//  bounds.top refers to the bottom edge of the window,</p>
-<p class="p15">//  measured from the bottom of the screen. Different than in SCView.</p>
-<p class="p14">x.bounds_(<span class="s11">Rect</span>(100,400,300,300));  </p>
+<p class="p15">// bounds.top refers to the bottom edge of the window,</p>
+<p class="p15">// measured from the bottom of the screen. Different than in SCView.</p>
+<p class="p14">x.bounds_(<span class="s11">Rect</span>(100,400,300,300)); </p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
@@ -260,7 +260,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">)</p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
-<p class="p15">// drawing dynamically  in a window with <a href="SCPen.html"><span class="s6">SCPen</span></a></p>
+<p class="p15">// drawing dynamically in a window with <a href="SCPen.html"><span class="s6">SCPen</span></a></p>
 <p class="p14">(</p>
 <p class="p14"><span class="s11">var</span> w, much = 0.02, string, synth;</p>
 <p class="p16"><br></p>
