@@ -3,8 +3,8 @@ SkipJack {
 	classvar <>verbose = true, <all, <defaultClock;
 	var updateFunc, <>dt, <>stopTest, <name, <clock, <task, restartFunc; 
 	
-	*new { arg updateFunc, dt = 0.2, stopTest = false, name = "anon", clock;
-		^super.newCopyArgs(updateFunc, dt, stopTest, name, clock).init.start;
+	*new { arg updateFunc, dt = 0.2, stopTest = false, name = "anon", clock, autostart=true;
+		^super.newCopyArgs(updateFunc, dt, stopTest, name, clock).init( autostart );
 	}
 	
 	*initClass { 
@@ -17,12 +17,13 @@ SkipJack {
 	
 	*stopAll { all.do(_.stop).clear; } 
 	
-	init {
+	init { |autostart=true|
 		task = Task ({
 			if( verbose )	{ ("SkipJack" + name + "starts.").postln }; 
 				while { dt.value.wait; stopTest.value.not } { updateFunc.value(this) };
 				this.stop;
 			}, clock ? defaultClock);
+		if ( autostart, { this.start} );
 	}
 
 	cmdPeriod {
