@@ -23,7 +23,7 @@ z.free;
 
 Volume {
 
-	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window,<volume, spec;
+	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window, <volume, spec;
 	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
 	
@@ -114,7 +114,7 @@ Volume {
 		numChans = num;
 	}
 	
-	mute{
+	mute {
 		this.isPlaying.if({		
 			this.prmute;
 		}, {
@@ -122,7 +122,7 @@ Volume {
 		});	
 	}
 	
-	unmute{
+	unmute {
 		this.prunmute;
 		(this.muteamp == 0.0).if({
 			this.free;
@@ -160,7 +160,7 @@ Volume {
 				this.playVolume(isMuted);
 			})
 		});
-		volume = volume.clip(-90, 6);	
+		volume = volume.clip(min, max);	
 		if(isMuted) { muteamp = volume };
 		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
