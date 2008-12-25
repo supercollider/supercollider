@@ -25,10 +25,10 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>EZScroller</b></span><span class="s2"><span class="Apple-tab-span">	</span></span><b>show a subset of items on gui elements</b></p>
 <p class="p2"><br></p>
-<p class="p1">EZScroller is a vertical slider that allows displaying different subsets of a </span></p>
-<p class="p1">dynamically changing list of objects on a fixed number of views by scrolling. </span></p>
+<p class="p1">EZScroller is a vertical slider that allows displaying different subsets of a</span></p>
+<p class="p1">dynamically changing list of objects on a fixed number of views by scrolling.</span></p>
 <p class="p3"><br></p>
-<p class="p1">EZScroller is used JITLib guis like NodeProxyEditor, ProxyMixer, </span></p>
+<p class="p1">EZScroller is used JITLib guis like NodeProxyEditor, ProxyMixer,</span></p>
 <p class="p1">TdefAllGui, and PdefAllGui.</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -39,7 +39,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s5"><span class="Apple-tab-span">	</span></span>// 12 items</p>
 <p class="p5">a = (1..12);</p>
 <p class="p4"><br></p>
-<p class="p5">e = <span class="s3">EZScroller</span>(w, <span class="s3">Rect</span>(100,0,14,100), v.size, a.size, { <span class="s3">|sc|</span> </span></p>
+<p class="p5">e = <span class="s3">EZScroller</span>(w, <span class="s3">Rect</span>(100,0,14,100), v.size, a.size, { <span class="s3">|sc|</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> startIndex = sc.value.asInteger.postcs;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>v.do { <span class="s3">|drag, i|</span> drag.object_( a[ (startIndex) + i] ? <span class="s4">""</span>); };</p>
 <p class="p5"><span class="Apple-tab-span">	</span>e.visible_(sc.numItems &gt; sc.maxItems); <span class="s6">// hide when not useful</span></p>

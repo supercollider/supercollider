@@ -48,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCTextField</b></p>
 <p class="p2"><br></p>
-<p class="p1">Does not allow copying and pasting. Does not handle composed character sequences ( é ø etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop accepts a any <a href="../../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
+<p class="p1">Does not allow copying and pasting. Does not handle composed character sequences (   etc. ). Use <a href="SCTextView.html"><span class="s2">SCTextView</span></a> for these features. Hit delete before typing to clear the text field. Drag and drop accepts a any <a href="../../Core/Object.html"><span class="s6">Object</span></a> and recieves it <b>asString</b>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s7">SCStaticTextBase</span></a>. If you drag a file from the finder onto an SCTextView, it will display the file path.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
@@ -70,9 +70,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../../Collections/String.html"><span class="s11">String</span></a> of the text field.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>s </b>- An instance of <a href="../../Collections/String.html"><span class="s11">String</span></a>.</p>
 <p class="p6"><br></p>
-<p class="p11"><b>Subclassing and Internal Methods </span></b></p>
+<p class="p11"><b>Subclassing and Internal Methods</span></b></p>
 <p class="p12"><br></p>
-<p class="p5"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p5"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>*viewClass</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
@@ -93,15 +93,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCTextView. Returns <b>string</b>. </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCTextView. Returns <b>string</b>.</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCTextView will respond only to drags containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../../Core/Object.html"><span class="s3">Object</span></a> does). </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCTextView will respond only to drags containing objects that respond to the method, <b>asString</b> (basically, all objects, since <a href="../../Core/Object.html"><span class="s3">Object</span></a> does).</span></p>
 <p class="p6"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument. </span></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument.</span></p>
 <p class="p10"><br></p>
 <p class="p11"><b>Examples</b></p>
 <p class="p13"><br></p>

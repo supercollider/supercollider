@@ -41,15 +41,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">SCModalWindow is an application modal version of SCWindow. This means that it blocks all other user input until it is dismissed. It is thus useful for alerts, preference panels and other situations which should limit user input.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also: </b><a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a> </span></span></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a></span></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Dismissing App Modal Windows</b></p>
 <p class="p2"><br></p>
-<p class="p1">SCModalWindows have non-functional OSX close buttons. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to close the window. As an 'escape hatch' pressing the esc key will kill any application modal window. </span></p>
+<p class="p1">SCModalWindows have non-functional OSX close buttons. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to close the window. As an 'escape hatch' pressing the esc key will kill any application modal window.</span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Blocking and Multiple App Modal Windows</b></p>
 <p class="p6"><br></p>
-<p class="p1">There can only be one active SCModalWindow at any given time. If you attempt to create more than one they will be cued and launched in turn as each is dismissed. </span></p>
+<p class="p1">There can only be one active SCModalWindow at any given time. If you attempt to create more than one they will be cued and launched in turn as each is dismissed.</span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>N.B.</b> If you launch multiple app modal windows which will alter the same data, you may need to take special care. You can use the <b>*current </b>class method to check if an app modal window is currently running, and add a <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> to its onClose in order to check if the additional window is still needed once the first one has closed. See below for an example of how to do this.</p>
 <p class="p2"><br></p>
@@ -59,7 +59,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCModalWindow instance. You do not need to call <b>front</b> on it to make it visible.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- The name that will be displayed in the title bar. An instance of <a href="../../Collections/String.html"><span class="s6">String</span></a> or <a href="../../Core/Symbol.html"><span class="s6">Symbol</span></a>. The default is 'panel'.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window. The size does not include the title bar. <b>N.B. </b>App Modal windows are centred on the screen when created, so if you wish to move it for some reason you will need to call <b>bounds_</b> on the window after creation.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window. The size does not include the title bar. <b>N.B. </b>App Modal windows are centred on the screen when created, so if you wish to move it for some reason you will need to call <b>bounds_</b> on the window after creation.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar. The default is true.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a> for more details.</p>

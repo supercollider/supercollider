@@ -57,7 +57,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">SCView is the abstract superclass for all SC GUI widgets. You cannot call SCView directly. Several key methods and variables are defined in SCView and inherited in its subclasses. This help file contains important information about many of the basic functions of all gui views, in particular defining actions, defining drag and drop, defining mouse actions, and defining key actions. </p>
+<p class="p1">SCView is the abstract superclass for all SC GUI widgets. You cannot call SCView directly. Several key methods and variables are defined in SCView and inherited in its subclasses. This help file contains important information about many of the basic functions of all gui views, in particular defining actions, defining drag and drop, defining mouse actions, and defining key actions.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>See also:</b> <a href="SCWindow.html"><span class="s2">SCWindow</span></a><span class="s2">, <a href="../GUI-Tools/GUI.html"><span class="s3">GUI</span></a></span></p>
 <p class="p4"><br></p>
@@ -144,24 +144,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p9"><b>Resize Constraints</b></p>
 <p class="p10"><br></p>
-<p class="p1"><b>resize</b> takes integers 1-9 as an argument which defines how a view bahaves<span class="Apple-converted-space">  </span>when a window<span class="Apple-converted-space">  </span>is resized.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><b>resize</b> takes integers 1-9 as an argument which defines how a view bahaves<span class="Apple-converted-space"> </span>when a window<span class="Apple-converted-space"> </span>is resized.<span class="Apple-converted-space"></span></p>
 <p class="p1">See <a href="../GUI-Tools/resize.html"><span class="s9">resize</span></a> for details and examples.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
 <p class="p9"><b>Defining Actions</b></p>
 <p class="p4"><br></p>
-<p class="p1">Actions are Functions which are evaluated when the primitive calls <b>doAction</b> in response to user input of some sort. Typically a view like <a href="SCButton.html"><span class="s3">SCButton</span></a>, <a href="SCSlider.html"><span class="s3">SCSlider</span></a>, <a href="SCPopUpMenu.html"><span class="s3">SCPopUpMenu</span></a>, etc, use <b>action</b> to store the function to be performed on user input. Many views only call <b>doAction</b> if their value has changed. </p>
+<p class="p1">Actions are Functions which are evaluated when the primitive calls <b>doAction</b> in response to user input of some sort. Typically a view like <a href="SCButton.html"><span class="s3">SCButton</span></a>, <a href="SCSlider.html"><span class="s3">SCSlider</span></a>, <a href="SCPopUpMenu.html"><span class="s3">SCPopUpMenu</span></a>, etc, use <b>action</b> to store the function to be performed on user input. Many views only call <b>doAction</b> if their value has changed.</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>action</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>action_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The action a view takes if doAction is called (normally by the primitive). See <b>doAction</b>. Many view subclasses override this methods for their own purposes.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s7">FunctionList</span></a>. Default value is nil. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s10">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s7">FunctionList</span></a>. Default value is nil.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>addAction (func, selector)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>removeAction (func, selector)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds/removes an action to or from the list of functions in the variable determined by <b>selector</b>. Adding functionality to a view by the method <b>addAction</b> is useful for adding things to existing frameworks that have action functions already. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds/removes an action to or from the list of functions in the variable determined by <b>selector</b>. Adding functionality to a view by the method <b>addAction</b> is useful for adding things to existing frameworks that have action functions already.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>func </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s7">Function</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>selector </b>- A <a href="../../Core/Symbol.html"><span class="s7">Symbol</span></a>. Defaults to<b> \action</b>. By default, <b>addAction</b> will add a function to the <a href="../../Core/Kernel/FunctionList.html"><span class="s11">FunctionList</span></a> of <b>action</b>, but you can also make it add a function to any other (sensible) instance or class variable in SCView by using a different selector, for example, \<b>globalKeyDownAction</b> or \<b>mouseUpAction</b> or \<b>onClose</b> . See the other action variables below.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -184,13 +184,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>view</b> - The receiving instance of SCView.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>char</b> - The character pressed, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>char</b> - The character pressed, possibly unprintable. Character sequences (for example ) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>modifiers</b>- An integer bit field indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see <a href="../GUI-Tools/modifiers.html"><span class="s3">modifiers</span></a>.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>unicode</b> - The unicode integer.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>keycode</b> - The hardware dependent keycode indicating the physical key. This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>keycode</b> - The hardware dependent keycode indicating the physical key. This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>N.B.: Function key modifier may change the keycode.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -206,7 +206,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyDownAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>This is where you define your key actions. If these variables are nil (the default), <b>defaultKeyDownAction</b> or <b>defaultKeyUpAction</b> are called instead. Many subclasses define their own appropriate default key actions. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>char</b>, <b>modifiers</b>, <b>unicode</b>, <b>keycode</b>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>char</b>, <b>modifiers</b>, <b>unicode</b>, <b>keycode</b>.</p>
 <p class="p11"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>globalKeyDownAction</b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>globalKeyDownAction_(arg1)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -221,16 +221,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyModifiersChangedAction</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you set actions to be performed if the modifier changes. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of Function or FunctionList. The function is passed the following argument list: <b>view, modifiers</b>.  </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of Function or FunctionList. The function is passed the following argument list: <b>view, modifiers</b>. </p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Defining Mouse Actions</b></p>
 <p class="p10"><br></p>
-<p class="p1">Use the methods below to store functions to be called in response to a mouse action initiated by the user. A view must be <b>enabled</b> for the mouse actions to work. The function is passed one or more arguments from the following argument list (in order): </p>
+<p class="p1">Use the methods below to store functions to be called in response to a mouse action initiated by the user. A view must be <b>enabled</b> for the mouse actions to work. The function is passed one or more arguments from the following argument list (in order):</p>
 <p class="p2"><br></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>view</b> - the view</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>x</b> - the x coordinate</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>y</b> - the y coordinate</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>modifiers</b> - a modifier key number. For a list of these, see <a href="../GUI-Tools/modifiers.html"><span class="s3">modifiers</span></a>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>modifiers</b> - a modifier key number. For a list of these, see <a href="../GUI-Tools/modifiers.html"><span class="s3">modifiers</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>buttonNumber</b> - 0-left, 1-right, 2-middle, etc.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clickCount</b> - the number of clicks within the system click time limit. At least 1.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -238,19 +238,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseDownAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you set your mouse down actions. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list <b>view, x, y, modifiers, buttonNumber, clickCount. </b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list <b>view, x, y, modifiers, buttonNumber, clickCount.</b></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseUpAction</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseUpAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you set your mouse up actions. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. This is where you set your mouse actions. The function is passed the following argument list: <b>view</b>, <b>x</b>, <b>y</b>, <b>modifiers</b>.  Default is nil.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. This is where you set your mouse actions. The function is passed the following argument list: <b>view</b>, <b>x</b>, <b>y</b>, <b>modifiers</b>. Default is nil.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseMoveAction</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseMoveAction_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you set your mouse move actions. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. This is where you set your mouse actions. The function is passed the following argument list: <b>view</b>, <b>x</b>, <b>y</b>, <b>modifiers</b>.  Default is nil.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. This is where you set your mouse actions. The function is passed the following argument list: <b>view</b>, <b>x</b>, <b>y</b>, <b>modifiers</b>. Default is nil.</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseOverAction</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseOverAction_(arg1)</b></p>
@@ -269,7 +269,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.enabled=<span class="s12">true</span>;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=<span class="s12">Font</span>.default.copy;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.background_(<span class="s12">Color</span>.rand);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={ </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.mouseDownAction={</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.background_(<span class="s12">Color</span>.rand);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q.font=q.font.size_(5+q.font.size+7%60)</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
@@ -292,19 +292,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>beginDragAction</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>This is a custom handler determining the content of the drag. If this variable is nil (the default), <b>defaultGetDrag</b> is called instead. Many views already have their own appropriate <b>defaultGetDrag. </b>See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>x, y</b>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>x, y</b>.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>canReceiveDragHandler_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>canReceiveDragHandler</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>This is where you deterimine under which conditions a view will recieve a drag. If this variable is nil (the default), <b>defaultCanReceiveDrag</b> is called instead. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>.  This function typically will examine <b>currentDrag,</b> an return a boolean. The function is passed the following argument list: <b>view</b>, <b>x, y</b>. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. This function typically will examine <b>currentDrag,</b> an return a boolean. The function is passed the following argument list: <b>view</b>, <b>x, y</b>.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>receiveDragHandler_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>receiveDragHandler</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>This is where you deterimine what a view will do when it receives a drag. If this variable is nil (the default), <b>defaultReceiveDrag</b> is called instead. See also <b>addAction (func, selector)</b> above.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>x, y</b>. Typically it will then precess <b>currentDrag </b>in some way<b>. </b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s3">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s3">FunctionList</span></a>. The function is passed the following argument list: <b>view</b>, <b>x, y</b>. Typically it will then precess <b>currentDrag </b>in some way<b>.</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>dragLabel_(string)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -321,16 +321,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s14">)</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>currentDrag</b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span> </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A class variable. Conatains the content fo the current drag. It is set by <b>beginDrag</b>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>currentDragString</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A class variable. Conatains the content fo the current drag <b>asCompileString</b> (see <a href="../../Core/Object.html"><span class="s3">Object</span></a>). It is set by <b>beginDrag.</b></p>
 <p class="p7"><br></p>
-<p class="p9"><b>Subclassing and Internal Methods </b></p>
+<p class="p9"><b>Subclassing and Internal Methods</b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.  For a Tutorial on how to subclass and <a href="SCUserView.html"><span class="s18">SCUserView</span></a> to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s18">SCUserView-Subclassing</span></a><span class="s18">. </span>The tutorial is a good template for any View subclass, and clearly explains the most important method overrides.</p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. For a Tutorial on how to subclass and <a href="SCUserView.html"><span class="s18">SCUserView</span></a> to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s18">SCUserView-Subclassing</span></a><span class="s18">. </span>The tutorial is a good template for any View subclass, and clearly explains the most important method overrides.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1">If you want to subclass a GUI class, then it is important to understand the viewClass mechanism (see below). You must set the viewCass if you want to use the primitive of the parent class.</p>
 <p class="p10"><br></p>
@@ -387,11 +387,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p9"><b>Subclassing and Internal Methods: Properties</b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. In particular, there are a number of views that return property keys, which are not implemented (yet). Typically, a sub class will implement instance methods which call getPropertyor setProperty whith the name of the method as the key. For example, the method <b>knobColor_(color) </b>might call setProperty(\knobColor, color). </p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. In particular, there are a number of views that return property keys, which are not implemented (yet). Typically, a sub class will implement instance methods which call getPropertyor setProperty whith the name of the method as the key. For example, the method <b>knobColor_(color) </b>might call setProperty(\knobColor, color).</p>
 <p class="p2"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. Most subclasses override or supplement this, getting their property list from their primitives. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. Most subclasses override or supplement this, getting their property list from their primitives.</p>
 <p class="p4"><br></p>
 <p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
 <p class="p22"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s14">, </span>\visible<span class="s14">, </span>\enabled<span class="s14">, </span>\canFocus<span class="s14">, </span>\resize<span class="s14">, </span>\background<span class="s14">, </span>\minWidth<span class="s14">, </span>\maxWidth<span class="s14">, </span>\minHeight<span class="s14">, </span>\maxHeight<span class="s14">, </span>\knobColor<span class="s14">, </span>\step<span class="s14">, </span>\thumbSize<span class="s14"> \]</span></p>
@@ -405,7 +405,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setPropertyWithAction (symbol, obj)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the property and calls <b>doAction. </b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the property and calls <b>doAction.</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>symbol </b>- The property key. An instance of <a href="../../Core/Symbol.html"><span class="s3">Symbol</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>obj </b>- a value appropriate to the key.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -420,12 +420,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p9"><b>Subclassing and Internal Methods: Key Actions</b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyUpAction</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> to define defualt key actions in a subclass. The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will bypass these defaults. <span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> to define defualt key actions in a subclass. The action function evaluated by default on a key action. Many views override these methods, defining their own appropreate default action. Setting the <b>keyDownAction </b>or<b> keyUpAction</b> will bypass these defaults.<span class="Apple-tab-span">	</span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped_(arg1)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyTyped</b></p>
@@ -435,12 +435,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyDown (char, modifiers, unicode, keycode)<span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyUp (char, modifiers, unicode, keycode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by a primitive. Evaluates the <b>globalKeyDownAction</b> (<b>globalKeyUpAction</b>) and calls the <b>handleKeyDownBubbling</b> (<b>handleKeyUpBubbling</b>) method. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by a primitive. Evaluates the <b>globalKeyDownAction</b> (<b>globalKeyUpAction</b>) and calls the <b>handleKeyDownBubbling</b> (<b>handleKeyUpBubbling</b>) method.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>handleKeyDownBubbling (view, char, modifiers, unicode, keycode)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>handleKeyUpBubbling (view, char, modifiers, unicode, keycode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by <b>keyDown</b> or <b>keyUp,</b> and either evaluated the key actions, or bubbles up to the parent view, which may then respond. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by <b>keyDown</b> or <b>keyUp,</b> and either evaluated the key actions, or bubbles up to the parent view, which may then respond.</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>keyModifiersChanged (modifiers)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -448,28 +448,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>handleKeyModifiersChangedBubbling (view, modifiers)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by <b>keyModifiersChanged,</b> and either evaluated the <b>keyModifiersChangedAction</b>, or bubbles up to the parent view, which may then respond. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by <b>keyModifiersChanged,</b> and either evaluated the <b>keyModifiersChangedAction</b>, or bubbles up to the parent view, which may then respond.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Subclassing and Internal Methods: Mouse Actions</b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseDown (x, y, modifiers, buttonNumber, clickCount)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseUp (x, y, modifiers)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseMove (x, y, modifiers)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mouseOver (x, y)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> in your subclass<b>. </b>If you override these, remember to call <b>mouseDownAction</b>, <b>mouseUpAction</b>, <b>mousMoveAction</b>, or <b>mouseOverAction</b> in your method so that users can still set addidtional custom mouse actions. These are called by the primitive. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods to override</b> in your subclass<b>. </b>If you override these, remember to call <b>mouseDownAction</b>, <b>mouseUpAction</b>, <b>mousMoveAction</b>, or <b>mouseOverAction</b> in your method so that users can still set addidtional custom mouse actions. These are called by the primitive.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b>Subclassing and Internal Methods: Drag and Drop Actions</b></p>
 <p class="p10"><br></p>
-<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p1">The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p2"><br></p>
 <p class="p1">The next three methods are the ones you will most likely override in your custom View subclass</p>
 <p class="p2"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Override this in your subclass</b>. The default method for determining the content of a drag. Many subclases override this for their specific behaviors. called by <b>beginDrag</b>. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Override this in your subclass</b>. The default method for determining the content of a drag. Many subclases override this for their specific behaviors. called by <b>beginDrag</b>.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>

@@ -44,28 +44,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="EZGui.html"><span class="s2"><b>EZGui</b></span></a><b> : </b><a href="EZLists.html"><span class="s2"><b>EZLists</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">EZListView is wrapper class which creates an (optional)  label and a listView. It includes  per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting list items are also included .  If the parent is nil, then EZListView will create its own window. See <a href="EZGui.html"><span class="s2">EZGui</span></a> and <a href="EZLists.html"><span class="s2">EZLists</span></a> for all of the options.</p>
+<p class="p1">EZListView is wrapper class which creates an (optional) label and a listView. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting list items are also included . If the parent is nil, then EZListView will create its own window. See <a href="EZGui.html"><span class="s2">EZGui</span></a> and <a href="EZLists.html"><span class="s2">EZLists</span></a> for all of the options.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b> <a href="../Cocoa-GUI/SCListView.html"><span class="s3">SCListView</span></a><span class="s4"> </span> </p>
+<p class="p1"><b>See also:</b> <a href="../Cocoa-GUI/SCListView.html"><span class="s3">SCListView</span></a><span class="s4"> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding EZListView</b></p>
 <p class="p2"><br></p>
-<p class="p1">The convenience methods for EZListView require that the items array is an array of associations  of  labels and  functions, not like in <a href="../Cocoa-GUI/SCListView.html"><span class="s3">SCListView</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. If you set label later, a staticText will be created.</p>
+<p class="p1">The convenience methods for EZListView require that the items array is an array of associations of labels and functions, not like in <a href="../Cocoa-GUI/SCListView.html"><span class="s3">SCListView</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. If you set label later, a staticText will be created.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds, label, items, globalAction, initVal, initAction, labelWidth, labelPosition, gap)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZListView will create its own <a href="../Main-GUI/Window.html"><span class="s5">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>, then the Rect determines the window bounds.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>-  An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s6">Point</span></a>. Default value is <span class="s7">160@200</span>. </p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.  If you set <b>label</b> later, the labelView will be created.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s6">Point</span></a>. Default value is <span class="s7">160@200</span>.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created. If you set <b>label</b> later, the labelView will be created.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s6">Association</span></a>s ['label' -&gt; {arg listObj; value}, ].</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg listObj; value}.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the List, i.e. the index selected. Default value is 0. </p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the List, i.e. the index selected. Default value is 0.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initAction </b>- An instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Performs the action at <b>initVal</b> on creation of the list, plus the <b>globalAction</b>. Default value is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelWidth </b>- Default value is 80. Not used if <b>labelPosition</b> is top.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelPosition</b>- \top of \left. default is left;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- by default, the view tries to get its parent's gap.x, otherwise it defaults to 4.<span class="Apple-converted-space">  </span>Setting it overrides these</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- by default, the view tries to get its parent's gap.x, otherwise it defaults to 4.<span class="Apple-converted-space"> </span>Setting it overrides these</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -80,8 +80,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item1</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 1"</span>).postln},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item2</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 2"</span>).postln},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is  a global action"</span>.postln},</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 2, </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is a global action"</span>.postln},</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 2,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s9">true</span>,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelWidth: 120</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -122,7 +122,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">(</p>
 <p class="p12">g = <span class="s9">EZListView</span>.new(bounds:200@230); <span class="s12">// no label</span></p>
 <p class="p12">12.do{<span class="s9">|i|</span> g.addItem(<span class="s11">"item"</span>++i.asString, {(<span class="s11">"this is item"</span> ++i.asString). postln})};</p>
-<p class="p15">g.view.parent.findWindow.name=<span class="s11">"<span class="Apple-converted-space">  </span>choose item"</span>;</p>
+<p class="p15">g.view.parent.findWindow.name=<span class="s11">"<span class="Apple-converted-space"> </span>choose item"</span>;</p>
 <p class="p15">)</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
 <p class="p11">// insert item;</p>

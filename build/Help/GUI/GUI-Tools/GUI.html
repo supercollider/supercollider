@@ -58,7 +58,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s7">GUI</span>.schemes;</p>
 <p class="p2"><br></p>
-<p class="p1">For a complete list of gui classes and redirects, see <a href="../GUI-Classes.html"><span class="s8">GUI-Classes</span></a>. </span></p>
+<p class="p1">For a complete list of gui classes and redirects, see <a href="../GUI-Classes.html"><span class="s8">GUI-Classes</span></a>.</span></p>
 <p class="p5"><br></p>
 <p class="p7"><b>Switching and Referring to GUI Kits</b></p>
 <p class="p8"><br></p>
@@ -68,8 +68,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p9"><span class="s9">GUI</span><span class="s3">.cocoa;<span class="Apple-tab-span">	</span></span>// use cocoa in subsequent GUI creation procedures</p>
 <p class="p9"><span class="s9">GUI</span><span class="s3">.swing;<span class="Apple-tab-span">	</span></span>// use swing in subsequent GUI creation procedures</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// NOTE: If you do not have SwingOSC installed, you get </span></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a warning only, and do not switch; so you cannot </span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// NOTE: If you do not have SwingOSC installed, you get</span></p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a warning only, and do not switch; so you cannot</span></p>
 <p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// accidentally disable your (mac) gui system.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1">These methods return the new GUI kit implementation. The current implementation can be queried by calling</p>
@@ -89,7 +89,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">The <span class="s12">*use</span> and <span class="s12">*useID</span> methods allow you to temporarily switch the kit, so as to use it only for a dedicated block of statements:</p>
 <p class="p2"><br></p>
 <p class="p10"><span class="s9">GUI</span>.cocoa;</p>
-<p class="p10"><span class="s9">GUI</span>.useID( <span class="s13">\swing</span>, { <span class="s9">Array</span>.rand( 1000, 0.0, 1.0 ).plot });</p>
+<p class="p10"><span class="s9">GUI</span>.useID( <span class="s13">\swing</span>, {<span class="s9">Array</span>.rand( 1000, 0.0, 1.0 ).plot });</p>
 <p class="p10"><span class="s9">GUI</span>.current.id.postln;<span class="Apple-tab-span">	</span><span class="s11">// --&gt; still cocoa</span></p>
 <p class="p11"><br></p>
 <p class="p1">You can get a particular kit using the <span class="s12">*get</span> method. You can switch to a particular kit using the <span class="s12">*set</span> method:</p>
@@ -122,9 +122,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">var</span> scheme;</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scheme = <span class="s9">GUI</span>.get( <span class="s13">\cocoa</span> );</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, { scheme.put( <span class="s13">\myText</span>, <span class="s9">SCStaticText</span> )});</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, {scheme.put( <span class="s13">\myText</span>, <span class="s9">SCStaticText</span> )});</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scheme = <span class="s9">GUI</span>.get( <span class="s13">\swing</span> );</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, { scheme.put( <span class="s13">\myText</span>, <span class="s9">JSCStaticText</span> )});</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if( scheme.notNil, {scheme.put( <span class="s13">\myText</span>, <span class="s9">JSCStaticText</span> )});</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span>}</p>
 <p class="p12">}</p>
@@ -143,7 +143,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fontColor</b>: <span class="Apple-tab-span">	</span>Color.black,</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>background</b>: <span class="Apple-tab-span">	</span>Color(0.8, 0.85, 0.7, 0.5),</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>foreground</b>:<span class="Apple-tab-span">	</span>Color.grey(0.95),</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>onColor</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Color(0.5, 1, 0.5), </span></p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>onColor</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Color(0.5, 1, 0.5),</span></p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>offColor</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Color.clear,</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b>:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0 @ 0,</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b>: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2@2,</p>
@@ -165,9 +165,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><br></p>
 <p class="p18"><b><span class="Apple-tab-span">	</span>*current</b></p>
 <p class="p19"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p18"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls. </span></p>
-<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Note: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future. </span></p>
+<p class="p18"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Note: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future.</span></p>
 <p class="p17"><br></p>
 <p class="p18"><b><span class="Apple-tab-span">	</span>*get (id)</b></p>
 <p class="p19"><b><span class="Apple-tab-span">	</span></b></p>

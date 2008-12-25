@@ -54,14 +54,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCListView</b></p>
 <p class="p2"><br></p>
-<p class="p6">By default, SCSlider will respond only to drags  </span>where  </span>the drag contains a <a href="../../Math/Number.html"><span class="s6">Number</span></a>.</p>
+<p class="p6">By default, SCSlider will respond only to drags </span>where </span>the drag contains a <a href="../../Math/Number.html"><span class="s6">Number</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a> indicating width@height.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>.new.front;</p>
@@ -75,21 +75,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>items</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>items_ (array)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array </b>- An <a href="../../Collections/Array.html"><span class="s7">Array</span></a> of <a href="../../Collections/String.html"><span class="s7">String</span></a>s or  </span><a href="../../Core/Symbol.html"><span class="s7">Symbol</span></a>s, which make up the items in the pop up menu.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>array </b>- An <a href="../../Collections/Array.html"><span class="s7">Array</span></a> of <a href="../../Collections/String.html"><span class="s7">String</span></a>s or </span><a href="../../Core/Symbol.html"><span class="s7">Symbol</span></a>s, which make up the items in the pop up menu.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>item</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p15"><span class="s1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns </span></span> items.at(<span class="s9">this</span>.value)</p>
+<p class="p15"><span class="s1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns</span></span> items.at(<span class="s9">this</span>.value)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>value</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>value_ (val)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the index of the currently highlighted item. This will <b>not</b>  </span>do the <b>action</b>.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the index of the currently highlighted item. This will <b>not</b> </span>do the <b>action</b>.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- The index of an item in the <b>items</b> array .</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>valueAction_ (val)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the menu to highlight the item at index <b>val</b>, and evaluates  </span><b>action</b> (see <a href="SCView.html"><span class="s7">SCView</span></a>), if the value has changed.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the menu to highlight the item at index <b>val</b>, and evaluates </span><b>action</b> (see <a href="SCView.html"><span class="s7">SCView</span></a>), if the value has changed.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- The index of an item in the <b>items</b> array .</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>enterKeyAction_(arg1)</b></p>
@@ -102,47 +102,47 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>font</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>font_ (argFont)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../GUI-Tools/Font.html"><span class="s7">Font</span></a> of the list. Default value is the  </span>default font:  </span>Font.default . </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argFont </span></b> - An instance of  </span><a href="../GUI-Tools/Font.html"><span class="s7">Font</span></a>.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the <a href="../GUI-Tools/Font.html"><span class="s7">Font</span></a> of the list. Default value is the </span>default font: </span>Font.default .</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>argFont</span></b> - An instance of </span><a href="../GUI-Tools/Font.html"><span class="s7">Font</span></a>.</p>
 <p class="p8"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>stringColor</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>stringColor_ (color)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set  </span>the string <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the unselected items  </span>in the list .</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of  </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set </span>the string <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the unselected items </span>in the list .</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>selectedStringColor</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>selectedStringColor_ (color)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set  </span>the string <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the selected item .</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of  </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set </span>the string <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the selected item .</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>hiliteColor</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>hiliteColor_ (color)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set  </span>the background <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the selected item .</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of  </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set </span>the background <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for the selected item .</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of </span><a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
 <p class="p8"><br></p>
-<p class="p14"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p6"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p14"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p6"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p8"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default keydown actions are:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>key</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>comment</b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>" "   <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>value + 1<span class="Apple-tab-span">	</span>with action<span class="Apple-tab-span">	</span>space</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>" "  <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>value + 1<span class="Apple-tab-span">	</span>with action<span class="Apple-tab-span">	</span>space</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>\r <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>enterKeyAction</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>\n, <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>enterKeyAction<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3.asAscii,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>enterKeyAction<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(enter key or cmd-C on Mac OSX )</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF700, <span class="Apple-tab-span">	</span>value - 1  </span>with action<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>up arrow</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF700, <span class="Apple-tab-span">	</span>value - 1 </span>with action<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>up arrow</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF703, <span class="Apple-tab-span">	</span>value + 1 with action<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>right arrow</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF701, <span class="Apple-tab-span">	</span>value + 1 with action<span class="Apple-tab-span">	</span>down arrow</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF702, <span class="Apple-tab-span">	</span>value - 1  </span>with action<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>left arrow</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unicode 16rF702, <span class="Apple-tab-span">	</span>value - 1 </span>with action<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>left arrow</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s7">SCView</span></a>. </span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s7">SCView</span></a>.</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns:</p>
 <p class="p17"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\value<span class="s4">, </span>\font<span class="s4">, </span>\items<span class="s4">, </span>\stringColor<span class="s4"> ]</span></p>
@@ -157,11 +157,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to drop a drag in this object. Returns  </span>the result of  </span><b>currentDrag</b>.isNumber.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to drop a drag in this object. Returns </span>the result of </span><b>currentDrag</b>.isNumber.</p>
 <p class="p7"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_</b> with the <b>currentDrag</b> as an argument.<span class="s12"> </span></span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_</b> with the <b>currentDrag</b> as an argument.<span class="s12"></span></span></p>
 <p class="p7"><br></p>
 <p class="p14"><b>Examples</b></p>
 <p class="p18"><br></p>
@@ -206,7 +206,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>ww=<span class="s8">SCFreqScopeWindow</span>.new(400, 200, 0);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w.bounds=<span class="s8">Rect</span>(50,<span class="s8">SCWindow</span>.screenBounds.height-300,200,200);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>ww.window.bounds=ww.window.bounds.moveTo(255,<span class="s8">SCWindow</span>.screenBounds.height-328);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({{ww.window.close}.defer(0.5);w.close;}); </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({{ww.window.close}.defer(0.5);w.close;});</span></p>
 <p class="p20"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//defer or crash, because SCFreqScopeWindow Class contains its own routine for cleaning up on CmdPeriod</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w.onClose_({n.free;f.free;freq.free});</p>
 <p class="p12">});</p>

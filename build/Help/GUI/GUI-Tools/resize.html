@@ -27,9 +27,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>resize</b> takes nine different arguments defining the behavior when window is resized.</p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1  </span>2  </span>3</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4  </span>5  </span>6</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>7  </span>8  </span>9</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 </span>2 </span>3</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4 </span>5 </span>6</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>7 </span>8 </span>9</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 - fixed to left, fixed to top</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2 - horizontally elastic, fixed to top</p>
@@ -50,7 +50,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">// resize behaviours</p>
 <p class="p7">(</p>
 <p class="p7"><span class="s2">var</span> a;</p>
-<p class="p7">a =  </span>{ <span class="s2">|i|</span></p>
+<p class="p7">a = </span>{ <span class="s2">|i|</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, b, x;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>i = i + 1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>(<span class="s3">"resize:"</span>+i, <span class="s2">Rect</span>(10 + (i * 110), 300, 100, 80));</p>
@@ -70,7 +70,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>}.dup;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>w.onClose = { a.do(<span class="s2">_</span>.close) };</p>
+<p class="p7"><span class="Apple-tab-span">	</span>w.onClose = {a.do(<span class="s2">_</span>.close) };</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p7">} ! 9;</p>

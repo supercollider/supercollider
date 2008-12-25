@@ -57,7 +57,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// or you can do also Synth like style if you already know the attributes of this synth</p>
 <p class="p8"><span class="Apple-tab-span">	</span>f = <span class="s4">SCImageFilter</span>.new(<span class="s5">\CIStarShineGenerator</span>, [<span class="s5">\center</span>, [200,200], <span class="s5">\radius</span>, 200*0.05]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span>f.values; <span class="s6">// </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>f.values; <span class="s6">//</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="s1"><span class="Apple-tab-span">	</span></span><b>*filterCategories</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a Dictionary containing all the filters associated by categories.</p>
@@ -168,7 +168,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p10">// thor's fast experimentation request</p>
 <p class="p10">// example with the filters array wich allows you to use filters without applying them in place</p>
-<p class="p10">// convenient for RT use / test or whatever... </p>
+<p class="p10">// convenient for RT use / test or whatever...</p>
 <p class="p9"><br></p>
 <p class="p10">// here scale down the image otherwise with the zoomblur it will take your computer</p>
 <p class="p10">// to its knees using addFilter and not applyFilter</p>
@@ -254,9 +254,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">h.amount_(50);</p>
 <p class="p9"><br></p>
 <p class="p10">// simple example control</p>
-<p class="p8">specs = [ </p>
-<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossOpacity_</span>, [-8, 0].asSpec, -4], </p>
-<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossAngle_</span>, [-pi, pi].asSpec, 0.0], </p>
+<p class="p8">specs = [</p>
+<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossOpacity_</span>, [-8, 0].asSpec, -4],</p>
+<p class="p8"><span class="Apple-tab-span">	</span>[f, <span class="s5">\crossAngle_</span>, [-pi, pi].asSpec, 0.0],</p>
 <p class="p8"><span class="Apple-tab-span">	</span>[h, <span class="s5">\amount_</span>, [0, 200].asSpec, 50],</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s3">]; </span>// CIStarShine opacity, CIZoomBlur</p>

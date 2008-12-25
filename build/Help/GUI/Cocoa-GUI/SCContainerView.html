@@ -38,13 +38,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">Users will not normally directly create instances of SCContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views  </span>of various kinds, which are used for placing and grouping widgets in a window.</p>
+<p class="p1">Users will not normally directly create instances of SCContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views </span>of various kinds, which are used for placing and grouping widgets in a window.</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also: </b><a href="SCTopView.html"><span class="s4">SCTopView</span></a><b>,</b> <a href="SCCompositeView.html"><span class="s5">SCCompositeView</span></a>, <a href="SCHLayoutView.html"><span class="s5">SCHLayoutView</span></a>, <a href="SCVLayoutView.html"><span class="s5">SCVLayoutView</span></a>, <a href="SCScrollView.html"><span class="s5">SCScrollView</span></a></span><span class="s2"> <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a></span></p>
 <p class="p5"><br></p>
 <p class="p6"><b>Some Important Issues Regarding SCContainerView</b></p>
 <p class="p2"><br></p>
-<p class="p1">Container views are meant for placing and grouping child views and widgets. While they accept key actions, many do not accept mouse cklicks or drags.  </span>The exception is <a href="SCTopView.html"><span class="s4">SCTopView</span></a> and its subclasses.</p>
+<p class="p1">Container views are meant for placing and grouping child views and widgets. While they accept key actions, many do not accept mouse cklicks or drags. </span>The exception is <a href="SCTopView.html"><span class="s4">SCTopView</span></a> and its subclasses.</p>
 <p class="p7"><br></p>
 <p class="p8"><b>Accessing Instance and Class Variables</b></p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
@@ -67,21 +67,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under  </span><a href="SCCompositeView.html"><span class="s9">SCCompositeView</span></a>.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under </span><a href="SCCompositeView.html"><span class="s9">SCCompositeView</span></a>.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Defaults to false, but some subclasses override this with true.</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><b>Adding and Removing Subviews</b></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>add (child)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds a view to <b>children</b>. The placement of the child view will depend on the  </span>the <b>decorator</b>, the <b>relativeOrigin</b> flag, and child's <b>bounds</b>. Nomally you don't need to call this directly, since subviews call it automatically when you create them.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds a view to <b>children</b>. The placement of the child view will depend on the </span>the <b>decorator</b>, the <b>relativeOrigin</b> flag, and child's <b>bounds</b>. Nomally you don't need to call this directly, since subviews call it automatically when you create them.</p>
 <p class="p7"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>removeAll</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Removes all children from the view</p>
 <p class="p7"><br></p>
-<p class="p8"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p10"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span></p>
+<p class="p8"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p10"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
 <p class="p7"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>

@@ -53,16 +53,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCSlider</b></p>
 <p class="p2"><br></p>
-<p class="p1">SCSlider always has a range between zero and one.  You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with  a <a href="../../Control/Spec.html"><span class="s2">Spec</span></a>, are helpful for this. To set the increment or decrement value of the slider, set the <b>step</b> (see <a href="SCSliderBase.html"><span class="s2">SCSliderBase</span></a>) . You <i>must</i> set <b>step</b> to enable the keyboard shortcuts. Inherits some formatting form <a href="SCSliderBase.html"><span class="s6">SCSliderBase</span></a>.</p>
+<p class="p1">SCSlider always has a range between zero and one. You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with a <a href="../../Control/Spec.html"><span class="s2">Spec</span></a>, are helpful for this. To set the increment or decrement value of the slider, set the <b>step</b> (see <a href="SCSliderBase.html"><span class="s2">SCSliderBase</span></a>) . You <i>must</i> set <b>step</b> to enable the keyboard shortcuts. Inherits some formatting form <a href="SCSliderBase.html"><span class="s6">SCSliderBase</span></a>.</p>
 <p class="p5"><br></p>
-<p class="p6">By default, SCSlider will respond only to drags  where  the drag contains a <a href="../../Math/Number.html"><span class="s7">Number</span></a>.</p>
+<p class="p6">By default, SCSlider will respond only to drags where the drag contains a <a href="../../Math/Number.html"><span class="s7">Number</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>,  or  a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">SCWindow</span>.new.front;</p>
@@ -84,8 +84,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>increment (zoom)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>decrement (zoom)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods called by pressing the arrow keys. These methods increment or decrement the slider value by <span class="s10">(max(</span><span class="s11">this</span><span class="s10">.step, </span><span class="s11">this</span><span class="s10">.pixelStep) * zoom)</span>. This means that by default increment  and decrement change the value by <b>pixelStep</b> (<b>step</b> is nil by default). You can set <b>step</b> to quantize the slider values. If you call these methods from your code, you can also change the resolution of the values with the <b>zoom</b> factor. This will not effect how the keys work, since they will always use a zoom factor of 1. Performs the action of the slider.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>zoom </b>- Defaults to 1. </p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>These are the methods called by pressing the arrow keys. These methods increment or decrement the slider value by <span class="s10">(max(</span><span class="s11">this</span><span class="s10">.step, </span><span class="s11">this</span><span class="s10">.pixelStep) * zoom)</span>. This means that by default increment and decrement change the value by <b>pixelStep</b> (<b>step</b> is nil by default). You can set <b>step</b> to quantize the slider values. If you call these methods from your code, you can also change the resolution of the values with the <b>zoom</b> factor. This will not effect how the keys work, since they will always use a zoom factor of 1. Performs the action of the slider.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>zoom </b>- Defaults to 1.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><br></p>
 <p class="p11"><b>Customizing Appearance</b></p>
@@ -95,19 +95,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>size </b>- The size of the slider button in pixels. Its width or height, depending on the slider orientation</p>
 <p class="p7"><br></p>
-<p class="p11"><b>Subclassing and Internal Methods </b></p>
-<p class="p6"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p11"><b>Subclassing and Internal Methods</b></p>
+<p class="p6"><span class="s12"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s2">SCView</span></a>. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s2">SCView</span></a>.</p>
 <p class="p13"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
 <p class="p15"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\knobColor<span class="s4">, </span>\step<span class="s4">, </span>\thumbSize<span class="s4"> \]</span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>pixelStep</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the reciprocal of:  the  slider width or height (depending on orientation) minus the <b>thumbSize</b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the reciprocal of: the slider width or height (depending on orientation) minus the <b>thumbSize</b><span class="Apple-tab-span">	</span></p>
 <p class="p13"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -127,15 +127,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCSlider. Returns the same as <b>value</b>. </p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag <b>from</b> an SCSlider. Returns the same as <b>value</b>.</p>
 <p class="p7"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to drop a drag in this object.  By default, SCSlider will respond only to drags  where  the drag contains a <a href="../../Math/Number.html"><span class="s2">Number</span></a>. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to drop a drag in this object. By default, SCSlider will respond only to drags where the drag contains a <a href="../../Math/Number.html"><span class="s2">Number</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_()</b>  using  <b>currentDrag</b> as an argument.  </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument. </p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><b>Examples</b></p>
 <p class="p16"><br></p>
@@ -213,7 +213,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p17">// adding funtionality to a view by the method addAction</p>
 <p class="p17">// this is useful for adding things to existing frameworks</p>
-<p class="p17">// that have action functions already. </p>
+<p class="p17">// that have action functions already.</p>
 <p class="p16"><br></p>
 <p class="p10">(</p>
 <p class="p10">w = <span class="s13">GUI</span>.window.new(<span class="s16">"A Slider"</span>);</p>
@@ -241,17 +241,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><br></p>
 <p class="p16"><br></p>
 <p class="p16"><br></p>
-<p class="p17">// you can use  SCSlider for triggering sounds also:</p>
+<p class="p17">// you can use SCSlider for triggering sounds also:</p>
 <p class="p16"><br></p>
-<p class="p10">( </p>
+<p class="p10">(</p>
 <p class="p10">s.waitForBoot({</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="s13">SynthDef</span>(<span class="s15">\pluck</span>,{<span class="s13">arg</span> freq=55;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">Out</span>.ar(0,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">Pluck</span>.ar(<span class="s13">WhiteNoise</span>.ar(0.06), </p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">EnvGen</span>.kr(<span class="s13">Env</span>.perc(0,4), 1.0, doneAction: 2), </p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal, </p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal, </p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10, </p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">Pluck</span>.ar(<span class="s13">WhiteNoise</span>.ar(0.06),</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">EnvGen</span>.kr(<span class="s13">Env</span>.perc(0,4), 1.0, doneAction: 2),</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>coef:0.1)</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p10"><span class="Apple-tab-span">	</span>}).send(s);</p>

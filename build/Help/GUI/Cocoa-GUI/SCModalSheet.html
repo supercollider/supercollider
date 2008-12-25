@@ -38,13 +38,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCWindow.html"><span class="s2"><b>SCWindow</b></span></a><b> : SCAbstractModalWindow</b></p>
 <p class="p3"><br></p>
-<p class="p1">SCModalSheet is an window modal version of SCWindow. A sheet is an accessory window which is attached  </span>to a parent window. SCModalSheet blocks all other user input to its parent window until it is dismissed. It is thus useful for alerts, preference panels and other situations which should limit user input.</p>
+<p class="p1">SCModalSheet is an window modal version of SCWindow. A sheet is an accessory window which is attached </span>to a parent window. SCModalSheet blocks all other user input to its parent window until it is dismissed. It is thus useful for alerts, preference panels and other situations which should limit user input.</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also:</b> <a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCModalWindow.html"><span class="s4">SCModalWindow</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Dismissing Modal Sheets</b></p>
 <p class="p2"><br></p>
-<p class="p1">SCModalSheets have no close button. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to dismiss the sheet. As an 'escape hatch' pressing the esc key will kill a sheet if it has focus (i.e. is foremost and selected). </span></p>
+<p class="p1">SCModalSheets have no close button. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to dismiss the sheet. As an 'escape hatch' pressing the esc key will kill a sheet if it has focus (i.e. is foremost and selected).</span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Blocking and Multiple Sheets on the Same Window</b></p>
 <p class="p6"><br></p>
@@ -56,7 +56,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCModalSheet instance. You do not need to call <b>front</b> on it to make it visible.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>window </b>- An instance of <a href="SCWindow.html"><span class="s2">SCWindow</span></a> or one of its subclasses. This is the parent window to which the sheet will be attached.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar. The default is true.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a> for more details.</p>

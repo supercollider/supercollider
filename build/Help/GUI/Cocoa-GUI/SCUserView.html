@@ -44,37 +44,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">SCUserView is a user-definable View intended mainly for use with Pen and drawHooks. It is also good for making custom buttons or other gui interfaces and displays. Thus anything you can draw with the methods of <a href="SCPen.html"><span class="s2">Pen</span></a>, combined with mouse tracking, can be used to create a vast variety of interfaces and displays.   </span>When a view is refreshed, either maunually, or triggered by a refresh of the parent view,  </span>drawFunc is evaluated.  </span>Using <b>refreshInRect </b>constrains the receiver's refresh area to the rectangle passed in aRect (see <a href="SCView.html"><span class="s2">SCView</span></a>). </span></p>
+<p class="p1">SCUserView is a user-definable View intended mainly for use with Pen and drawHooks. It is also good for making custom buttons or other gui interfaces and displays. Thus anything you can draw with the methods of <a href="SCPen.html"><span class="s2">Pen</span></a>, combined with mouse tracking, can be used to create a vast variety of interfaces and displays.  </span>When a view is refreshed, either maunually, or triggered by a refresh of the parent view, </span>drawFunc is evaluated. </span>Using <b>refreshInRect </b>constrains the receiver's refresh area to the rectangle passed in aRect (see <a href="SCView.html"><span class="s2">SCView</span></a>).</span></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also: </b><a href="../GUI-Overview.html">GUI-Overview</a><b>,</b> <a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCPen.html"><span class="s4">Pen</span></a>, <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>, and <a href="../../Collections/String.html"><span class="s4">String</span></a></span><span class="s4"> </span></span><span class="s3"> <a href="SCUserViewSubclassing/SCUserView-Subclassing.html">SCUserView-Subclassing</a></span></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="../GUI-Overview.html">GUI-Overview</a><b>,</b> <a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCPen.html"><span class="s4">Pen</span></a>, <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>, and <a href="../../Collections/String.html"><span class="s4">String</span></a></span><span class="s4"></span></span><span class="s3"> <a href="SCUserViewSubclassing/SCUserView-Subclassing.html">SCUserView-Subclassing</a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
 <p class="p6"><br></p>
 <p class="p10"><b>Accessing Instance and Class Variables</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>relativeOrigin</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under  </span><a href="SCCompositeView.html"><span class="s6">SCCompositeView</span></a>.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under </span><a href="SCCompositeView.html"><span class="s6">SCCompositeView</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default value is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawFunc_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawFunc</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set the function which should be evaluated if the view is refreshed. This happens every time the view or the whole window is refreshed (manually by calling SCView:refresh, SCWindow:refresh or e.g. by selecting the view or resizing the window). </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set the function which should be evaluated if the view is refreshed. This happens every time the view or the whole window is refreshed (manually by calling SCView:refresh, SCWindow:refresh or e.g. by selecting the view or resizing the window).</span></p>
 <p class="p7">.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s2">Function</span></a>. Default value is nil.  </span>Refreshing passes the instance of SCUserView itself as the first argument to the function.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../../Core/Kernel/Function.html"><span class="s2">Function</span></a>. Default value is nil. </span>Refreshing passes the instance of SCUserView itself as the first argument to the function.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>clearOnRefresh</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>clearOnRefresh_ (bool)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Determines whether the drawn content of the view is cleared on refresh. </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default value is true. </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Determines whether the drawn content of the view is cleared on refresh.</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default value is true.</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>mousePosition</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -88,13 +88,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If <b>clearOnRefresh</b> is set to false, then you can use this to manually clear the drawing (you must refesh in order for it to show)</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><b>Subclassing and Internal Methods </span></b></p>
-<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.  </span>For a Tutorial on how to subclass SCUserView to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s8">SCUserView-Subclassing</span></a></p>
+<p class="p10"><b>Subclassing and Internal Methods</span></b></p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </span>For a Tutorial on how to subclass SCUserView to make your own custom GUI Widgets, see <a href="SCUserViewSubclassing/SCUserView-Subclassing.html"><span class="s8">SCUserView-Subclassing</span></a></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><b>parent </b>-  </span>The parent view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>,  </span>or  </span>a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><b>parent </b>- </span>The parent view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a>, </span>or </span>a <a href="../../Geometry/Point.html"><span class="s5">Point</span></a> indicating width@height.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>keyDownFunc</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>keyDownFunc_ (action)</b></p>
@@ -222,7 +222,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><br></p>
 <p class="p15"><br></p>
 <p class="p14">// Mouse Tracking</p>
-<p class="p14">// Set the function which should be evaluated if the mouse is at the end of tracking (mouse-up). </span></p>
+<p class="p14">// Set the function which should be evaluated if the mouse is at the end of tracking (mouse-up).</span></p>
 <p class="p14">// This function will be passed four arguments: theView, x coordinate, y coordinate, and keyboard modifiers.</p>
 <p class="p15"><span class="Apple-tab-span">	</span></p>
 <p class="p16">(</p>
@@ -324,11 +324,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><br></p>
 <p class="p15"><br></p>
 <p class="p14">// Clearing on Refresh</p>
-<p class="p14">// </span></p>
-<p class="p14">// Set the behaviour for refreshing the view. </span></p>
+<p class="p14">//</span></p>
+<p class="p14">// Set the behaviour for refreshing the view.</span></p>
 <p class="p14">// If this flag is true (the default) the view will be cleared before each refresh call,</p>
-<p class="p14">// otherwise It will draw in top of it. </span></p>
-<p class="p14">// On OSX this functionality is only available for the version &gt;= 10.4  </span>and with the flag relativeOrigin set to true.</p>
+<p class="p14">// otherwise It will draw in top of it.</span></p>
+<p class="p14">// On OSX this functionality is only available for the version &gt;= 10.4 </span>and with the flag relativeOrigin set to true.</p>
 <p class="p15"><br></p>
 <p class="p16">(</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="s9">var</span> width = 640, height = 480, w, theta = 0, drawFunc, gui;</p>
@@ -420,7 +420,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><br></p>
 <p class="p16">win = <span class="s9">SCWindow</span>.new(<span class="s11">"refreshInRect Test"</span>, <span class="s9">Rect</span>(400, 400, 600, 200), scroll:<span class="s9">true</span>).front;</p>
 <p class="p16">win.onClose_({ a.free; });</p>
-<p class="p15"> </span></p>
+<p class="p15"></span></p>
 <p class="p16">userView = <span class="s9">SCUserView</span>(win, <span class="s9">Rect</span>(10,10,2000,800))</p>
 <p class="p16"><span class="Apple-tab-span">	</span>.backgroundImage_(a, 5)</p>
 <p class="p16"><span class="Apple-tab-span">	</span>.relativeOrigin_(<span class="s9">false</span>)</p>

@@ -49,16 +49,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="s4"><b>See also:</b> <a href="SC2DTabletSlider.html"><span class="s5">SC2DTabletSlider</span></a></span><span class="s2"> , <a href="SCTabletView.html"><span class="s6">SCTabletView</span></a></span></p>
 <p class="p2"><br></p>
-<p class="p4"><b>Some Important Issues Regarding SC2DSlider </b></p>
+<p class="p4"><b>Some Important Issues Regarding SC2DSlider</b></p>
 <p class="p2"><br></p>
-<p class="p1">SC2DSlider values always have ranges between zero and one.  You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with  a <a href="../../Control/Spec.html"><span class="s7">Spec</span></a>, are helpful for this.  Drag and drop returns and accept a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>.  Inherits some formatting form <a href="SCSliderBase.html"><span class="s8">SCSliderBase</span></a>.</p>
+<p class="p1">SC2DSlider values always have ranges between zero and one. You must scale the output and input values to your needs. Using <b>map</b> and <b>unmap,</b> combined with a <a href="../../Control/Spec.html"><span class="s7">Spec</span></a>, are helpful for this. Drag and drop returns and accept a <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. Inherits some formatting form <a href="SCSliderBase.html"><span class="s8">SCSliderBase</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
 <p class="p7"><br></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>-  The parent view.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>,  or  a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s9">Rect</span></a>, or a <a href="../../Geometry/Point.html"><span class="s9">Point</span></a> indicating width@height.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s10">SCWindow</span>(<span class="s11">"SC2DSlider"</span>, <span class="s10">Rect</span>(100,100, 140 ,140)).front;</p>
@@ -90,37 +90,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setXY (x, y)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>x_</b>  and <b>y_</b> setters. This will not do the <b>action</b> of the slider.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>x_</b> and <b>y_</b> setters. This will not do the <b>action</b> of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setXYActive (x, y)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>x_</b>  and <b>y_</b> setters.  Does the action of the slider.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience method which performs both the <b>x_</b> and <b>y_</b> setters. Does the action of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>incrementY</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments <b>y</b>  by 1/bounds.height, unless the hight value is out of bounds. Does the action of the slider.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments <b>y</b> by 1/bounds.height, unless the hight value is out of bounds. Does the action of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>decrementY</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements <b>y</b>  by 1/bounds.heitght, unless the hight value is out of bounds. Does the action of the slider.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements <b>y</b> by 1/bounds.heitght, unless the hight value is out of bounds. Does the action of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>incrementX</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments <b>x</b>  by 1/bounds.width, unless the hight value is out of bounds. Does the action of the slider.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments <b>x</b> by 1/bounds.width, unless the hight value is out of bounds. Does the action of the slider.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>decrementX</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements <b>x</b>  by 1/bounds.width, unless the hight value is out of bounds. Does the action of the slider.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements <b>x</b> by 1/bounds.width, unless the hight value is out of bounds. Does the action of the slider.</p>
 <p class="p5"><br></p>
-<p class="p12"><b>Subclassing and Internal Methods </b></p>
-<p class="p6"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed. </p>
+<p class="p12"><b>Subclassing and Internal Methods</b></p>
+<p class="p6"><span class="s13"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default keydown actions are:</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>key</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>comment</b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>r<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>activex_(1.rand), activey_(1.rand) with action    </b><span class="Apple-tab-span">	</span>random</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>r<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>activex_(1.rand), activey_(1.rand) with action  </b><span class="Apple-tab-span">	</span>random</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>activex_(0), activey_(0) with action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>left lower corner<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>activex_(1), activey_(1) with action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>top left corner</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>activex_(0.5), activey_(0.5) with action</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>centered</p>
@@ -131,19 +131,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag. Returns a <a href="../../Geometry/Point.html"><span class="s14">Point</span></a> (<b>lo</b>@<b>hi). </b></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The method called by default when initiating a drag. Returns a <a href="../../Geometry/Point.html"><span class="s14">Point</span></a> (<b>lo</b>@<b>hi).</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultCanReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCSlider will respond only to drags  where  the drag contains a <a href="../../Geometry/Point.html"><span class="s14">Point</span></a>.  </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. By default, SCSlider will respond only to drags where the drag contains a <a href="../../Geometry/Point.html"><span class="s14">Point</span></a>. </p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s15"><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. The default action performed when receiving a drag. Sets <b>x</b> and <b>y</b>  respectively using the <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> ( currentDrag.x@currentDrag.y) . Does <b>not</b> perform the action. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. The default action performed when receiving a drag. Sets <b>x</b> and <b>y</b> respectively using the <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> ( currentDrag.x@currentDrag.y) . Does <b>not</b> perform the action.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s9">SCView</span></a>. </p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s9">SCView</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
 <p class="p14"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\knobColor<span class="s4">, </span>\step<span class="s4">, </span>\x<span class="s4">, </span>\y<span class="s4"> ]</span></p>
@@ -165,7 +165,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="s4">t.x_(0.25) <span class="Apple-tab-span">	</span></span>// set the x loc</p>
 <p class="p15"><br></p>
 <p class="p15"><br></p>
-<p class="p16">// drag an drop Points </p>
+<p class="p16">// drag an drop Points</p>
 <p class="p11">(</p>
 <p class="p11">w = <span class="s10">SCWindow</span>(<span class="s11">"SC2DSlider"</span>, <span class="s10">Rect</span>(100,100, 500 ,300));</p>
 <p class="p11">w.view.decorator = <span class="s10">FlowLayout</span>(w.view.bounds);</p>
@@ -192,11 +192,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">// Shape a Sound</p>
 <p class="p11">(</p>
 <p class="p11">s.waitForBoot({</p>
-<p class="p11"><span class="Apple-tab-span">	</span>a={<span class="s10">arg</span> mod=0.05, index=0.05;  </p>
+<p class="p11"><span class="Apple-tab-span">	</span>a={<span class="s10">arg</span> mod=0.05, index=0.05; </p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">var</span> r,out,out2;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r=<span class="s10">Saw</span>.ar(8,0.03);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s10">PMOsc</span>.ar(440, </p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>660*mod,3*index, 0, </p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s10">PMOsc</span>.ar(440,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>660*mod,3*index, 0,</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Lag</span>.ar(r,0.01,1));</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[out,<span class="s10">Delay1</span>.ar(out)];</p>
 <p class="p15"><br></p>
