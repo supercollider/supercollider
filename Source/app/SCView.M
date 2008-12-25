@@ -6182,6 +6182,7 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
+	if(!view) 	return errNone;
     view->refresh();
 	return errNone;
 }
