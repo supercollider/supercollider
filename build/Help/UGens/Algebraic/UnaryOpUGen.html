@@ -5,46 +5,56 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0000bf}
-span.s4 {color: #bf0000}
+span.s3 {text-decoration: underline}
+span.s4 {color: #0000ff}
+span.s5 {color: #0000bf}
+span.s6 {color: #001bb9}
+span.s7 {color: #ad140d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>UnaryOpUgen</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unary operator on a ugen</p>
+<p class="p1"><span class="s1"><b>UnaryOpUgen</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>apply a unary operation to the values of an input ugen</b></p>
 <p class="p2"><br></p>
 <p class="p1">superclass: BasicOpUGen</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2">see also <a href="../../BinaryOps/BinaryOpUGen.html">BinaryOpUGen</a></span></p>
+<p class="p3"><span class="s2">see also: <a href="../../BinaryOps/BinaryOpUGen.html"><span class="s3">BinaryOpUGen</span></a></span></p>
+<p class="p1">structurally related: <a href="../../Core/UnaryOpFunction.html"><span class="s4">UnaryOpFunction</span></a>, <a href="../../Streams-Patterns-Events/Punop.html"><span class="s4">Punop</span></a></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(selector, a)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>return a new instance that applies the operator (<b>selector</b>) to the ugen (<b>a</b>)</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>normally, this is implicitly called when applying a unary operator to a UGen.</p>
+<p class="p2"><br></p>
+<p class="p1">UnaryOpUGens are created as the result of a unary operator applied to a UGen.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s5">SinOsc</span>.ar(200).abs).dump;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(<span class="s5">LFSaw</span>.ar(200).sin).dump;</p>
+<p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p1">Examples for unary operations on UGens are to be found in UGen's superclass AbstractFunction.<span class="Apple-converted-space"> </span></p>
+<p class="p1">Examples for unary operations on UGens are to be found in UGen's superclass <a href="../../Core/Kernel/AbstractFunction.html"><span class="s4">AbstractFunction</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p1">They include: <b>neg, abs, ceil, floor, frac, squared, cubed, sqrt, exp, log, log2, log10, sin, cos, scurve, distort</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span></span>// example</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span>a = </span><span class="s3">WhiteNoise</span><span class="s2">.ar; </span>// a WhiteNoise</p>
-<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span>b = a.squared; </span>// a UnaryOpUGen.</p>
-<p class="p6"><span class="Apple-tab-span">	</span>b.operator; <span class="s4">// squared</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span>// example</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>a = </span><span class="s6">WhiteNoise</span><span class="s2">.ar; </span>// a WhiteNoise</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>b = a.squared; </span>// a UnaryOpUGen.</p>
+<p class="p4"><span class="Apple-tab-span">	</span>b.operator; <span class="s7">// squared</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>// sound example</p>
+<p class="p5"><span class="Apple-tab-span">	</span>// sound example</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s3">var</span> a = <span class="s3">LFSaw</span>.ar(300).range(0, 2pi); a.sin * 0.1 }.play;</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s6">var</span> a = <span class="s6">LFSaw</span>.ar(300).range(0, 2pi); a.sin * 0.1 }.play;</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
