@@ -30,7 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="s1"><b>SkipJack</b></span><span class="s2"> </span><b>a utility for background tasks that survive cmd-.</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b></b><br></p>
-<p class="p1"><b>*new( updateFunc, dt, stopTest, name, clock )<span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><b>*new( updateFunc, dt, stopTest, name, clock, autostart )<span class="Apple-converted-space"> </span></b></p>
 <p class="p3"><br></p>
 <p class="p1"><b>updateFunc - </b>the function to repeat in the background</p>
 <p class="p1"><b>dt - </b>the time interval at which to repeat. can also be a stream or a function that returns a number</p>
@@ -39,6 +39,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>clock - </b>the clock that plays the task.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>default is <a href="../../../Scheduling/AppClock.html"><span class="s3">AppClock</span></a>, so SkipJack can call GUI primitives.<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>If you need more precise timing, you can supply your own clock, and use defer only where necessary.</p>
+<p class="p1"><b>autostart - </b>when true (default) SkipJack starts automatically as it is created.</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
