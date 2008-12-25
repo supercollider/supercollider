@@ -160,7 +160,7 @@ Volume {
 				this.playVolume(isMuted);
 			})
 		});
-		volume = volume.clip(-90, 6);	
+		volume = volume.clip(min, max);
 		if(isMuted) { muteamp = volume };
 		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
