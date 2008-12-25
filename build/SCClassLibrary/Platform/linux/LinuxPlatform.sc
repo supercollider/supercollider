@@ -28,4 +28,10 @@ LinuxPlatform : UnixPlatform
 		this.loadStartupFiles;
 	}
 	defaultHIDScheme { ^\linux_hid }
+
+	recompile{
+		if ( this.hasFeature( \emacs ) ) {
+			Emacs.evalLispExpression( "(sclang-start)" );
+		};		
+	}
 }
