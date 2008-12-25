@@ -160,13 +160,13 @@ Volume {
 				this.playVolume(isMuted);
 			})
 		});
-		volume = volume.clip(min, max);
+		volume = volume.clip(-90, 6);	
 		if(isMuted) { muteamp = volume };
 		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
 	}
 	
-	playVolume {arg muted = false;
+	playVolume { arg muted = false;
 		(this.isPlaying.not and: {
 			(volume != 0.0) or: {muted}
 		}).if({
@@ -174,13 +174,19 @@ Volume {
 		})
 	}
 			
-	lag_ {arg aLagTime;
+	lag_ { arg aLagTime;
 		lag = aLagTime;
 		ampSynth.set(\volumeLag, lag);
 	}
+	
+	setVolumeRange { arg argMin, argMax;
+		argMin !? { min = argMin };
+		argMax !? { max = argMax };
+		this.changed(\ampRange, min, max);
+	}
 		
 	
-	gui {arg window, bounds;
+	gui { arg window, bounds;
 //		this.debug(\gui);
 		^VolumeGui(this, window, bounds)	
 	}
@@ -220,6 +226,10 @@ VolumeGui{
 					this.debug(volume);
 					box.value_(volume.round(0.01)) ;
 					slider.value_(spec.unmap(volume)) ;
+				})
+				.put(\ampRange, {|changer, what, min, max|
+					spec = [min, max, \db].asSpec.debug;
+					slider.value_(spec.unmap(model.volume)) ;
 				})
 	}
 }
