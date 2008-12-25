@@ -33,8 +33,8 @@
 			};
 		};
 		
-		name=class.key.asString; 
-		name[0]=name[0].toUpper; // The class name from the key
+		name=class.asString; 
+		//name[0]=name[0].toUpper; // The class name from the key
 		
 		string=template.replace("%%",links); //Insert the list of  links into the template
 		
