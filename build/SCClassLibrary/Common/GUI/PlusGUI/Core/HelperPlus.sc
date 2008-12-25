@@ -2,7 +2,7 @@
 
 *updateRedirectStubs {
 	var template, tfile, classesArray, path;
-	path= path ? "Help/GUI/stubs/";
+	path= path ? "Help/GUI/Main-GUI/";
 	
 	tfile=File(path++"StubTemplate.html","r");  // read the html template file
 	template=tfile.readAllString;
@@ -24,7 +24,7 @@
 				nm=scheme.perform(class.key).name.asString;  //Get the kit-specific class name
 			
 				{ helpFilePath=nm.findHelpFile
-					.asRelativePath(Platform.helpDir++"/GUI/stubs")}.try({helpFilePath=nm++".html"});
+					.asRelativePath(Platform.helpDir++"/GUI/Main-GUI")}.try({helpFilePath=nm++".html"});
 					//if you can't find the helpfile path, then just create a file name
 			
 				links=links++(("<p class=\"p1\"><b>%:<span class=\"Apple-tab-span\">     </span>"
