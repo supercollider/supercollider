@@ -23,8 +23,7 @@
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		if( gui.id === \cocoa, {
-			w.view.background = HiliteGradient(Color.rand(0.5,1.0),Color.rand(0.5,1.0),
-								[\h,\v].choose, 100, rrand(0.1,0.9));
+			w.view.background = Color.rand; // gradients are currently not swing compatible
 		});
 		
 		// add a button to start and stop the sound.
