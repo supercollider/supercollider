@@ -15,19 +15,24 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #000000}
-span.s2 {text-decoration: underline ; color: #0020f6}
+span.s2 {text-decoration: underline ; color: #0c2eee}
 span.s3 {text-decoration: underline}
-span.s4 {color: #2946d8}
-span.s5 {text-decoration: underline ; color: #2641c9}
-span.s6 {color: #2040df}
+span.s4 {color: #314bd1}
+span.s5 {text-decoration: underline ; color: #2d46c3}
+span.s6 {color: #2946d8}
+span.s7 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>SCUserView Subclassing Tutorial</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s1">See also: <a href="../../GUI-Overview.html"><span class="s2">GUI-Overview</span></a>, <a href="../SCUserView.html"><span class="s3">SCUserView</span></a>, <a href="../SCView.html"><span class="s3">SCView</span></a>, <a href="../../../Extending and Customizing SC/Writing-Classes.html"><span class="s3">Writing Classes</span></a><span class="Apple-converted-space"></span></span></p>
+<p class="p3"><span class="s1">See also: <a href="../../GUI-Overview.html"><span class="s2">GUI-Overview</span></a>, <a href="../SCUserView.html"><span class="s3">SCUserView</span></a>, <a href="../SCView.html"><span class="s3">SCView</span></a>, <a href="../../../Extending and Customizing SC/Writing-Classes.html"><span class="s3">Writing Classes</span></a></span></p>
 <p class="p4"><br></p>
 <p class="p5">The following is a short tutorial on how to make a custom gui widget by subclassing SCUserView. It is assumed that you know how to write classes in SuperCollider. See <a href="../../../Extending and Customizing SC/Writing-Classes.html"><span class="s4">Writing Classes</span></a>.</p>
 <p class="p4"><br></p>
@@ -40,17 +45,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>1. Setup instance vars appropriate to your widget</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>You inherit all of the instance variables from SCUserView and SCView, of course, but many gui widgets need their own variables. In particular, you need to overide <b>value</b>, to return whatever you want your view to return. The instance variable, <b>step</b>, is also often used to allow <b>value</b> to be quantized. <b>thumbSize</b> is used for both width and height of a slider thumb, while <b>thumbWidth</b> or <b>thumbHeight</b> are typically used for only one dimension. <b>x</b> and <b>y</b> are used for mouse clicks. Take a look at a similar SC widget to see what the standard instance variables are.<span class="Apple-converted-space"></span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>You inherit all of the instance variables from SCUserView and SCView, of course, but many gui widgets need their own variables. In particular, you need to overide <b>value</b>, to return whatever you want your view to return. The instance variable, <b>step</b>, is also often used to allow <b>value</b> to be quantized. <b>thumbSize</b> is used for both width and height of a slider thumb, while <b>thumbWidth</b> or <b>thumbHeight</b> are typically used for only one dimension. <b>x</b> and <b>y</b> are used for mouse clicks. Take a look at a similar SC widget to see what the standard instance variables are.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>2. Define the viewClass to SCUserView</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is mandatory. You must do this so that your class calls the primitive of SCUserView on init.<span class="Apple-converted-space"></span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is mandatory. You must do this so that your class calls the primitive of SCUserView on init.</p>
 <p class="p4"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>3. Set up your view</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>You will want to override <b>init</b> to customize your sub class.<span class="Apple-converted-space"></span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>You will want to override <b>init</b> to customize your sub class.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>In <b>init</b>, you need to set <b>relativeOrigin</b>, one way or the other, so that your draw method is guaranteed to work consistently.<span class="Apple-converted-space"></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>In <b>init</b>, you need to set <b>relativeOrigin</b>, one way or the other, so that your draw method is guaranteed to work consistently.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Then set the defaults of some of your instant variables and anything else you want to do on creating the view.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -80,7 +85,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">That's it. Now recompile, only to find your first syntax errors. ;-)</p>
 <p class="p7"><br></p>
 <p class="p6">Happy subclassing.</p>
-<p class="p7"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">//try this after you have added the class to the class library</p>
+<p class="p11"><br></p>
+<p class="p12">w=<span class="s7">Window</span>.new.front;</p>
+<p class="p12">v=<span class="s7">MyWidget</span>(w, <span class="s7">Rect</span>(10,20,200,20)).valueAction_(0.5);</p>
+<p class="p11"><br></p>
+<p class="p12">q=<span class="s7">MyWidget</span>(w, <span class="s7">Rect</span>(10,60,200,20)).valueAction_(0.3);</p>
+<p class="p9"><br></p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
