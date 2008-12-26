@@ -4,7 +4,8 @@ Currently has limitations compared to other Document implementations,
 doesn't connect to all of psyco's potential.
 */
 PsycolliderDocument : Document {
-	var <path;
+	var <path, 
+		<id; // Should be the "windowId" used in psycollider to uniquely identify the window
 
 	*initClass{
 		Document.implementationClass = PsycolliderDocument;
@@ -19,11 +20,11 @@ PsycolliderDocument : Document {
 		tempFile = File(path, "w");
 		tempFile.write(string); 
 		tempFile.close;
-		path.openWinTextFile;
+		id = path.openWinTextFile;
 	}
 	
 	*findHelpFile { |str|
 		^Help.findHelpFile(str)
 	}
 }
-             
+                   

@@ -89,6 +89,8 @@ SC3_KEYWORDS.sort()
 #   - creates the default menus
 #   - asks to save a modified file when closing
 #   - adds file history
+#   - holds an ID number for each window, for PsycolliderDocument to refer to self
+nextPsycolliderWindowId = 1
 class PsycolliderWindow(wx.Frame):
     config = None                   # wx.FileConfig object
     menubar = None                  # wx.MenuBar object
@@ -98,11 +100,18 @@ class PsycolliderWindow(wx.Frame):
     title = ""                      # the window title
     isModified = False              # whether or not window contents have been modified
     filePath = ""                   # path to file being displayed
+    windowId = -99
     
     def __init__(self, parent, id, title="", winStyle=wx.DEFAULT_FRAME_STYLE):
         self.title = title
         self.config = wx.GetApp().config
         wx.Frame.__init__(self, parent, id, title, style=winStyle)
+        global nextPsycolliderWindowId
+        windowId = nextPsycolliderWindowId
+        nextPsycolliderWindowId = nextPsycolliderWindowId + 1
+        #sys.stdout.write("windowId in pythonland is ")
+        #sys.stdout.write(str(windowId))
+        #sys.stdout.write("\n")
         
         self.config.SetPath("/WindowSettings")
         sizeX = self.config.ReadInt('DefaultSizeX', DEFAULT_SIZEX)
@@ -1036,7 +1045,7 @@ class Psycollider(wx.App):
             # Todo: better error handling? Just print error message for now
             wx.MessageBox("Psycollider Error: Could not open file " + path)
             return None  
-            
+
         if textContent[0:5] == '{\\rtf':
             win = self.NewCodeWindow()
             win.codeSubWin.AddTextUTF8('Sorry, still no RTF support, wxRichTextControl does not yet support reading RTF files...')
@@ -1188,6 +1197,7 @@ def OpenTextFile(path, rangeStart, rangeSize):
     else:
         codeWin = wx.GetApp().OpenFile(path)
         #codeWin.SelectRange(rangeStart,rangeSize)
+        return codeWin
         
 # ---------------------------------------------------------------------
 # Main

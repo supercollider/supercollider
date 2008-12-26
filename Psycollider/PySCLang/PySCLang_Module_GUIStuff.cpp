@@ -51,9 +51,9 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
     return errCantCallOS;
 
   PyrSlot *d = g->sp - 3;
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp; // tagObj for 
+	PyrSlot *a = g->sp - 2; // path
+	PyrSlot *b = g->sp - 1; // rangeStart
+	PyrSlot *c = g->sp;     // rangeSize
 	
   int rangeStart, rangeSize;
 
@@ -89,13 +89,13 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
     PyTuple_SetItem(tuple,2,pyRangeSize);
 
    /* make the Python call thread safe (global interpreter clock) */
-	PyGILState_STATE gstate;	
+	PyGILState_STATE gstate;
 	gstate = PyGILState_Ensure();
-    PyObject* result = PyObject_Call(PySCLang_Module::PyPrOpenWinTextFile_s,tuple,NULL);
+	PyObject* result = PyObject_Call(PySCLang_Module::PyPrOpenWinTextFile_s,tuple,NULL);
 	PyGILState_Release(gstate);
 
 	result = PyErr_Occurred( );
-	if (!result) {
+	if (result) {
 		post("logSink call failed, result: %d\n", result);
 		return errFailed;
 	}
@@ -106,7 +106,7 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
   }
   //NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
         
-  //SetPtr(d->uo->slots + 0, doc); // what should we do with this
+	//  SetInt(a, result---->window->Id);
 	return errNone;
 }
 
