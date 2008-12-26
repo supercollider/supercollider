@@ -46,7 +46,7 @@ Document {
 	*new { arg title="Untitled", string="", makeListener=false, envir;
 		var doc, env;
 		env = currentEnvironment;
-		this.current.restoreCurrentEnvironment;		
+		if(this.current.notNil){this.current.restoreCurrentEnvironment};		
 		doc = Document.implementationClass.new(title, string, makeListener);
 		if (doc.notNil) {
 			doc.envir_(envir)
