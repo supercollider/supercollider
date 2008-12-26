@@ -290,7 +290,8 @@ Help {
 						{
 							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
 						}.defer( 0.001 );
-						isClass = selecteditem.asSymbol.asClass.notNil;							classButt.enabled_(isClass);
+						isClass = selecteditem.asSymbol.asClass.notNil;
+                                                if(classButt.notNil){classButt.enabled_(isClass)};
 						browseButt.enabled_(isClass);
 						// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
 						selectednodes[index] = try { if(index==0, {tree}, {selectednodes[index-1]})
@@ -368,16 +369,22 @@ Help {
 	});
 	
 //	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
-	GUI.button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
+        Platform.case(\windows, {
+            // TEMPORARY WORKAROUND:
+            // At present, opening text windows from GUI code can cause crashes on Psycollider
+            // (thread safety issue?). To work around this we just remove those buttons.
+        }, {
+            GUI.button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Open Help File", Color.black, Color.clear]])
 		.action_({{ selecteditem.openHelpFile }.defer;});
-	classButt = GUI.button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
+            classButt = GUI.button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Open Class File", Color.black, Color.clear]])
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
 			});
 		});
+        });
 	browseButt = GUI.button.new( win, Rect( 233, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Browse Class", Color.black, Color.clear]])
 		.action_({ 
