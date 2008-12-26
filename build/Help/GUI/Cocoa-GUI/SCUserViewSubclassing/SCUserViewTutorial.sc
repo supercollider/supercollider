@@ -16,7 +16,7 @@ MyWidget : SCUserView {
 		super.init(argParent, argBounds);  
 				
 		// this must accord with your mouse and drawing functions
-		this.relativeOrigin_( false ); 
+		this.relativeOrigin_( true ); 
 
 		// set defaults of your instance variable
 		rightColor=Color.grey(0.8);
@@ -29,15 +29,22 @@ MyWidget : SCUserView {
 	
 	
 	// (4) define a drawing function for SCPen
-	draw{ 
-	
-		SCPen.addRect(this.bounds);
-		SCPen.fillAxialGradient(
-				((this.bounds.width*value)+thumbWidth+this.bounds.left) @ this.bounds.top,
-				((this.bounds.width*value)-thumbWidth+this.bounds.left) @ this.bounds.top,
-				rightColor,
-				leftColor);
-
+	draw{
+		// Draw the fill
+		SCPen.fillColor = Color.grey;
+		Pen.addRect(Rect(0,0, this.bounds.width*value,this.bounds.height));
+		Pen.fill;
+		// Draw the triangle
+		SCPen.fillColor = Color.red;
+		Pen.moveTo(((this.bounds.width*value)-5) @ this.bounds.height);
+		Pen.lineTo(((this.bounds.width*value)+5) @ this.bounds.height);
+		Pen.lineTo(((this.bounds.width*value)) @ (this.bounds.height/2));
+		Pen.lineTo(((this.bounds.width*value)-5) @ this.bounds.height);
+		Pen.fill;
+		// Draw the frame
+		SCPen.strokeColor = Color.black;
+		Pen.addRect(Rect(0,0, this.bounds.width,this.bounds.height));
+		Pen.stroke;
 	}
 		
 		
