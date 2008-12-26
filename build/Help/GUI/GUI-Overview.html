@@ -43,8 +43,8 @@ span.s9 {color: #606060}
 span.s10 {font: 10.0px Monaco; color: #383631}
 span.s11 {color: #bf0000}
 span.s12 {color: #4357c0}
-span.s13 {text-decoration: underline ; color: #001ee6}
-span.s14 {color: #485abb}
+span.s13 {text-decoration: underline ; color: #0000ff}
+span.s14 {color: #0000ff}
 span.s15 {text-decoration: underline}
 span.s16 {color: #2946d8}
 span.s17 {color: #6c7188}
@@ -55,14 +55,13 @@ span.s21 {font: 12.0px Helvetica; color: #000000}
 span.s22 {color: #6a708c}
 span.s23 {color: #314bd1}
 span.s24 {color: #5763a9}
-span.s25 {color: #58682a}
-span.s26 {font: 10.0px Monaco; color: #3f4981}
-span.s27 {font: 10.0px Monaco}
-span.s28 {color: #5461ad}
-span.s29 {font: 10.0px Monaco; color: #54565d}
-span.s30 {color: #32418f}
-span.s31 {color: #62623d}
-span.s32 {text-decoration: underline ; color: #545f9a}
+span.s25 {font: 10.0px Monaco; color: #3f4981}
+span.s26 {font: 10.0px Monaco}
+span.s27 {color: #5461ad}
+span.s28 {font: 10.0px Monaco; color: #54565d}
+span.s29 {color: #32418f}
+span.s30 {color: #62623d}
+span.s31 {text-decoration: underline ; color: #545f9a}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -117,7 +116,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5">In the above example, first a <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> was created. A <a href="Main-GUI/Window.html"><span class="s4">Window</span></a> automatically has its own top level container, which is a subclass of <a href="Main-GUI/CompositeView.html"><span class="s4">CompositeView</span></a>. A <a href="Main-GUI/CompositeView.html"><span class="s12">CompositeView</span></a> can have a <b>decorator</b>, which automatically places the contents in a predetermined order. In this case it is a <a href="GUI-Tools/FlowLayout.html"><span class="s4">FlowLayout</span></a>, which is the only one that currently exists. This is optional however. Try commenting out the decorator in the example above.</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s13"><a href="Cocoa-GUI/SCWindow.html">SCWindow</a></span> and <a href="Cocoa-GUI/SCCompositeView.html"><span class="s14">SCCompositeView</span></a> both have addFlowLayout utility methods which assign an instance of FlowLayout to their view decorators and return the decorator.</p>
+<p class="p5"><span class="s13"><a href="Main-GUI/Window.html">Window</a></span> and <a href="Main-GUI/CompositeView.html"><span class="s14">CompositeView</span></a> both have addFlowLayout utility methods which assign an instance of FlowLayout to their view decorators and return the decorator.</p>
 <p class="p7"><br></p>
 <p class="p5">Most gui objects are subclasses of <a href="Main-GUI/View.html"><span class="s4">View</span></a>. All subclasses of View are created with the same beginning arguments, <b>parent </b>and <b>bounds</b>, for example, <a href="Main-GUI/Slider.html"><span class="s4">Slider</span></a>(<b>parent</b>, <b>bounds</b>).</p>
 <p class="p4"><br></p>
@@ -349,7 +348,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.drawHook = {<span class="s8">|me|</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.use{</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>90.do{</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pen.strokeColor=<span class="s8">Color</span>.rand.alpha_(rrand(0.1,0.9));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.strokeColor=<span class="s8">Color</span>.rand.alpha_(rrand(0.1,0.9));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.addArc(400.rand@400.rand, rrand(10, 100), 2pi.rand, pi);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.stroke;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
@@ -455,28 +454,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">Returns a Rect object describing the bounds occupied by the given string if it was painted using the given font. Note that this method is asynchronous in SwingOSC, hence it is advised to use it inside a Routine.(not necessary on CocoaGUI). Example:</p>
 <p class="p4"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span>{</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s18">var</span> text = <span class="s9">"Test"</span>, bounds, font, fonts, rect = <span class="s18">Rect</span>.new, total = <span class="s18">Rect</span>.new;</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fonts = <span class="s18">Font</span>.availableFonts;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s18">Window</span>.new( <span class="s9">"String Bounds"</span>, resizable: <span class="s18">false</span> );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background = <span class="s18">Color</span>.blue;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do({</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s18">GUI.font</span>.new( fonts.choose, exprand( 6, 36 ));</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bounds<span class="Apple-tab-span">	</span>= <span class="s18">GUI</span>.stringBounds( text, font );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rect.set( rect.right, rect.bottom, bounds.width + 4, bounds.height + 2 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s18">StaticText</span>.new( w, rect )</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_( font ).align_( <span class="s25">\center</span> ).string_( text ).background_( <span class="s18">Color</span>.white );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>total<span class="Apple-tab-span">	</span>= total.union( rect );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = total.moveTo( 200, 200 );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span>}.fork( <span class="s18">AppClock</span> );</p>
-<p class="p11"><span class="Apple-tab-span">	</span>)</p>
+<p class="p12"><span class="Apple-tab-span">	</span>{</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> text = <span class="s9">"Test"</span>, bounds, font, fonts, rect = <span class="s8">Rect</span>.new, total = <span class="s8">Rect</span>.new;</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fonts = <span class="s8">Font</span>.availableFonts;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>.new( <span class="s9">"String Bounds"</span>, resizable: <span class="s8">false</span> );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background = <span class="s8">Color</span>.blue;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do({</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s8">GUI</span>.font.new( fonts.choose, exprand( 6, 36 ));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bounds<span class="Apple-tab-span">	</span>= <span class="s8">GUI</span>.stringBounds( text, font );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rect.set( rect.right, rect.bottom, bounds.width + 4, bounds.height + 2 );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">StaticText</span>.new( w, rect )</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_( font ).align_( <span class="s20">\center</span> ).string_( text ).background_( <span class="s8">Color</span>.white );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>total<span class="Apple-tab-span">	</span>= total.union( rect );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = total.moveTo( 200, 200 );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}.fork( <span class="s8">AppClock</span> );</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>)</p>
 <p class="p4"><br></p>
 <p class="p6"><b>Browsers and Inspectors</b></p>
 <p class="p4"><br></p>
-<p class="p5">These classes use the current GUI kit implementation as returned by <span class="s26">GUI</span><span class="s27">.current</span> . You usually do not instantiate them directly, but use one of the "Plus-GUI" methods described in the next paragraph.</p>
+<p class="p5">These classes use the current GUI kit implementation as returned by <span class="s25">GUI</span><span class="s26">.current</span> . You usually do not instantiate them directly, but use one of the "Plus-GUI" methods described in the next paragraph.</p>
 <p class="p4"><br></p>
 <p class="p5">ObjectInspector</p>
 <p class="p5">StringInspector</p>
@@ -489,17 +488,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">ClassBrowser</p>
 <p class="p4"><br></p>
 <p class="p7"><br></p>
-<p class="p5">"Plus-GUI" methods are methods added to other classes such as <a href="../Collections/String.html"><span class="s28">String</span></a> or <a href="../ServerArchitecture/Server.html"><span class="s28">Server</span></a> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s29">GUI</span><span class="s27">.current</span> .</p>
+<p class="p5">"Plus-GUI" methods are methods added to other classes such as <a href="../Collections/String.html"><span class="s27">String</span></a> or <a href="../ServerArchitecture/Server.html"><span class="s27">Server</span></a> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s28">GUI</span><span class="s26">.current</span> .</p>
 <p class="p4"><br></p>
 <p class="p22">.inspect</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Inspectors:</p>
-<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s30">Server</span>.default.inspect;</p>
-<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s30">Server</span>.inspect;</p>
+<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s29">Server</span>.default.inspect;</p>
+<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s29">Server</span>.inspect;</p>
 <p class="p4"><br></p>
 <p class="p23">.browse</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Browsers:</p>
-<p class="p24"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s30">UGen</span><span class="s1">.browse;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ClassBrowser</p>
-<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s30">SynthDescLib</span>( <span class="s31">\myLib</span> ).read.browse;</p>
+<p class="p24"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s29">UGen</span><span class="s1">.browse;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ClassBrowser</p>
+<p class="p22"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s29">SynthDescLib</span>( <span class="s30">\myLib</span> ).read.browse;</p>
 <p class="p4"><br></p>
 <p class="p23">.makeWindow</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Server:</p>
@@ -513,7 +512,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p23">.scope</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Scoping</p>
-<p class="p16"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="../ServerArchitecture/Bus.html"><span class="s15">Bus</span></a>, <a href="../Core/Kernel/Function.html"><span class="s15">Function</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s15">Server</span></a>, <a href="../UGens/UGen.html"><span class="s15">UGen</span></a></span><span class="s3">, <a href="Main-GUI/ScopeView.html"><span class="s32">ScopeView</span></a>, <a href="Main-GUI/Stethoscope.html"><span class="s32">Stethoscope</span></a></span></p>
+<p class="p16"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="../ServerArchitecture/Bus.html"><span class="s15">Bus</span></a>, <a href="../Core/Kernel/Function.html"><span class="s15">Function</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s15">Server</span></a>, <a href="../UGens/UGen.html"><span class="s15">UGen</span></a></span><span class="s3">, <a href="Main-GUI/ScopeView.html"><span class="s31">ScopeView</span></a>, <a href="Main-GUI/Stethoscope.html"><span class="s31">Stethoscope</span></a></span></p>
 <p class="p4"><br></p>
 <p class="p7"><br></p>
 </body>
