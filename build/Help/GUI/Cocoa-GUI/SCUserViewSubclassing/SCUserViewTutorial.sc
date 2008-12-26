@@ -75,7 +75,7 @@ MyWidget : SCUserView {
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount); 
 
 		// set the value and do the action
-		(modifiers == 256).if{ // restrict to no modifier
+		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
 			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
@@ -90,7 +90,7 @@ MyWidget : SCUserView {
 		mouseMoveAction.value(this, x, y, modifiers, buttonNumber, clickCount);
 		
 		// set the value and do the action
-		(modifiers == 256).if{ // restrict to no modifier
+		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
 			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
