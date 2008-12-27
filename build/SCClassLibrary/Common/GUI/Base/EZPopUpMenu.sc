@@ -13,9 +13,12 @@ EZPopUpMenu : EZLists{
 		parentView.isNil.if{
 				bounds.isNil.if{bounds= 160@44};
 				if (bounds.class==Point){
+					bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
 					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
 					bounds.x,bounds.y)
-					}{winBounds=bounds};
+					}{// window minimum height;
+					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
+					};
 				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
 				parentView=w.asView;
 				w.front;

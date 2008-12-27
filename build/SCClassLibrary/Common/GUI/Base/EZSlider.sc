@@ -2,11 +2,11 @@
 
 EZSliderSC : EZGui {
 
-	var  <sliderView, <numberView, <>controlSpec, <>action, <value, numSize;
+	var <sliderView, <numberView, <>controlSpec, <>action, <value, numSize;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
-			initAction=false, labelWidth=80, numberWidth = 80;
+			initAction = false, labelWidth = 80, numberWidth = 80;
 		^super.new.init(parent, bounds, label, controlSpec, action, initVal, 
 			initAction, labelWidth, numberWidth);
 	}
@@ -18,33 +18,36 @@ EZSliderSC : EZGui {
 		// get parent gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		gap = decorator.tryPerform(\gap).tryPerform(\x);
-		gap = gap ?  2;
+		gap = gap ? 2;
 		
 		labelPosition.isNil.if{labelPosition = \left};
 		
 		// pop up window
 		parentView.isNil.if{
-				bounds.isNil.if{bounds= 390@44};
+				bounds.isNil.if{bounds = 350@20};
 					//if its a point, then place the Window on the screen
-				if (bounds.class==Point){
-					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+				if (bounds.class == Point){
+					bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
+					winBounds = Rect(200, Window.screenBounds.height-bounds.y-100,
 					bounds.x,bounds.y)
-					}{winBounds=bounds};
+					}{// window minimum height;
+					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
+					};
 				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-				parentView=w.asView;
+				parentView = w.asView;
 				w.front;
-				bounds=bounds.asRect;
+				bounds = bounds.asRect;
 				// inset the bounds to make a nice margin
-				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
-				view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(5);
+				bounds = Rect(4,4,bounds.width-8,bounds.height-24);
+				view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(5);
 			}{
-			bounds.isNil.if{bounds= 160@20};
-			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+			bounds.isNil.if{bounds = 160@20};
+			bounds = bounds.asRect;
+			view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		};
 		
-		labelSize=labelWidth@bounds.height;
-		numSize=numberWidth@bounds.height;
+		labelSize = labelWidth@bounds.height;
+		numSize = numberWidth@bounds.height;
 		
 		// calcualate bounds
 		# labelBounds,numBounds,sliderBounds = this.prSubViewBounds(bounds, label.notNil);
@@ -66,7 +69,7 @@ EZSliderSC : EZGui {
 		sliderView.action = {
 			this.valueAction_(controlSpec.map(sliderView.value));
 		};
-		if (controlSpec.step != 0) {
+		if (controlSpec.step == 0) {
 			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 
@@ -99,7 +102,7 @@ EZSliderSC : EZGui {
 	}
 	doAction { action.value(this) }
 
-	set { arg label, spec, argAction, initVal, initAction=false;
+	set { arg label, spec, argAction, initVal, initAction = false;
 		this.label_(label);
 		controlSpec = spec.asSpec;
 		action = argAction;
@@ -116,48 +119,48 @@ EZSliderSC : EZGui {
 	visible { ^sliderView.visible }
 	visible_ { |bool| [labelView, sliderView, numberView].do(_.visible_(bool)) }
 	
-	enabled {  ^sliderView.enabled } 
+	enabled { ^sliderView.enabled } 
 	enabled_ { |bool| [sliderView, numberView].do(_.enabled_(bool)) }
 	
 	
 	bounds_{arg rect;
 		var labelBounds,numBounds,sliderBounds;
-		view.bounds=rect.asRect;
+		view.bounds = rect.asRect;
 		# labelBounds,numBounds,sliderBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
 		
-		labelView.notNil.if{labelView.bounds=labelBounds};
-		sliderView.bounds=sliderBounds;
-		numberView.bounds=numBounds;
+		labelView.notNil.if{labelView.bounds = labelBounds};
+		sliderView.bounds = sliderBounds;
+		numberView.bounds = numBounds;
 	}
 	
 	labelPosition_{arg pos;
-		labelPosition=pos;
-		if (labelPosition==\top){
-			numSize=numSize.x@20;
+		labelPosition = pos;
+		if (labelPosition == \top){
+			numSize = numSize.x@20;
 			labelView.notNil.if{
-				labelSize=80@20;
+				labelSize = 80@20;
 				this.bounds_(view.bounds);
-				labelView.align=\left; 
+				labelView.align = \left; 
 				labelView.resize_(2);
 				};
-			numberView.resize_(3);
-			sliderView.resize_(5);
-			this.bounds_(view.bounds);
-			^this;
-		};
-		if (labelPosition==\left){
-			labelView.notNil.if{labelView.align=\rigth; labelView.resize_(1)};
 			numberView.resize_(3);
 			sliderView.resize_(2);
 			this.bounds_(view.bounds);
 			^this;
 		};
-		if (labelPosition==\stack){
-			numSize=view.bounds.width@20;
+		if (labelPosition == \left){
+			labelView.notNil.if{labelView.align = \rigth; labelView.resize_(1)};
+			numberView.resize_(3);
+			sliderView.resize_(2);
+			this.bounds_(view.bounds);
+			^this;
+		};
+		if (labelPosition == \stack){
+			numSize = view.bounds.width@20;
 			labelView.notNil.if{
-				labelSize=numSize;
+				labelSize = numSize;
 				this.bounds_(view.bounds);
-				labelView.align=\center; 
+				labelView.align = \center; 
 				labelView.resize_(1);
 				};
 			numberView.resize_(7);
@@ -168,43 +171,50 @@ EZSliderSC : EZGui {
 		
 	}
 	
-	prSubViewBounds{arg rect, hasLabel=true;
-		var numBounds,labelBounds,sliderBounds,  tempGap, tempGap2;
-		tempGap=gap;	
-		tempGap2=tempGap;
-		hasLabel.not.if{tempGap=0; labelSize=0@0};
+	prSubViewBounds{arg rect, hasLabel = true;
+		var numBounds,labelBounds,sliderBounds, tempGap, tempGap2, tmp;
+		tempGap = gap;	
+		tempGap2 = tempGap;
+		hasLabel.not.if{tempGap = 0; labelSize = 0@0};
 		
-		if (labelPosition==\top){
-			sliderBounds= Rect(
+		if (labelPosition == \top){
+			sliderBounds = Rect(
 					0,
 					numSize.y+tempGap,
-					view.bounds.width,  
-					view.bounds.height-numSize.y-tempGap
+					rect.width, 
+					rect.height-numSize.y-tempGap
 					);
-			hasLabel.if{numBounds=Rect(view.bounds.width-numSize.x,0, numSize.x, numSize.y)}
-					{numBounds=Rect(0,0,view.bounds.width, numSize.y)};
+			if (view.parent.respondsTo(\findWindow)){
+			 tmp = view.parent.findWindow.bounds;
+			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap));
+			 sliderBounds = sliderBounds.height_(max(sliderBounds.height,16));
+			};
 					
-			labelBounds=Rect(0,0,view.bounds.width-numSize.x-tempGap,labelSize.y);
+			hasLabel.if{numBounds = Rect(rect.width-numSize.x,0, numSize.x, numSize.y)}
+					{numBounds = Rect(0,0,rect.width, numSize.y)};
+					
+			labelBounds = Rect(0,0,rect.width-numSize.x-tempGap,labelSize.y);
 		};
-		if (labelPosition==\left){
-			labelBounds=Rect(0,0, labelSize.x,view.bounds.height);
-			numBounds=Rect(view.bounds.width-numSize.x,0, numSize.x,view.bounds.height);
-			sliderBounds= Rect(
+		if (labelPosition == \left){
+			labelBounds = Rect(0,0, labelSize.x,rect.height);
+			numBounds = Rect(rect.width-numSize.x,0, numSize.x,rect.height);
+			sliderBounds = Rect(
 					labelSize.x+tempGap,
 					0,
-					view.bounds.width-labelSize.x-tempGap-numBounds.width-tempGap2,  
-					view.bounds.height
+					rect.width-labelSize.x-tempGap-numBounds.width-tempGap2, 
+					rect.height
 					);
 		};
 		
-		if (labelPosition==\stack){
-			labelBounds=Rect(0,0, view.bounds.width,labelSize.y);
-			numBounds=Rect(0,view.bounds.height-numSize.y, view.bounds.width,numSize.y);
-			sliderBounds= Rect(
+		if (labelPosition == \stack){
+					
+			labelBounds = Rect(0,0, rect.width,labelSize.y);
+			numBounds = Rect(0,rect.height-numSize.y, rect.width,numSize.y);
+			sliderBounds = Rect(
 					0,
 					labelSize.y+tempGap,
-					view.bounds.width,  
-					view.bounds.height-labelSize.y-tempGap-numBounds.height-tempGap2
+					rect.width, 
+					rect.height-labelSize.y-tempGap-numBounds.height-tempGap2
 					);
 					
 		};
@@ -215,15 +225,15 @@ EZSliderSC : EZGui {
 	label_{ arg string;
 		// if no label view exists, add one
 		labelView.isNil.if{
-			labelSize=80@20;
-			if(labelPosition==\top)
+			labelSize = 80@20;
+			if(labelPosition == \top)
 			 	{labelView = GUI.staticText.new(view, view.bounds.width@ labelSize.y);
 				labelView.align = \left};
-			if(labelPosition==\left)
+			if(labelPosition == \left)
 				{ labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
 				labelView.align = \right};
-			if(labelPosition==\stack)
-				{ labelSize=view.bounds.widht@numberView.bounds.height;
+			if(labelPosition == \stack)
+				{ labelSize = view.bounds.widht@numberView.bounds.height;
 				 labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
 				labelView.align = \center};
 			labelView.string = string;
