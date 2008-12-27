@@ -85,27 +85,32 @@ EZGui{ // an abstract class
 	}
 	
 	prSubViewBounds{arg rect, hasLabel=true;
-		var listBounds,labelBounds, tempGap;
+		var widgetBounds,labelBounds, tempGap,tmp;
 		tempGap=gap;	
 		hasLabel.not.if{tempGap=0; labelSize=0@0};
 		
 		if (labelPosition==\top)
-			{ listBounds= Rect(
+			{ widgetBounds= Rect(
 					0,
 					labelSize.y+tempGap,
-					view.bounds.width,  
-					view.bounds.height-labelSize.y-tempGap
+					rect.width,  
+					rect.height-labelSize.y-tempGap
 					);
-			labelBounds=Rect(0,0,listBounds.width,labelSize.y);}
-			{ listBounds= Rect(
+			if (view.parent.respondsTo(\findWindow)){
+			 tmp = view.parent.findWindow.bounds;
+			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap));
+			 widgetBounds = widgetBounds.height_(max(widgetBounds.height,16));
+			};
+			labelBounds=Rect(0,0,widgetBounds.width,labelSize.y);}
+			{ widgetBounds= Rect(
 					labelSize.x+tempGap,
 					0,
-					view.bounds.width-labelSize.x-tempGap,  
-					view.bounds.height
+					rect.width-labelSize.x-tempGap,  
+					rect.height
 					);
-			labelBounds=Rect(0,0, labelSize.x ,listBounds.height )};
+			labelBounds=Rect(0,0, labelSize.x ,widgetBounds.height )};
 		
-		^[labelBounds, listBounds]
+		^[labelBounds, widgetBounds]
 	}
 	
 	

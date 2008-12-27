@@ -30,9 +30,12 @@ EZNumberSC : EZGui{
 				// if bounds is a point the place the window on screen
 				bounds.isNil.if {bounds= 160@44};
 				if (bounds.class==Point)
-					{ winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
-								bounds.x,bounds.y)}
-					{winBounds=bounds};
+					{ bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
+					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+								bounds.x,bounds.y)
+					}{// window minimum height;
+					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
+					};
 				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
 				parentView=w.asView;
 				w.front;
@@ -112,7 +115,7 @@ EZNumberSC : EZGui{
 	remove { [labelView, widget].do(_.remove) }
 	
 	prSubViewBounds{arg rect, hasLabel=true;
-		var numBounds,labelBounds, tempGap;
+		var numBounds,labelBounds, tempGap,tmp;
 		
 		tempGap=gap;	
 		hasLabel.not.if{tempGap=0; labelSize=0@0};
@@ -124,6 +127,11 @@ EZNumberSC : EZGui{
 					view.bounds.width,  
 					view.bounds.height-labelSize.y-tempGap
 					);
+			if (view.parent.respondsTo(\findWindow)){
+			 tmp = view.parent.findWindow.bounds;
+			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap));
+			 numBounds = numBounds.height_(max(numBounds.height,16));
+			};
 			labelBounds=Rect(0,0,numBounds.width,labelSize.y);}
 			{ numBounds= Rect(
 					labelSize.x+tempGap,
