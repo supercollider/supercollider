@@ -1,5 +1,5 @@
 EZGui{ // an abstract class
-	var <>labelView, <widget, <view, <gap, <labelPosition, labelSize, <>alwaysOnTop=true;
+	var <>labelView, <widget, <view, <gap, <labelPosition, labelSize, <alwaysOnTop=false;
 	
 	label_{ arg string;
 	
@@ -55,6 +55,14 @@ EZGui{ // an abstract class
 	}
 	labelWidth{
 		^ labelSize.x
+	}
+	
+	alwaysOnTop_{arg bool;
+		alwaysOnTop=bool;
+		this.view.parent.respondsTo(\findWindow).if{
+		this.view.parent.findWindow.alwaysOnTop=alwaysOnTop;
+		}
+	
 	}
 	
 	labelWidth_{arg width;
