@@ -1,4 +1,4 @@
-// How to subclass SCUserView to make custom GUI interfaces
+// How to subclass SCUserView to make custom GUI interfaces. Jost Muxfeldt, 2008.
 // For many purposes you can use this as a template, and simply adjust the methods
 
 MyWidget : SCUserView {
