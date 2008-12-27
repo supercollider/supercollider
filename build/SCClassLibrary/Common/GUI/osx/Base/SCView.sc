@@ -722,6 +722,11 @@ SCRangeSlider : SCSliderBase {
 		this.setSpan( lo, hi );
 		this.doAction;
 	}
+	
+	setDeviation { arg deviation, average;
+			var lo = ( 1 - deviation ) * average;
+			this.setSpan(lo, lo + deviation);
+	}
 
 	properties {
 		^super.properties ++ #[\lo, \hi]
