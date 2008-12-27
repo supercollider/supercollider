@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -15,11 +15,11 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #712d1c}
-span.s1 {color: #0000ff}
-span.s2 {color: #1354dd}
-span.s3 {color: #0e3fa5}
-span.s4 {color: #712d1c}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #622f20}
+span.s1 {color: #0033f1}
+span.s2 {color: #245ed2}
+span.s3 {color: #1b479d}
+span.s4 {color: #622f20}
 </style>
 </head>
 <body>
@@ -315,6 +315,18 @@ span.s4 {color: #712d1c}
 <p class="p7"><br></p>
 <p class="p6">Set[1, 2, 3].powerset;</p>
 <p class="p7"><br></p>
+<p class="p6">// generate the von neumann ordinals. (warning: only count to four at maximum!)</p>
+<p class="p6">a = Set[];</p>
+<p class="p6">a = a.powerset;</p>
+<p class="p6">a = a.powerset;</p>
+<p class="p6">a = a.powerset;</p>
+<p class="p7"><br></p>
+<p class="p6">u = { |set| set.unify }; // union (count down)</p>
+<p class="p6">n = { |set| set.powerset }; // powerset (count up)</p>
+<p class="p6">a = Set[]; // empty set (zero)</p>
+<p class="p6">n.(n.(a)); // two</p>
+<p class="p6">u.(n.(n.(a))) == n.(a); // two - one == one</p>
+<p class="p6">u.(u.(n.(n.(a)))) == u.(n.(a)); // two - two == one - one<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>flopDict(unbubble)</b></p>
 <p class="p2"><br></p>
