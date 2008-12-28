@@ -13,28 +13,34 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 28.0px; text-indent: -28.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 28.0px; text-indent: -28.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p10 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 28.0px; font: 12.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9c260d; min-height: 12.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p13 {margin: 0.0px 0.0px 0.0px 28.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #007300}
+p.p15 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a02600; min-height: 12.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0043f8}
-span.s3 {color: #002bf8}
-span.s4 {color: #001bb9}
+span.s2 {color: #0047fe}
+span.s3 {color: #0031fe}
+span.s4 {color: #0000bf}
 span.s5 {color: #606060}
 span.s6 {color: #000000}
-span.s7 {color: #0024f8}
+span.s7 {color: #002bfe}
 span.s8 {font: 9.0px Monaco; color: #0000bf}
-span.s9 {font: 9.0px Monaco}
-span.s10 {color: #2c7014}
-span.s11 {color: #ad140d}
+span.s9 {font: 9.0px Monaco; color: #000000}
+span.s10 {color: #2b6f0b}
+span.s11 {color: #007300}
+span.s12 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -112,11 +118,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p10"><b>*writeOnce(name, ugenGraphFunc, rates, prependArgs, dir, metadata)</b></p>
 <p class="p11"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
-<p class="p12">Create a new SynthDef and write it to disk, providing a def file with this name does not already exist. This is useful in class definitions so that the def is not written every time the library is compiled. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for <b>dir</b> is to use the path specified by <span class="s8">SynthDef</span><span class="s9">.synthDefDir</span>.</p>
+<p class="p12">Create a new SynthDef and write it to disk, but only if a def file with this name does not already exist. This is useful in class definitions so that the def is not written every time the library is compiled. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for <b>dir</b> is to use the path specified by <span class="s8">SynthDef</span><span class="s9">.synthDefDir</span>.</p>
 <p class="p11"><br></p>
 <p class="p10"><b>*wrap(ugenGraphFunc, rates, prependArgs)</b></p>
 <p class="p11"><br></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span></b>Wraps a def within an enclosing synthdef. Can be useful for mass-producing defs. See example below.</p>
+<p class="p12">Wraps a function within an enclosing synthdef. Arguments to the wrapped function are automatically promoted to be SynthDef controls, using the same rules applied to arguments of the main UGen function. For a very simple example:</p>
+<p class="p13"><br></p>
+<p class="p14"><span class="s6">d = </span><span class="s4">SynthDef</span><span class="s6">(</span>\demoWrapping<span class="s6">, { </span><span class="s4">|out|</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SynthDef</span>.wrap({ <span class="s4">|freq|</span> <span class="s4">SinOsc</span>.ar(freq) }))</p>
+<p class="p15">});</p>
+<p class="p16"><br></p>
+<p class="p15">d.allControlNames;</p>
+<p class="p11"><br></p>
+<p class="p10">Prints: [ ControlName<span class="Apple-converted-space">  </span>P 0 <b>out</b> control 0, ControlName<span class="Apple-converted-space">  </span>P 1 <b>freq</b> control 0 ]</p>
+<p class="p13"><br></p>
+<p class="p12">The outer function declares the argument 'out', and the wrapped function has 'freq' as its argument. The resulting SynthDef has both arguments as controls, exactly as if the outer function included both as arguments.</p>
+<p class="p13"><br></p>
+<p class="p12">The <b>rates</b> array behaves as described earlier. <b>PrependArgs</b> allows values or unit generators to be passed into the inner function from the enclosing SynthDef context. Any inner function argument that receives a prependArg value (including nil) will use that value, suppressing creation of a control for that argument. The longer example below demonstrates this technique.</p>
+<p class="p13"><br></p>
+<p class="p12">This is very useful for mass-producing SynthDefs that have a common "shell" defining features such as enveloping or triggering mechanisms that apply to different subgraphs of unit generators. The common features need be written only once; the UGens that differ between the SynthDefs are plugged into the supporting architecture.</p>
 <p class="p2"><br></p>
 <p class="p10"><b>*synthDefDir</b></p>
 <p class="p10"><b>*synthDefDir_(dir)</b></p>
@@ -163,39 +183,39 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>Return an <a href="../Collections/Event.html"><span class="s2">Event</span></a> containing this def's variants.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><b>Examples</b></p>
-<p class="p14"><br></p>
+<p class="p17"><b>Examples</b></p>
+<p class="p18"><br></p>
 <p class="p3"><b>Basic</b></p>
-<p class="p15"><br></p>
+<p class="p19"><br></p>
 <p class="p9">// Note that constructions like SynthDef(...) and Synth(...) are short for SynthDef.new(...), etc.</p>
 <p class="p9">// With SynthDef it is common to chain this with calls on the resulting instance,</p>
 <p class="p9">// e.g. SynthDef(...).send(s) or SynthDef(...).play</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// make a simple def and send it to the server</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p7">s.boot;</p>
-<p class="p7"><span class="s4">SynthDef</span>(<span class="s10">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) }).send(s);</p>
-<p class="p14"><br></p>
+<p class="p7"><span class="s4">SynthDef</span>(<span class="s11">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) }).send(s);</p>
+<p class="p20"><br></p>
 <p class="p9">// the above is essentially the same as the following:</p>
-<p class="p7">d = <span class="s4">SynthDef</span>.new(<span class="s10">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) });</p>
+<p class="p7">d = <span class="s4">SynthDef</span>.new(<span class="s11">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) });</p>
 <p class="p7">d.send(s);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// now make a synth from it, using the default value for freq, then another with a different value</p>
-<p class="p16"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\SimpleSine<span class="s6">);</span></p>
-<p class="p7">y = <span class="s4">Synth</span>(<span class="s10">\SimpleSine</span>, [<span class="s10">\freq</span>, 660]);</p>
-<p class="p14"><br></p>
+<p class="p21"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\SimpleSine<span class="s6">);</span></p>
+<p class="p7">y = <span class="s4">Synth</span>(<span class="s11">\SimpleSine</span>, [<span class="s11">\freq</span>, 660]);</p>
+<p class="p20"><br></p>
 <p class="p9">// now change the freq value for x</p>
-<p class="p7">x.set(<span class="s10">\freq</span>, 880);</p>
-<p class="p14"><br></p>
+<p class="p7">x.set(<span class="s11">\freq</span>, 880);</p>
+<p class="p20"><br></p>
 <p class="p7">x.free; y.free;</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// using the play convenience method</p>
-<p class="p7">x = <span class="s4">SynthDef</span>(<span class="s10">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) }).play</p>
+<p class="p7">x = <span class="s4">SynthDef</span>(<span class="s11">\SimpleSine</span>, { <span class="s4">arg</span> freq = 440; <span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq, 0, 0.2)) }).play</p>
 <p class="p7">x.free;</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p3"><b>Argument Rates</b></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
 <p class="p9">// the following two defs are equivalent. The first uses a 't_' arg:</p>
 <p class="p7">(</p>
 <p class="p9"><span class="s4">SynthDef</span><span class="s6">(</span><span class="s5">"trigTest"</span><span class="s6">, { </span><span class="s4">arg</span><span class="s6"> t_trig=0, freq=440; </span>// t_trig creates a TrigControl</p>
@@ -203,49 +223,49 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="s6">}, [0, 4]<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)</p>
 <p class="p7">);</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// This second version makes trig a \tr arg by specifying it in the rates array. Send this one.</p>
 <p class="p7">(</p>
 <p class="p7"><span class="s4">SynthDef</span>(<span class="s5">"trigTest2"</span>, { <span class="s4">arg</span> trig=0, freq=440;<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, <span class="s4">SinOsc</span>.ar(freq+[0,1], 0, <span class="s4">Decay2</span>.kr(trig, 0.005, 1.0)));</p>
-<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span>}, [</span><span class="s10">\tr</span><span class="s6">, 4]<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig</p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span>}, [</span><span class="s11">\tr</span><span class="s6">, 4]<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig</p>
 <p class="p7">).send(s);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// Using the second version create a synth</p>
-<p class="p7">z = <span class="s4">Synth</span>.head(s, <span class="s10">\trigTest2</span>);</p>
-<p class="p14"><br></p>
+<p class="p7">z = <span class="s4">Synth</span>.head(s, <span class="s11">\trigTest2</span>);</p>
+<p class="p20"><br></p>
 <p class="p9">// now trigger the decay envelope</p>
-<p class="p9"><span class="s6">z.set(</span><span class="s10">\trig</span><span class="s6">, 1); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// you can do this multiple times<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="s6">z.set(</span><span class="s10">\trig</span><span class="s6">, 1, </span><span class="s10">\freq</span><span class="s6">, 220); <span class="Apple-tab-span">	</span></span>// hear how the freq lags</p>
-<p class="p7">z.set(<span class="s10">\trig</span>, 1, <span class="s10">\freq</span>, 880);</p>
-<p class="p14"><br></p>
+<p class="p9"><span class="s6">z.set(</span><span class="s11">\trig</span><span class="s6">, 1); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// you can do this multiple times<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="s6">z.set(</span><span class="s11">\trig</span><span class="s6">, 1, </span><span class="s11">\freq</span><span class="s6">, 220); <span class="Apple-tab-span">	</span></span>// hear how the freq lags</p>
+<p class="p7">z.set(<span class="s11">\trig</span>, 1, <span class="s11">\freq</span>, 880);</p>
+<p class="p20"><br></p>
 <p class="p9"><span class="s6">z.free; </span>//free the synth</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p3"><b>Variants</b></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
 <p class="p9">// create a def with some variants</p>
 <p class="p7">(</p>
-<p class="p17">SynthDef<span class="s6">(</span><span class="s5">"vartest"</span><span class="s6">, {</span>|out=0, freq=440, amp=0.2, a = 0.01, r = 1|</p>
+<p class="p22">SynthDef<span class="s6">(</span><span class="s5">"vartest"</span><span class="s6">, {</span>|out=0, freq=440, amp=0.2, a = 0.01, r = 1|</p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// the EnvGen with doneAction: 2 frees the synth automatically when done</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(a, r, amp), doneAction: 2)));</p>
 <p class="p7">}, variants: (alpha: [a: 0.5, r: 0.5], beta: [a: 3, r: 0.01], gamma: [a: 0.01, r: 4])</p>
 <p class="p7">).send(s);</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// now make some synths. First using the arg defaults</p>
 <p class="p8"><span class="s4">Synth</span><span class="s6">(</span>"vartest"<span class="s6">);</span></p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// now the variant defaults</p>
 <p class="p8"><span class="s4">Synth</span><span class="s6">(</span>"vartest.alpha"<span class="s6">);</span></p>
 <p class="p8"><span class="s4">Synth</span><span class="s6">(</span>"vartest.beta"<span class="s6">);</span></p>
 <p class="p8"><span class="s4">Synth</span><span class="s6">(</span>"vartest.gamma"<span class="s6">);</span></p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// override a variant</p>
-<p class="p7"><span class="s4">Synth</span>(<span class="s5">"vartest.alpha"</span>, [<span class="s10">\release</span>, 3, <span class="s10">\freq</span>, 660]);</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p7"><span class="s4">Synth</span>(<span class="s5">"vartest.alpha"</span>, [<span class="s11">\release</span>, 3, <span class="s11">\freq</span>, 660]);</p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p3"><b>Literal Array Arguments</b></p>
 <p class="p2"><br></p>
 <p class="p9">// freqs has a literal array of defaults. This makes a multichannel Control of the same size.</p>
@@ -253,44 +273,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s4">SynthDef</span>(<span class="s5">"arrayarg"</span>, { <span class="s4">arg</span> amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> env, sines;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s4">Linen</span>.kr(gate, 0.1, 1, 1, 2) * amp;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>sines = <span class="s4">SinOsc</span>.ar(freqs +.t [0,0.5]).cubed.sum; <span class="s11">// A mix of 4 oscillators</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>sines = <span class="s4">SinOsc</span>.ar(freqs +.t [0,0.5]).cubed.sum; <span class="s12">// A mix of 4 oscillators</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, sines * env);<span class="Apple-converted-space"> </span></p>
 <p class="p7">}, [0, 0.1, 0]).send(s);</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p8"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>"arrayarg"<span class="s6">);</span></p>
 <p class="p7">x.setn(<span class="s5">"freqs"</span>, [440, 441, 442, 443]);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// Don't accidentally set too many values, or you may have unexpected side effects</p>
 <p class="p9">// The code below inadvertantly sets the gate arg, and frees the synth</p>
 <p class="p7">x.setn(<span class="s5">"freqs"</span>, [300, 400, 500, 600, 0]);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// Mr. McCartney's more complex example</p>
 <p class="p7">(</p>
 <p class="p7">fork {<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p8"><span class="s6"><span class="Apple-tab-span">	</span>z = </span><span class="s4">Synth</span><span class="s6">(</span>"arrayarg"<span class="s6">);</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p20"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>2.wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>10.do {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z.setn(<span class="s10">\freqs</span>, {exprand(200,800.0)} ! 4);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z.setn(<span class="s11">\freqs</span>, {exprand(200,800.0)} ! 4);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(2 ** (0..3).choose * 0.2).wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>};</p>
-<p class="p14"><br></p>
-<p class="p7"><span class="Apple-tab-span">	</span>z.set(<span class="s10">\amp</span>, -40.dbamp);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>z.set(<span class="s11">\amp</span>, -40.dbamp);</p>
+<p class="p20"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span>10.do {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z.setn(<span class="s10">\freqs</span>, {exprand(200,800.0)} ! 4);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z.setn(<span class="s11">\freqs</span>, {exprand(200,800.0)} ! 4);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(2 ** (0..3).choose * 0.2).wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>};</p>
 <p class="p7"><span class="Apple-tab-span">	</span>2.wait;</p>
-<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p20"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>z.release;</p>
 <p class="p7">};</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p3"><b>Wrapping Example: 'factory' production of effects defs</b></p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// The makeEffect function below wraps a simpler function within itself and provides</p>
 <p class="p9">// a crossfade into the effect (so you can add it without clicks), control over wet</p>
 <p class="p9">// and dry mix, etc.</p>
@@ -299,26 +319,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">(</p>
 <p class="p9">// the basic wrapper</p>
 <p class="p7">~ makeEffect = { <span class="s4">arg</span> name, func, lags, numChannels = 2;</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">SynthDef</span>(name, { <span class="s4">arg</span> i_bus = 0, gate = 1, wet = 1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span><span class="s4">var</span> in, out, env, lfo;</p>
 <p class="p7"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>in = <span class="s4">In</span>.ar(i_bus, numChannels);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">Linen</span>.kr(gate, 2, 1, 2, 2); <span class="s11">// fade in the effect</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">Linen</span>.kr(gate, 2, 1, 2, 2); <span class="s12">// fade in the effect</span></p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// call the wrapped function. The in and env arguments are passed to the function</p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// as the first two arguments (prependArgs).<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Any other arguments of the wrapped function will be Controls.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out = <span class="s4">SynthDef</span>.wrap(func, lags, [in, env]);</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">XOut</span>.ar(i_bus, wet * env, out);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}, [0, 0, 0.1] ).send(s);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p7">};</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// now make a wah</p>
 <p class="p7">(</p>
-<p class="p7">~makeEffect.value(<span class="s10">\wah</span>, { <span class="s4">arg</span> in, env, rate = 0.7, ffreq = 1200, depth = 0.8, rq = 0.1;</p>
+<p class="p7">~makeEffect.value(<span class="s11">\wah</span>, { <span class="s4">arg</span> in, env, rate = 0.7, ffreq = 1200, depth = 0.8, rq = 0.1;</p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// in and env come from the wrapper. The rest are controls</p>
 <p class="p7"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span><span class="s4">var</span> lfo;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>lfo = <span class="s4">LFNoise1</span>.kr(rate, depth * ffreq, ffreq);</p>
@@ -327,10 +347,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span>2<span class="Apple-tab-span">	</span></span>// numChannels</p>
 <p class="p7">);</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// now make a simple reverb</p>
 <p class="p7">(</p>
-<p class="p7">~makeEffect.value(<span class="s10">\reverb</span>, { <span class="s4">arg</span> in, env;</p>
+<p class="p7">~makeEffect.value(<span class="s11">\reverb</span>, { <span class="s4">arg</span> in, env;</p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// in and env come from the wrapper.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> input;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>input = in;</p>
@@ -340,22 +360,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span>2<span class="Apple-tab-span">	</span></span>// numChannels</p>
 <p class="p7">);</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// something to process</p>
 <p class="p7">x = { {<span class="s4">Decay2</span>.ar(<span class="s4">Dust2</span>.ar(3), mul: <span class="s4">PinkNoise</span>.ar(0.2))} ! 2}.play;</p>
-<p class="p14"><br></p>
-<p class="p7">y = <span class="s4">Synth</span>.tail(s, <span class="s10">\wah</span>);</p>
-<p class="p7">z = <span class="s4">Synth</span>.tail(s, <span class="s10">\reverb</span>, [<span class="s10">\wet</span>, 0.5]);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
+<p class="p7">y = <span class="s4">Synth</span>.tail(s, <span class="s11">\wah</span>);</p>
+<p class="p7">z = <span class="s4">Synth</span>.tail(s, <span class="s11">\reverb</span>, [<span class="s11">\wet</span>, 0.5]);</p>
+<p class="p20"><br></p>
 <p class="p9">// we used an arg named gate, so Node-release can crossfade out the effects</p>
 <p class="p7">y.release;<span class="Apple-converted-space"> </span></p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// setting gate to zero has the same result</p>
-<p class="p7">z.set(<span class="s10">\gate</span>, 0);</p>
-<p class="p14"><br></p>
+<p class="p7">z.set(<span class="s11">\gate</span>, 0);</p>
+<p class="p20"><br></p>
 <p class="p7">x.free;</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p3"><b>common argument names: <i>out</i> </b>and<b> <i>gate</i></b></p>
 <p class="p2"><br></p>
 <p class="p9">// arguments named 'out' and 'gate' are commonly used to specify an output bus and</p>
@@ -363,41 +383,41 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">// and interchangeability. 'gate' is particularly useful, as it allows for Node's release</p>
 <p class="p9">// method.</p>
 <p class="p7">(</p>
-<p class="p7"><span class="s4">SynthDef</span>(<span class="s10">\synthDefTest</span>, { <span class="s4">arg</span> out, gate=1, freq=440;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s4">SynthDef</span>(<span class="s11">\synthDefTest</span>, { <span class="s4">arg</span> out, gate=1, freq=440;<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>// doneAction: 2 frees the synth when EnvGen is done</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq) * <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.asr(0.1, 0.3, 1.3), gate, doneAction:2));</p>
 <p class="p9"><span class="s6">}).store; </span>// use store for compatibility with pattern example below</p>
 <p class="p7">)</p>
-<p class="p14"><br></p>
-<p class="p9"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span><span class="s10">\synthDefTest</span><span class="s6">, [</span><span class="s10">\out</span><span class="s6">, 0]); </span>// play out through hardware output bus 0 (see Out.help)</p>
+<p class="p20"><br></p>
+<p class="p9"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span><span class="s11">\synthDefTest</span><span class="s6">, [</span><span class="s11">\out</span><span class="s6">, 0]); </span>// play out through hardware output bus 0 (see Out.help)</p>
 <p class="p9"><span class="s6">x.release; </span>// releases and frees the synth (if doneAction is &gt; 2; see EnvGen)</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">//equivalent:</p>
-<p class="p14"><br></p>
-<p class="p9"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span><span class="s10">\synthDefTest</span><span class="s6">); </span>// out defaults to zero, if no default arg is given.</p>
-<p class="p7">x.set(<span class="s10">\gate</span>, 0);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
+<p class="p9"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span><span class="s11">\synthDefTest</span><span class="s6">); </span>// out defaults to zero, if no default arg is given.</p>
+<p class="p7">x.set(<span class="s11">\gate</span>, 0);</p>
+<p class="p20"><br></p>
 <p class="p9">// if value is negative, it overrides the release time, to -1 - gate</p>
-<p class="p16"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">);</span></p>
-<p class="p9"><span class="s6">x.set(</span><span class="s10">\gate</span><span class="s6">, -5); </span>// 4 second release</p>
-<p class="p14"><br></p>
+<p class="p21"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">);</span></p>
+<p class="p9"><span class="s6">x.set(</span><span class="s11">\gate</span><span class="s6">, -5); </span>// 4 second release</p>
+<p class="p20"><br></p>
 <p class="p9">//equivalent:</p>
-<p class="p16"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">);</span></p>
+<p class="p21"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">);</span></p>
 <p class="p7">x.release(4);</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// if the out arg is used in a standard way, it can always be changed without knowing the synth def</p>
-<p class="p16"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">, [</span>\out<span class="s6">, 0]);</span></p>
-<p class="p9"><span class="s6">x.set(</span><span class="s10">\out</span><span class="s6">, 1); </span>//play through channel 1</p>
+<p class="p21"><span class="s6">x = </span><span class="s4">Synth</span><span class="s6">(</span>\synthDefTest<span class="s6">, [</span>\out<span class="s6">, 0]);</span></p>
+<p class="p9"><span class="s6">x.set(</span><span class="s11">\out</span><span class="s6">, 1); </span>//play through channel 1</p>
 <p class="p7">x.release;</p>
-<p class="p14"><br></p>
+<p class="p20"><br></p>
 <p class="p9">// Another good example of this is with patterns, which can use gate to release notes</p>
 <p class="p7">(</p>
-<p class="p17">Pbind<span class="s6">(</span></p>
-<p class="p16"><span class="s6"><span class="Apple-tab-span">	</span></span>\instrument<span class="s6">, </span>\synthDefTest<span class="s6">,</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">\freq</span>, <span class="s4">Pseq</span>([500, 600, <span class="s4">Prand</span>([200, 456, 345],1)], <span class="s4">inf</span>),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">\legato</span>, <span class="s4">Pseq</span>([1.5, 0.2], <span class="s4">inf</span>),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">\dur</span>, 0.4,</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s10">\out</span>, <span class="s4">Pseq</span>([0, 1], <span class="s4">inf</span>)</p>
+<p class="p22">Pbind<span class="s6">(</span></p>
+<p class="p21"><span class="s6"><span class="Apple-tab-span">	</span></span>\instrument<span class="s6">, </span>\synthDefTest<span class="s6">,</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s11">\freq</span>, <span class="s4">Pseq</span>([500, 600, <span class="s4">Prand</span>([200, 456, 345],1)], <span class="s4">inf</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s11">\legato</span>, <span class="s4">Pseq</span>([1.5, 0.2], <span class="s4">inf</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s11">\dur</span>, 0.4,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s11">\out</span>, <span class="s4">Pseq</span>([0, 1], <span class="s4">inf</span>)</p>
 <p class="p7">).play;</p>
 <p class="p7">)</p>
 </body>
