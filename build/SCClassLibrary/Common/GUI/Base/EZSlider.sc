@@ -1,29 +1,40 @@
 
-
 EZSliderSC : EZGui {
 
-	var <sliderView, <numberView, <>controlSpec, <>action, <value, numSize;
+	var <sliderView, <numberView, <unitView, <>controlSpec, 
+		 <>action,<value, popUp=false, numSize,numberWidth,unitWidth, gap;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
-			initAction = false, labelWidth = 80, numberWidth = 80;
-		^super.new.init(parent, bounds, label, controlSpec, action, initVal, 
-			initAction, labelWidth, numberWidth);
-	}
-	init { arg parentView, bounds, label, argControlSpec, argAction, initVal, 
-			initAction, labelWidth, numberWidth;
+			initAction=false, labelWidth=60, numberWidth=40, 
+			unitWidth=0, labelHeight=20,  layout=\horz, gap;
 			
-		var labelBounds, numBounds,w, winBounds, viewBounds, sliderBounds;
-		
-		// get parent gap
+		^super.new.init(parent, bounds, label, controlSpec, action, 
+			initVal, initAction, labelWidth, numberWidth, 
+				unitWidth, labelHeight, layout, gap)
+	}
+	
+	init { arg parentView, bounds, label, argControlSpec, argAction, initVal, 
+			initAction, labelWidth, argNumberWidth,argUnitWidth, 
+			labelHeight, argLayout, argGap;
+			
+		var labelBounds, numBounds,w, winBounds, 
+				viewBounds, unitBounds,sliderBounds;
+				
+		// try to use the paretn decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
-		gap = decorator.tryPerform(\gap).tryPerform(\x);
-		gap = gap ? 2;
-		
-		labelPosition.isNil.if{labelPosition = \left};
+		argGap.isNil.if{ 
+			gap = decorator.tryPerform(\gap);
+			gap = gap ? (2@2)}
+			{gap=argGap};
+			
+		unitWidth = argUnitWidth;
+		numberWidth = argNumberWidth;
+		layout=argLayout;
 		
 		// pop up window
 		parentView.isNil.if{
+				popUp=true;
 				bounds.isNil.if{bounds = 350@20};
 					//if its a point, then place the Window on the screen
 				if (bounds.class == Point){
@@ -39,30 +50,37 @@ EZSliderSC : EZGui {
 				bounds = bounds.asRect;
 				// inset the bounds to make a nice margin
 				bounds = Rect(4,4,bounds.width-8,bounds.height-24);
-				view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(5);
+				view = GUI.compositeView.new(parentView,bounds)
+						.relativeOrigin_(true).resize_(5);
 			}{
 			bounds.isNil.if{bounds = 160@20};
 			bounds = bounds.asRect;
 			view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		};
 		
-		labelSize = labelWidth@bounds.height;
-		numSize = numberWidth@bounds.height;
+		labelSize=labelWidth@labelHeight;
+		numSize = numberWidth@labelHeight;
 		
 		// calcualate bounds
-		# labelBounds,numBounds,sliderBounds = this.prSubViewBounds(bounds, label.notNil);
+		# labelBounds,numBounds,sliderBounds, unitBounds 
+				= this.prSubViewBounds(bounds, label.notNil, unitWidth>0);
 
 		label.notNil.if{ //only add a label if desired
 			labelView = GUI.staticText.new(view, labelBounds);
 			labelView.string = label;
 		};
-		
+
+		unitWidth.notNil.if{ //only add a unitLabel if desired
+			unitView = GUI.staticText.new(view, unitBounds);
+		};
+
+
 		numberView = GUI.numberBox.new(view, numBounds);
 		sliderView = GUI.slider.new(view, sliderBounds);
-		this.labelPosition_(\left);
 		
 		
 		controlSpec = argControlSpec.asSpec;
+		unitView.string = " "++controlSpec.units.asString;
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
@@ -88,6 +106,7 @@ EZSliderSC : EZGui {
 		}{
 			this.value_(initVal);
 		};
+		this.prSetViewParams;
 		
 	}
 	
@@ -103,7 +122,7 @@ EZSliderSC : EZGui {
 	doAction { action.value(this) }
 
 	set { arg label, spec, argAction, initVal, initAction = false;
-		this.label_(label);
+		labelView.notNil.if{labelView.string=label};
 		controlSpec = spec.asSpec;
 		action = argAction;
 		initVal = initVal ? controlSpec.default;
@@ -116,134 +135,142 @@ EZSliderSC : EZGui {
 		};
 	}
 	
-	visible { ^sliderView.visible }
-	visible_ { |bool| [labelView, sliderView, numberView].do(_.visible_(bool)) }
 	
 	enabled { ^sliderView.enabled } 
 	enabled_ { |bool| [sliderView, numberView].do(_.enabled_(bool)) }
 	
-	
-	bounds_{arg rect;
-		var labelBounds,numBounds,sliderBounds;
-		view.bounds = rect.asRect;
-		# labelBounds,numBounds,sliderBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
 		
-		labelView.notNil.if{labelView.bounds = labelBounds};
-		sliderView.bounds = sliderBounds;
-		numberView.bounds = numBounds;
-	}
+	prSetViewParams{
 	
-	labelPosition_{arg pos;
-		labelPosition = pos;
-		if (labelPosition == \top){
-			numSize = numSize.x@20;
-			labelView.notNil.if{
-				labelSize = 80@20;
-				this.bounds_(view.bounds);
-				labelView.align = \left; 
-				labelView.resize_(2);
+		switch (layout,
+		\lin2, {
+		},
+		\vert, {
+			labelView.notNil.if{labelView.resize_(2).align_(\left)};
+			unitView.notNil.if{unitView.resize_(8).align_(\left)};
+			numberView.resize_(8);
+			sliderView.resize_(5);
+			popUp.if{view.resize_(4)};
+		},
+		\horz, {
+			labelView.notNil.if{labelView.resize_(4).align_(\right)};
+			unitView.notNil.if{unitView.resize_(6).align_(\left)};
+			numberView.resize_(6);
+			sliderView.resize_(5);
+			popUp.if{view.resize_(2)};
+		});
+	
+	}
+	prSubViewBounds{arg rect, hasLabel, hasUnit;
+		var numBounds,labelBounds,sliderBounds, unitBounds, gap1, gap2, gap3, tmp, labelH, unitH;
+		gap1 = gap;	
+		gap2 = gap1;
+		gap3 = gap1;
+		labelH=labelSize.y;//  needed for \vert
+		unitH=labelSize.y; //  needed for \vert
+		hasLabel.not.if{ gap2 = 0@0; labelSize.x = 0 ;};
+		hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
+		
+		switch (layout,
+			\line2, {
+			
+				hasLabel.if{ // with label
+					unitBounds = (unitWidth@labelSize.y)
+						.asRect.left_(rect.width-unitWidth);// view to right
+					numBounds = (numSize.x@labelSize.y)
+						.asRect.left_(rect.width-unitBounds.width-numberWidth-gap3.x); // view to right
+					labelBounds = (labelSize.x@labelSize.y)
+						.asRect.width_(numBounds.left-gap2.x); //adjust width
+				}{ // no label
+				labelBounds = (0@labelSize.y).asRect; //just a dummy
+				numBounds = (numberWidth@labelSize.y).asRect; //view to left
+				(unitWidth>0).if{
+					unitBounds = Rect (numBounds.width+gap3.x, 0,
+						rect.width-numBounds.width-gap3.x,labelSize.y); //adjust width
+						}{
+					unitBounds = Rect (0, 0,0,0); //no unitView
+						numBounds = (rect.width@labelSize.y).asRect; //view to left
+						};
+						
 				};
-			numberView.resize_(3);
-			sliderView.resize_(2);
-			this.bounds_(view.bounds);
-			^this;
-		};
-		if (labelPosition == \left){
-			labelView.notNil.if{labelView.align = \rigth; labelView.resize_(1)};
-			numberView.resize_(3);
-			sliderView.resize_(2);
-			this.bounds_(view.bounds);
-			^this;
-		};
-		if (labelPosition == \stack){
-			numSize = view.bounds.width@20;
-			labelView.notNil.if{
-				labelSize = numSize;
-				this.bounds_(view.bounds);
-				labelView.align = \center; 
-				labelView.resize_(1);
-				};
-			numberView.resize_(7);
-			sliderView.resize_(4);
-			this.bounds_(view.bounds);
-			^this;
-		};
+				sliderBounds = Rect(
+						0,
+						labelSize.y+gap1.y,
+						rect.width, 
+						rect.height-numSize.y-gap1.y;
+						);
+				},
+			
+			 \vert, { 
+				hasLabel.not.if{labelH=0};
+				labelBounds = (rect.width@labelH).asRect; // to top
+				hasUnit.not.if{unitH=0};
+				unitBounds = (rect.width@unitH)
+					.asRect.top_(rect.height-labelSize.y); // to bottom
+				numBounds = (rect.width@labelSize.y)
+					.asRect.top_(rect.height-unitBounds.height-numSize.y-gap3.y); // to bottom
+				
+				sliderBounds = Rect(
+					0,
+					labelBounds.height+gap1.y, 
+					rect.width,
+					rect.height - labelBounds.height - unitBounds.height 
+							- numBounds.height - gap1.y - gap2.y - gap3.y
+					);
+				},
+				
+			 \horz, {
+				labelSize.y=view.bounds.height;
+				labelBounds = (labelSize.x@labelSize.y).asRect;
+				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth);
+				numBounds = (numSize.x@labelSize.y).asRect
+					.left_(rect.width-unitBounds.width-numSize.x-gap3.x);
+				sliderBounds  =  Rect(
+					labelBounds.width+gap1.x,
+					0,
+					rect.width - labelBounds.width - unitBounds.width 
+							- numBounds.width - gap1.x - gap2.x - gap3.x, 
+					labelBounds.height
+					);
+		});
 		
+		
+		^[labelBounds, numBounds, sliderBounds, unitBounds]
 	}
 	
-	prSubViewBounds{arg rect, hasLabel = true;
-		var numBounds,labelBounds,sliderBounds, tempGap, tempGap2, tmp;
-		tempGap = gap;	
-		tempGap2 = tempGap;
-		hasLabel.not.if{tempGap = 0; labelSize = 0@0};
-		
-		if (labelPosition == \top){
-			sliderBounds = Rect(
-					0,
-					numSize.y+tempGap,
-					rect.width, 
-					rect.height-numSize.y-tempGap
-					);
-			if (view.parent.respondsTo(\findWindow)){
-			 tmp = view.parent.findWindow.bounds;
-			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap));
-			 sliderBounds = sliderBounds.height_(max(sliderBounds.height,16));
-			};
-					
-			hasLabel.if{numBounds = Rect(rect.width-numSize.x,0, numSize.x, numSize.y)}
-					{numBounds = Rect(0,0,rect.width, numSize.y)};
-					
-			labelBounds = Rect(0,0,rect.width-numSize.x-tempGap,labelSize.y);
-		};
-		if (labelPosition == \left){
-			labelBounds = Rect(0,0, labelSize.x,rect.height);
-			numBounds = Rect(rect.width-numSize.x,0, numSize.x,rect.height);
-			sliderBounds = Rect(
-					labelSize.x+tempGap,
-					0,
-					rect.width-labelSize.x-tempGap-numBounds.width-tempGap2, 
-					rect.height
-					);
-		};
-		
-		if (labelPosition == \stack){
-					
-			labelBounds = Rect(0,0, rect.width,labelSize.y);
-			numBounds = Rect(0,rect.height-numSize.y, rect.width,numSize.y);
-			sliderBounds = Rect(
-					0,
-					labelSize.y+tempGap,
-					rect.width, 
-					rect.height-labelSize.y-tempGap-numBounds.height-tempGap2
-					);
-					
-		};
-		
-		^[labelBounds, numBounds, sliderBounds]
+	setColors{arg stringBackground, strColor, sliderColor,  boxColor,
+			 boxNormalColor, boxTypingColor,boxStringColor, knobColor,background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};
+				unitView.notNil.if{unitView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};
+				unitView.notNil.if{unitView.stringColor_(strColor)};};
+			boxColor.notNil.if{		
+				numberView.boxColor_(boxColor);	};
+			boxNormalColor.notNil.if{	
+				numberView.normalColor_(boxNormalColor);};
+			boxTypingColor.notNil.if{	
+				numberView.typingColor_(boxTypingColor);};
+			boxStringColor.notNil.if{	
+				numberView.stringColor_(boxStringColor);};
+			sliderColor.notNil.if{	
+				sliderView.background_(sliderColor);};
+			knobColor.notNil.if{	
+				sliderView.normalColor_(knobColor);};
+			background.notNil.if{	
+				view.background=background;};
+			numberView.refresh;
 	}
 	
-	label_{ arg string;
-		// if no label view exists, add one
-		labelView.isNil.if{
-			labelSize = 80@20;
-			if(labelPosition == \top)
-			 	{labelView = GUI.staticText.new(view, view.bounds.width@ labelSize.y);
-				labelView.align = \left};
-			if(labelPosition == \left)
-				{ labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
-				labelView.align = \right};
-			if(labelPosition == \stack)
-				{ labelSize = view.bounds.widht@numberView.bounds.height;
-				 labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
-				labelView.align = \center};
-			labelView.string = string;
-	 		this.bounds_(view.bounds); //recalculate bounds
-		}{
-		
-	 	labelView.string_(string)
-	 	};
-	 	
+	font_{ arg font;
+
+			labelView.notNil.if{labelView.font=font};
+			unitView.notNil.if{unitView.font=font};
+			numberView.font=font;
 	}
+	
 	
 }
 			
