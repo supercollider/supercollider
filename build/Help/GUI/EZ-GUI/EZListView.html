@@ -24,16 +24,17 @@ p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #2946d8}
-span.s3 {color: #5f689f}
-span.s4 {color: #3e54c5}
-span.s5 {color: #61699c}
+span.s2 {color: #4357c0}
+span.s3 {color: #666c94}
+span.s4 {color: #505fb1}
+span.s5 {color: #676d92}
 span.s6 {font: 11.0px Monaco}
-span.s7 {color: #000000}
-span.s8 {color: #0000bf}
-span.s9 {color: #007300}
-span.s10 {color: #606060}
-span.s11 {color: #bf0000}
+span.s7 {color: #0020f6}
+span.s8 {color: #000000}
+span.s9 {color: #0000bf}
+span.s10 {color: #007300}
+span.s11 {color: #606060}
+span.s12 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -52,99 +53,103 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds, label, items, globalAction, initVal, initAction, labelWidth, labelPosition, gap)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*new (parentView, bounds, label, items, globalAction, initVal, initAction, labelWidth, labelHeight,layout,gap)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZListView will create its own <a href="../Main-GUI/Window.html"><span class="s4">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s4">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s4">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s5">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s5">Point</span></a>. Default value is <span class="s6">160@200</span>.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created. If you set <b>label</b> later, the labelView will be created.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s5">Association</span></a>s ['label' -&gt; {arg listObj; value}, ].</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg listObj; value}.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the List, i.e. the index selected. Default value is 0.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initAction </b>- An instance of <a href="../../Core/Boolean.html"><span class="s5">Boolean</span></a>. Performs the action at <b>initVal</b> on creation of the list, plus the <b>globalAction</b>. Default value is false.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelWidth </b>- Default value is 80. Not used if <b>labelPosition</b> is top.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelPosition</b>- \top of \left. default is left;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- by default, the view tries to get its parent's gap.x, otherwise it defaults to 4. Setting it overrides these</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelWidth </b>- Default value is 80. Not used if <b>layout</b> is \vert.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelHeight </b>- Default value is 20. Not used if <b>layout</b> is \horz.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>layout</b>- \vert or \horz. default is vert;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- A <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. By default, the view tries to get its parent's gap, otherwise it defaults to 2@2. Setting it overrides these.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// default with label on top</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s8">Window</span>.new.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s8">FlowLayout</span>(w.view.bounds);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s8">EZListView</span>.new(w,</p>
+<p class="p11"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// default with vertical layout</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s9">Window</span>.new.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EZListView</span>.new(w,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>230@230,</p>
-<p class="p12"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"An SCListView:"<span class="s7">,</span></p>
+<p class="p12"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"An SCListView:"<span class="s8">,</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">\item0</span> -&gt;{<span class="s8">|a|</span> (<span class="s10">"this is item 0"</span>).postln},</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">\item1</span> -&gt;{<span class="s8">|a|</span> (<span class="s10">"this is item 1"</span>).postln},</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">\item2</span> -&gt;{<span class="s8">|a|</span> (<span class="s10">"this is item 2"</span>).postln},</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item0</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 0"</span>).postln},</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item1</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 1"</span>).postln},</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item2</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 2"</span>).postln},</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s10">"this is a global action"</span>.postln},</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is a global action"</span>.postln},</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 2,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s8">true</span>,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelWidth: 120</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s9">true</span>,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelWidth: 120,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelHeight: 16,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>layout: <span class="s10">\vert</span>,</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gap: 2@2</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// or a more simple syntax:</p>
+<p class="p11"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// or a more simple syntax (uses decorator gap settings):</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s8">Window</span>.new.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s8">FlowLayout</span>(w.view.bounds);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s8">EZListView</span>.new(w,200@230, <span class="s10">" List:"</span>);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s9">\item0</span>, {<span class="s10">"this is item 0"</span>. postln});</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s9">\item1</span>, {<span class="s10">"this is item 1"</span>. postln});</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s9">\item2</span>, {<span class="s10">"this is item 2"</span>. postln});</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.labelView.background_(<span class="s8">Color</span>.grey).stringColor_(<span class="s8">Color</span>.white)</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s9">Window</span>.new.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EZListView</span>.new(w,200@230, <span class="s11">" List:"</span>);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.labelView.background_(<span class="s9">Color</span>.grey).stringColor_(<span class="s9">Color</span>.white)</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><b>Examples</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p11">// Creates its own window if parentView is nil:</p>
 <p class="p10">(</p>
-<p class="p10">g = <span class="s8">EZListView</span>.new(label: <span class="s10">" My PopUp List: "</span>);</p>
-<p class="p10">g.addItem(<span class="s9">\item0</span>, {<span class="s10">"this is item 0"</span>. postln});</p>
-<p class="p10">g.addItem(<span class="s9">\item1</span>, {<span class="s10">"this is item 1"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item2</span>, {<span class="s10">"this is item 2"</span>. postln});</p>
-<p class="p14">g.labelView.background_(<span class="s8">Color</span>.grey).stringColor_(<span class="s8">Color</span>.white)</p>
+<p class="p10">g = <span class="s9">EZListView</span>.new(label: <span class="s11">" My PopUp List: "</span>);</p>
+<p class="p10">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
+<p class="p10">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
+<p class="p14">g.labelView.background_(<span class="s9">Color</span>.grey).stringColor_(<span class="s9">Color</span>.white)</p>
 <p class="p15"><br></p>
 <p class="p14">)</p>
 <p class="p15"><br></p>
-<p class="p11">// label on the left:</p>
+<p class="p11">// Layout horizontal:</p>
 <p class="p10">(</p>
-<p class="p10">g = <span class="s8">EZListView</span>.new(<span class="s8">nil</span>,205@180, <span class="s10">"Choose One: "</span>, labelPosition:<span class="s9">\left</span>);</p>
-<p class="p10">10.do{<span class="s8">|i|</span> g.addItem(<span class="s10">"item"</span>++i.asString, {(<span class="s10">"this is item"</span> ++i.asString). postln})};</p>
-<p class="p14">g.labelView.background_(<span class="s8">Color</span>.grey).stringColor_(<span class="s8">Color</span>.white)</p>
+<p class="p10">g = <span class="s9">EZListView</span>.new(<span class="s9">nil</span>,205@180, <span class="s11">"Choose One: "</span>, layout:<span class="s10">\horz</span>);</p>
+<p class="p10">10.do{<span class="s9">|i|</span> g.addItem(<span class="s11">"item"</span>++i.asString, {(<span class="s11">"this is item"</span> ++i.asString). postln})};</p>
+<p class="p14">g.labelView.background_(<span class="s9">Color</span>.grey).stringColor_(<span class="s9">Color</span>.white)</p>
 <p class="p14">)</p>
 <p class="p15"><br></p>
 <p class="p11">// No labelView created, so set the window title;</p>
 <p class="p10">(</p>
-<p class="p10">g = <span class="s8">EZListView</span>.new(bounds:200@230); <span class="s11">// no label</span></p>
-<p class="p10">12.do{<span class="s8">|i|</span> g.addItem(<span class="s10">"item"</span>++i.asString, {(<span class="s10">"this is item"</span> ++i.asString). postln})};</p>
-<p class="p14">g.view.parent.findWindow.name=<span class="s10">" choose item"</span>;</p>
+<p class="p10">g = <span class="s9">EZListView</span>.new(bounds:200@230); <span class="s12">// no label</span></p>
+<p class="p10">12.do{<span class="s9">|i|</span> g.addItem(<span class="s11">"item"</span>++i.asString, {(<span class="s11">"this is item"</span> ++i.asString). postln})};</p>
+<p class="p14">g.view.parent.findWindow.name=<span class="s11">" choose item"</span>;</p>
 <p class="p14">)</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
 <p class="p11">// insert item;</p>
 <p class="p10">(</p>
-<p class="p10">g = <span class="s8">EZListView</span>.new(<span class="s8">nil</span>,200@200, <span class="s10">"List:"</span>);</p>
-<p class="p14">g.addItem(<span class="s9">\item0</span>, {<span class="s10">"this is item 0"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item1</span>, {<span class="s10">"this is item 1"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item2</span>, {<span class="s10">"this is item 2"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item4</span>, {<span class="s10">"this is item 4"</span>. postln});</p>
+<p class="p10">g = <span class="s9">EZListView</span>.new(<span class="s9">nil</span>,200@200, <span class="s11">"List:"</span>);</p>
+<p class="p14">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
 <p class="p14">)</p>
 <p class="p15"><br></p>
-<p class="p14">g.insertItem(3, <span class="s9">\item3</span>, {<span class="s10">"this is item 3"</span>. postln});</p>
+<p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11">// remove item;</p>
 <p class="p10">(</p>
-<p class="p10">g = <span class="s8">EZListView</span>.new(<span class="s8">nil</span>,200@200, <span class="s10">"List:"</span>);</p>
-<p class="p14">g.addItem(<span class="s9">\item0</span>, {<span class="s10">"this is item 0"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item1</span>, {<span class="s10">"this is item 1"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item2</span>, {<span class="s10">"this is item 2"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s9">\item4</span>, {<span class="s10">"this is item 4"</span>. postln});</p>
-<p class="p14">g.insertItem(3, <span class="s9">\item3</span>, {<span class="s10">"this is item 3"</span>. postln});</p>
+<p class="p10">g = <span class="s9">EZListView</span>.new(<span class="s9">nil</span>,200@200, <span class="s11">"List:"</span>);</p>
+<p class="p14">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
+<p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
+<p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
 <p class="p14">)</p>
 <p class="p15"><br></p>
 <p class="p14">g. removeItemAt(0);</p>
-<p class="p16"><br></p>
+<p class="p7"><br></p>
 </body>
 </html>

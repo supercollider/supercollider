@@ -1,12 +1,11 @@
 EZListView : EZLists{
 	
-	initViews{ arg parentView, bounds, label, labelWidth,argLabelPosition;
-		var labelBounds, listBounds,w, winBounds, labelHeight;
+	initViews{ arg parentView, bounds, label, labelWidth,labelHeight,arglayout;
+		var labelBounds, listBounds,w, winBounds;
 		
 		bounds.isNil.if{bounds= 160@200};
 		labelWidth = labelWidth ? 80;
-		labelHeight =  20;
-		labelPosition=argLabelPosition ? \top;
+		layout=arglayout ? \vert;
 		labelSize=labelWidth@labelHeight;
 
 		parentView.isNil.if{
@@ -25,12 +24,11 @@ EZListView : EZLists{
 			bounds=bounds.asRect;
 			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		};
-		view.decorator=FlowLayout(view.bounds,0@0,0@0);
 
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
 		
 		label.notNil.if{ //only add a label if desired
-			if (labelPosition==\top){
+			if (layout==\vert){
 				labelView = GUI.staticText.new(view, labelBounds).resize_(2);
 				labelView.align = \left;
 				}{
@@ -45,6 +43,25 @@ EZListView : EZLists{
 
 	listView{^widget}
 	
+	setColors{arg stringBackground, strColor, listBackground,  listStringColor,
+	 selectedStringColor,hiliteColor, background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};};
+			listBackground.notNil.if{		
+				this.listview.background_(listBackground);};
+			listStringColor.notNil.if{	
+				this.listview.stringColor_(listStringColor);};
+			selectedStringColor.notNil.if{	
+				this.listview.selectedStringColor_(selectedStringColor);};
+			hiliteColor.notNil.if{	
+				this.listview.hiliteColor_(hiliteColor);};
+				
+			background.notNil.if{	
+				view.background=background;};
+	}
 }
 
 

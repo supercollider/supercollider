@@ -1,29 +1,6 @@
 EZGui{ // an abstract class
-	var <>labelView, <widget, <view, <gap, <labelPosition, labelSize, <alwaysOnTop=false;
+	var <>labelView, widget, <view, <gap,  <layout, <labelSize, <alwaysOnTop=false;
 	
-	label_{ arg string;
-	
-		labelView.isNil.if{
-			labelSize=80@20;
-			if(labelPosition==\top, {
-				labelView = GUI.staticText.new(view, view.bounds.width@ labelSize.y);
-				labelView.align = \left;
-			},{
-				labelView = GUI.staticText.new(view, labelSize.x @ view.bounds.height);
-				labelView.align = \right;
-			});
-			labelView.string = string;
-	 		this.bounds_(view.bounds); //recalculate bounds
-		}{
-		
-	 	labelView.string_(string)
-	 	};
-	 	
-	}
-	
-	label {
-	 	^labelView.string;
-	}
 		
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
@@ -31,31 +8,8 @@ EZGui{ // an abstract class
 	enabled {  ^widget.enabled } 
 	enabled_ { |bool| widget.enabled_(bool) }
 	
-	remove { [widget, labelView].do(_.remove) }
+	remove { view.remove}
 	
-	bounds{^view.bounds}
-	
-	bounds_{arg rect;
-		var labelBounds, listBounds;
-		view.bounds=rect;
-		# labelBounds,listBounds = this.prSubViewBounds(view.bounds, labelView.notNil);
-		
-		labelView.notNil.if{labelView.bounds=labelBounds};
-		widget.bounds=listBounds;
-	
-	}
-	
-	labelHeight{
-		^ labelSize.y
-	}
-	
-	labelHeight_{arg height;
-		labelSize.y=height;
-		this.bounds_(view.bounds); 	
-	}
-	labelWidth{
-		^ labelSize.x
-	}
 	
 	alwaysOnTop_{arg bool;
 		alwaysOnTop=bool;
@@ -64,17 +18,20 @@ EZGui{ // an abstract class
 		}
 	
 	}
-	
-	labelWidth_{arg width;
-		labelSize.x=width;
-		this.bounds_(view.bounds); 	
+	font_{ arg font;
+
+			labelView.notNil.if{labelView.font=font};
+			widget.font=font;
 	}
 	
-	labelPosition_{arg pos;
-		labelPosition=pos;
+
+	
+	
+	layout_{arg pos;
+		layout=pos;
 		labelSize=80@20;
 		labelView.notNil.if{
-			(labelPosition==\top).if{
+			(layout==\vert).if{
 			labelView.align=\left;
 			labelView.resize_(2);
 			}{
@@ -86,34 +43,28 @@ EZGui{ // an abstract class
 		this.bounds_(view.bounds); 	
 	}
 	
-	gap_{arg val;
-		gap=val;
-		this.bounds_(this.view.bounds);
-		
-	}
 	
-	prSubViewBounds{arg rect, hasLabel=true;
-		var widgetBounds,labelBounds, tempGap,tmp;
-		tempGap=gap;	
-		hasLabel.not.if{tempGap=0; labelSize=0@0};
+	prSubViewBounds{arg rect, hasLabel;
+		var widgetBounds,labelBounds,tmp;
+		hasLabel.not.if{gap=0@0; labelSize=0@0};
 		
-		if (labelPosition==\top)
+		if (layout==\vert)
 			{ widgetBounds= Rect(
 					0,
-					labelSize.y+tempGap,
+					labelSize.y+gap.y,
 					rect.width,  
-					rect.height-labelSize.y-tempGap
+					rect.height-labelSize.y-gap.y
 					);
 			if (view.parent.respondsTo(\findWindow)){
 			 tmp = view.parent.findWindow.bounds;
-			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap));
+			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap.y));
 			 widgetBounds = widgetBounds.height_(max(widgetBounds.height,16));
 			};
 			labelBounds=Rect(0,0,widgetBounds.width,labelSize.y);}
 			{ widgetBounds= Rect(
-					labelSize.x+tempGap,
+					labelSize.x+gap.x,
 					0,
-					rect.width-labelSize.x-tempGap,  
+					rect.width-labelSize.x-gap.x,  
 					rect.height
 					);
 			labelBounds=Rect(0,0, labelSize.x ,widgetBounds.height )};
@@ -130,23 +81,23 @@ EZLists : EZGui{  // an abstract class
 	var <items, <>globalAction, value; 
 	
 	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
-			initAction=false, labelWidth, labelPosition, gap;
+			initAction=false, labelWidth,labelHeight=20, layout, gap;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
-			initAction, labelWidth,labelPosition, gap);
+			initAction, labelWidth,labelHeight,layout, gap);
 			}
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
-			initAction, labelWidth, labelPosition,  argGap;
+			initAction, labelWidth, labelHeight, layout,  argGap;
 			
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		
-		argGap.isNil.if
-			{gap = decorator.tryPerform(\gap).tryPerform(\x)}
-			{gap = argGap};
-		gap  = gap ? 2;
+		argGap.isNil.if{ 
+			gap = decorator.tryPerform(\gap);
+			gap = gap ? (2@2)}
+			{gap=argGap};
 		
-		this.initViews(  parentView, bounds, label, labelWidth,labelPosition );
+		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
 			
 		this.items=argItems ? [];
 		
@@ -168,9 +119,8 @@ EZLists : EZGui{  // an abstract class
 		};
 	}	
 	
-	initViews{ arg parentView, bounds, label, labelWidth, labelHeight,argLabelPosition;
-			var labelBounds, listBounds,w, winBounds;
-	}
+	initViews{}  // override this for your view
+	
 	value{ ^widget.value }
 	
 	value_{|val| widget.value_(val)}

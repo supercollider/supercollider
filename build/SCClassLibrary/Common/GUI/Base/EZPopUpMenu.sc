@@ -1,13 +1,10 @@
 EZPopUpMenu : EZLists{
-
-
 	
-	initViews{ arg parentView, bounds, label, labelWidth,argLabelPosition;
-		var labelBounds, listBounds,w, winBounds, labelHeight;
+	initViews{ arg parentView, bounds, label, labelWidth,labelHeight,arglayout;
+		var labelBounds, listBounds,w, winBounds ;
 		
 		labelWidth = labelWidth ? 80;
-		labelHeight= 20;
-		labelPosition=argLabelPosition ? \left;
+		layout=arglayout ? \horz;
 		labelSize=labelWidth@labelHeight;
 		
 		parentView.isNil.if{
@@ -34,7 +31,7 @@ EZPopUpMenu : EZLists{
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
 		
 		label.notNil.if{ //only add a label if desired
-			if (labelPosition==\top){
+			if (layout==\vert){
 				labelView = GUI.staticText.new(view, labelBounds).resize_(2);
 				labelView.align = \left;
 				}{
@@ -48,6 +45,21 @@ EZPopUpMenu : EZLists{
 	}
 	
 	menu {^ widget}
+	
+	setColors{arg stringBackground, strColor, menuBackground,  menuStringColor,background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};};
+			menuBackground.notNil.if{		
+				this.menu.background_(menuBackground);};
+			menuStringColor.notNil.if{	
+				this.menu.stringColor_(menuStringColor);};
+			background.notNil.if{	
+				view.background=background;};
+	}
+	
 }
 
 
