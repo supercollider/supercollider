@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,14 +13,14 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d4d4d}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #840d15}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #65191d}
-span.s1 {color: #0000ab}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #75151a}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5a1c20}
+span.s1 {color: #0011a8}
 span.s2 {color: #000000}
-span.s3 {color: #0009a8}
-span.s4 {color: #345e0b}
-span.s5 {color: #0011a4}
-span.s6 {color: #445a11}
+span.s3 {color: #0014a5}
+span.s4 {color: #3f5c0f}
+span.s5 {color: #0019a1}
+span.s6 {color: #495915}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,7 +33,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span>trigger </b>- a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The following args are polled at grain creation time</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>dur</b> - size of the grain.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>sndbuf</b> - the buffer holding an audio signal</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>sndbuf</b> - the buffer holding a mono audio signal. If using multi-channel files, use Buffer.readChannel.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>rate</b> - the playback rate of the sampled sound</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>pos</b> - the playback position for the grain to start with (0 is beginning, 1 is end of file)</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>interp -<i> </i></b>the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.<span class="Apple-converted-space"> </span></p>
