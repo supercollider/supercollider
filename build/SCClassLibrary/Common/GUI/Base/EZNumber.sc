@@ -20,7 +20,7 @@ EZNumberSC : EZGui{
 		var labelBounds, numBounds,w, winBounds, 
 				viewBounds, unitBounds;
 						
-		// try to use the paretn decorator gap
+		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		argGap.isNil.if{ 
 			gap = decorator.tryPerform(\gap);
@@ -31,11 +31,11 @@ EZNumberSC : EZGui{
 		numberWidth = argNumberWidth;
 		layout=argLayout;
 		
-		// pop up window
+		// if no parent, then pop up window 
 		parentView.isNil.if{
 			popUp=true;
-				// if bounds is a point the place the window on screen
 				bounds.isNil.if {bounds= 160@20};
+				// if bounds is a point the place the window on screen
 				if (bounds.class==Point)
 					{ bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
 					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
@@ -47,17 +47,14 @@ EZNumberSC : EZGui{
 				parentView=w.asView;
 				w.front;
 				bounds=bounds.asRect;
-				// If numberWidth is set, then adjust the parent view size  both subviews
-				//numberWidth.notNil.if{ bounds=bounds.width_(labelWidth+gap.x+numberWidth)};
 				// inset the bounds to make a nice margin
 				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
 				view=GUI.compositeView.new(parentView,bounds)
 					.relativeOrigin_(true).resize_(2);
-			}{
+		// normal parent view			
+		}{
 			bounds.isNil.if{bounds= 160@20};
 			bounds=bounds.asRect;
-				// If numberWidth is set, then adjust the parent view size  both subviews
-				//numberWidth.notNil.if{ bounds=bounds.width_(labelWidth+gap.x+numberWidth)};
 			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		};
 		
@@ -67,7 +64,9 @@ EZNumberSC : EZGui{
 		// calcualate bounds
 		# labelBounds,numBounds, unitBounds 
 				= this.prSubViewBounds(bounds, label.notNil, unitWidth>0);
-
+			
+		// insert the views	
+		
 		label.notNil.if{ //only add a label if desired
 				labelView = GUI.staticText.new(view, labelBounds);
 			if (layout==\line2)
@@ -79,6 +78,9 @@ EZNumberSC : EZGui{
 		(unitWidth>0).if{ //only add a unitLabel if desired
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
+
+
+		// set view parameters and actions
 
 		controlSpec = argControlSpec.asSpec;
 		(unitWidth>0).if{ unitView.string = " "++controlSpec.units.asString};
@@ -121,17 +123,14 @@ EZNumberSC : EZGui{
 			numberView.value = value.round(round);
 		};
 	}
-			
-	enabled {  ^numberView.enabled } 
-	enabled_ { |bool| numberView.enabled_(bool) }
+				
 	
-	
-	prSetViewParams{
+	prSetViewParams{ // sets resize and alignment for different layouts
 	
 		switch (layout,
 		\line2, {
-			labelView.notNil.if{labelView.resize_(2).align_(\left)};
-			unitView.notNil.if{unitView.resize_(6).align_(\left)};
+			labelView.notNil.if{labelView.resize_(2)};
+			unitView.notNil.if{unitView.resize_(6)};
 			numberView.resize_(5);
 		},
 		\horz, {
@@ -148,7 +147,8 @@ EZNumberSC : EZGui{
 	}
 	
 	prSubViewBounds{arg rect, hasLabel, hasUnit;
-		var numBounds,labelBounds,sliderBounds, unitBounds, gap1, gap2, numY;
+		var numBounds,labelBounds,sliderBounds;
+		var unitBounds, gap1, gap2, numY;
 		gap1 = gap;	
 		gap2 = gap1;
 		hasLabel.not.if{ gap1 = 0@0; labelSize=0@0};
@@ -157,7 +157,7 @@ EZNumberSC : EZGui{
 		switch (layout,
 			\line2, {
 			
-				labelBounds = Rect(
+				labelBounds = Rect( // fill the line
 						0,
 						0,
 						rect.width, 
@@ -166,18 +166,18 @@ EZNumberSC : EZGui{
 						
 				numSize.y=numSize.y-gap1.y;
 				numY=labelBounds.height+gap1.y;
-				unitBounds = Rect( view.bounds.width - unitWidth,
+				unitBounds = Rect( view.bounds.width - unitWidth, // //adjust to fit
 					numY, unitWidth, numSize.y);
 				numBounds = Rect(0, numY, 
-					rect.width-unitWidth-gap2.x, numSize.y); // view to right
+					rect.width-unitWidth-gap2.x, numSize.y); // to right
 					
 				},
 							
 			 \horz, {
 				labelSize.y=view.bounds.height;
-				labelBounds = (labelSize.x@labelSize.y).asRect;
-				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth);
-				numBounds  =  Rect(
+				labelBounds = (labelSize.x@labelSize.y).asRect; // to left
+				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right
+				numBounds  =  Rect( //adjust to fit
 					labelBounds.width+gap1.x,
 					0,
 					rect.width - labelBounds.width - unitBounds.width - gap1.x - gap2.x , 
