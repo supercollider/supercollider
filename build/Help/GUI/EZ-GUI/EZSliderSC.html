@@ -10,8 +10,8 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #ff0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #ff0000; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #da251a}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #da251a; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
@@ -24,21 +24,21 @@ p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #61699c}
-span.s3 {color: #676d92}
+span.s2 {color: #636a99}
+span.s3 {color: #686e90}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #6a708c}
-span.s7 {color: #6f7180}
+span.s6 {color: #6b718a}
+span.s7 {color: #6f717f}
 span.s8 {font: 11.0px Monaco}
-span.s9 {color: #3e54c5}
+span.s9 {color: #4357c0}
 span.s10 {color: #0000bf}
 span.s11 {color: #606060}
 span.s12 {color: #6f7178}
-span.s13 {color: #6f7183}
-span.s14 {color: #0c2eee}
+span.s13 {color: #6f7182}
+span.s14 {color: #1638e6}
 span.s15 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -63,7 +63,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZSlider will create its own <a href="../Main-GUI/Window.html"><span class="s6">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s6">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. Default value is <span class="s8">160@20</span>.</p>
 <p class="p13"><br></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created. If you set <b>label</b> later, the labelView will be created.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space"> </span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>controlSpec </b>- The <a href="../../Control/ControlSpec.html"><span class="s2">ControlSpec</span></a> for scaling the value.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A <a href="../../Core/Kernel/Function.html"><span class="s2">Function</span></a> called when the value changes. The function is passed the EZSlider instance as its argument.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- The value to initialize the slider and number box with. If nil, then it uses the ControlSpec's default value.</p>
@@ -371,6 +371,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">};</p>
 <p class="p14">});</p>
 <p class="p14">)</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
