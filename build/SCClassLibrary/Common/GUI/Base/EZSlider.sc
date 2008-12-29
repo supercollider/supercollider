@@ -70,7 +70,7 @@ EZSliderSC : EZGui {
 			labelView.string = label;
 		};
 
-		unitWidth.notNil.if{ //only add a unitLabel if desired
+		(unitWidth>0).if{ //only add a unitLabel if desired
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
 
@@ -80,7 +80,7 @@ EZSliderSC : EZGui {
 		
 		
 		controlSpec = argControlSpec.asSpec;
-		unitView.string = " "++controlSpec.units.asString;
+		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
@@ -143,7 +143,21 @@ EZSliderSC : EZGui {
 	prSetViewParams{
 	
 		switch (layout,
-		\lin2, {
+		\line2, {
+			labelView.notNil.if{
+				labelView.resize_(2).align_(\left);
+				unitView.notNil.if{unitView.resize_(3).align_(\left)};
+				numberView.resize_(3);
+				}{
+				unitView.notNil.if{
+					unitView.resize_(2).align_(\left);
+					numberView.resize_(1);
+					}{
+					numberView.resize_(2);
+					};
+				};
+			sliderView.resize_(5);
+			popUp.if{view.resize_(2)};
 		},
 		\vert, {
 			labelView.notNil.if{labelView.resize_(2).align_(\left)};

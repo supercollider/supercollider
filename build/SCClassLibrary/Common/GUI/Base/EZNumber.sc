@@ -33,6 +33,7 @@ EZNumberSC : EZGui{
 		
 		// pop up window
 		parentView.isNil.if{
+			popUp=true;
 				// if bounds is a point the place the window on screen
 				bounds.isNil.if {bounds= 160@20};
 				if (bounds.class==Point)
@@ -75,12 +76,12 @@ EZNumberSC : EZGui{
 			labelView.string = label;
 		};
 
-		unitWidth.notNil.if{ //only add a unitLabel if desired
+		(unitWidth>0).if{ //only add a unitLabel if desired
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
 
 		controlSpec = argControlSpec.asSpec;
-		unitView.string = " "++controlSpec.units.asString;
+		(unitWidth>0).if{ unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
@@ -94,6 +95,8 @@ EZNumberSC : EZGui{
 		}{
 			this.value = initVal;
 		};
+		
+		this.prSetViewParams;
 	}
 	
 	value_{ arg val; 
@@ -123,26 +126,27 @@ EZNumberSC : EZGui{
 	enabled_ { |bool| numberView.enabled_(bool) }
 	
 	
-	
 	prSetViewParams{
 	
 		switch (layout,
-		\lin2, {
-		},
-		\vert, {
+		\line2, {
 			labelView.notNil.if{labelView.resize_(2).align_(\left)};
-			unitView.notNil.if{unitView.resize_(8).align_(\left)};
-			numberView.resize_(8);
-			popUp.if{view.resize_(4)};
+			unitView.notNil.if{unitView.resize_(6).align_(\left)};
+			numberView.resize_(5);
 		},
 		\horz, {
-			labelView.notNil.if{labelView.resize_(4).align_(\right)};
-			unitView.notNil.if{unitView.resize_(6).align_(\left)};
-			numberView.resize_(6);
-			popUp.if{view.resize_(2)};
+			labelView.notNil.if{
+				labelView.resize_(4).align_(\right);
+				numberView.resize_(5);
+				unitView.notNil.if{unitView.resize_(6)};
+			}{
+				unitView.notNil.if{	unitView.resize_(6)};
+				numberView.resize_(5);
+			};
 		});
-	
+			popUp.if{view.resize_(2)};
 	}
+	
 	prSubViewBounds{arg rect, hasLabel, hasUnit;
 		var numBounds,labelBounds,sliderBounds, unitBounds, gap1, gap2, numY;
 		gap1 = gap;	
