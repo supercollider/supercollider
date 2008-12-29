@@ -98,7 +98,7 @@ EZRangerJ {
 
 	// EZRanger laid out in two lines
 
-EZRanger2 : EZRangerJ { 
+EZRanger2J : EZRangerJ { 
 	*new { |w, dimensions, label, spec, action, initVal, initAction=false, 
 		labelWidth=60, numberWidth=40, unitWidth=30, useTwoLines=true|
 				

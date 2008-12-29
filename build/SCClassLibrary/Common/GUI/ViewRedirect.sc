@@ -86,14 +86,4 @@ EZNumber : ViewRedirect  {
 	}
 	*key { ^\ezNumber }
 }
-EZRanger : ViewRedirect  {
-
-	*new { arg parent, bounds, label, controlSpec, action, initVal, 
-			initAction=false, labelWidth=80, numberWidth=40 , unitWidth=0,
-			 labelHeight=20,  layout=\horz, gap;
-		^this.implClass.new(parent, bounds, label, controlSpec, action, initVal, 
-			initAction, labelWidth, numberWidth, unitWidth, labelHeight, layout, gap)
-	}
-	*key { ^\ezRanger }
-}
 

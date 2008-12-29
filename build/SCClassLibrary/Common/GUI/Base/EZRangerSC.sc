@@ -1,5 +1,5 @@
 
-EZRangerSC : EZGui {
+EZRanger : EZGui {
 
 	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec, 
 		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth, gap;
