@@ -63,7 +63,6 @@ CocoaGUI {
 	*scrollView { ^SCScrollView }
 	*ezSlider { ^EZSliderSC }
 	*ezNumber { ^EZNumberSC }
-	*ezRanger { ^EZRangerSC }
 	*menuItem { ^CocoaMenuItem }
 	
 	*font { ^Font }
