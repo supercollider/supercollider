@@ -1,12 +1,11 @@
 EZGui{ // an abstract class
-	var <>labelView, widget, <view, <gap,  <layout, <labelSize, <alwaysOnTop=false;
-	
-		
+	var <>labelView, widget, <view, <gap,  <layout, labelSize, <alwaysOnTop=false;
+			
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
-	enabled {  ^widget.enabled } 
-	enabled_ { |bool| widget.enabled_(bool) }
+	enabled {  ^view.enabled } 
+	enabled_ { |bool| view.enabled_(bool) }
 	
 	remove { view.remove}
 	
@@ -33,25 +32,21 @@ EZGui{ // an abstract class
 		hasLabel.not.if{gap=0@0; labelSize=0@0};
 		
 		if (layout==\vert)
-			{ widgetBounds= Rect(
+			{ widgetBounds= Rect(  // fit to full width
 					0,
 					labelSize.y+gap.y,
 					rect.width,  
 					rect.height-labelSize.y-gap.y
 					);
-			if (view.parent.respondsTo(\findWindow)){
-			 tmp = view.parent.findWindow.bounds;
-			 view.parent.findWindow.bounds = tmp.height_(max(tmp.height,62+gap.y));
-			 widgetBounds = widgetBounds.height_(max(widgetBounds.height,16));
-			};
-			labelBounds=Rect(0,0,widgetBounds.width,labelSize.y);}
-			{ widgetBounds= Rect(
+			labelBounds=Rect(0,0,widgetBounds.width,labelSize.y);//fit to full width
+		}{ 
+			widgetBounds= Rect(   // fit to full remaining
 					labelSize.x+gap.x,
 					0,
 					rect.width-labelSize.x-gap.x,  
 					rect.height
 					);
-			labelBounds=Rect(0,0, labelSize.x ,widgetBounds.height )};
+			labelBounds=Rect(0,0, labelSize.x ,widgetBounds.height )}; // to left
 		
 		^[labelBounds, widgetBounds]
 	}
@@ -74,13 +69,14 @@ EZLists : EZGui{  // an abstract class
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
 			initAction, labelWidth, labelHeight, layout,  argGap;
 			
+		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
-		
 		argGap.isNil.if{ 
 			gap = decorator.tryPerform(\gap);
 			gap = gap ? (2@2)}
 			{gap=argGap};
 		
+		// init the views (hndled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
 			
 		this.items=argItems ? [];
@@ -103,7 +99,7 @@ EZLists : EZGui{  // an abstract class
 		};
 	}	
 	
-	initViews{}  // override this for your view
+	initViews{}  // override this for your subclass views
 	
 	value{ ^widget.value }
 	
