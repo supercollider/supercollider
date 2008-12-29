@@ -2363,7 +2363,7 @@ void SCRangeSlider::moveRangeFromPoint(SCPoint where)
         }
     } else {
         moveableRange = bounds.height - 5;
-        pos = (where.y - bounds.y - 2) / moveableRange;
+        pos = 1.0 - (where.y - bounds.y - 2) / moveableRange;
         range = mHi - mLo;
         if (pos-(range/2) < 0.0) {
             lo = 0;
