@@ -2257,11 +2257,12 @@ SCRangeSlider::SCRangeSlider(SCContainerView *inParent, PyrObject* inObj, SCRect
 void SCRangeSlider::draw(SCRect inDamage)
 {
     calcRangeRect();
+    SCRect bounds = getDrawBounds();
     
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     
-    CGRect cgBounds = SCtoCGRect(mBounds);
+    CGRect cgBounds = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, cgBounds);
     
 	if (mBackgroundImage)
