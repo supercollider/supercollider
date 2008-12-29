@@ -10,15 +10,14 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica; min-height: 24.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; min-height: 17.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7b2c20}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 20.0px Helvetica}
-span.s2 {color: #0922b2}
-span.s3 {color: #606060}
-span.s4 {color: #476c1d}
-span.s5 {color: #000000}
+span.s2 {color: #000000}
+span.s3 {color: #1129ac}
+span.s4 {color: #516a24}
+span.s5 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,92 +48,53 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Another useful instance variable is <b>round</b>, the rounding precision for the number box display.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>The default value for <b>round</b> is 0.001 .</p>
 <p class="p3"><br></p>
-<p class="p1"><b>// Examples:</b></p>
+<p class="p3"><br></p>
 <p class="p4"><br></p>
-<p class="p5">(</p>
-<p class="p5">w = <span class="s2">Window</span>(<span class="s3">"EZRanger"</span>, <span class="s2">Rect</span>(400, 400, 400, 100)).front;</p>
-<p class="p5">w.view.decorator_(<span class="s2">FlowLayout</span>(w.bounds.copy.moveTo(0, 0)));</p>
-<p class="p6"><br></p>
-<p class="p5">r = <span class="s2">EZRanger</span>(w, 384@20, <span class="s3">"test"</span>, <span class="s4">\freq</span>, { <span class="s2">|ez|</span> ez.value.postln }, [250, 4000]).round_(0.1);</p>
-<p class="p6"><br></p>
-<p class="p5">)</p>
-<p class="p6"><br></p>
-<p class="p5">r.lo_(40);</p>
-<p class="p5">r.hi_(300);</p>
-<p class="p5">r.value;</p>
-<p class="p5">r.value_([300, 3000]);</p>
-<p class="p5">r.valueAction_([200, 5000]);</p>
-<p class="p6"><br></p>
-<p class="p5">r.spec.postcs;</p>
-<p class="p6"><br></p>
-<p class="p5">r.enabled;</p>
-<p class="p5">r.enabled_(<span class="s2">false</span>);</p>
-<p class="p5">r.enabled_(<span class="s2">true</span>);</p>
-<p class="p6"><br></p>
-<p class="p5">r.visible;</p>
-<p class="p5">r.visible_(<span class="s2">false</span>);</p>
-<p class="p5">r.visible_(<span class="s2">true</span>);</p>
-<p class="p6"><br></p>
-<p class="p5">r.remove; w.refresh;</p>
-<p class="p6"><br></p>
-<p class="p6"><br></p>
-<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>// layout option in two lines:</p>
-<p class="p5">(</p>
-<p class="p5">w = <span class="s2">GUI.window.new</span>(<span class="s3">"EZRanger2"</span>, <span class="s2">Rect</span>(400, 400, 300, 100)).front;</p>
-<p class="p5">w.view.decorator_(<span class="s2">FlowLayout</span>(w.bounds.copy.moveTo(0, 0)));</p>
-<p class="p6"><br></p>
-<p class="p5"><span class="s2">EZRanger2</span>(w, 190@40, label: <span class="s3">"test2"</span>, spec: <span class="s4">\freq</span>, initVal: [2000, 6000], labelWidth: 40, numberWidth: 60, unitWidth: 20)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(0.01);</p>
-<p class="p5"><span class="s2">EZRanger2</span>(w, 190@40, label: <span class="s3">"test3"</span>, spec: <span class="s4">\freq</span>, initVal: [200, 600], labelWidth: 40, numberWidth: 60, unitWidth: 20)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(0.01);</p>
-<p class="p5">)</p>
-<p class="p6"><br></p>
-<p class="p6"><br></p>
-<p class="p6"><br></p>
-<p class="p7"><span class="s5">(<span class="Apple-tab-span">	</span></span>// example to explore a synthesis idea:</p>
-<p class="p5">p = <span class="s2">ProxySpace</span>.push(s.boot);</p>
-<p class="p6"><br></p>
-<p class="p5">q = q ? ();</p>
-<p class="p5">q.freqRange = [200, 2000];</p>
-<p class="p5">q.ampRange = [0.1, 1];</p>
-<p class="p5">q.ringRange = [0.1, 10];</p>
-<p class="p5">q.numRange = [3, 30];</p>
-<p class="p6"><br></p>
-<p class="p5">q.soundfunc = { <span class="s2">|dens=5|</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Splay</span>.ar(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Array</span>.fill(exprand(q.numRange[0], q.numRange[1]).asInteger, {</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Ringz</span>.ar(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dust</span>.ar(dens),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.freqRange[0], q.freqRange[1]),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.ringRange[0], q.ringRange[1]),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.ampRange[0], q.ampRange[1])</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
-<p class="p5"><span class="Apple-tab-span">	</span>).distort</p>
-<p class="p5">};</p>
-<p class="p5">)</p>
-<p class="p5">~plong.play;</p>
-<p class="p6"><br></p>
-<p class="p5">~plong.fadeTime = 3;</p>
-<p class="p5">~plong = q[<span class="s4">\soundfunc</span>];</p>
-<p class="p6"><br></p>
-<p class="p5">(</p>
-<p class="p5">w = <span class="s2">Window</span>(<span class="s3">"cow herd"</span>).front;</p>
-<p class="p5">w.view.decorator_(<span class="s2">FlowLayout</span>(w.bounds.copy.moveTo(0, 0)));</p>
-<p class="p6"><br></p>
-<p class="p5"><span class="s2">Spec</span>.add(<span class="s4">\ring</span>, [0.03, 30, <span class="s4">\exp</span>]);</p>
-<p class="p5"><span class="s2">Spec</span>.add(<span class="s4">\num</span>, [3, 30, <span class="s4">\exp</span>, 1]);</p>
-<p class="p6"><br></p>
-<p class="p5"><span class="s2">EZRanger</span>(w, 390@20, <span class="s3">"numRange"</span>, <span class="s4">\num</span>, { <span class="s2">|sl|</span> q.numRange = sl.value; }, q.numRange)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(1);</p>
-<p class="p6"><br></p>
-<p class="p5"><span class="s2">EZRanger</span>(w, 390@20, <span class="s3">"freqRange"</span>, <span class="s4">\freq</span>, { <span class="s2">|sl|</span> q.freqRange = sl.value; }, q.freqRange)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(0.1);</p>
-<p class="p5"><span class="s2">EZRanger</span>(w, 390@20, <span class="s3">"ringRange"</span>, <span class="s4">\ring</span>, { <span class="s2">|sl|</span> q.ringRange = sl.value; }, q.ringRange)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(0.0001);</p>
-<p class="p5"><span class="s2">EZRanger</span>(w, 390@20, <span class="s3">"ampRange"</span>, <span class="s4">\amp</span>, { <span class="s2">|sl|</span> q.ampRange = sl.value; }, q.ampRange)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>.round_(0.0001);</p>
-<p class="p5"><span class="s2">Button</span>(w, 190@20).states_([[<span class="s4">\newSound</span>]]).action_({~plong = q[<span class="s4">\soundfunc</span>] });</p>
-<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s2">(<span class="Apple-tab-span">	</span></span>// example to explore a synthesis idea:</p>
+<p class="p6">p = <span class="s3">ProxySpace</span>.push(s.boot);</p>
+<p class="p4"><br></p>
+<p class="p6">q = q ? ();</p>
+<p class="p6">q.freqRange = [200, 2000];</p>
+<p class="p6">q.ampRange = [0.1, 1];</p>
+<p class="p6">q.ringRange = [0.1, 10];</p>
+<p class="p6">q.numRange = [3, 30];</p>
+<p class="p4"><br></p>
+<p class="p6">q.soundfunc = { <span class="s3">|dens=5|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Splay</span>.ar(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Array</span>.fill(exprand(q.numRange[0], q.numRange[1]).asInteger, {</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Ringz</span>.ar(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Dust</span>.ar(dens),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.freqRange[0], q.freqRange[1]),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.ringRange[0], q.ringRange[1]),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>exprand(q.ampRange[0], q.ampRange[1])</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p6"><span class="Apple-tab-span">	</span>).distort</p>
+<p class="p6">};</p>
+<p class="p6">)</p>
+<p class="p6">~plong.play;</p>
+<p class="p4"><br></p>
+<p class="p6">~plong.fadeTime = 3;</p>
+<p class="p6">~plong = q[<span class="s4">\soundfunc</span>];</p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s3">Window</span>(<span class="s5">"cow herd"</span>).front;</p>
+<p class="p6">w.view.decorator_(<span class="s3">FlowLayout</span>(w.bounds.copy.moveTo(0, 0)));</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s3">Spec</span>.add(<span class="s4">\ring</span>, [0.03, 30, <span class="s4">\exp</span>]);</p>
+<p class="p6"><span class="s3">Spec</span>.add(<span class="s4">\num</span>, [3, 30, <span class="s4">\exp</span>, 1]);</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s3">EZRanger</span>(w, 390@20, <span class="s5">"numRange"</span>, <span class="s4">\num</span>, { <span class="s3">|sl|</span> q.numRange = sl.value; }, q.numRange)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.round_(1);</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s3">EZRanger</span>(w, 390@20, <span class="s5">"freqRange"</span>, <span class="s4">\freq</span>, { <span class="s3">|sl|</span> q.freqRange = sl.value; }, q.freqRange)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.round_(0.1);</p>
+<p class="p6"><span class="s3">EZRanger</span>(w, 390@20, <span class="s5">"ringRange"</span>, <span class="s4">\ring</span>, { <span class="s3">|sl|</span> q.ringRange = sl.value; }, q.ringRange)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.round_(0.0001);</p>
+<p class="p6"><span class="s3">EZRanger</span>(w, 390@20, <span class="s5">"ampRange"</span>, <span class="s4">\amp</span>, { <span class="s3">|sl|</span> q.ampRange = sl.value; }, q.ampRange)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.round_(0.0001);</p>
+<p class="p6"><span class="s3">Button</span>(w, 190@20).states_([[<span class="s4">\newSound</span>]]).action_({~plong = q[<span class="s4">\soundfunc</span>] });</p>
+<p class="p6">)</p>
 </body>
 </html>
