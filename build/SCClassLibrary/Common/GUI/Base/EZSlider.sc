@@ -272,7 +272,7 @@ EZSliderSC : EZGui {
 			sliderColor.notNil.if{	
 				sliderView.background_(sliderColor);};
 			knobColor.notNil.if{	
-				sliderView.normalColor_(knobColor);};
+				sliderView.knobColor_(knobColor);};
 			background.notNil.if{	
 				view.background=background;};
 			numberView.refresh;
