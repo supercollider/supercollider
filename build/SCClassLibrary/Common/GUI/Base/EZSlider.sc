@@ -80,7 +80,6 @@ EZSliderSC : EZGui {
 		numberView = GUI.numberBox.new(view, numBounds);
 		sliderView = GUI.slider.new(view, sliderBounds);
 		
-		
 		// set view parameters and actions
 		
 		controlSpec = argControlSpec.asSpec;
