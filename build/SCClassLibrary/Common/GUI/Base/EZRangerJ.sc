@@ -1,6 +1,6 @@
 	// platform independent wrapper for a range slider. 
 	
-EZRanger { 
+EZRangerJ { 
 	var <w, <zone, <labelView, <loBox, <rangeSlider, <hiBox, <unitView, <views;
 	var <spec, <lo, <hi, <>round=0.001, <>action;
 	
