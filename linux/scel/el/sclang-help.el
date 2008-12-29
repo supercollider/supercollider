@@ -63,6 +63,62 @@
   :version "21.3"
   :type 'string)
 
+;; dynamically change certain html-tags when displaying in w3m-browser:
+
+(defcustom sclang-help-filters
+  '(("p\\.p\\([0-9]+\\)" . "#p\\1")
+    ("<p class=\"\\(.*\\)\">\\(.*\\)</p>" . "<div id=\"\\1\">\\2</div>"))
+  "list of pairs of (regexp . filter) defining html-tags to be replaced by the function sclang-help-substitute-for-filters"
+  :group 'sclang-interface
+  :type '(repeat (cons (string :tag "match") (string :tag "replacement"))))
+
+(defun sclang-help-substitute-for-filters (&rest args)
+  "substitute various tags in SCs html-docs"
+  (mapcar #'(lambda (filter)
+	      (let ((regexp (car filter))
+		    (to-string (cdr filter)))
+		(goto-char (point-min))
+		(while (re-search-forward regexp nil t)
+		  (replace-match to-string nil nil))))
+	  sclang-help-filters))
+
+;; w3m's content-filtering system
+(setq w3m-use-filter t)
+
+(eval-after-load "w3m-filter"
+  '(add-to-list 'w3m-filter-rules
+		;; run on all files read by w3m...
+                '(".*" sclang-help-substitute-for-filters)))
+
+
+;; dynamically change certain html-tags when displaying in w3m-browser:
+
+(defcustom sclang-help-filters
+  '(("p\\.p\\([0-9]+\\)" . "#p\\1")
+    ("<p class=\"\\(.*\\)\">\\(.*\\)</p>" . "<div id=\"\\1\">\\2</div>"))
+  "list of pairs of (regexp . filter) defining html-tags to be replaced by the function sclang-help-substitute-for-filters"
+  :group 'sclang-interface
+  :type '(repeat (cons (string :tag "match") (string :tag "replacement"))))
+
+(defun sclang-help-substitute-for-filters (&rest args)
+  "substitute various tags in SCs html-docs"
+  (mapcar #'(lambda (filter)
+	      (let ((regexp (car filter))
+		    (to-string (cdr filter)))
+		(goto-char (point-min))
+		(while (re-search-forward regexp nil t)
+		  (replace-match to-string nil nil))))
+	  sclang-help-filters))
+
+;; w3m's content-filtering system
+(setq w3m-use-filter t)
+
+(eval-after-load "w3m-filter"
+  '(add-to-list 'w3m-filter-rules
+		;; run on all files read by w3m...
+                '(".*" sclang-help-substitute-for-filters)))
+
+
 (defvar sclang-help-topic-alist nil
   "Alist mapping help topics to file names.")
 
