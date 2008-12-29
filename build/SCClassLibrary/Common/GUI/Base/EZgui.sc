@@ -25,7 +25,7 @@ EZGui{ // an abstract class
 	}
 	
 
-	
+	window{^if(view.parent.respondsTo(\findWindow)){view.parent.findWindow}}
 	
 	layout_{arg pos;
 		layout=pos;

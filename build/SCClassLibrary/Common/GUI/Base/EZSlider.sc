@@ -252,8 +252,8 @@ EZSliderSC : EZGui {
 		^[labelBounds, numBounds, sliderBounds, unitBounds]
 	}
 	
-	setColors{arg stringBackground, strColor, sliderColor,  boxColor,
-			 boxNormalColor, boxTypingColor,boxStringColor, knobColor,background ;
+	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
+			 boxNormalColor, boxTypingColor, knobColor,background ;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};

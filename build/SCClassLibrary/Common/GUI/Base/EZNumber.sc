@@ -189,8 +189,8 @@ EZNumberSC : EZGui{
 		^[labelBounds, numBounds, unitBounds]
 	}
 	
-	setColors{ arg stringBackground, strColor,boxColor,
-			 boxNormalColor, boxTypingColor,boxStringColor, background ;
+	setColors{ arg stringBackground, strColor,boxColor,boxStringColor,
+			 boxNormalColor, boxTypingColor, background ;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};
