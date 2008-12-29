@@ -59,5 +59,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">p.stop;</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
+<p class="p3">Note:</p>
+<p class="p3">A related approach is to instantiate a Synth yourself and then set its values by using an Event whose "type" is \set, as illustrated here:</p>
+<p class="p5"><br></p>
+<p class="p4">x = {|freq=440, amp=0.6| MoogFF.ar(PinkNoise.ar(amp), freq).dup}.play</p>
+<p class="p6">// we specify type:\set and also the nodeID for the synth:</p>
+<p class="p4">p = Pbind(<strong>\type, \set,</strong> \freq, Pwhite(100, 1000), \dur, 0.2, \amp,
+Pseq((1,0.99 .. 0.1), inf), <strong>\id, x.nodeID</strong>).play</p>
+<p class="p4">p.stop</p>
+<p class="p4">x.free</p>
+<p class="p5"><br></p>
 </body>
 </html>
