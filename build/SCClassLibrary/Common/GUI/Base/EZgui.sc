@@ -27,22 +27,6 @@ EZGui{ // an abstract class
 
 	window{^if(view.parent.respondsTo(\findWindow)){view.parent.findWindow}}
 	
-	layout_{arg pos;
-		layout=pos;
-		labelSize=80@20;
-		labelView.notNil.if{
-			(layout==\vert).if{
-			labelView.align=\left;
-			labelView.resize_(2);
-			}{
-			labelView.align=\right;
-			labelView.resize_(4);
-			};
-		};
-		
-		this.bounds_(view.bounds); 	
-	}
-	
 	
 	prSubViewBounds{arg rect, hasLabel;
 		var widgetBounds,labelBounds,tmp;
