@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,27 +13,30 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000006; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000006}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; min-height: 17.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000006}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; min-height: 17.0px}
 span.s1 {font: 12.0px Monaco}
 span.s2 {font: 13.0px Monaco}
 span.s3 {color: #000000}
-span.s4 {color: #961e1e}
+span.s4 {color: #bf0000}
 span.s5 {color: #000006}
-span.s6 {color: #0026f7}
-span.s7 {color: #606060}
-span.s8 {color: #001db9}
-span.s9 {font: 9.0px Monaco}
-span.s10 {font: 12.0px Helvetica; color: #0026f7}
-span.s11 {font: 12.0px Helvetica}
-span.s12 {color: #426f0e}
+span.s6 {font: 12.0px Monaco; color: #000000}
+span.s7 {color: #002dfd}
+span.s8 {color: #606060}
+span.s9 {color: #0000bf}
+span.s10 {font: 9.0px Monaco}
+span.s11 {color: #007300}
+span.s12 {font: 12.0px Helvetica; color: #002dfd}
+span.s13 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -87,98 +90,110 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p4"><b>Events and SynthDefs</b></p>
 <p class="p10"><br></p>
-<p class="p3"><span class="s5">The key used to select what synthdef is to be played is </span><span class="s1">\instrument</span>.<span class="Apple-converted-space">  </span>In order to use a SynthDef with an Event, send it a <span class="s1">store </span>message.<span class="Apple-converted-space">  </span>This creates a description of the SynthDef that the event can consult to determine its control names. The values of these names in the event are used when the event is played. (See <a href="../ServerArchitecture/SynthDesc.html"><span class="s6"><b>SynthDesc</b></span></a><b> </b>for details.)</p>
+<p class="p3"><span class="s5">The key used to select what synthdef is to be played is </span><span class="s1">\instrument</span>.<span class="Apple-converted-space">  </span>In order to use a SynthDef with an Event, send it a <span class="s1">store </span>or <span class="s6">memStore</span> message.<span class="Apple-converted-space">  </span>This creates a description of the SynthDef that the event can consult to determine its control names. The values of these names in the event are used when the event is played. (See <a href="../ServerArchitecture/SynthDesc.html"><span class="s7"><b>SynthDesc</b></span></a><b> </b>for details.)</p>
 <p class="p2"><br></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s3">(</span><span class="s7">"pm"</span><span class="s3">, { </span>| out=0, freq=440, amp=0.1, pan=0, gate=1, ratio = 1, index = 1, ar = 0.1, dr = 0.1 |</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> z;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = <span class="s8">LPF</span>.ar(</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">PMOsc</span>.ar(freq, freq * ratio, <span class="s8">Linen</span>.kr(gate, ar,index, dr), 0, 0.3),</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">XLine</span>.kr(<span class="s8">Rand</span>(4000,5000), <span class="s8">Rand</span>(2500,3200), 1)</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>) * <span class="s8">Linen</span>.kr(gate, 0.01, 0.7, dr, 2);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">OffsetOut</span>.ar(out, <span class="s8">Pan2</span>.ar(z, pan, amp));</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p3"><b>.store</b> is more like .load -- it writes a .scsyndef file to disk and adds the SynthDef to the SynthDesc library.</p>
+<p class="p3"><b>.memStore</b> is more like .send -- it sends the SynthDef over OSC and adds the SynthDef to the SynthDesc library.</p>
+<p class="p2"><br></p>
+<p class="p11">SynthDef<span class="s3">(</span><span class="s8">"pm"</span><span class="s3">, { </span>| out=0, freq=440, amp=0.1, pan=0, gate=1, ratio = 1, index = 1, ar = 0.1, dr = 0.1 |</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">var</span> z;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = <span class="s9">LPF</span>.ar(</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">PMOsc</span>.ar(freq, freq * ratio, <span class="s9">Linen</span>.kr(gate, ar,index, dr), 0, 0.3),</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">XLine</span>.kr(<span class="s9">Rand</span>(4000,5000), <span class="s9">Rand</span>(2500,3200), 1)</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>) * <span class="s9">Linen</span>.kr(gate, 0.01, 0.7, dr, 2);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">OffsetOut</span>.ar(out, <span class="s9">Pan2</span>.ar(z, pan, amp));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).store;</p>
 <p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>(instrument: <span class="s7">"pm"</span>).play;</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>(instrument: <span class="s7">"pm"</span>, ratio: 3.42, index: 12, freq: 150, ar: 8, dr: 3, sustain: 10).play;</p>
+<p class="p9">(instrument: <span class="s8">"pm"</span>).play;</p>
+<p class="p8"><br></p>
+<p class="p9">(instrument: <span class="s8">"pm"</span>, ratio: 3.42, index: 12, freq: 150, ar: 8, dr: 3, sustain: 10).play;</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>note: The use of <span class="s1">OffsetOut</span> in the SynthDef prevents artifacts that can result from the interaction of the timing of a sequence of notes and the control rate of the Server.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><b>Multi-channel Expansion</b><span class="s9"><span class="Apple-tab-span">	</span></span></p>
-<p class="p8"><br></p>
+<p class="p4"><b>Multi-channel Expansion</b><span class="s10"><span class="Apple-tab-span">	</span></span></p>
+<p class="p12"><br></p>
 <p class="p3">If a key relevant to the action is assigned an array, the action is repeated on each element of the array:</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( degree: (0..12)).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// a diatonic cluster</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p9">( degree: (0..12)).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// a diatonic cluster</span></p>
 <p class="p2"><br></p>
 <p class="p3">If several keys are assigned arrays, the action is repeated for each element of the largest array.</p>
 <p class="p3">Smaller arrays are rotated through repeatedly.<span class="Apple-converted-space">  </span>Here are some examples:</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( degree: (0..12), amp: [0,0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every other note of the diatonic cluster: stacked thirds</p>
+<p class="p7">// every other note of the diatonic cluster: stacked thirds</p>
+<p class="p9">( degree: (0..12), amp: [0,0.1]).play</p>
+<p class="p13"><br></p>
+<p class="p7">// every other note of the semitone cluster: a wholetone cluster again</p>
+<p class="p9">( note: (0..12), amp: [0,0.1]).play</p>
+<p class="p13"><br></p>
+<p class="p7">// every third note of the semitone cluster: a diminished chord</p>
+<p class="p9">( note: (0..12), amp: [0,0, 0.1]).play</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( note: (0..12), amp: [0,0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every other note of the semitone cluster: a wholetone cluster again</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( note: (0..12), amp: [0,0, 0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every third note of the semitone cluster: a diminished chord</p>
+<p class="p3">Events may be used for object prototyping. See <a href="Environment.html"><span class="s7">Environment</span></a> for more details.</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p3">Events may be used for object prototyping. See <a href="Environment.html"><span class="s6">Environment</span></a> for more details.</p>
-<p class="p2"><br></p>
-<p class="p4"><b>Arrayed Arguments</b><span class="s9"><span class="Apple-tab-span">	</span></span></p>
-<p class="p8"><br></p>
+<p class="p4"><b>Arrayed Arguments</b><span class="s10"><span class="Apple-tab-span">	</span></span></p>
+<p class="p12"><br></p>
 <p class="p3">It is possible to assign an array to one of a SynthDef's controls. For example:</p>
 <p class="p2"><br></p>
-<p class="p12">SynthDef("test", { | out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |</p>
-<p class="p12"><span class="Apple-tab-span">	</span>var audio, env;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>audio = Mix.ar(Pulse.ar(freq, 0.5));<span class="Apple-tab-span">	</span>// this is a mixture of three oscillators</p>
-<p class="p12"><span class="Apple-tab-span">	</span>env = Linen.kr(gate, susLevel: amp , doneAction: 2);<span class="Apple-converted-space">  </span>// envelope deletes the synt when done</p>
-<p class="p12"><span class="Apple-tab-span">	</span>audio = audio * env;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>OffsetOut.ar(0, audio );</p>
-<p class="p12">}).store;</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p11">SynthDef<span class="s3">(</span><span class="s8">"test"</span><span class="s3">, { </span>| out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s9">var</span> audio, env;</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>audio = </span><span class="s9">Mix</span><span class="s3">.ar(</span><span class="s9">Pulse</span><span class="s3">.ar(freq, 0.5));<span class="Apple-tab-span">	</span></span>// this is a mixture of three oscillators</p>
+<p class="p9"><span class="Apple-tab-span">	</span>env = <span class="s9">Linen</span>.kr(gate, susLevel: amp , doneAction: 2);<span class="Apple-converted-space">  </span><span class="s4">// envelope deletes the synt when done</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>audio = audio * env;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s9">OffsetOut</span>.ar(0, audio );</p>
+<p class="p9">}).store;</p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Within an event, arrayed arguments of this sort must be enclosed within a Ref or an additional array to distinguish</p>
 <p class="p3">them from arguments intended for multi-channel expansion.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: \test, note: `[0,2,4]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// one synth, use Ref to prevent multi-channel expansion</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7">// one synth, use Ref to prevent multi-channel expansion</p>
+<p class="p9">(instrument: <span class="s11">\test</span>, note: `[0,2,4]).play</p>
 <p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: \test, note: [[0,2,4]]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// one synth, use enclosing array to prevent multi-channel expansion</p>
+<p class="p7">// one synth, use enclosing array to prevent multi-channel expansion</p>
+<p class="p9">(instrument: <span class="s11">\test</span>, note: [[0,2,4]]).play</p>
 <p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(instrument: \test, note: [[0,2,4], 6 +[0,2,4]]).play<span class="Apple-tab-span">	</span>// two synths</p>
+<p class="p7">// two synths</p>
+<p class="p9">(instrument: <span class="s11">\test</span>, note: [[0,2,4], 6 +[0,2,4]]).play</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">If several keys are assigned arrays, the action is repeated for each element of the largest array.</p>
 <p class="p3">Smaller arrays are rotated through repeatedly.<span class="Apple-converted-space">  </span>Here are some examples:</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( degree: (0..12), amp: [0,0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every other note of the diatonic cluster: stacked thirds</p>
+<p class="p7">// every other note of the diatonic cluster: stacked thirds</p>
+<p class="p9">( degree: (0..12), amp: [0,0.1]).play</p>
+<p class="p13"><br></p>
+<p class="p7">// every other note of the semitone cluster: a wholetone cluster again</p>
+<p class="p9">( note: (0..12), amp: [0,0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><br></p>
+<p class="p7">// every third note of the semitone cluster: a diminished chord</p>
+<p class="p9">( note: (0..12), amp: [0,0, 0.1]).play</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( note: (0..12), amp: [0,0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every other note of the semitone cluster: a wholetone cluster again</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( note: (0..12), amp: [0,0, 0.1]).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// every third note of the semitone cluster: a diminished chord</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p3">Events may be used for object prototyping. See <a href="Environment.html"><span class="s6">Environment</span></a> for more details.</p>
+<p class="p3">Events may be used for object prototyping. See <a href="Environment.html"><span class="s7">Environment</span></a> for more details.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><br></p>
 <p class="p4"><b>Events and Patterns</b></p>
 <p class="p10"><br></p>
-<p class="p13">Events are closely integrated with the Patterns library.<span class="Apple-converted-space">  </span>Different patterns can be bound to different keys (or collections of keys) to specify the resultant music.<span class="Apple-converted-space">  </span><span class="s3">See the help<span class="Apple-converted-space">  </span>files <a href="../Streams-Patterns-Events/Pattern.html"><span class="s10"><b>Pattern</b></span></a><b> </b>and <a href="../Streams-Patterns-Events/Pbind.html"><span class="s10"><b>Pbind</b></span></a><b> </b>and the tutorials<span class="Apple-converted-space">  </span><a href="../Streams-Patterns-Events/Streams-Patterns-Events4.html"><span class="s10"><b>Streams-Patterns-Events4</b></span></a> and <a href="../Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s10"><b>Streams-Patterns-Events5</b></span></a><b> </b>for more details on Patterns.</span></p>
+<p class="p14">Events are closely integrated with the Patterns library.<span class="Apple-converted-space">  </span>Different patterns can be bound to different keys (or collections of keys) to specify the resultant music.<span class="Apple-converted-space">  </span><span class="s3">See the help<span class="Apple-converted-space">  </span>files <a href="../Streams-Patterns-Events/Pattern.html"><span class="s12"><b>Pattern</b></span></a><b> </b>and <a href="../Streams-Patterns-Events/Pbind.html"><span class="s12"><b>Pbind</b></span></a><b> </b>and the tutorials<span class="Apple-converted-space">  </span><a href="../Streams-Patterns-Events/Streams-Patterns-Events4.html"><span class="s12"><b>Streams-Patterns-Events4</b></span></a> and <a href="../Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s12"><b>Streams-Patterns-Events5</b></span></a><b> </b>for more details on Patterns.</span></p>
 <p class="p2"><br></p>
-<p class="p13">Here is an example that illustrates some of the keys defined by the defaultParentEvent.</p>
+<p class="p14">Here is an example that illustrates some of the keys defined by the defaultParentEvent.</p>
 <p class="p2"><br></p>
 <p class="p9">(</p>
-<p class="p9">p = <span class="s8">Pbind</span>(*[</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stepsPerOctave:<span class="Apple-tab-span">	</span><span class="s8">Pstep</span>(<span class="s8">Pseq</span>((2..12).mirror, <span class="s8">inf</span>),12), <span class="s4">// 3 - 12 tone e.t. scales</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>note:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pseq</span>((0..12).mirror, <span class="s8">inf</span>),</p>
+<p class="p9">p = <span class="s9">Pbind</span>(*[</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stepsPerOctave:<span class="Apple-tab-span">	</span><span class="s9">Pstep</span>(<span class="s9">Pseq</span>((2..12).mirror, <span class="s9">inf</span>),12), <span class="s4">// 3 - 12 tone e.t. scales</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>note:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Pseq</span>((0..12).mirror, <span class="s9">inf</span>),</p>
 <p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ctranspose:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-0.2, 0.2),<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// detune up to +-20 cents</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-1.0, 1.0),<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// detune up to 1 Hz<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ctranspose:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Pwhite</span>(-0.2, 0.2),<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// detune up to +-20 cents</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Pwhite</span>(-1.0, 1.0),<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// detune up to 1 Hz<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Prand</span>([0.2, 0.2, 0.2, 4], <span class="s8">inf</span>), <span class="Apple-tab-span">	</span><span class="s4">// notes last 0.2 or 4 seconds</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Prand</span>([0.2, 0.2, 0.2, 4], <span class="s9">inf</span>), <span class="Apple-tab-span">	</span><span class="s4">// notes last 0.2 or 4 seconds</span></p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// 1 in 6 chance note lasts 0.8 seconds</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Prand</span>([0.2, 0.2, 0.2, 0.2, 0.2, 0.8], <span class="s8">inf</span>),</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Prand</span>([0.2, 0.2, 0.2, 0.2, 0.2, 0.8], <span class="s9">inf</span>),</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Pstep</span><span class="s3">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// 4 beat accent structure</p>
-<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pseq</span>([-15, -25, -20, -25], <span class="s8">inf</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s9">Pstep</span><span class="s3">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// 4 beat accent structure</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Pseq</span>([-15, -25, -20, -25], <span class="s9">inf</span>),<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.8</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span>]);</p>
@@ -189,9 +204,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">When an Event<span class="Apple-converted-space">  </span>(or any other Environment) receives a <span class="s1">use(function)</span> message, it sets itself to be currentEnvironment, evaluates the function, and restores the original value of currentEnvironment. This allows the function to access and alter the contents of the event using the following shortcuts:</p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s11"><span class="Apple-tab-span">	</span></span>~keyName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">which is equivalent to<span class="Apple-tab-span">	</span></span>currentEnvironment.at(keyName)</p>
+<p class="p15"><span class="s13"><span class="Apple-tab-span">	</span></span>~keyName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s13">which is equivalent to<span class="Apple-tab-span">	</span></span>currentEnvironment.at(keyName)</p>
 <p class="p3">and</p>
-<p class="p14"><span class="s11"><span class="Apple-tab-span">	</span></span>~keyName = value<span class="Apple-tab-span">	</span><span class="s11">which is equivalent to<span class="Apple-tab-span">	</span></span>currentEnvironment.put(keyName, value)</p>
+<p class="p15"><span class="s13"><span class="Apple-tab-span">	</span></span>~keyName = value<span class="Apple-tab-span">	</span><span class="s13">which is equivalent to<span class="Apple-tab-span">	</span></span>currentEnvironment.put(keyName, value)</p>
 <p class="p6"><br></p>
 <p class="p3">We will write ~keyName whenever referring to the value stored at the key keyName in the event. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
@@ -199,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p9"><span class="Apple-tab-span">	</span>play {</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if (parent.isNil) { parent = defaultParentEvent };</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">this</span>.use { ~play.value };</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">this</span>.use { ~play.value };</p>
 <p class="p9"><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p3">Thus we can see that the defaultParentEvent is used unless otherwise specified and the function stored in <span class="s1">~play </span>is executed in the context of the Event.</p>
@@ -230,8 +245,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">of nodes to place the group. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">serverEvent keys:</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>server: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">nil</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if nil, Server.default is used</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span></span><span class="s12">\default</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this is the name of a SynthDef</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>server: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s9">nil</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if nil, Server.default is used</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span></span><span class="s11">\default</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this is the name of a SynthDef</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>group: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// nodeID of group on the server</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// whening adding before or after a node</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this could be the nodeID of a synth instead of a group</p>
@@ -239,16 +254,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>out: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// usually an output bus number, but depends on the SynthDef<span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p3">The ampEvent determines volume.<span class="Apple-converted-space">  </span>Notice that <span class="s1">~amp</span> is a function that determines its value from <span class="s1">~db</span>. The user can choose to specify the amplitude directly by overwriting ~amp or to use a decibel specification by overwriting <span class="s1">~db</span>.</p>
-<p class="p8"><br></p>
+<p class="p12"><br></p>
 <p class="p3">ampEvent keys:</p>
-<p class="p9"><span class="Apple-tab-span">	</span>amp: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#{ ~db.dbamp },</p>
-<p class="p9"><span class="Apple-tab-span">	</span>db: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>-20.0,</p>
-<p class="p9"><span class="Apple-tab-span">	</span>pan: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.0,<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>amp: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#{ ~db.dbamp },</p>
+<p class="p16"><span class="Apple-tab-span">	</span>db: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>-20.0,</p>
+<p class="p16"><span class="Apple-tab-span">	</span>pan: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.0,<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p2"><br></p>
 <p class="p3">The durEvent has keys that determine the timing of a note. Notice that <span class="s1">~sustain </span>is a function that uses ~legato to determine the sustain. Like <span class="s1">~amp </span>this can be overwritten to set the sustain directly.</p>
 <p class="p2"><br></p>
 <p class="p3">durEvent keys:</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>tempo:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">nil</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// changes tempo of a TempoClock</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>tempo:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s9">nil</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// changes tempo of a TempoClock</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>dur: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// delay until next note</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>stretch: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inverse of tempo control, specific to the Event's stream</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>legato: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.8,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ratio of sustain to duration</p>
@@ -299,48 +314,48 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">An Event responds to a play message by evaluating ~play in the event Here is a slightly simplified version of the default definition of<span class="Apple-converted-space">  </span><span class="s1">~play:</span></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>{ <span class="Apple-tab-span">	</span>~eventTypes[~type].value(server); },</p>
+<p class="p16"><span class="Apple-tab-span">	</span>{ <span class="Apple-tab-span">	</span>~eventTypes[~type].value(server); },</p>
 <p class="p5"><br></p>
-<p class="p3">The function uses the value of <span class="s9">~</span><span class="s1">type</span><span class="s9"> </span>to select a function from the dictionary held in <span class="s9">~</span><span class="s1">eventTypes</span><span class="s9">.</span> The collection of eventTypes can be readily extended using <b>*addEventType(key, function)</b>. <span class="Apple-converted-space"> </span></p>
+<p class="p3">The function uses the value of <span class="s10">~</span><span class="s1">type</span><span class="s10"> </span>to select a function from the dictionary held in <span class="s10">~</span><span class="s1">eventTypes</span><span class="s10">.</span> The collection of eventTypes can be readily extended using <b>*addEventType(key, function)</b>. <span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">Here is an example the uses the event types<span class="Apple-converted-space">  </span><span class="s1">\group </span>and<span class="s1"> \note</span>:</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>(type: </span><span class="s12">\group</span><span class="s3">, id: 2).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// create a group with nodeID 2</p>
-<p class="p9"><span class="Apple-tab-span">	</span>(type: <span class="s12">\note</span>, freq: 500, group: 2).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// play a synth in that group</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span>(type: </span><span class="s11">\group</span><span class="s3">, id: 2).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// create a group with nodeID 2</p>
+<p class="p9"><span class="Apple-tab-span">	</span>(type: <span class="s11">\note</span>, freq: 500, group: 2).play<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// play a synth in that group</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">Here is a listing of currently existing event types:</p>
-<p class="p15"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>group<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates group, id must be specified</p>
-<p class="p9"><span class="Apple-converted-space"> </span>note<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument specifies synthdef</p>
-<p class="p9"><span class="Apple-converted-space"> </span>note_score<span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>midi</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>monoNote</p>
-<p class="p9"><span class="Apple-converted-space"> </span>monoSet</p>
-<p class="p9"><span class="Apple-converted-space"> </span>monoOff</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>play synth, id must be specified</p>
-<p class="p9"><span class="Apple-converted-space"> </span>off <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>release synth (or free if no gate)</p>
-<p class="p9"><span class="Apple-converted-space"> </span>kill<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>free synth</p>
-<p class="p9"><span class="Apple-converted-space"> </span>set<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set parameter of synth</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>bus<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>write ~array to control buses starting at ~out</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>alloc<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>allocate ~bufnum with ~numframes and ~numchannels</p>
-<p class="p9"><span class="Apple-converted-space"> </span>free<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>free ~bufnum</p>
-<p class="p9"><span class="Apple-converted-space"> </span>gen<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>send ~gencmd to ~bufnum</p>
-<p class="p9"><span class="Apple-converted-space"> </span>load<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>load ~filename starting at ~frame into ~bufnum</p>
-<p class="p9"><span class="Apple-converted-space"> </span>read</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>setProperties<span class="Apple-converted-space">  </span>~receiver, ~args<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>sends setter messages to ~receiver for each key in ~args that</p>
-<p class="p9"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>has a nonNil value in the Event<span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>tree<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates a tree of groups. ~tree can be an array of nodeIDs, and may contain associations to further nested arrays.</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-converted-space"> </span>phrase<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instead of playing a single synth from a SynthDef with ~instrument, it looks up a Pdef and plays a cluster of sounds.</p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-converted-space"> </span></p>
+<p class="p17"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>group<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates group, id must be specified</p>
+<p class="p16"><span class="Apple-converted-space"> </span>note<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument specifies synthdef</p>
+<p class="p16"><span class="Apple-converted-space"> </span>note_score<span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>midi</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>monoNote</p>
+<p class="p16"><span class="Apple-converted-space"> </span>monoSet</p>
+<p class="p16"><span class="Apple-converted-space"> </span>monoOff</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>play synth, id must be specified</p>
+<p class="p16"><span class="Apple-converted-space"> </span>off <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>release synth (or free if no gate)</p>
+<p class="p16"><span class="Apple-converted-space"> </span>kill<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>free synth</p>
+<p class="p16"><span class="Apple-converted-space"> </span>set<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set parameter of synth</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>bus<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>write ~array to control buses starting at ~out</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>alloc<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>allocate ~bufnum with ~numframes and ~numchannels</p>
+<p class="p16"><span class="Apple-converted-space"> </span>free<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>free ~bufnum</p>
+<p class="p16"><span class="Apple-converted-space"> </span>gen<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>send ~gencmd to ~bufnum</p>
+<p class="p16"><span class="Apple-converted-space"> </span>load<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>load ~filename starting at ~frame into ~bufnum</p>
+<p class="p16"><span class="Apple-converted-space"> </span>read</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>setProperties<span class="Apple-converted-space">  </span>~receiver, ~args<span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>sends setter messages to ~receiver for each key in ~args that</p>
+<p class="p16"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>has a nonNil value in the Event<span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>tree<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates a tree of groups. ~tree can be an array of nodeIDs, and may contain associations to further nested arrays.</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-converted-space"> </span>phrase<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instead of playing a single synth from a SynthDef with ~instrument, it looks up a Pdef and plays a cluster of sounds.</p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-converted-space"> </span></p>
 </body>
 </html>
