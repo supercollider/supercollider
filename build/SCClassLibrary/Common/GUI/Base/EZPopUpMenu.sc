@@ -1,37 +1,16 @@
 EZPopUpMenu : EZLists{
 	
 	initViews{ arg parentView, bounds, label, labelWidth,labelHeight,arglayout;
-		var labelBounds, listBounds,w, winBounds ;
+		var labelBounds, listBounds;
 		
 		labelWidth = labelWidth ? 80;
 		layout=arglayout ? \horz;
 		labelSize=labelWidth@labelHeight;
 		
+		bounds.isNil.if{bounds= 160@44};
+		
 		// if no parent, then pop up window 
-		parentView.isNil.if{
-				bounds.isNil.if{bounds= 160@44};
-				// if bounds is a point the place the window on screen
-				if (bounds.class==Point){
-					bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
-					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
-					bounds.x,bounds.y)
-					}{// window minimum height;
-					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
-					};
-				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-				parentView=w.asView;
-				w.front;
-				bounds=bounds.asRect;
-				// inset the bounds to make a nice margin
-				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
-				view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true).resize_(2);
-				
-		// normal parent view			
-		}{
-			bounds.isNil.if{bounds= 160@20};
-			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
+		# view,bounds = this.prPopUpWindow( parentView,bounds);	
 		
 		// calcualate bounds
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);

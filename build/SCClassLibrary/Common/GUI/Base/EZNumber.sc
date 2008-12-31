@@ -1,7 +1,7 @@
 
 EZNumberSC : EZGui{
 	var <numberView, <unitView, <>controlSpec, 
-		 <>action,<value, popUp=false, numSize,numberWidth,unitWidth, gap, gap2;
+		 <>action,<value,  numSize,numberWidth,unitWidth, gap, gap2;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
@@ -17,8 +17,7 @@ EZNumberSC : EZGui{
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
 			labelHeight, argLayout, argGap;
 			
-		var labelBounds, numBounds,w, winBounds, 
-				viewBounds, unitBounds;
+		var labelBounds, numBounds, unitBounds;
 						
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
@@ -31,33 +30,11 @@ EZNumberSC : EZGui{
 		numberWidth = argNumberWidth;
 		layout=argLayout;
 		
-		// if no parent, then pop up window 
-		parentView.isNil.if{
-			popUp=true;
-				bounds.isNil.if {bounds= 160@20};
-				// if bounds is a point the place the window on screen
-				if (bounds.class==Point)
-					{ bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
-					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
-								bounds.x,bounds.y)
-					}{// window minimum height;
-					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
-					};
-				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-				parentView=w.asView;
-				w.front;
-				bounds=bounds.asRect;
-				// inset the bounds to make a nice margin
-				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
-				view=GUI.compositeView.new(parentView,bounds)
-					.relativeOrigin_(true).resize_(2);
-		// normal parent view			
-		}{
-			bounds.isNil.if{bounds= 160@20};
-			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
+		bounds.isNil.if {bounds= 160@20};
 		
+		// if no parent, then pop up window 
+		# view,bounds = this.prPopUpWindow( parentView,bounds);	
+			
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
 		

@@ -1,34 +1,16 @@
 EZListView : EZLists{
 	
 	initViews{ arg parentView, bounds, label, labelWidth,labelHeight,arglayout;
-		var labelBounds, listBounds,w, winBounds;
+		var labelBounds, listBounds;
 		
-		bounds.isNil.if{bounds= 160@200};
 		labelWidth = labelWidth ? 80;
 		layout=arglayout ? \vert;
 		labelSize=labelWidth@labelHeight;
 		
-		// if no parent, then pop up window 
-		parentView.isNil.if{
-				if (bounds.class==Point){
-					// if bounds is a point the place the window on screen
-					winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
-					bounds.x,bounds.y)
-					}{winBounds=bounds};
-				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-				parentView=w.asView;
-				w.front;
-				bounds=bounds.asRect;
-				// inset the bounds to make a nice margin
-				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
-				view=GUI.compositeView.new(parentView,bounds).resize_(5).relativeOrigin_(true);
+		bounds.isNil.if{bounds= 160@200};
 		
-		// normal parent view			
-		}{
-			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
-
+		// if no parent, then pop up window 
+		# view,bounds = this.prPopUpWindow( parentView,bounds);	
 		// calcualate bounds
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
 		

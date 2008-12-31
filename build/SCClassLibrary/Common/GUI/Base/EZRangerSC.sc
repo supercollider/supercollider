@@ -18,8 +18,7 @@ EZRanger : EZGui {
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
 			labelHeight, argLayout, argGap;
 			
-		var labelBounds, hiBounds,loBounds, w, winBounds, 
-				viewBounds, unitBounds,rangerBounds;
+		var labelBounds, hiBounds,loBounds, unitBounds,rangerBounds;
 				
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
@@ -32,31 +31,10 @@ EZRanger : EZGui {
 		numberWidth = argNumberWidth;
 		layout=argLayout;
 		
-		// pop up window
-		parentView.isNil.if{
-				popUp=true;
-				bounds.isNil.if{bounds = 350@20};
-					//if its a point, then place the Window on the screen
-				if (bounds.class == Point){
-					bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
-					winBounds = Rect(200, Window.screenBounds.height-bounds.y-100,
-					bounds.x,bounds.y)
-					}{// window minimum height;
-					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
-					};
-				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-				parentView = w.asView;
-				w.front;
-				bounds = bounds.asRect;
-				// inset the bounds to make a nice margin
-				bounds = Rect(4,4,bounds.width-8,bounds.height-24);
-				view = GUI.compositeView.new(parentView,bounds)
-						.relativeOrigin_(true).resize_(5);
-			}{
-			bounds.isNil.if{bounds = 160@20};
-			bounds = bounds.asRect;
-			view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
+		bounds.isNil.if{bounds = 350@20};
+		
+		// if no parent, then pop up window 
+		# view,bounds = this.prPopUpWindow( parentView,bounds);	
 		
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;

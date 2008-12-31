@@ -1,5 +1,5 @@
 EZGui{ // an abstract class
-	var <>labelView, widget, <view, <gap,  <layout, labelSize, <alwaysOnTop=false;
+	var <>labelView, widget, <view, <gap, popUp=false,  <layout, labelSize, <alwaysOnTop=false;
 			
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
@@ -51,7 +51,33 @@ EZGui{ // an abstract class
 		^[labelBounds, widgetBounds]
 	}
 	
-	
+	prPopUpWindow{arg parentView,bounds; // return a container, or a popUpWindow with a container
+		var w, winBounds, view;
+		parentView.isNil.if{
+			popUp=true;
+				// if bounds is a point the place the window on screen
+				if (bounds.class==Point)
+					{ bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
+					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+								bounds.x,bounds.y)
+					}{// window minimum height;
+					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
+					};
+				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
+				parentView=w.asView;
+				w.front;
+				bounds=bounds.asRect;
+				// inset the bounds to make a nice margin
+				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
+				view=GUI.compositeView.new(parentView,bounds)
+					.relativeOrigin_(true).resize_(2);
+		// normal parent view			
+		}{
+			bounds=bounds.asRect;
+			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+		};
+	^[view,bounds];
+	}
 }
 
 
@@ -76,7 +102,7 @@ EZLists : EZGui{  // an abstract class
 			gap = gap ? (2@2)}
 			{gap=argGap};
 		
-		// init the views (hndled by subclasses)
+		// init the views (handled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
 			
 		this.items=argItems ? [];

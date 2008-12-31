@@ -18,8 +18,7 @@ EZSliderSC : EZGui {
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
 			labelHeight, argLayout, argGap;
 			
-		var labelBounds, numBounds,w, winBounds, 
-				viewBounds, unitBounds,sliderBounds;
+		var labelBounds, numBounds, unitBounds,sliderBounds;
 				
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
@@ -31,34 +30,10 @@ EZSliderSC : EZGui {
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
 		layout=argLayout;
+		bounds.isNil.if{bounds = 350@20};
 		
 		// if no parent, then pop up window 
-		parentView.isNil.if{
-			popUp=true;
-			bounds.isNil.if{bounds = 350@20};
-				//if its a point, then place the Window on the screen
-			if (bounds.class == Point){
-				bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
-				winBounds = Rect(200, Window.screenBounds.height-bounds.y-100,
-				bounds.x,bounds.y)
-				}{// window minimum height;
-				winBounds = bounds.height_(max(bounds.height,bounds.height+24))
-				};
-			w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
-			parentView = w.asView;
-			w.front;
-			bounds = bounds.asRect;
-			// inset the bounds to make a nice margin
-			bounds = Rect(4,4,bounds.width-8,bounds.height-24);
-			view = GUI.compositeView.new(parentView,bounds)
-					.relativeOrigin_(true).resize_(5);
-					
-		// normal parent view			
-		}{ 
-			bounds.isNil.if{bounds = 160@20};
-			bounds = bounds.asRect;
-			view = GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
+		# view,bounds = this.prPopUpWindow( parentView,bounds);	
 		
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
