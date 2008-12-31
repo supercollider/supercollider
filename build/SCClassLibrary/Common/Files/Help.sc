@@ -32,7 +32,7 @@ Help {
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
 		var thisHelpExt;
-		if(tree.isNil, {
+		if(tree.isNil, { "Help files scanned in % seconds".format({
 			// Building the tree - base class was originally UGen
 			
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
@@ -57,7 +57,7 @@ Help {
 			helpDirs.do{ |helpDir|
 				this.addDirTree( helpDir,tree );
 			};
-		});
+		}.bench(false)).postln});
 		^tree;
 	}
 
@@ -182,7 +182,55 @@ Help {
 		
 	}
 
+	*writeTextArchive{ |path|
+		var fp = File(path, "w");
+		this.prRecurseTreeToFile(fp, this.tree); // Must use this.tree - will create if not exists
+		fp.close;
+	}
 
+	*prRecurseTreeToFile{ | fp, treeBit, numtabs=0 |
+		fp.write("%%\n".format($\t.dup(numtabs).join, treeBit.size));
+		treeBit.keysValuesDo{| key, val |
+			fp.write("%%\n".format($\t.dup(numtabs).join, key.asString));
+			if(val.isKindOf(Dictionary)){
+				this.prRecurseTreeToFile(fp, val, numtabs + 1)
+			}{
+				fp.write("%%\n".format($\t.dup(numtabs).join, val.asString));
+			}
+		};
+	}
+
+	*readTextArchive{ |path|
+		var fp = File(path, "r");
+		try{
+			tree = this.prRecurseTreeFromFile(fp);
+		}{
+			"Failure in Help.treeFromFile(%)".format(path).warn;
+			this.forgetTree;
+		};
+		fp.close;
+	}
+
+	*prRecurseTreeFromFile{ | fp, numtabs=0 |
+		var line, numentries, dict, key;
+		line = fp.getLine[numtabs..];
+		numentries = line.asInteger;
+		dict = Dictionary.new(numentries);
+		numentries.do{
+			line = fp.getLine[numtabs..];
+			key = line;
+			if(key[0]==$[ and:{ key[1]==$[ }){
+				// starting with [[ is indicator of being a category
+				dict[key] = this.prRecurseTreeFromFile(fp, numtabs+1);
+			}{
+				line = fp.getLine[numtabs..];
+				key = key.asSymbol;
+				key = key.asClass ? key; // Classes become classes, topics stay as symbols
+				dict[key] = line;
+			}
+		};
+		^dict
+	}
 
 *gui { |sysext=true,userext=true|
 	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds;
