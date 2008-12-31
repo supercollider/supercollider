@@ -10,7 +10,7 @@ EZPopUpMenu : EZLists{
 		bounds.isNil.if{bounds= 160@44};
 		
 		// if no parent, then pop up window 
-		# view,bounds = this.prPopUpWindow( parentView,bounds);	
+		# view,bounds = this.prMakeView( parentView,bounds);	
 		
 		// calcualate bounds
 		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);

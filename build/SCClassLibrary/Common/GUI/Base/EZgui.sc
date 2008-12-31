@@ -51,7 +51,7 @@ EZGui{ // an abstract class
 		^[labelBounds, widgetBounds]
 	}
 	
-	prPopUpWindow{arg parentView,bounds; // return a container, or a popUpWindow with a container
+	prMakeView{arg parentView,bounds; // return a container, or a popUpWindow with a container
 		var w, winBounds, view;
 		parentView.isNil.if{
 			popUp=true;
