@@ -3,6 +3,7 @@ OSXPlatform : UnixPlatform
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
+		this.declareFeature(\findHelpFile); // Announce that we have our own way of finding helpfiles
 	}
 
 	name { ^\osx }
@@ -30,4 +31,10 @@ OSXPlatform : UnixPlatform
 	defaultHIDScheme { ^\osx_hid }
 	
 	recompile { _Recompile }
+
+	findHelpFile { | string |
+		_Cocoa_HelpFileForString_
+		^this.primitiveFailed
+	}
 }
+

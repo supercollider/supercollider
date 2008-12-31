@@ -77,12 +77,18 @@
 	}
 
 
-	/// cocoa or at least foundation dependant
 	findHelpFile {
-		_Cocoa_HelpFileForString_
-		^this.primitiveFailed
+		^if(thisProcess.platform.hasFeature(\findHelpFile)){
+			// on osx, there's a primitve which does it nice and fast
+			thisProcess.platform.findHelpFile(this)
+		}{
+			// this is very fast, but not on first run since it needs a tree to be scanned+built
+			Help.findHelpFile(this)
+		}
+		
 	}
 	openHelpFile {
 		(this.findHelpFile ? "Help/Help.html".standardizePath).openHTMLFile
 	}
 }
+
