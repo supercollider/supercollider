@@ -33,7 +33,7 @@ EZSliderSC : EZGui {
 		bounds.isNil.if{bounds = 350@20};
 		
 		// if no parent, then pop up window 
-		# view,bounds = this.prPopUpWindow( parentView,bounds);	
+		# view,bounds = this.prMakeView( parentView,bounds);	
 		
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
