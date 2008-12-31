@@ -37,11 +37,13 @@
 		var	lib = SynthDescLib.all[libname] ?? {
 				Error("library" + libname  + "not found").throw
 			},
-			stream = CollStream(this.asBytes);
+			stream = CollStream(this.asBytes), desc;
 		SynthDesc.readFile(stream, keepDef, lib.synthDescs);
+		desc = lib[name.asSymbol];
 		if(keepDef) {
-			lib[name.asSymbol].def = this;
+			desc.def = this;
 		};
-		^lib[name.asSymbol]
+		if(metadata.notNil) { desc.metadata = metadata };
+		^desc
 	}
 }
