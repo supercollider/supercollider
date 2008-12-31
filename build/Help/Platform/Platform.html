@@ -5,68 +5,69 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bb9}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9; min-height: 12.0px}
 span.s1 {color: #000000}
 span.s2 {font: 12.0px Helvetica; color: #000000}
-span.s3 {color: #007300}
+span.s3 {color: #2c7014}
 span.s4 {color: #606060}
-span.s5 {text-decoration: underline ; color: #0018e8}
-span.s6 {color: #0000bf}
+span.s5 {text-decoration: underline ; color: #0029e1}
+span.s6 {color: #001bb9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>Platform</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p3"><b>superclass: Object</b></p>
-<p class="p2"><b></b><br></p>
-<p class="p3">Platform is an abstract class encapsulating various platform dependent constants and properties, such as directories, primitive features and startup files. The platform object is accessible through the 'platform' method of the main process instance:</p>
 <p class="p2"><br></p>
-<p class="p4">thisProcess<span class="s1">.platform</span></p>
+<p class="p3"><b>superclass: Object</b></p>
+<p class="p2"><br></p>
+<p class="p3">The Platform class (along with its subclasses) handles things which differ between operating systems (mac/linux/windows/...), to simplify cross-platform aspects of SuperCollider.</p>
+<p class="p2"><br></p>
+<p class="p3">Platform is an <i>abstract class</i> encapsulating various platform dependent constants and properties, such as directories, primitive features and startup files. The platform object is accessible through the 'platform' method of the main process instance:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>thisProcess<span class="s1">.platform</span></p>
+<p class="p2"><br></p>
+<p class="p3">Currently implemented platforms include: OSXPlatform, LinuxPlatform, WindowsPlatform, UnixPlatform.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Platform name and platform dependent actions</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>name</b> - returns the platform name</p>
 <p class="p2"><br></p>
 <p class="p3"><b>*case</b>(... <b>cases</b>)</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span>perform actions depending on the current platform (name), just like <span class="s1">Object:switch</span>:</p>
+<p class="p3"><span class="Apple-tab-span">	</span>perform actions depending on the current platform (name), just like Object:switch:</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>Platform<span class="s1">.case(</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\osx</span>,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s4">"OSX"</span>.postln },</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\linux</span>,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s4">"Linux"</span>.postln },</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\windows</span>, <span class="Apple-tab-span">	</span>{ <span class="s4">"Windows"</span>.postln }</p>
 <p class="p7"><span class="Apple-tab-span">	</span>);</p>
-<p class="p8"><br></p>
-<p class="p9"><b>Directories and filesystem stuff</b></p>
-<p class="p8"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><b>Directories and filesystem stuff</b></p>
+<p class="p2"><br></p>
 <p class="p3"><b>classLibraryDir</b></p>
 <p class="p3"><b>*classLibraryDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- location of the bundled class library</p>
-<p class="p8"><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>helpDir</b></p>
 <p class="p3"><b>*helpDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- location of the bundled help files</p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b>systemAppSupportDir</b></p>
-<p class="p10"><b>*systemAppSupportDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- system application support directory</p>
-<p class="p8"><br></p>
+<p class="p3"><b>*systemAppSupportDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- system application support directory</p>
+<p class="p2"><br></p>
 <p class="p3"><b>userAppSupportDir</b></p>
-<p class="p10"><b>*userAppSupportDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- user application support directory</p>
-<p class="p8"><br></p>
-<p class="p10"><b>systemExtensionDir</b></p>
+<p class="p3"><b>*userAppSupportDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- user application support directory</p>
+<p class="p2"><br></p>
+<p class="p3"><b>systemExtensionDir</b></p>
 <p class="p3"><b>*systemExtensionDir<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>- system extension directory (see <a href="dev/SuperCollider/supercollider/build/Help/Extending and Customizing SC/Using-Extensions.html"><span class="s5">Using-Extensions</span></a>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>userExtensionDir</b></p>
@@ -83,7 +84,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>startupFiles</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- files to be loaded on startup</p>
 <p class="p3"><b>loadStartupFiles</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- (re)load startup files</p>
 <p class="p2"><br></p>
-<p class="p9"><b>Features</b></p>
+<p class="p5"><b>Features</b></p>
 <p class="p2"><br></p>
 <p class="p3">Features are abstract symbols that can be declared by extension authors and be checked during runtime in user code. Apart from explicitly declared features, class and primitive names are implicitly declared.</p>
 <p class="p2"><br></p>
@@ -92,21 +93,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>Declare <b>aSymbol</b> to be a feature present in the runtime. Class names and primitive names cannot be declared as features.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>hasFeature(aSymbol)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b>Return true if the feature <b>aSymbol</b> is present in the runtime system. <b>aSymbol </b>can refer to explicitly declared features as well as class and primitive names.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s6">thisProcess</span>.platform.hasFeature(<span class="s3">\Object</span>);</p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'_SCWindow_BeginFullScreen'<span class="s1">);</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'_SCWindow_BeginFullScreen'<span class="s1">);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s6">thisProcess</span>.platform.hasFeature(<span class="s3">'_myFuncyPrimitive'</span>);</p>
-<p class="p12"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.declareFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
-<p class="p13"><br></p>
-<p class="p10"><b>when(features, ifFunction, elseFunction)</b></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.declareFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
+<p class="p10"><br></p>
+<p class="p3"><b>when(features, ifFunction, elseFunction)</b></p>
 <p class="p3"><b>*when(features, ifFunction, elseFunction)</b></p>
-<p class="p8"><b></b><br></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span></b>Evaluate <b>ifFunction</b> if all <b>features</b> are present, otherwise evaluate <b>elseFunction</b>.</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span></b>Evaluate <b>ifFunction</b> if all <b>features</b> are present, otherwise evaluate <b>elseFunction</b>.</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s6">Platform</span>.when(#[<span class="s3">\Document</span>, <span class="s3">\SCWindow</span>], { <span class="s4">"yeehah!"</span>.postln });</p>
 </body>
 </html>
