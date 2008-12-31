@@ -49,8 +49,8 @@ EZGui{ // an abstract class
 		^[labelBounds, widgetBounds]
 	}
 	
-	onclose{^ popUp.if{this.window.onClose}{view.onClose};}
-	onclose_{|func| popUp.if{this.window.onClose_(func)}{view.onClose_(func)};}
+	onClose{^ popUp.if{this.window.onClose}{view.onClose};}
+	onClose_{|func| popUp.if{this.window.onClose_(func)}{view.onClose_(func)};}
 	
 	prMakeView{arg parentView,bounds; // return a container, or a popUpWindow with a container
 		var w, winBounds, view;
