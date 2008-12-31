@@ -163,10 +163,11 @@ int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *receiver = g->sp;
+    PyrSlot *a = g->sp;
+    PyrSlot *receiver = g->sp - 1;
     
     // this function should be moved out of the MyDocument instance
-    NSString *path = pathOfHelpFileFor( nsStringFromPyrSlot(receiver));
+    NSString *path = pathOfHelpFileFor( nsStringFromPyrSlot(a));
 
     if(path) {
         PyrString* pyrPathString = newPyrString(g->gc,[path fileSystemRepresentation],0,true);
@@ -282,7 +283,7 @@ void initCocoaFilePrimitives()
     //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
 //     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
     definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
-    definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 1, 0);	
+    definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 2, 0);	
 
   /*  definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);	
     definePrimitive(base, index++, "_ObjC_Dealloc", prDealloc, 2, 0);	
