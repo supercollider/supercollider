@@ -1352,7 +1352,7 @@ void XLine_Ctor(XLine* unit)
 	
 	int counter = (int)(dur * unit->mRate->mSampleRate + .5f);
 	unit->mCounter = sc_max(1, counter);
-	unit->mGrowth = pow(end / start, 1.0 / counter);
+	unit->mGrowth = std::pow(end / start, 1.0 / counter);
 	unit->mLevel = start;
 	unit->mEndLevel = end;
 	
@@ -1518,7 +1518,7 @@ void AmpComp_next(AmpComp *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float xa = ZXP(freq);
-		ZXP(out) = xa >= 0.f ? pow(xa, xb) * rootmul : -pow(-xa, xb) * rootmul;
+		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) * rootmul : -std::pow(-xa, xb) * rootmul;
 	);
 }
 
@@ -1532,7 +1532,7 @@ void AmpComp_next_kk(AmpComp *unit, int inNumSamples)
 	
 	LOOP(inNumSamples, 
 		float xa = root / ZXP(freq);
-		ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
+		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 	);
 }
 
@@ -1542,7 +1542,7 @@ void AmpComp_Ctor(AmpComp* unit)
 		SETCALC(AmpComp_next_kk);
 	} else {
 		float exp = ZIN0(2);
-		unit->m_rootmul = pow(ZIN0(1), exp);
+		unit->m_rootmul = std::pow(ZIN0(1), exp);
 		unit->m_exponent = -1.f * exp;
 		SETCALC(AmpComp_next);
 	}
@@ -1662,7 +1662,7 @@ void LinExp_next(LinExp *unit, int inNumSamples)
 	float rrminuslo = unit->m_rrminuslo;
 
 	LOOP(inNumSamples, 
-		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+		ZXP(out) = dstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
 
@@ -1679,7 +1679,7 @@ void LinExp_next_kk(LinExp *unit, int inNumSamples)
 	float rrminuslo = rsrcrange * -srclo;
 
 	LOOP(inNumSamples, 
-		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+		ZXP(out) = dstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
 
@@ -1701,7 +1701,7 @@ void LinExp_next_aa(LinExp *unit, int inNumSamples)
 		float dstratio = zdsthi/zdstlo;
 		float rsrcrange = 1. / (zsrchi - zsrclo);
 		float rrminuslo = rsrcrange * -zsrclo;
-		ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+		ZXP(out) = zdstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
 
@@ -1721,7 +1721,7 @@ void LinExp_next_ak(LinExp *unit, int inNumSamples)
 		
 		float rsrcrange = 1. / (zsrchi - zsrclo);
 		float rrminuslo = rsrcrange * -zsrclo;
-		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+		ZXP(out) = dstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
 
@@ -1740,7 +1740,7 @@ void LinExp_next_ka(LinExp *unit, int inNumSamples)
 		float zdsthi = ZXP(dsthi);
 		float zdstlo = ZXP(dstlo);
 		float dstratio = zdsthi/zdstlo;
-		ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
+		ZXP(out) = zdstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
 
@@ -2073,7 +2073,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 					//Print("grow %g\n", unit->m_grow);
 				} break;
 				case shape_Exponential : {
-					unit->m_grow = pow(endLevel / level, 1.0 / counter);
+					unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 				} break;
 				case shape_Sine : {
 					double w = pi / counter;
@@ -2117,8 +2117,8 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 					unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 				} break;
 				case shape_Cubed : {
-					unit->m_y1 = pow(level, 0.33333333); 
-					unit->m_y2 = pow(endLevel, 0.33333333); 
+					unit->m_y1 = std::pow(level, 0.33333333);
+					unit->m_y2 = std::pow(endLevel, 0.33333333);
 					unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 				} break;
 			}
@@ -2278,7 +2278,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 						unit->m_grow = (endLevel - level) / counter;
 					} break;
 					case shape_Exponential : {
-						unit->m_grow = pow(endLevel / level, 1.0 / counter);
+						unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 					} break;
 					case shape_Sine : {
 						double w = pi / counter;
@@ -2322,8 +2322,8 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = std::pow(level, 0.33333333);
+						unit->m_y2 = std::pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 				}
@@ -2525,7 +2525,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 						unit->m_grow = (endLevel - level) / counter;
 					} break;
 					case shape_Exponential : {
-						unit->m_grow = pow(endLevel / level, 1.0 / counter);
+						unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 					} break;
 					case shape_Sine : {
 						double w = pi / counter;
@@ -2569,8 +2569,8 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = std::pow(level, 0.33333333);
+						unit->m_y2 = std::pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 				}
@@ -2806,7 +2806,7 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 					//Print("grow %g\n", unit->m_grow);
 				} break;
 				case shape_Exponential : {
-					unit->m_grow = pow(endLevel / level, 1.0 / counter);
+					unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 				} break;
 				case shape_Sine : {
 					double w = pi / counter;
@@ -2850,8 +2850,8 @@ void BufEnvGen_next_k(BufEnvGen *unit, int inNumSamples)
 					unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 				} break;
 				case shape_Cubed : {
-					unit->m_y1 = pow(level, 0.33333333); 
-					unit->m_y2 = pow(endLevel, 0.33333333); 
+					unit->m_y1 = std::pow(level, 0.33333333);
+					unit->m_y2 = std::pow(endLevel, 0.33333333);
 					unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 				} break;
 			}
@@ -3002,7 +3002,7 @@ void BufEnvGen_next_ak(BufEnvGen *unit, int inNumSamples)
 						unit->m_grow = (endLevel - level) / counter;
 					} break;
 					case shape_Exponential : {
-						unit->m_grow = pow(endLevel / level, 1.0 / counter);
+						unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 					} break;
 					case shape_Sine : {
 						double w = pi / counter;
@@ -3046,8 +3046,8 @@ void BufEnvGen_next_ak(BufEnvGen *unit, int inNumSamples)
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = std::pow(level, 0.33333333);
+						unit->m_y2 = std::pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 				}
@@ -3232,7 +3232,7 @@ void BufEnvGen_next_aa(BufEnvGen *unit, int inNumSamples)
 						unit->m_grow = (endLevel - level) / counter;
 					} break;
 					case shape_Exponential : {
-						unit->m_grow = pow(endLevel / level, 1.0 / counter);
+						unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
 					} break;
 					case shape_Sine : {
 						double w = pi / counter;
@@ -3276,8 +3276,8 @@ void BufEnvGen_next_aa(BufEnvGen *unit, int inNumSamples)
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = std::pow(level, 0.33333333);
+						unit->m_y2 = std::pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 					} break;
 				}
@@ -3586,10 +3586,10 @@ inline void ADSR_set(ADSR *unit, float endLevel, float time)
 	counter = sc_max(1, counter);
 	unit->m_counter = counter;
 
-	double a1 = (endLevel - unit->m_level) / (1.0 - exp(curve));	
+	double a1 = (endLevel - unit->m_level) / (1.0 - std::exp(curve));
 	unit->m_a2 = unit->m_level + a1;
 	unit->m_b1 = a1; 
-	unit->m_grow = exp(curve / counter);
+	unit->m_grow = std::exp(curve / counter);
 }
 
 inline void ADSR_next(ADSR *unit)
@@ -3699,7 +3699,7 @@ void EnvFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 				}
 			} break;
 			case shape_Exponential : {
-				double grow = pow(endLevel / level, 1.0 / nsmps);
+				double grow = std::pow(endLevel / level, 1.0 / nsmps);
 				for (int i=0; i<nsmps; ++i) {
 					data[index++] = level;
 					level *= grow;
@@ -3774,8 +3774,8 @@ void EnvFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 				}
 			} break;
 			case shape_Cubed : {
-				double y1 = pow(level, 0.33333333); 
-				double y2 = pow(endLevel, 0.33333333); 
+				double y1 = std::pow(level, 0.33333333);
+				double y2 = std::pow(endLevel, 0.33333333);
 				double grow = (y2 - y1) / nsmps;
 				for (int i=0; i<nsmps; ++i) {
 					data[index++] = level;
@@ -3823,7 +3823,7 @@ extern "C"
 		    level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
 		    break; \
 	    case shape_Exponential : \
-		    level = unit->m_level = begLevel * pow(endLevel / begLevel, pos); \
+			level = unit->m_level = begLevel * std::pow(endLevel / begLevel, pos); \
 		    break; \
 	    case shape_Sine : \
 		    level = unit->m_level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5); \
@@ -3840,8 +3840,8 @@ extern "C"
 		    if (fabs((float)curve) < 0.0001) { \
 			    level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
 		    } else { \
-			    double denom = 1. - exp((float)curve); \
-			    double numer = 1. - exp((float)(pos * curve)); \
+				double denom = 1. - std::exp((float)curve); \
+				double numer = 1. - std::exp((float)(pos * curve)); \
 			    level = unit->m_level = begLevel + (endLevel - begLevel) * (numer/denom); \
 		    } \
 		    break; \
@@ -3855,8 +3855,8 @@ extern "C"
 	    } \
 	    case shape_Cubed : \
 	    { \
-		    double cbrtBegLevel = pow(begLevel, (float)0.3333333); \
-		    double cbrtEndLevel = pow(endLevel, (float)0.3333333); \
+			double cbrtBegLevel = std::pow(begLevel, 0.3333333f); \
+			double cbrtEndLevel = std::pow(endLevel, 0.3333333f); \
 		    double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel; \
 		    level = unit->m_level = cbrtLevel * cbrtLevel * cbrtLevel; \
 		    break; \
