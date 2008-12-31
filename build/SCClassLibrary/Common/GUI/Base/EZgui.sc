@@ -12,9 +12,7 @@ EZGui{ // an abstract class
 	
 	alwaysOnTop_{arg bool;
 		alwaysOnTop=bool;
-		this.view.parent.respondsTo(\findWindow).if{
-		this.view.parent.findWindow.alwaysOnTop=alwaysOnTop;
-		}
+		popUp.if{this.window.alwaysOnTop=alwaysOnTop};
 	
 	}
 	font_{ arg font;
@@ -24,7 +22,7 @@ EZGui{ // an abstract class
 	}
 	
 
-	window{^if(view.parent.respondsTo(\findWindow)){view.parent.findWindow}}
+	window{^ popUp.if{view.parent.findWindow};}
 	
 	
 	prSubViewBounds{arg rect, hasLabel;
@@ -51,8 +49,8 @@ EZGui{ // an abstract class
 		^[labelBounds, widgetBounds]
 	}
 	
-	onclose{^ popUp.if{window.onClose}{view.onClose};}
-	onclose_{|func| popUp.if{window.onClose_(func)}{view.onClose_(func)};}
+	onclose{^ popUp.if{this.window.onClose}{view.onClose};}
+	onclose_{|func| popUp.if{this.window.onClose_(func)}{view.onClose_(func)};}
 	
 	prMakeView{arg parentView,bounds; // return a container, or a popUpWindow with a container
 		var w, winBounds, view;
