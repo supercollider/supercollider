@@ -5,19 +5,22 @@ EZRangerJ {
 	var <spec, <lo, <hi, <>round=0.001, <>action;
 	
 	*new { |w, dimensions, label, spec, action, initVal, initAction=false, 
-		labelWidth=60, numberWidth=40, unitWidth=30, useTwoLines=false| 
+		labelWidth=60, numberWidth=40, unitWidth=30, labelHeight, useTwoLines=false| 
 		
 			^super.new.init(w, dimensions, label, spec, action, initVal, initAction, 
-			labelWidth, numberWidth, unitWidth, useTwoLines)
+			labelWidth, numberWidth, unitWidth, labelHeight, useTwoLines)
 	} 
 	
 	init { |argW, dimensions, argLabel, argSpec, argAction, initVal, initAction=false, 
-		argLabelWidth, numberWidth, unitWidth, useTwoLines|
+		argLabelWidth, numberWidth, unitWidth, labelHeight, useTwoLines|
 
 		var sys = GUI.scheme; 
 		var skin = GUI.skin;
 		var font = sys.font.new(*skin.fontSpecs);
 		var lineHeight;
+		
+		(useTwoLines==\horz).if{useTwoLines=false};// For viewDirector compatibility
+		labelHeight; // this is just a dummy for compatibility
 		
 		spec = argSpec.asSpec;
 		action = argAction; 
