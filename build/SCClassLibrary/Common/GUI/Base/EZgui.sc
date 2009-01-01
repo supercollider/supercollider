@@ -1,6 +1,8 @@
 EZGui{ // an abstract class
-	var <>labelView, widget, <view, <gap, popUp=false,  <layout, labelSize, <alwaysOnTop=false;
-			
+	var <>labelView, <widget, <view, <gap, popUp=false, 
+	<>action,   <layout, value, labelSize, <alwaysOnTop=false;
+	
+	///// general stuff for all EZ classes. override as needed	
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
@@ -20,10 +22,26 @@ EZGui{ // an abstract class
 			labelView.notNil.if{labelView.font=font};
 			widget.font=font;
 	}
-	
 
 	window{^ popUp.if{view.parent.findWindow};}
 	
+	onClose{^ popUp.if{this.window.onClose}{view.onClose};}
+	
+	onClose_{|func| popUp.if{this.window.onClose_(func)}{view.onClose_(func)};}
+	
+	
+	//// value stuff. override as needed
+	
+	value{ ^widget.value }
+	
+	value_{|val| widget.value_(val)}
+	
+	valueAction_{|val| this.value_(val); this.doAction}
+		
+	doAction {this.action.value(this)}
+	
+
+	///////// private methods. You can still override these in subclasses
 	
 	prSubViewBounds{arg rect, hasLabel;
 		var widgetBounds,labelBounds,tmp;
@@ -49,8 +67,6 @@ EZGui{ // an abstract class
 		^[labelBounds, widgetBounds]
 	}
 	
-	onClose{^ popUp.if{this.window.onClose}{view.onClose};}
-	onClose_{|func| popUp.if{this.window.onClose_(func)}{view.onClose_(func)};}
 	
 	prMakeView{arg parentView,bounds; // return a container, or a popUpWindow with a container
 		var w, winBounds, view;

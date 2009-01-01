@@ -27,7 +27,7 @@ EZListView : EZLists{
 		};
 				
 		widget = GUI.listView.new(view, listBounds).resize_(5);
-		}
+	}
 
 	listView{^widget}
 	

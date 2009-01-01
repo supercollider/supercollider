@@ -11,21 +11,23 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
-p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
-p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #485abb}
+span.s2 {color: #505fb1}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #4c526c}
-span.s6 {color: #676d92}
-span.s7 {color: #0000ff}
-span.s8 {color: #0c2eee}
+span.s5 {color: #4e5369}
+span.s6 {color: #696f8e}
+span.s7 {color: #0c2eee}
+span.s8 {color: #2040df}
+span.s9 {color: #0020f6}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,55 +36,90 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers.</p>
+<p class="p1">Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers. It also provides a standard for EZ GUI Classes, and new EZ Classes should subclass EZGUI to help keep a consistent user interface .</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also: </b><a href="EZListView.html"><span class="s4">EZListView</span></a>, <a href="EZPopUpMenu.html"><span class="s4">EZPopUpMenu</span></a>, <a href="EZSlider.html"><span class="s4">EZSlider</span></a>, <a href="EZNumber.html"><span class="s4">EZNumber</span></a>, <a href="EZRanger.html"><span class="s4">EZRanger</span></a></span></p>
 <p class="p2"><br></p>
-<p class="p5"><br></p>
-<p class="p6"><b>Accessing Instance and Class Variables</b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>view</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the enclosing compositeView.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>label</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>label_(string)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the label. Will add the label view if none was initially created.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>window</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the window if you used the popUp window function.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><b>Accessing GUI options</b></p>
-<p class="p11"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>alwaysOnTop_(bool)</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>alwaysOnTop</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Makes the popup window always on top, if there is one</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is false;</p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>visible</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component views are visible.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>enabled</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets if the list is enabled.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;<span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>onClose</b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>onClose_(func)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the onClose function of either <b>view</b> or <b>window</b>, depending on whether the EZ view used a popup window.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>func </b>- An Instance of <a href="../../Core/Kernel/Function.html"><span class="s7">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s7">FunctionList</span></a>.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>font_(font)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An Instance of <a href="../GUI-Tools/Font.html"><span class="s8">Font</span></a>;<span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><b>Accessing Instance and Class Variables</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>view</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the enclosing compositeView.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>label</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>label_(string)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the label. Will add the label view if none was initially created.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>string </b>- An Instance of <a href="../../Collections/String.html"><span class="s5">String</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>window</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Returns the window if you used the popUp window function.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>Accessing GUI options</b></p>
+<p class="p10"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>alwaysOnTop_(bool)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>alwaysOnTop</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Makes the popup window always on top, if there is one</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is false;</p>
+<p class="p6"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>visible</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>visible_(bool)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets it the component views are visible.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>enabled</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>enabled_(bool)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets if the list is enabled.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An Instance of <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a>. Default is true;<span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>onClose</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>onClose_(func)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets/gets the onClose function of either <b>view</b> or <b>window</b>, depending on whether the EZ view used a popup window.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>func </b>- An Instance of <a href="../../Core/Kernel/Function.html"><span class="s7">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s7">FunctionList</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>font_(font)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An Instance of <a href="../GUI-Tools/Font.html"><span class="s8">Font</span></a>;<span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><b>Subclassing</b></p>
+<p class="p10"><br></p>
+<p class="p1">EZGui provides a standard and basic tools for most EZ classes. If you make a new EZ class, then subclass EZGui, and override the necessary methods. If your class only has a label and a widget, chances are, you need to overide nothing, but only neet to write a new and init class methods. See existing subclasses of EZGui for examples of this. You may also want to override the following:</p>
+<p class="p2"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>widget</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>returns the active widget.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>subclasses will typically refer to it or ignor it, e.g.:</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>MyEZClass{</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myOtherMethods{}</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>....</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listView{^widget}</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p2"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>action</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>action_(func)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Gets/sets the action of the EZclass instance.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fund </b>- An Instance of <a href="../../Core/Kernel/Function.html"><span class="s9">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s9">FunctionList</span></a>.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>value</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>value_ (val)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the value of the <b>widget</b>. Does not perform the action.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An integer.</p>
+<p class="p12"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>valueAction_ (val)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets thevalue of the widget. Performs do action</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An integer.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>doAction</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Performs this.action.value(this) .</p>
+<p class="p10"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>
