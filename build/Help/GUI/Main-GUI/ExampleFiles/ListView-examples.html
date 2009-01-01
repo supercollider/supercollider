@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0000bf}
+span.s2 {color: #000000}
+span.s3 {color: #bf0000}
+span.s4 {color: #606060}
+span.s5 {color: #007300}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Examples</b></p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p2"><br></p>
+<p class="p3">w = <span class="s1">Window</span>.new.front;</p>
+<p class="p2"><br></p>
+<p class="p3">v = <span class="s1">ListView</span>(w,<span class="s1">Rect</span>(10,10,120,70))</p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span>.items_([ </span>"SinOsc"<span class="s2">, </span>"Saw"<span class="s2">, </span>"LFSaw"<span class="s2">, </span>"WhiteNoise"<span class="s2">, </span>"PinkNoise"<span class="s2">, </span>"BrownNoise"<span class="s2">, </span>"Osc"<span class="s2"> ])</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>.background_(<span class="s1">Color</span>.clear)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>.hiliteColor_(<span class="s1">Color</span>.green(alpha:0.6))</p>
+<p class="p3"><span class="Apple-tab-span">	</span>.action_({ <span class="s1">arg</span> sbs;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, v.items[sbs.value]].postln;<span class="Apple-tab-span">	</span><span class="s3">// .value returns the integer</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>});</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// Sound example use to switch Filters</p>
+<p class="p3">(</p>
+<p class="p3"><span class="s1">Server</span>.default = s = <span class="s1">GUI</span>.stethoscope.defaultServer.boot;</p>
+<p class="p3">s.waitForBoot({</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">var</span> f, freq, ww;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>n={r=<span class="s1">LFSaw</span>.ar([220, 530],0,0.3)*<span class="s1">LFPulse</span>.ar(12,0,0.3,0.4); [r[0],<span class="s1">Delay2</span>.ar(r[1])]}.play;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>freq={<span class="s1">SinOsc</span>.kr(0.5,0,4000,4200)}.play;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>w=<span class="s1">Window</span>(<span class="s4">"Filters"</span>).front;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>v = <span class="s1">ListView</span>(w,<span class="s1">Rect</span>(10,10,180,120))</p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.items_([ </span>"No Filter"<span class="s2">,</span>"RLPF"<span class="s2">, </span>"RHPF"<span class="s2">, </span>"BPF"<span class="s2">, </span>"Resonz"<span class="s2">, </span>"MoogFF"<span class="s2"> ])</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s1">Color</span>.clear)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.hiliteColor_(<span class="s1">Color</span>.green(alpha:0.6))</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s1">arg</span> v;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.value.switch(</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,{try{f.free};<span class="s4">"test"</span>.postln},</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,{try{f.free};f={<span class="s1">ReplaceOut</span>.ar(0,<span class="s1">RLPF</span>.ar(<span class="s1">In</span>.ar(0,2),<span class="s1">In</span>.kr(0,1),0.2,0.3))}.play(addAction:<span class="s5">\addToTail</span>)},</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2,{try{f.free};f={<span class="s1">ReplaceOut</span>.ar(0,<span class="s1">RHPF</span>.ar(<span class="s1">In</span>.ar(0,2),<span class="s1">In</span>.kr(0,1),0.2,0.3))}.play(addAction:<span class="s5">\addToTail</span>)},</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3,{try{f.free};f={<span class="s1">ReplaceOut</span>.ar(0,<span class="s1">BPF</span>.ar(<span class="s1">In</span>.ar(0,2),<span class="s1">In</span>.kr(0,1),0.2,1.5))}.play(addAction:<span class="s5">\addToTail</span>)},</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4,{try{f.free};f={<span class="s1">ReplaceOut</span>.ar(0,<span class="s1">Resonz</span>.ar(<span class="s1">In</span>.ar(0,2),<span class="s1">In</span>.kr(0,1),0.2,2))}.play(addAction:<span class="s5">\addToTail</span>)},</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5,{try{f.free};f={<span class="s1">ReplaceOut</span>.ar(0,<span class="s1">MoogFF</span>.ar(<span class="s1">In</span>.ar(0,2),<span class="s1">In</span>.kr(0,1),1.5))}.play(addAction:<span class="s5">\addToTail</span>)}</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>ww=<span class="s1">FreqScopeWindow</span>.new(400, 200, 0);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>w.bounds=<span class="s1">Rect</span>(50,<span class="s1">Window</span>.screenBounds.height-300,200,200);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>ww.window.bounds=ww.window.bounds.moveTo(255,<span class="s1">Window</span>.screenBounds.height-328);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">CmdPeriod</span>.doOnce({{ww.window.close}.defer(0.5);w.close;});</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//defer or crash, because FreqScopeWindow Class contains its own routine for cleaning up on CmdPeriod</p>
+<p class="p3"><span class="Apple-tab-span">	</span>w.onClose_({n.free;f.free;freq.free});</p>
+<p class="p3">});</p>
+<p class="p6">)</p>
+</body>
+</html>

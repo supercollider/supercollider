@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #6f7178}
+span.s2 {color: #0000bf}
+span.s3 {color: #000000}
+span.s4 {text-decoration: underline}
+span.s5 {color: #007300}
+span.s6 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s1">Rect</span></a>, or a <a href="../../../Geometry/Point.html"><span class="s1">Point</span></a> indicating width@height.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>.new.front;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 60, 150, 20));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = { a.value.postln };</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p6"><br></p>
+<p class="p8"><b>Examples</b></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">// the simplest version will give you a very long float</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s2">Window</span>.new.front;</p>
+<p class="p7">c = <span class="s2">NumberBox</span>(w, <span class="s2">Rect</span>(20, 20, 150, 20));</p>
+<p class="p7">a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 60, 150, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(a.value)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">a.action.value;</p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s3">(</span>// change the bounds to become vertical</p>
+<p class="p7">w = <span class="s2">Window</span>.new.front;</p>
+<p class="p7">c = <span class="s2">NumberBox</span>(w, <span class="s2">Rect</span>(20, 20, 150, 20));</p>
+<p class="p7">a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(200, 60, 20, 150))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(a.value)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">a.action.value;</p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p10">// use a <a href="../../../Control/Spec.html"><span class="s4">Spec</span></a> to round and map the output range for clearer display</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s2">Window</span>.new.front;</p>
+<p class="p10"><span class="s3">b = </span><span class="s2">ControlSpec</span><span class="s3">(-50, 50, </span><span class="s5">\linear</span><span class="s3">, 0.01); </span>// min, max, mapping, step</p>
+<p class="p7">c = <span class="s2">StaticText</span>(w, <span class="s2">Rect</span>(20, 20, 150, 20)).align_(<span class="s5">\center</span>).background_(<span class="s2">Color</span>.rand);</p>
+<p class="p7">a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 50, 150, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.focusColor_(<span class="s2">Color</span>.red(alpha:0.2))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.string_(b.map(a.value).asString)</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// round the float so it will fit in the NumberBox</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7">a.action.value;</p>
+<p class="p11"><br></p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p10">// change the stepsize of the slider, selected via a PopUpMenu</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s2">Window</span>.new.front;</p>
+<p class="p12"><span class="s3">a = [</span>"0"<span class="s3">, </span>"0.0625"<span class="s3">, </span>"0.125"<span class="s3">, </span>"0.25"<span class="s3">, </span>"0.5"<span class="s3">, </span>"1"<span class="s3">];</span></p>
+<p class="p7">b = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 100, 100, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.value_(b.value)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s2">Color</span>.rand);</p>
+<p class="p7">d = <span class="s2">PopUpMenu</span>(w, <span class="s2">Rect</span>(20, 60, 100, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.items_(a)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.step_((a.at(d.value)).asFloat);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="s2">StaticText</span>(w, <span class="s2">Rect</span>(130, 60, 100, 20)).string_(<span class="s6">"change step"</span>);<span class="Apple-tab-span">	</span></p>
+<p class="p7">c = <span class="s2">NumberBox</span>(w, <span class="s2">Rect</span>(20, 20, 100, 20));</p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p10">// use the slider view to accept key actions</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s3">(</span>// select the slider, type something and watch the post window</p>
+<p class="p7">w = <span class="s2">Window</span>.new;</p>
+<p class="p7">c = <span class="s2">Slider</span>(w,<span class="s2">Rect</span>(0,0,100,30));</p>
+<p class="p7">c.keyDownAction = { <span class="s2">arg</span> view,char,modifiers,unicode,keycode;</p>
+<p class="p7">[char,modifiers,unicode,keycode].postln;</p>
+<p class="p7">};</p>
+<p class="p7">w.front;</p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p10">// adding funtionality to a view by the method addAction</p>
+<p class="p10">// this is useful for adding things to existing frameworks</p>
+<p class="p10">// that have action functions already.</p>
+<p class="p11"><br></p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s2">GUI</span>.window.new(<span class="s6">"A Slider"</span>);</p>
+<p class="p7">a = <span class="s2">GUI</span>.slider.new(w, <span class="s2">Rect</span>(40, 10, 300, 30));</p>
+<p class="p7">w.front</p>
+<p class="p7">);</p>
+<p class="p11"><br></p>
+<p class="p10">// now incrementally add some action to the slider</p>
+<p class="p7">a.addAction({ <span class="s2">|sl|</span> sl.value.postln });</p>
+<p class="p7">a.addAction({ <span class="s2">|sl|</span> w.view.background = <span class="s2">Color</span>.green(sl.value) });</p>
+<p class="p7">a.addAction({ <span class="s2">|sl|</span> sl.background = <span class="s2">Color</span>.red(1 - sl.value) });</p>
+<p class="p11"><br></p>
+<p class="p10">// adding and removing an action:</p>
+<p class="p12"><span class="s3">f = { </span><span class="s2">|sl|</span><span class="s3"> </span>"--------*******-------"<span class="s3">.postln; };</span></p>
+<p class="p7">a.addAction(f);</p>
+<p class="p7">a.removeAction(f);</p>
+<p class="p11"><br></p>
+<p class="p10">// or remove all, of course</p>
+<p class="p7">a.action = <span class="s2">nil</span>;</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p7">-----</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p10">// you can use Slider for triggering sounds also:</p>
+<p class="p11"><br></p>
+<p class="p7">(</p>
+<p class="p7">s.waitForBoot({</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SynthDef</span>(<span class="s5">\pluck</span>,{<span class="s2">arg</span> freq=55;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pluck</span>.ar(<span class="s2">WhiteNoise</span>.ar(0.06),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0,4), 1.0, doneAction: 2),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq.reciprocal,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>coef:0.1)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>.new(<span class="s6">"Hold arrow keys to trigger sound"</span>,<span class="s2">Rect</span>(300,<span class="s2">Window</span>.screenBounds.height-300,400,100)).front;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(50, 20, 300, 40))</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.step_(0.05)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.focus</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// trigger a synth with varying frequencies</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s5">\pluck</span>, [<span class="s5">\freq</span>,55+(1100*a.value)]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background_(<span class="s2">Gradient</span>(<span class="s2">Color</span>.rand,<span class="s2">Color</span>.rand));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
+<p class="p7">});</p>
+<p class="p11"><br></p>
+<p class="p7">)</p>
+<p class="p11"><br></p>
+<p class="p10">// change the background color of WIndow by moving the sliders</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s2">Window</span>(<span class="s6">"RGB fader"</span>, <span class="s2">Rect</span>(100, 500, 400, 400))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.front;</p>
+<p class="p7">f = { w.view.background_(<span class="s2">Color</span>.new(r.value, g.value, b.value, 1)) };</p>
+<p class="p7">r = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(100, 140, 200, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p7">g = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(100, 170, 200, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p7">b = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(100, 200, 200, 20))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({ f.value });</p>
+<p class="p7">f.value;</p>
+<p class="p7">);</p>
+</body>
+</html>

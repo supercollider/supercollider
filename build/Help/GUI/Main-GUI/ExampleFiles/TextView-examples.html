@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018b8}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #6f717e}
+span.s2 {color: #1129ac}
+span.s3 {color: #0018b8}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.s6 {color: #a41c14}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s1">Rect</span></a>, or a <a href="../../../Geometry/Point.html"><span class="s1">Point</span></a> indicating width@height.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>.new.front;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>t = <span class="s2">TextView</span>(w.asView,<span class="s2">Rect</span>(10,10, 380,200))</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.focus(<span class="s2">true</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><br></p>
+<p class="p9"><b>Examples</b></p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s3">Window</span>.new(<span class="s4">"Text View Example"</span>,<span class="s3">Rect</span>(100,<span class="s3">Window</span>.screenBounds.height-400, 520,300)).front;</p>
+<p class="p7">t = <span class="s3">TextView</span>(w.asView,<span class="s3">Rect</span>(10,10, 500,200))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.focus(<span class="s3">true</span>);</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p10">// Using the Window you just created, try these in succession, and test how the text view responds</p>
+<p class="p11"><span class="s5">t.mouseUpAction_{</span>|it, x, y, modifiers, buttonNumber, clickCount, pos|<span class="s5"> [pos].postln};</span></p>
+<p class="p7">t.hasVerticalScroller_(<span class="s3">true</span>);</p>
+<p class="p7">t.hasHorizontalScroller_(<span class="s3">true</span>);</p>
+<p class="p7">t.autohidesScrollers_(<span class="s3">true</span>);</p>
+<p class="p8"><br></p>
+<p class="p12"><span class="s5">t.open(</span>"Help/GUI/Button.html"<span class="s5">); </span><span class="s6">// load an html file</span></p>
+<p class="p8"><br></p>
+<p class="p10">// selective editing and formatting</p>
+<p class="p7">t.setStringColor (<span class="s3">Color</span>.red, 5, 220);</p>
+<p class="p7">t.setFont (<span class="s3">Font</span>(<span class="s4">"Courier"</span>,12), 5, 120);</p>
+<p class="p12"><span class="s5">t.setString (</span>"\nA replacement String\n"<span class="s5">, 12, 120);</span></p>
+<p class="p8"><br></p>
+<p class="p10">// compare with these methods, which change everything</p>
+<p class="p7">t.font_(<span class="s3">Font</span>(<span class="s4">"Courier"</span>,14));</p>
+<p class="p7">t.stringColor_(<span class="s3">Color</span>.blue);</p>
+<p class="p8"><br></p>
+</body>
+</html>
