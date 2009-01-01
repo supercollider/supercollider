@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {color: #6f7178}
+span.s2 {font: 9.0px Monaco}
+span.s3 {color: #0000bf}
+span.s4 {color: #606060}
+span.s5 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s1">Rect</span></a>, or a <a href="../../../Geometry/Point.html"><span class="s1">Point</span></a> indicating width@height.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">(</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s3">Window</span>(<span class="s4">"envelope"</span>, <span class="s3">Rect</span>(150 , <span class="s3">Window</span>.screenBounds.height-250, 250, 100)).front;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s3">EnvelopeView</span>(w, <span class="s3">Rect</span>(10, 10, 230, 80))</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawLines_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s3">Color</span>.red)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawRects_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s3">arg</span> b; [b.index,b.value].postln})</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.thumbSize_(5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>)<span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p9"><b>Examples</b></p>
+<p class="p10"><br></p>
+<p class="p11">// use as envelope view</p>
+<p class="p7">(</p>
+<p class="p11">//use shift-click to keep a node selected</p>
+<p class="p7">w = <span class="s3">Window</span>(<span class="s4">"envelope"</span>, <span class="s3">Rect</span>(150 , <span class="s3">Window</span>.screenBounds.height-250, 250, 100)).front;</p>
+<p class="p7">w.view.decorator = <span class="s3">FlowLayout</span>(w.view.bounds);</p>
+<p class="p12"><br></p>
+<p class="p7">b = <span class="s3">EnvelopeView</span>(w, <span class="s3">Rect</span>(0, 0, 230, 80))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s3">Color</span>.red)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.resize_(5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.step_(0.05)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.action_({<span class="s3">arg</span> b; [b.index,b.value].postln})</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.thumbSize_(5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);</p>
+<p class="p12"><br></p>
+<p class="p7">w.front;</p>
+<p class="p7">)</p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p11">// make the first point unmoveable</p>
+<p class="p12"><br></p>
+<p class="p7">(</p>
+<p class="p7">b.setEditable(0,<span class="s3">false</span>);</p>
+<p class="p7">)</p>
+<p class="p12"><br></p>
+<p class="p11">// use shift click to select/unselect the points</p>
+<p class="p12"><br></p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s3">Window</span>(<span class="s4">"envelope"</span>, <span class="s3">Rect</span>(150 , <span class="s3">Window</span>.screenBounds.height-250, 400, 150)).front;</p>
+<p class="p7">w.view.decorator = <span class="s3">FlowLayout</span>(w.view.bounds);</p>
+<p class="p12"><br></p>
+<p class="p7">b = <span class="s3">EnvelopeView</span>(w, <span class="s3">Rect</span>(0, 0, 350, 100))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.thumbSize_(5)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.fillColor_(<span class="s3">Color</span>.green)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s3">Color</span>.red)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.setEditable(0,<span class="s3">false</span>);</p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p7">)</p>
+<p class="p12"><br></p>
+<p class="p7">(</p>
+<p class="p13"><span class="s5">r = </span>Routine<span class="s5">({</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> j = 0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>20.do({ <span class="s3">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.select((b.size -1).rand.abs);</p>
+<p class="p12"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.1.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.x_(1.0.rand.abs);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.y_(1.0.rand.abs);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.select(-1);</p>
+<p class="p12"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">AppClock</span>.play(r);</p>
+<p class="p7">)<span class="Apple-tab-span">	</span></p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p11">//show boxes with a string in it:</p>
+<p class="p7">(</p>
+<p class="p7">a = <span class="s3">Window</span>(<span class="s4">"text-boxes"</span>, <span class="s3">Rect</span>(200 , 450, 450, 450));</p>
+<p class="p7">a.view.decorator = <span class="s3">FlowLayout</span>(a.view.bounds);</p>
+<p class="p12"><br></p>
+<p class="p7">b = <span class="s3">EnvelopeView</span>(a, <span class="s3">Rect</span>(0, 0, 440, 440))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.thumbWidth_(60.0)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.thumbHeight_(15.0)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawLines_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.drawRects_(<span class="s3">true</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.selectionColor_(<span class="s3">Color</span>.red)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);</p>
+<p class="p7">4.do({<span class="s3">arg</span> i;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.setString(i, [<span class="s4">"this"</span>, <span class="s4">"is"</span>, <span class="s4">"so much"</span>, <span class="s4">"fun"</span>].at(i));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>b.setFillColor(i,[<span class="s3">Color</span>.yellow, <span class="s3">Color</span>.white, <span class="s3">Color</span>.green].choose);</p>
+<p class="p7">});</p>
+<p class="p7">a.front;</p>
+<p class="p7">)</p>
+<p class="p12"><br></p>
+<p class="p7">(</p>
+<p class="p11"><span class="s5">b.connect(3, [2.0,0.0,1.0]); </span>// the text objects can be connected</p>
+<p class="p7">b.connect(0,[2.0,3.0,1.0]);</p>
+<p class="p7">)</p>
+</body>
+</html>

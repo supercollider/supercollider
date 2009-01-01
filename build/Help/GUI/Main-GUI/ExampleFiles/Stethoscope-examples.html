@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+span.s1 {color: #0922b2}
+span.s2 {color: #606060}
+span.s3 {color: #8d261b}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Examples</b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">(</p>
+<p class="p3"><span class="s1">Server</span>.default = <span class="s1">Server</span>.internal;</p>
+<p class="p3">s = <span class="s1">Server</span>.default;</p>
+<p class="p3">s.boot;</p>
+<p class="p3">)</p>
+<p class="p3">(</p>
+<p class="p3">{</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s1">SinOsc</span>.ar([225, 450, 900], 0, 0.2)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>+ <span class="s1">LPF</span>.ar(</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFPulse</span>.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">MouseX</span>.kr(20, 10000, 1)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p3">}.scope;</p>
+<p class="p3">)</p>
+<p class="p2"><br></p>
+<p class="p4">// server.scope only changes the properies explicitly given:</p>
+<p class="p2"><br></p>
+<p class="p3">s.scope(numChannels:5);</p>
+<p class="p3">s.scope(index:12);</p>
+<p class="p3">s.scope(zoom:4);</p>
+<p class="p3">s.scope(index:0);</p>
+<p class="p2"><br></p>
+<p class="p3">s.scopeWindow.size = 600;</p>
+<p class="p3">s.scopeWindow.size = 222;</p>
+<p class="p2"><br></p>
+<p class="p4">// scoping buses:</p>
+<p class="p2"><br></p>
+<p class="p3">a = <span class="s1">Bus</span>.audio(s, 4);</p>
+<p class="p3">{ <span class="s1">WhiteNoise</span>.ar(0.2.dup(4)) }.play(s, a);</p>
+<p class="p2"><br></p>
+<p class="p3">a.scope;</p>
+<p class="p2"><br></p>
+<p class="p3">c = <span class="s1">Bus</span>.control(s, 3);</p>
+<p class="p3">{ <span class="s1">WhiteNoise</span>.kr(1.dup(4) * <span class="s1">MouseX</span>.kr) }.play(s, c);</p>
+<p class="p2"><br></p>
+<p class="p3">c.scope;</p>
+<p class="p2"><br></p>
+<p class="p4">// note that scoping control rate buses shows block size interpolation (this is due to the</p>
+<p class="p4">// fact that ScopeOut.kr doesn't work yet.)</p>
+<p class="p2"><br></p>
+<p class="p5"><b>external use: you can pass your own view in to add a stethoscope to it;</b></p>
+<p class="p2"><br></p>
+<p class="p3">w = <span class="s1">Window</span>.new(<span class="s2">"my own scope"</span>, <span class="s1">Rect</span>(20, 20, 400, 500));</p>
+<p class="p3">w.view.decorator = <span class="s1">FlowLayout</span>(w.view.bounds);</p>
+<p class="p3">c = <span class="s1">Stethoscope</span>.new(s, view:w.view);</p>
+<p class="p3">w.onClose = { c.free }; <span class="s3">// don't forget this</span></p>
+<p class="p3">w.front;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>

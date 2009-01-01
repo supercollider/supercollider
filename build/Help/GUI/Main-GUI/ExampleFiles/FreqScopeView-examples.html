@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {color: #0018b8}
+span.s2 {color: #606060}
+span.s3 {color: #a41c14}
+span.s4 {color: #6f7178}
+span.s5 {color: #000000}
+span.s6 {color: #0000bf}
+span.s7 {color: #bf0000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>A Very Important Issue Regarding FreqScopeView:</b></p>
+<p class="p2"><br></p>
+<p class="p3">The scope will remain active after a command-period. To turn it off you must use the 'active' method.</p>
+<p class="p3"><b>Very important:</b> You must run <b>kill() </b>when the parent window is closed to avoid problems.</p>
+<p class="p3">It also frees the buffers that the scope allocated and stops the FFT analysis synth. So:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s1">Window</span>(<span class="s2">"My Analyzer"</span>, <span class="s1">Rect</span>(0, 0, 511, 300));</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s1">FreqScopeView</span>(w, w.view.bounds);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill }); <span class="s3">// YOU MUST HAVE THIS</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p2"><br></p>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s4">Rect</span></a>, or a <a href="../../../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Start internal server</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s = <span class="s1">Server</span>.internal.boot;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Create analyzer in a window</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s1">Window</span>(<span class="s2">"My Analyzer"</span>, <span class="s1">Rect</span>(0, 0, 511, 300)); <span class="s3">// width should be 511</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f = <span class="s1">FreqScopeView</span>(w, w.view.bounds);</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.active_(</span><span class="s1">true</span><span class="s5">); <span class="Apple-tab-span">	</span></span>// turn it on the first time;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose_({ f.kill }); <span class="s3">// you must have this</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s1">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s); <span class="s3">// start two sine waves</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*response (parent, bounds, bus1, bus2, freqMode)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Create a scope in a special frequency-response mode. This uses FFT-based spectral division to estimate the frequency response of some effect, on the assumption that the signal to <b>bus1</b> is transformed to the signal at <b>bus2</b> by some linear time-invariant process.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../../Geometry/Rect.html"><span class="s4">Rect</span></a>, or a <a href="../../../Geometry/Point.html"><span class="s4">Point</span></a> indicating width@height.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bus1</b> - The bus on which the "pre" signal is found.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bus2</b> - The bus on which the "post" signal is found.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>freqMode</b> - linear (0) or log(1) frequency mode. Defaults to 1.</p>
+<p class="p5"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Server</span>.default = s = <span class="s1">GUI</span>.stethoscope.defaultServer.boot;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// basic usage. try these. Each one will open a new window</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// move the mouse left and right to test response in different ranges<span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LPF</span>.scopeResponse</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">HPF</span>.scopeResponse</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">MoogFF</span>.scopeResponse</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">BBandPass</span>.scopeResponse</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">BLowShelf</span><span class="s5">.scopeResponse </span>// by default BLowShelf doesn't mangle much</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Resonz</span>.scopeResponse</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">BRF</span>.scopeResponse</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Integrator</span>.scopeResponse</p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s1">Median</span><span class="s5">.scopeResponse </span>// nonlinear, and therefore interesting</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// customize the parameters for more informative scoping</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s1">|in|</span> <span class="s1">MoogFF</span>.ar(in, freq: <span class="s1">MouseX</span>.kr(10, 10000, 1),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gain:<span class="s1">MouseY</span>.kr(4,0))}.scopeResponse</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><b>Examples</b></p>
+<p class="p14"><br></p>
+<p class="p15">// Start internal server</p>
+<p class="p16">s = <span class="s6">Server</span>.internal.boot;</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p15">// Create analyzer in a window</p>
+<p class="p16">(</p>
+<p class="p16">w = <span class="s6">Window</span>(<span class="s2">"My Analyzer"</span>, <span class="s6">Rect</span>(0, 0, 511, 300)); <span class="s7">// width should be 511</span></p>
+<p class="p16">f = <span class="s6">FreqScopeView</span>(w, w.view.bounds);</p>
+<p class="p15"><span class="s5">f.active_(</span><span class="s6">true</span><span class="s5">); <span class="Apple-tab-span">	</span></span>// turn it on the first time;</p>
+<p class="p17"><br></p>
+<p class="p16">w.onClose_({ f.kill }); <span class="s7">// you must have this</span></p>
+<p class="p16">w.front;</p>
+<p class="p16">{ <span class="s6">SinOsc</span>.ar([500, 1000], 0, 0.25).mean.dup }.play(s); <span class="s7">// start two sine waves</span></p>
+<p class="p17"><br></p>
+<p class="p16">)</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p15"><span class="s5">f.freqMode_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change to log scale so we can see them</p>
+<p class="p15"><span class="s5">f.inBus_(1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// look at bus 1</p>
+<p class="p15"><span class="s5">f.dbRange_(200);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// expand amplitude range</p>
+<p class="p15"><span class="s5">f.active_(</span><span class="s6">false</span><span class="s5">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn scope off (watch CPU)</p>
+<p class="p15"><span class="s5">f.active_(</span><span class="s6">true</span><span class="s5">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// turn it back on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p15">// Now press command-period. The scope is still running.</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p16">{ <span class="s6">Mix</span>.ar(<span class="s6">SinOsc</span>.ar([500, 1200, 3000, 9000,12000], 0, [0.2,0.1,0.05,0.03,0.01])) }.play(s); <span class="s7">// restart some sines</span></p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p15">// Close window and scope is killed.</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018b8}
+span.s1 {color: #0018b8}
+span.s2 {color: #606060}
+span.s3 {color: #000000}
+span.s4 {color: #356f14}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new (parent, bounds)</b></p>
+<p class="p4"><br></p>
+<p class="p5"><b>Examples</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s1">Window</span>.new;</p>
+<p class="p7">t = <span class="s1">TabletView</span>(w,<span class="s1">Rect</span>(40,40,300,300));</p>
+<p class="p7">t.background = <span class="s1">Color</span>.white;</p>
+<p class="p7">w.front;</p>
+<p class="p6"><br></p>
+<p class="p7">t.mouseDownAction = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[<span class="s2">"down"</span>,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation].postln;</p>
+<p class="p7">};</p>
+<p class="p6"><br></p>
+<p class="p7">t.action = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[<span class="s2">"dragging"</span>, x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation].postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.background = <span class="s1">Color</span>(x / 300,y / 300,tiltx,pressure);</p>
+<p class="p7">};</p>
+<p class="p6"><br></p>
+<p class="p7">t.mouseUpAction = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[<span class="s2">"up"</span>,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation].postln;</p>
+<p class="p7">};</p>
+<p class="p6"><br></p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p8">//Assign the same function to each action</p>
+<p class="p7">(</p>
+<p class="p7">w = <span class="s1">Window</span>.new;</p>
+<p class="p7">t = <span class="s1">TabletView</span>(w,<span class="s1">Rect</span>(40,40,300,300));</p>
+<p class="p7">t.background = <span class="s1">Color</span>.white;</p>
+<p class="p7">w.front;</p>
+<p class="p6"><br></p>
+<p class="p7">f = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount].postln;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>t.background = <span class="s1">Color</span>(x / 300,y / 300,tiltx,pressure);</p>
+<p class="p7">};</p>
+<p class="p6"><br></p>
+<p class="p7">t.mouseDownAction = f;</p>
+<p class="p7">t.action = f;</p>
+<p class="p7">t.mouseUpAction = f;</p>
+<p class="p6"><br></p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p8">// sound example</p>
+<p class="p6"><br></p>
+<p class="p7">s.boot</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">SynthDef</span>(<span class="s2">"help-2DTabletSlider"</span>,{ <span class="s1">arg</span> freq=440,int1=5,int2 = -5,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreqInterval=0,rq=0.4,gate=0.0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> p,c,d,f;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c=<span class="s1">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>d=<span class="s1">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>f=<span class="s1">LFNoise1</span>.kr(0.1,2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>p=<span class="s1">Pulse</span>.ar([ freq * int1.midiratio + f , freq, freq * int2.midiratio - f],</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[c,d,c],0.2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(<span class="s1">Mix</span>.ar(p),freq * ffreqInterval.midiratio,rq)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.adsr, gate, gate)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
+<p class="p7">},[0.1,0.1,0.1,0.1,0.1,<span class="s1">nil</span>]).send(s);</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> w, v,freq,int,synth;</p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span>synth = </span><span class="s1">Synth</span><span class="s3">(</span>"help-2DTabletSlider"<span class="s3">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>w = <span class="s1">Window</span>.new.front;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s1">ControlSpec</span>(100,3000,<span class="s4">\exp</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>int = <span class="s1">ControlSpec</span>(-48,48,<span class="s4">\linear</span>,1);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>v = <span class="s1">TabletView</span>(w,<span class="s1">Rect</span>(10,10,380,380));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.background = <span class="s1">Color</span>.blue.alpha_(0.2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.action = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synth.set(<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\int1</span>, int.map(x),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\int2</span>, int.map(y),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\ffreqInterval</span>, int.map(pressure),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\gate</span>, pressure.postln</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.mouseDownAction = { <span class="s1">arg</span> view,x,y,pressure;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synth.set(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\freq</span> , rrand(30,80).midicps,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\gate</span>, pressure.postln</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.mouseUpAction = { <span class="s1">arg</span> view,x,y,pressure;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>synth.set( <span class="s4">\gate</span>, 0.postln )</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8">//An example using crucial library</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s1">Instr</span>([<span class="s4">\minimoog</span>,<span class="s4">\loose</span>],{ <span class="s1">arg</span> freq=440,int1=5,int2 = -5,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreqInterval=0,rq=0.4,gate=0.0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> p,c,d,f;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>c=<span class="s1">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>d=<span class="s1">LFNoise1</span>.kr(0.1,0.45,0.55);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>f=<span class="s1">LFNoise1</span>.kr(0.1,2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>p=<span class="s1">Pulse</span>.ar([ freq * int1.midiratio + f , freq, freq * int2.midiratio - f],</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[c,d,c],0.2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">RLPF</span>.ar(<span class="s1">Mix</span>.ar(p),freq * ffreqInterval.midiratio,rq)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.adsr, gate, <span class="s1">Latch</span>.kr(gate,gate))</p>
+<p class="p6"><br></p>
+<p class="p7">},#[</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>nil<span class="s3">,</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>[[-48,48,<span class="s4">\linear</span>,1]],</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[[-48,48,<span class="s4">\linear</span>,1]],</p>
+<p class="p7"><span class="Apple-tab-span">	</span>[[-48,48,<span class="s4">\linear</span>,1]]</p>
+<p class="p7">]);</p>
+<p class="p6"><br></p>
+<p class="p7">p = <span class="s1">Patch</span>.new([ <span class="s4">'minimoog'</span>, <span class="s4">'loose'</span> ],[</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>nil<span class="s3">,</span>nil<span class="s3">,</span>nil<span class="s3">,</span>nil<span class="s3">,</span>nil<span class="s3">,</span></p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s1">KrNumberEditor</span><span class="s3">(0.0,</span><span class="s4">\gate</span><span class="s3">) </span>// override the default control</p>
+<p class="p7">]);</p>
+<p class="p6"><br></p>
+<p class="p10">Sheet<span class="s3">({ </span>arg<span class="s3"> f;</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s1">var</span> v,freq,int;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s1">ControlSpec</span>(100,3000,<span class="s4">\exp</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>int = [-48,48,<span class="s4">\linear</span>,1].asSpec;</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>p.topGui(f);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v = <span class="s1">TabletView</span>(f,<span class="s1">Rect</span>(0,0,200,200));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.background = <span class="s1">Color</span>.white;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.action = { <span class="s1">arg</span> view,x,y,pressure,tiltx,tilty;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(1).value_( int.map( x / 200 ) ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(2).value_( int.map( y / 200 ) ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(3).value_( int.map( pressure ) ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.mouseDownAction = { <span class="s1">arg</span> view,x,y,pressure;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(0).value_( rrand(30,80).midicps ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(5).value_( pressure ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7"><span class="Apple-tab-span">	</span>v.mouseUpAction = { <span class="s1">arg</span> view,x,y,pressure;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>p.args.at(5).value_( 0.0 ).changed;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>};</p>
+<p class="p7">});</p>
+<p class="p6"><br></p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+</body>
+</html>

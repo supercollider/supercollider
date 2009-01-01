@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a41c14}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a41c14; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+span.s1 {color: #0018b8}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
+span.s4 {color: #606060}
+span.s5 {color: #007300}
+span.s6 {text-decoration: underline}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Creation / Class Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>*new(name, bounds, resizable, border, server, scroll)</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s1">Window</span>.new;</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front; </span>// draw it and bring it to the front</p>
+<p class="p7"><br></p>
+<p class="p8"><b>Examples</b></p>
+<p class="p9"><br></p>
+<p class="p10"><br></p>
+<p class="p11">//how to add views</p>
+<p class="p12">(</p>
+<p class="p12"><span class="s3">var</span> w;</p>
+<p class="p12">w = <span class="s3">Window</span>(<span class="s4">"my name is... panel"</span>, <span class="s3">Rect</span>(128, 64, 340, 360));</p>
+<p class="p10"><br></p>
+<p class="p12">32.do({ <span class="s3">arg</span> i;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>b = <span class="s3">Button</span>(w, <span class="s3">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p12"><span class="Apple-tab-span">	</span>b.states = [[<span class="s4">"Start "</span>++i, <span class="s3">Color</span>.black, <span class="s3">Color</span>.rand],</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">"Stop "</span>++i, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red]];</p>
+<p class="p12">});</p>
+<p class="p12">w.front;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p11">// using a decorator on this window's top view</p>
+<p class="p12">(</p>
+<p class="p12"><span class="s3">var</span> w;</p>
+<p class="p12">w = <span class="s3">Window</span>(<span class="s4">"my name is... panel"</span>, <span class="s3">Rect</span>(128, 64, 340, 360));</p>
+<p class="p10"><br></p>
+<p class="p12">w.view.decorator = <span class="s3">FlowLayout</span>(w.view.bounds);</p>
+<p class="p11">// w.addFlowLayout; // you can als write this instead of the line above</p>
+<p class="p10"><br></p>
+<p class="p12">w.view.background = <span class="s3">Color</span>(0.6,0.8,0.8);</p>
+<p class="p12">32.do({ <span class="s3">arg</span> i;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>b = <span class="s3">Button</span>(w, <span class="s3">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p12"><span class="Apple-tab-span">	</span>b.states = [[<span class="s4">"Start "</span>++i, <span class="s3">Color</span>.black, <span class="s3">Color</span>.rand],</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s4">"Stop "</span>++i, <span class="s3">Color</span>.white, <span class="s3">Color</span>.red]];</p>
+<p class="p12">});</p>
+<p class="p10"><br></p>
+<p class="p12">w.front;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p11">// setting bounds</p>
+<p class="p11">// use screenbounds for precise placement from the top</p>
+<p class="p10"><br></p>
+<p class="p12">(</p>
+<p class="p12">x = <span class="s3">Window</span>.new(<span class="s4">"test"</span>, <span class="s3">Rect</span>(100,<span class="s3">Window</span>.screenBounds.height-180,300,100));x.front;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p11">// bounds.top refers to the bottom edge of the window,</p>
+<p class="p11">// measured from the bottom of the screen. Different than in View.</p>
+<p class="p12">x.bounds_(<span class="s3">Rect</span>(100,400,300,300));</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p11">// borderless windows</p>
+<p class="p11"><span class="s2">w = </span><span class="s3">Window</span><span class="s2">.new(border:</span><span class="s3">false</span><span class="s2">).front; </span>// can't be manually closed</p>
+<p class="p11"><span class="s2">w.close; </span>// so close it in code</p>
+<p class="p10"><br></p>
+<p class="p11">// onClose</p>
+<p class="p12">(</p>
+<p class="p12">x = <span class="s3">Window</span>.new.front;</p>
+<p class="p12">x.alpha = 0.8;</p>
+<p class="p11"><span class="s2">x.onClose_({ y = </span><span class="s3">Synth</span><span class="s2">.new(</span><span class="s5">\default</span><span class="s2">) }); </span>//close the window and the synth plays</p>
+<p class="p12">)</p>
+<p class="p12">x.close;</p>
+<p class="p12">y.free;</p>
+<p class="p10"><br></p>
+<p class="p11">// a window with scrollers</p>
+<p class="p12">(</p>
+<p class="p11"><span class="s2">w = </span><span class="s3">Window</span><span class="s2">(scroll: </span><span class="s3">true</span><span class="s2">); </span>// you must set this when the window is created</p>
+<p class="p12">c = <span class="s3">2DSlider</span>(w, <span class="s3">Rect</span>(0, 0, 1500, 300));</p>
+<p class="p12">d = <span class="s3">Slider</span>(w, <span class="s3">Rect</span>(0, 310, 20, 300));</p>
+<p class="p12">c.background = <span class="s3">Color</span>.grey.alpha = 0.6;</p>
+<p class="p12">d.background = <span class="s3">Color</span>.grey.alpha = 0.6;</p>
+<p class="p12">w.front;</p>
+<p class="p12">)</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p11">// drawing dynamically in a window with <a href="../../Cocoa-GUI/SCPen.html"><span class="s6">Pen</span></a></p>
+<p class="p12">(</p>
+<p class="p12"><span class="s3">var</span> w, much = 0.02, string, synth;</p>
+<p class="p10"><br></p>
+<p class="p12">w = <span class="s3">GUI</span>.window.new(<span class="s4">"swing"</span>, <span class="s3">Rect</span>(100, 100, 300, 500)).front;</p>
+<p class="p12">w.view.background_(<span class="s3">Color</span>.new255(153, 255, 102).vary);</p>
+<p class="p10"><br></p>
+<p class="p12">string = <span class="s4">"swing "</span>.dup(24).join;</p>
+<p class="p10"><br></p>
+<p class="p12">w.drawHook = <span class="s3">Routine</span> {<span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> i = 0;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> size = 40;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> func = { <span class="s3">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> scale;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">Pen</span>.font = <span class="s3">Font</span>(<span class="s4">"Helvetica-Bold"</span>, 40);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>loop {<span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span><span class="s3">|char, j|</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale = func.value(i, j).dup(6);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pen</span>.fillColor = <span class="s3">Color</span>.new255(0, 120, 120).vary;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pen</span>.stringAtPoint(char.asString,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p12">};</p>
+<p class="p10"><br></p>
+<p class="p12">fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };</p>
+<p class="p10"><br></p>
+<p class="p12">w.front;</p>
+<p class="p10"><br></p>
+<p class="p12">)</p>
+</body>
+</html>
