@@ -1,7 +1,7 @@
 
 EZNumberSC : EZGui{
 	var <numberView, <unitView, <>controlSpec, 
-		 <>action,<value,  numSize,numberWidth,unitWidth, gap, gap2;
+		 numSize,numberWidth,unitWidth, gap, gap2;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
@@ -56,7 +56,6 @@ EZNumberSC : EZGui{
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
 
-
 		// set view parameters and actions
 
 		controlSpec = argControlSpec.asSpec;
@@ -101,6 +100,37 @@ EZNumberSC : EZGui{
 		};
 	}
 				
+	setColors{ arg stringBackground, strColor,boxColor,boxStringColor,
+			 boxNormalColor, boxTypingColor, background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};
+				unitView.notNil.if{unitView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};
+				unitView.notNil.if{unitView.stringColor_(strColor)};};
+			boxColor.notNil.if{		
+				numberView.boxColor_(boxColor);	};
+			boxNormalColor.notNil.if{	
+				numberView.normalColor_(boxNormalColor);};
+				
+			boxTypingColor.notNil.if{	
+				numberView.typingColor_(boxTypingColor);};
+			boxStringColor.notNil.if{	
+				numberView.stringColor_(boxStringColor);};
+			background.notNil.if{	
+				view.background=background;};
+	}
+
+
+	font_{ arg font;
+
+			labelView.notNil.if{labelView.font=font};
+			unitView.notNil.if{unitView.font=font};
+			numberView.font=font;
+	}
+
+	/////// Private methods /////////
 	
 	prSetViewParams{ // sets resize and alignment for different layouts
 	
@@ -165,37 +195,6 @@ EZNumberSC : EZGui{
 		
 		^[labelBounds, numBounds, unitBounds]
 	}
-	
-	setColors{ arg stringBackground, strColor,boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, background ;
-			
-			stringBackground.notNil.if{
-				labelView.notNil.if{labelView.background_(stringBackground)};
-				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
-			boxColor.notNil.if{		
-				numberView.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				numberView.normalColor_(boxNormalColor);};
-				
-			boxTypingColor.notNil.if{	
-				numberView.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				numberView.stringColor_(boxStringColor);};
-			background.notNil.if{	
-				view.background=background;};
-	}
-
-
-	font_{ arg font;
-
-			labelView.notNil.if{labelView.font=font};
-			unitView.notNil.if{unitView.font=font};
-			numberView.font=font;
-	}
-	
 	
 
 }

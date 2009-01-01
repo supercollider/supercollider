@@ -2,7 +2,7 @@
 EZSliderSC : EZGui {
 
 	var <sliderView, <numberView, <unitView, <>controlSpec, 
-		 <>action,<value, popUp=false, numSize,numberWidth,unitWidth, gap;
+		  popUp=false, numSize,numberWidth,unitWidth, gap;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
@@ -116,6 +116,42 @@ EZSliderSC : EZGui {
 		};
 	}
 		
+	
+	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
+			 boxNormalColor, boxTypingColor, knobColor,background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};
+				unitView.notNil.if{unitView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};
+				unitView.notNil.if{unitView.stringColor_(strColor)};};
+			boxColor.notNil.if{		
+				numberView.boxColor_(boxColor);	};
+			boxNormalColor.notNil.if{	
+				numberView.normalColor_(boxNormalColor);};
+			boxTypingColor.notNil.if{	
+				numberView.typingColor_(boxTypingColor);};
+			boxStringColor.notNil.if{	
+				numberView.stringColor_(boxStringColor);};
+			sliderColor.notNil.if{	
+				sliderView.background_(sliderColor);};
+			knobColor.notNil.if{	
+				sliderView.knobColor_(knobColor);};
+			background.notNil.if{	
+				view.background=background;};
+			numberView.refresh;
+	}
+	
+	font_{ arg font;
+
+			labelView.notNil.if{labelView.font=font};
+			unitView.notNil.if{unitView.font=font};
+			numberView.font=font;
+	}
+	
+	///////Private methods ///////
+	
 	prSetViewParams{ // sets resize and alignment for different layouts
 		
 		switch (layout,
@@ -228,39 +264,6 @@ EZSliderSC : EZGui {
 		
 		
 		^[labelBounds, numBounds, sliderBounds, unitBounds]
-	}
-	
-	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, knobColor,background ;
-			
-			stringBackground.notNil.if{
-				labelView.notNil.if{labelView.background_(stringBackground)};
-				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
-			boxColor.notNil.if{		
-				numberView.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				numberView.normalColor_(boxNormalColor);};
-			boxTypingColor.notNil.if{	
-				numberView.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				numberView.stringColor_(boxStringColor);};
-			sliderColor.notNil.if{	
-				sliderView.background_(sliderColor);};
-			knobColor.notNil.if{	
-				sliderView.knobColor_(knobColor);};
-			background.notNil.if{	
-				view.background=background;};
-			numberView.refresh;
-	}
-	
-	font_{ arg font;
-
-			labelView.notNil.if{labelView.font=font};
-			unitView.notNil.if{unitView.font=font};
-			numberView.font=font;
 	}
 	
 	
