@@ -7,7 +7,7 @@ Clock {
 		task.clock = this;
 		seconds = thisThread.seconds;
 		beats = this.secs2beats(seconds);
-		this.sched(task.value(beats, seconds, this), task)
+		this.sched(0.0, { task.value(beats, seconds, this) })
 	}
 	seconds { ^thisThread.seconds }
 }
