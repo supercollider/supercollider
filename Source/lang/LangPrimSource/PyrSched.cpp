@@ -733,26 +733,32 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	
 	mQueue = mTempoClockObj->slots[0].uo;
 	pthread_cond_init (&mCondition, NULL);
-	pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
+
+	int err = pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
+	if (err)
+	{
+		post("Couldn't start thread for TempoClock: %s\n", strerror(err));
+		return;
+	}
 #ifdef SC_DARWIN
-        int machprio;
-        boolean_t timeshare;
-        GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
-        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
-        
-        // what priority should gSchedThread use?
-        
-        RescheduleStdThread(pthread_mach_thread_np(mThread), 10, false);
+	int machprio;
+	boolean_t timeshare;
+	GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
 
-        GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
-        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
+	// what priority should gSchedThread use?
 
-        //param.sched_priority = 70; // you'll have to play with this to see what it does
-        //pthread_setschedparam (mThread, policy, &param);
+	RescheduleStdThread(pthread_mach_thread_np(mThread), 10, false);
+
+	GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
+
+	//param.sched_priority = 70; // you'll have to play with this to see what it does
+	//pthread_setschedparam (mThread, policy, &param);
 #endif // SC_DARWIN
 
 #ifdef SC_LINUX
-		SC_LinuxSetRealtimePriority(mThread, 1);
+	SC_LinuxSetRealtimePriority(mThread, 1);
 #endif // SC_LINUX
 }
 
