@@ -201,7 +201,7 @@ QuarkView {
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 			.states_([["info"]]).action_{this.fullDescription};
 		
-		if(quark.isLocal and: {thisProcess.platformClass == OSXPlatform}) {
+		if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
 			srcButton = GUI.button.new(parent, sourceBounds)
 				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 				.states_([["src"]]).action_{
