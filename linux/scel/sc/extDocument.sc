@@ -1,4 +1,5 @@
 // copyright 2003 stefan kersten <steve@k-hornz.de>
+// changes 2008/9 nescivi <nescivi@gmail.com>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -31,15 +32,18 @@
 
 
 + String{
+	/*
 	findHelpFile {
 		if ( Emacs.initialized) {
 			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
 		}
 	}
+	*/
 
 	openHelpFile {
 		if ( Emacs.initialized) {
-			this.findHelpFile;
+			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
+			//		this.findHelpFile;
 		}
 	}
 
@@ -54,19 +58,21 @@
 + Class{
 	openHelpFile {
 		if ( Emacs.initialized) {
-			this.asString.findHelpFile;
+			this.asString.openHelpFile;
 		}
 	}
 }
 
+/*
 + Method{
 
 	openHelpFile {
 		if ( Emacs.initialized) {
-			this.asString.findHelpFile;
+			this.asString.openHelpFile;
 		}
 	}
 }
+*/
  
 
 
