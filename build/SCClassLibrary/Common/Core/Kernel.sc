@@ -113,7 +113,7 @@ Class {
 		^this.name.asString.findHelpFile
 	}
 	openHelpFile { 
-		(this.helpFilePath ? (Platform.helpDir ++ "/Help.html")).openTextFile
+		this.name.asString.openHelpFile
 	}
 	
 	shallowCopy { ^this }

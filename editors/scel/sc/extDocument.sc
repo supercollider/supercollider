@@ -31,15 +31,10 @@
 
 
 + String{
-	findHelpFile {
-		if ( Emacs.initialized) {
-			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
-		}
-	}
 
 	openHelpFile {
 		if ( Emacs.initialized) {
-			this.findHelpFile;
+			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
 		}
 	}
 
@@ -50,24 +45,5 @@
 		}
 	}
 }
-
-+ Class{
-	openHelpFile {
-		if ( Emacs.initialized) {
-			this.asString.findHelpFile;
-		}
-	}
-}
-
-+ Method{
-
-	openHelpFile {
-		if ( Emacs.initialized) {
-			this.asString.findHelpFile;
-		}
-	}
-}
- 
-
 
 // EOF
