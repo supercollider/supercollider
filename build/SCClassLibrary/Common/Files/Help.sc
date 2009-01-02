@@ -233,20 +233,23 @@ Help {
 	}
 
 *gui { |sysext=true,userext=true|
-	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds;
+	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds, textViewBounds, results, resultsview, statictextloc, searchField, helpguikeyacts;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
 	
 	// Now for a GUI
-	screenBounds = GUI.window.screenBounds;
+	screenBounds = Window.screenBounds;
 	bounds = Rect(128, 264, 1040, 564);
 	bounds = bounds.center_(screenBounds.center);
 	bounds = bounds.sect(screenBounds.insetBy(15));
-	win = GUI.window.new("Help browser", bounds); // SCWindow
-	scrollView = GUI.scrollView.new(win, Rect(5, 0, 425, 529)).hasBorder_(true);
-	compView = GUI.compositeView.new(scrollView, Rect(0, 0, numcols * 200, /*504*/ bounds.height-60));
-	textView = GUI.textView.new(win, Rect(435, 0, /*620*/bounds.width-435, /*554*/ bounds.height-10))
+	win = Window.new("Help browser", bounds); // SCWindow
+	// scrollView and compView hold the category-browsing list widgets
+	scrollView = ScrollView.new(win, Rect(5, 0, 425, 529)).hasBorder_(true).resize_(4);
+	compView = CompositeView.new(scrollView, Rect(0, 0, numcols * 200, /*504*/ bounds.height-60));
+	// textView displays a help file "inline"
+	textViewBounds = Rect(435, 0, /*620*/bounds.width-435, /*554*/ bounds.height-35);
+	textView = TextView.new(win, textViewBounds)
 		.hasVerticalScroller_(true)
 		.hasHorizontalScroller_(false)
 		.autohidesScrollers_(false)
@@ -254,6 +257,11 @@ Help {
 		.canFocus_(true);
 		
 	textView.bounds = textView.bounds; // hack to fix origin on first load
+
+	// hidden at first, this will receive search results when the search field is activated
+	resultsview = ScrollView(win, textViewBounds)
+				.resize_(5)
+				.visible_(false);
 	
 	// updates the history arrow buttons
 	fBwdFwd = {
@@ -304,7 +312,7 @@ Help {
 	
 	// SCListView
 	listviews = (0..numcols-1).collect({ arg index; var view;
-		view = GUI.listView.new( compView, Rect( 5 + (index * 200), 4, 190, /* 504 */ bounds.height - 60 ));
+		view = ListView( compView, Rect( 5 + (index * 200), 4, 190, /* 504 */ bounds.height - 60 ));
 		//view.items = []; // trick me into drawing correctly in scrollview
 		if( view.respondsTo( \allowsDeselection ), {
 			view.allowsDeselection_( true ).value_( nil );
@@ -339,8 +347,11 @@ Help {
 							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
 						}.defer( 0.001 );
 						isClass = selecteditem.asSymbol.asClass.notNil;
-                                                if(classButt.notNil){classButt.enabled_(isClass)};
-						browseButt.enabled_(isClass);
+						// Note: "Help" class is not the class that matches "Help.html", so avoid potential confusion via special case
+                            if(classButt.notNil){
+                            	classButt.enabled_((selecteditem!="Help") and: {isClass});
+                            };
+						browseButt.enabled_((selecteditem!="Help") and: {isClass});
 						// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
 						selectednodes[index] = try { if(index==0, {tree}, {selectednodes[index-1]})
 									[curkey.asSymbol.asClass ? curkey.asSymbol]};
@@ -416,45 +427,108 @@ Help {
 		});
 	});
 	
-//	buttonView = GUI.hLayoutView.new(win, Rect(5, 530, 405, 20));
-        Platform.case(\windows, {
+	Platform.case(\windows, {
             // TEMPORARY WORKAROUND:
             // At present, opening text windows from GUI code can cause crashes on Psycollider
             // (thread safety issue?). To work around this we just remove those buttons.
-        }, {
-            GUI.button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
-		.states_([["Open Help File", Color.black, Color.clear]])
-		.action_({{ selecteditem.openHelpFile }.defer;});
-            classButt = GUI.button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
-		.states_([["Open Class File", Color.black, Color.clear]])
-		.action_({ 
-			if(selecteditem.asSymbol.asClass.notNil, {
-				{selecteditem.asSymbol.asClass.openCodeFile }.defer;
+	}, {
+		Button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
+			.states_([["Open Help File", Color.black, Color.clear]])
+			.resize_(7)
+			.action_({{ selecteditem.openHelpFile }.defer;});
+		classButt = Button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
+			.states_([["Open Class File", Color.black, Color.clear]])
+			.resize_(7)
+			.action_({ 
+				if(selecteditem.asSymbol.asClass.notNil, {
+					{selecteditem.asSymbol.asClass.openCodeFile }.defer;
+				});
 			});
-		});
-        });
-	browseButt = GUI.button.new( win, Rect( 233, /* 534 */ bounds.height - 30, 110, 20 ))
+	});
+	browseButt = Button.new( win, Rect( 233, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Browse Class", Color.black, Color.clear]])
+		.resize_(7)
 		.action_({ 
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.browse }.defer;
 			});
 		});
-	bwdButt = GUI.button.new( win, Rect( 347, /* 534 */ bounds.height - 30, 30, 20 ))
+	bwdButt = Button.new( win, Rect( 347, /* 534 */ bounds.height - 30, 30, 20 ))
 		.states_([[ "<" ]])
+		.resize_(7)
 		.action_({
 			if( historyIdx > 0, {
 				fHistoryMove.value( -1 );
 			});
 		});
-	fwdButt = GUI.button.new( win, Rect( 380, /* 534 */ bounds.height - 30, 30, 20 ))
+	fwdButt = Button.new( win, Rect( 380, /* 534 */ bounds.height - 30, 30, 20 ))
 		.states_([[ ">" ]])
+		.resize_(7)
 		.action_({
 			if( historyIdx < (history.size - 1), {
 				fHistoryMove.value( 1 );
 			});
 		});
 	fBwdFwd.value;
+	
+	// textfield for searching:
+	statictextloc = Rect(10, 10, textViewBounds.width-20, 200);
+	StaticText.new(win, Rect(435, bounds.height-35, 100 /* bounds.width-435 */, 35))
+		.align_(\right).resize_(7).string_("Search help files:");
+	searchField = TextField.new(win, Rect(535, bounds.height-35, bounds.width-535-35, 35).insetBy(8))
+		.resize_(8).action_({|widget| 
+			
+			if(widget.value != ""){
+				// Let's search!
+				// hide the textView, show the resultsview, do a query 
+				textView.visible = false;
+				resultsview.visible = true;
+				resultsview.removeAll;
+				results = this.search(widget.value);
+				// Now add the results!
+				StaticText(resultsview, Rect(0, 0, textViewBounds.width / 2, 30))
+					.resize_(1)
+					.align_(\right)
+					.string_("% results found for query '%'.".format(results.size, widget.value));
+				Button(resultsview, Rect(textViewBounds.width / 2, 0, 100, 30).insetBy(5))
+					.resize_(1)
+					.states_([["Clear"]])
+					.action_({ searchField.valueAction_("") })
+					.focus();
+				results.do{|res, index|
+					res.drawRow(resultsview, Rect(0, index*30 + 30, textViewBounds.width, 30));
+				};
+				
+			}{
+				// Empty query string, go back to textView
+				textView.visible = true;
+				resultsview.visible = false;
+			};
+			
+		});
+	
+	// Handle some "global" (for the Help gui) key actions
+	helpguikeyacts = {|view, char, modifiers, unicode, keycode|
+		if((modifiers & (262144 | 1048576)) != 0){ // cmd or control key is pressed
+			unicode.switch(
+				6, { // f for find
+					searchField.focus;
+				},
+				8, // h for home
+				{
+					{
+						listviews[0].valueAction_(listviews[0].items.find(["Help"]));
+						scrollView.visibleOrigin_(0@0);
+					}.defer(0.001)
+				}
+			);
+		};
+	};
+	win.view.addAction(helpguikeyacts, \keyUpAction);
+	
+	win.onClose_{
+		fHistoryDo = {}; // This is done to prevent Cmd+W winclose from trying to do things in vanishing textviews!
+	};
 	
 	win.front;
 	listviews[0].focus;
@@ -501,61 +575,9 @@ Help {
 		}
 	}
 	
-	/*
-	Help.searchGUI
-	*/
 	*searchGUI {
-		var win, qbox, resultsview, results, winwidth=600, statictextloc, screenBounds, bounds;
-		
-		screenBounds = GUI.window.screenBounds;
-		bounds = Rect(100, 400, winwidth, 600);
-		bounds = bounds.center_(screenBounds.center);
-		bounds = bounds.sect(screenBounds.insetBy(15));
-		win = GUI.window.new("<< Search SC Help >>", bounds);
-		
-		statictextloc = Rect(10, 10, winwidth-20, 200);
-		
-		// SCTextField
-		qbox = GUI.textField.new(win, Rect(0, 0, winwidth, 50).insetBy(50,15))
-			.resize_(2)
-			.action_{ |widget|
-				resultsview.removeAll;
-				if(widget.value != ""){
-					results = this.search(widget.value);
-					// Now add the results!
-					if(results.size == 0){
-						GUI.staticText.new(resultsview, statictextloc)
-							.resize_(5)
-							.string_("No results found.");
-					}{
-						results.do{|res, index|
-							res.drawRow(resultsview, Rect(0, index*30, winwidth, 30));
-						}
-					};
-				};
-			};
-		
-		/*
-		// dividing line? hmm, double-drawing issue on my mac
-		win.drawHook_{
-			Pen.color = Color.black;
-			Pen.moveTo(Point(0, 49));
-			Pen.lineTo(Point(winwidth, 49));
-			Pen.stroke;
-		};
-		*/
-		
-		// SCScrollView
-		resultsview = GUI.scrollView.new(win, Rect(0, 50, winwidth, 550))
-				.resize_(5);
-		
-		GUI.staticText.new(resultsview, statictextloc)
-			.resize_(5)
-			.string_("Type a word above and press enter.\nResults will appear here.");
-		
-		win.front;
-		qbox.focus;
-		^win;
+		this.deprecated(thisMethod, Meta_Help.findRespondingMethodFor(\gui));
+		^this.gui
 	}
 	
 	// Returns an array of hits as HelpSearchResult instances
@@ -624,10 +646,10 @@ HelpSearchResult {
 	
 	drawRow { |parent, bounds|
 		// SCButton
-		GUI.button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
+		Button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
 				.states_([[docname]]).action_{ path.openHTMLFile };
 		
-		GUI.staticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
+		StaticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
 										.moveBy(bounds.width * 0.3, 0)
 										.insetBy(5, 5))
 				.string_(this.contextTrimmed);
