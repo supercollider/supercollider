@@ -1,6 +1,6 @@
 EZGui{ // an abstract class
 	var <>labelView, <widget, <view, <gap, popUp=false, 
-	<>action,   <layout, value, labelSize, <alwaysOnTop=false;
+	<>action,   <layout, <value, labelSize, <alwaysOnTop=false;
 	
 	///// general stuff for all EZ classes. override as needed	
 	visible { ^view.getProperty(\visible) }
@@ -32,9 +32,8 @@ EZGui{ // an abstract class
 	
 	//// value stuff. override as needed
 	
-	value{ ^widget.value }
 	
-	value_{|val| widget.value_(val)}
+	value_{|val| value=val; widget.value_(val)}
 	
 	valueAction_{|val| this.value_(val); this.doAction}
 		
