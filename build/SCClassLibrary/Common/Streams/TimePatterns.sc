@@ -23,7 +23,7 @@ Pstep : Pattern {
 				thisThread.endBeat = thisThread.endBeat + dur;
 					while(
 						{ thisThread.endBeat > thisThread.beats },
-						{ inval = yield(val) }
+						{ inval = val.embedInStream(inval) }
 					)
 				});
 		};
