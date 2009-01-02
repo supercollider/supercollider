@@ -251,7 +251,7 @@ EZRanger : EZGui {
 				hiBox.stringColor_(boxStringColor);
 				loBox.stringColor_(boxStringColor);};
 			knobColor.notNil.if{	
-				rangeSlider.setProperty(\knobColor,knobColor);};
+				rangeSlider.knobColor_(knobColor);};
 			background.notNil.if{	
 				view.background=background;};
 			hiBox.refresh;
