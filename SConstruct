@@ -1109,7 +1109,7 @@ if is_installing():
     # scel
     if env['SCEL']:
         env.Alias('install-library', install_dir(
-            env, 'linux/scel/sc',
+            env, 'editors/scel/sc',
             pkg_extension_dir(INSTALL_PREFIX, 'scel'),
             SC_FILE_RE, 3))
     # scvim
@@ -1132,14 +1132,14 @@ if is_installing():
 
 # scel
 if env['SCEL']:
-    env.Command('linux/scel/el/sclang-vars.el', 'linux/scel/el/sclang-vars.el.in',
+    env.Command('editors/scel/el/sclang-vars.el', 'editors/scel/el/sclang-vars.el.in',
                 'sed \'s,@PKG_DATA_DIR@,%s,g\' < $SOURCE > $TARGET' %
                 pkg_data_dir(FINAL_PREFIX))
-    el_files = glob.glob('linux/scel/el/*.el') + ['linux/scel/el/sclang-vars.el']
+    el_files = glob.glob('editors/scel/el/*.el') + ['editors/scel/el/sclang-vars.el']
     elc_files = map(lambda f: os.path.splitext(f)[0] + '.elc', el_files)
     elisp_dir = os.path.join(INSTALL_PREFIX, 'share', 'emacs', 'site-lisp')
     env.Command(elc_files, el_files,
-                'emacs -batch --eval "(add-to-list \'load-path (expand-file-name \\"linux/scel/el/\\"))" -f batch-byte-compile $SOURCES')
+                'emacs -batch --eval "(add-to-list \'load-path (expand-file-name \\"editors/scel/el/\\"))" -f batch-byte-compile $SOURCES')
     env.Alias('install-elisp', env.Install(elisp_dir, el_files + elc_files))
     installEnv.Append(DATA = 'install-elisp')
 
@@ -1203,15 +1203,15 @@ linux/README
 linux/examples/onetwoonetwo.sc
 linux/examples/sclang.cfg.in
 linux/examples/sclang.sc
-linux/scel/README
+editors/scel/README
 scsynthlib_exp
 ''')
 
 DIST_SPECS = [
     ('build', HELP_FILE_RE),
     ('Headers', SRC_FILE_RE),
-    ('linux/scel/sc', SC_FILE_RE),
-    ('linux/scel/el', re.compile('.*\.el$')),
+    ('editors/scel/sc', SC_FILE_RE),
+    ('editors/scel/el', re.compile('.*\.el$')),
     ('Source', SRC_FILE_RE)
     ]
 
