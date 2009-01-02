@@ -1,5 +1,5 @@
 
-EZNumberSC : EZGui{
+EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec, 
 		 numSize,numberWidth,unitWidth, gap, gap2;
 	var <>round = 0.001;

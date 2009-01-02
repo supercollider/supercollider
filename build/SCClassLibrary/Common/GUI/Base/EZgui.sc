@@ -68,25 +68,27 @@ EZGui{ // an abstract class
 	
 	
 	prMakeView{arg parentView,bounds; // return a container, or a popUpWindow with a container
-		var w, winBounds, view;
+		var w, winBounds, view, extraHeight=24;
+		(GUI.id==\swing).if{extraHeight=36};
 		parentView.isNil.if{
 			popUp=true;
 				// if bounds is a point the place the window on screen
 				if (bounds.class==Point)
-					{ bounds = bounds.x@max(bounds.y,bounds.y+24);// window minimum height;
+					{ bounds = bounds.x@max(bounds.y,bounds.y+extraHeight);// window minimum height;
 					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
 								bounds.x,bounds.y)
 					}{// window minimum height;
-					winBounds = bounds.height_(max(bounds.height,bounds.height+24))
+					winBounds = bounds.height_(max(bounds.height,bounds.height+extraHeight))
 					};
 				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
 				parentView=w.asView;
 				w.front;
 				bounds=bounds.asRect;
 				// inset the bounds to make a nice margin
-				bounds=Rect(4,4,bounds.width-8,bounds.height-24);
+				bounds=Rect(4,4,bounds.width-8,bounds.height-extraHeight);
 				view=GUI.compositeView.new(parentView,bounds)
 					.relativeOrigin_(true).resize_(2);
+				w.bounds=w.bounds; // swing needs this for some reason, or bounds are too high
 		// normal parent view			
 		}{
 			bounds=bounds.asRect;

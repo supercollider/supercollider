@@ -1,5 +1,5 @@
 
-EZSliderSC : EZGui {
+EZSlider : EZGui {
 
 	var <sliderView, <numberView, <unitView, <>controlSpec, 
 		  popUp=false, numSize,numberWidth,unitWidth, gap;

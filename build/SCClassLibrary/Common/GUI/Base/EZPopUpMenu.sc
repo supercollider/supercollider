@@ -7,7 +7,7 @@ EZPopUpMenu : EZLists{
 		layout=arglayout ? \horz;
 		labelSize=labelWidth@labelHeight;
 		
-		bounds.isNil.if{bounds= 160@44};
+		bounds.isNil.if{bounds= 160@20};
 		
 		// if no parent, then pop up window 
 		# view,bounds = this.prMakeView( parentView,bounds);	
