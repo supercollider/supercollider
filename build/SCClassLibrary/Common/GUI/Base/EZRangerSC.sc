@@ -69,7 +69,6 @@ EZRanger : EZGui {
 				this.doAction;
 			});
 		hiBox.action_({ |box| this.hi_(box.value).doAction; });
-		unitView.notNil.if{unitView.string_(controlSpec.units ? "")};
 		
 		if (initVal.notNil) { this.value_(initVal) };
 		if (initAction) { this.doAction };
