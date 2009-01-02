@@ -380,7 +380,7 @@ Quarks
 		};
 		
 		// add open directory button (open is only implemented in OS X)
-		(thisProcess.platformClass == OSXPlatform).if{
+		(thisProcess.platform.name == \osx).if{
 			GUI.button.new(window, Rect(15,15,150,20)).states_([["open quark directory", Color.black, Color.gray(0.5)]]).action_{ arg butt;
 				"open %".format(this.local.path.escapeChar($ )).unixCmd;
 			};
