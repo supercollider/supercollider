@@ -5,30 +5,29 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #3248bf}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #3248bf; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #384cb9}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #384cb9; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #3248bf}
-span.s3 {color: #0000ff}
+span.s2 {color: #384cb9}
+span.s3 {color: #0020f6}
 span.s4 {color: #000000}
-span.s5 {text-decoration: underline ; color: #2e42b1}
-span.s6 {color: #364aba}
-span.s7 {color: #2e46c5}
-span.s8 {color: #2541d1}
-span.s9 {color: #1638e6}
-span.s10 {color: #0000bf}
+span.s5 {text-decoration: underline ; color: #3346ac}
+span.s6 {color: #3b4eb5}
+span.s7 {color: #344abf}
+span.s8 {color: #2c46cb}
+span.s9 {color: #2040df}
+span.s10 {color: #0018b8}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,7 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b>Setting the Internal Bounds</b></p>
 <p class="p2"><br></p>
-<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s7">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container view within it.</span></p>
+<p class="p1">The size of the contained 'canvas' is determined by the bounds of the views which it encloses. Resize settings are thus ignored for contained views. To set it to a particular size, you can add a <a href="SCCompositeView.html"><span class="s7">SCCompositeView</span></a> or other container view, but there is no direct setter. One should not use a decorator such as FlowLayout directly on a NSScrollTopView, only on a container view within it.</p>
 <p class="p2"><br></p>
 <p class="p6"><b>Action Functions with Scrolling SCViews</b></p>
 <p class="p2"><br></p>
@@ -84,21 +83,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Examples</b></p>
-<p class="p10"><br></p>
-<p class="p11">(</p>
-<p class="p12"><span class="s4">w = </span><span class="s10">SCWindow</span><span class="s4">(scroll: </span><span class="s10">true</span><span class="s4">); </span>// you must set this when the window is created</p>
-<p class="p11">c = <span class="s10">SCSlider</span>(w, <span class="s10">Rect</span>(0,0,100,30));</p>
-<p class="p11">w.front;</p>
-<p class="p11">)</p>
-<p class="p10"><br></p>
-<p class="p12"><span class="s4">c.resize = 2; </span>// resize settings are ignored if scrolling is enabled.</p>
-<p class="p10"><br></p>
-<p class="p12"><span class="s4">d = </span><span class="s10">SCSlider</span><span class="s4">(w, </span><span class="s10">Rect</span><span class="s4">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
-<p class="p10"><br></p>
-<p class="p12"><span class="s4">w.view.autohidesScrollers_(</span><span class="s10">false</span><span class="s4">); </span>// autohide is enabled by default, but we can turn it off</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p12"><span class="s4">w.view.visibleOrigin = 1500@0; </span>// but we can still scroll using the visibleOrigin method</p>
-<p class="p10"><br></p>
+<p class="p3"><br></p>
+<p class="p10">(</p>
+<p class="p11"><span class="s4">w = </span><span class="s10">Window</span><span class="s4">(scroll: </span><span class="s10">true</span><span class="s4">); </span>// you must set this when the window is created</p>
+<p class="p10">c = <span class="s10">Slider</span>(w, <span class="s10">Rect</span>(0,0,100,30));</p>
+<p class="p10">w.front;</p>
+<p class="p10">)</p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s4">c.resize = 2; </span>// resize settings are ignored if scrolling is enabled.</p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s4">d = </span><span class="s10">Slider</span><span class="s4">(w, </span><span class="s10">Rect</span><span class="s4">(1500, 40, 100, 30)); </span>// a horizontal scroller appears</p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s4">w.view.autohidesScrollers_(</span><span class="s10">false</span><span class="s4">); </span>// autohide is enabled by default, but we can turn it off</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p11"><span class="s4">w.view.visibleOrigin = 1500@0; </span>// but we can still scroll using the visibleOrigin method</p>
+<p class="p3"><br></p>
 </body>
 </html>
