@@ -1193,9 +1193,9 @@ void T2A_next(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
 	int offset = (int) IN0(1);
-	float *out = OUT(0);
-	
-	
+	float *out = ZOUT(0);
+
+
 	if((unit->mLevel <= 0.f && level > 0.f)) {
 		for(int i = 0; i < inNumSamples; i++) {
 			if(i == offset) { 
