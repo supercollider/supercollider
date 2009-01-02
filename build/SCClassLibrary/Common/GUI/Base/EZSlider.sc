@@ -6,7 +6,7 @@ EZSlider : EZGui {
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
-			initAction=false, labelWidth=60, numberWidth=40, 
+			initAction=false, labelWidth=60, numberWidth=45, 
 			unitWidth=0, labelHeight=20,  layout=\horz, gap;
 			
 		^super.new.init(parent, bounds, label, controlSpec, action, 
