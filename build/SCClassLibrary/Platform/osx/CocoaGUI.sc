@@ -61,9 +61,12 @@ CocoaGUI {
 	*textView { ^SCTextView }
 	*quartzComposerView { ^SCQuartzComposerView }
 	*scrollView { ^SCScrollView }
-	*ezSlider { ^EZSliderSC }
-	*ezNumber { ^EZNumberSC }
-	*ezRanger { ^EZRangerSC }		// not cross-platform for now
+	*ezScroller { ^EZScroller }
+	*ezSlider { ^EZSlider }
+	*ezListView { ^EZListView }
+	*ezPopUpMenu { ^EZPopUpMenu}
+	*ezNumber { ^EZNumber}
+	*ezRanger { ^EZRanger }		
 	*menuItem { ^CocoaMenuItem }
 	
 	*font { ^Font }
