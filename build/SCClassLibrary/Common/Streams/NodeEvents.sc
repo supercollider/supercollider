@@ -65,8 +65,12 @@ Here is a simple example of its use:
 			this[\server].sendBundle( this[\latency],  *(msg.flop) )
 		}
 	}
-	set{ | ... args | 
-		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray)); 
+	set { | ... args | 
+//		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray)); 
+		args = ([15, this[\id]] ++ args).flop.asOSCArgBundle; 
+		if (this[\isPlaying]) {
+			this[\server].sendBundle( this[\latency],  *args )
+		}
 	}
 		
 	stop { this.use { ~stop.value }  }
