@@ -1,0 +1,44 @@
+Long-term goals:
+
+* Extended bottom panel that shows running servers, server status, etc;
+  (maybe even some libgtop widgets)
+* A "real" SuperCollider library binding so that "recompile class library"
+  feature becomes possible;
+* Gedit autostart in SuperCollider mode (requested by Eduardo Melendez);
+* GtkSourceCompletion support.
+
+Planned syntax highlighting extensions:
+
+* Methods (have to be different from instance variables).
+* Unary/binary ops (see below) incl. "and:" etc.
+* ~global and a-z variables.
+* Keyword args?
+
+Old buggy contexts to fix:
+
+    <context id="operators" style-ref="operator">
+      <match extended="true">
+        &lt;&lt;&lt;\* |
+        ===         |  !==         |
+        @\|@        |  \|@\|       |
+        \+\+\+      |  \+&gt;&gt;  |
+        &lt;&lt;\*  |  &lt;&lt;&lt;|
+        ==          |  !=          |
+        !\?         |  @@          |
+        \|\|        |  \?\?        |
+        \*\*        |  \+\+        |
+        &amp;&amp;  |  -&gt;       |
+        &gt;=       |  &gt;&gt;    |
+        &lt;=       |  &lt;!       |
+        &lt;&gt;    |  &lt;&lt;    |
+        [-+*/%&amp;|@&lt;&gt;?!=]
+      </match>
+    </context>
+
+    <context id="keyword-args" style-ref="global-variable">
+      <match>(?&lt;=[(,])\s*\w+(?=:)</match>
+    </context>
+
+    <context id="global-variables" style-ref="global-variable">
+      <match>~[a-z]\w*</match>
+    </context>

@@ -1,0 +1,8 @@
+[Gedit Plugin]
+Loader=python
+Module=sced
+IAge=2
+Name=Sced
+Description=Interact with the SuperCollider interpreter from gedit.
+Authors=Артём Попов <artfwo@gmail.com>;Eckard Riedenklau <eriedenk@techfak.uni-bielefeld.de>
+Copyright=Copyright © 2006-2008 Артём Попов <artfwo@gmail.com>

@@ -311,6 +311,8 @@ opts.AddOptions(
                'Enable the SCEL user interface; NOTE for the HTML help system you need emacs-w3m', 1),
     BoolOption('SCVIM',
                'Enable the SCVIM user interface; NOTE see the README in /editors/scvim for setting variables', 1),
+    BoolOption('SCED',
+               'Enable the SCED (based on gedit) user interface', 0),
     BoolOption('SSE',
                'Build with SSE support', 1),
     BoolOption('STRIP',
@@ -1118,7 +1120,7 @@ if is_installing():
             env, 'editors/scvim/scclasses',
             pkg_extension_dir(INSTALL_PREFIX, 'scvim'),
             SC_FILE_RE, 3))
-        # scvim helpfiles
+    # scvim helpfiles
     if env['SCVIM']:
        env.Alias('install-library', install_dir(
             env, 'editors/scvim/cache/doc',
@@ -1129,6 +1131,12 @@ if is_installing():
 #if env['SCVIM']:
         #os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
     #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
+
+if env['SCVIM']:
+   SConscript("editors/scvim/SConstruct", 'env')
+
+if env['SCED']:
+   SConscript("editors/sced/SConstruct", 'env')
 
 # scel
 if env['SCEL']:
@@ -1204,6 +1212,8 @@ linux/examples/onetwoonetwo.sc
 linux/examples/sclang.cfg.in
 linux/examples/sclang.sc
 editors/scel/README
+editors/scvim/README
+editors/sced/README
 scsynthlib_exp
 ''')
 
@@ -1212,6 +1222,7 @@ DIST_SPECS = [
     ('Headers', SRC_FILE_RE),
     ('editors/scel/sc', SC_FILE_RE),
     ('editors/scel/el', re.compile('.*\.el$')),
+    ('editors/scvim/scclasses', SC_FILE_RE),
     ('Source', SRC_FILE_RE)
     ]
 
@@ -1283,6 +1294,7 @@ print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
 print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
+print ' SCED:                   %s' % yesorno(env['SCED'])
 print ' SSE:                     %s' % yesorno(features['sse'])
 print ' STRIP:                   %s' % yesorno(env['STRIP'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
