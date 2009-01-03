@@ -1,5 +1,10 @@
 +SynthDesc {
-	makeWindow {
+
+	makeWindow{
+		this.makeGui;
+	}
+	
+	makeGui {
 		var w, s, startButton, sliders;
 		var id, cmdPeriodFunc;
 		var usefulControls, numControls;
