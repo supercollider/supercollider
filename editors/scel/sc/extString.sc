@@ -1,4 +1,5 @@
 // copyright 2003 stefan kersten <steve@k-hornz.de>
+// 2007-9 marije baalman <nescivi AT gmail DOT com>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -14,21 +15,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
-
-
-+ Document {
-	// Document class for Emacs interface.
-	//	
-	// Delegates to ScelDocument, which delegates to EmacsDocument.
-
-	// moved to Emacs, upon startup
-	//  *implementationClass { ^ScelDocument }
-
-	// PRIVATE
-	//	*newFromIndex { ^this.shouldNotImplement(thisMethod) }
-	*prGetLast { ^allDocuments.last }
-}
-
 
 + String{
 
