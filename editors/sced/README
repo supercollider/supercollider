@@ -4,6 +4,16 @@
     Sced aims to simplify SuperCollider experience on Linux systems
     as far as possible.
 
+SCONS
+=====
+
+You can install SCED by invoking the main SC scons script with the options SCED
+
+$ scons SCED=1
+$ sudo scons install
+
+The notes below are for manual install
+
 Installation
 ============
 
