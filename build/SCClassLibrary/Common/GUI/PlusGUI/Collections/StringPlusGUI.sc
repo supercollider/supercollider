@@ -87,6 +87,12 @@
 		}
 		
 	}
+
+	findHelpFileOrElse {
+		// this is very fast, but not on first run since it needs a tree to be scanned+built
+		^Help.findHelpFileOrElse(this)	
+	}
+
 	openHelpFile {
 		(this.findHelpFile ? "Help/Help.html".standardizePath).openHTMLFile
 	}

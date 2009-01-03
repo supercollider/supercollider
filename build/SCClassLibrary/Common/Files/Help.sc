@@ -623,6 +623,13 @@ Help {
 		^ret;
 	}
 
+	// does the same as findHelpFile, but replaces the string with "Help" if the string is empty. This makes it possible in sced to open the main help if nothing is selected.
+	*findHelpFileOrElse { |str|
+		str = str.asString;
+		if ( str.isEmpty ) { str = "Help" };
+		^Help.findHelpFile( str );
+	}
+
 } // End class
 
 

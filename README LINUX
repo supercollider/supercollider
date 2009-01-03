@@ -91,7 +91,7 @@ build requirements (optional features)
    for sclang's linux input device (LID) interface
 
  o for scel: the Emacs interface see the README in the directory 
-   `linux/scel'
+   `editors/scel'
 
 ------------------------------------------------------------------------
 build requirements (debian users)
