@@ -256,7 +256,12 @@ Help {
 	}
 
 *gui { |sysext=true,userext=true|
-	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds, textViewBounds, results, resultsview, statictextloc, searchField, helpguikeyacts, fSelectTreePath;
+	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
+	var selectednodes, scrollView, compView, textView;
+	var classButt, browseButt, bwdButt, fwdButt;
+	var isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
+	var screenBounds, bounds, textViewBounds, results, resultsview, statictextloc;
+	var searchField, helpguikeyacts, fSelectTreePath;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
@@ -320,7 +325,7 @@ Help {
 					//fHistoryDo.value( \open, url );
 					keys = this.findKeysForValue(url);
 					if(keys.size == 0, {
-						("Invalid hyberlink:" + url + "Please repair this.\nSearching help directories for alternative.").warn;
+						("Invalid hyperlink:" + url + "Please repair this.\nSearching help directories for alternative.").warn;
 						url = Help.findHelpFile(url.basename.splitext.first);
 						url.notNil.if({keys = this.findKeysForValue(url)});
 					});
@@ -473,6 +478,8 @@ Help {
 			foundIndex = listviews[catpath.size].items.indexOfEqual(leaf);
 			if(foundIndex.notNil){
 				listviews[catpath.size].valueAction = foundIndex;
+				history = history.drop(-1);
+				historyIdx = history.size - 1;
 			}{
 				"Could not select menu list item %".format(leaf).postln;
 			};
