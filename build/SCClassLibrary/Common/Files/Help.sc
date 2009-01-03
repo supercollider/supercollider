@@ -233,7 +233,7 @@ Help {
 	}
 
 *gui { |sysext=true,userext=true|
-	var classes, win, lists, listviews, numcols=5, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds, textViewBounds, results, resultsview, statictextloc, searchField, helpguikeyacts;
+	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey, selectednodes, scrollView, compView, textView, /* buttonView, */ classButt, browseButt, bwdButt, fwdButt, isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove, screenBounds, bounds, textViewBounds, results, resultsview, statictextloc, searchField, helpguikeyacts, fSelectTreePath;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
@@ -427,6 +427,32 @@ Help {
 		});
 	});
 	
+	// Add ability to programmatically select an item in a tree
+	fSelectTreePath = { | catpath, leaf |
+		var foundIndex;
+		Task{
+			0.001.wait;
+			catpath.do{ |item, index|
+				foundIndex = listviews[index].items.indexOfEqual(item);
+				if(foundIndex.notNil){
+					listviews[index].valueAction = foundIndex;
+				}{
+					"Could not select menu list item % in %".format(item, listviews[index].items).postln;
+				};
+				0.02.wait;
+			};
+			foundIndex = listviews[catpath.size].items.indexOfEqual(leaf);
+			if(foundIndex.notNil){
+				listviews[catpath.size].valueAction = foundIndex;
+			}{
+				"Could not select menu list item %".format(leaf).postln;
+			};
+			textView.visible = true;
+			resultsview.visible = false;
+			win.front;
+		}.play(AppClock);
+	};
+	
 	Platform.case(\windows, {
             // TEMPORARY WORKAROUND:
             // At present, opening text windows from GUI code can cause crashes on Psycollider
@@ -496,7 +522,10 @@ Help {
 					.action_({ searchField.valueAction_("") })
 					.focus();
 				results.do{|res, index|
-					res.drawRow(resultsview, Rect(0, index*30 + 30, textViewBounds.width, 30));
+					res.drawRow(resultsview, Rect(0, index*30 + 30, textViewBounds.width, 30), 
+						// Add an action that uses the gui itself:
+						{ fSelectTreePath.(res.catpath, res.docname) }
+						);
 				};
 				
 			}{
@@ -532,7 +561,7 @@ Help {
 	
 	win.front;
 	listviews[0].focus;
-	{listviews[0].valueAction_(listviews[0].items.find(["Help"]));}.defer(0.001);
+	fSelectTreePath.([], "Help"); // Select the "Help" entry in the root
 	selecteditem = "Help";
 } 
 // end *gui
@@ -563,14 +592,14 @@ Help {
 	
 	// Iterates the tree, finding the help-doc paths and calling action.value(docname, path)
 	*do { |action|
-		this.pr_do(action, this.tree);
+		this.pr_do(action, this.tree, []);
 	}
-	*pr_do { |action, curdict|
+	*pr_do { |action, curdict, catpath|
 		curdict.keysValuesDo{|key, val|
 			if(val.class == Dictionary){
-				this.pr_do(action, val) // recurse
+				this.pr_do(action, val, catpath ++ [key]) // recurse
 			}{
-				action.value(key.asString, val)
+				action.value(key.asString, val, catpath)
 			}
 		}
 	}
@@ -583,10 +612,10 @@ Help {
 	// Returns an array of hits as HelpSearchResult instances
 	*search { |query, ignoreCase=true|
 		var results = List.new, file, ext, docstr, pos;
-		this.do{ |docname, path|
+		this.do{ |docname, path, catpath|
 			if(path != ""){	
 				if(docname.find(query, ignoreCase).notNil){
-					results.add(HelpSearchResult(docname, path, 100 / (docname.size - query.size + 1), ""));
+					results.add(HelpSearchResult(docname, path, 100 / (docname.size - query.size + 1), "", catpath.deepCopy));
 				}{
 					ext = path.splitext[1];
 					// OK, let's open the document, see if it contains the string... HEAVY!
@@ -601,7 +630,7 @@ Help {
 						file.close;
 						pos = docstr.findAll(query, ignoreCase);
 						if(pos.notNil){
-							results.add(HelpSearchResult(docname, path, pos.size, docstr[pos[0] ..  pos[0]+50]));
+							results.add(HelpSearchResult(docname, path, pos.size, docstr[pos[0] ..  pos[0]+50], catpath.deepCopy));
 						}
 					}{
 						"File:isOpen failure: %".format(path).postln;
@@ -634,9 +663,9 @@ Help {
 
 
 HelpSearchResult {
-	var <>docname, <>path, <>goodness, <>context;
-	*new{|docname, path, goodness, context|
-		^this.newCopyArgs(docname, path, goodness, context);
+	var <>docname, <>path, <>goodness, <>context, <>catpath;
+	*new{|docname, path, goodness, context, catpath|
+		^this.newCopyArgs(docname, path, goodness, context, catpath);
 	}
 	
 	asString {
@@ -651,10 +680,10 @@ HelpSearchResult {
 		^context.tr($\n, $ ).tr($\t, $ )
 	}
 	
-	drawRow { |parent, bounds|
+	drawRow { |parent, bounds, action|
 		// SCButton
 		Button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
-				.states_([[docname]]).action_{ path.openHTMLFile };
+				.states_([[docname]]).action_(action ? { path.openHTMLFile });
 		
 		StaticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
 										.moveBy(bounds.width * 0.3, 0)
