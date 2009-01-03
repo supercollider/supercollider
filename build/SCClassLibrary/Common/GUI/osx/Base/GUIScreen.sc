@@ -1,6 +1,6 @@
 
 SCWindow {
-	classvar <>allWindows;
+	classvar <>allWindows, <currentFullScreen;
 	
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
@@ -64,10 +64,20 @@ SCWindow {
 	removeFromOnClose { | function | onClose = onClose.removeFunc(function) }
 
 	fullScreen {
+		currentFullScreen.notNil.if({currentFullScreen.endFullScreen});
+		this.prFullScreen;
+		currentFullScreen = this;
+	}
+	endFullScreen {
+		this.prEndFullScreen;
+		currentFullScreen = nil;
+	}
+	
+	prFullScreen {
 		_SCWindow_BeginFullScreen
 		^this.primitiveFailed
 	}
-	endFullScreen {
+	prEndFullScreen {
 		_SCWindow_EndFullScreen
 		^this.primitiveFailed
 	}

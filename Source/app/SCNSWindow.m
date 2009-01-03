@@ -26,7 +26,7 @@
  */
 
 #import "SCNSWindow.h"
-
+extern pthread_mutex_t gLangMutex;
 
 @implementation SCNSWindow
 - (BOOL) canBecomeKeyWindow { if(mHasBorders) return YES; else return [super canBecomeKeyWindow]; }
@@ -34,4 +34,9 @@
 - (void) setHasBorders: (BOOL) flag {mHasBorders = flag;}
 - (void) setSCGraphView: (NSView*)view {mSCGraphView = view;}
 - (NSView*) getSCGraphView {return mSCGraphView;}
+- (IBAction) escape:(id)sender {
+	pthread_mutex_lock(&gLangMutex);
+    runLibrary(getsym("escapeWindow"));
+    pthread_mutex_unlock(&gLangMutex);
+}
 @end
