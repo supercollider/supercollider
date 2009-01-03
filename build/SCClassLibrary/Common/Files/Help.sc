@@ -284,6 +284,8 @@ Help {
 		.resize_(5)
 		.canFocus_(true);
 		
+	if(GUI.current == SwingGUI, { textView.editable_( false ).canFocus_( true ) });
+		
 	textView.bounds = textView.bounds; // hack to fix origin on first load
 
 	// hidden at first, this will receive search results when the search field is activated
@@ -316,8 +318,6 @@ Help {
 	// keep this check for compatibility with old versions of swingOSC
 	if( textView.respondsTo( \linkAction ), {
 		textView
-			.editable_( false )
-			.canFocus_( true )
 			.linkAction_({ arg view, url, descr; 
 				var path;
 				if( url.notEmpty, {
