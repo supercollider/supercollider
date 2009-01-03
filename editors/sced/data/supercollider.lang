@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<language id="supercollider" _name="SuperCollider" version="2.0" _section="Sources">
+  <metadata>
+    <property name="mimetypes">text/x-sc</property>
+    <property name="globs">*.sc;*.scd</property>
+    <property name="line-comment-start">//</property>
+    <property name="block-comment-start">/*</property>
+    <property name="block-comment-end">*/</property>
+  </metadata>
+
+  <styles>
+    <style id="comment"         _name="Comment"         map-to="def:comment"/>
+    <style id="error"           _name="Error"           map-to="def:error"/>
+    <style id="keyword"         _name="Keyword"         map-to="def:keyword"/>
+    <style id="number"          _name="Number"          map-to="def:number"/>
+
+    <!-- characters -->
+
+    <style id="string"          _name="String"          map-to="def:string"/>
+    <style id="symbol"          _name="Symbol"          map-to="def:string"/>
+
+    <!-- identifiers -->
+
+    <style id="class-name"      _name="Class Name"      map-to="def:type"/>
+    <style id="special-value"   _name="Special Value"   map-to="def:special-constant"/>
+    <style id="pseudo-variable" _name="Pseudo Variable" map-to="def:identifier"/>
+  </styles>
+
+  <definitions>
+    <context id="line-comment" style-ref="comment" end-at-line-end="true">
+      <start>//</start>
+      <include>
+        <context ref="def:in-comment"/>
+      </include>
+    </context>
+
+    <context id="block-comment" style-ref="comment">
+      <start>/\*</start>
+      <end>\*/</end>
+      <include>
+        <context ref="def:in-comment"/>
+        <context ref="block-comment"/> <!-- nested comments are okay -->
+      </include>
+    </context>
+
+    <context id="close-comment-outside-comment" style-ref="error">
+      <match>\*/(?!\*)</match>
+    </context>
+
+    <!-- numbers -->
+    <context id="numbers" style-ref="number">
+      <!--
+        1. pi
+        2. default notation
+        3. base-n. "-" (in some cases) can be placed before and after 'r' (one or both means negative)
+        4. exponential notation supports only digits (not letters) after the "e" sign
+      -->
+      <match extended="true">
+        (?&lt;![\w\.])
+        (
+          \-?pi |
+          (\-?)([0-9]+)(\.[0-9]+)?(pi)? |
+          (\-?)([0-9]+[rR]{1,1})((\-?)[0-9A-Za-z\.]*)(pi)? |
+          (\-?)([0-9]+)(\.[0-9]+)?e(\-?)([0-9]+)(pi)?
+        )
+        (?!\w)
+      </match>
+    </context>
+
+    <!-- characters -->
+    <!-- XXX $\x evaluates as well as $x -->
+    <!-- $\t, $\n, etc. work as expected -->
+    <context id="characters" style-ref="string">
+      <match>\$(\\?).</match>
+    </context>
+
+    <!-- strings  -->
+    <context id="strings" style-ref="string" end-at-line-end="false">
+      <start>"</start>
+      <end>"</end>
+      <include>
+        <context ref="def:escape"/>
+      </include>
+    </context>
+
+    <!-- symbols (quoted) -->
+    <context id="quoted-symbols" style-ref="symbol" end-at-line-end="true">
+      <start>'</start>
+      <end>'</end>
+      <include>
+        <context ref="def:escape"/>
+      </include>
+    </context>
+
+    <!-- symbols -->
+    <context id="symbols" style-ref="symbol">
+      <match>\\\w+</match>
+    </context>
+
+    <!-- identifiers -->
+    <!-- classes may not start with "_" -->
+    <context id="class-names" style-ref="class-name">
+      <keyword>[A-Z]\w*</keyword>
+    </context>
+
+    <context id="special-values" style-ref="special-value">
+      <keyword>true</keyword>
+      <keyword>false</keyword>
+      <keyword>nil</keyword>
+      <keyword>inf</keyword>
+    </context>
+
+    <context id="keywords" style-ref="keyword">
+      <keyword>var</keyword>
+      <keyword>arg</keyword>
+      <keyword>classvar</keyword>
+      <keyword>const</keyword>
+    </context>
+
+    <context id="control-operators" style-ref="keyword">
+      <keyword>if</keyword>
+      <keyword>while</keyword>
+      <keyword>forBy</keyword>
+      <keyword>for</keyword>
+      <keyword>do</keyword>
+      <keyword>switch</keyword>
+      <keyword>case</keyword>
+      <keyword>loop</keyword> <!-- not in Control-Structures.html -->
+    </context>
+
+    <context id="pseudo-variables" style-ref="pseudo-variable">
+      <keyword>super</keyword>
+      <keyword>thisFunctionDef</keyword>
+      <keyword>thisFunction</keyword>
+      <keyword>thisMethod</keyword>
+      <keyword>thisProcess</keyword>
+      <keyword>thisThread</keyword>
+      <keyword>this</keyword>
+    </context>
+
+    <context id="supercollider">
+      <include>
+        <context ref="line-comment"/>
+        <context ref="block-comment"/>
+        <context ref="close-comment-outside-comment"/>
+
+        <context ref="numbers"/>
+        <context ref="characters"/>
+        <context ref="strings"/>
+        <context ref="quoted-symbols"/>
+        <context ref="symbols"/>
+
+        <context ref="class-names"/>
+        <context ref="special-values"/>
+
+        <context ref="keywords"/>
+        <context ref="control-operators"/>
+        <context ref="pseudo-variables"/>
+      </include>
+    </context>
+  </definitions>
+</language>
