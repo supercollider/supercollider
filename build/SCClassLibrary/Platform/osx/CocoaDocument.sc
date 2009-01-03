@@ -196,4 +196,10 @@ CocoaDocument : Document {
 		_TextWindow_GetIndexOfListener
 	}
 
+	initLast {
+		this.prGetLastIndex;
+		if(dataptr.isNil,{^nil});
+		this.background_(Color.white);
+		this.prAdd;
+	}
 }

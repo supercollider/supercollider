@@ -548,10 +548,7 @@ Document {
 	}
 	
 	initLast {
-		this.prGetLastIndex;
-		if(dataptr.isNil,{^nil});
-		this.background_(Color.white);
-		this.prAdd;
+		^this.subclassResponsibility
 	}
 	
 	prGetLastIndex {
