@@ -1,6 +1,6 @@
 
 SCWindow {
-	classvar <>allWindows, <currentFullScreen;
+	classvar <>allWindows, <currentFullScreen, <>initAction;
 	
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
@@ -30,6 +30,7 @@ SCWindow {
 			view = SCTopView(nil, argBounds.moveTo(0,0));
 		});
 		this.prInit(name, argBounds, resizable, border, scroll, view, appmodal);
+		initAction.value(this);
 	}
 
 	asView { ^view }
