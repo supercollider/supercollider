@@ -1255,9 +1255,9 @@ void FSinOsc_Ctor(FSinOsc *unit)
 	unit->m_freq = ZIN0(0);
 	float iphase = ZIN0(1);
 	float w = unit->m_freq * unit->mRate->mRadiansPerSample;
-	unit->m_b1 = 2. * cos(w);
-	unit->m_y1 = sin(iphase);
-	unit->m_y2 = sin(iphase - w);
+	unit->m_b1 = 2. * std::cos(w);
+	unit->m_y1 = std::sin(iphase);
+	unit->m_y2 = std::sin(iphase - w);
 	
 	ZOUT0(0) = unit->m_y1;
 }
@@ -1317,9 +1317,9 @@ void PSinGrain_Ctor(PSinGrain *unit)
 	unit->mCounter = (int32)(sdur + .5);
 
 	/* calc feedback param and initial conditions */
-	unit->m_b1 = 2. * cos(w);
+	unit->m_b1 = 2. * std::cos(w);
 	unit->m_y1 = 0.f;
-	unit->m_y2 = -sin(w) * amp;
+	unit->m_y2 = -std::sin(w) * amp;
 	ZOUT0(0) = 0.f;
 }
 
@@ -2573,7 +2573,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					ZXP(out) = 1.f;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2624,7 +2624,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					ZXP(out) = 1.f;
 				} else {
 					int32 rphase = phase * N2;
@@ -2721,7 +2721,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					ZXP(out) = y1 = 1.f + 0.999f * y1;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2773,7 +2773,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					ZXP(out) = y1 = 1.f + 0.999f * y1;
 				} else {
 					int32 rphase = phase * N2;
@@ -2878,7 +2878,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					pul1 = 1.f;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2924,7 +2924,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase2);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					pul2 = 1.f;
 				} else {
 					int32 rphase = phase2 * prevN2;
@@ -2976,7 +2976,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					pul1 = rscale;
 				} else {
 					int32 rphase = phase * N2;
@@ -3005,7 +3005,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase2);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (fabs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005) {
 					pul2 = rscale;
 				} else {
 					int32 rphase = phase2 * N2;
@@ -3069,13 +3069,13 @@ float Klang_SetCoefs(Klang *unit)
 		float phase = ZIN0(j+2);
 
 		if (phase != 0.f) {
-			outf += *++coefs = level * sin(phase);		// y1
-			        *++coefs = level * sin(phase - w);	// y2
+			outf += *++coefs = level * std::sin(phase);		// y1
+			        *++coefs = level * std::sin(phase - w);	// y2
 		} else {
-			outf += *++coefs = 0.f;				// y1
-			        *++coefs = level * -sin(w);	// y2
+			outf += *++coefs = 0.f;						// y1
+			        *++coefs = level * -std::sin(w);	// y2
 		}
-		*++coefs = 2. * cos(w);		// b1
+		*++coefs = 2. * std::cos(w);		// b1
 	}
 	return outf;
 }
@@ -3276,7 +3276,7 @@ void Klank_SetCoefs(Klank *unit)
 		float R = time == 0.f ? 0.f : exp(log001/(time * sampleRate));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * cos(w)) / (1.f + R2);
+		float cost = (twoR * std::cos(w)) / (1.f + R2);
 		
 		int k = 20 * (i>>2) + (i & 3);
 		coefs[k+0] = 0.f;					// y1
@@ -3500,7 +3500,7 @@ void normalize_samples(int size, float* data, float peak)
 {
 	float maxamp = 0.f;
 	for (int i=0; i<size; ++i) {
-		float absamp = fabs(data[i]);
+		float absamp = std::abs(data[i]);
 		if (absamp > maxamp) maxamp = absamp;
 	}
 	if (maxamp != 0.f && maxamp != peak) {
@@ -3515,7 +3515,7 @@ void normalize_wsamples(int size, float* data, float peak)
 {
 	float maxamp = 0.f;
 	for (int i=0; i<size; i+=2) {
-		float absamp = fabs(data[i] + data[i+1]);
+		float absamp = std::abs(data[i] + data[i+1]);
 		if (absamp > maxamp) maxamp = absamp;
 	}
 	if (maxamp != 0.f && maxamp != peak) {
