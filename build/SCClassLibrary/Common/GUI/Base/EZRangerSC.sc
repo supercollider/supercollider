@@ -262,6 +262,7 @@ EZRanger : EZGui {
 			labelView.notNil.if{labelView.font=font};
 			unitView.notNil.if{unitView.font=font};
 			hiBox.font=font;
+			loBox.font=font;
 	}
 	
 	
