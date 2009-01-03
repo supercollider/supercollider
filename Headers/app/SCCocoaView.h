@@ -57,7 +57,6 @@
     clickedOnLink: (id) link
 		  atIndex: (unsigned) charIndex;
 
-
 @end
 
 @interface SCNSMenuItem : NSMenuItem {
@@ -86,11 +85,19 @@ public:
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual void setVisibleFromParent();
-
+	void setLoadLinkInView(bool flag){mLoadLinkInView = flag;};
+	bool getLoadLinkInView(){return mLoadLinkInView;};
+	
+	int open(NSString *path);
+	NSURL* getLastURL() {return mLastURL;};
+	bool SCCocoaTextView::linkAction(NSString *path);
+	
 protected:
 	SCTextView *mTextView;
 	NSScrollView *mScrollView;
 	SCCocoaTextViewResponder *mCocoaToLangAction;
+	bool mLoadLinkInView;
+	NSURL *mLastURL;
 };
 
 class SCMovieView : public SCView

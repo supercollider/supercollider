@@ -60,6 +60,29 @@ Help {
 		}.bench(false)).postln});
 		^tree;
 	}
+	
+	*findKeysForValue{|val|
+		var func, node, keyPath;
+		keyPath =[];
+		if(val.contains("://"), {
+			// only file scheme urls in tree
+			if(val.beginsWith("file://"), {val = val.copyToEnd(7)}, {^keyPath});
+		});
+		val = val.replace("%20", " ");
+		func = {|dict, depth = 0|
+			node = dict.findKeyForValue(val);
+			node.isNil.if({
+				dict.keysValuesDo({|key, item| 
+					item.isKindOf(Dictionary).if({
+						keyPath = keyPath.copyFromStart(depth - 1).add(key);
+						func.value(item, depth + 1)
+					})
+				});
+			}, {^keyPath.add(node)});
+		};
+		func.value(this.tree);
+		^[];
+	}
 
 	*addUserFilter{ |subpath|
 		filterUserDirEntries = filterUserDirEntries.add( subpath );
@@ -285,23 +308,29 @@ Help {
 		fBwdFwd.value;
 	};
 	
-	// SCTextView will open a new Document when clicking on a link.
-	// JSCTextView instead will fire a linkAction that is used here
-	// to follow the link.
+	// keep this check for compatibility with old versions of swingOSC
 	if( textView.respondsTo( \linkAction ), {
 		textView
 			.editable_( false )
 			.canFocus_( true )
-			.linkAction_({ arg view, state, url, descr; var path;
-				if( state === \activated, {
-					if( url.notEmpty, {
-						fHistoryDo.value( \openURL, url );
-					}, { if( descr.beginsWith( "SC://" ), {
-						path = fileslist.at( descr.copyToEnd( 5 ).asSymbol );
-						if( path.notNil, {
-							fHistoryDo.value( \open, path );
-						});
-					})});
+			.linkAction_({ arg view, url, descr; 
+				var path;
+				if( url.notEmpty, {
+					var keys;
+					//fHistoryDo.value( \open, url );
+					keys = this.findKeysForValue(url);
+					if(keys.size == 0, {
+						("Invalid hyberlink:" + url + "Please repair this.\nSearching help directories for alternative.").warn;
+						url = Help.findHelpFile(url.basename.splitext.first);
+						url.notNil.if({keys = this.findKeysForValue(url)});
+					});
+					if(keys.size > 0, {
+						fSelectTreePath.value(keys.drop(-1), keys.last.asString);
+					});
+				}, { 
+					if( descr.beginsWith( "SC://" ), {
+						fHistoryDo.value( \open, descr );
+					});
 				});
 			});
 	});
