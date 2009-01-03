@@ -116,7 +116,7 @@ install_scedfiles = env.Alias('install-scedfiles', [
 	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'gtksourceview-2.0/language-specs' ), LANG_FILE_RE, 1 ),
 	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'mime/packages' ), XML_FILE_RE, 1 ),
 	install_dir( env, 'data/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PLUGIN_FILE_RE, 1 ),
-	install_dir( env, 'sced/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PY_FILE_RE, 1 )
+	install_dir( env, 'sced/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PY_FILE_RE, 0 )
 	])
 
 

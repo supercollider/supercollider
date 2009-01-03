@@ -1,5 +1,11 @@
 === Sced 0.4 ===
 
+2009-01-02  Marije Baalman <nescivi AT gmail DOT com>
+
+	* added to the SC svn
+	* made a SConstruct for installing
+	* sced/WindowHelper.py: changed findHelpFile function
+
 2008-11-21  Артём Попов <artfwo@gmail.com>
 
 	* sced/WindowHelper.py: implemented status message for disclosed blocks.
