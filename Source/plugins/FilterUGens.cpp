@@ -956,9 +956,9 @@ void OnePole_next_k(OnePole *unit, int inNumSamples)
 				b1 += b1_slope;
 			);
 		} else {
-			LOOP(inNumSamples, 
-				float y0 = ZXP(in); 
-				ZXP(out) = y1 = (1.f - fabs(b1)) * y0 + b1 * y1;
+			LOOP(inNumSamples,
+				float y0 = ZXP(in);
+				ZXP(out) = y1 = (1.f - std::abs(b1)) * y0 + b1 * y1;
 				b1 += b1_slope;
 			);
 		}
@@ -1033,9 +1033,9 @@ void OneZero_next(OneZero* unit, int inNumSamples)
 				b1 += b1_slope;
 			);
 		} else {
-			LOOP(inNumSamples, 
-				float x0 = ZXP(in); 
-				ZXP(out) = (1.f - fabs(b1)) * x0 + b1 * x1;
+			LOOP(inNumSamples,
+				float x0 = ZXP(in);
+				ZXP(out) = (1.f - std::abs(b1)) * x0 + b1 * x1;
 				x1 = x0;
 				b1 += b1_slope;
 			);
@@ -1292,7 +1292,7 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = 2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = -(reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -1366,7 +1366,7 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = -2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = -2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = (reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -1453,7 +1453,7 @@ void APF_next(APF* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = 2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = -(reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -2006,12 +2006,12 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		
-		float D = tan(pfreq * qres * 0.5);
+
+		float D = std::tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
-		
-		float next_b1 = (1.f + C) * cosf;	
+		float cosf = std::cos(pfreq);
+
+		float next_b1 = (1.f + C) * cosf;
 		float next_b2 = -C;
 		float next_a0 = (1.f + C - next_b1) * .25;
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
@@ -2088,12 +2088,12 @@ void RLPF_next_1(RLPF* unit, int inNumSamples)
 
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		
-		float D = tan(pfreq * qres * 0.5);
+
+		float D = std::tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
-		
-		b1 = (1.f + C) * cosf;	
+		float cosf = std::cos(pfreq);
+
+		b1 = (1.f + C) * cosf;
 		b2 = -C;
 		a0 = (1.f + C - b1) * .25;
 
@@ -2160,12 +2160,12 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		
-		float D = tan(pfreq * qres * 0.5);
+
+		float D = std::tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
-		
-		float next_b1 = (1.f + C) * cosf;	
+		float cosf = std::cos(pfreq);
+
+		float next_b1 = (1.f + C) * cosf;
 		float next_b2 = -C;
 		float next_a0 = (1.f + C + next_b1) * .25;
 
@@ -2242,12 +2242,12 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		
-		float D = tan(pfreq * qres * 0.5);
+
+		float D = std::tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
-		
-		b1 = (1.f + C) * cosf;	
+		float cosf = std::cos(pfreq);
+
+		b1 = (1.f + C) * cosf;
 		b2 = -C;
 		a0 = (1.f + C + b1) * .25;
 
@@ -2313,8 +2313,8 @@ void LPF_next(LPF* unit, int inNumSamples)
 	if (freq != unit->m_freq) {
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
-		
-		float C = 1.f / tan(pfreq);
+
+		float C = 1.f / std::tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2390,8 +2390,8 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 	if (freq != unit->m_freq) {
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
-		
-		float C = 1.f / tan(pfreq);
+
+		float C = 1.f / std::tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2;
 		a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2460,7 +2460,7 @@ void HPF_next(HPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = tan(pfreq);
+		float C = std::tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2538,7 +2538,7 @@ void HPF_next_1(HPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = tan(pfreq);
+		float C = std::tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2;
 		a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2607,10 +2607,10 @@ void BPF_next(BPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
-		
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
-	
+
+		float C = 1.f / std::tan(pbw);
+		float D = 2.f * std::cos(pfreq);
+
 		float next_a0 = 1.f / (1.f + C);
 		float next_b1 = C * D * next_a0 ;
 		float next_b2 = (1.f - C) * next_a0;
@@ -2686,10 +2686,10 @@ void BPF_next_1(BPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
-		
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
-	
+
+		float C = 1.f / std::tan(pbw);
+		float D = 2.f * std::cos(pfreq);
+
 		float a0 = 1.f / (1.f + C);
 		float b1 = C * D * a0 ;
 		float b2 = (1.f - C) * a0;
@@ -2757,10 +2757,10 @@ void BRF_next(BRF* unit, int inNumSamples)
 	if (freq != unit->m_freq || bw != unit->m_bw) {
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
-		
-		float C = tan(pbw);
-		float D = 2.f * cos(pfreq);
-	
+
+		float C = std::tan(pbw);
+		float D = 2.f * std::cos(pfreq);
+
 		float next_a0 = 1.f / (1.f + C);
 		float next_a1 = -D * next_a0;
 		float next_b2 = (1.f - C) * next_a0;
@@ -2846,10 +2846,10 @@ void BRF_next_1(BRF* unit, int inNumSamples)
 	if (freq != unit->m_freq || bw != unit->m_bw) {
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
-		
-		float C = tan(pbw);
-		float D = 2.f * cos(pfreq);
-	
+
+		float C = std::tan(pbw);
+		float D = 2.f * std::cos(pfreq);
+
 		float a0 = 1.f / (1.f + C);
 		float a1 = -D * a0;
 		float b2 = (1.f - C) * a0;
@@ -2919,10 +2919,10 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 		float amp = sc_dbamp(db) - 1.0;
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
-		
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
-	
+
+		float C = 1.f / std::tan(pbw);
+		float D = 2.f * std::cos(pfreq);
+
 		float next_a0 = 1.f / (1.f + C);
 		float next_b1 = C * D * next_a0 ;
 		float next_b2 = (1.f - C) * next_a0;
@@ -3106,7 +3106,7 @@ void Resonz_next(Resonz* unit, int inNumSamples)
 		float R = 1.f - B * 0.5f;
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
 		float b1_next = twoR * cost;
 		float b2_next = -R2;
 		float a0_next = (1.f - R2) * 0.5f;
@@ -3202,7 +3202,7 @@ void Ringz_next(Ringz* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
 		float b1_next = twoR * cost;
 		float b2_next = -R2;
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
@@ -3307,7 +3307,7 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
 		float b01_next = twoR * cost;
 		float b02_next = -R2;
 		float b01_slope = (b01_next - b01) * unit->mRate->mFilterSlope;
@@ -3424,14 +3424,14 @@ void Formlet_next_1(Formlet* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
 		b01 = twoR * cost;
 		b02 = -R2;
 		
 		R = attackTime == 0.f ? 0.f : exp(log001/(attackTime * SAMPLERATE));
 		twoR = 2.f * R;
 		R2 = R * R;
-		cost = (twoR * cos(ffreq)) / (1.f + R2);
+		cost = (twoR * std::cos(ffreq)) / (1.f + R2);
 		b11 = twoR * cost;
 		b12 = -R2;
 		
@@ -3746,7 +3746,7 @@ void Compander_next(Compander* unit, int inNumSamples)
 	
 	float val;
 	LOOP(inNumSamples,
-		val = fabs(ZXP(control)); 
+		val = std::abs(ZXP(control));
 		if (val < prevmaxval) {
 			val = val + (prevmaxval - val) * relaxcoef;
 		} else {
@@ -3764,7 +3764,7 @@ void Compander_next(Compander* unit, int inNumSamples)
 		} else {
 			next_gain = pow(prevmaxval / thresh, slope_below - 1.f);
             //blows up here
-            float32 absx = fabs(next_gain);
+            float32 absx = std::abs(next_gain);
             //zap gremlins, but returns 0. if gain is too small and 1. if gain is too big
             next_gain = 
 				(absx < (float32)1e-15) ? (float32)0. :
@@ -3844,7 +3844,7 @@ void Normalizer_next(Normalizer* unit, int inNumSamples)
 				ZXP(xinbuf) = val = ZXP(in);
 				ZXP(out) = level * ZXP(xoutbuf); 
 				level += slope;
-				val = fabs(val);
+				val = std::abs(val);
 				if (val > curmaxval) curmaxval = val;
 			);
 		} else {
@@ -3852,7 +3852,7 @@ void Normalizer_next(Normalizer* unit, int inNumSamples)
 				ZXP(xinbuf) = val = ZXP(in);
 				ZXP(out) = 0.f;
 				level += slope;
-				val = fabs(val);
+				val = std::abs(val);
 				if (val > curmaxval) curmaxval = val;
 			);
 		}
@@ -3945,7 +3945,7 @@ void Limiter_next(Limiter* unit, int inNumSamples)
 				ZXP(xinbuf) = val = ZXP(in);
 				ZXP(out) = level * ZXP(xoutbuf); 
 				level += slope;
-				val = fabs(val);
+				val = std::abs(val);
 				if (val > curmaxval) curmaxval = val;
 			);
 		} else {
@@ -3953,7 +3953,7 @@ void Limiter_next(Limiter* unit, int inNumSamples)
 				ZXP(xinbuf) = val = ZXP(in);
 				ZXP(out) = 0.f;
 				level += slope;
-				val = fabs(val);
+				val = std::abs(val);
 				if (val > curmaxval) curmaxval = val;
 			);
 		}
@@ -4026,7 +4026,7 @@ void Amplitude_next(Amplitude* unit, int inNumSamples)
 	
 	float val;
 	LOOP(inNumSamples,
-		val = fabs(ZXP(in)); 
+		val = std::abs(ZXP(in));
 		if (val < previn) {
 			val = val + (previn - val) * relaxcoef;
 		} else {
@@ -4048,7 +4048,7 @@ void Amplitude_next_atok(Amplitude* unit, int inNumSamples)
 	
 	float val;
 	LOOP(FULLBUFLENGTH,
-		val = fabs(ZXP(in)); 
+		val = std::abs(ZXP(in));
 		if (val < previn) {
 			val = val + (previn - val) * relaxcoef;
 		} else {
@@ -4085,7 +4085,7 @@ void Amplitude_next_kk(Amplitude* unit, int inNumSamples)
 	
 	float val;
 	LOOP(inNumSamples,
-		val = fabs(ZXP(in)); 
+		val = std::abs(ZXP(in));
 		if (val < previn) {
 			val = val + (previn - val) * relaxcoef;
 		} else {
@@ -4120,7 +4120,7 @@ void Amplitude_next_atok_kk(Amplitude* unit, int inNumSamples)
 	
 	float val;
 	LOOP(FULLBUFLENGTH,
-		val = fabs(ZXP(in)); 
+		val = std::abs(ZXP(in));
 		if (val < previn) {
 			val = val + (previn - val) * relaxcoef;
 		} else {
@@ -4159,7 +4159,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 	// I thought of a better way to do this...
 	/*
 	for (int i=0; i<inNumSamples; ++i) {
-		float val = fabs(ZXP(in)); 
+		float val = std::abs(ZXP(in));
 		if (val >= thresh) counter = 0;
 		else if (counter >= 0) {
 			if (++counter >= unit->mEndCounter && doneAction) {
@@ -4174,7 +4174,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 	float *in = IN(0);
 	float *out = OUT(0);
 	for (int i=0; i<inNumSamples; ++i) {
-		val = fabs(*in++); 
+		val = std::abs(*in++);
 		if (val > thresh) {
 			counter = 0;
 			*out++ = 0.f;
@@ -4714,8 +4714,8 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 		if(freq != IN0(1)){
 			freq = IN0(1);
 			//Print("Updated freq to %g\n", freq);
-			wcD = 2.0 * tan(T * PI * freq) * SAMPLERATE;
-			if(wcD<0) 
+			wcD = 2.0 * std::tan(T * PI * freq) * SAMPLERATE;
+			if(wcD<0)
 				wcD = 0; // Protect against negative cutoff freq
 			double TwcD = T*wcD; 
 			b0 = (float)(TwcD/(TwcD + 2.));
