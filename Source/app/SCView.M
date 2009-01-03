@@ -6254,11 +6254,14 @@ void initSCViewPrimitives()
 	definePrimitive(base, index++, "_SCView_RefreshInRect", prSCView_RefreshInRect, 2, 0);
 }
 
+int ivxSCTextView_linkAction;
+
 void initGUI();
 void initGUI()
 {
 	ivxSCDragSource_object = instVarOffset("SCDragSource", "object");
 	ivxSCDragBoth_object = instVarOffset("SCDragBoth", "object");
+	ivxSCTextView_linkAction = instVarOffset("SCTextView", "linkAction");
 }
 
 

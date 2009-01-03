@@ -2,9 +2,14 @@ SCTextView : SCView{
 	var <stringColor, <font, <editable;
 	var 	<autohidesScrollers, <hasHorizontalScroller, <hasVerticalScroller, <textBounds;
 	var <usesTabToFocusNextView=true, <enterInterpretsSelection=true;
+	var <>linkAction;
 	
 	mouseUp {arg x, y, modifiers, buttonNumber, clickCount, clickPos;
 		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount, clickPos);	}
+		
+	doLinkAction { arg url, description;
+		linkAction.value(this, url, description);
+	}
 	
 	string{
 		^this.getProperty(\string);
@@ -28,6 +33,10 @@ SCTextView : SCView{
 	
 	selectionSize {
 		^this.getProperty(\selectedRange);
+	}
+	
+	path {
+		^this.getProperty(\path);
 	}	
 	
 	stringColor_ {arg color;
@@ -85,7 +94,16 @@ SCTextView : SCView{
 		this.setProperty(\textBounds, rect);
 	}
 	
-	open {|path|		
+	open {|path|	
+		if ( path.contains( "SC://"), {
+	        	path = Help.findHelpFile( path.asRelativePath( "SC:/") );
+		});
+		
+		if ( path.contains( "://" ).not, {
+	        if ( path.first.asString != "/" ) { path = String.scDir +/+ path; };
+	        path = "file://"++path;
+		});	
+		path = path.replace(" ", "%20");
 		this.setProperty(\open, path);
 	}
 }

@@ -146,8 +146,9 @@ void SyntaxColorize(NSTextView* textView);
     clickedOnLink: (id) link
 		  atIndex: (unsigned) charIndex
 {
-    NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
-	if (!docctl) return YES;
+	bool loadLinkInView = mSCViewObject->getLoadLinkInView();
+	NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
+	if (!docctl && !loadLinkInView) return YES;
 	
 	NSURL *desiredURL;
 	
@@ -161,14 +162,12 @@ void SyntaxColorize(NSTextView* textView);
 				return YES;
 			}
 			desiredURL = [NSURL URLWithString: helpPath];
-		} //else desiredURL = [NSURL URLWithString: [link stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: [self fileURL]];
+		} else desiredURL = [NSURL URLWithString: [link stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: mSCViewObject->getLastURL()];
         
     } else if ([link isKindOfClass: [NSURL class]])
     {
-		
 		// check for schemes which we'll handle
 		if([[link scheme] isEqualToString: @"SC"] || [[link scheme] isEqualToString:@"sc"]) { // this means search immediately
-			
 			NSString *helpPath = pathOfHelpFileFor([[[[link relativeString] substringFromIndex:5] stringByDeletingPathExtension] stringByDeletingPathExtension]);
 			if(!helpPath) {
 				post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\n", [[link relativeString] cString]);
@@ -178,26 +177,37 @@ void SyntaxColorize(NSTextView* textView);
 		} else if (![link scheme]) { // NULL could be a regular file link that's been edited
 			if([[link relativePath] hasPrefix: @"/"]) {
 				desiredURL = [NSURL fileURLWithPath: [link relativeString]];
-			} //else {
-//				desiredURL = [NSURL URLWithString: [[link relativeString] stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: [self fileURL]];
-//			}
-			//desiredURL = [NSURL fileURLWithPath: [link relativeString]];
+			} else {
+				desiredURL = [NSURL URLWithString: [[link relativeString] stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: mSCViewObject->getLastURL()];
+			}
 		} else if(![[link scheme] isEqualToString: @"file"]) {
 			return NO; // it's http, etc. so pass it on to Safari or whatever
-		} else desiredURL = link; // it's a regular file:// URL
+		} else {
+			desiredURL = link; // it's a regular file:// URL
+		}
     } else return NO;
-    
+	
+	// try the link action first then use default
+	if(mSCViewObject->linkAction([desiredURL absoluteString])) return YES;
+	
 	MyDocument *doc = nil;
+	int result = 0;
+	
 	if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
-		
-		doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
+		if(!loadLinkInView) doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
 	} else NSLog(@"file doesn't exist at path");
     if (!doc) {
-        doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
-        if (!doc) {
+		if(!loadLinkInView) {
+			doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
+		} else {
+			result = mSCViewObject->open([desiredURL path]);
+		}
+        if (!doc && result) {
 			// it's a bad file:// URL, post a warning and search
 			post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\nSearching help directories for alternative.\n", [[desiredURL path] cString]);
 			// delete extension twice in case something.help.rtf
+			if(!desiredURL) NSLog(@"foo");
+			NSLog(@"url path %@", [desiredURL path]);
 			NSString *desiredHelpName = [[[[desiredURL path] lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension];
 			NSString *helpPath = pathOfHelpFileFor(desiredHelpName); 
 			if(!helpPath) {
@@ -206,23 +216,31 @@ void SyntaxColorize(NSTextView* textView);
 			}
 			desiredURL = [NSURL fileURLWithPath: helpPath];
 			if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
-				doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
+				if(!loadLinkInView) {
+					doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
+				}
 			} else post("file doesn't exist at path: '%s'\n", [[desiredURL path] cString]);
 			if (!doc) {
-				doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
-				if(!doc) {
+				if(!loadLinkInView) {
+					doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
+				} else {
+					result = mSCViewObject->open(helpPath);
+				}
+				if(!doc && result) {
 					post("Can't open Help File Document: '%s'\n", [[desiredURL path] cString]);
 					return YES;
 				}
 			}
         }
     }
-    NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
-    if (!window) {
-        post("!! window controller returns nil ? failed to open help file window\n");
-        return YES;
-    }
-    [window makeKeyAndOrderFront: nil];
+	if(!loadLinkInView) {
+		NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
+		if (!window) {
+			post("!! window controller returns nil ? failed to open help file window\n");
+			return YES;
+		}
+		[window makeKeyAndOrderFront: nil];
+	}
     return YES;
 }
 
@@ -270,6 +288,8 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	: SCView(inParent, inObj, inBounds)
 {
 
+	mLoadLinkInView = true;
+	mLastURL = nil;
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mTextView = [[SCTextView alloc] initWithFrame:matrect];
 	NSView *view = mTop->GetNSView();		
@@ -308,6 +328,7 @@ SCCocoaTextView::~SCCocoaTextView()
 	[mCocoaToLangAction release];
 	[mTextView release];
 	[mScrollView release];
+	[mLastURL release];
 }
 
 void SCCocoaTextView::tabPrevFocus()
@@ -479,47 +500,11 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!pstring) return errNone;
 		NSRange selectedRange = [mTextView selectedRange];
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
-		NSURL *url = [NSURL fileURLWithPath: path];
-		
-		NSTextStorage* text = [mTextView textStorage];
-		
-		[text beginEditing];	// Bracket with begin/end editing for efficiency
-		[[text mutableString] setString:@""];	// Empty the document
-		
-		NSString* extension = [path pathExtension];
-		
-		if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-			NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
-			
-			if(!htmlAttributedString) {
-				[text endEditing];
-				[path release];
-				return errFailed;
-			} else {
-				[text setAttributedString:htmlAttributedString];
-				[mTextView setDefaultTabsTo: 28.0f];
-			}
-		}
-		else {
-			NSError *error;
-			BOOL success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
-			if(!success) {
-				NSLog(@"Error opening file: %@", error);
-				[text endEditing];
-				[path release];
-				return errFailed;
-			}
-		}
-		
-		if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
-			[mTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
-			SyntaxColorize(mTextView);
-		}
-		
-		[text endEditing];
+
+		int result = open(path);
 
 		[path release];
-		return errNone;
+		return result;
 	}
 	
 	if (strcmp(name, "background")==0) {
@@ -692,7 +677,60 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
+	if (strcmp(name, "path")==0) {
+		if(mLastURL) {
+			const char * cstr = [[mLastURL path] UTF8String];
+			PyrString *string = newPyrString(NULL, cstr, 0, true);
+			SetObject(slot, string);
+		} else SetNil(slot);
+		return errNone;		
+	}
+	
 	return SCView::getProperty(symbol, slot);
+}
+
+int SCCocoaTextView::open(NSString *path)
+{
+	NSURL *url = [NSURL URLWithString: path];
+	NSTextStorage* text = [mTextView textStorage];
+	
+	[text beginEditing];	// Bracket with begin/end editing for efficiency
+	[[text mutableString] setString:@""];	// Empty the document
+	
+	NSString* extension = [path pathExtension];
+	
+	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
+		NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
+		
+		if(!htmlAttributedString) {
+			[text endEditing];
+			[path release];
+			return errFailed;
+		} else {
+			[text setAttributedString:htmlAttributedString];
+			[mTextView setDefaultTabsTo: 28.0f];
+		}
+	}
+	else {
+		NSError *error;
+		BOOL success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
+		if(!success) {
+			NSLog(@"Error opening file: %@", error);
+			[text endEditing];
+			[path release];
+			return errFailed;
+		}
+	}
+	
+	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
+		[mTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
+		SyntaxColorize(mTextView);
+	}
+	[mTextView scrollPoint:NSMakePoint(0, 0)];
+	[text endEditing];
+	[mLastURL release];
+	mLastURL = [url retain];
+	return errNone;
 }
 
 void SCCocoaTextView::setVisibleFromParent()
@@ -706,6 +744,29 @@ void SCCocoaTextView::setVisibleFromParent()
 		[mTextView setHidden:YES];
 	}
 	
+}
+
+extern int ivxSCTextView_linkAction;
+
+bool SCCocoaTextView::linkAction(NSString *url)
+{	
+	if(NotNil(mObj->slots + ivxSCTextView_linkAction)){
+		pthread_mutex_lock (&gLangMutex);
+		PyrSymbol *method = getsym("doLinkAction");
+		if (mObj) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			const char * cstr = [url UTF8String];
+			PyrString *string = newPyrString(NULL, cstr, 0, true);
+			++g->sp;  SetObject(g->sp, mObj); 
+			++g->sp;  SetObject(g->sp, string); 
+			++g->sp;  SetObject(g->sp, string); 
+			runInterpreter(g, method, 3);
+			g->canCallOS = false;
+		}
+		pthread_mutex_unlock (&gLangMutex);
+		return true;
+	} else return false; // handle the link in the responder
 }
 
 
