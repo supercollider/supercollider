@@ -361,20 +361,6 @@ SCTopView : SCCompositeView {
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		var currentAppModal, window;
 		keyDownAction.value(view, char, modifiers, unicode, keycode);
-		// kill app modal window with esc
-		if(modifiers == 256 and: {unicode == 27}, {
-			currentAppModal = SCModalWindow.current;
-			currentAppModal.notNil.if({
-				currentAppModal.close;
-				"An instance of SCModalWindow was aborted".warn;
-			}, {
-				window = this.findWindow;
-				window.isKindOf(SCModalSheet).if({
-					window.close;
-					"An instance of SCModalSheet was aborted".warn;
-				});
-			});
-		});
 	}
 	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
 		keyUpAction.value(view, char, modifiers, unicode, keycode);

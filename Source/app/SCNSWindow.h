@@ -37,4 +37,5 @@
 - (void) setHasBorders: (BOOL) flag;
 - (void) setSCGraphView: (NSView*) view;
 - (NSView*) getSCGraphView;
+- (IBAction) escape:(id)sender;
 @end
