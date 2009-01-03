@@ -261,7 +261,7 @@ Help {
 	var classButt, browseButt, bwdButt, fwdButt;
 	var isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
 	var screenBounds, bounds, textViewBounds, results, resultsview, statictextloc;
-	var searchField, helpguikeyacts, fSelectTreePath;
+	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
@@ -376,10 +376,13 @@ Help {
 						// We have a "leaf" (class or helpdoc), since no keys found
 						
 						if( (index + 1 < lists.size), { lists[index+1] = #[] });
-
+						
+						if(inPathSelect.not, {
 						{
+							
 							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
 						}.defer( 0.001 );
+						});
 						isClass = selecteditem.asSymbol.asClass.notNil;
 						// Note: "Help" class is not the class that matches "Help.html", so avoid potential confusion via special case
                             if(classButt.notNil){
@@ -466,6 +469,7 @@ Help {
 		var foundIndex;
 		Task{
 			0.001.wait;
+			inPathSelect = true;
 			catpath.do{ |item, index|
 				foundIndex = listviews[index].items.indexOfEqual(item);
 				if(foundIndex.notNil){
@@ -475,11 +479,12 @@ Help {
 				};
 				0.02.wait;
 			};
+			inPathSelect = false;
 			foundIndex = listviews[catpath.size].items.indexOfEqual(leaf);
 			if(foundIndex.notNil){
-				listviews[catpath.size].valueAction = foundIndex;
-				history = history.drop(-1);
-				historyIdx = history.size - 1;
+				listviews[catpath.size].value_(foundIndex).doAction;
+//				history = history.drop(-1);
+//				historyIdx = history.size - 1;
 			}{
 				"Could not select menu list item %".format(leaf).postln;
 			};
