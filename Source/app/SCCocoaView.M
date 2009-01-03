@@ -691,7 +691,9 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 int SCCocoaTextView::open(NSString *path)
 {
-	NSURL *url = [NSURL URLWithString: path];
+	NSURL *url = [[NSURL alloc] initWithString: path];
+	if(!url) return errFailed;
+
 	NSTextStorage* text = [mTextView textStorage];
 	
 	[text beginEditing];	// Bracket with begin/end editing for efficiency
@@ -704,7 +706,7 @@ int SCCocoaTextView::open(NSString *path)
 		
 		if(!htmlAttributedString) {
 			[text endEditing];
-			[path release];
+			[url release];
 			return errFailed;
 		} else {
 			[text setAttributedString:htmlAttributedString];
@@ -717,7 +719,7 @@ int SCCocoaTextView::open(NSString *path)
 		if(!success) {
 			NSLog(@"Error opening file: %@", error);
 			[text endEditing];
-			[path release];
+			[url release];
 			return errFailed;
 		}
 	}
@@ -729,7 +731,7 @@ int SCCocoaTextView::open(NSString *path)
 	[mTextView scrollPoint:NSMakePoint(0, 0)];
 	[text endEditing];
 	[mLastURL release];
-	mLastURL = [url retain];
+	mLastURL = url;
 	return errNone;
 }
 
