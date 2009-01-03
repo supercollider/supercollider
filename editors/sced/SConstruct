@@ -113,10 +113,10 @@ install_scedfiles = env.Alias('install-scedfiles', [
 	#install_file( env, 'data/supercollider.lang', os.path.join( share_dir(PREFIX), 'gtksourceview-2.0/language-specs' ), 0 ),
 	#install_file( env, 'data/supercollider.xml', os.path.join( share_dir(PREFIX), 'mime/packages' ), 0 ),
 	#install_file( env, 'data/sced.gedit-plugin', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), 0 ),
-	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'gtksourceview-2.0/language-specs' ), LANG_FILE_RE, 0 ),
-	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'mime/packages' ), XML_FILE_RE, 0 ),
-	install_dir( env, 'data/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PLUGIN_FILE_RE, 0 ),
-	install_dir( env, 'sced/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PY_FILE_RE, 0 )
+	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'gtksourceview-2.0/language-specs' ), LANG_FILE_RE, 1 ),
+	install_dir( env, 'data/', os.path.join( share_dir(PREFIX), 'mime/packages' ), XML_FILE_RE, 1 ),
+	install_dir( env, 'data/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PLUGIN_FILE_RE, 1 ),
+	install_dir( env, 'sced/', os.path.join( lib_dir(PREFIX), 'gedit-2/plugins' ), PY_FILE_RE, 1 )
 	])
 
 

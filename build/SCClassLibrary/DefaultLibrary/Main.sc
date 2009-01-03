@@ -28,7 +28,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 		StartUp.run;
 		(
 			osx: "Welcome to SuperCollider, type cmd-d for help",
-			linux: "Welcome to SuperCollider, for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim)",
+			linux: "Welcome to SuperCollider, for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit)",
 		 	windows: "Welcome to SuperCollider, press F1 for help"
 		 ).at(platform.name).postln;
 	}
