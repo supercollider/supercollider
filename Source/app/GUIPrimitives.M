@@ -3686,10 +3686,14 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *stringSlot = g->sp - 1;	// name of the menu item
 	PyrSlot *submenbool = g->sp;		// submenu bool
 	
+	bool nilIndex;
 	int menIndex, err;
 	
-	err = slotIntVal(ind, &menIndex);
-	if (err) return err;
+	nilIndex = IsNil(ind);
+	if(!nilIndex){
+		err = slotIntVal(ind, &menIndex);
+		if (err) return err;
+	}
 	
 	//NSLog(@"menIndex: %i", menIndex);
 	
@@ -3724,7 +3728,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"ヘルプ"] submenu];
+			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"„Éò„É´„Éó"] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
@@ -3742,7 +3746,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	// protect against bad indices
 	int parentSize = [parentMenu numberOfItems];
 	//NSLog(@"parentSize: %i", parentSize);
-	if(menIndex > parentSize) {
+	if(menIndex > parentSize || nilIndex) {
 		//NSLog(@"Index > parentSize");
 		menIndex = parentSize;
 	}
