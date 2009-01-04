@@ -39,4 +39,11 @@ extern pthread_mutex_t gLangMutex;
     runLibrary(getsym("escapeWindow"));
     pthread_mutex_unlock(&gLangMutex);
 }
+- (void)keyDown:(NSEvent *)event
+{
+	if ([event keyCode] == 53)
+	{
+		[self escape:self];
+	} else [super keyDown:event];
+}
 @end
