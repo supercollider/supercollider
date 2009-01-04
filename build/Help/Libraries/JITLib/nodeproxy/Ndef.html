@@ -5,21 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #416d1f}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0025b2; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8b2719; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002dad; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0025b2}
-span.s4 {color: #416d1f}
-span.s5 {color: #000000}
+span.s3 {color: #000000}
+span.s4 {color: #0000ff}
+span.s5 {color: #0000bf}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,18 +32,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">superclass: NodeProxy</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p3"><br></p>
 <p class="p1">reference to a proxy, forms an alternative to ProxySpace</p>
 <p class="p3"><br></p>
-<p class="p1">Ndef(key) returns the instance, Ndef(key, obj) stores the object and returns the instance, like Tdef and Pdef.</p>
-<p class="p1">see also <b>ProxySpace</b>, <b>NodeProxy</b></p>
+<p class="p4"><span class="s3">see also: <a href="NodeProxy.html">NodeProxy</a>, <a href="../environments/ProxySpace.html">ProxySpace</a></span></p>
+<p class="p3"><br></p>
+<p class="p1">Ndef(key) returns the instance</p>
+<p class="p1">Ndef(key, obj) stores the object and returns the instance, like <a href="../Patterns/Tdef.html"><span class="s4">Tdef</span></a> and <a href="../Patterns/Pdef.html"><span class="s4">Pdef</span></a>.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(key, object)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>craete a new node proxy and store it in a global dictionary under key.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if there is already an Ndef there, replace its object with the new one.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The object can be any supported class, see NodeProxy help.</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if key is an association, it is interpreted as <b>server -&gt; key.</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if key is an association, it is interpreted as <b>key -&gt; server name.<span class="Apple-converted-space"> </span></b> (order changed in SC3.3)</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*clear<span class="Apple-converted-space"> </span></b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clear all proxies</p>
@@ -52,36 +56,36 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the default server (default: Server.local)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">// examples</p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s3">Server</span>.default.boot;</p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>).play;</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>).fadeTime = 1;</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635], 0, <span class="s3">SinOsc</span>.kr(2).max(0) * 0.2) });</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635] * 3, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635] * 2, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, <span class="s3">Pbind</span>(<span class="s4">\dur</span>, 0.17, <span class="s4">\freq</span>, <span class="s3">Pfunc</span>({ rrand(300, 700) })) );</p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\lfo</span>, { <span class="s3">LFNoise1</span>.kr(3, 400, 800) });</p>
-<p class="p6"><span class="s3">Ndef</span><span class="s5">(</span>\sound<span class="s5">).map(</span>\freq<span class="s5">, </span><span class="s3">Ndef</span><span class="s5">(</span>\lfo<span class="s5">));</span></p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, { <span class="s3">arg</span> freq; <span class="s3">SinOsc</span>.ar([600, 635] + freq, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\lfo</span>, { <span class="s3">LFNoise1</span>.kr(300, 400, 800) });</p>
-<p class="p2"><br></p>
-<p class="p4"><span class="s3">Ndef</span><span class="s5">.clear; </span>//clear all</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
+<p class="p5">// examples</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s5">Server</span>.default.boot;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>).play;</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>).fadeTime = 1;</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, { <span class="s5">SinOsc</span>.ar([600, 635], 0, <span class="s5">SinOsc</span>.kr(2).max(0) * 0.2) });</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, { <span class="s5">SinOsc</span>.ar([600, 635] * 3, 0, <span class="s5">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, { <span class="s5">SinOsc</span>.ar([600, 635] * 2, 0, <span class="s5">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, <span class="s5">Pbind</span>(<span class="s6">\dur</span>, 0.17, <span class="s6">\freq</span>, <span class="s5">Pfunc</span>({ rrand(300, 700) })) );</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\lfo</span>, { <span class="s5">LFNoise1</span>.kr(3, 400, 800) });</p>
+<p class="p8"><span class="s5">Ndef</span><span class="s3">(</span>\sound<span class="s3">).map(</span>\freq<span class="s3">, </span><span class="s5">Ndef</span><span class="s3">(</span>\lfo<span class="s3">));</span></p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, { <span class="s5">arg</span> freq; <span class="s5">SinOsc</span>.ar([600, 635] + freq, 0, <span class="s5">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\lfo</span>, { <span class="s5">LFNoise1</span>.kr(300, 400, 800) });</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s5">Ndef</span><span class="s3">.clear; </span>//clear all</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
 <p class="p1"><b>recursion:</b></p>
 <p class="p3"><br></p>
 <p class="p1">Ndefs can be used recursively.</p>
 <p class="p1">a structure like the following works:</p>
 <p class="p3"><br></p>
-<p class="p8"><br></p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635], <span class="s3">Ndef</span>(<span class="s4">\sound</span>).ar * 10, <span class="s3">LFNoise1</span>.kr(2).max(0) * 0.2) });</p>
-<p class="p5"><span class="s3">Ndef</span>(<span class="s4">\sound</span>).play;</p>
+<p class="p10"><br></p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>, { <span class="s5">SinOsc</span>.ar([600, 635], <span class="s5">Ndef</span>(<span class="s6">\sound</span>).ar * 10, <span class="s5">LFNoise1</span>.kr(2).max(0) * 0.2) });</p>
+<p class="p7"><span class="s5">Ndef</span>(<span class="s6">\sound</span>).play;</p>
 <p class="p3"><br></p>
 <p class="p1">this is due to the fact that there is a feedback delay (the server's block size), usually 64 samples,</p>
 <p class="p1">so that calculation can reiterate over its own outputs.</p>
-<p class="p7"><br></p>
+<p class="p9"><br></p>
 </body>
 </html>
