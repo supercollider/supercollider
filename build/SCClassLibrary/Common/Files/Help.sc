@@ -473,7 +473,7 @@ Help {
 			catpath.do{ |item, index|
 				foundIndex = listviews[index].items.indexOfEqual(item);
 				if(foundIndex.notNil){
-					listviews[index].valueAction = foundIndex;
+					listviews[index].value_(foundIndex).doAction;
 				}{
 					"Could not select menu list item % in %".format(item, listviews[index].items).postln;
 				};
