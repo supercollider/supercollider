@@ -60,6 +60,7 @@ struct DiskOut : public Unit
 struct VDiskIn : public Unit
 {
 	float m_fbufnum, m_pchRatio, m_framePos, m_bufPos, m_rBufSize;
+	uint32 m_count;
 	SndBuf *m_buf;
 };
 
@@ -364,6 +365,8 @@ void VDiskIn_Ctor(VDiskIn* unit)
 	unit->m_framePos = 0.;
 	unit->m_bufPos = 0.;
 	unit->m_pchRatio = IN0(1);
+	unit->m_count = 0;
+		
 	SETCALC(VDiskIn_first); // should be first
 }
 
@@ -390,7 +393,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	float fbufFrames2 = (float)bufFrames2;
 	float fbufFrames = (float)bufFrames;
 	unit->m_rBufSize = 1. / bufFrames;
-	
+		
 	SETUP_OUT(0)
 	
 	float framePos = unit->m_framePos;
@@ -447,9 +450,11 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
+		DoneAction((int)ZIN0(3), unit);
 		}
 	    }
 	if ( test ){
+		unit->m_count++;
 	    if(unit->mWorld->mRealTime){
 		test = false;
 		DiskIOMsg msg;
@@ -468,6 +473,15 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 		pgDiskFifo->Write(msg);
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
+
+		if((int)ZIN0(4)) { 
+			SendTrigger(
+				&unit->mParent->mNode, 
+				(int)ZIN0(4), 
+				bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames)
+			);
+		}
+
 		} else {
 		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
 		    uint32 mPos;
@@ -484,10 +498,12 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 			    }
 		    } else { // non-loop
 			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+				DoneAction((int)ZIN0(3), unit);
 			    if (count < bufFrames2) {
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }
 		    }
+			
 	    }
 	}
 	
@@ -554,9 +570,11 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
+		DoneAction((int)ZIN0(3), unit);
 		}
 	    }
 	if ( test ){
+		unit->m_count++;
 	    if(unit->mWorld->mRealTime){
 		test = false;
 		DiskIOMsg msg;
@@ -575,6 +593,15 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		pgDiskFifo->Write(msg);
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
+
+		if((int)ZIN0(4)) { 
+			SendTrigger(
+				&unit->mParent->mNode, 
+				(int)ZIN0(4), 
+				bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames)
+			);
+		}
+		
 		} else {
 		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int)fbufnum);
 		    uint32 mPos;
@@ -591,12 +618,16 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 			    }
 		    } else { // non-loop
 			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+				DoneAction((int)ZIN0(3), unit);
 			    if (count < bufFrames2) {
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }
 		    }
+			
 	    }
 	}
+	
+	
 	
 	unit->m_framePos = framePos;
 	unit->m_pchRatio = pchRatio;

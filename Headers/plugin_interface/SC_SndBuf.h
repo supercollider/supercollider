@@ -36,6 +36,7 @@ struct SndBuf
 	int mask1;	// for interpolating oscillators.
 	int coord;	// used by fft ugens
 	SNDFILE *sndfile; // used by disk i/o
+	SF_INFO fileinfo; // used by disk i/o
 };
 typedef struct SndBuf SndBuf;
 
