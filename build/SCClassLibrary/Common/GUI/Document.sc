@@ -350,7 +350,7 @@ Document {
 		this.selectRange(index, 0);
 		
 		// refer to local link with round parens
-		if(selectedText.first == $( /*)*/ and: {Ê/*(*/ selectedText.last == $) }) {
+		if(selectedText.first == $( /*)*/ and: {/*(*/ selectedText.last == $) }) {
 				selectedText = selectedText[1 .. selectedText.size-2];
 				directory = Document.current.path.dirname ++ "/";
 		} {
