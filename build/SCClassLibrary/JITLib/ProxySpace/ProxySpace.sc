@@ -3,7 +3,7 @@ ProxySpace : LazyEnvir {
 
 	classvar <>all;
 	
-	var <name, <server, <clock, <fadeTime;
+	var <name, <server, <clock, <fadeTime, <quant;
 	var <>awake=true, tempoProxy, <group;
 	
 	*initClass { all = IdentityDictionary.new }
@@ -33,6 +33,7 @@ ProxySpace : LazyEnvir {
 			proxy.awake = awake;
 			if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
 			if(group.isPlaying) { proxy.parentGroup = group };
+			if(quant.notNil) { proxy.quant = quant };
 			^proxy
 	}
 	
@@ -57,6 +58,11 @@ ProxySpace : LazyEnvir {
 		this.do { arg item; item.parentGroup = node };
 	}
 	
+	quant_ { arg val;
+		quant = val;
+		this.do { arg item; item.quant = val };
+	}
+	
 	makeTempoClock { arg tempo=1.0, beats, seconds;
 		var clock, proxy;
 		proxy = envir[\tempo];
@@ -64,6 +70,7 @@ ProxySpace : LazyEnvir {
 		proxy.fadeTime = 0.0;
 		proxy.put(0, { |tempo = 1.0| tempo }, 0, [\tempo, tempo]);
 		this.clock = TempoBusClock.new(proxy, tempo, beats, seconds).permanent_(true);
+		if(quant.isNil) { this.quant = 1.0 };
 	}
 
 	
@@ -158,6 +165,19 @@ ProxySpace : LazyEnvir {
 		^monitors
 	}
 	
+	getStructure { arg keys, excluding;
+		^keys.collect { |key|
+			var proxy = envir.at(key);
+			var structure;
+			proxy !? {
+				structure = proxy.getStructure(excluding);
+				structure.deepCollect(inf, { |px|
+					px !? { envir.findKeyForValue(px) -> px }
+				});
+			}
+		}
+	}
+	
 	activeProxies { ^this.arProxyNames({ |px, key| px.isPlaying }) }
 	
 	playingProxies { ^this.arProxyNames({ |px, key| px.monitor.isPlaying }) }
@@ -218,4 +238,6 @@ ProxySpace : LazyEnvir {
 	postln { Post << this }
 	
 }	
+
+
 

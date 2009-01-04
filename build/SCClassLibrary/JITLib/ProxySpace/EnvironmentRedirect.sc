@@ -147,21 +147,17 @@ EnvironmentRedirect {
 		};
 		^this[selector].functionPerformList(\value, this, args);
 	}
-          
-     //// this should maybe go in Environment
-     
-     makeDocument { arg title, string="";
-     	^EnvirDocument.new(this, title, string);
-	}
-     
+	          
      linkDoc { arg doc, pushNow=true;
      	doc = doc ? Document.current;
      	doc.envir_(this);
      	if(pushNow and: { currentEnvironment !== this }) { this.push };
      }
      
-     unlinkDoc { arg doc;
-     	doc.envir_(nil);
+     unlinkDoc { arg doc, popNow = false;
+     	doc = doc ? Document.current;
+     	if(doc.envir === this) { doc.envir_(nil) };
+     	if(popNow and:  { currentEnvironment === this }) { this.pop };
      }
      
      // networking
