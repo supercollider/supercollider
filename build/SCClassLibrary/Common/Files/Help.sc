@@ -284,7 +284,7 @@ Help {
 		.resize_(5)
 		.canFocus_(true);
 		
-	if(GUI.current == SwingGUI, { textView.editable_( false ).canFocus_( true ) });
+	if(GUI.current.id == \swing, { textView.editable_( false ).canFocus_( true ) });
 		
 	textView.bounds = textView.bounds; // hack to fix origin on first load
 
