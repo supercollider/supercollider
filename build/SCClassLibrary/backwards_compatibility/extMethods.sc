@@ -81,12 +81,8 @@
 	
 	asOSCArgEmbeddedArray { | array|
 		array = array.add($[);
-		this.do{ | e | array = e.asOSCArgAddedToArray(array) };
-		array.add($]);
-		^array;
-	}
-	asOSCArgAddedToArray { | array|
 		this.do{ | e | array = e.asOSCArgEmbeddedArray(array) };
+		array.add($]);
 		^array;
 	}
 
@@ -96,17 +92,32 @@
 
 	asControlInput { ^this.asArray }
 	asOSCArgEmbeddedArray { | array| ^this.asArray.asOSCArgEmbeddedArray(array) }
-	asOSCArgAddedToArray { | array|  ^this.asArray.asOSCArgAddedToArray(array)  }
 }
 
 +Object {Ê
 	asOSCArgEmbeddedArray { | array| ^array.add(this.asControlInput) }
-	asOSCArgAddedToArray { | array| ^array.add(this.asControlInput) }
 	asOSCArgArray { ^this.asControlInput }
 	asOSCArgBundle { ^this.asControlInput }
+	asStringff { | size = 8 |
+		var str = this.asString;
+		str = str[0..size-1];
+		str = str ++ String.fill(size - str.size, Char.space);
+		^str;
+	}
+	
+	postff { | size = 8 |
+		this.asStringff(size).post
+	}
 }
 
 +Nil {
 	asOSCArgArray {}
 }
-	
+
++AbstractFunction {
+
+	eq { arg function, adverb; ^this.composeBinaryOp('==', function, adverb) }
+//	
+	ne { arg function, adverb; ^this.composeBinaryOp('!=', function, adverb) }
+
+}

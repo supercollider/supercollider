@@ -115,7 +115,7 @@ Event : Environment {
 		this.makeParentEvents;
 		
 		StartUp.add {
-			this.makeDefaultSynthDef;
+			Event.makeDefaultSynthDef;
 		};
 		
 

@@ -1,15 +1,22 @@
+
 // clocks for timing threads.
 
 Clock {
 	// abstract class
-	*play { arg task;
-		var beats, seconds;
-		task.clock = this;
-		seconds = thisThread.seconds;
-		beats = this.secs2beats(seconds);
-		this.sched(0.0, { task.value(beats, seconds, this) })
+	*play { | task | this.sched(0, task) }
+	*seconds { ^thisThread.seconds }
+	
+	// tempo clock compatibility
+	*beats { ^thisThread.seconds }
+	*beats2secs { | beats | ^beats }
+	*secs2beats { | secs | ^secs }
+	*beats2bars { ^0 }
+	*bars2beats { ^0 }
+	*timeToNextBeat { ^0 }
+	*nextTimeOnGrid { | quant = 1, phase = 0| 
+		if (quant ==0) { ^this.beats + phase };
+		^roundUp(this.beats - (phase % quant), quant) + phase;
 	}
-	seconds { ^thisThread.seconds }
 }
 
 SystemClock : Clock {
@@ -25,22 +32,84 @@ SystemClock : Clock {
 		_SystemClock_SchedAbs
 		^this.primitiveFailed
 	}
-	
-	*beats2secs { arg beats; ^beats }
-	*secs2beats { arg secs; ^secs }
-	*beats { ^thisThread.seconds }
-	*seconds { ^thisThread.seconds }
-	
-	// tempo clock compatibility
-	*beats2bars { ^0 }
-	*bars2beats { ^0 }
-	*timeToNextBeat { ^0 }
-	*nextTimeOnGrid { arg quant = 1, phase = 0;
-		^this.beats + phase
+		
+}
+
+AppClock : Clock {
+	classvar scheduler;
+	*initClass {
+		scheduler = Scheduler.new(this, true);
+	}
+	*clear {
+		scheduler.clear;
+	}
+	*sched { arg delta, item;
+		scheduler.sched(delta, item)
+	}
+	*tick {
+		var saveClock = thisThread.clock;
+		thisThread.clock = this;
+		scheduler.seconds = Main.elapsedTime;
+		thisThread.clock = saveClock;
 	}
 	
 }
 
+Scheduler {
+	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
+	
+	*new { arg clock, drift = false;
+		^super.newCopyArgs(clock, drift).init;
+	}
+	init {
+		beats = thisThread.beats;
+		queue = PriorityQueue.new;
+	}
+
+	play { arg task;
+		this.sched(0, task)
+	}
+
+	schedAbs { | time, item |
+		queue.put(time, item);
+	}
+
+	sched { | delta, item |
+		var fromTime;
+		if (delta.notNil, { 
+			fromTime = if (drift, { Main.elapsedTime },{ seconds });
+			queue.put(fromTime + delta, item);
+		});
+	}
+	clear { // adc: priorityqueue has no pairsDo method, array has
+		if(queue.array.notNil,{
+			queue.array.pairsDo { | time, item | item.removedFromScheduler };
+		});
+		queue.clear 
+	}
+
+	isEmpty { ^queue.isEmpty }
+	
+	advance { | delta |
+		this.seconds = seconds + delta;
+	}
+	
+	seconds_ { | newSeconds  |
+		var delta, item;
+		while ({ 
+			seconds = queue.topPriority; 
+			seconds.notNil and: { seconds <= newSeconds }
+		},{ 
+			item = queue.pop;
+			delta = item.awake( beats, seconds, clock );
+			if (delta.isNumber, {
+				this.sched(delta, item); 
+			});
+		});
+		seconds = newSeconds;
+		beats = clock.secs2beats(newSeconds);
+	}
+}
 
 TempoClock : Clock {
 	classvar <all, <>default;
@@ -78,7 +147,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		all.do({ arg item; item.clear(false) });
 		all.do({ arg item; if (item.permanent.not, { item.stop })  })
 	}	
-
+	
 	init { arg tempo, beats, seconds, queueSize;
 		queue = Array.new(queueSize);
 		this.prStart(tempo, beats, seconds);
@@ -97,8 +166,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 	
 	playNextBar { arg task; this.schedAbs(this.nextBar, task) }
-	
-	*play { ^this.shouldNotImplement(thisMethod) }
 	
 	tempo {
 		_TempoClock_Tempo
@@ -124,6 +191,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			^this.secs2beats(thisThread.seconds)
 		*/
 	}
+
+	seconds { ^thisThread.seconds }
 
 	sched { arg delta, item;
 		_TempoClock_Sched
@@ -203,8 +272,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		// return the beat of the bar, range is 0 to < t.beatsPerBar
 		^this.beats - this.bars2beats(this.bar) 
 	}
-	
-	
 		
 	// PRIVATE
 	prStart { arg tempo;
@@ -236,88 +303,39 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		barsPerBeat = beatsPerBar.reciprocal;
 		this.changed(\meter);
 	}
-}
 
-AppClock : Clock {
-	classvar scheduler;
-	*initClass {
-		scheduler = Scheduler.new(this, true);
-	}
-	*sched { arg delta, item;
-		scheduler.sched(delta, item)
-	}
-	*tick {
-		var saveClock = thisThread.clock;
-		thisThread.clock = this;
-		scheduler.seconds = Main.elapsedTime;
-		thisThread.clock = saveClock;
-	}
-	*clear {
-		scheduler.clear;
-	}
-	
-	*beats2secs { arg beats; ^beats }
-	*secs2beats { arg secs; ^secs }
-	
-	// tempo clock compatibility
-	*beats { ^thisThread.seconds }
-	*beats2bars { ^0 }
-	*bars2beats { ^0 }
-	*timeToNextBeat { ^0 }
-	*nextTimeOnGrid { arg quant = 1, phase = 0;
-		^this.beats + phase
-	}
-}
+// these methods allow TempoClock to act as TempoClock.default
+   *stop { TempoClock.default.stop  }
+   *play { | task, quant | TempoClock.default.play(task, quant)  }
+   *sched { | delta, item | TempoClock.default.sched(delta, item)  }
+   *schedAbs { | beat, item | TempoClock.default.schedAbs(beat, item)  }
+   *clear { | releaseNodes | TempoClock.default.clear(releaseNodes)  }
+   *tempo_ { | newTempo | TempoClock.default.tempo_(newTempo)  }
+   *etempo_ { | newTempo | TempoClock.default.etempo_(newTempo)  }
 
-Scheduler {
-	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
-	
-	*new { arg clock, drift = false;
-		^super.newCopyArgs(clock, drift).init;
-	}
-	init {
-		beats = thisThread.beats;
-		queue = PriorityQueue.new;
-	}
+   *tempo { ^TempoClock.default.tempo }
+   *beats { ^TempoClock.default.beats }
+   *beats2secs { | beats | ^TempoClock.default.beats2secs(beats)  }
+   *secs2beats { | secs | ^TempoClock.default.secs2beats(secs)  }
+   *nextTimeOnGrid { | quant, phase | ^TempoClock.default.nextTimeOnGrid(quant, phase)  }
+   *timeToNextBeat { | quant | ^TempoClock.default.timeToNextBeat(quant)  }
 
-	play { arg task;
-		this.sched(task.value(thisThread.beats, thisThread.seconds, clock), task)
-	}
+   *setTempoAtBeat { | newTempo, beats | TempoClock.default.setTempoAtBeat(newTempo, beats)  }
+   *setTempoAtSec { | newTempo, secs | TempoClock.default.setTempoAtSec(newTempo, secs)  }
+   *setMeterAtBeat { | newBeatsPerBar, beats | TempoClock.default.setMeterAtBeat(newBeatsPerBar, beats)  }
 
-	sched { arg delta, item;
-		var fromTime;
-		if (delta.notNil, { 
-			fromTime = if (drift, { Main.elapsedTime },{ seconds });
-			queue.put(fromTime + delta, item);
-		});
-	}
-	clear { // adc: priorityqueue has no pairsDo method, array has
-		if(queue.array.notNil,{
-			queue.array.pairsDo { arg time, item; item.removedFromScheduler };
-		});
-		queue.clear 
-	}
+   *beatsPerBar { ^TempoClock.default.beatsPerBar  }
+   *baseBarBeat { ^TempoClock.default.baseBarBeat  }
+   *baseBar { ^TempoClock.default.baseBar  }
+   *playNextBar { | task | ^TempoClock.default.playNextBar(task)  }
+   *beatDur { ^TempoClock.default.beatDur  }
+   *elapsedBeats { ^TempoClock.default.elapsedBeats  }
+   *beatsPerBar_ { | newBeatsPerBar | TempoClock.default.beatsPerBar_(newBeatsPerBar)  }
+   *beats2bars { | beats | ^TempoClock.default.beats2bars(beats)  }
+   *bars2beats { | bars | ^TempoClock.default.bars2beats(bars)  }
+   *bar { ^TempoClock.default.bar  }
+   *nextBar { | beat | ^TempoClock.default.nextBar  }
+   *beatInBar { ^TempoClock.default.beatInBar  }
 
-	isEmpty { ^queue.isEmpty }
-	
-	advance { arg delta;
-		this.seconds = seconds + delta;
-	}
-	
-	seconds_ { arg newSeconds;
-		var delta, item;
-		while ({ 
-			seconds = queue.topPriority; 
-			seconds.notNil and: { seconds <= newSeconds }
-		},{ 
-			item = queue.pop;
-			delta = item.awake( beats, seconds, clock );
-			if (delta.isNumber, {
-				this.sched(delta, item); 
-			});
-		});
-		seconds = newSeconds;
-		beats = clock.secs2beats(newSeconds);
-	}
 }
 
