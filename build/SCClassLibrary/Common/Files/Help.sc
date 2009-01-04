@@ -379,7 +379,8 @@ Help {
 						
 						if(inPathSelect.not, {
 						{
-							
+							textView.visible = true;
+							resultsview.visible = false;
 							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
 						}.defer( 0.001 );
 						});
