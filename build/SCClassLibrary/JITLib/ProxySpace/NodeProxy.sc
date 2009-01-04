@@ -172,6 +172,10 @@ BusPlug : AbstractFunction {
 	
 	play { arg out, numChannels, group, multi=false, vol, fadeTime, addAction;  
 		var bundle = MixedBundle.new;
+		if(this.homeServer.serverRunning.not) { 
+			("server not running:" + this.homeServer).warn; 
+			^this 
+		};
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock, this.quant)
@@ -179,6 +183,10 @@ BusPlug : AbstractFunction {
 	
 	playN { arg outs, amps, ins, vol, fadeTime, group, addAction;
 		var bundle = MixedBundle.new;
+		if(this.homeServer.serverRunning.not) { 
+			("server not running:" + this.homeServer).warn; 
+			^this 
+		};
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock, this.quant)
 	}
@@ -826,7 +834,22 @@ NodeProxy : BusPlug {
 		};
 		^set 	
 	}
-
+	
+	getStructure { arg alreadyAsked;
+		var parents, substructure;
+		parents = List.new;
+		alreadyAsked = alreadyAsked ?? { IdentitySet.new };
+		if(alreadyAsked.includes(this).not) {
+			alreadyAsked.add(this);
+			objects.do { arg obj; parents.addAll(obj.parents) };
+			parents.addAll(nodeMap.parents);
+			substructure = parents.collect { arg proxy; proxy.getStructure(alreadyAsked) };
+			^[this, substructure.flatten(1)];
+		};
+		^nil
+	}
+	
+	
 		
 	
 	////// private /////
@@ -1017,19 +1040,35 @@ NodeProxy : BusPlug {
 
 Ndef : NodeProxy {
 	classvar <>defaultServer, <>all;
-	var <key;
+	var <>key;
 	
 	*initClass { all = () }
 	
-	*new { arg key, object;
-		var res, server;
+	*new { arg key, object; 
+		// key may be simply a symbol, or an association of a symbol and a server name
+		var res, server, serverKey, dict;
+		
 		if(key.isKindOf(Association)) {
-			server = key.key;
-			key = key.value;
+			serverKey = key.value;
+			key = key.key;
+			server = Server.named.at(serverKey);
+			if(server.isNil) { Error("no server found with this name:" + serverKey).throw };
 		} {
-			server = defaultServer ? Server.default;
+			server = Server.default;
+			serverKey = server.name;
 		};
-		res = this.at(server, key) ?? { super.new(server).toLib(key) };
+		
+		dict = all.at(serverKey);
+		if(dict.isNil) { 
+			dict = ProxySpace.new(server); // use a proxyspace for ease of access.
+			all.put(serverKey, dict) 
+		};
+		res = dict.envir.at(key);
+		if(res.isNil) { 
+			res = super.new(server).key_(key); 
+			dict.envir.put(key, res) 
+		};
+		
 		object !? { res.source = object };
 		^res;
 	}
@@ -1038,30 +1077,12 @@ Ndef : NodeProxy {
 		all.do { arg dict; dict.do { arg item; item.clear } };
 		all.clear;
 	}
-	
-	*getDict { arg server;
-		var dict = all.at(server);
-		if(dict.isNil) { dict = ProxySpace.new(server); all.put(server, dict) };
-		^dict.envir // return the proxyspace envir
-	}
-	
-	*at { arg server, key;
-		^this.getDict(server).at(key)
-	}
-	
-	*put { arg server, key, val;
-		this.getDict(server).put(key, val)
-	}
-	
-	toLib { arg key;
-		this.class.put(this.server, key, this)
-	}
-	
+				
 	storeOn { arg stream;
 		this.printOn(stream);
 	}
 	printOn { arg stream;
-		stream << this.class.name << "(" <<< key << ")"
+		stream << this.class.name << "(" <<< this.key << ")"
 	}
 }
 

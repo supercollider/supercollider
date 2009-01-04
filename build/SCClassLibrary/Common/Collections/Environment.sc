@@ -48,5 +48,18 @@ Environment : IdentityDictionary {
 	}
 	pop { ^this.class.pop }
 	push { this.class.push(this) }
+	
+	linkDoc { arg doc, pushNow = true;
+     	doc = doc ? Document.current;
+     	doc.envir_(this);
+     	if(pushNow and: { currentEnvironment !== this }) { this.push };
+     }
+     
+     unlinkDoc { arg doc, popNow = false;
+     	doc = doc ? Document.current;
+     	if(doc.envir === this) { doc.envir_(nil) };
+     	if(popNow and:  { currentEnvironment === this }) { this.pop };
+     }
+
 }
 
