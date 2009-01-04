@@ -96,6 +96,7 @@ public:
 	};
 
 	static PyrSymbol* s_dataAvailable;
+	static PyrSymbol* s_doneAction;
 
 public:
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options);
@@ -114,6 +115,7 @@ protected:
 	void threadLoop();
 
 	void dataAvailable();
+	void doneAction();
 
 private:
 	// language interface
@@ -136,6 +138,7 @@ private:
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
+PyrSymbol* SerialPort::s_doneAction = 0;
 
 SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& options)
 	: m_obj(obj),
@@ -376,6 +379,20 @@ void SerialPort::dataAvailable()
     pthread_mutex_unlock (&gLangMutex);
 }
 
+void SerialPort::doneAction()
+{
+    pthread_mutex_lock (&gLangMutex);
+    PyrSymbol *method = s_doneAction;
+    if (m_obj) {
+        VMGlobals *g = gMainVMGlobals;
+        g->canCallOS = true;
+        ++g->sp; SetObject(g->sp, m_obj); 
+        runInterpreter(g, method, 1);
+        g->canCallOS = false;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+}
+
 void SerialPort::threadLoop()
 {
 	const int fd = m_fd;
@@ -396,22 +413,28 @@ void SerialPort::threadLoop()
 		timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
 
 		int n = select(max_fd, &rfds, 0, 0, &timeout);
+// 		int fdset = FD_ISSET(fd, &rfds);
+// 		printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
 		if ((n > 0) && FD_ISSET(fd, &rfds)) {
 // 				printf("poll input\n");
 			int nr = 0;
 			while (true) {
-				int n = read(fd, m_rxbuffer, kBufferSize);
-// 					printf("read %d\n", n);
-				if (n > 0) {
+				int n2 = read(fd, m_rxbuffer, kBufferSize);
+//  					printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
+				if (n2 > 0) {
 					// write data to ringbuffer
-					for (int i=0; i < n; ++i) {
+					for (int i=0; i < n2; ++i) {
 						if (!m_rxfifo.Put(m_rxbuffer[i])) {
 							m_rxErrors[1]++;
 							break;
 						}
 					}
-					nr += n;
-				} else if ((n == 0) || ((n == -1) && (errno == EAGAIN))) {
+					nr += n2;
+				} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
+// 					printf( "done\n" );
+					goto done;
+				} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
+// 					printf( "break\n");
 					break;
 				} else {
 #ifndef NDEBUG
@@ -437,6 +460,7 @@ void SerialPort::threadLoop()
 	}
 
 done:
+	doneAction();
 	tcflush(fd, TCIOFLUSH);
 	tcsetattr(fd, TCSANOW, &m_oldtermio);
 	close(fd);
@@ -580,6 +604,7 @@ void initSerialPrimitives()
 	definePrimitive(base, index++, "_SerialPort_RXErrors", prSerialPort_RXErrors, 1, 0);
 
 	SerialPort::s_dataAvailable = getsym("prDataAvailable");
+	SerialPort::s_doneAction = getsym("prDoneAction");
 }
 
 // EOF
