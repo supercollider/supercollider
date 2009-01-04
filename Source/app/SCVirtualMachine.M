@@ -388,6 +388,12 @@ bool gIsFullScreen = false;
     [(SCGraphView*)[window getSCGraphView] willClose];
 }
 
+- (void)windowWillMiniaturize:(NSNotification *)notification
+{
+    SCNSWindow* window = [notification object];
+    [self endFullScreen: window];
+}
+
 - (void) windowDidBecomeKey:(NSNotification *)aNotification
 {
     SCNSWindow* window = [aNotification object];
