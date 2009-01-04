@@ -23,7 +23,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">// =====================================================================</p>
 <p class="p1">// SerialPort</p>
 <p class="p1">// <span class="Apple-converted-space">  </span>serial port interface</p>
-<p class="p1">// <span class="Apple-converted-space">  </span>(currently unix/posix only)</p>
 <p class="p2"><br></p>
 <p class="p1">// device list</p>
 <p class="p1"><span class="s1">SerialPort</span><span class="s2">.listDevices;<span class="Apple-tab-span">	</span></span>// prints to postbuffer</p>
@@ -70,6 +69,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><span class="s2">p.putAll(</span>"whaddayawant"<span class="s2">);</span></p>
 <p class="p3">p.putAll(<span class="s1">Int8Array</span>[13, 10]);</p>
+
+<p class="p2"><br></p>
+<p class="p1">// you can set an function which will be evaluated if the port gets closed (maybe unexpectedly so, due to hardware failure or accidental disconnection). This allows you to for example to make a backup solution and activate it (like using fake input data for your algorithm, or trying to reopen the device). By default it will post a message to the post window.</p>
+<p class="p2"><br></p>
+<p class="p3">p.doneAction = { "my serial port got closed".postln; }</p>
+<p class="p2"><br></p>
+
 <p class="p2"><br></p>
 <p class="p1">// close the port</p>
 <p class="p2"><br></p>
@@ -78,6 +84,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">// close all ports</p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s1">SerialPort</span>.closeAll;</p>
+
 <p class="p2"><br></p>
 <p class="p1">// EOF</p>
 </body>

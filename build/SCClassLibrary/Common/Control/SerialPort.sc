@@ -3,6 +3,8 @@ SerialPort
 	classvar <>devicePattern, allPorts;
 	var dataptr, semaphore;
 
+	var <>doneAction;
+
 	*initClass {
 		allPorts = Array[];
 		UI.registerForShutdown({
@@ -14,7 +16,7 @@ SerialPort
 	*devices {
 		^(devicePattern ?? {
 			thisProcess.platform.name.switch(
-				\linux,   "/dev/ttyS*",
+				\linux,   "/dev/tty[S,U]*",
 				\osx,     "/dev/tty.*",
 				\windows, "COM"
 			)
@@ -55,6 +57,8 @@ SerialPort
 		semaphore = Semaphore(0);
 		this.prOpen(*args);
 		allPorts = allPorts.add(this);
+
+		doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
 // 		CmdPeriod.add(this);
 	}
 
@@ -105,6 +109,10 @@ SerialPort
 		}
 	}
 
+	doDoneAction{
+		doneAction.value;
+	}
+
 // 	cmdPeriod {
 // 		// remove waiting threads
 // 		semaphore.clear;
@@ -126,5 +134,9 @@ SerialPort
 	prDataAvailable {
 		// callback
 		semaphore.signal;
+	}
+	prDoneAction {
+		// callback
+		this.doDoneAction;
 	}
 }
