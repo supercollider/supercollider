@@ -23,7 +23,7 @@ EZSlider : EZGui {
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap);
+			gap = decorator.tryPerform(\gap).copy;
 			gap = gap ? (2@2)}
 			{gap=argGap};
 			
@@ -196,7 +196,6 @@ EZSlider : EZGui {
 		gap3 = gap1;
 		labelH=labelSize.y;//  needed for \vert
 		unitH=labelSize.y; //  needed for \vert
-		hasLabel.not.if{ gap2 = 0@0; labelSize.x = 0 ;};
 		hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
 		
 		switch (layout,
@@ -230,6 +229,7 @@ EZSlider : EZGui {
 				},
 			
 			 \vert, { 
+				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				hasLabel.not.if{labelH=0};
 				labelBounds = (rect.width@labelH).asRect; // to top
 				hasUnit.not.if{unitH=0};
@@ -248,6 +248,7 @@ EZSlider : EZGui {
 				},
 				
 			 \horz, {
+				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				labelSize.y=view.bounds.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; //to left
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right 
