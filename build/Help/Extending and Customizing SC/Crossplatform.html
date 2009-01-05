@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title>Crossplatform</title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ba1100}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+span.s1 {color: #000000}
+span.s2 {color: #001fbf}
+span.s3 {color: #8d2c17}
+span.s4 {color: #002aff}
+span.s5 {text-decoration: underline ; color: #0000ff}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>Crossplatform</b></p>
+<p class="p2"><br></p>
+<p class="p3">When extending SuperCollider you may need to take care of cross platform compatibility. This help file tries to make you aware of the issues you need to watch out for.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Structure of SuperCollider</b></p>
+<p class="p2"><br></p>
+<p class="p3">SuperCollider is composed of three or four programs. There is scsynth, sclang, the editor and optionally a GUI server.</p>
+<p class="p3">On OSX most users use the SCapp, which is an editor, including GUI facilities. However, you can also use the GUI server SwingOSC, and may choose to use another editor (such as scel, scvim, or even JSCEclipse and PsyCollider.</p>
+<p class="p3">On Windows most users use PsyCollider or JSCEclipse and use the SwingOSC GUI server. Theoretically it is also possible to run scel or scvim on Windows.</p>
+<p class="p3">On Linux most users use scel or scvim or sced (a gedit frontend) and use the SwingOSC GUI server. But they could also use JSCEclipse or PsyCollider.</p>
+<p class="p3"></p>
+<p class="p5"><br></p>
+<p class="p4"><b>Shortcuts</b></p>
+<p class="p3">Each editor has its own shortcuts, which are documented in the Shortcuts helpfile.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>GUI implementation</b></p>
+<p class="p3">GUI's are made cross platform compatible by using ViewRedirects, or the GUI classes. So instead of using SCWindow, you use Window or GUI.window.new.</p>
+<p class="p3">If you want to subclass GUI widgets, things get a bit trickier, or you have to make them platform specific.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>Document implementation</b></p>
+<p class="p3">Document forwards to an editor dependent class (CocoaDocument for SCapp and ScelDocument for scel). Of these CocoaDocument provides the most functionality, ScelDocument provides a partial set of features. For the other editors there is no Document support yet.</p>
+<p class="p3">The post window is yet another cup of tea. In SCapp it is a Document like any other. In scel it is a separate window which catches stdout (standard output) of sclang. This is the same for the other editors, who either catch the output in a window internal to the editor, or externally (like scvim).</p>
+<p class="p5"><br></p>
+<p class="p4"><b>Menus</b></p>
+<p class="p3">Menus are also editor specific, though they can also be added to SwingOSC windows.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>Help files</b></p>
+<p class="p3">Help files are generally HTML format. In SCapp they are viewed inside the editor and are regular Documents that are saved as HTML files when they are resaved. In scel they are opened in emacs-w3m in an sclang-minor-mode, so code can be executed from them. For scvim the help files are stripped of their HTML, so they can be opened within scvim as plain text files. Sced opens the help files in Firefox.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>HID (Human Input Device)</b></p>
+<p class="p3">HID support is also slightly platform dependent (not editor dependent!). There is a cross platform accessing class called GeneralHID. The only part which is not cross platform yet in that approach is the numbering of the slots, so these cannot be depended upon across platforms.</p>
+<p class="p3">The Windows version of SC should use a python program IxiHID for now with SC to have a partial access to HID devices (only game devices and no output).</p>
+<p class="p5"><br></p>
+<p class="p4"><b>MouseX, MouseY, MouseButton and KeyState</b></p>
+<p class="p3">Should work as is on different platforms.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>WiiMote</b></p>
+<p class="p3">Has been implemented for both OSX and Linux and have the same interface.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>Wacom</b></p>
+<p class="p3">Can be accessed on OSX through a separate interface. On Linux it can be accessed as an HID interface.</p>
+<p class="p5"><br></p>
+<p class="p4"><b>unixCmd</b></p>
+<p class="p3">unixCmd works across platforms, but on Windows has to be a DOS command.</p>
+<p class="p5"><br></p>
+
+<p class="p4"><b>What to do? Platform specific extensions</b></p>
+<p class="p3">So, now that you have created a class, what to do if it is not platform independent? Well...</p>
+<p class="p3">SC implements a scheme to ensure that classes that are only valid for one specific platform are only compiled for that platform. This works by putting a class in a folder (anywhere in the SCClassLibrary or Extensions) named after that platform (osx/windows/linux). Note that this is case sensitive.</p>
+<p class="p5"><br></p>
+</body>
+</html>
