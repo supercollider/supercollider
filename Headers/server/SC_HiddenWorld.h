@@ -44,6 +44,18 @@ struct TriggerMsg {
 	void Perform();
 };
 
+
+struct NodeReplyMsg {
+	World *mWorld;
+	int32 mNodeID;
+	int32 mID;
+	int32 mNumArgs;
+	float *mValues;
+	char *mCmdName;
+	void Perform();
+};
+
+
 struct NodeEndMsg {
 	World *mWorld;
 	int32 mNodeID;
@@ -66,6 +78,7 @@ struct DeleteGraphDefMsg {
 
 
 typedef MsgFifoNoFree<TriggerMsg, 1024> TriggersFifo;
+typedef MsgFifoNoFree<NodeReplyMsg, 1024> NodeReplyFifo;
 typedef MsgFifoNoFree<NodeEndMsg, 1024> NodeEndsFifo;
 typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
 typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
@@ -86,6 +99,7 @@ struct HiddenWorld
 	float *mWireBufSpace;
 	
 	TriggersFifo mTriggers;
+	NodeReplyFifo mNodeMsgs;
 	NodeEndsFifo mNodeEnds;
 	DeleteGraphDefsFifo mDeleteGraphDefs;
 	

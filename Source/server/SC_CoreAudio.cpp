@@ -368,6 +368,7 @@ void* audio_driver_thread_func(void* arg)
 void* SC_AudioDriver::RunThread()
 {
 	TriggersFifo *trigfifo = &mWorld->hw->mTriggers;
+	NodeReplyFifo *nodereplyfifo = &mWorld->hw->mNodeMsgs;
 	NodeEndsFifo *nodeendfifo = &mWorld->hw->mNodeEnds;
 	DeleteGraphDefsFifo *deletegraphfifo = &mWorld->hw->mDeleteGraphDefs;
 
@@ -379,6 +380,9 @@ void* SC_AudioDriver::RunThread()
 		
 		// send /tr messages
 		trigfifo->Perform();		
+		
+		// send node reply messages
+		nodereplyfifo->Perform();
 		
 		// send node status messages
 		nodeendfifo->Perform();

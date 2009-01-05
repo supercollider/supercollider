@@ -473,13 +473,10 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 		pgDiskFifo->Write(msg);
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
+		float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
 
 		if((int)ZIN0(4)) { 
-			SendTrigger(
-				&unit->mParent->mNode, 
-				(int)ZIN0(4), 
-				bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames)
-			);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
 		}
 
 		} else {
@@ -594,12 +591,9 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
 
+		float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
 		if((int)ZIN0(4)) { 
-			SendTrigger(
-				&unit->mParent->mNode, 
-				(int)ZIN0(4), 
-				bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames)
-			);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
 		}
 		
 		} else {

@@ -215,6 +215,8 @@ void InterfaceTable_Init()
 	ft->fNodeRun = &Node_SetRun;
 	
 	ft->fSendTrigger = &Node_SendTrigger;
+	ft->fSendNodeReply = &Node_SendReply;
+
 	
 	ft->fDefineUnitCmd = &UnitDef_AddCmd;
 	ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
@@ -972,6 +974,7 @@ void World_Start(World *inWorld)
 	inWorld->hw->mWireBufSpace = (float*)malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
 	
 	inWorld->hw->mTriggers.MakeEmpty();
+	inWorld->hw->mNodeMsgs.MakeEmpty();
 	inWorld->hw->mNodeEnds.MakeEmpty();
 	inWorld->mRunning = true;
 }
@@ -1165,6 +1168,31 @@ void TriggerMsg::Perform()
 		SendReply(users+i, packet.data(), packet.size());
 	}
 }
+
+void NodeReplyMsg::Perform()
+{
+	small_scpacket packet;
+	packet.adds(mCmdName);
+	packet.maketags(3 + mNumArgs);
+	packet.addtag(',');
+	packet.addtag('i');
+	packet.addtag('i');
+	for(int i=0; i<mNumArgs; ++i) {
+		packet.addtag('f');
+	}
+	packet.addi(mNodeID);
+	packet.addi(mID);
+	for(int i=0; i<mNumArgs; ++i) {
+		packet.addf(mValues[i]);
+	}
+
+	ReplyAddress *users = mWorld->hw->mUsers;
+	int numUsers = mWorld->hw->mNumUsers;
+	for (int i=0; i<numUsers; ++i) {
+		SendReply(users+i, packet.data(), packet.size());
+	}
+}
+
 
 void NodeEndMsg::Perform()
 {
