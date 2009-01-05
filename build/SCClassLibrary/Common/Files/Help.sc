@@ -454,9 +454,20 @@ Help {
 			});
 		})
 		.mouseDownAction_({|view, x, y, modifiers, buttonNumber, clickCount|
-			if(scrollView.visibleOrigin.x > lv.bounds.left, {
-				scrollView.visibleOrigin_(Point(lv.bounds.left - 5, 0));
-			});	
+			{
+			if(lists[index][lv.value][0]==$[, {
+				if(scrollView.visibleOrigin.x != (lv.bounds.left - 5), {
+					{
+					10.do({|i| { scrollView.visibleOrigin_(
+									Point(((lv.bounds.left - lv.bounds.width)+((10+i)*10)-5), 0))
+								}.defer; 
+						0.02.wait;
+					});
+					}.fork;
+				});
+			});
+			}.defer(0.01); // defer because .action above needs to register the new index
+
 			if(clickCount == 2, {	
 				if(lv.value.notNil and: { try { if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]] }.isNil}, {
 					{ selecteditem.openHelpFile }.defer;
