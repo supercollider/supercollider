@@ -257,11 +257,11 @@ Help {
 
 *gui { |sysext=true,userext=true|
 	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
-	var selectednodes, scrollView, compView, textView;
+	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
 	var isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
 	var screenBounds, bounds, textViewBounds, results, resultsview, statictextloc;
-	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false;
+	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false, fUpdateWinTitle;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext );
@@ -321,7 +321,6 @@ Help {
 			.linkAction_({ arg view, url, descr; 
 				var path;
 				if( url.notEmpty, {
-					var keys;
 					//fHistoryDo.value( \open, url );
 					keys = this.findKeysForValue(url);
 					if(keys.size == 0, {
@@ -357,7 +356,7 @@ Help {
 			if( lv.value.notNil, {
 				// We've clicked on a category or on a class
 						
-				if(lv.items.size != 0, { 
+				if((lv.items.size != 0), { 
 					lv2 = if( index < (listviews.size - 1), { listviews[ index + 1 ]});
 					
 					selecteditem = lists[index][lv.value];
@@ -379,8 +378,9 @@ Help {
 						
 						if(inPathSelect.not, {
 						{
-							textView.visible = true;
-							resultsview.visible = false;
+							// Note: the "isClosed" check is to prevent errors caused by event triggering while user closing window
+							if(textView.isClosed.not){textView.visible = true};
+							if(resultsview.isClosed.not){resultsview.visible = false};
 							fHistoryDo.value( \open, fileslist.at( selecteditem.asSymbol ) ? fileslist.at( \Help ));
 						}.defer( 0.001 );
 						});
@@ -394,7 +394,7 @@ Help {
 						selectednodes[index] = try { if(index==0, {tree}, {selectednodes[index-1]})
 									[curkey.asSymbol.asClass ? curkey.asSymbol]};
 						
-						
+						fUpdateWinTitle.value;
 					}, {
 						// We have a category on our hands
 						if( lv2.notNil, {
@@ -491,8 +491,15 @@ Help {
 			};
 			textView.visible = true;
 			resultsview.visible = false;
+			fUpdateWinTitle.value;
 			win.front;
 		}.play(AppClock);
+	};
+	
+	fUpdateWinTitle = {
+		SCListView;
+		win.name_(
+			(["Help browser"] ++ listviews.collect{|lv| lv.items[lv.value] }.reject(_.isNil)).join(" > ") );
 	};
 	
 	Platform.case(\windows, {
@@ -598,7 +605,8 @@ Help {
 	win.view.addAction(helpguikeyacts, \keyUpAction);
 	
 	win.onClose_{
-		fHistoryDo = {}; // This is done to prevent Cmd+W winclose from trying to do things in vanishing textviews!
+		// This is done to prevent Cmd+W winclose from trying to do things in vanishing textviews!
+		fHistoryDo = {};
 	};
 	
 	win.front;
