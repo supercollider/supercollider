@@ -415,15 +415,23 @@ int SC_AlsaMidiClient::sendEvent(int outputIndex, int uid, snd_seq_event_t* evt,
 		snd_seq_ev_set_dest(evt, cid, pid);
 	}
 
+	long latelong;
 	if (late > 0.f) {
-		time.tv_sec = (unsigned)(late * 1.0e-6f);
-		time.tv_nsec = (unsigned)(late * 1.0e3f);
+		latelong = (long) (late * 1000000000);
+// new time calculation. The old one was not correct
+		time.tv_sec = (long)(latelong / 1000000000); // seconds
+		time.tv_nsec = (long)(latelong % 1000000000); // nanoseconds
 	} else {
 		time.tv_sec = time.tv_nsec = 0;
 	}
 
+// 	evt->flags = evt->flags | SND_SEQ_TIME_STAMP_REAL;
+
+// 	post("MIDI (ALSA): sending event, time %i, %i, late %f, latelong %i\n", time.tv_sec, time.tv_nsec, late, latelong);
+
 	snd_seq_ev_schedule_real(evt, mQueue, 1, &time);
 	snd_seq_event_output_direct(mHandle, evt);
+// 	snd_seq_event_output(mHandle, evt);
 
 	return errNone;
 }
@@ -508,7 +516,7 @@ int initMIDI(int numIn, int numOut)
 		post("MIDI (ALSA): could not create MIDI encoder\n");
 		return errFailed;
 	}
-	
+
 	snd_midi_event_no_status(client->mEventToMidi, 1);
 	snd_midi_event_no_status(client->mMidiToEvent, 1);
 
@@ -524,10 +532,7 @@ int initMIDI(int numIn, int numOut)
 
 int initMIDIClient()
 {
-// 	post("MIDI (ALSA): calling init MIDI\n");
-
 	SC_AlsaMidiClient* client = &gMIDIClient;
-// 	int i;
 
 	if (client->mHandle) return errNone;
 
@@ -539,8 +544,6 @@ int initMIDIClient()
 	}
 
 	snd_seq_set_client_name(client->mHandle, "SuperCollider");
-
-// 	post("MIDI (ALSA): set client name\n");
 
 	// initialize queue
 	client->mQueue = snd_seq_alloc_queue(client->mHandle);
@@ -560,7 +563,7 @@ int initMIDIClient()
 		post("MIDI (ALSA): could not create MIDI encoder\n");
 		return errFailed;
 	}
-	
+
 	snd_midi_event_no_status(client->mEventToMidi, 1);
 	snd_midi_event_no_status(client->mMidiToEvent, 1);
 
@@ -773,7 +776,7 @@ int sendMIDI(int port, int uid, int length, int hiStatus, int loStatus, int aval
 {
 	if (!gMIDIClient.mHandle) return errFailed;
 
-	//post("MIDI (ALSA): send %x %x %d %d\n", hiStatus>>4, loStatus, aval, bval);
+// 	post("MIDI (ALSA): send %x %x %d %d %i\n", hiStatus>>4, loStatus, aval, bval, gMIDIClient.mMidiToEvent);
 
 	snd_seq_event_t evt;
 	SC_AlsaMidiPacket pkt;

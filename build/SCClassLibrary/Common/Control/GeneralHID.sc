@@ -205,6 +205,10 @@ GeneralHIDDevice{
 		spec.freeAllBuses;
 	}
 
+	makeGui{
+		^GeneralHIDDeviceGUI.new( this );
+	}
+
 }
 
 GeneralHIDSlot{

@@ -1294,7 +1294,7 @@ print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
 print ' SCEL:                    %s' % yesorno(env['SCEL'])
 print ' SCVIM:                   %s' % yesorno(env['SCVIM'])
-print ' SCED:                   %s' % yesorno(env['SCED'])
+print ' SCED:                    %s' % yesorno(env['SCED'])
 print ' SSE:                     %s' % yesorno(features['sse'])
 print ' STRIP:                   %s' % yesorno(env['STRIP'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
