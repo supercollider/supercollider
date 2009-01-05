@@ -211,7 +211,31 @@ Event : Environment {
 				addAction: 0,
 				
 				instrument: \default,
-				msgFunc: nil,	
+				variant: nil,
+					// this function should return a msgFunc
+					// (i.e. a Function that assembles a synth control list from event values)
+				getMsgFunc: { |instrument|
+					var	synthLib, desc;
+						// if user specifies a msgFunc, prefer user's choice
+					if(~msgFunc.isNil) {
+						instrument = ~instrument = instrument.asSymbol;
+						synthLib = ~synthLib ?? { SynthDescLib.global };
+						~synthDesc = desc = synthLib.at(instrument);
+						if (desc.notNil) { 
+							~hasGate = desc.hasGate;
+							~msgFunc = desc.msgFunc;
+						}{
+							~msgFunc = ~defaultMsgFunc;
+						};
+					} { ~msgFunc };
+				},	
+				synthDefName: { |instrument, variant, synthDesc|
+						// allow `nil to cancel a variant in a pattern
+					variant = variant.dereference;
+					if(variant.notNil and: { synthDesc.notNil and: { synthDesc.hasVariants } })
+						{ (instrument ++ "." ++ variant).asSymbol }
+						{ instrument.asSymbol };
+				},
 				hasGate: true,		// assume SynthDef has gate
 				sendGate: nil,		// false => event does not specify note release
 				
@@ -382,17 +406,8 @@ Event : Environment {
 										
 						if (freqs.isKindOf(Symbol).not) {
 							// determine msgFunc - it gets the synth's control values from the Event
-							instrumentName = ~instrument.asSymbol;
-							msgFunc = ~msgFunc ?? {
-								synthLib = ~synthLib ?? { SynthDescLib.global };
-								desc = synthLib.synthDescs[instrumentName];
-								if (desc.notNil) { 
-									~hasGate = desc.hasGate;
-									~msgFunc = msgFunc = desc.msgFunc;
-								}{
-									~msgFunc = ~defaultMsgFunc;
-								};
-							};
+							msgFunc = ~getMsgFunc.valueEnvir;
+							instrumentName = ~synthDefName.valueEnvir;
 						
 							// now update values in the Event that may be determined by functions
 							~freq = freqs;
@@ -443,17 +458,8 @@ Event : Environment {
 						if (freqs.isKindOf(Symbol).not) {
 							~freq = freqs;
 							~amp = ~amp.value;
-							instrumentName = ~instrument.asSymbol;
-							msgFunc = ~msgFunc ?? {
-								synthLib = ~synthLib ?? { SynthDescLib.global };
-								desc = synthLib.synthDescs[instrumentName];
-								if (desc.notNil) { 
-									~hasGate = desc.hasGate;
-									~msgFunc = msgFunc = desc.msgFunc;
-								}{
-									~msgFunc = ~defaultMsgFunc;
-								};
-							};
+							msgFunc = ~getMsgFunc.valueEnvir;
+							instrumentName = ~synthDefName.valueEnvir;
 //							bndl = msgFunc.valueEnvir.asControlInput;
 //							bndl = [\s_new, instrumentName, ~id, Node.actionNumberFor(~addAction), ~group.asControlInput] ++ bndl; 
 //							bndl = bndl.flop;
@@ -481,14 +487,14 @@ Event : Environment {
 					},
 					
 					set: #{|server|
-						var instrumentName, freqs, lag, dur, strum, bndl,msgFunc;
+						var freqs, lag, dur, strum, bndl, msgFunc;
 						freqs = ~freq = ~detunedFreq.value;
 										
 						if (freqs.isKindOf(Symbol).not) {
 							~server = server;
 							freqs = ~freq;
 							~amp = ~amp.value;
-							if ( (msgFunc = ~msgFunc).notNil) {
+							if ( (msgFunc = ~getMsgFunc.valueEnvir).notNil) {
 								bndl = msgFunc.valueEnvir;
 							} {	
 								bndl = ~args.envirPairs;
@@ -651,16 +657,9 @@ Event : Environment {
 						group = ~group.asControlInput;
 						~freq = ~detunedFreq.value;
 						~amp = ~amp.value;
-						ids = ~id;					
-						synthLib = ~synthLib ?? { SynthDescLib.global };
-						~defName = instrumentName = ~instrument.asSymbol;
-						desc = synthLib.synthDescs[instrumentName];
-						if (desc.notNil) { 
-							msgFunc = desc.msgFunc;
-							~hasGate = desc.hasGate;
-						}{
-							msgFunc = ~defaultMsgFunc;
-						};
+						ids = ~id;
+						msgFunc = ~getMsgFunc.valueEnvir;
+						instrumentName =~synthDefName.valueEnvir;
 					
 						bndl = ( [\s_new, instrumentName, ids, addAction, group] 
 						++ msgFunc.valueEnvir).flop;
@@ -775,15 +774,8 @@ Event : Environment {
 					~server = server = ~server ?? { Server.default };
 					addAction = Node.actionNumberFor(~addAction);
 					group = ~group.asControlInput;
-					synthLib = ~synthLib ?? { SynthDescLib.global };
-					instrumentName = ~instrument.asSymbol;
-					desc = synthLib.synthDescs[instrumentName];
-					if (desc.notNil) { 
-						msgFunc = desc.msgFunc;
-						~hasGate = desc.hasGate;
-					}{
-						msgFunc = ~defaultMsgFunc;
-					};
+					msgFunc = ~getMsgFunc.valueEnvir;
+					instrumentName = ~synthDefName.valueEnvir;
 				
 					bndl = ( [\s_new, instrumentName, ids, addAction, group]
 						 ++ msgFunc.valueEnvir).flop;

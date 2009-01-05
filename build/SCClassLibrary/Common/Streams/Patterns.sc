@@ -295,7 +295,7 @@ Pmono : Pattern {
 	var <>synthName, <>patternpairs;
 	*new { arg name ... pairs;
 		if (pairs.size.odd, { Error("Pmono should have odd number of args.\n").throw; });
-		^super.newCopyArgs(name, pairs)
+		^super.newCopyArgs(name.asSymbol, pairs)
 	}
 	
 	embedInStream { | inevent |
@@ -311,16 +311,17 @@ Pmono : Pattern {
 		inevent ?? { ^nil.yield };
 
 		event = inevent.copy;
-		event.use { 
+		event.use {
 			synthLib = ~synthLib ?? { SynthDescLib.global };
-			desc = synthLib.synthDescs[synthName.asSymbol]; 			if (desc.notNil) { 
-			msgFunc = desc.msgFunc;
-			hasGate = desc.hasGate;
+			~synthDesc = desc = synthLib.match(synthName);
+			if (desc.notNil) {
+				~hasGate = desc.hasGate;
+				~msgFunc = desc.msgFunc;
 			}{
-				msgFunc = event[\defaultMsgFunc];
-				hasGate = true;
+				~msgFunc = ~defaultMsgFunc;
 			};
-			~msgFunc = msgFunc;
+			msgFunc = ~msgFunc;
+
 			if (~id.notNil) {	
 				~type = \monoSet;	
 			} {

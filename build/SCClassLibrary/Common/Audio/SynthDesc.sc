@@ -21,7 +21,7 @@ SynthDesc {
 	var <>metadata;
 	
 	var <>constants, <>def;
-	var <>msgFunc, <>hasGate = false, <>hasArrayArgs, <>canFreeSynth = false;
+	var <>msgFunc, <>hasGate = false, <>hasArrayArgs, <>hasVariants, <>canFreeSynth = false;
 	var <msgFuncKeepGate = false;
 
 	*initClass {
@@ -74,7 +74,7 @@ SynthDesc {
 		^dict
 	}
 	readSynthDef { arg stream, keepDef=false;
-		var numControls, numConstants, numControlNames, numUGens;
+		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 		
 		protect {
 		
@@ -116,6 +116,11 @@ SynthDesc {
 		
 		def.controlNames = controls.select {|x| x.name.notNil };
 		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+		
+		numVariants = stream.getInt16;
+		hasVariants = numVariants > 0;
+			// maybe later, read in variant names and values
+			// this is harder than it might seem at first
 
 		def.constants = Dictionary.new;
 		constants.do {|k,i| def.constants.put(k,i) };
@@ -207,7 +212,8 @@ SynthDesc {
 	
 	makeMsgFunc {
 		var	string, comma=false;
-		var	names = IdentitySet.new;
+		var	names = IdentitySet.new,
+			suffix = this.hash.asHexString(8);
 			// if a control name is duplicated, the msgFunc will be invalid
 			// that "shouldn't" happen but it might; better to check for it
 			// and throw a proper error
@@ -233,6 +239,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		};
 		comma = false;
 		names = 0;	// now, count the args actually added to the func
+
 		string = String.streamContents {|stream|
 			stream << "#{ ";
 			if (controlNames.size > 0) {
@@ -246,13 +253,13 @@ Use of this synth in Patterns will not detect argument names automatically becau
 						hasGate = true;
 						if(msgFuncKeepGate) {
 							if (comma) { stream << ", " } { comma = true };
-							stream << name << " = " << controlName.defaultValue.asStringPrec(7);
+							stream << name;
 							names = names + 1;
 						}
 					}{
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
 						if (comma) { stream << ", " } { comma = true };
-						stream << name2 << " = " << controlName.defaultValue.asStringPrec(7);
+						stream << name2;
 						names = names + 1;
 					};
 				};
@@ -260,7 +267,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			if (controlNames.size > 0) {
 				stream << ";\n" ;
 			};
-			stream << "\t[ ";
+			stream << "\tvar\tx" << suffix << " = Array.new(" << (names*2) << ");\n";
 			comma = false;
 			controls.do {|controlName, i|
 				var name, name2;
@@ -268,13 +275,15 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				if (name.asString != "?") {
 					if (msgFuncKeepGate or: { name != "gate" }) {
 						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
-						if (comma) { stream << ", " } { comma = true };
-						stream << "'" << name << "', " << name2; 
+						stream << "\t" << name2 << " !? { x" << suffix
+							<< ".add('" << name << "').add(" << name2 << ") };\n";
+						names = names + 1;
 					};
 				};
 			};
-			stream << " ] }";
+			stream << "\tx" << suffix << "\n}"
 		};
+
 			// do not compile the string if no argnames were added
 		if(names > 0) { msgFunc = string.compile.value };
 	}
@@ -337,6 +346,16 @@ SynthDescLib {
 	}
 	at { arg i; ^synthDescs.at(i) }
 	*at { arg i; ^global.at(i) }
+
+	match { |key|
+		var	keyString = key.asString, dotIndex = keyString.indexOf($.), desc;
+		if(dotIndex.isNil) { ^synthDescs.at(key.asSymbol) };
+		if((desc = synthDescs[keyString[..dotIndex-1].asSymbol]).notNil
+				and: { desc.hasVariants })
+			{ ^desc }
+			{ ^synthDescs.at(key.asSymbol) }
+	}
+	*match { |key| ^global.match(key) }
 
 	send { 
 		servers.do {|server|
