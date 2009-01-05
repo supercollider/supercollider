@@ -44,6 +44,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>on OS X the uid should be the uid of that port</p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>ie. MIDIClient.destinations[port].uid</p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>On Linux using the uid is optional as described below</p>
 <p class="p4"><br></p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>*newByName(deviceName,portName)</b></p>
@@ -59,7 +60,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><b>  *connect(port, uid)</b> (Linux only)</p>
 <p class="p3">  <b>*disconnect(port, uid)</b> (Linux only)</p>
-<p class="p3"><span class="Apple-tab-span">	</span>OS X does not need to connect   </p>
+<p class="p3"><span class="Apple-tab-span">	</span>OS X does not need to connect. On Linux it is an optional feature (see below).</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>noteOn</b> ( chan, note, veloc )</p>
@@ -159,6 +160,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">m.connect( 2 );</p>
 <p class="p4"><br></p>
 <p class="p3">Note that by connecting in this way, you can connect more than one destination to the MIDI output.</p>
+<p class="p3">You can also use other tools to connect to a MIDIOut port of SC, e.g. through aconnect or QJackCtl (on the ALSA tab).</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3"><b>OS X specific: Sending MIDI to other applications</b></p>
