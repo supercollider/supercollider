@@ -20,21 +20,20 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #505fb1}
-span.s3 {color: #656b96}
-span.s4 {color: #696f8e}
-span.s5 {color: #6c7188}
-span.s6 {color: #6f717e}
+span.s2 {color: #5461ad}
+span.s3 {color: #666c94}
+span.s4 {color: #6a708c}
+span.s5 {color: #6d7187}
+span.s6 {color: #6f717d}
 span.s7 {font: 11.0px Monaco}
 span.s8 {color: #0000bf}
 span.s9 {color: #606060}
 span.s10 {color: #000000}
 span.s11 {color: #6f7178}
-span.s12 {color: #6f7181}
-span.s13 {color: #3e54c5}
+span.s12 {color: #6f7180}
+span.s13 {color: #4357c0}
 span.s14 {color: #007300}
 span.s15 {font: 11.0px Monaco; color: #007300}
 span.Apple-tab-span {white-space:pre}
@@ -159,14 +158,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><br></p>
 <p class="p14"><br></p>
 <p class="p12">// Simplest version, no parent view, so a window is created</p>
-<p class="p15"><br></p>
+<p class="p14"><br></p>
 <p class="p12"><span class="s10">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// basic use</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s8">Window</span>.new.front;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s8">EZNumber</span>(w, 170@16,<span class="s9">" test<span class="Apple-converted-space">  </span>"</span>, <span class="s14">\</span><span class="s15">freq</span>,unitWidth:30, numberWidth:60,layout:<span class="s14">\horz</span>);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s8">Color</span>.grey,<span class="s8">Color</span>.white);</p>
 <p class="p10">);</p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
 <p class="p12">// lots of numberviews on on view</p>
 <p class="p10">(</p>
 <p class="p10">w=<span class="s8">Window</span>.new.front;</p>
@@ -218,13 +217,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">/// Layout \line2</p>
 <p class="p11"><br></p>
 <p class="p12"><span class="s10">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// all features</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s8">EZNumber</span>(<span class="s8">nil</span>, 120@44,<span class="s9">" freq<span class="Apple-converted-space">  </span>"</span>, <span class="s14">\</span><span class="s15">freq</span>,unitWidth:30, numberWidth:60,layout:<span class="s14">\line2</span>);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s8">EZNumber</span>(<span class="s8">nil</span>, 120@42,<span class="s9">" freq<span class="Apple-converted-space">  </span>"</span>, <span class="s14">\</span><span class="s15">freq</span>,unitWidth:30, numberWidth:60,layout:<span class="s14">\line2</span>);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s8">Color</span>.grey,<span class="s8">Color</span>.white);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(100,50);</p>
 <p class="p10">);</p>
 <p class="p11"><br></p>
 <p class="p12"><span class="s10">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// no unitView, with label</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s8">EZNumber</span>(<span class="s8">nil</span>, 170@44,<span class="s9">" freq<span class="Apple-converted-space">  </span>"</span>, <span class="s14">\</span><span class="s15">freq</span>,unitWidth:0, numberWidth:60,layout:<span class="s14">\line2</span>);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s8">EZNumber</span>(<span class="s8">nil</span>, 170@42,<span class="s9">" freq<span class="Apple-converted-space">  </span>"</span>, <span class="s14">\</span><span class="s15">freq</span>,unitWidth:0, numberWidth:60,layout:<span class="s14">\line2</span>);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s8">Color</span>.grey,<span class="s8">Color</span>.white);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(100, -50);</p>
 <p class="p10">);</p>
@@ -273,7 +272,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.background = <span class="s8">Color</span>.rand;</p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="s10"><span class="Apple-tab-span">	</span></span>// add a button to start and stop the sound.</p>
-<p class="p10"><span class="Apple-tab-span">	</span>startButton = <span class="s8">Button</span>(w, 75 @ 24);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>startButton = <span class="s8">Button</span>(w, 75 @ 20);</p>
 <p class="p10"><span class="Apple-tab-span">	</span>startButton.states = [</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">"Start"</span>, <span class="s8">Color</span>.black, <span class="s8">Color</span>.green],</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s9">"Stop"</span>, <span class="s8">Color</span>.white, <span class="s8">Color</span>.red]</p>
@@ -295,23 +294,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="s10"><span class="Apple-tab-span">	</span></span>// create controls for all parameters</p>
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator.nextLine;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>noteControl = <span class="s8">EZNumber</span>(w, 160 @ 24, <span class="s9">"Note"</span>, <span class="s8">ControlSpec</span>(24, 60, <span class="s14">\lin</span>, 1),</p>
+<p class="p10"><span class="Apple-tab-span">	</span>noteControl = <span class="s8">EZNumber</span>(w, 160 @ 20, <span class="s9">"Note"</span>, <span class="s8">ControlSpec</span>(24, 60, <span class="s14">\lin</span>, 1),</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">|ez|</span> node.set( <span class="s9">"note"</span>, ez.value )}, 36);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator.nextLine;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>cutoffControl = <span class="s8">EZNumber</span>(w, 160 @ 24, <span class="s9">"Cutoff"</span>, <span class="s8">ControlSpec</span>(200, 5000, <span class="s14">\exp</span>),</p>
+<p class="p10"><span class="Apple-tab-span">	</span>cutoffControl = <span class="s8">EZNumber</span>(w, 160 @ 20, <span class="s9">"Cutoff"</span>, <span class="s8">ControlSpec</span>(200, 5000, <span class="s14">\exp</span>),</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">|ez|</span> node.set( <span class="s9">"fc"</span>, ez.value )}, 1000);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator.nextLine;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>resonControl = <span class="s8">EZNumber</span>(w, 160 @ 24, <span class="s9">"Resonance"</span>, <span class="s8">ControlSpec</span>(0.1, 0.7),</p>
+<p class="p10"><span class="Apple-tab-span">	</span>resonControl = <span class="s8">EZNumber</span>(w, 160 @ 20, <span class="s9">"Resonance"</span>, <span class="s8">ControlSpec</span>(0.1, 0.7),</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">|ez|</span> node.set( <span class="s9">"rq"</span>, ez.value )}, 0.2);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator.nextLine;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>balanceControl = <span class="s8">EZNumber</span>(w, 160 @ 24, <span class="s9">"Balance"</span>, <span class="s14">\bipolar</span>,</p>
+<p class="p10"><span class="Apple-tab-span">	</span>balanceControl = <span class="s8">EZNumber</span>(w, 160 @ 20, <span class="s9">"Balance"</span>, <span class="s14">\bipolar</span>,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">|ez|</span> node.set( <span class="s9">"bal"</span>, ez.value )}, 0);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator.nextLine;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>ampControl = <span class="s8">EZNumber</span>(w, 160 @ 24, <span class="s9">"Amp"</span>, <span class="s14">\db</span>,</p>
+<p class="p10"><span class="Apple-tab-span">	</span>ampControl = <span class="s8">EZNumber</span>(w, 160 @ 20, <span class="s9">"Amp"</span>, <span class="s14">\db</span>,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{<span class="s8">|ez|</span> node.set( <span class="s9">"amp"</span>, ez.value.dbamp )}, -6);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
