@@ -21,11 +21,7 @@ EZRanger : EZGui {
 		var labelBounds, hiBounds,loBounds, unitBounds,rangerBounds;
 				
 		// try to use the parent decorator gap
-		var	decorator = parentView.asView.tryPerform(\decorator);
-		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap).copy;
-			gap = gap ? (2@2)}
-			{gap=argGap};
+		gap=this.prMakeGap(parentView, argGap);	
 			
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
@@ -184,8 +180,8 @@ EZRanger : EZGui {
 	prSubViewBounds{arg rect, hasLabel, hasUnit;
 		var hiBounds,loBounds,labelBounds,rangerBounds;
 		var unitBounds, gap1, gap2, gap3,gap4, tmp, labelH, unitH;
-		gap1 = gap.copy;	
-		gap2 = gap.copy;
+		gap1 = gap.copy; // use copy to make sure these are unique
+		gap2 = gap.copy; // since you later set the .x or .y
 		gap3 = gap.copy;
 		gap4 = gap.copy;
 		labelH=labelSize.y;//  needed for \vert

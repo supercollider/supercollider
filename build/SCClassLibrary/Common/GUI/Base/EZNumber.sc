@@ -20,11 +20,7 @@ EZNumber : EZGui{
 		var labelBounds, numBounds, unitBounds;
 						
 		// try to use the parent decorator gap
-		var	decorator = parentView.asView.tryPerform(\decorator);
-		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap).copy;
-			gap = gap ? (2@2)}
-			{gap=argGap};
+		gap=this.prMakeGap(parentView, argGap);	
 		
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
@@ -156,8 +152,8 @@ EZNumber : EZGui{
 	prSubViewBounds{arg rect, hasLabel, hasUnit;
 		var numBounds,labelBounds,sliderBounds;
 		var unitBounds, gap1, gap2, numY;
-		gap1 = gap;	
-		gap2 = gap1;
+		gap1 = gap.copy;	
+		gap2 = gap.copy;
 		hasLabel.not.if{ gap1 = 0@0; labelSize=0@0};
 		hasUnit.not.if{gap2 = 0@0};
 		

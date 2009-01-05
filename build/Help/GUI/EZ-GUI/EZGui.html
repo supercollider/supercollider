@@ -20,14 +20,15 @@ p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #505fb1}
+span.s2 {color: #5461ad}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #4e5369}
-span.s6 {color: #696f8e}
-span.s7 {color: #0c2eee}
-span.s8 {color: #2040df}
-span.s9 {color: #0020f6}
+span.s5 {color: #4f5368}
+span.s6 {color: #6a708c}
+span.s7 {color: #1638e6}
+span.s8 {color: #2946d8}
+span.s9 {color: #0c2eee}
+span.s10 {color: #0000ff}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -104,7 +105,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>Gets/sets the action of the EZclass instance.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fund </b>- An Instance of <a href="../../Core/Kernel/Function.html"><span class="s9">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s9">FunctionList</span></a>.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>value</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>value_ (val)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
@@ -120,6 +120,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Performs this.action.value(this) .</p>
 <p class="p10"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>prSubViewBounds(rect, hasLabel)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This calulates the bounds og the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>prMakeView(parentView,bounds);</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by init . Returns s<span class="Apple-converted-space">  </span><b>[view,bounds]</b>. The container is either the enclosing Container,<span class="Apple-converted-space">  </span>or a popUpWindow with a container.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>prSetViewParams</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Only defined by some subclassses. Sets the <b>resize</b> <b>align</b> of all the views, according to the state of <b>layout</b><span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>prMakeGap(parentView, argGap)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called in the<span class="Apple-converted-space">  </span>init method of all subclasses.<span class="Apple-converted-space">  </span>Returns a <a href="../../Geometry/Point.html"><span class="s10">Point</span></a>. By default, it tries to get its parent's gap, otherwise it defaults to 2@2. Setting argGap<span class="Apple-converted-space">  </span>overrides these.</p>
 <p class="p6"><br></p>
 </body>
 </html>
