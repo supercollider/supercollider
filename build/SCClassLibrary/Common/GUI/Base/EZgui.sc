@@ -96,6 +96,17 @@ EZGui{ // an abstract class
 		};
 	^[view,bounds];
 	}
+	
+	prMakeGap{arg parentView, argGap;
+		var gap;
+		var	decorator = parentView.asView.tryPerform(\decorator);
+		argGap.isNil.if{ 
+			gap = decorator.tryPerform(\gap).copy; // use copy to protect the parent gap
+			gap = gap ? (2@2)}
+			{gap=argGap};
+		^gap;
+	}
+	
 }
 
 
@@ -114,11 +125,8 @@ EZLists : EZGui{  // an abstract class
 			initAction, labelWidth, labelHeight, layout,  argGap;
 			
 		// try to use the parent decorator gap
-		var	decorator = parentView.asView.tryPerform(\decorator);
-		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap).copy;
-			gap = gap ? (2@2)}
-			{gap=argGap};
+		gap=this.prMakeGap(parentView, argGap);	
+		
 		
 		// init the views (handled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );

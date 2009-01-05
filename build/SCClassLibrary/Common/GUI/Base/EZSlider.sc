@@ -21,12 +21,8 @@ EZSlider : EZGui {
 		var labelBounds, numBounds, unitBounds,sliderBounds;
 				
 		// try to use the parent decorator gap
-		var	decorator = parentView.asView.tryPerform(\decorator);
-		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap).copy;
-			gap = gap ? (2@2)}
-			{gap=argGap};
-			
+		gap=this.prMakeGap(parentView, argGap);	
+				
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
 		layout=argLayout;
@@ -191,9 +187,9 @@ EZSlider : EZGui {
 	prSubViewBounds{arg rect, hasLabel, hasUnit;  // calculate subview bounds
 		var numBounds,labelBounds,sliderBounds, unitBounds;
 		var gap1, gap2, gap3, tmp, labelH, unitH;
-		gap1 = gap;	
-		gap2 = gap1;
-		gap3 = gap1;
+		gap1 = gap.copy;	
+		gap2 = gap.copy;
+		gap3 = gap.copy;
 		labelH=labelSize.y;//  needed for \vert
 		unitH=labelSize.y; //  needed for \vert
 		hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
@@ -249,7 +245,7 @@ EZSlider : EZGui {
 				
 			 \horz, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
-				labelSize.y=view.bounds.height;
+				labelSize.y = view.bounds.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; //to left
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right 
 				numBounds = (numSize.x@labelSize.y).asRect
