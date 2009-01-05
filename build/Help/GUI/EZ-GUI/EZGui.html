@@ -17,18 +17,19 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #5461ad}
+span.s2 {color: #5763a9}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #4f5368}
-span.s6 {color: #6a708c}
-span.s7 {color: #1638e6}
-span.s8 {color: #2946d8}
-span.s9 {color: #0c2eee}
-span.s10 {color: #0000ff}
+span.s5 {color: #505367}
+span.s6 {color: #6b718a}
+span.s7 {color: #2040df}
+span.s8 {color: #314bd1}
+span.s9 {color: #1638e6}
+span.s10 {color: #0020f6}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -37,7 +38,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers. It also provides a standard for EZ GUI Classes, and new EZ Classes should subclass EZGUI to help keep a consistent user interface .</p>
+<p class="p1">Users will not normally directly create instances of EZGui, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers. It also provides a standard for EZ GUI Classes, and new EZ Classes should subclass EZGUI to help keep a consistent user interface .</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also: </b><a href="EZListView.html"><span class="s4">EZListView</span></a>, <a href="EZPopUpMenu.html"><span class="s4">EZPopUpMenu</span></a>, <a href="EZSlider.html"><span class="s4">EZSlider</span></a>, <a href="EZNumber.html"><span class="s4">EZNumber</span></a>, <a href="EZRanger.html"><span class="s4">EZRanger</span></a></span></p>
 <p class="p2"><br></p>
@@ -87,17 +88,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b>Subclassing</b></p>
 <p class="p10"><br></p>
-<p class="p1">EZGui provides a standard and basic tools for most EZ classes. If you make a new EZ class, then subclass EZGui, and override the necessary methods. If your class only has a label and a widget, chances are, you need to overide nothing, but only neet to write a new and init class methods. See existing subclasses of EZGui for examples of this. You may also want to override the following:</p>
+<p class="p1">EZGui provides a standard and basic tools for most EZ classes. If you make a new EZ class, then subclass EZGui, and override the necessary methods. If your class only has a label and a widget, chances are, you need to overide nothing, but only neet to write the<span class="Apple-converted-space">  </span>new and init class methods. See existing subclasses of EZGui for examples of this. You may also want to override the following:</p>
 <p class="p2"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>widget</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>returns the active widget.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>subclasses will typically refer to it or ignor it, e.g.:</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>MyEZClass{</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myOtherMethods{}</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>....</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listView{^widget}</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>MyEZClass<span class="s3">{</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myOtherMethods{}</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>....</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listView{^widget}</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>action</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>action_(func)</b></p>
@@ -110,7 +111,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets the value of the <b>widget</b>. Does not perform the action.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An integer.</p>
-<p class="p12"><br></p>
+<p class="p13"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>valueAction_ (val)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Gets/sets thevalue of the widget. Performs do action</p>
@@ -120,14 +121,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Performs this.action.value(this) .</p>
 <p class="p10"><br></p>
+<p class="p5"><b>Internal Utilities</b></p>
+<p class="p10"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>prSubViewBounds(rect, hasLabel)</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This calulates the bounds og the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This calculates the bounds of the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.</p>
 <p class="p6"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>prMakeView(parentView,bounds);</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called by init . Returns s<span class="Apple-converted-space">  </span><b>[view,bounds]</b>. The container is either the enclosing Container,<span class="Apple-converted-space">  </span>or a popUpWindow with a container.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>prSetViewParams</b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Only defined by some subclassses. Sets the <b>resize</b> <b>align</b> of all the views, according to the state of <b>layout</b><span class="Apple-converted-space"> </span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Only defined by some subclassses. Sets the <b>resize</b><span class="Apple-converted-space">  </span>and <b>align</b> of all the views, according to the state of <b>layout</b><span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>prMakeGap(parentView, argGap)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Called in the<span class="Apple-converted-space">  </span>init method of all subclasses.<span class="Apple-converted-space">  </span>Returns a <a href="../../Geometry/Point.html"><span class="s10">Point</span></a>. By default, it tries to get its parent's gap, otherwise it defaults to 2@2. Setting argGap<span class="Apple-converted-space">  </span>overrides these.</p>
