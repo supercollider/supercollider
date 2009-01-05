@@ -43,6 +43,16 @@ struct SendTrig : public Unit
 	float m_prevtrig;
 };
 
+struct SendReply : public Unit
+{
+	float m_prevtrig;
+	int m_cmdNameSize;
+	int m_valueSize;
+	int m_valueOffset;
+	float *m_values;
+	char *m_cmdName;
+};
+
 
 struct Poll : public Unit
 {
@@ -225,6 +235,10 @@ void Trig_next_k(Trig *unit, int inNumSamples);
 void SendTrig_Ctor(SendTrig *unit);
 void SendTrig_next(SendTrig *unit, int inNumSamples);
 void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
+
+void SendReply_Ctor(SendReply *unit);
+void SendReply_next(SendReply *unit, int inNumSamples);
+void SendReply_next_aka(SendReply *unit, int inNumSamples);
 
 void Poll_Ctor(Poll* unit);
 void Poll_next_aa(Poll *unit, int inNumSamples);
@@ -543,6 +557,83 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 	unit->m_prevtrig = prevtrig;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void SendReply_Ctor(SendReply *unit)
+{
+	
+	unit->m_prevtrig = 0.f;
+	unit->m_cmdNameSize = IN0(2);
+	unit->m_valueSize = unit->mNumInputs - unit->m_cmdNameSize - 3;
+	
+	// allocations
+	int offset = 3;
+	unit->m_cmdName = (char*)RTAlloc(unit->mWorld, ((int)unit->m_cmdNameSize) * sizeof(char));	
+	for(int i = 0; i < (int)unit->m_cmdNameSize; i++){
+		unit->m_cmdName[i] = (char)IN0(offset+i);
+	};
+	
+	offset = 3 + unit->m_cmdNameSize;
+	unit->m_values = (float*)RTAlloc(unit->mWorld, unit->m_valueSize * sizeof(float));	
+	
+	unit->m_valueOffset = offset;
+	
+	if (INRATE(offset) == calc_FullRate) {
+		SETCALC(SendReply_next_aka);
+	} else {
+		SETCALC(SendReply_next);
+	}
+	
+}
+
+void SendReply_Dtor(SendReply* unit)
+{
+	RTFree(unit->mWorld, unit->m_values);
+	RTFree(unit->mWorld, unit->m_cmdName);
+}
+
+
+void SendReply_next(SendReply *unit, int inNumSamples)
+{
+	float *trig = IN(0);
+	float prevtrig = unit->m_prevtrig;
+	float *values = unit->m_values;
+	int valueSize = unit->m_valueSize;
+	int valueOffset = unit->m_valueOffset;
+	for(int j = 0; j < inNumSamples; j++) {
+		float curtrig = trig[j];
+		if (curtrig > 0.f && prevtrig <= 0.f) {
+			for(int i=0; i<valueSize; i++) {
+					values[i] = IN(i + valueOffset)[0];
+			}
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName);
+		}
+		prevtrig = curtrig;
+	}
+	unit->m_prevtrig = prevtrig;
+}
+
+void SendReply_next_aka(SendReply *unit, int inNumSamples)
+{
+	float *trig = IN(0);
+	float prevtrig = unit->m_prevtrig;
+	float *invalues = IN(unit->m_valueOffset);
+	float *values = unit->m_values;
+	int valueSize = unit->m_valueSize;
+	int valueOffset = unit->m_valueOffset;
+	for(int j = 0; j < inNumSamples; j++) {
+		float curtrig = trig[j];
+		if (curtrig > 0.f && prevtrig <= 0.f) {
+			for(int i=0; i<valueSize; i++) {
+					values[i] = IN(i + valueOffset)[j];
+			}
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName);
+		}
+		prevtrig = curtrig;
+	}
+	unit->m_prevtrig = prevtrig;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2242,6 +2333,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(Trig1);
 	DefineSimpleUnit(Trig);
 	DefineSimpleUnit(SendTrig);
+	DefineDtorUnit(SendReply);
 	DefineDtorUnit(Poll);
 	DefineSimpleUnit(ToggleFF);
 	DefineSimpleUnit(SetResetFF);

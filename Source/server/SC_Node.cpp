@@ -262,6 +262,41 @@ void Node_SendTrigger(Node* inNode, int triggerID, float value)
 	world->hw->mTriggers.Write(msg);
 }
 
+// send a reply from a node to a client program.
+// this function puts the reply on a FIFO which is harvested by another thread that
+// actually does the sending.
+void Node_SendReply(Node* inNode, int replyID, int numArgs,  float* values, char* cmdName)
+{
+	World *world = inNode->mWorld;
+	if (!world->mRealTime) return;
+
+	NodeReplyMsg msg;
+	msg.mWorld = world;
+	msg.mNodeID = inNode->mID;
+	msg.mID = replyID;
+	msg.mValues = values;
+	msg.mNumArgs = numArgs;
+	msg.mCmdName = cmdName;
+	world->hw->mNodeMsgs.Write(msg);
+}
+
+void Node_SendReply(Node* inNode, int replyID, float value, char* cmdName)
+{
+	World *world = inNode->mWorld;
+	if (!world->mRealTime) return;
+
+	NodeReplyMsg msg;
+	msg.mWorld = world;
+	msg.mNodeID = inNode->mID;
+	msg.mID = replyID;
+	msg.mValues = &value;
+	msg.mNumArgs = 1;
+	msg.mCmdName = cmdName;
+	world->hw->mNodeMsgs.Write(msg);
+}
+
+
+
 // notify a client program of a node's state change.
 // this function puts the message on a FIFO which is harvested by another thread that
 // actually does the sending.

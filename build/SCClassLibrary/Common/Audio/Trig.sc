@@ -28,6 +28,19 @@ SendTrig : UGen {
 	writeOutputSpecs {}
 }
 
+SendReply : SendTrig {
+	*kr { arg trig = 0.0, values, id = 0, cmdName = "/tr";
+		var ascii = cmdName.asString.ascii;
+		this.multiNewList(['control', trig, id, ascii.size].addAll(ascii).addAll(values));
+		^0.0		// SendReply has no output
+	}
+	*ar { arg trig = 0.0, values, id = 0, cmdName = "/tr";
+		var ascii = cmdName.asString.ascii;
+		this.multiNewList(['audio', trig, id, ascii.size].addAll(ascii).addAll(values));
+		^0.0		// SendReply has no output
+	}
+}
+
 TDelay : Trig1 {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }

@@ -81,6 +81,9 @@ struct InterfaceTable
 	// send a trigger from a Node to clients
 	void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);	
 	
+	// send a reply message from a Node to clients
+	void (*fSendNodeReply)(struct Node* inNode, int replyID, int numArgs, float* values, char* cmdName);	
+	
 	// sending messages between real time and non real time levels.
 	bool (*fSendMsgFromRT)(World *inWorld, struct FifoMsg& inMsg);
 	bool (*fSendMsgToRT)(World *inWorld, struct FifoMsg& inMsg);
@@ -131,6 +134,7 @@ typedef struct InterfaceTable InterfaceTable;
 #define DefineBufGen (*ft->fDefineBufGen)
 #define ClearUnitOutputs (*ft->fClearUnitOutputs)
 #define SendTrigger (*ft->fSendTrigger)
+#define SendNodeReply (*ft->fSendNodeReply)
 #define SendMsgFromRT (*ft->fSendMsgFromRT)
 #define SendMsgToRT (*ft->fSendMsgToRT)
 #define DoneAction (*ft->fDoneAction)
