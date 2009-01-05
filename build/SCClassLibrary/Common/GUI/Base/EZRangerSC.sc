@@ -23,7 +23,7 @@ EZRanger : EZGui {
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap);
+			gap = decorator.tryPerform(\gap).copy;
 			gap = gap ? (2@2)}
 			{gap=argGap};
 			
@@ -107,6 +107,43 @@ EZRanger : EZGui {
 		hiBox.value_(hi.round(round));
 		rangeSlider.hi_(controlSpec.unmap(hi));
 	}
+	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
+			 boxNormalColor, boxTypingColor, knobColor,background ;
+			
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};
+				unitView.notNil.if{unitView.background_(stringBackground)};};
+			strColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(strColor)};
+				unitView.notNil.if{unitView.stringColor_(strColor)};};
+			sliderColor.notNil.if{	
+				rangeSlider.background_(sliderColor);};
+			boxColor.notNil.if{		
+				hiBox.boxColor_(boxColor);
+				loBox.boxColor_(boxColor);	};
+			boxNormalColor.notNil.if{	
+				hiBox.normalColor_(boxNormalColor);
+				loBox.normalColor_(boxNormalColor);};
+			boxTypingColor.notNil.if{	
+				hiBox.typingColor_(boxTypingColor);
+				loBox.typingColor_(boxTypingColor);};
+			boxStringColor.notNil.if{	
+				hiBox.stringColor_(boxStringColor);
+				loBox.stringColor_(boxStringColor);};
+			knobColor.notNil.if{	
+				rangeSlider.knobColor_(knobColor);};
+			background.notNil.if{	
+				view.background=background;};
+			hiBox.refresh;
+	}
+	
+	font_{ arg font;
+
+			labelView.notNil.if{labelView.font=font};
+			unitView.notNil.if{unitView.font=font};
+			hiBox.font=font;
+			loBox.font=font;
+	}
 	
 		
 	prSetViewParams{
@@ -147,18 +184,17 @@ EZRanger : EZGui {
 	prSubViewBounds{arg rect, hasLabel, hasUnit;
 		var hiBounds,loBounds,labelBounds,rangerBounds;
 		var unitBounds, gap1, gap2, gap3,gap4, tmp, labelH, unitH;
-		gap1 = gap;	
-		gap2 = gap;
-		gap3 = gap;
-		gap4 = gap;
+		gap1 = gap.copy;	
+		gap2 = gap.copy;
+		gap3 = gap.copy;
+		gap4 = gap.copy;
 		labelH=labelSize.y;//  needed for \vert
 		unitH=labelSize.y; //  needed for \vert
-		hasLabel.not.if{ gap2 = 0@0; labelSize.x = 0 ;};
-		hasUnit.not.if{ gap4 = 0@0; unitWidth = 0};
 		
 		switch (layout,
 			\line2, {
-			
+				hasLabel.not.if{ gap2 = 0@0; labelSize.x = 0 ;};
+				hasUnit.not.if{ gap4 = 0@0; unitWidth = 0};
 				hasLabel.if{ // with label
 					unitBounds = (unitWidth@labelSize.y)
 						.asRect.left_(rect.width-unitWidth);// view to right
@@ -168,11 +204,11 @@ EZRanger : EZGui {
 						.asRect.left_(rect.width-unitBounds.width-numberWidth
 							-gap3.x-hiBounds.width-gap4.x); // view to right
 					labelBounds = (labelSize.x@labelSize.y)
-						.asRect.width_(hiBounds.left-gap2.x); //adjust width
+						.asRect.width_(loBounds.left-gap2.x); //adjust width
 				}{ // no label
 				labelBounds = (0@labelSize.y).asRect; //just a dummy
 				loBounds = (numberWidth@labelSize.y).asRect; //view to left
-				hiBounds = (numberWidth@labelSize.y).asRect.moveTo(loBounds.width+gap2.x,0); //view to left
+				hiBounds = (numberWidth@labelSize.y).asRect.moveTo(loBounds.width+gap3.x,0); //view to left
 				(unitWidth>0).if{
 					unitBounds = Rect.newSides (hiBounds.right+gap4.x,
 					0,rect.width, labelSize.y); //adjust width
@@ -190,24 +226,26 @@ EZRanger : EZGui {
 				},
 			
 			 \vert, { 
-				hasLabel.not.if{labelH=0};
+				hasLabel.not.if{labelH=0; gap1.y=0};
 				labelBounds = (rect.width@labelH).asRect; // to top
-				hasUnit.not.if{unitH=0};
+				hasUnit.not.if{unitH=0; gap4 = 0@0;};
 				unitBounds = (rect.width@unitH)
-					.asRect.top_(rect.height-labelSize.y); // to bottom
+					.asRect.top_(rect.height-unitH); // to bottom
 				hiBounds = (rect.width@labelSize.y)
-					.asRect.top_(labelBounds.height-gap1.y); // to bottom
+					.asRect.top_(labelBounds.height+gap1.y); // to bottom
 				loBounds = (rect.width@labelSize.y)
 					.asRect.top_(rect.height-unitBounds.height-numSize.y-gap4.y); // to bottom
 				rangerBounds = Rect.newSides(
 					0,
 					hiBounds.bottom+gap2.y, 
 					rect.width,
-					loBounds.top-gap3.y-gap4.y
+					loBounds.top-gap3.y
 					);
 				},
 				
 			 \horz, {
+				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
+				hasUnit.not.if{ gap4 = 0@0; unitWidth = 0};
 				labelSize.y=view.bounds.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect;
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth);
@@ -225,44 +263,6 @@ EZRanger : EZGui {
 		
 		
 		^[labelBounds, hiBounds, loBounds, rangerBounds, unitBounds]
-	}
-	
-	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, knobColor,background ;
-			
-			stringBackground.notNil.if{
-				labelView.notNil.if{labelView.background_(stringBackground)};
-				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
-			sliderColor.notNil.if{	
-				rangeSlider.background_(sliderColor);};
-			boxColor.notNil.if{		
-				hiBox.boxColor_(boxColor);
-				loBox.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				hiBox.normalColor_(boxNormalColor);
-				loBox.normalColor_(boxNormalColor);};
-			boxTypingColor.notNil.if{	
-				hiBox.typingColor_(boxTypingColor);
-				loBox.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				hiBox.stringColor_(boxStringColor);
-				loBox.stringColor_(boxStringColor);};
-			knobColor.notNil.if{	
-				rangeSlider.knobColor_(knobColor);};
-			background.notNil.if{	
-				view.background=background;};
-			hiBox.refresh;
-	}
-	
-	font_{ arg font;
-
-			labelView.notNil.if{labelView.font=font};
-			unitView.notNil.if{unitView.font=font};
-			hiBox.font=font;
-			loBox.font=font;
 	}
 	
 	

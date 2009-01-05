@@ -22,7 +22,7 @@ EZNumber : EZGui{
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap);
+			gap = decorator.tryPerform(\gap).copy;
 			gap = gap ? (2@2)}
 			{gap=argGap};
 		
@@ -174,9 +174,9 @@ EZNumber : EZGui{
 				numSize.y=numSize.y-gap1.y;
 				numY=labelBounds.height+gap1.y;
 				unitBounds = Rect( view.bounds.width - unitWidth, // //adjust to fit
-					numY, unitWidth, numSize.y);
+					numY, unitWidth, view.bounds.height-labelSize.y-gap1.y);
 				numBounds = Rect(0, numY, 
-					rect.width-unitWidth-gap2.x, numSize.y); // to right
+					rect.width-unitWidth-gap2.x, view.bounds.height-labelSize.y-gap1.y); // to right
 					
 				},
 							

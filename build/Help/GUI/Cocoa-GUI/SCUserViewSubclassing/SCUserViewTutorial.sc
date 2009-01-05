@@ -18,7 +18,7 @@ MyWidget : SCUserView {
 		// this must accord with your mouse and drawing functions
 		this.relativeOrigin_( true ); 
 
-		// set defaults of your instance variable
+		// set defaults of your instance variables
 		rightColor=Color.grey(0.8);
 		leftColor=Color.grey(0.2);
 		step=this.pixelStep;

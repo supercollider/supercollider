@@ -116,7 +116,7 @@ EZLists : EZGui{  // an abstract class
 		// try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
 		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap);
+			gap = decorator.tryPerform(\gap).copy;
 			gap = gap ? (2@2)}
 			{gap=argGap};
 		
