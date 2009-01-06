@@ -19,11 +19,13 @@ HOME_DIR_RE = re.compile(os.environ.get('HOME') + '.*')
 DEFAULT_PREFIX = '/usr/local/'
 DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
 
+def in_home_directory(dir):
+	return HOME_DIR_RE.match(dir)
 
 def pkg_data_dir(prefix, *args):
     if PLATFORM == 'darwin':
         base = '/Library/Application Support'
-        if is_home_directory(prefix):
+        if in_home_directory(prefix):
             base = os.path.join(prefix, base)
     else:
         base = os.path.join(prefix, 'share')
@@ -63,9 +65,6 @@ def bin_dir(prefix):
 
 def share_dir(prefix):
     return os.path.join(prefix, 'share')
-
-def in_home_directory(dir):
-	return HOME_DIR_RE.match(dir)
 
 #build help, the help depends on having the home directory enviroment variable.. that could change
 build_help = Builder(action = 
