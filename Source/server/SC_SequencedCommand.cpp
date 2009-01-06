@@ -666,9 +666,7 @@ bool BufReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	
-	buf->fileinfo = fileinfo; // keep fileinfo.
-	
+		
 	if (mFileOffset < 0) mFileOffset = 0;
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames < 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
