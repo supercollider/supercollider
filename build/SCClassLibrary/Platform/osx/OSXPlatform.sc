@@ -49,6 +49,12 @@ OSXPlatform : UnixPlatform
 		currentFullScreen = SCWindow.currentFullScreen;
 		currentFullScreen.notNil.if({currentFullScreen.endFullScreen; currentFullScreen.close});
 	}
+	
+	exitFullScreen {
+		var currentFullScreen;
+		currentFullScreen = SCWindow.currentFullScreen;
+		currentFullScreen.notNil.if({currentFullScreen.endFullScreen;});
+	}
 
 	findHelpFile { | string |
 		_Cocoa_HelpFileForString_

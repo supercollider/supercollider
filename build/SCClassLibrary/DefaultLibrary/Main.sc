@@ -124,4 +124,6 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 	recompile { platform.recompile }
 	
 	escapeWindow { platform.escapeWindow }
+	
+	exitFullScreen { platform.exitFullScreen }
 }
