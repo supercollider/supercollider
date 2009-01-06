@@ -508,9 +508,8 @@ Help {
 	};
 	
 	fUpdateWinTitle = {
-		SCListView;
 		win.name_(
-			(["Help browser"] ++ listviews.collect{|lv| lv.items[lv.value] }.reject(_.isNil)).join(" > ") );
+			(["Help browser"] ++ listviews.collect{|lv| lv.value !? {lv.items[lv.value]} }.reject(_.isNil)).join(" > ") );
 	};
 	
 	Platform.case(\windows, {
