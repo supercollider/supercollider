@@ -385,6 +385,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
+		unit->m_count = 0;
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
@@ -476,8 +477,8 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 		
 
 		if((int)ZIN0(4)) {
-			float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-			Print("outval: %f\n", outval);
+		//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
+			float outval = bufPos + (float)(unit->m_count * bufFrames2);
 			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
 		}
 
@@ -519,6 +520,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	GET_BUF
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
+		unit->m_count = 0;
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
@@ -594,8 +596,9 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 #endif //#ifndef SC_WIN32
 
 		if((int)ZIN0(4)) {
-			float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-			Print("outval: %f\n", outval);
+			
+			// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
+			float outval = bufPos + (float)(unit->m_count * bufFrames2);
 			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
 		}
 		
