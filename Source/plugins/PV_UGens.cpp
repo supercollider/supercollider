@@ -647,7 +647,39 @@ void PV_MagDiv_Ctor(PV_Unit *unit)
 void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 {
 	
-	PV_GET_BUF2
+	float fbufnum1 = ZIN0(0); 
+	float fbufnum2 = ZIN0(1); 
+	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; } 
+	ZOUT0(0) = fbufnum2; 
+	uint32 ibufnum1 = (int)fbufnum1; 
+	uint32 ibufnum2 = (int)fbufnum2; 
+	World *world = unit->mWorld; 
+	SndBuf *buf1; 
+	SndBuf *buf2; 
+	if (ibufnum1 >= world->mNumSndBufs) { 
+		int localBufNum = ibufnum1 - world->mNumSndBufs; 
+		Graph *parent = unit->mParent; 
+		if(localBufNum <= parent->localBufNum) { 
+			buf1 = parent->mLocalSndBufs + localBufNum; 
+		} else { 
+			buf1 = world->mSndBufs; 
+		} 
+	} else { 
+		buf1 = world->mSndBufs + ibufnum1; 
+	} 
+	if (ibufnum2 >= world->mNumSndBufs) { 
+		int localBufNum = ibufnum2 - world->mNumSndBufs; 
+		Graph *parent = unit->mParent; 
+		if(localBufNum <= parent->localBufNum) { 
+			buf2 = parent->mLocalSndBufs + localBufNum; 
+		} else { 
+			buf2 = world->mSndBufs; 
+		} 
+	} else { 
+		buf2 = world->mSndBufs + ibufnum2; 
+	} 
+	if (buf1->samples != buf2->samples) return; 
+	int numbins = buf1->samples - 2 >> 1;
 	
 	// copy to buf2
 	buf2->coord = buf1->coord;
