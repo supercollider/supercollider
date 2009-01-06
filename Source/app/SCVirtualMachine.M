@@ -390,8 +390,10 @@ bool gIsFullScreen = false;
 
 - (void)windowWillMiniaturize:(NSNotification *)notification
 {
-    SCNSWindow* window = [notification object];
-    [self endFullScreen: window];
+    if(gIsFullScreen){
+		SCNSWindow* window = [notification object];
+		[self sendMain:"exitFullScreen"];
+	}
 }
 
 - (void) windowDidBecomeKey:(NSNotification *)aNotification
