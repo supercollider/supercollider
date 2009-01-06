@@ -8,7 +8,7 @@
 <meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0f3687; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #143984; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -17,8 +17,8 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-h
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #1752cd}
-span.s2 {color: #1857d5}
+span.s1 {color: #1f57c8}
+span.s2 {color: #215cd0}
 span.s3 {color: #0000bf}
 span.s4 {color: #606060}
 span.s5 {color: #000000}
@@ -92,6 +92,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">o = <span class="s3">OSCresponder</span>(s.addr,<span class="s6">'/diskin'</span>,{ <span class="s3">arg</span> time,responder,msg;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s3">var</span> sendID = msg[2];</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s3">var</span> index = msg[3];</p>
+<p class="p8"><span class="Apple-tab-span">	</span>msg.postln;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">"id: % pos: % frames (% sec)\n"</span>.postf(sendID, index, (index / c.sampleRate));</p>
 <p class="p8">}).add</p>
 <p class="p8">);</p>
