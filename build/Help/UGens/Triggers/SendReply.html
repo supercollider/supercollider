@@ -12,40 +12,94 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-span.s1 {color: #0024f8}
-span.s2 {color: #0000bf}
-span.s3 {color: #007300}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {color: #0047e4}
+span.s2 {color: #002eaf}
+span.s3 {color: #486b24}
+span.s4 {color: #0026b4}
+span.s5 {color: #3d6d1d}
+span.s6 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>SendReply<span class="Apple-tab-span">	</span> <span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></b></p>
+<p class="p1"><b>SendReply<span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>SendReply.kr(in, inputs, id, cmdName)</b></p>
+<p class="p3"><b>SendReply.kr(trig, inputs, id, cmdName)</b></p>
 <p class="p4"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>trig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a non-positive to positive transition telling Poll to return a value</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>inputs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>array of ugens</p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>id<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>integer id (similar to <a href="SendTrig.html"><span class="s1">SendTrig</span></a>)</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>cmdName<span class="Apple-tab-span">	</span></b>a string or symbol, as a message name.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>inputs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>array of ugens</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>replyID<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>integer id (similar to <a href="SendTrig.html"><span class="s1">SendTrig</span></a>)</p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p4"><br></p>
-<p class="p3">the reply message is formatted as follows: <b>[msg, nodeID, id, inputs ...]</b></p>
+<p class="p3">the reply message is formatted as follows: <b>[msg, nodeID, replyID, inputs ...]</b></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>SendReply</span>.kr(<span class="s2">Impulse</span>.kr(3), [40, 41, 42, 43] + <span class="s2">MouseX</span>.kr, 1905, <span class="s3">'/the_answer'</span>);</p>
-<p class="p6">}.play;</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>SendReply</span>.kr(<span class="s2">Impulse</span>.kr(3), <span class="s3">'/the_answer', </span>[40, 41, 42, 43] + <span class="s2">MouseX</span>.kr, 1905);</p>
+<p class="p6">}.play(s);</p>
 <p class="p6">)</p>
-<p class="p7"><br></p>
-<p class="p6">o.remove; o = <span class="s2">OSCresponder</span>(<span class="s2">nil</span>, <span class="s3">'/the_answer'</span>, { <span class="s2">|t, r, msg|</span> msg.postln }).add;</p>
-<p class="p7"><br></p>
+<p class="p5"><br></p>
+<p class="p6">o.remove; o = <span class="s2">OSCresponder</span>(<span class="s2">s.addr</span>, <span class="s3">'/the_answer'</span>, { <span class="s2">|t, r, msg|</span> msg.postln }).add;</p>
+<p class="p5"><br></p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p6"><span class="s2">SendReply</span>.ar(<span class="s2">Impulse</span>.ar(<span class="s2">MouseX</span>.kr(1, 300, 1)),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>[40, 41, 42, 43] + <span class="s2">SinOsc</span>.ar(0.1), 1905, <span class="s3">'/the_answer'</span>);</p>
-<p class="p6">}.play;</p>
+<p class="p6"><span class="s4">SendReply</span>.ar(<span class="s4">Impulse</span>.ar(<span class="s4">MouseX</span>.kr(1, 300, 1)), <span class="s5">'/the_answer'</span>,</p>
+<p class="p6"><span class="Apple-tab-span">	</span>[40, 41, 42, 43] + <span class="s4">SinOsc</span>.kr(0.1), 1905);</p>
+<p class="p6">}.play(s);</p>
 <p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p6">SynthDef(\xxx, { |replyID = 3|</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p6">})</p>
+<p class="p5"><br></p>
+<p class="p7">// multichannel expansion</p>
+<p class="p6">(</p>
+<p class="p6">{</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span>SendReply<span class="s6">.kr(</span>Impulse<span class="s6">.kr(3),<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">'/the_answer'</span>, [[40, 80], [41, 56], 42, [43, 100, 200]], [1905, 1906, 1907]</p>
+<p class="p6"><span class="Apple-tab-span">	</span>);</p>
+<p class="p6">}.play(s);</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p9">/*</p>
+<p class="p10"><br></p>
+<p class="p9">(</p>
+<p class="p9">{</p>
+<p class="p9"><span class="Apple-tab-span">	</span>SendReply.kr(Impulse.kr(3),<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>['/the_answer/0', '/the_answer/1', '/the_answer/2'],<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[[40, 80], [41, 56], 42, [43, 100, 200]],<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[1905, 1906, 1907]</p>
+<p class="p9"><span class="Apple-tab-span">	</span>);</p>
+<p class="p9">}.play(s);</p>
+<p class="p9">)</p>
+<p class="p10"><br></p>
+<p class="p9">o.remove;</p>
+<p class="p9">o = { OSCresponder(s.addr, '/the_answer/'++_, { |t, r, msg| msg.postln }).add } ! 3;</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p9">SendReply : SendTrig {</p>
+<p class="p9"><span class="Apple-tab-span">	</span>*kr { arg trig = 0.0, cmdName = '/reply', values, replyID = 0;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var ascii = cmdName.ascii;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this.multiNewList(['control', trig, replyID, ascii.size].addAll(ascii).addAll(values).postcs);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^0.0<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// SendReply has no output</p>
+<p class="p9"><span class="Apple-tab-span">	</span>}</p>
+<p class="p9"><span class="Apple-tab-span">	</span>*ar { arg trig = 0.0, cmdName = '/reply', values, replyID = 0;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var ascii = cmdName.ascii;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this.multiNewList(['audio', trig, replyID, ascii.size].addAll(ascii).addAll(values));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^0.0<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// SendReply has no output</p>
+<p class="p9"><span class="Apple-tab-span">	</span>}</p>
+<p class="p10"><br></p>
+<p class="p9">}</p>
+<p class="p9">*/</p>
+<p class="p11"><br></p>
 </body>
 </html>
