@@ -19,7 +19,8 @@
 		hvBold12	= gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
 		fntMono	= gui.font.new( gui.font.defaultMonoFace, 10 );
 		
-		w = gui.window.new("SynthDef browser", Rect(128, 320, 700, 608));
+		w = gui.window.new("SynthDef browser", Rect(128, (gui.window.screenBounds.height - 638).clip(0, 320),
+			700, 608));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		w.view.decorator.shift(220);
