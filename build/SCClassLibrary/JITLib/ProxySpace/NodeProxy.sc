@@ -1046,23 +1046,19 @@ Ndef : NodeProxy {
 	
 	*new { arg key, object; 
 		// key may be simply a symbol, or an association of a symbol and a server name
-		var res, server, serverKey, dict;
+		var res, server, dict;
 		
 		if(key.isKindOf(Association)) {
-			serverKey = key.value;
+			server = Server.named.at(key.value);
+			if(server.isNil) { 
+				Error("Ndef(%): no server found with this name.".format(key)).throw 
+			};
 			key = key.key;
-			server = Server.named.at(serverKey);
-			if(server.isNil) { Error("no server found with this name:" + serverKey).throw };
 		} {
 			server = Server.default;
-			serverKey = server.name;
 		};
 		
-		dict = all.at(serverKey);
-		if(dict.isNil) { 
-			dict = ProxySpace.new(server); // use a proxyspace for ease of access.
-			all.put(serverKey, dict) 
-		};
+		dict = this.dictFor(server);
 		res = dict.envir.at(key);
 		if(res.isNil) { 
 			res = super.new(server).key_(key); 
@@ -1071,6 +1067,15 @@ Ndef : NodeProxy {
 		
 		object !? { res.source = object };
 		^res;
+	}
+	
+	*dictFor { arg server;
+		var dict = all.at(server.name);
+		if(dict.isNil) {
+			dict = ProxySpace.new(server); // use a proxyspace for ease of access.
+			all.put(server.name, dict) 
+		};
+		^dict
 	}
 	
 	*clear {
