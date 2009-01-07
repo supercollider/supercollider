@@ -250,7 +250,11 @@ typedef	struct SNDFILE_tag	SNDFILE ;
 ** off64_t (Solaris), __int64_t (Win32) etc.
 */
 
+#ifdef WIN32
+typedef __int64	sf_count_t ;
+#else
 typedef off_t	sf_count_t ;
+#endif
 
 #define SF_COUNT_MAX		0x7FFFFFFFFFFFFFFFLL
 
