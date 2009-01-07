@@ -196,12 +196,16 @@ BusPlug : AbstractFunction {
 	fadeTime { ^0.02 }
 	quant { ^nil }
 	vol { ^if(monitor.isNil) { 1.0 }{ monitor.vol } }
-	vol_ { arg val; if(this.rate === 'audio') {
-						if(monitor.isNil) { monitor = Monitor.new }; monitor.vol = val 
-				}
-	}
+	vol_ { arg val; this.initMonitor(val) }
+
 	monitorIndex { ^if(monitor.isNil) { nil }{ monitor.out } }
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
+	
+	initMonitor { arg volume;
+		if(this.rate !== 'audio') { Error("can only monitor audio proxy").throw };
+		if(monitor.isNil) { monitor = Monitor.new };
+		^monitor
+	}
 	
 	stop { arg fadeTime=0.1, reset=false; monitor.stop(fadeTime); if(reset) { monitor = nil }; }
 	
@@ -246,8 +250,7 @@ BusPlug : AbstractFunction {
 	
 	newMonitorToBundle { arg bundle, numChannels;
 		this.initBus(\audio, numChannels);
-		if(this.rate !== 'audio') { Error("can't monitor a control rate proxy").throw };
-		if(monitor.isNil) { monitor = Monitor.new };
+		this.initMonitor;
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 	
