@@ -11,6 +11,8 @@ Symbol {
 		_Symbol_AsFloat
 		^this.primitiveFailed
 	}
+	ascii { ^this.asString.ascii }
+	
 	// the primitive fails to escape '
 	asCompileString { ^("'" ++ super.asString.escapeChar($') ++ "'") }
 	asClass { 
