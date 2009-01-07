@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib winmm.lib user32.lib ../../libsndfile/libsndfile.lib"
+				AdditionalDependencies="wsock32.lib winmm.lib user32.lib ../../libsndfile/libsndfile-1.lib"
 				OutputFile="$(PYTHONPATH)\Lib\site-packages\PySCLang.pyd"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(PYTHONPATH)\libs\"
@@ -182,7 +182,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy some windowsy-or-psyco files into the build directory"
-				CommandLine="copy &quot;$(ProjectDir)\..\Psycollider\Psycollider.py&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\startup.sc&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\keywords.list&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\libsndfile\libsndfile.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\..\fftw3\libfftw3f-3.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(ProjectDir)\..\Psycollider\Psycollider.py&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\startup.sc&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\windows\keywords.list&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\libsndfile\libsndfile-1.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\..\..\..\fftw3\libfftw3f-3.dll&quot; &quot;$(SolutionDir)\..\build\&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

@@ -56,8 +56,8 @@
 		<File Id="libfftw3f" Name="libfftw3f-3.dll"
 						Source="../build/libfftw3f-3.dll" DiskId="1">
 		</File>
-		<File Id="libsndfile" Name="libsndfile.dll"
-						Source="../build/libsndfile.dll" DiskId="1">
+		<File Id="libsndfile" Name="libsndfile-1.dll"
+						Source="../build/libsndfile-1.dll" DiskId="1">
 		</File>
 		<File Id="keywordslist" Name="keywords.list"
 						Source="keywords.list" DiskId="1">

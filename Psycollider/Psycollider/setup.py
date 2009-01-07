@@ -28,7 +28,7 @@ setup(
                        "optimize": 2,
 		       "bundle_files": 1,
 		       #"excludes": ["PySCLang"],
-                       "dll_excludes": ["MSVCP90.dll", "MSVCP80.dll", "MSVCR80.dll", "libsndfile.dll"]
+                       "dll_excludes": ["MSVCP90.dll", "MSVCP80.dll", "MSVCR80.dll", "libsndfile-1.dll"]
                        }
     }
 )
