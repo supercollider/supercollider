@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib ..\..\libsndfile\libsndfile.lib"
+				AdditionalDependencies="wsock32.lib ..\..\libsndfile\libsndfile-1.lib"
 				OutputFile="$(OutDir)/$(ProjectName).scx"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msvcrt.lib ws2_32.lib user32.lib ole32.lib Advapi32.lib ..\libsndfile\libsndfile.lib"
+				AdditionalDependencies="msvcrt.lib ws2_32.lib user32.lib ole32.lib Advapi32.lib ..\libsndfile\libsndfile-1.lib"
 				OutputFile="$(OutDir)/scsynth.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

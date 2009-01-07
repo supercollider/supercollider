@@ -141,7 +141,24 @@ You also need to run the instructions in the readme that accompany the fftw3 dow
 how to generate "lib" files for your system.
 
 
-6: actually building and running the thing!
+6: libsndfile
+-----------------------
+Some libsndfile files are included in the sc3 source distribution - however, you need to do a couple of things to get libsndfile stuff compiling correctly on your system:
+
+* go to http://www.mega-nerd.com/libsndfile/#Download section and download the "Windows zip file including precompiled binaries"
+* that zip file contains a readme with some instructions. Follow them.
+* When done, place the following files into SuperCollider's "libsndfile" folder:
+
+...
+ROOT\libsndfile\libsndfile-1.def
+ROOT\libsndfile\libsndfile-1.dll
+ROOT\libsndfile\libsndfile-1.exp
+ROOT\libsndfile\libsndfile-1.lib
+ROOT\libsndfile\sndfile.h
+...
+
+
+7: actually building and running the thing!
 -------------------------------------------
 
 Once all the above is done, the Solution "SC3win.sln" should compile without problems (lots of warnings though...).
