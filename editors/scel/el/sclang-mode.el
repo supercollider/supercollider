@@ -90,6 +90,7 @@
      ["Find References ..."	sclang-find-references]
      ["Pop Mark"		sclang-pop-definition-mark]
      ["Show Method Arguments"	sclang-show-method-args]
+     ["Complete keyword"	sclang-complete-symbol]
      ["Dump Interface"		sclang-dump-interface]
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
@@ -115,6 +116,7 @@
   (define-key map "\C-\M-x"			'sclang-eval-defun)
   (define-key map "\C-c\C-e"			'sclang-eval-expression)
   ;; language information
+  (define-key map "\C-c\C-n"			'sclang-complete-symbol)
   (define-key map "\M-\t"			'sclang-complete-symbol)
   (define-key map "\C-c:"			'sclang-find-definitions)
   (define-key map "\C-c;"			'sclang-find-references)
