@@ -74,13 +74,15 @@ ProxySpace : LazyEnvir {
 	}
 
 	
-	play { arg key=\out, busIndex=0, nChan=2;
+	play { arg key=\out, out=0, numChannels=2;
 		^this.use({ arg envir;
-			this.at(key).play(busIndex, nChan);
+			this.at(key).play(out, numChannels);
 		});
 	}
 	
-	stop { arg key=\out, fadeTime; this.at(key).stop(fadeTime) }
+	stop { arg fadeTime; 
+		this.do({ arg proxy; proxy.stop(fadeTime) })
+	}
 	
 	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
 		^this.use({ arg envir;
@@ -207,7 +209,7 @@ ProxySpace : LazyEnvir {
 			if(this.class.all[name].isNil) 
 			{ this.class.all.put(name, this) } 
 			{ "there is already an environment with this name".warn };
-		}
+		} { "a ProxySpace with no name cannot be added to the repository".warn }
 	}
 	
 	remove {
