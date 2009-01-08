@@ -136,7 +136,7 @@ ProxyChain {
 	
 		if (win.notNil) { try { ed.w.close } };
 		
-		ed = NodeProxyEditor(px, name, nSliders, win, comp).pxKey_(name); 
+		ed = NodeProxyEditor(px, nSliders, win, comp).pxKey_(name); 
 			// this should be more specific to be efficient.
 		slotNames.do { |name, i| ed.replaceKeys.put(("wet" ++ i).asSymbol, name) };
 		slotNames.do { |name, i| ed.replaceKeys.put(("mix" ++ i).asSymbol, name) };
