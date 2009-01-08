@@ -41,7 +41,7 @@ SpeechChannel{
 		Speech.setSpeechVoice(channel, voice);			
 	}
 	
-	stop{|when|
+	stop{|when=0|
 		if(when.isNumber.not){
 			when = Speech.stopMethods[when];
 		};
