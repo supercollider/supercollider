@@ -24,19 +24,20 @@ p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #6f717e}
-span.s3 {color: #6f717a}
+span.s2 {color: #6f717d}
+span.s3 {color: #6f7179}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
 span.s6 {color: #6f7178}
 span.s7 {font: 11.0px Monaco}
-span.s8 {color: #6c7188}
+span.s8 {color: #6d7187}
 span.s9 {color: #0000bf}
 span.s10 {color: #606060}
 span.s11 {color: #007300}
-span.s12 {color: #5f689f}
-span.s13 {color: #666c94}
+span.s12 {color: #61699c}
+span.s13 {color: #676d92}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -176,7 +177,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p15"><b>Examples</b></p>
-<p class="p16"><br></p>
+<p class="p18"><br></p>
 <p class="p13"><br></p>
 <p class="p14"><span class="s4">(<span class="Apple-tab-span">	</span></span>// basic use</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w=<span class="s9">Window</span>.new.front;</p>
@@ -274,28 +275,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">/// Layout \vert</p>
 <p class="p13"><br></p>
 <p class="p14"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// all features, small font</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300,<span class="s10">" Vol<span class="Apple-converted-space">  </span>"</span>, <span class="s11">\db</span>,initVal:[-3-15.rand,-2.rand],unitWidth:30, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300,<span class="s10">" Vol<span class="Apple-converted-space">  </span>"</span>, <span class="s11">\db</span>.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],unitWidth:30, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white, <span class="s9">Color</span>.grey(0.7),</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.grey, <span class="s9">Color</span>.white, <span class="s9">Color</span>.yellow,knobColor: <span class="s9">HiliteGradient</span>(<span class="s9">Color</span>.grey, <span class="s9">Color</span>.white,<span class="s11">\h</span>));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(250,50);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.font_(<span class="s9">GUI</span>.font.new(<span class="s10">"Helvetica"</span>,10));</p>
 <p class="p12">);</p>
 <p class="p14"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// no label, small font</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s9">nil</span>, <span class="s11">\db</span>,initVal:[-3-15.rand,-2.rand],unitWidth:30, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s9">nil</span>, <span class="s11">\db</span>.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],unitWidth:30, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white, <span class="s9">Color</span>.grey(0.7),</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.grey, <span class="s9">Color</span>.white, <span class="s9">Color</span>.yellow,knobColor: <span class="s9">HiliteGradient</span>(<span class="s9">Color</span>.grey, <span class="s9">Color</span>.white,<span class="s11">\h</span>));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(310,50);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.font_(<span class="s9">GUI</span>.font.new(<span class="s10">"Helvetica"</span>,10));</p>
 <p class="p12">);</p>
 <p class="p14"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// no Units small font</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s10">" Vol"</span>, <span class="s11">\db</span>,initVal:[-3-15.rand,-2.rand],unitWidth:0, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s10">" Vol"</span>, <span class="s11">\db</span>.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],unitWidth:0, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white, <span class="s9">Color</span>.grey(0.7),</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.grey, <span class="s9">Color</span>.white, <span class="s9">Color</span>.yellow,knobColor: <span class="s9">HiliteGradient</span>(<span class="s9">Color</span>.grey, <span class="s9">Color</span>.white,<span class="s11">\h</span>));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(370,50);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.font_(<span class="s9">GUI</span>.font.new(<span class="s10">"Helvetica"</span>,10));</p>
 <p class="p12">);</p>
 <p class="p14"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// no unitView, no units small font</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s9">nil</span>, <span class="s11">\db</span>,initVal:[-3-15.rand,-2.rand],unitWidth:0, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g=<span class="s9">EZRanger</span>(<span class="s9">nil</span>, 45@300, <span class="s9">nil</span>, <span class="s11">\db</span>.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],unitWidth:0, numberWidth:60,layout:<span class="s11">\vert</span>);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white, <span class="s9">Color</span>.grey(0.7),</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Color</span>.grey, <span class="s9">Color</span>.white, <span class="s9">Color</span>.yellow,knobColor: <span class="s9">HiliteGradient</span>(<span class="s9">Color</span>.grey, <span class="s9">Color</span>.white,<span class="s11">\h</span>));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.window.bounds = g.window.bounds.moveBy(430,50);</p>
