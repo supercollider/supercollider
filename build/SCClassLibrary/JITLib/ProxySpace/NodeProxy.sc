@@ -204,7 +204,8 @@ BusPlug : AbstractFunction {
 	initMonitor { arg vol;
 		if(this.rate !== 'audio') { Error("can only monitor audio proxy").throw };
 		if(monitor.isNil) { monitor = Monitor.new };
-		^monitor.vol_(vol)
+		if (vol.notNil) { monitor.vol_(vol) };
+		^monitor
 	}
 	
 	stop { arg fadeTime=0.1, reset=false; monitor.stop(fadeTime); if(reset) { monitor = nil }; }
