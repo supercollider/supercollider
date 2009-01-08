@@ -323,7 +323,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 
 	//next FFT bufffer ready, update
 	//assuming at this point that buffer precalculated for any resampling
-	if (fbufnum>(-0.01)) {
+	if (!(fbufnum<0)) {
 	
 		unit->m_frame= unit->m_frame+1;
 		BeatTrack_dofft(unit, (uint32)fbufnum); 
@@ -400,9 +400,19 @@ void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum) {
 	
 	//int i;
 	
-	World *world = unit->mWorld; 
-	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-	SndBuf *buf = world->mSndBufs + ibufnum; 
+	World *world = unit->mWorld;
+	SndBuf *buf;
+	if (ibufnum >= world->mNumSndBufs) {
+		int localBufNum = ibufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf = world->mSndBufs;
+		}
+	} else {
+		buf = world->mSndBufs + ibufnum;
+	}	
 	//int numbins = buf->samples - 2 >> 1;
 	
 	unit->m_FFTBuf = buf->data; //just assign it! 

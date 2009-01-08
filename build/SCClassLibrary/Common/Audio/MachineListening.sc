@@ -3,7 +3,12 @@
 BeatTrack : MultiOutUGen {
 
 	*kr { arg chain, lock=0;
-	
+		
+		if(chain.isKindOf(FFT).not){
+			// Automatically drop in an FFT, possible now that we have LocalBuf
+			chain = FFT(LocalBuf(if(SampleRate.ir>48000, 2048, 1024)), chain);
+		};
+		
 		^this.multiNew('control',chain, lock);
 	}
 	
