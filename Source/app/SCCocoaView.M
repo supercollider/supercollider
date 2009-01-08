@@ -120,7 +120,7 @@ extern PyrSymbol *s_scview;
 				character = [characters characterAtIndex: 0];
 			}				
 			if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
-			   mSCViewObject->tabPrevFocus(); //this does not work as expected!
+			   mSCViewObject->tabPrevFocus(); 
 				return NO;
 			} else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
 				mSCViewObject->tabNextFocus();
