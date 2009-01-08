@@ -64,11 +64,11 @@ ScelDocument : Document{
 		^this
 	}
 
-	string_ { | argName, completFunc |
+	string_ { | argName, rangestart = -1, rangesize = 1 |
 		if ( thisdoc.notNil, { 
-			thisdoc.string_( argName, completFunc )
+			thisdoc.string_( argName, rangestart, rangesize )
 		},{ 
-			cFuncs = cFuncs ++ { this.string_( argName, completFunc ) };  
+			cFuncs = cFuncs ++ { this.string_( argName ) };  
 		});
 	}
 
@@ -244,7 +244,7 @@ ScelDocument : Document{
 	}
 
 	string {arg rangestart, rangesize = 1;
-		var cond;
+		//		var cond;
 		currentString = nil;
 		thisdoc.string( rangestart, { |v| currentString = v }, rangesize );
 //		cond = Condition.new( { currentString.notNil } );
@@ -252,6 +252,17 @@ ScelDocument : Document{
 		//		while ( { currentString.isNil }, {"wait for string".postln;} );
 		^currentString;
 	}
+
+	currentLine {
+		//		var cond;
+		currentString = nil;
+		thisdoc.currentLine( { |v| currentString = v } );
+//		cond = Condition.new( { currentString.notNil } );
+//		cond.wait;
+		//		while ( { currentString.isNil }, {"wait for string".postln;} );
+		^currentString;
+	}
+
 	text {
 		^this.string;
 	}
@@ -264,9 +275,6 @@ ScelDocument : Document{
 	background_ {arg color, rangestart= -1, rangesize = 0;
 	}	
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
-	}
-	currentLine {
-		^""
 	}
 
 	prGetBounds { | bounds | ^bounds }

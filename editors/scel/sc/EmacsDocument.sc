@@ -147,13 +147,21 @@ EmacsDocument
 		^nil;
 	}
 
-	string_{|string|
+	string_{|string, rangestart = -1, rangesize = 1|
 		Emacs.sendToLisp(\_documentPutString, [this, string]);
 	}
 	
-	/*	currentLine {
-		^""
-		}*/
+	currentLine { |returnFunc|
+		Emacs.evalLispExpression(['with-current-buffer', title, ['thing-at-point', '\'line'] ].asLispString, { |result| returnFunc.value( result ) } )
+		^nil;
+
+		// '(set-text-properties start end nil)' will remove text properties somehow?
+	}
+
+	currentWord { |returnFunc|
+		Emacs.evalLispExpression(['with-current-buffer', title, ['current-word'] ].asLispString, { |result| returnFunc.value( result ) } )
+		^nil;
+	}
 	
 	// environment support
 	/*	envir_ { | environment |
