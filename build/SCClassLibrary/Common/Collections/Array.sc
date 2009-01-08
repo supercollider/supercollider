@@ -214,10 +214,12 @@ Array[slot] : ArrayedCollection {
 	numChannels { ^this.size }
 	
 	// multichannel UGen-poll	
-	poll { arg trig = 10, label = "UGen Array:", trigid = -1;
+	poll { arg trig = 10, label, trigid = -1;
+		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
 		^Poll(trig, this, label, trigid)
 	}
-	dpoll { arg label = "UGen Array:", run = 1, trigid = -1;
+	dpoll { arg label, run = 1, trigid = -1;
+		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
 		^Dpoll(this, label, run, trigid)
 	}
 	
