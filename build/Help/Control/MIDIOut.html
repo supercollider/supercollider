@@ -62,6 +62,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">  <b>*disconnect(port, uid)</b> (Linux only)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>OS X does not need to connect. On Linux it is an optional feature (see below).</p>
 <p class="p4"><br></p>
+<p class="p3"><span class="Apple-converted-space"> </span><b>latency_( time )</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>This sets the
+  latency with which a midi event is sent out. Per default this is set
+  to 0.1, in order to be equal to the Server.latency.<br> NOTE: on Linux
+  there seems to be an ALSA bug if the latency is larger than 0. If MIDIOut does not seem to work, set the latency to 0.</p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>noteOn</b> ( chan, note, veloc )</p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>noteOff</b> ( chan, note, veloc )</p>

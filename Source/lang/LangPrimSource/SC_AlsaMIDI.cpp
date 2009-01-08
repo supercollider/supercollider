@@ -431,7 +431,10 @@ int SC_AlsaMidiClient::sendEvent(int outputIndex, int uid, snd_seq_event_t* evt,
 
 	snd_seq_ev_schedule_real(evt, mQueue, 1, &time);
 	snd_seq_event_output_direct(mHandle, evt);
-// 	snd_seq_event_output(mHandle, evt);
+//  	snd_seq_event_output(mHandle, evt);
+
+// 	snd_seq_continue_queue(mHandle, mQueue, 0);
+// 	snd_seq_drain_output(mHandle);
 
 	return errNone;
 }
