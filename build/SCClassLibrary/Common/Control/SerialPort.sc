@@ -127,6 +127,16 @@ SerialPort
 		_SerialPort_Close
 		^this.primitiveFailed
 	}
+	primCleanup {
+		_SerialPort_Cleanup
+		^this.primitiveFailed
+	}
+	prCleanup{
+		if (this.isOpen) {
+			this.primCleanup;
+			allPorts.remove(this);		
+		}
+	}
 	prPut { | byte |
 		_SerialPort_Put
 		^this.primitiveFailed
@@ -138,5 +148,7 @@ SerialPort
 	prDoneAction {
 		// callback
 		this.doDoneAction;
+		// cleanup the port
+		this.prCleanup
 	}
 }
