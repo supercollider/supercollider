@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+  <title>Emacs Editor</title>
+  <meta name="GENERATOR" content="Quanta Plus">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>The Emacs Editor</h1>
+
+Here is a more extensive and elaborate overview of useful shortcuts in the Emacs Editor.
+
+<TABLE>
+<tr><td>C-g</td><td>Abort current action</td></tr>
+<tr><td colspan="2" align="center"><strong>Interpreting code</strong></td></tr>
+<tr><td>C-c C-x<br>(C-c C-c)</td><td>Interpret Selection <br>(only if transient-mark-mode is on)</td></tr>
+<tr><td>C-c C-c</td><td>Interpret current line</td></tr>
+<tr><td>C-c C-e</td><td>Evaluate expression (in minibuffer)</td></tr>
+<tr><td>C-M-x</td><td>Interpret defun</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Control the interpreter</strong></td></tr>
+<tr><td>C-c C-s</td><td>Stop (CmdPeriod) / Main.stop</td></tr>
+<tr><td>C-c C-r</td><td>Main.run</td></tr>
+<tr><td>C-c C-l</td><td>Recompile library</td></tr>
+<tr><td>M-x sclang-stop</td><td>Stop interpreter</td></tr>
+<tr><td>C-c C-p p</td><td>Show server panels</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Postbuffer and workspace</strong></td></tr>
+<tr><td>C-c C-w</td><td>Switch to workspace</td></tr>
+<tr><td>C-c &lt;</td><td>Clear postbuffer</td></tr>
+<tr><td>C-c &gt;</td><td>Show postbuffer</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Help files</strong></td></tr>
+<tr><td>C-M-h</td><td>Show help browser</td></tr>
+<tr><td>C-c C-h</td><td>Open help file. You do not need to select a word before using the shortcut. It will suggest the word at the current cursor position, or lets you type a word in the minibuffer. There is autocompletion by typing &lt;TAB&gt;.</td></tr>
+<tr><td>E</td><td>(in the help browser) open the help file as plain text (in sclang-mode), so it can be edited.</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Finding things in class source files</strong></td></tr>
+<tr><td>C-c :</td><td>Find definitions (method or class). Again, you can type the word you want to look for in the minibuffer and it suggests the word at the current cursor position.</td></tr>
+<tr><td>C-c ;</td><td>Find references to (method or class). (ditto)</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Current code completion and interface</strong></td></tr>
+<tr><td>C-c {</td><td>Dump interface</td></tr>
+<tr><td>C-c C-m / C-c RET</td><td>Show method arguments (in minibuffer)</td></tr>
+<tr><td>C-c C-n / M-TAB</td><td>Autocomplete keyword (either puts in the one possible completion, or pops up a buffer with possibilities from which you can choose one)</td></tr>
+
+
+<tr><td colspan="2" align="center"><strong>Files and buffers</strong></td></tr>
+<tr><td>C-x C-f</td><td>Open file or new file</td></tr>
+<tr><td>C-x C-s</td><td>Save file</td></tr>
+<tr><td>C-x C-w</td><td>Save file as</td></tr>
+<tr><td>C-x C-v</td><td>Open another file in this buffer</td></tr>
+<tr><td>C-x i</td><td>Insert a file at cursor position</td></tr>
+<tr><td>C-x b</td><td>Create/switch buffers</td></tr>
+<tr><td>C-x C-b</td><td>Show buffer list</td></tr>
+<tr><td>C-x k</td><td>Kill buffer</td></tr>
+<tr><td>C-z</td><td>Suspend emacs</td></tr>
+<tr><td>C-x C-c</td><td>Close down emacs</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Undo and recovery</strong></td></tr>
+<tr><td>C-x u / C-_</td><td>Undo</td></tr>
+<tr><td>C-x u / C-_</td><td>Redo</td></tr>
+<tr><td>M-x revert-buffer RETURN</td><td>undo all changes since last save</td></tr>
+<tr><td>M-x recover-file RETURN</td><td>Recover text from an autosave-file</td></tr>
+<tr><td>M-x recover-session RETURN</td><td>Recover text from an autosave-files if you edited several files</td></tr>
+ 
+
+<tr><td colspan="2" align="center"><strong>Editing</strong></td></tr>
+<tr><td>M-w</td><td>Copy</td></tr>
+<tr><td>C-y</td><td>Paste</td></tr>
+<tr><td>C-w</td><td>Cut</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Search and replace</strong></td></tr>
+<tr><td>C-s</td><td>Search / find. This allows you to set a string in the mini-buffer. The occurences in the text will be highlighted and you can press C-s again and again to jump to next occurences</td></tr>
+<tr><td>C-r</td><td>Search / find backwards.</td></tr>
+<tr><td>M-%</td><td>Replace and find next</td></tr>
+<tr><td>M-,</td><td>Replace</td></tr>
+
+<tr><td colspan="2" align="center"><strong>Navigating and selecting</strong></td></tr>
+<tr><td>M-g g</td><td>Goto line ...</td></tr>
+<tr><td>C-x a</td><td>Select all</td></tr>
+
+<tr><TD>C-M-f</TD>
+    <TD>zips you forward to matching parenthesis, so if you hover over the opening bracket, hit <br>
+	 C-&lt;space&gt;, C-M-f, C-c C-c you can quickly execute a block.
+   </TD></TR>
+
+<tr><TD>C-M-b</TD>
+    <TD>zips you backward to matching parenthesis. If you are just to the right of
+closing brackets this is handier if you've just finished some code.
+   </TD></TR>
+
+<tr><td colspan="2" align="center"><strong>Formatting</strong></td></tr>
+<tr><td> M-x show-paren-mode</td><td>Paren match highlighting. Can also be set from the options menu.</td></tr>
+<tr><td>M-;</td><td>Add comment. If you have a text selected, then that text will become a comment. It will remove the commenting // when you have selected a commented text.</td></tr>
+<tr><td>C-M-j</td><td>Continue the comment on the next line.</td></tr>
+<tr><td>C-u M-;</td><td>Remove comment. This removes the whole comment, so also the text!</td></tr>
+<tr><td>M-x comment-region</td><td>Comments the selected region</td></tr>
+<tr><td>M-x uncomment-region</td><td>Uncomments the selected region</td></tr>
+<tr><td>TAB</td><td>Auto-aligns tabs according to code.</td></tr>
+
+</TABLE>
+
+
+<h2>Customsing Emacs' behaviour</h2>
+<p>
+You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is <code>~/.emacs</code>.
+
+You can define options there, for example:
+</p>
+<pre>
+(custom-set-variables
+ '(case-fold-search t)
+ '(global-font-lock-mode t nil (font-lock))
+ '(sclang-runtime-directory "~/SuperCollider/")
+ '(show-paren-mode t nil (paren))
+ '(transient-mark-mode t)
+)
+</pre>
+
+<code>nil</code> means that an option is turned off, <code>t</code> means that it is turned on.
+
+<TABLE>
+<tr><td><code>'(sclang-eval-line-forward nil)</code></td><td>Configure the text cursor NOT to move after hitting C-c C-c</td></tr>
+</TABLE>
+
+
+<h2>More info on Emacs</h2>
+
+<ul>
+<li><A href="http://www.emacswiki.org/cgi-bin/wiki">Emacs Wiki</A></li>
+<li><A href="http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html">Emacs reference</A></li>
+</ul>
+
+</body>
+</html>
