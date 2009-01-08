@@ -11,9 +11,11 @@
 <h1>The Emacs Editor</h1>
 
 Here is a more extensive and elaborate overview of useful shortcuts in the Emacs Editor.
+For a general reference to Emacs shortcut, check out this <A href="http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html">Emacs reference</A>.
 
 <TABLE>
 <tr><td>C-g</td><td>Abort current action</td></tr>
+<tr><td>C-h</td><td>General help on emacs</td></tr>
 <tr><td colspan="2" align="center"><strong>Interpreting code</strong></td></tr>
 <tr><td>C-c C-x<br>(C-c C-c)</td><td>Interpret Selection <br>(only if transient-mark-mode is on)</td></tr>
 <tr><td>C-c C-c</td><td>Interpret current line</td></tr>
@@ -71,6 +73,7 @@ Here is a more extensive and elaborate overview of useful shortcuts in the Emacs
 <tr><td>M-w</td><td>Copy</td></tr>
 <tr><td>C-y</td><td>Paste</td></tr>
 <tr><td>C-w</td><td>Cut</td></tr>
+<tr><td>C-x C-o</td><td>Delete blank lines</td></tr>
 
 <tr><td colspan="2" align="center"><strong>Search and replace</strong></td></tr>
 <tr><td>C-s</td><td>Search / find. This allows you to set a string in the mini-buffer. The occurences in the text will be highlighted and you can press C-s again and again to jump to next occurences</td></tr>
@@ -103,7 +106,23 @@ closing brackets this is handier if you've just finished some code.
 
 </TABLE>
 
+<h2>Marks</h2>
+(info from EmacsWiki)
 
+<p><strong>set-mark-command (`C-SPC')</strong><br>
+
+A nice feature that not all know about is what happens if you feed it with a universal argument: ‘C-u C-SPC’. It’s an easy way to navigate back to your previous editing spots by jumping to the positions stored in the buffer’s local mark ring. Repeated calls will cycle through the ring of marks.
+</p><p>
+If you use TransientMarkMode and you want to set the mark but don’t want to subsequently see the region highlighting, you can use ‘C-SPC C-g’ to set the mark and then deactivate it.
+</p>
+<p><strong>pop-global-mark (`C-x C-SPC')</strong><br>
+
+In addition to the ordinary mark ring that belongs to each buffer, Emacs has a single global mark ring. It records a sequence of buffers in which you have recently set the mark, so you can go back to those buffers.</p>
+<p>
+Setting the mark always makes an entry on the current buffer’s mark ring. If you have switched buffers since the previous mark setting, the new mark position makes an entry on the global mark ring also. The result is that the global mark ring records a sequence of buffers that you have been in, and, for each buffer, a place where you set the mark.
+</p><p>
+‘C-x C-SPC’ (‘pop-global-mark’) jumps to the buffer and position of the latest entry in the global mark ring. It also rotates the ring, so that successive uses of ‘C-x C-SPC’ take you to earlier and earlier buffers.
+</p>
 <h2>Customsing Emacs' behaviour</h2>
 <p>
 You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is <code>~/.emacs</code>.
@@ -120,19 +139,84 @@ You can define options there, for example:
 )
 </pre>
 
-<code>nil</code> means that an option is turned off, <code>t</code> means that it is turned on.
+<code>nil</code> means that an option is turned off, <code>t</code> or <code>1</code> means that it is turned on.
 
 <TABLE>
 <tr><td><code>'(sclang-eval-line-forward nil)</code></td><td>Configure the text cursor NOT to move after hitting C-c C-c</td></tr>
 </TABLE>
 
+<h3>Customize w3m</h3>
+
+Normally w3m uses the arrow keys to jump between hyperlinks. For browsing SC help files this is not very useful.
+
+<pre>
+(eval-after-load "w3m"
+ '(progn
+ (define-key w3m-mode-map [left] 'backward-char)
+ (define-key w3m-mode-map [right] 'forward-char)
+ (define-key w3m-mode-map [up] 'previous-line)
+ (define-key w3m-mode-map [down] 'next-line)
+ (setq w3m-auto-show 1)
+ ))
+</pre>
+
+<h3>Automatically complete brackets and parentheses</h3>
+<pre>
+      (setq skeleton-pair t)
+      (global-set-key (kbd "(") 'skeleton-pair-insert-maybe)
+      (global-set-key (kbd "{") 'skeleton-pair-insert-maybe)
+      (global-set-key (kbd "[") 'skeleton-pair-insert-maybe)
+      (global-set-key (kbd "\"") 'skeleton-pair-insert-maybe)
+      (global-set-key (kbd "'") 'skeleton-pair-insert-maybe)
+</pre>
+
+<h3>Scrollwheel support</h3>
+<pre>
+;;; scrollwheel support
+(defun scroll-up-half ()
+  "Scroll up half a page."
+  (interactive)
+  (scroll-up (/ (window-height) 2))
+  )
+      
+(defun scroll-down-half ()
+  "Scroll down half a page."
+  (interactive)
+  (scroll-down (/ (window-height) 2))
+  )
+(global-set-key [(mouse-5)] 'scroll-up-half)
+(global-set-key [(mouse-4)] 'scroll-down-half)
+</pre>
+
+
+<h3>Recent files menu</h3>
+<p>
+Recentf is a minor mode that builds a list of recently opened files. This list is is automatically saved across Emacs sessions. You can then access this list through a menu.
+Put this in your `~/.emacs’:</p>
+<pre>
+    (require 'recentf)
+    (recentf-mode 1)
+</pre>
+
+
+<p>
+For adding a shortcut (C-x C-r) to open a recent file add this code as well:
+</p>
+<pre>
+    (defun recentf-open-files-compl ()
+      (interactive)
+      (let* ((all-files recentf-list)
+        (tocpl (mapcar (function 
+           (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
+        (prompt (append '("File name: ") tocpl))
+        (fname (completing-read (car prompt) (cdr prompt) nil nil)))
+        (find-file (cdr (assoc-ignore-representation fname tocpl))))) 
+
+    (global-set-key "\C-x\C-r" 'recentf-open-files-compl)
+</pre>
+
 
 <h2>More info on Emacs</h2>
-
-<ul>
-<li><A href="http://www.emacswiki.org/cgi-bin/wiki">Emacs Wiki</A></li>
-<li><A href="http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html">Emacs reference</A></li>
-</ul>
-
+<A href="http://www.emacswiki.org/cgi-bin/wiki">Emacs Wiki</A>
 </body>
 </html>

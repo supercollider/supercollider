@@ -89,7 +89,6 @@ elif CPU in [ 'i586', 'i686' ]:
 else:
     DEFAULT_OPT_ARCH = None
 
-
 if PLATFORM != 'windows':
 	subprocess.call(['sh', 'setMainVersion.sh'])
 
@@ -352,7 +351,6 @@ env = Environment(options = opts,
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
 
-
 # checks for DISTCC and CCACHE as used in modern linux-distros:
 
 if os.path.exists('/usr/lib/distcc/bin'):
@@ -368,6 +366,11 @@ if PLATFORM == 'windows':
 	env['ENV']['HOME'] = os.environ['HOMEPATH']
 else:
 	env['ENV']['HOME'] = os.environ['HOME']
+
+if PLATFORM == 'linux':
+	env['amd64'] = platform.uname()[2].find( 'amd64' ) > 0
+	if env['amd64']:
+		print "we are on amd64 linux"
 
 
 # ======================================================================
@@ -696,6 +699,15 @@ if env['CURL']:
     merge_lib_info(commonEnv, libraries['libcurl'])
 libcommon = commonEnv.Library('build/common', commonSources)
 
+#if env['amd64']:
+    #commonSources32 = list(commonSources)
+    #commonEnv32 = commonEnv.Clone()
+    #commonEnv32.Append(
+        #CCFLAGS = ['-m32'],
+    #)
+    #libcommon32 = commonEnv32.Library('build/common32', commonSources32)
+
+
 # ======================================================================
 # Source/server
 # ======================================================================
@@ -949,6 +961,8 @@ langEnv.Append(
     LIBPATH = 'build'
     )
 
+if env['amd64']:
+	langEnv.Append( CXXFLAGS = ['-m32'] )
 
 # functionality of libdl is included in libc on freebsd
 if PLATFORM == 'freebsd':
