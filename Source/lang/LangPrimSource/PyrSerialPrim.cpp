@@ -110,6 +110,8 @@ public:
 	bool get(uint8_t* byte);
 	int rxErrors();
 
+	void stop();
+
 protected:
 	static void* threadFunc(void*);
 	void threadLoop();
@@ -337,6 +339,10 @@ SerialPort::~SerialPort()
 	pthread_join(m_thread, 0);
 }
 
+void SerialPort::stop(){
+  m_running = false;
+}
+
 bool SerialPort::put(uint8_t byte)
 {
 	return write(m_fd, &byte, sizeof(byte)) == sizeof(byte);
@@ -398,13 +404,12 @@ void SerialPort::threadLoop()
 	const int fd = m_fd;
 	const int max_fd = fd+1;
 
-// 	printf("SerialPort: entering main loop\n");
-
 	m_running = true;
 	m_rxErrors[1] = 0;
 
 	while (true) {
 		fd_set rfds;
+
 		FD_ZERO(   &rfds);
 		FD_SET(fd, &rfds);
 
@@ -455,7 +460,7 @@ void SerialPort::threadLoop()
 		}
 		if (!m_running) {
 			// close and cleanup
-			goto done;
+				goto done;
 		}
 	}
 
@@ -534,7 +539,16 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = getSerialPort(self);
+	SerialPort* port = (SerialPort*)getSerialPort(self);
+	if (port == 0) return errFailed;
+	port->stop();
+	return errNone;
+}
+
+static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot* self = g->sp;
+	SerialPort* port = (SerialPort*)getSerialPort(self);
 	if (port == 0) return errFailed;
 	delete port;
 	SetNil(self->uo->slots+0);
@@ -584,7 +598,7 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = getSerialPort(self);
+	SerialPort* port = (SerialPort*)getSerialPort(self);
 	if (port == 0) return errFailed;
 	SetInt(self, port->rxErrors());
 	return errNone;
@@ -602,6 +616,7 @@ void initSerialPrimitives()
 	definePrimitive(base, index++, "_SerialPort_Next",     prSerialPort_Next, 1, 0);
 	definePrimitive(base, index++, "_SerialPort_Put",      prSerialPort_Put, 2, 0);
 	definePrimitive(base, index++, "_SerialPort_RXErrors", prSerialPort_RXErrors, 1, 0);
+	definePrimitive(base, index++, "_SerialPort_Cleanup",    prSerialPort_Cleanup, 1, 0);
 
 	SerialPort::s_dataAvailable = getsym("prDataAvailable");
 	SerialPort::s_doneAction = getsym("prDoneAction");
