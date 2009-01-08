@@ -5,23 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002eaf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0f3ea0; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #486b24}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1c4598; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0b4ede}
-span.s3 {font: 9.0px Monaco}
-span.s4 {color: #000000}
-span.s5 {color: #2c7014}
-span.s6 {color: #001bb9}
-span.s7 {color: #606060}
+span.s2 {color: #1d59d3}
+span.s3 {color: #0024f8}
+span.s4 {color: #0000ff}
+span.s5 {font: 9.0px Monaco}
+span.s6 {color: #000000}
+span.s7 {color: #486b24}
+span.s8 {color: #002eaf}
+span.s9 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,7 +43,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">and returns the instance, like Pdef, Tdef and Ndef.</p>
 <p class="p1">it is very similar to <a href="PatternProxy.html"><span class="s2">PatternProxy</span></a></p>
 <p class="p3"><br></p>
-<p class="p1">it can be used to store value patterns globally (for event patterns, see <b>Pdef</b>).</p>
+<p class="p1">it can be used to store value patterns globally (for <b>event patterns</b>, see <a href="Pdef.html"><span class="s3">Pdef</span></a>).</p>
+<p class="p1">Overview: <a href="../JITLib.html"><span class="s4">JITLib</span></a></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*new(key, pattern)</b></p>
@@ -86,10 +89,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>clear</b><span class="Apple-tab-span">	</span>set the source to nil</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>embed(val)</b><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pass a value into the pattern, and embed the Pdefn in the stream.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>embedInStream(inval)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>just like any stream, embeds itself in stream.</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s3"><span class="Apple-tab-span">	</span></span><b>reset</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="s5"><span class="Apple-tab-span">	</span></span><b>reset</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch the pattern immediately. (stuck conditions can be subverted by this)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><br></p>
@@ -106,7 +112,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>map one Pdefn to the other. the patterns can be accessed via the currentEnvironment</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s3"><span class="Apple-tab-span">	</span></span><b>endless</b></p>
+<p class="p1"><span class="s5"><span class="Apple-tab-span">	</span></span><b>endless</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns a Proutine that plays the proxy endlessly, replacing <b>nil</b> with a <b>default</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>value (1). This allows to create streams that idle on until a new pattern is inserted.</p>
 <p class="p2"><br></p>
@@ -121,25 +127,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b><i>Pdefn in expressions</i></b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\c</span><span class="s4">, </span>Pdefn<span class="s4">(</span><span class="s5">\a</span><span class="s4">) + </span>Pdefn<span class="s4">(</span><span class="s5">\b</span><span class="s4">));</span></p>
+<p class="p4">Pdefn<span class="s6">(</span><span class="s7">\c</span><span class="s6">, </span>Pdefn<span class="s6">(</span><span class="s7">\a</span><span class="s6">) + </span>Pdefn<span class="s6">(</span><span class="s7">\b</span><span class="s6">));</span></p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s4">t = </span><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\c</span><span class="s4">).asStream; </span>// create a stream from Pdefn(\c)</p>
+<p class="p5"><span class="s6">t = </span><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\c</span><span class="s6">).asStream; </span>// create a stream from Pdefn(\c)</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s4">t.value; </span>// default value for a Pdefn is 1, so that it is a good time value default.</p>
+<p class="p5"><span class="s6">t.value; </span>// default value for a Pdefn is 1, so that it is a good time value default.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\a</span><span class="s4">, 100); </span>// (re)define Pdefn(\a) as 100</p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\a</span><span class="s6">, 100); </span>// (re)define Pdefn(\a) as 100</p>
 <p class="p2"><br></p>
 <p class="p6">t.value;</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\b</span><span class="s4">, </span><span class="s6">Pseq</span><span class="s4">([1, 2, 3], </span><span class="s6">inf</span><span class="s4">)); </span>// (re)define Pdefn(\b) as Pseq([1, 2, 3], inf)</p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\b</span><span class="s6">, </span><span class="s8">Pseq</span><span class="s6">([1, 2, 3], </span><span class="s8">inf</span><span class="s6">)); </span>// (re)define Pdefn(\b) as Pseq([1, 2, 3], inf)</p>
 <p class="p2"><br></p>
 <p class="p6">3.do { t.value.postln };</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\c</span><span class="s4">, </span><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\a</span><span class="s4">) * </span><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\b</span><span class="s4">) - </span><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\a</span><span class="s4">)); </span>// (re)define Pdefn(\c)<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\c</span><span class="s6">, </span><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\a</span><span class="s6">) * </span><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\b</span><span class="s6">) - </span><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\a</span><span class="s6">)); </span>// (re)define Pdefn(\c)<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p6">8.do { t.value.postln };</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\a</span><span class="s4">, </span><span class="s6">Prand</span><span class="s4">([1, 4, 2], </span><span class="s6">inf</span><span class="s4">));<span class="Apple-converted-space">  </span></span>// (re)define Pdefn(\a)<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\a</span><span class="s6">, </span><span class="s8">Prand</span><span class="s6">([1, 4, 2], </span><span class="s8">inf</span><span class="s6">));<span class="Apple-converted-space">  </span></span>// (re)define Pdefn(\a)<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -149,15 +155,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>([1, 2, 3],<span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>([1, 2, 3],<span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
-<p class="p6">x = <span class="s6">Pseq</span>([0, 0, <span class="s6">Pdefn</span>(<span class="s5">\x</span>)], <span class="s6">inf</span>).asStream;</p>
+<p class="p6">x = <span class="s8">Pseq</span>([0, 0, <span class="s8">Pdefn</span>(<span class="s7">\x</span>)], <span class="s8">inf</span>).asStream;</p>
 <p class="p2"><br></p>
-<p class="p6">t = <span class="s6">Task</span>({ loop({ x.next.postln; 0.3.wait }) }).play;</p>
+<p class="p6">t = <span class="s8">Task</span>({ loop({ x.next.postln; 0.3.wait }) }).play;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>([55, 66, 77],<span class="s6">inf</span>));</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>([55, 66, 77],1));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>([55, 66, 77],<span class="s8">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>([55, 66, 77],1));</p>
 <p class="p2"><br></p>
 <p class="p6">t.stop;</p>
 <p class="p2"><br></p>
@@ -166,35 +172,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Pdefn can be accessed in multiple streams</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s6">SynthDef</span>(<span class="s7">"Pdefhelp"</span>, { <span class="s6">arg</span> out, freq, sustain=1, amp=1, pan;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">var</span> env, u=1;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>env = <span class="s6">EnvGen</span>.kr(<span class="s6">Env</span>.perc(0.03, sustain), 1, doneAction:2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>5.do { <span class="s6">var</span> d; d = exprand(0.01, 1); u = <span class="s6">SinOsc</span>.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, <span class="s6">Pan2</span>.ar(<span class="s6">SinOsc</span>.ar(u + 1 * freq, 0, amp * env), pan));</p>
+<p class="p6"><span class="s8">SynthDef</span>(<span class="s9">"Pdefhelp"</span>, { <span class="s8">arg</span> out, freq, sustain=1, amp=1, pan;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s8">var</span> env, u=1;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>env = <span class="s8">EnvGen</span>.kr(<span class="s8">Env</span>.perc(0.03, sustain), 1, doneAction:2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>5.do { <span class="s8">var</span> d; d = exprand(0.01, 1); u = <span class="s8">SinOsc</span>.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(out, <span class="s8">Pan2</span>.ar(<span class="s8">SinOsc</span>.ar(u + 1 * freq, 0, amp * env), pan));</p>
 <p class="p2"><br></p>
 <p class="p6">}).store;</p>
 <p class="p6">s.boot;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, <span class="s6">Pseq</span>([0, 3, 2],<span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, <span class="s8">Pseq</span>([0, 3, 2],<span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s6">Pset</span><span class="s4">(</span>\instrument<span class="s4">, </span>\Pdefhelp<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p4"><span class="s4"><span class="Apple-tab-span">	</span></span>Ppar<span class="s4">([</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s6">Pbind</span><span class="s4">(</span>\degree<span class="s4">, </span><span class="s6">Pdefn</span><span class="s4">(</span>\deg<span class="s4">)),</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Pbind</span>(<span class="s5">\degree</span>, <span class="s6">Pdefn</span>(<span class="s5">\deg</span>), <span class="s5">\dur</span>, 1/3)</p>
+<p class="p7"><span class="s8">Pset</span><span class="s6">(</span>\instrument<span class="s6">, </span>\Pdefhelp<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="s6"><span class="Apple-tab-span">	</span></span>Ppar<span class="s6">([</span></p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Pbind</span><span class="s6">(</span>\degree<span class="s6">, </span><span class="s8">Pdefn</span><span class="s6">(</span>\deg<span class="s6">)),</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\deg</span>), <span class="s7">\dur</span>, 1/3)</p>
 <p class="p6">])</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, <span class="s6">Prand</span>([0, 3, [1s, 4]],<span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, <span class="s8">Prand</span>([0, 3, [1s, 4]],<span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, <span class="s6">Pn</span>(<span class="s6">Pshuf</span>([0, 3, 2, 7, 6],2),<span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, <span class="s8">Pn</span>(<span class="s8">Pshuf</span>([0, 3, 2, 7, 6],2),<span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\deg</span><span class="s4">, </span>Plazy<span class="s4"> { </span>var<span class="s4"> pat;</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pat = [<span class="s6">Pshuf</span>([0, 3, 2, 7, 6],2), <span class="s6">Pseries</span>(0, 1, 11), <span class="s6">Pseries</span>(11, -1, 11)].choose;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Pn</span>(pat, <span class="s6">inf</span>)</p>
+<p class="p4">Pdefn<span class="s6">(</span><span class="s7">\deg</span><span class="s6">, </span>Plazy<span class="s6"> { </span>var<span class="s6"> pat;</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pat = [<span class="s8">Pshuf</span>([0, 3, 2, 7, 6],2), <span class="s8">Pseries</span>(0, 1, 11), <span class="s8">Pseries</span>(11, -1, 11)].choose;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pn</span>(pat, <span class="s8">inf</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
@@ -206,18 +212,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">// if quant is set, the update is done at the next beat or whatever is specified:</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>).quant = 4;</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, <span class="s6">Pn</span>(<span class="s6">Pseries</span>(0, 1, 8),<span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>).quant = 4;</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, <span class="s8">Pn</span>(<span class="s8">Pseries</span>(0, 1, 8),<span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\deg</span><span class="s4">).quant = </span><span class="s6">nil</span><span class="s4">; </span>// activate immediately again</p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\deg</span><span class="s6">).quant = </span><span class="s8">nil</span><span class="s6">; </span>// activate immediately again</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\deg</span><span class="s4">, {</span></p>
+<p class="p4">Pdefn<span class="s6">(</span><span class="s7">\deg</span><span class="s6">, {</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p6"><span class="Apple-tab-span">	</span>5.do { <span class="s6">|i|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>5.do { <span class="s8">|i|</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[1, 3, 4].choose.yield;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[5, 0, 12].choose.yield;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[14, 3, 4].choose.do { <span class="s6">|j|</span> (i % j).postln.yield };</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[14, 3, 4].choose.do { <span class="s8">|j|</span> (i % j).postln.yield };</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
 <p class="p6">})</p>
@@ -235,19 +241,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">called <b>count(n).</b></p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
-<p class="p6">z = <span class="s6">Pbind</span>(<span class="s5">\degree</span>, <span class="s6">Pdefn</span>(<span class="s5">\x</span>), <span class="s5">\dur</span>, 0.25).play;</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>((0..5), <span class="s6">inf</span>)).condition_({ <span class="s6">|val, i|</span> i.postln % 6 == 0 });</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>((0..8), <span class="s6">inf</span>)).condition_({ <span class="s6">|val, i|</span> i.postln % 9 == 0 });</p>
+<p class="p6">z = <span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\x</span>), <span class="s7">\dur</span>, 0.25).play;</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..5), <span class="s8">inf</span>)).condition_({ <span class="s8">|val, i|</span> i.postln % 6 == 0 });</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..8), <span class="s8">inf</span>)).condition_({ <span class="s8">|val, i|</span> i.postln % 9 == 0 });</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5">// the above is equvalent to:</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>, <span class="s6">Pseq</span>((0..8), <span class="s6">inf</span>)).count(9);</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..8), <span class="s8">inf</span>)).count(9);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>reset</b></p>
 <p class="p8"><span class="Apple-converted-space"> </span></p>
 <p class="p5">// reset to change immediately:</p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\x</span>).reset;</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>).reset;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -255,11 +261,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b><i>Functions as arguments to Pdefn</i></b></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });</p>
 <p class="p2"><br></p>
 <p class="p5">// equivalent to:</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\deg</span>, <span class="s6">Proutine</span> { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\deg</span>, <span class="s8">Proutine</span> { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });</p>
 <p class="p2"><br></p>
 <p class="p5">// this is not exactly true, see below..</p>
 <p class="p2"><br></p>
@@ -273,51 +279,51 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">// set() creates a local environment that overrides the outer currentEnvironment</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).set(<span class="s5">\a</span>, 1, <span class="s5">\b</span>, 5);</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).set(<span class="s7">\a</span>, 1, <span class="s7">\b</span>, 5);</p>
 <p class="p6">(</p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\z</span><span class="s4">, { </span>|e|<span class="s4"> <span class="Apple-converted-space"> </span></span></p>
+<p class="p4">Pdefn<span class="s6">(</span><span class="s7">\z</span><span class="s6">, { </span>|e|<span class="s6"> <span class="Apple-converted-space"> </span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>loop { yield((e.a + e.b) + 0.1.rand.round(0.01)) }<span class="Apple-converted-space"> </span></p>
 <p class="p6">})</p>
-<p class="p5"><span class="s4">); </span>// [1]</p>
+<p class="p5"><span class="s6">); </span>// [1]</p>
 <p class="p2"><br></p>
-<p class="p6">t = <span class="s6">Pdefn</span>(<span class="s5">\z</span>).asStream;</p>
+<p class="p6">t = <span class="s8">Pdefn</span>(<span class="s7">\z</span>).asStream;</p>
 <p class="p2"><br></p>
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p4">Pdefn<span class="s4">(</span><span class="s5">\z</span><span class="s4">, { </span>|e|<span class="s4"> <span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>//(e.a + e.b) + 0.1.rand.round(0.01) 1</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Pseq</span>([1, 2, e.a], 1)</p>
+<p class="p4">Pdefn<span class="s6">(</span><span class="s7">\z</span><span class="s6">, { </span>|e|<span class="s6"> <span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>//(e.a + e.b) + 0.1.rand.round(0.01) 1</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s8">Pseq</span>([1, 2, e.a], 1)</p>
 <p class="p6">})</p>
 <p class="p6">);<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>, <span class="s6">Pseq</span>([1, 2, 3], 1));<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>, <span class="s8">Pseq</span>([1, 2, 3], 1));<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p6">e = <span class="s6">Pdefn</span>(<span class="s5">\z</span>).envir</p>
+<p class="p6">e = <span class="s8">Pdefn</span>(<span class="s7">\z</span>).envir</p>
 <p class="p6">d</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).set(<span class="s5">\a</span>, 3);</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).set(<span class="s7">\a</span>, 3);</p>
 <p class="p2"><br></p>
 <p class="p6">t.next;</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).set(<span class="s5">\a</span>, <span class="s6">Pseq</span>([1, 2, 3], <span class="s6">inf</span>));</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).set(<span class="s7">\a</span>, <span class="s8">Pseq</span>([1, 2, 3], <span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\z</span><span class="s4">).envir; </span>// post the envir</p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\z</span><span class="s6">).envir; </span>// post the envir</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5">// using the "map" message one can map one Pdefn to the other:</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).map(<span class="s5">\a</span>, <span class="s5">\other</span>);</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).map(<span class="s7">\a</span>, <span class="s7">\other</span>);</p>
 <p class="p2"><br></p>
-<p class="p6">t = <span class="s6">Pn</span>(<span class="s6">Pdefn</span>(<span class="s5">\z</span>)).asStream;</p>
+<p class="p6">t = <span class="s8">Pn</span>(<span class="s8">Pdefn</span>(<span class="s7">\z</span>)).asStream;</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s4">t.nextN(3); </span>// Pdefn default value (1) is used</p>
+<p class="p5"><span class="s6">t.nextN(3); </span>// Pdefn default value (1) is used</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s6">Pdefn</span><span class="s4">(</span><span class="s5">\other</span><span class="s4">, </span><span class="s6">Prand</span><span class="s4">([200, 300, 400], </span><span class="s6">inf</span><span class="s4">)); </span>// assign a pattern to \other</p>
+<p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\other</span><span class="s6">, </span><span class="s8">Prand</span><span class="s6">([200, 300, 400], </span><span class="s8">inf</span><span class="s6">)); </span>// assign a pattern to \other</p>
 <p class="p2"><br></p>
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
@@ -326,7 +332,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// assign the currentEnvironment to the envir's parent (or proto) field</p>
 <p class="p5">// (this shouldn't be a proxy space of course.)</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s6">Pdefn</span>(<span class="s5">\z</span>).envir.parent = currentEnvironment;</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).envir.parent = currentEnvironment;</p>
 <p class="p6">~a = 9;</p>
 <p class="p6">~b = 10;<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 17.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,16 +14,17 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Monaco; min-height: 11.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902a19}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #842d1c}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #091fb1}
-span.s1 {text-decoration: underline}
-span.s2 {color: #091fb1}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #456c20}
-span.s6 {color: #902a19}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0029ac}
+span.s1 {color: #0000ff}
+span.s2 {text-decoration: underline}
+span.s3 {color: #0029ac}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #4e6a26}
+span.s7 {color: #842d1c}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -32,10 +33,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>superclass: NodeProxy</b></p>
 <p class="p4"><br></p>
-<p class="p5">a node proxy that can record</p>
+<p class="p5">a <a href="NodeProxy.html"><span class="s1">NodeProxy</span></a> that can record</p>
 <p class="p4"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s1">instance creation:</span></b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="s2">instance creation:</span></b></p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>*new(server) / *audio(server, numChannels)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>see superclass</p>
@@ -44,7 +47,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>instantiate a new proxy that listens to the in proxy.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s1">access:</span></b></p>
+<p class="p3"><b><span class="s2">access:</span></b></p>
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>open(path, headerformat, sampleformat)</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>open new file and initialize buffer on server</p>
@@ -66,24 +69,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>until the proxy is not used by any output ( either .play or .ar/.kr )</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>it is not running on the server. you can wake it up to force it playing.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>___________________________________________________</b></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5"><b>examples</b></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">s = <span class="s2">Server</span>.local;</p>
+<p class="p7">s = <span class="s3">Server</span>.local;</p>
 <p class="p7">s.boot;</p>
 <p class="p6"><br></p>
-<p class="p7">a = <span class="s2">RecNodeProxy</span>.audio(s, 2);</p>
-<p class="p7">a.source = { <span class="s2">SinOsc</span>.ar([400,500], 0, 0.1) };</p>
-<p class="p8"><span class="s3">a.play; </span>//monitor;</p>
-<p class="p9"><span class="s3">a.open(</span>"xproxySpace.aif"<span class="s3">);</span></p>
+<p class="p7">a = <span class="s3">RecNodeProxy</span>.audio(s, 2);</p>
+<p class="p7">a.source = { <span class="s3">SinOsc</span>.ar([400,500], 0, 0.1) };</p>
+<p class="p8"><span class="s4">a.play; </span>//monitor;</p>
+<p class="p9"><span class="s4">a.open(</span>"xproxySpace.aif"<span class="s4">);</span></p>
 <p class="p7">a.record(false);</p>
 <p class="p6"><br></p>
-<p class="p7">a.source = { <span class="s2">SinOsc</span>.ar([400,700], 0, 0.1) };</p>
-<p class="p7">a.source = { <span class="s2">SinOsc</span>.ar([410,510], 0, 0.1) };</p>
-<p class="p7">a.source = { <span class="s2">SinOsc</span>.ar([<span class="s2">LFNoise1</span>.kr(80, 100, 300),500], 0, 0.1) };</p>
+<p class="p7">a.source = { <span class="s3">SinOsc</span>.ar([400,700], 0, 0.1) };</p>
+<p class="p7">a.source = { <span class="s3">SinOsc</span>.ar([410,510], 0, 0.1) };</p>
+<p class="p7">a.source = { <span class="s3">SinOsc</span>.ar([<span class="s3">LFNoise1</span>.kr(80, 100, 300),500], 0, 0.1) };</p>
 <p class="p6"><br></p>
 <p class="p8">//stop recording and close file</p>
 <p class="p7">a.close;</p>
@@ -93,19 +95,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5"><b>recording from some bus</b></p>
 <p class="p10"><br></p>
-<p class="p7">a = <span class="s2">Bus</span>.audio(s, 2);<span class="Apple-converted-space"> </span></p>
+<p class="p7">a = <span class="s3">Bus</span>.audio(s, 2);<span class="Apple-converted-space"> </span></p>
 <p class="p6"><br></p>
-<p class="p7"><span class="s2">SynthDef</span>(<span class="s4">"test"</span>, { <span class="s2">arg</span> out; <span class="s2">Out</span>.ar(out, { <span class="s2">WhiteNoise</span>.ar(0.1) }.dup(2)) }).send(s);</p>
-<p class="p7">x = <span class="s2">Synth</span>(<span class="s4">"test"</span>, [<span class="s5">\out</span>, a]);</p>
+<p class="p7"><span class="s3">SynthDef</span>(<span class="s5">"test"</span>, { <span class="s3">arg</span> out; <span class="s3">Out</span>.ar(out, { <span class="s3">WhiteNoise</span>.ar(0.1) }.dup(2)) }).send(s);</p>
+<p class="p7">x = <span class="s3">Synth</span>(<span class="s5">"test"</span>, [<span class="s6">\out</span>, a]);</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">n = <span class="s2">RecNodeProxy</span>.audio(s, 2);</p>
-<p class="p7">n.source = { <span class="s2">InFeedback</span>.ar(a, 2) };</p>
+<p class="p7">n = <span class="s3">RecNodeProxy</span>.audio(s, 2);</p>
+<p class="p7">n.source = { <span class="s3">InFeedback</span>.ar(a, 2) };</p>
 <p class="p6"><br></p>
-<p class="p8"><span class="s3">n.play;</span>//monitor</p>
-<p class="p8"><span class="s3">n.stop;</span>//turn off monitor</p>
+<p class="p8"><span class="s4">n.play;</span>//monitor</p>
+<p class="p8"><span class="s4">n.stop;</span>//turn off monitor</p>
 <p class="p6"><br></p>
-<p class="p9"><span class="s3">n.open(</span>"noise.aif"<span class="s3">);</span></p>
+<p class="p9"><span class="s4">n.open(</span>"noise.aif"<span class="s4">);</span></p>
 <p class="p7">n.record;</p>
 <p class="p7">n.unpause;</p>
 <p class="p6"><br></p>
@@ -116,42 +118,42 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">b = <span class="s2">NodeProxy</span>.audio(s, 2);</p>
-<p class="p8"><span class="s3">b.play; </span>//listen to b</p>
-<p class="p7">b.source = { <span class="s2">SinOsc</span>.ar([400,500], 0, 0.1) }; <span class="s6">//play something</span></p>
+<p class="p7">b = <span class="s3">NodeProxy</span>.audio(s, 2);</p>
+<p class="p8"><span class="s4">b.play; </span>//listen to b</p>
+<p class="p7">b.source = { <span class="s3">SinOsc</span>.ar([400,500], 0, 0.1) }; <span class="s7">//play something</span></p>
 <p class="p6"><br></p>
-<p class="p7">r = <span class="s2">RecNodeProxy</span>.newFrom(b);</p>
-<p class="p9"><span class="s3">r.open(</span>"recproxy514.aif"<span class="s3">); </span><span class="s6">//open file</span></p>
-<p class="p8"><span class="s3">r.record; </span>//start recorder (paused)</p>
+<p class="p7">r = <span class="s3">RecNodeProxy</span>.newFrom(b);</p>
+<p class="p9"><span class="s4">r.open(</span>"recproxy514.aif"<span class="s4">); </span><span class="s7">//open file</span></p>
+<p class="p8"><span class="s4">r.record; </span>//start recorder (paused)</p>
 <p class="p6"><br></p>
-<p class="p8"><span class="s3">r.unpause; </span>//start recording</p>
+<p class="p8"><span class="s4">r.unpause; </span>//start recording</p>
 <p class="p6"><br></p>
-<p class="p7">b.source = { <span class="s2">SinOsc</span>.ar([430,500], 0, 0.1) };</p>
-<p class="p7">b.source = { <span class="s2">SinOsc</span>.ar([410,510], 0, 0.1) };</p>
-<p class="p7">b.source = { <span class="s2">SinOsc</span>.ar([<span class="s2">LFNoise1</span>.kr(80, 100, 300), 500], 0, 0.1) };</p>
+<p class="p7">b.source = { <span class="s3">SinOsc</span>.ar([430,500], 0, 0.1) };</p>
+<p class="p7">b.source = { <span class="s3">SinOsc</span>.ar([410,510], 0, 0.1) };</p>
+<p class="p7">b.source = { <span class="s3">SinOsc</span>.ar([<span class="s3">LFNoise1</span>.kr(80, 100, 300), 500], 0, 0.1) };</p>
 <p class="p7">r.pause;</p>
-<p class="p7">b.source = { <span class="s2">WhiteNoise</span>.ar(0.01) };</p>
+<p class="p7">b.source = { <span class="s3">WhiteNoise</span>.ar(0.01) };</p>
 <p class="p7">r.unpause;</p>
 <p class="p7">r.pause;</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p8">//stop recording and close file</p>
 <p class="p7">r.close;</p>
-<p class="p8"><span class="s3">b.stop; </span>//stop listen to b</p>
+<p class="p8"><span class="s4">b.stop; </span>//stop listen to b</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5"><b>instance creation from an existent node proxy II</b></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">b = <span class="s2">NodeProxy</span>.audio(s, 2);</p>
-<p class="p8"><span class="s3">b.play; </span>//listen to b</p>
-<p class="p7">b.source = { <span class="s2">SinOsc</span>.ar([400,500], 0, 0.1) }; <span class="s6">//play something</span></p>
+<p class="p7">b = <span class="s3">NodeProxy</span>.audio(s, 2);</p>
+<p class="p8"><span class="s4">b.play; </span>//listen to b</p>
+<p class="p7">b.source = { <span class="s3">SinOsc</span>.ar([400,500], 0, 0.1) }; <span class="s7">//play something</span></p>
 <p class="p6"><br></p>
-<p class="p8"><span class="s3">r = </span><span class="s2">b.record</span><span class="s3">(</span><span class="s4">"recproxy101.aiff"</span><span class="s3">); </span>//start recorder (paused)</p>
-<p class="p8"><span class="s3">r.unpause; </span>//start recording</p>
-<p class="p8"><span class="s3">r.close;<span class="Apple-converted-space">  </span></span>//end recording, close file</p>
-<p class="p8"><span class="s3">b.stop;<span class="Apple-tab-span">	</span></span>//stop listen</p>
+<p class="p8"><span class="s4">r = </span><span class="s3">b.record</span><span class="s4">(</span><span class="s5">"recproxy101.aiff"</span><span class="s4">); </span>//start recorder (paused)</p>
+<p class="p8"><span class="s4">r.unpause; </span>//start recording</p>
+<p class="p8"><span class="s4">r.close;<span class="Apple-converted-space">  </span></span>//end recording, close file</p>
+<p class="p8"><span class="s4">b.stop;<span class="Apple-tab-span">	</span></span>//stop listen</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
@@ -160,18 +162,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">s = <span class="s2">Server</span>.local;</p>
+<p class="p7">s = <span class="s3">Server</span>.local;</p>
 <p class="p7">s.boot;</p>
 <p class="p6"><br></p>
-<p class="p7">a = <span class="s2">RecNodeProxy</span>.audio(s, 2);</p>
-<p class="p8"><span class="s3">b = a.index; </span>//get the bus index;</p>
-<p class="p7">a.play; <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">//monitor;</span></p>
-<p class="p9"><span class="s3">a.open(</span>"xproxySpace.aif"<span class="s3">);</span></p>
+<p class="p7">a = <span class="s3">RecNodeProxy</span>.audio(s, 2);</p>
+<p class="p8"><span class="s4">b = a.index; </span>//get the bus index;</p>
+<p class="p7">a.play; <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">//monitor;</span></p>
+<p class="p9"><span class="s4">a.open(</span>"xproxySpace.aif"<span class="s4">);</span></p>
 <p class="p7">a.record;</p>
 <p class="p7">a.unpause;</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
-<p class="p11">Routine<span class="s3">({</span></p>
+<p class="p11">Routine<span class="s4">({</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>var id;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>loop({</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>id = s.nextNodeID;</p>
