@@ -28,6 +28,7 @@ import subprocess
 import re
 import types
 import tarfile
+import platform   # Seems to have more portable uname() than os
 
 # ======================================================================
 # constants
@@ -41,15 +42,13 @@ f = open('VERSION')
 VERSION = f.readline()
 f.close()
 
-subprocess.call(['sh', 'setMainVersion.sh'])
-
 def short_cpu_name(cpu):
     if cpu == 'Power Macintosh':
         cpu = 'ppc'
     return cpu.lower()
 
-PLATFORM = os.uname()[0].lower()
-CPU = short_cpu_name(os.uname()[4])
+PLATFORM = platform.uname()[0].lower()
+CPU = short_cpu_name(platform.uname()[4])
 
 #print os.uname()
 
@@ -90,6 +89,9 @@ elif CPU in [ 'i586', 'i686' ]:
 else:
     DEFAULT_OPT_ARCH = None
 
+
+if PLATFORM != 'windows':
+	subprocess.call(['sh', 'setMainVersion.sh'])
 
 
 # ======================================================================
@@ -362,7 +364,10 @@ if os.path.exists('/usr/lib/ccache/bin'):
     env['ENV']['CCACHE_DIR']   = os.environ['CCACHE_DIR']
     
 env['ENV']['PATH'] = os.environ['PATH']
-env['ENV']['HOME'] = os.environ['HOME']
+if PLATFORM == 'windows':
+	env['ENV']['HOME'] = os.environ['HOMEPATH']
+else:
+	env['ENV']['HOME'] = os.environ['HOME']
 
 
 # ======================================================================
