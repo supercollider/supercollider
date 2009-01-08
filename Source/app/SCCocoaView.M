@@ -53,6 +53,9 @@ extern PyrObject*		newPyrSCImage(VMGlobals* g); // class creation func
 
 void SyntaxColorize(NSTextView* textView);
 
+static NSString *sSCObjType = @"SuperCollider object address";
+extern PyrSymbol *s_scview;
+
 @implementation SCCocoaTextViewResponder
 
 - (struct PyrObject*)getSCObject
@@ -102,10 +105,12 @@ void SyntaxColorize(NSTextView* textView);
     
 }
 
-- (void) keyDown: (NSEvent*) event
+//- (void) keyDown: (NSEvent*) event
+- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)characters
 {
 	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
 		if(usesTabToFocusNextView){
+			NSEvent *event = [NSApp currentEvent];
 		    NSString *characters = [event characters];
 			unsigned int modifiers = [event modifierFlags];	
 			uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
@@ -116,13 +121,18 @@ void SyntaxColorize(NSTextView* textView);
 			}				
 			if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
 			   mSCViewObject->tabPrevFocus(); //this does not work as expected!
-				return;
+				return NO;
 			} else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
 				mSCViewObject->tabNextFocus();
-				return;
+				return NO;
 			} // other tab keys avail for user 
 		}
+	return YES;
 
+}
+- (void) keyDown: (NSEvent*) event
+{
+	
 }
 - (void) keyUp: (NSEvent*) event
 {
@@ -132,6 +142,7 @@ void SyntaxColorize(NSTextView* textView);
 {
 	mSCViewObject->makeFocus(true);
 }
+
 - (void) setUsesTabToFocusNextView: (BOOL) flag
 {
 	usesTabToFocusNextView = flag;
@@ -246,6 +257,442 @@ void SyntaxColorize(NSTextView* textView);
 
 @end
 
+
+@implementation SCTextFieldResponder
+
+- (struct PyrObject*)getSCObject
+{
+	return mSCViewObject->GetSCObj();
+}
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+	textReallyChanged = true;
+}
+//- (void)controlTextDidEndEditing:(NSNotification *)aNotification
+//{
+//	if(textReallyChanged){
+//		pthread_mutex_lock (&gLangMutex);
+//		PyrSymbol *method = getsym("doAction");
+//		PyrObject *mObj;
+//		if (mObj = mSCViewObject->GetSCObj()) {
+//			VMGlobals *g = gMainVMGlobals;
+//			g->canCallOS = true;
+//			++g->sp;  SetObject(g->sp, mObj); 
+//			runInterpreter(g, method, 1);		
+//			g->canCallOS = false;
+//		}
+//		pthread_mutex_unlock (&gLangMutex);
+//		textReallyChanged = false;
+//	}
+//}
+- (void)controlTextDidBeginEditing:(NSNotification *)aNotification
+{
+	textReallyChanged = false;
+}
+
+//- (void)mouseDown:(NSEvent *)theEvent
+//{
+//	
+//	mSCViewObject->makeFocus(true);
+//	unsigned int modifiers = [theEvent modifierFlags];
+//    //control tab/escape doesn't get passed here at all ?
+//	if(modifiers & NSCommandKeyMask) {
+//		[self selectText:self]; // exit editing and select all for a drag
+//		[self display];
+//	} else [super mouseDown:theEvent];
+//}
+
+-(void)rightMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
+-(void)otherMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	//NSLog(@"SCGraphView MOUSEDOWN");
+	//[[self window] makeFirstResponder:self]; // there may be an active field editor
+    BOOL keepOn = YES;
+    //BOOL isInside = YES;
+    NSPoint mouseLoc;
+	//NSLog(@"Click count: %i", [theEvent clickCount]);
+	//if([theEvent clickCount] == 2) return;
+	//if (!mTopView) return;
+    unsigned int modifiers = [theEvent modifierFlags];
+    mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+	SCTopView *mTopView = mSCViewObject->getTop();
+    if (mSCViewObject) {
+		mDragStarted = NO;
+		//mMenuView = 0;
+        mSCViewObject->makeFocus(true);
+		bool constructionmode = mTopView->ConstructionMode();
+		if(!constructionmode)
+		{
+			mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);				
+			mSCViewObject->mouseBeginTrack(scpoint, modifiers,theEvent);
+		}else
+			mSCViewObject->setConstructionModeFromPoint(scpoint);
+		
+        [self displayIfNeeded];
+        
+        while (keepOn && !mDragStarted) {
+            theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
+						NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged 
+						| NSKeyDownMask | NSKeyUpMask
+						];
+			modifiers = [theEvent modifierFlags]; // added
+            mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+            //isInside = [self mouse:mouseLoc inRect:[self bounds]];
+            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
+            int evtype = [theEvent type];
+            switch ([theEvent type]) {
+				case NSLeftMouseDown:
+				case NSRightMouseDown:
+					if(constructionmode)
+					{
+						mSCViewObject->doConstructionMove(scpoint);
+						mTopView->refresh();
+					}else
+						mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);	
+					//						post("down \n");
+					break;
+                case NSLeftMouseDragged:
+                case NSRightMouseDragged:
+                case NSOtherMouseDragged:
+					if(constructionmode)
+					{
+						mSCViewObject->doConstructionMove(scpoint);
+						mTopView->refresh();
+					}else
+						mSCViewObject->mouseTrack(scpoint, modifiers,theEvent);
+					mSCViewObject->mouseMoveAction(scpoint, modifiers,theEvent);				
+					//							post("drag \n");
+					break;
+                case NSLeftMouseUp:
+                case NSRightMouseUp:
+                case NSOtherMouseUp:
+					if(constructionmode)
+					{
+						//				view->doConstructionMove(scpoint);
+						mTopView->refresh();
+					}else
+					{
+						//							if(!view.GetSCObj()) break;						
+						mSCViewObject->mouseUpAction(scpoint, modifiers,theEvent);						
+						mSCViewObject->mouseEndTrack(scpoint, modifiers,theEvent);
+					}
+					keepOn = NO;
+					break;
+				case NSKeyDown:
+					if(!constructionmode)
+					{
+						[self keyDown:theEvent];
+					}
+					break;
+				case NSKeyUp:
+					if(!constructionmode)
+					{
+						[self keyUp:theEvent];
+					}
+					break;
+                default:
+                    post("evtype %d %4.4s\n", evtype, (char*)&evtype);
+					/* Ignore any other kind of event. */
+					break;
+            }
+			//			display:
+            [self displayIfNeeded];
+            flushPostBuf();
+        }
+    }
+	//mMenuView = 0;
+    return;
+}
+
+-(void)mouseMoved:(NSEvent*)theEvent 
+{
+	NSPoint mouseLoc;
+    unsigned int modifiers = [theEvent modifierFlags];
+    mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
+    if (mSCViewObject) {
+		mDragStarted = NO;
+		//        view->makeFocus(true);
+        mSCViewObject->mouseOver(scpoint, modifiers, theEvent);
+	}
+}
+
+const int circDiam = 20;
+
+- (NSImage*) makeDragImage: (PyrSlot*)slot label: (NSString*)label
+{
+	
+    if (!slot) return 0;
+    
+    NSString *nsstring;
+    if(label) {
+		nsstring = label;
+	} else if (slot) {
+        PyrClass *classobj = classOfSlot(slot);
+        nsstring = [NSString stringWithCString: classobj->name.us->name];
+        if (!nsstring) return 0;
+    } else {
+        nsstring = @"No Data!";
+    }
+	
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    NSFont *font = [NSFont fontWithName: @"Helvetica" size: 12];
+    if (!font) return 0;
+    [dict setObject: font forKey: NSFontAttributeName ];
+	
+    NSSize strSize = [nsstring sizeWithAttributes: dict];
+    NSRect strRect = NSMakeRect(circDiam, 0, circDiam + strSize.width, strSize.height);
+    
+    NSSize size = NSMakeSize(circDiam+strSize.width, sc_max(circDiam, strSize.height));
+    
+    NSImage *image = [[NSImage alloc] initWithSize: size];
+    if (!image) return 0;
+    
+    [image autorelease];
+    
+    float alpha = 0.6;
+    NSColor *colorClear = [NSColor colorWithCalibratedRed: 0
+													green: 0 
+													 blue: 0 
+													alpha: 0];
+    NSColor *colorTransBlack = [NSColor colorWithCalibratedRed: 0
+														 green: 0 
+														  blue: 0 
+														 alpha: alpha];
+    NSColor *colorTransBlue = [NSColor colorWithCalibratedRed: 0
+														green: 0 
+														 blue: 1 
+														alpha: alpha];
+    /*NSColor *colorTransLtBlue = [NSColor colorWithCalibratedRed: 0.8
+	 green: 0.8 
+	 blue: 1 
+	 alpha: alpha];*/
+    NSColor *colorTransWhite = [NSColor colorWithCalibratedRed: 1
+														 green: 1 
+														  blue: 1 
+														 alpha: alpha];
+    NSColor *colorCaptionBackgnd = [NSColor colorWithCalibratedRed: 0
+															 green: 0
+															  blue: 0 
+															 alpha: 0.4];
+    NSColor *colorWhite = [NSColor colorWithCalibratedRed: 1
+													green: 1 
+													 blue: 1 
+													alpha: 1];
+    
+    [dict setObject: colorWhite forKey: NSForegroundColorAttributeName ];
+	
+    [image lockFocus];
+    [colorClear set];
+    [NSBezierPath fillRect: NSMakeRect(0,0,size.width,size.height)];
+    NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(1,1,circDiam-2,circDiam-2)];
+    
+    [path setLineWidth: 1.5];
+    [colorTransBlue set];
+    [path fill];
+    
+    NSBezierPath *hilite = [NSBezierPath bezierPathWithOvalInRect: 
+							NSMakeRect(circDiam*0.3, circDiam*0.7, circDiam*0.4, circDiam*0.15)];
+	
+    [colorTransWhite set];
+    [hilite fill];
+	
+    [colorTransBlack set];
+    [path stroke];
+	
+    [colorCaptionBackgnd set];
+    [NSBezierPath fillRect: strRect];
+    
+    [nsstring drawInRect: strRect withAttributes: dict];
+	
+    [image unlockFocus];
+    
+    return image;
+}
+
+
+- (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string label:(NSString*) label
+{
+    NSImage *image = [self makeDragImage: slot label: label];
+    
+    NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+    [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil] owner: self];
+    
+	int fakeData;
+    NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
+    
+    [pboard setData: data forType: sSCObjType];
+    [pboard setString: string forType: NSStringPboardType];
+	
+    NSSize imageSize = [image size];
+    where.x -= circDiam / 2;
+    where.y += circDiam / 4;
+    
+    NSSize dragOffset = NSMakeSize(0.0, 0.0);
+    mDragStarted = YES;
+    [self dragImage: image at: where offset: dragOffset event: [NSApp currentEvent]
+		 pasteboard: pboard source: self slideBack: YES];
+}
+
+//- (void)mouseDragged:(NSEvent *)theEvent
+//{
+//    NSSize dragOffset = NSMakeSize(0.0, 0.0);
+//    NSPasteboard *pboard;
+//	
+//    pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+//    [pboard declareTypes:[NSArray arrayWithObjects:sSCObjType, NSStringPboardType, nil]  owner:self];
+//    
+//	int fakeData;
+//    NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
+//    
+//    [pboard setData: data forType: sSCObjType];
+//    [pboard setString: [self stringValue] forType: NSStringPboardType];
+//	
+//    [self dragImage:[[[self window] fieldEditor:NO forObject:self] dragImageForSelectionWithEvent:NSMakePoint(0.0, 0.0)] at:[self imageLocation] offset:dragOffset
+//			  event:theEvent pasteboard:pboard source:self slideBack:YES];
+//	
+//    return;
+//}
+
+- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
+{
+	return YES;
+}
+
+- (void)setSCView: (struct SCTextField*)inObject
+{
+	mSCViewObject = inObject;
+}
+//
+//// TEST: For tab-index
+//- (BOOL)becomeFirstResponder
+//{
+//	post("becomeFirstResponder\n");
+//	return YES;
+//}
+//-(BOOL) acceptsFirstResponder
+//{
+//	return YES;
+//}
+//
+//- (BOOL)resignFirstResponder
+//{
+//	post("resignFirstResponder\n");
+//	[[self window] endEditingFor:self];
+//	return YES;
+//}
+//- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
+//{
+//	post("ha!\n");
+//	NSLog(@"fr: %@", [[self window] firstResponder]);
+//	return YES;
+//}
+
+// handle tabs and enter
+- (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector
+{
+	//NSLog(@"sel: %@", NSStringFromSelector(aSelector));
+	if (aSelector == @selector(insertTab:)){
+		mSCViewObject->tabPrevFocus(); 
+		return YES;
+	} else if (aSelector == @selector(insertBacktab:)){
+		mSCViewObject->tabNextFocus();
+		return YES;
+	} else if (aSelector == @selector(insertNewline:)){
+		[[self window] endEditingFor:self];
+		if(textReallyChanged){
+			pthread_mutex_lock (&gLangMutex);
+			PyrSymbol *method = getsym("doAction");
+			PyrObject *mObj;
+			if (mObj = mSCViewObject->GetSCObj()) {
+				VMGlobals *g = gMainVMGlobals;
+				g->canCallOS = true;
+				++g->sp;  SetObject(g->sp, mObj); 
+				runInterpreter(g, method, 1);		
+				g->canCallOS = false;
+			}
+			pthread_mutex_unlock (&gLangMutex);
+			textReallyChanged = false;
+			return NO; // this will let the field editor end editing
+		}
+	}
+	return NO;
+}
+
+- (void)setTextReallyChanged:(bool)changed 
+{ 
+	textReallyChanged = changed; 
+}
+
+- (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)dragInfo {
+	NSPasteboard* pboard = [dragInfo draggingPasteboard];
+	if ([[pboard types] containsObject: sSCObjType]) {
+		return mSCViewObject->draggingEntered();
+	} else if ([[pboard types] containsObject: NSStringPboardType]) {
+		NSString *nsstring = [pboard stringForType: NSStringPboardType];
+		if (!nsstring) return NSDragOperationNone;
+		
+		pthread_mutex_lock (&gLangMutex);
+		VMGlobals *g = gMainVMGlobals;
+		PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
+		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+		SetObject(&g->classvars->slots[classVarIndex+0], pstrobj);
+		g->gc->GCWrite(g->classvars, pstrobj);
+		post("aha!\n");
+		NSLog(@"ahadragSource %@", [dragInfo draggingSource]);
+		//PyrSymbol *method = getsym("importDrag");
+		//g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, s_scview->u.classobj); 
+		//runInterpreter(g, method, 1);
+		//g->canCallOS = false;
+		
+		pthread_mutex_unlock (&gLangMutex);
+		
+		int fakeData;
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		[pboard setData: data forType: sSCObjType];
+		
+	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
+		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
+		if (!files) return NSDragOperationNone;
+		pthread_mutex_lock (&gLangMutex);
+		VMGlobals *g = gMainVMGlobals;
+		int size = [files count];
+		PyrObject* array = newPyrArray(g->gc, size, 0, true);
+		
+		for (int i=0; i<size; ++i) {
+			NSString *path = [files objectAtIndex: i];
+			PyrString *string = newPyrString(g->gc, [path UTF8String], 0, true);
+			SetObject(array->slots + array->size, string);
+			array->size++;
+			g->gc->GCWrite(array, string);
+		}
+		
+		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+		SetObject(&g->classvars->slots[classVarIndex+0], array);
+		g->gc->GCWrite(g->classvars, array);
+		
+		pthread_mutex_unlock (&gLangMutex);
+		
+		int fakeData;
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		[pboard setData: data forType: sSCObjType];
+		
+	} else {
+        return NSDragOperationNone;
+	}
+	
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+
+	return mSCViewObject->performDrag();
+}
+@end
+
+
 @implementation SCNSMenuItem
 
 - (void)setSCObject: (struct PyrObject*)inObject
@@ -345,12 +792,10 @@ void SCCocoaTextView::makeFocus(bool focus)
     if (focus) {
         if (canFocus() && !isFocus()) {
 			[mTextView setAcceptsFirstResponder:YES];
-			[[mTextView window] makeFirstResponder: mTextView];	
+			//[[mTextView window] makeFirstResponder: mTextView];	
         }
     } else {
         if (isFocus()) {
-			if([[mTextView window] firstResponder] == mTextView)
-				[[mTextView window] makeFirstResponder: mTop->GetNSView()];	
 			[mTextView setAcceptsFirstResponder:NO];
         }
     }
@@ -1476,4 +1921,295 @@ void SCQuartzComposerView::setVisibleFromParent()
 		[mQCView setHidden:YES];
 	}	
 	mTop->resetFocus();
+}
+
+
+
+////////////////////
+SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCTextField(inParent, inObj, inBounds);
+}
+
+SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+	: SCView(inParent, inObj, inBounds)
+//: SCStaticText(inParent, inObj, inBounds)
+{
+	NSRect matrect = SCtoNSRect(getDrawBounds());
+	mTextField = [[SCTextFieldResponder alloc] initWithFrame:matrect];
+	NSView *view = mTop->GetNSView();	
+	[view addSubview: mTextField];
+	
+	[mTextField setFocusRingType:NSFocusRingTypeNone];
+	//NSLog(@"SCTextField init\n");
+
+	//mCocoaToLangAction = [SCTextFieldResponder alloc];
+	[mTextField setSCView: this];
+	[mTextField setDelegate: mTextField];
+	[mTextField setTextReallyChanged:false];
+	
+	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
+	
+	// Want SC to control the tab-order
+	//BLEH [mTextField setAcceptsFirstResponder:NO];
+	
+	setVisibleFromParent();
+}
+
+SCTextField::~SCTextField()
+{
+	[mTextField removeFromSuperview];
+	[mTextField release];
+}
+
+void SCTextField::setBounds(SCRect screct)
+{
+	[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
+	mBounds = screct;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getBounds();
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}
+
+	[mTextField setFrame: SCtoNSRect(mLayout.bounds)];
+	[mTextField setBounds: SCtoNSRect(mBounds)]; //?
+	[mTextField setNeedsDisplay: YES];
+}
+
+int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	char *name = symbol->name;
+	
+	if (strcmp(name, "string")==0) {
+		if(!isKindOfSlot(slot, class_string)) return errWrongType;
+		PyrString* pstring = slot->uos;
+		if(!pstring) return errNone;
+		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		[mTextField setStringValue: string];
+		[string release];
+		[mTextField setTextReallyChanged:true];
+		return errNone;
+	}
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		mVisible = visible;
+		setVisibleFromParent();
+		return errNone;
+	}
+
+	if (strcmp(name, "font")==0) {
+		NSFont *font;
+		if (IsNil(slot)){
+			
+			font = [NSFont controlContentFontOfSize: 0.0 ];
+			
+		}else{
+		
+			if (!(isKindOfSlot(slot, s_font->u.classobj))) return errWrongType;
+			PyrSlot *nameSlot = slot->uo->slots+0;
+			PyrSlot *sizeSlot = slot->uo->slots+1;
+			float size;
+			if (IsNil(sizeSlot)){
+				size = [[mTextField font] pointSize];
+			}else{
+				int err = slotFloatVal(sizeSlot, &size);
+				if (err) return err;
+			}
+
+			PyrString *pstring = nameSlot->uos;
+			NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+			if (!fontName) return errFailed;
+			font = [NSFont fontWithName: fontName size: size];
+			if (!font) return errFailed;
+		}
+		
+		[mTextField setFont: font];
+		return errNone;
+	}
+	
+	if (strcmp(name, "stringColor")==0) {
+		err = slotColorVal(slot, &mStringColor);
+		if (err) return err;
+		NSColor *color = [NSColor colorWithCalibratedRed: mStringColor.red
+                            green: mStringColor.green 
+                            blue: mStringColor.blue 
+                            alpha: mStringColor.alpha];
+		[mTextField setTextColor: color];
+		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "boxColor")==0) {
+		err = slotColorVal(slot, &mBoxColor);
+		if (err) return err;
+		NSColor *color = [NSColor colorWithCalibratedRed: mBoxColor.red
+                            green: mBoxColor.green 
+                            blue: mBoxColor.blue 
+                            alpha: mBoxColor.alpha];
+		[mTextField setBackgroundColor: color];
+		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		err = slotGetSCRect(slot, &screct);
+		if (err) return err;
+		setBounds(screct);
+		return errNone;
+	}
+	
+	if (strcmp(name, "setEditable")==0) {
+		if(IsTrue(slot))[mTextField setEditable: YES];
+		else{
+			[mTextField setEditable: NO];
+			[mTextField abortEditing]; // If cursor is in cell, this is required to stop it.
+		}
+		return errNone;		
+	}
+
+	if (strcmp(name, "align")==0) {
+		int align;
+		if (IsSym(slot)) {
+			[[mTextField window] endEditingFor:mTextField];
+			if (slot->us->name[0] == 'l')      [mTextField setAlignment: NSLeftTextAlignment];
+			else if (slot->us->name[0] == 'r') [mTextField setAlignment: NSRightTextAlignment];
+			else if (slot->us->name[0] == 'c') [mTextField setAlignment: NSCenterTextAlignment];
+			else return errFailed;
+			
+			[mTextField display];
+		}/* else {
+			err = slotIntVal(slot, &align);
+			if (err) return err;
+			mAlignment = align;
+		} */
+		refresh();
+		return errNone;
+	}
+	
+	//return SCStaticText::setProperty(symbol, slot);
+	return SCView::setProperty(symbol, slot);
+}
+
+
+int SCTextField::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+
+	if (strcmp(name, "string")==0) {
+		NSString* str = [mTextField stringValue];
+        const char * cstr = [str UTF8String];
+        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	if (strcmp(name, "boxColor")==0) {
+		return setSlotColor(slot, &mBoxColor);
+	}
+	if (strcmp(name, "stringColor")==0) {
+		return setSlotColor(slot, &mStringColor);
+	}
+
+	//return SCStaticText::getProperty(symbol, slot);
+	return SCView::getProperty(symbol, slot);
+}
+
+
+void SCTextField::setVisibleFromParent()
+{
+	if(mVisible && mParent->isVisible()) {
+		[mTextField setHidden:NO];
+	} else {
+		[mTextField setHidden:YES];
+	}	
+	[mTextField setNeedsDisplay:YES];
+	NSRect frame = [mTextField frame];
+	[mTextField setFrame: NSInsetRect(frame,1,1)];
+	[mTextField setFrame: frame];
+	mTop->resetFocus();
+	refresh();
+}
+
+void SCTextField::tabPrevFocus()
+{
+	mTop->tabPrevFocus();
+}
+void SCTextField::tabNextFocus()
+{
+	//post("next focus\n");
+	mTop->tabNextFocus();
+}
+
+extern PyrSymbol* s_canReceiveDrag;
+
+bool SCTextField::canReceiveDrag()
+{
+    PyrSlot result;
+    sendMessage(s_canReceiveDrag, 0, 0, &result);
+    return IsTrue(&result);
+}
+
+NSDragOperation SCTextField::draggingEntered()
+{
+	bool flag = canReceiveDrag();
+	mTop->setDragView(flag ? this : 0);
+	[mTextField displayIfNeeded];
+	return flag ? NSDragOperationEvery : NSDragOperationNone;	
+}
+
+extern PyrSymbol* s_receiveDrag;
+
+BOOL SCTextField::performDrag()
+{	
+        bool flag = canReceiveDrag();
+        if (flag) {
+            mTop->setDragView(this);
+            sendMessage(s_receiveDrag, 0, 0, 0);
+        } else {
+            mTop->setDragView(0);
+        }
+        [mTextField displayIfNeeded];
+        return flag ? YES : NO;
+}
+
+void SCTextField::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    } 
+}
+
+extern PyrSymbol *s_beginDrag;
+
+void SCTextField::beginDrag(SCPoint where)
+{
+    sendMessage(s_beginDrag, 0, 0, 0);
+    
+    PyrSlot slot;
+    PyrSlot stringSlot;
+	NSString *string = 0;
+	NSString *label = 0;
+    pthread_mutex_lock (&gLangMutex);
+    if (mObj) {
+        VMGlobals *g = gMainVMGlobals;
+        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
+        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+		if (isKindOfSlot(&stringSlot, class_string)) {
+			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
+		}
+		if(mDragLabel) label = mDragLabel;
+    }
+    pthread_mutex_unlock (&gLangMutex);
+    
+    //mTop->beginDragCallback(where, &slot, string, label);
+	NSPoint point = NSMakePoint(where.x, where.y);
+    [mTextField beginDragFrom: point of: &slot string: string label: label];
 }

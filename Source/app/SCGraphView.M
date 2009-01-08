@@ -199,7 +199,8 @@ static NSString *sSCObjType = @"SuperCollider object address";
 -(void)otherMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
 - (void)mouseDown:(NSEvent *)theEvent
 {
-//	NSLog(@"SCGraphView MOUSEDOWN");
+	//NSLog(@"SCGraphView MOUSEDOWN");
+	[[self window] makeFirstResponder:self]; // there may be an active field editor
     BOOL keepOn = YES;
     //BOOL isInside = YES;
     NSPoint mouseLoc;
@@ -558,25 +559,28 @@ const int circDiam = 20;
 }
 
 - (unsigned int)draggingEntered:(id)dragInfo {
+	NSLog(@"dragSource %@", [dragInfo draggingSource]);
 	if (!mTopView) return NSDragOperationNone;
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
+	NSLog(@"types %@", [pboard types]);
 	if ([[pboard types] containsObject: sSCObjType]) {
 	
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
+		NSLog(@"string %@", nsstring);
 		if (!nsstring) return NSDragOperationNone;
-		
+		NSLog(@"goingto imp");
 		pthread_mutex_lock (&gLangMutex);
 			VMGlobals *g = gMainVMGlobals;
 			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
 			int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-			SetObject(&g->classvars->slots[classVarIndex+0], pstrobj);
+			SetObject(&g->classvars->slots[classVarIndex+0], pstrobj); // currentDrag
 			g->gc->GCWrite(g->classvars, pstrobj);
-			
-			PyrSymbol *method = getsym("importDrag");
+		
+			//PyrSymbol *method = getsym("importDrag");
 			//g->canCallOS = true;
 			++g->sp;  SetObject(g->sp, s_scview->u.classobj); 
-			runInterpreter(g, method, 1);
+			//runInterpreter(g, method, 1);
 			//g->canCallOS = false;
 			
 		pthread_mutex_unlock (&gLangMutex);

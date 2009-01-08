@@ -59,6 +59,21 @@
 
 @end
 
+@interface SCTextFieldResponder : NSTextField
+{
+	struct SCTextField *mSCViewObject;
+	bool textReallyChanged;
+	BOOL mDragStarted;
+}
+
+- (struct PyrObject*)getSCObject;
+- (void)controlTextDidChange:(NSNotification *)aNotification;
+//- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
+- (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
+- (void)setSCView: (struct SCTextField*)inObject;
+- (void)setTextReallyChanged:(bool)changed;
+@end
+
 @interface SCNSMenuItem : NSMenuItem {
 	struct PyrObject *mMenuItemObj;
 }
@@ -92,6 +107,8 @@ public:
 	NSURL* getLastURL() {return mLastURL;};
 	bool SCCocoaTextView::linkAction(NSString *path);
 	
+	virtual NSView* focusResponder() { return mTextView; }
+	
 protected:
 	SCTextView *mTextView;
 	NSScrollView *mScrollView;
@@ -109,6 +126,7 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void setVisibleFromParent();
+	virtual NSView* focusResponder() { return mMovieView; }
 
 protected:
 	NSMovieView *mMovieView;
@@ -116,6 +134,34 @@ protected:
 	TimeBase mTimeBase;
 	TimeRecord mTimeRecord;
 	Movie mMovie;	
+};
+
+//class SCTextField : public SCStaticText
+class SCTextField : public SCView
+{
+public:	
+	SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCTextField();
+	virtual void setBounds(SCRect inBounds);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void setVisibleFromParent();
+	void tabPrevFocus();
+	void tabNextFocus();
+	virtual NSView* focusResponder() { return mTextField; }
+	BOOL SCTextField::performDrag();
+	NSDragOperation draggingEntered();
+	virtual bool canReceiveDrag();
+	SCTopView* getTop() { return mTop; }
+	virtual void mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void beginDrag(SCPoint where);
+
+protected:
+	SCTextFieldResponder *mTextField;
+    SCColor mBoxColor;
+	//SCTextFieldResponder *mCocoaToLangAction;
+	
+	SCColor mStringColor;
 };
 
 //////////////////////////////////////
@@ -136,6 +182,7 @@ public:
 	virtual id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr);
 	virtual int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type);
 	virtual void setVisibleFromParent();
+	virtual NSView* focusResponder() { return mQCView; }
 	
 protected:
 	QCView *mQCView;
@@ -144,4 +191,5 @@ protected:
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
