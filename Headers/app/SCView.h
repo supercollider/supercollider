@@ -128,6 +128,7 @@ public:
 	virtual SCView* nextFocus(bool *foundFocus, bool canFocus);
 	virtual SCView* prevFocus(SCView **prevView, bool canFocus);
 	virtual bool canFocus();
+	virtual NSView* focusResponder();
 
 	void sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot *result);
 

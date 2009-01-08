@@ -286,13 +286,13 @@ SCView {  // abstract class
 		});
 	}
 	
-	*importDrag { 
-		// this is called when an NSString is the drag object
-		// from outside of the SC app
-		// we compile it to an SCObject.
-		currentDragString = currentDrag;
-		currentDrag = currentDrag.interpret;
-	}
+//	*importDrag { 
+//		// this is called when an NSString is the drag object
+//		// from outside of the SC app
+//		// we compile it to an SCObject.
+//		currentDragString = currentDrag;
+//		currentDrag = currentDrag.interpret;
+//	}
 
 	absoluteBounds {
 		^this.getProperty(\absoluteBounds,Rect.new)

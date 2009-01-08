@@ -768,6 +768,8 @@ void SCView::makeFocus(bool focus)
             if (prevFocus) prevFocus->makeFocus(false);
             mTop->focusIs(this);
             refreshFocus();
+			NSView* newFirstResponder = focusResponder();
+			[[newFirstResponder window] makeFirstResponder:newFirstResponder];
         }
     } else {
         if (isFocus()) {
@@ -776,6 +778,8 @@ void SCView::makeFocus(bool focus)
         }
     }
 }
+
+NSView* SCView::focusResponder() { return mTop->GetNSView(); }
 
 void SCContainerView::makeFocus(bool focus)
 {
@@ -6018,6 +6022,7 @@ extern SCView* NewSCSoundFileView(SCContainerView *inParent, PyrObject* inObj, S
 extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+extern SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 void registerSCViewClasses()
 {
@@ -6050,6 +6055,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
     new SCViewMaker("SCMovieView", NewSCMovieView);
 	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
+    new SCViewMaker("SCTextField2", NewSCTextField);
 	new SCViewMaker("SCScrollTopView", NewSCScrollTopView);
 	new SCViewMaker("SCScrollView", NewSCScrollView);
 }
