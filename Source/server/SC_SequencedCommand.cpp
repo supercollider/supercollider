@@ -727,8 +727,9 @@ void SC_BufReadCommand::InitChannels(sc_msg_iter& msg)
 bool SC_BufReadCommand::CheckChannels(int inNumChannels)
 {
 	for (int i=0; i < mNumChannels; ++i) {
-		if (mChannels[i] >= inNumChannels)
+		if (mChannels[i] >= inNumChannels) {
 			return false;
+		}
 	}
 	return true;
 }
@@ -929,21 +930,22 @@ bool BufReadChannelCmd::Stage2()
 
 	if (mNumChannels > 0) {
 		// verify channel indexes
-		if (!(CheckChannels(fileinfo.channels) && CheckChannels(buf->channels))) {
+		if (!( CheckChannels(fileinfo.channels)) ) { // nescivi:  && CheckChannels(buf->channels) (should not check here for buf->channels)
             const char* str = "Channel index out of range.\n";
 			SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
 		}
-	} else if (fileinfo.channels != buf->channels) {
-		char str[256];
-		sf_close(sf);
-		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n",
-				mFilename, fileinfo.channels, buf->channels);
-		SendFailure(&mReplyAddress, "/b_read", str);
-		scprintf(str);
-		return false;
+// nescivi: this also seems out of place: we want to read from a file with more channels than are in the buffer
+// 	} else if (fileinfo.channels != buf->channels) {
+// 		char str[256];
+// 		sf_close(sf);
+// 		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n",
+// 				mFilename, fileinfo.channels, buf->channels);
+// 		SendFailure(&mReplyAddress, "/b_read", str);
+// 		scprintf(str);
+// 		return false;
 	}
 
 	if (mFileOffset < 0) mFileOffset = 0;
