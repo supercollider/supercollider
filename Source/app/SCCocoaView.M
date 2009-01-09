@@ -108,31 +108,45 @@ extern PyrSymbol *s_scview;
 //- (void) keyDown: (NSEvent*) event
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)characters
 {
+	NSEvent *event = [NSApp currentEvent];
 	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
-		if(usesTabToFocusNextView){
-			NSEvent *event = [NSApp currentEvent];
-		    NSString *characters = [event characters];
-			unsigned int modifiers = [event modifierFlags];	
-			uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
-				| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
-			unichar character = 0;
-			if([characters length] > 0) {
-				character = [characters characterAtIndex: 0];
-			}				
-			if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
-			   mSCViewObject->tabPrevFocus(); 
-				return NO;
-			} else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
-				mSCViewObject->tabNextFocus();
-				return NO;
-			} // other tab keys avail for user 
-		}
+	if(usesTabToFocusNextView && ([event type] == NSKeyDown)){
+		NSString *characters = [event characters];
+		unsigned int modifiers = [event modifierFlags];	
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+		unichar character = 0;
+		if([characters length] > 0) {
+			character = [characters characterAtIndex: 0];
+		}				
+		if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
+			mSCViewObject->tabPrevFocus(); 
+			return NO;
+		} // check in keyDown for shift-Tab since it doesn't replace chars
+	}
 	return YES;
 
 }
 - (void) keyDown: (NSEvent*) event
 {
-	
+	NSLog(@"keyDown");
+	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
+	if(usesTabToFocusNextView){
+		NSString *characters = [event characters];
+		unsigned int modifiers = [event modifierFlags];	
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+		| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+		unichar character = 0;
+		if([characters length] > 0) {
+			character = [characters characterAtIndex: 0];
+			NSLog(@"char %i", character);
+		}				
+		if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
+			NSLog(@"backtab");
+			mSCViewObject->tabNextFocus();
+		} // other tab keys avail for user 
+	}
+			
 }
 - (void) keyUp: (NSEvent*) event
 {
