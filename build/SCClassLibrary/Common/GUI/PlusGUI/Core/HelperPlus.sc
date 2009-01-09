@@ -1,10 +1,12 @@
 + Helper{
 
-*updateRedirectStubs {
+*updateRedirectStubs { |wpath|
 	var template, tfile, classesArray, path;
-	path= Platform.helpDir++"/GUI/Main-GUI/";
+	path= Platform.helpDir+/+"/GUI/Main-GUI/";
+	wpath = wpath ? Platform.helpDir;
+	wpath= wpath +/+"/GUI/Main-GUI/";
 	
-	tfile=File(path++"StubTemplate.html","r");  // read the html template file
+	tfile=File(path+/+"StubTemplate.html","r");  // read the html template file
 	template=tfile.readAllString;
 	tfile.close;
 	
@@ -13,9 +15,9 @@
 	classesArray.do {arg class;
 		var file, name, string, links="";
 		
-		(path++class.name.asString++".html").postln;
+		(wpath+/+class.name.asString++".html").postln;
 		
-		file=File(path++class.name.asString++".html", "w"); //create the stub file
+		file=File(wpath+/+class.name.asString++".html", "w"); //create the stub file
 		
 		GUI.schemes.do{arg scheme;  // for each registerd scheme
 			var nm, helpFilePath="";
@@ -23,9 +25,16 @@
 			
 				nm=scheme.perform(class.key).name.asString;  //Get the kit-specific class name
 			
-				{ helpFilePath=nm.findHelpFile
-					.asRelativePath(Platform.helpDir++"/GUI/Main-GUI")}.try({helpFilePath=nm++".html"});
-					//if you can't find the helpfile path, then just create a file name
+				{ 
+					helpFilePath=nm.findHelpFile;
+					if ( PathName( helpFilePath ).isAbsolutePath, {
+						helpFilePath = "file://" ++ helpFilePath;
+					},{
+						helpFilePath = helpFilePath.asRelativePath(Platform.helpDir+/+"/GUI/Main-GUI")
+					});
+				}.try({helpFilePath=nm++".html"});
+						
+				//if you can't find the helpfile path, then just create a file name
 			
 				links=links++(("<p class=\"p1\"><b>%:<span class=\"Apple-tab-span\">     </span>"
 					 ++"</b> <a href=\"%\">%</a></p>\n<br>\n")
