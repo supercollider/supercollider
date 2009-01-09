@@ -30,6 +30,8 @@ Headlines:
 * 2008-12-15 added methods to SCFreqScope for "special" SynthDef, and for visualising frequency responses - ds
 * 2008-12-18 the main windows version of sc is now called "SuperCollider" rather than "PsyCollider" (although psycollider is the name of the code editor). SuperCollider on windows now has a different (better? who knows) installer, uses the main sc3 icon, and has some other tweaks that make it different from version 3.2 - ds
 * 2008-12-19 new EZListView - jm
+* 2009-01-06 SendReply UGen - jr
+* 2009-01-06 VDiskIn sends file position to client - jr
 
 Bugfixes:
 ---------
@@ -52,6 +54,10 @@ Other additions/improvements:
 * 2008-11-27 SC3 will ignore ugens/class-files in folders named "ignore". Previously the name has been "test" - ignoring folders named "test" is now deprecated and will be removed - ds
 * 2008-12-15 Buffer's done osc reply now includes the bufnum - jt
 * 2008-12-24 EZSLider and EZNumber now have an enclosing containers, as well labelPosition =\left, \right, or \stack modes - jm
+* 2009-01-08 interface change to ProxySpace.stop (now stops all proxies, just like free/end/clear) - jr
+* 2009-01-08 improved Ndef implementation, stores values in an internal ProxySpace, Ndef takes server names for multiple servers. - jr
+* 2009-01-08 improved ProxyMixer implementation, added NdefMixer. - adc
+
 
 SuperCollider v3.2, released 2008-02-21
 =======================================
