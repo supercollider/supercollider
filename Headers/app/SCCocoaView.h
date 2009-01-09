@@ -49,7 +49,7 @@
 - (IBAction) executeSelection: (id) sender;
 - (void)sendSelection: (char*) methodName;
 - (void) keyUp: (NSEvent*) event;
-- (void) keyDown: (NSEvent*) event;
+- (BOOL) handleKeyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
 - (void) setUsesTabToFocusNextView: (BOOL) flag;
 - (void) setEnterExecutesSelection: (BOOL) flag;

@@ -200,7 +200,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	//NSLog(@"SCGraphView MOUSEDOWN");
-	[[self window] makeFirstResponder:self]; // there may be an active field editor
+	//[[self window] makeFirstResponder:self]; // there may be an active field editor
     BOOL keepOn = YES;
     //BOOL isInside = YES;
     NSPoint mouseLoc;
@@ -212,6 +212,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
     if (view) {
+		[[self window] makeFirstResponder:self]; // there may be an active field editor
 		mDragStarted = NO;
 		mMenuView = 0;
         view->makeFocus(true);

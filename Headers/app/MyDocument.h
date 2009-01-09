@@ -110,6 +110,7 @@ extern PyrSymbol *s_closed;
 - (void) setPromptToSave: (BOOL) flag; 
 - (void) keyUp: (NSEvent*) event;
 - (void) keyDown: (NSEvent*) event;
+- (BOOL) handleKeyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;

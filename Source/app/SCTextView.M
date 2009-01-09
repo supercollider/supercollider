@@ -192,7 +192,7 @@ extern bool compiledOK;
         [self autoIndent: event];
     } else {
         //call lang
-		[[self delegate] keyDown: event];
+		if([[self delegate] handleKeyDown: event]) return;
 		if(ignoreControlKeys && ([event modifierFlags] & NSCommandKeyMask)) return;
 		[super keyDown: event];
     }
