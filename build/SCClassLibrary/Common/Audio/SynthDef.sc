@@ -9,6 +9,7 @@ SynthDef {
 		
 	var <>constants;
 	var <>constantSet;
+	var <>maxLocalBufs;
 	
 	// topo sort
 	var <>available;
@@ -69,6 +70,7 @@ SynthDef {
 		constantSet = Set.new;
 		controls = nil;
 		controlIndex = 0;
+		maxLocalBufs = nil;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		var result;
