@@ -106,9 +106,10 @@ extern PyrSymbol *s_scview;
 }
 
 //- (void) keyDown: (NSEvent*) event
-- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)characters
+//- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)characters
+- (BOOL) handleKeyDown: (NSEvent*) event;
 {
-	NSEvent *event = [NSApp currentEvent];
+
 	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
 	if(usesTabToFocusNextView && ([event type] == NSKeyDown)){
 		NSString *characters = [event characters];
@@ -121,33 +122,40 @@ extern PyrSymbol *s_scview;
 		}				
 		if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
 			mSCViewObject->tabPrevFocus(); 
-			return NO;
-		} // check in keyDown for shift-Tab since it doesn't replace chars
-	}
-	return YES;
-
-}
-- (void) keyDown: (NSEvent*) event
-{
-	NSLog(@"keyDown");
-	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
-	if(usesTabToFocusNextView){
-		NSString *characters = [event characters];
-		unsigned int modifiers = [event modifierFlags];	
-		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
-		| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
-		unichar character = 0;
-		if([characters length] > 0) {
-			character = [characters characterAtIndex: 0];
-			NSLog(@"char %i", character);
-		}				
-		if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
-			NSLog(@"backtab");
+			return YES;
+		} else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
+			//NSLog(@"backtab");
+			/////[mSCViewObject->getTextView() resignFirstResponder];
 			mSCViewObject->tabNextFocus();
+			return YES;
 		} // other tab keys avail for user 
 	}
-			
+	return NO;
+
 }
+//- (BOOL) handleKeyDown: (NSEvent*) event;
+//{
+//	//NSLog(@"keyDown");
+//	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
+//	if(usesTabToFocusNextView){
+//		NSString *characters = [event characters];
+//		unsigned int modifiers = [event modifierFlags];	
+//		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+//		| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
+//		unichar character = 0;
+//		if([characters length] > 0) {
+//			character = [characters characterAtIndex: 0];
+//			//NSLog(@"char %i", character);
+//		}				
+//		if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
+//			//NSLog(@"backtab");
+//			/////[mSCViewObject->getTextView() resignFirstResponder];
+//			mSCViewObject->tabNextFocus();
+//			return YES;
+//		} // other tab keys avail for user 
+//	}
+//	return NO;		
+//}
 - (void) keyUp: (NSEvent*) event
 {
 
@@ -704,6 +712,7 @@ const int circDiam = 20;
 
 	return mSCViewObject->performDrag();
 }
+
 @end
 
 
@@ -1964,9 +1973,6 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	
 	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
 	
-	// Want SC to control the tab-order
-	//BLEH [mTextField setAcceptsFirstResponder:NO];
-	
 	setVisibleFromParent();
 }
 
@@ -2098,7 +2104,7 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			else if (slot->us->name[0] == 'c') [mTextField setAlignment: NSCenterTextAlignment];
 			else return errFailed;
 			
-			[mTextField display];
+			//[mTextField display];
 		}/* else {
 			err = slotIntVal(slot, &align);
 			if (err) return err;
