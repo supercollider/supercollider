@@ -21,21 +21,21 @@ p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monac
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #606060}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #5a65a5}
-span.s3 {color: #6c7188}
-span.s4 {color: #61699c}
-span.s5 {color: #6d7187}
+span.s2 {color: #5d67a2}
+span.s3 {color: #6d7187}
+span.s4 {color: #636a99}
+span.s5 {color: #6e7186}
 span.s6 {font: 11.0px Monaco}
-span.s7 {color: #3850cb}
+span.s7 {color: #3e54c5}
 span.s8 {color: #000000}
 span.s9 {color: #0000bf}
 span.s10 {color: #007300}
 span.s11 {color: #606060}
-span.s12 {color: #2040df}
+span.s12 {color: #2946d8}
 span.s13 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -103,8 +103,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p16"><b>Changing Appearance</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p15"><b>Changing Appearance</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>setColors(stringBackground,strColor,listBackground,listStringColor,</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>selectedStringColor,hiliteColor,background)</b></p>
@@ -124,23 +124,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><b>Examples</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p11">// Creates its own window if parentView is nil:</p>
+<p class="p11">// Creates its own window if parent is nil:</p>
 <p class="p10">(</p>
 <p class="p10">g = <span class="s9">EZListView</span>.new(label: <span class="s11">" My PopUp List: "</span>);</p>
 <p class="p10">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
 <p class="p10">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
 <p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
 <p class="p14">g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p14">)</p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p11">// Layout horizontal:</p>
 <p class="p10">(</p>
 <p class="p10">g = <span class="s9">EZListView</span>.new(<span class="s9">nil</span>,205@180, <span class="s11">"Choose One: "</span>, layout:<span class="s10">\horz</span>);</p>
 <p class="p10">10.do{<span class="s9">|i|</span> g.addItem(<span class="s11">"item"</span>++i.asString, {(<span class="s11">"this is item"</span> ++i.asString). postln})};</p>
 <p class="p14">g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
 <p class="p14">)</p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p11">// No labelView created, so set the window title;</p>
 <p class="p10">(</p>
 <p class="p10">g = <span class="s9">EZListView</span>.new(bounds:200@230); <span class="s13">// no label</span></p>
@@ -156,7 +156,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
 <p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
 <p class="p14">)</p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
 <p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11">// remove item;</p>
@@ -168,8 +168,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
 <p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
 <p class="p14">)</p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p14">g. removeItemAt(0);</p>
-<p class="p7"><br></p>
+<p class="p17"><br></p>
 </body>
 </html>
