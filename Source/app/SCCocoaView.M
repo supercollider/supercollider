@@ -1987,7 +1987,7 @@ void SCTextField::setBounds(SCRect screct)
 	[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
 	mBounds = screct;
 	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getBounds();
+		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
@@ -1997,7 +1997,7 @@ void SCTextField::setBounds(SCRect screct)
 	}
 
 	[mTextField setFrame: SCtoNSRect(mLayout.bounds)];
-	[mTextField setBounds: SCtoNSRect(mBounds)]; //?
+	//[mTextField setBounds: SCtoNSRect(mBounds)]; //?
 	[mTextField setNeedsDisplay: YES];
 }
 
