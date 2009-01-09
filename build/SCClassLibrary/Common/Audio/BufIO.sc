@@ -130,22 +130,32 @@ Tap : UGen {
 
 LocalBuf : UGen {
 	
-	*new { arg numFrames = 1, numChannels = 1, maxLocalBufs = 8;
-		^this.multiNew('scalar', numChannels, numFrames, maxLocalBufs)
+	*new { arg numFrames = 1, numChannels = 1;
+		^this.multiNew('scalar', numChannels, numFrames)
 	}
 	
-	numFrames { ^inputs[1] }
-	numChannels { ^inputs[0] }
+	*new1 { arg rate ... args;
+		var maxLocalBufs = UGen.buildSynthDef.maxLocalBufs;
+		if(maxLocalBufs.isNil) {
+			maxLocalBufs = MaxLocalBufs.new;
+			UGen.buildSynthDef.maxLocalBufs = maxLocalBufs;
+		};
+		maxLocalBufs.increment;
+		^super.new.rate_(rate).addToSynth.init( *args ) 
+	}
 		
-	*newFrom { arg list, maxLocalBufs = 8;
+	*newFrom { arg list;
 		var shape, buf;
 		shape = list.shape;
 		if(shape.size == 1) { shape = [1, list.size] };
 		if(shape.size > 2) { Error("LocalBuf: list has not the right shape").throw };
-		buf = this.new(*shape.reverse ++ maxLocalBufs);
+		buf = this.new(*shape.reverse);
 		buf.set(list.flop.flat);
 		^buf 
 	}
+	
+	numFrames { ^inputs[1] }
+	numChannels { ^inputs[0] }
 	
 	set { arg values, offset = 0;
 		SetBuf(this, values.asArray, offset);
@@ -154,6 +164,15 @@ LocalBuf : UGen {
 		ClearBuf(this);
 	}
 	
+}
+
+MaxLocalBufs : UGen {
+	*new {
+		^this.multiNew('scalar', 0);
+	}
+	increment {
+		inputs[0] = inputs[0] + 1;
+	}
 }
 
 SetBuf : UGen {

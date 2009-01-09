@@ -232,6 +232,11 @@ struct LocalBuf : public Unit
 	SndBuf *m_buf;
 };
 
+struct MaxLocalBufs : public Unit
+{
+
+};
+
 struct SetBuf : public Unit
 {
 	float m_fbufnum;
@@ -243,6 +248,8 @@ struct ClearBuf : public Unit
 	float m_fbufnum;
 	SndBuf *m_buf;
 };
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -319,6 +326,8 @@ extern "C"
 	void LocalBuf_Ctor(LocalBuf *unit);
 	void LocalBuf_Dtor(LocalBuf *unit);
 	void LocalBuf_next(LocalBuf *unit, int inNumSamples);
+	
+	void MaxLocalBufs_Ctor(MaxLocalBufs *unit);
 	
 	void SetBuf_Ctor(SetBuf *unit);
 	void SetBuf_next(SetBuf *unit, int inNumSamples);
@@ -623,18 +632,11 @@ void LocalBuf_Ctor(LocalBuf *unit)
 	
 	int offset =  unit->mWorld->mNumSndBufs;
 	int bufnum =  parent->localBufNum;
-	int maxBufNum = (int)(IN0(2) + .5f);
-
 	
-	if(!parent->localBufNum) { // only the first time.
-		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
-		parent->localMaxBufNum = maxBufNum;
-	} 
-	if (parent->localBufNum >= maxBufNum) {
-		
+	if (parent->localBufNum >= parent->localMaxBufNum) {
 		unit->m_fbufnum = -1.f;
 		if(unit->mWorld->mVerbosity > -2){
-			printf("warning: LocalBuf tried to allocate too many local buffers. Increasing maxLocalBufs may help\n");
+			printf("warning: LocalBuf tried to allocate too many local buffers.\n");
 		}
 	
 	} else {
@@ -655,6 +657,8 @@ void LocalBuf_Dtor(LocalBuf *unit)
 	RTFree(unit->mWorld, unit->m_buf->data);
 	if(!unit->mParent->localBufNum) { // only the last time.
 		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
+		unit->mParent->localMaxBufNum = 0;
+		printf("buf dealloc.\n");
 	} else {
 		unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
 	}
@@ -663,6 +667,24 @@ void LocalBuf_Dtor(LocalBuf *unit)
 // dummy for unit size.
 void LocalBuf_next(LocalBuf *unit, int inNumSamples) {}
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
+{
+	Graph *parent = unit->mParent;
+	
+	int offset =  unit->mWorld->mNumSndBufs;
+	int bufnum =  parent->localBufNum;
+	int maxBufNum = (int)(IN0(0) + .5f);
+	if(!parent->localMaxBufNum) {
+		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
+		parent->localMaxBufNum = maxBufNum;
+	} else {
+		printf("warning: MaxLocalBufs - maximum number of local buffers is already declared (%i) and must remain unchanged.\n", parent->localMaxBufNum);
+	}
+	
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7610,6 +7632,7 @@ void load(InterfaceTable *inTable)
 	DefineDelayUnit(Pluck);
 	
 	DefineDtorUnit(LocalBuf);
+	DefineSimpleUnit(MaxLocalBufs);
 	DefineSimpleUnit(SetBuf);
 	DefineSimpleUnit(ClearBuf);
 }
