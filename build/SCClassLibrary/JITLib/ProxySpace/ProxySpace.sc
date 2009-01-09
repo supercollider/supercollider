@@ -22,7 +22,8 @@ ProxySpace : LazyEnvir {
 		server = argServer;  
 		clock = argClock;
 		name = argName;
-		this.add;
+		if(clock.notNil) { this.quant = 1.0 };
+		if(argName.notNil) { this.add };
 	}
 	
 	
