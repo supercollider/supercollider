@@ -226,6 +226,52 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 }
 
+int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
+	if (IsNil(b)) return errNone;
+	SCColor rgb;
+	int err = slotColorVal(b, &rgb);
+	if (err) return err;
+	NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
+											   green: rgb.green 
+												blue: rgb.blue 
+											   alpha: rgb.alpha];
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+	[doc setSelectedBackgroundColor: color];
+	return errNone;
+}
+
+int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
+	if (IsNil(b)) return errNone;
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+	NSTextView * view = [doc initTextView];
+	if(!view) view = [doc textView];
+	if(!view) return errNone;
+	NSColor * color = [[[view selectedTextAttributes] objectForKey: NSBackgroundColorAttributeName] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+	if(!color) return errNone;
+	float red, green, blue, alpha;
+	[color getRed:&red green:&green blue:&blue alpha:&alpha];
+	PyrSlot *slots = b->uo->slots;
+	SetFloat(slots+0, red);
+	SetFloat(slots+1, green);
+	SetFloat(slots+2, blue);
+	SetFloat(slots+3, alpha);
+	return errNone;
+}
+
+
 int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1109,6 +1155,7 @@ int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 
 extern SCColor postTextColor;
 
+int prSetPostTextColor(struct VMGlobals *g, int numArgsPushed);
 int prSetPostTextColor(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
@@ -3925,6 +3972,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_Text", prTextWindow_Text, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SetBackgroundColor", prTextWindow_SetBackgroundColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_GetBackgroundColor", prTextWindow_GetBackgroundColor, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SetSelectedBackgroundColor", prTextWindow_SetSelectedBackgroundColor, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_GetSelectedBackgroundColor", prTextWindow_GetSelectedBackgroundColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetTextColor", prTextWindow_SetTextColor, 4, 0);
 	definePrimitive(base, index++, "_TextWindow_SyntaxColorize", prTextWindow_SyntaxColorize, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SelectLine", prTextWindow_SelectLine, 2, 0);
