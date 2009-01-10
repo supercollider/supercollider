@@ -180,6 +180,10 @@ Document {
 		^color;
 	}
 	
+	*postColor_ { arg col;
+		^Document.implementationClass.postColor_(col);
+	}
+	
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
 		stringColor = color;
 		this.setTextColor(color,rangeStart, rangeSize);
@@ -595,7 +599,7 @@ Document {
 	}
 	prGetBackgroundColor { arg color;
 		^this.subclassResponsibility
-	}	
+	}
 	selectedRangeLocation {
 		^this.subclassResponsibility
 	}

@@ -322,4 +322,6 @@ ScelDocument : Document{
 	prGetLastIndex {
 		^this.shouldNotImplement(thisMethod)
 	}
+	postColor_{
+	}
 }

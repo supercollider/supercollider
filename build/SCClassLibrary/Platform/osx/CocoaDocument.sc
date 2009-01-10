@@ -72,6 +72,10 @@ CocoaDocument : Document {
 		_TextWindow_UnderlineSelection
 	}
 	
+	*postColor_{ arg color;
+		_PostWindow_SetTextColor
+	}
+	
 // state info
 	isEdited {
 		_TextWindow_IsEdited
@@ -179,7 +183,7 @@ CocoaDocument : Document {
 	}
 	prGetBackgroundColor { arg color;
 		_TextWindow_GetBackgroundColor
-	}	
+	}
 	selectedRangeLocation {
 		_TextWindow_GetSelectedRangeLocation
 	}
