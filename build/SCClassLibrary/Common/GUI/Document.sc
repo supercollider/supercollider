@@ -180,6 +180,17 @@ Document {
 		^color;
 	}
 	
+	selectedBackground_ { arg color;
+		this.prSetSelectedBackgroundColor(color);
+	}
+	
+	selectedBackground {
+		var color;
+		color = Color.new;
+		this.prGetSelectedBackgroundColor(color);
+		^color;
+	}
+	
 	*postColor_ { arg col;
 		^Document.implementationClass.postColor_(col);
 	}
@@ -599,6 +610,12 @@ Document {
 	}
 	prGetBackgroundColor { arg color;
 		^this.subclassResponsibility
+	}
+	prSetSelectedBackgroundColor{ arg color;
+		^this.subclassResponsibility;
+	}
+	prGetSelectedBackgroundColor{ arg color;
+		^this.subclassResponsibility;
 	}
 	selectedRangeLocation {
 		^this.subclassResponsibility

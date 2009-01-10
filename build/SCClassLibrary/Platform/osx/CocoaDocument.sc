@@ -184,6 +184,12 @@ CocoaDocument : Document {
 	prGetBackgroundColor { arg color;
 		_TextWindow_GetBackgroundColor
 	}
+	prSetSelectedBackgroundColor { arg color;
+		_TextWindow_SetSelectedBackgroundColor
+	}
+	prGetSelectedBackgroundColor{ arg color;
+		_TextWindow_GetSelectedBackgroundColor
+	}
 	selectedRangeLocation {
 		_TextWindow_GetSelectedRangeLocation
 	}

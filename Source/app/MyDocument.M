@@ -1364,6 +1364,11 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 	[[[self textView] window] setAlphaValue: [color alphaComponent]];
 }
 
+- (void)setSelectedBackgroundColor:(NSColor *)color
+{
+	[[self textView] setSelectedTextAttributes: [NSDictionary dictionaryWithObject: color forKey: NSBackgroundColorAttributeName]];
+}
+
 - (BOOL)promptToSave
 {
 	return promptToSave;

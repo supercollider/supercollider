@@ -100,6 +100,7 @@ extern PyrSymbol *s_closed;
 - (struct PyrObject*)getSCObject;
 - (void) closeWindow;
 - (void)setBackgroundColor:(NSColor *)color;
+- (void)setSelectedBackgroundColor:(NSColor *)color;
 - (NSScrollView*) scrollView;
 - (NSTextView*) initTextView;
 - (void)selectLine:(int)linenum;
