@@ -126,6 +126,7 @@ private:
 	// serial interface
 	Options				m_options;
 	int					m_fd;
+	volatile bool		m_open;
 	struct termios		m_termio;
 	struct termios		m_oldtermio;
 
@@ -331,11 +332,14 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		close(m_fd);
 		throw SysError(e);
 	}
+
+	m_open = true;
 }
 
 SerialPort::~SerialPort()
 {
 	m_running = false;
+	m_open = false;
 	pthread_join(m_thread, 0);
 }
 
@@ -420,43 +424,45 @@ void SerialPort::threadLoop()
 		int n = select(max_fd, &rfds, 0, 0, &timeout);
 // 		int fdset = FD_ISSET(fd, &rfds);
 // 		printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
-		if ((n > 0) && FD_ISSET(fd, &rfds)) {
-// 				printf("poll input\n");
-			int nr = 0;
-			while (true) {
-				int n2 = read(fd, m_rxbuffer, kBufferSize);
-//  					printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
-				if (n2 > 0) {
-					// write data to ringbuffer
-					for (int i=0; i < n2; ++i) {
-						if (!m_rxfifo.Put(m_rxbuffer[i])) {
-							m_rxErrors[1]++;
-							break;
+		if ( m_open ){
+			if ((n > 0) && FD_ISSET(fd, &rfds)) {
+	// 				printf("poll input\n");
+				int nr = 0;
+				while (true) {
+					int n2 = read(fd, m_rxbuffer, kBufferSize);
+	//  					printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
+					if (n2 > 0) {
+						// write data to ringbuffer
+						for (int i=0; i < n2; ++i) {
+							if (!m_rxfifo.Put(m_rxbuffer[i])) {
+								m_rxErrors[1]++;
+								break;
+							}
 						}
+						nr += n2;
+					} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
+	// 					printf( "done\n" );
+						goto done;
+					} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
+	// 					printf( "break\n");
+						break;
+					} else {
+	#ifndef NDEBUG
+						printf("SerialPort HUP\n");
+	#endif
+						goto done;
 					}
-					nr += n2;
-				} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
-// 					printf( "done\n" );
-					goto done;
-				} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
-// 					printf( "break\n");
-					break;
-				} else {
-#ifndef NDEBUG
-					printf("SerialPort HUP\n");
-#endif
+				}
+				if (!m_running) {
+					// close and cleanup
 					goto done;
 				}
-			}
-			if (!m_running) {
-				// close and cleanup
+				if (nr > 0) {
+					dataAvailable();
+				}
+			} else if (n == -1) {
 				goto done;
 			}
-			if (nr > 0) {
-				dataAvailable();
-			}
-		} else if (n == -1) {
-			goto done;
 		}
 		if (!m_running) {
 			// close and cleanup
@@ -466,9 +472,12 @@ void SerialPort::threadLoop()
 
 done:
 	doneAction();
-	tcflush(fd, TCIOFLUSH);
-	tcsetattr(fd, TCSANOW, &m_oldtermio);
-	close(fd);
+	if ( m_open ){
+		tcflush(fd, TCIOFLUSH);
+		tcsetattr(fd, TCSANOW, &m_oldtermio);
+		close(fd);
+	};
+	m_open = false;
 	m_running = false;
 #ifndef NDEBUG
 	printf("SerialPort closed\n");
