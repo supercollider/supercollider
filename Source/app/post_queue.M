@@ -24,11 +24,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <pthread.h>
+#include <SCGeom.h>
 #import <Cocoa/Cocoa.h>
 
 char *gHomePath;
 CFBundleRef gMainBundle;
 NSTextView *gPostView;
+SCColor postTextColor;
 
 void SetupHomeDirectory();
 void SetupHomeDirectory()
@@ -77,6 +79,7 @@ void PostBuf::Init()
 {
 	buf = (char *)malloc(POSTBUFLEN);
 	//HoldMemory(buf, POSTBUFLEN);
+	postTextColor = SCMakeColor(0.0, 0.0, 0.0, 1.0); //default black
 	wrpos = 0;
 	rdpos = 0;
         pthread_mutex_init(&mutex, NULL);
@@ -236,6 +239,11 @@ void PostBuf::Flush()
 				
 				if ([gPostView shouldChangeTextInRange: range replacementString: string]) {
 					[gPostView replaceCharactersInRange: range withString: string];
+					[gPostView setTextColor: [NSColor colorWithCalibratedRed: postTextColor.red 
+																	   green: postTextColor.green 
+																		 blue: postTextColor.blue 
+																	   alpha: postTextColor.alpha] 
+									   range: NSMakeRange(range.location, [gPostView selectedRange].location - range.location)];
 					[gPostView didChangeText];
 					
 					range = [gPostView selectedRange];

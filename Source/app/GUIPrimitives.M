@@ -1107,6 +1107,24 @@ int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 
 }
 
+extern SCColor postTextColor;
+
+int prSetPostTextColor(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a;
+	PyrSlot *c;
+	
+	a = g->sp - 1;
+	c = a + 1;
+	
+	if(!(isKindOfSlot(c, s_color->u.classobj))) return errWrongType;
+	
+	int err = slotColorVal(c, &postTextColor);
+	if(err) return err;
+		
+	return errNone;
+}
+
 
 int slotGetNSRect(PyrSlot* a, NSRect *r)
 {
@@ -3932,7 +3950,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_IsAlwaysOnTop", prTextWindow_IsAlwaysOnTop, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SetPromptToSave", prTextWindow_SetPromptToSave, 2, 0);	
 	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);	
+	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);
+	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
 
 
 

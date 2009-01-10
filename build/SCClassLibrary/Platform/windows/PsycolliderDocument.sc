@@ -26,5 +26,8 @@ PsycolliderDocument : Document {
 	*findHelpFile { |str|
 		^Help.findHelpFile(str)
 	}
+
+	*postColor_ {
+	}
 }
-                   
+                    
