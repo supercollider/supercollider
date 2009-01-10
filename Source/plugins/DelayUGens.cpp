@@ -643,7 +643,7 @@ void LocalBuf_Ctor(LocalBuf *unit)
 		
 		unit->m_fbufnum = (float) (bufnum + offset);
 		unit->m_buf =  parent->mLocalSndBufs + bufnum;
-		parent->localBufNum = bufnum + 1;
+		parent->localBufNum = parent->localBufNum + 1;
 
 		LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(0), (int)IN0(1));
 	}
@@ -655,10 +655,9 @@ void LocalBuf_Ctor(LocalBuf *unit)
 void LocalBuf_Dtor(LocalBuf *unit)
 {
 	RTFree(unit->mWorld, unit->m_buf->data);
-	if(!unit->mParent->localBufNum) { // only the last time.
+	if(unit->mParent->localBufNum <= 1) { // only the last time.
 		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
 		unit->mParent->localMaxBufNum = 0;
-		printf("buf dealloc.\n");
 	} else {
 		unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
 	}
