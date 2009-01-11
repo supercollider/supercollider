@@ -21,10 +21,21 @@ Help {
 	classvar <filterUserDirEntries;
 	
 	*initClass {
+		var	dir;
 		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
 			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
+		if(\SCImageFilter.asClass.notNil) {
+			categoriesSkipThese = categoriesSkipThese.add(\SCImageFilter.asClass)
+		};
 		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads" ];
+		[Platform.systemExtensionDir, Platform.userExtensionDir].do({ |path|
+			path.split(Platform.pathSeparator).do({ |dirname|
+				if(filterUserDirEntries.detect(_ == dirname).isNil) {
+					filterUserDirEntries = filterUserDirEntries.add(dirname);
+				};
+			});
+		})
 	}
 	
 	*tree { |sysext=true,userext=true|
@@ -399,7 +410,16 @@ Help {
 						// We have a category on our hands
 						if( lv2.notNil, {
 							lists[ index + 1 ] = node.keys(Array).collect(_.asString).sort({|a,b| 
-								a[0]==$[ /* ] */ || (b[0]!=$[ /* ] */ && (a <= b))
+									// the outcomes:
+									// a and b both start with open-bracket:
+									//	test result should be a < b
+									// or one starts with open-bracket and the other doesn't (xor)
+									//	test result should be whether it's a that has the bracket
+								if(a[0] == $[ /*]*/ xor: (b[0] == $[ /*]*/)) {
+									a[0] == $[ /*]*/
+								} {
+									a < b
+								}
 							});
 							lv2.items = lists[index+1];
 						});
