@@ -92,6 +92,7 @@
      ["Show Method Arguments"	sclang-show-method-args]
      ["Complete keyword"	sclang-complete-symbol]
      ["Dump Interface"		sclang-dump-interface]
+     ["Dump Full Interface"	sclang-dump-full-interface]
      "-"
      ["Index Help Topics"	sclang-index-help-topics]
      ["Find Help ..."		sclang-find-help]
@@ -112,7 +113,7 @@
   (define-key map "\C-c\C-w"			'sclang-switch-to-workspace)
   ;; code evaluation
   (define-key map "\C-c\C-c"			'sclang-eval-region-or-line)
-  (define-key map "\C-c\C-x"			'sclang-eval-region)
+  (define-key map "\C-c\C-d"		        'sclang-eval-region)
   (define-key map "\C-\M-x"			'sclang-eval-defun)
   (define-key map "\C-c\C-e"			'sclang-eval-expression)
   ;; language information
@@ -122,7 +123,8 @@
   (define-key map "\C-c;"			'sclang-find-references)
   (define-key map "\C-c}"			'sclang-pop-definition-mark)
   (define-key map "\C-c\C-m"			'sclang-show-method-args)
-  (define-key map "\C-c{"			'sclang-dump-interface)
+  (define-key map "\C-c{"			'sclang-dump-full-interface)
+  (define-key map "\C-c["			'sclang-dump-interface)
   ;; documentation access
   (define-key map "\C-c\C-h"			'sclang-find-help)
   (define-key map "\C-\M-h"                     'sclang-goto-help-browser)
