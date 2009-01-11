@@ -10,83 +10,86 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ba1100}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #007300}
-span.s1 {color: #0000bf}
-span.s2 {color: #606060}
-span.s3 {color: #007300}
-span.s4 {color: #000000}
-span.s5 {color: #0000ff}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #1d7008}
+span.s1 {color: #0000ff}
+span.s2 {color: #001fbf}
+span.s3 {color: #606060}
+span.s4 {color: #1d7008}
+span.s5 {color: #0000bf}
+span.s6 {color: #000000}
+span.s7 {color: #007300}
+span.s8 {color: #002aff}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>Pmono</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: Pattern</b></p>
-<p class="p2"><br></p>
+<p class="p3"><b>Superclass: </b><a href="Pattern.html"><span class="s1"><b>Pattern</b></span></a></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Pmono(synthDefName, patternPairs)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Plays one instance of a synth.<span class="Apple-converted-space">  </span>The pattern pairs define changes in that one synth's controls.</p>
+<p class="p3">Plays one instance of a <a href="../ServerArchitecture/Synth.html"><span class="s1">Synth</span></a>.<span class="Apple-converted-space">  </span>The pattern pairs define changes in that one synth's controls.</p>
 <p class="p3">If event[\id] is not nil, Pmono simply directs its pattern changes to that node and does not create an extra synth.</p>
 <p class="p2"><br></p>
-<p class="p3">examples:</p>
 <p class="p2"><br></p>
-<p class="p4">p = <span class="s1">Pmono</span>(<span class="s2">"default"</span>, <span class="s3">\dur</span>, 0.2, <span class="s3">\freq</span>, <span class="s1">Pwhite</span>(1,8) * 100 ).play</p>
+<p class="p3"><b>Examples</b></p>
+<p class="p4">p = <span class="s2">Pmono</span>(<span class="s3">"default"</span>, <span class="s4">\dur</span>, 0.2, <span class="s4">\freq</span>, <span class="s2">Pwhite</span>(1,8) * 100 ).play</p>
 <p class="p5"><br></p>
 <p class="p4">p.stop</p>
-<p class="p6"><br></p>
-<p class="p7">// multi channel expansion is supported:</p>
-<p class="p5"><br></p>
-<p class="p4">p = <span class="s1">Pmono</span>(<span class="s2">"default"</span>, <span class="s3">\dur</span>, 0.2, <span class="s3">\freq</span>, <span class="s1">Pwhite</span>(1,8) * 100, <span class="s3">\detune</span>, [0,2,5,1]).play</p>
+<p class="p2"><br></p>
+<p class="p6">// multi channel expansion is supported:</p>
+<p class="p4">p = <span class="s2">Pmono</span>(<span class="s3">"default"</span>, <span class="s4">\dur</span>, 0.2, <span class="s4">\freq</span>, <span class="s2">Pwhite</span>(1,8) * 100, <span class="s4">\detune</span>, [0,2,5,1]).play</p>
 <p class="p5"><br></p>
 <p class="p4">p.stop</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
-<p class="p7">// the following example will end after 5 seconds</p>
-<p class="p7">// or you can stop it sooner with a stop message</p>
-<p class="p5"><br></p>
+<p class="p6">// the following example will end after 5 seconds</p>
+<p class="p6">// or you can stop it sooner with a stop message</p>
 <p class="p4">(</p>
-<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s1">Pfindur</span>(5,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pset</span>(<span class="s3">\detune</span>,<span class="s1">Pwhite</span>(0,1.0) * [0,1,3,7],</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Ppar</span>([</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pmono</span>(<span class="s2">"default"</span>, <span class="s3">\dur</span>, 0.2, <span class="s3">\freq</span>, <span class="s1">Pwhite</span>(1,8) * 100 ),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pmono</span>(<span class="s2">"default"</span>, <span class="s3">\dur</span>, 0.1, <span class="s3">\freq</span>, <span class="s1">Pwhite</span>(1,8) * 300)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>p = <span class="s2">Pfindur</span>(5,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pset</span>(<span class="s4">\detune</span>,<span class="s2">Pwhite</span>(0,1.0) * [0,1,3,7],</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Ppar</span>([</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pmono</span>(<span class="s3">"default"</span>, <span class="s4">\dur</span>, 0.2, <span class="s4">\freq</span>, <span class="s2">Pwhite</span>(1,8) * 100 ),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pmono</span>(<span class="s3">"default"</span>, <span class="s4">\dur</span>, 0.1, <span class="s4">\freq</span>, <span class="s2">Pwhite</span>(1,8) * 300)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p4"><span class="Apple-tab-span">	</span>).play;</p>
 <p class="p4">)</p>
 <p class="p4">p.stop;</p>
-<p class="p8"><br></p>
-<p class="p8"><br></p>
-<p class="p3">Note:</p>
-<p class="p3">A related approach is to instantiate a Synth yourself and then set its values by using an Event whose "type" is \set, as illustrated here. The user is responsible for ensuring proper synchronization between between Synth creation and pattern execution.</p>
-<p class="p8"><br></p>
-<p class="p4">x = {<span class="s1">|freq=440, amp=0.6|</span> <span class="s1">MoogFF</span>.ar(<span class="s1">PinkNoise</span>.ar(amp), freq).dup}.play</p>
-<p class="p7">// we specify type:\set and also the nodeID for the synth:</p>
-<p class="p4">p = <span class="s1">Pbind</span>(</p>
-<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>\type<span class="s4">, </span>\set<span class="s4">,</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">\freq</span>, <span class="s1">Pwhite</span>(100, 1000),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, 0.2,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">\amp</span>, <span class="s1">Pseq</span>((1,0.99 .. 0.1), <span class="s1">inf</span>),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">\id</span>, x.nodeID</p>
-<p class="p4">).play;</p>
 <p class="p5"><br></p>
-<p class="p4">p.stop</p>
-<p class="p4">x.free</p>
-<p class="p8"><br></p>
-<p class="p8"><br></p>
-<p class="p10"><b>SynthDef variant support</b></p>
-<p class="p6"><br></p>
-<p class="p10">SynthDefs allow alternate sets of default values to be defined (see "Variants" in <a href="../ServerArchitecture/SynthDef.html"><span class="s5">SynthDef</span></a> help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:</p>
-<p class="p6"><br></p>
-<p class="p11"><span class="s1">Pmono</span><span class="s4">(</span>'<b>synthDefName.variant</b>'<span class="s4">, pairs...)</span></p>
+<p class="p5"><br></p>
+<p class="p3"><b>Note:</b></p>
+<p class="p3">A related approach is to instantiate a Synth yourself and then set its values by using an <a href="../Collections/Event.html"><span class="s1">Event</span></a> whose "type" is \set, as illustrated here. The user is responsible for ensuring proper synchronization between between Synth creation and pattern execution.</p>
+<p class="p5"><br></p>
+<p class="p7">// First we create something to control</p>
+<p class="p8">x = {<span class="s5">|freq=440, amp=0.6|</span> <span class="s5">MoogFF</span>.ar(<span class="s5">PinkNoise</span>.ar(amp), freq).dup}.play;</p>
+<p class="p9"><br></p>
+<p class="p7">// In the following pattern, the first two keys are the ones that create the monophonic behaviour:</p>
+<p class="p8">(</p>
+<p class="p8">p = <span class="s5">Pbind</span>(</p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s7">\type</span><span class="s6">, </span><span class="s7">\set</span><span class="s6">,<span class="Apple-tab-span">	</span></span>// This tells it we'll be setting parameters of an existing node...</p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s7">\id</span><span class="s6">, x.nodeID,<span class="Apple-tab-span">	</span></span>// ...and this tells it whose parameters we'll be setting</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s7">\freq</span>, <span class="s5">Pwhite</span>(100, 1000),</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s7">\dur</span>, 0.2,</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s7">\amp</span>, <span class="s5">Pseq</span>((1,0.99 .. 0.1), <span class="s5">inf</span>)</p>
+<p class="p8">).play;</p>
+<p class="p8">)</p>
+<p class="p9"><br></p>
+<p class="p8">p.stop</p>
+<p class="p8">x.free</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p3"><b>SynthDef variant support</b></p>
+<p class="p2"><br></p>
+<p class="p3">SynthDefs allow alternate sets of default values to be defined (see "Variants" in <a href="../ServerArchitecture/SynthDef.html"><span class="s8">SynthDef</span></a> help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:</p>
+<p class="p2"><br></p>
+<p class="p10"><span class="s2">Pmono</span><span class="s6">(</span>'<b>synthDefName.variant</b>'<span class="s6">, pairs...)</span></p>
 </body>
 </html>
