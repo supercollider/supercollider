@@ -26,7 +26,11 @@
 		^super.envirKey(envir);
 		//don't want to add a slot yet. not optimized
 	}
-	
+		// not ideal, but usable for now.
+	storeOn { |stream| 
+		var key = this.key ? '<unnamed nodeproxy>';
+		stream << ("~" ++ key);
+	}
 	playNDialog { |bounds|		var editstring, doc;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
 		editstring = "~" ++ this.key ++ ".playN(\n" 
