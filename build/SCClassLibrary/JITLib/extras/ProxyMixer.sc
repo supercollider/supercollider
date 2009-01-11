@@ -27,8 +27,8 @@
 		
 		/*		GUI.button.new(compKrZone, Rect(0,0,20, skin.buttonHeight))		.font_(Font("Helvetica-Bold", 12))		.states_([["+", Color.red, Color.white]])		.action_({			if(emergencySynth.isPlaying.not) {				emergencySynth = Synth.tail(0, "proxymixer_emergency");				NodeWatcher.register(emergencySynth);			} {				emergencySynth.release			}		});		*/		layout.nextLine;		layout.nextLine;				buttonLinesKr = Array.fill(nProxies, { arg i;			var nameBtn, pausBtn, sendBtn, editBtn, pollBtn;						nameBtn = GUI.dragSource.new(compKrZone, Rect(0,0,68, skin.buttonHeight))			.font_(font)			.align_(\center);			
 			pausBtn = GUI.button.new(compKrZone, Rect(0,0, 30, skin.buttonHeight))
-				.font_(font).states_([["paus", Color.black, skin.foreground], 
-				["rsum", Color.black]])
+				.font_(font).states_([["paus", Color.black, skin.onColor], 
+				["rsum", Color.black, Color.clear]])
 				.action_({ |btn|
 					var editName = nameBtn.string.asSymbol;
 					var px = proxyspace.envir[editName];
@@ -37,7 +37,7 @@
 					};
 				});
 			sendBtn = GUI.button.new(compKrZone, Rect(0,0, 30, skin.buttonHeight))
-				.font_(font).states_([["send", Color.black, skin.foreground]])
+				.font_(font).states_([["send", Color.black, skin.onColor]])
 				.action_({ |btn|
 					var editName = nameBtn.string.asSymbol;
 					var px = proxyspace.envir[editName];

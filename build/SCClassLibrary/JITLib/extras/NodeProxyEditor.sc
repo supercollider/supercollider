@@ -1,24 +1,55 @@
-NodeProxyEditor { 		classvar <>menuHeight=18;	var <>w, <zone, <proxy, <edits, <sinks, <scrolly, <currentSettings, 		<editNameView, <>nSliders, <editKeys, <>ignoreKeys=#[], oldNodeMap, skipjack;	var <monitor;	var <skin, <font;	var <prevSettings; 
-	var <tooManyKeys = false, <keysRotation = 0; 
+NodeProxyEditor { 		classvar <>menuHeight=18;	var 	<proxy;
+	var <skin, <font;
+
+	var <>w, <zone, <nameView, <typeChanView, <monitor,
+		<>nSliders, <edits, <sinks, <scrolly, skipjack;
+	var buttonFuncs, pauseBut, sendBut;
 	
-	var <>replaceKeys;		// a dict for slider names to be replaced
+	var 	<currentSettings, 	<prevSettings, <editKeys, <>ignoreKeys=#[];	var <>replaceKeys;		// a dict for slider names to be replaced
+	var 	<tooManyKeys = false, <keysRotation = 0; 	
+
+	*initClass { 
+		StartUp.add({ Spec.add(\amp4, [0, 4, \amp]) }); 
+	}
+		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
+		monitor=true, sinks=true, morph=false; 
+				^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}	proxy_ { arg px; 		if (px.isKindOf(NodeProxy), { 			proxy = px;			nameView.object_(px).string_(px.key ? 'anon proxy');			if (monitor.notNil) { monitor.proxy_(proxy) };			this.fullUpdate;		})	}
 	
-	*initClass { StartUp.add({ Spec.add(\amp4, [0, 4, \amp]) }) }
-		*new { arg proxy, nSliders=16, win, comp, 		extras=[\scope, \doc, \reset], monitor=true, sinks=true, morph=false; 		^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}	proxy_ { arg px; 		if (px.isKindOf(NodeProxy), { 			proxy = px;			editNameView.object_(px.source);			editNameView.string_(px.key.asString);			oldNodeMap = proxy.nodeMap;			if (monitor.notNil) { monitor.proxy_(proxy) };			this.fullUpdate;		})	}
-	clear {		proxy = nil; 		{ editNameView.object_(nil).string_(""); }.defer;		this.fullUpdate;	}		init { arg win, comp, extras, monitor, sinks, morph;						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? { "NodeProxyEditor: making internal win.".postln; 
+	name { ^nameView.string.asSymbol }
+	name_ { |key| nameView.string_(key.asString); }
+	
+		// backwards compatibility
+	pxKey { ^this.name }
+	pxKey_ { |key| ^this.name_(key) }
+	clear {		proxy = nil; 		{ nameView.object_(nil).string_("-"); }.defer;		this.fullUpdate;	}
+			init { arg win, comp, extras, monitor, sinks, morph;
+						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? { "NodeProxyEditor: making internal win.".postln; 
 			Window(this.class.name, bounds.resizeBy(4, 4)) 
 		};		w = win; 			zone = comp ?? { "NodeProxyEditor: making internal zone.".postln;  
 			CompositeView(w, bounds); 
-		};		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(2@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;		
+		};		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(0@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;		
 		replaceKeys = replaceKeys ?? { () };
-				this.makeTopLine(extras);		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });		this.makeSinksSliders(sinks);		this.makeSkipJack; 	}	makePxMon { 		monitor = ProxyMonitorGui(proxy, zone, zone.bounds.width - 4 @ (skin.buttonHeight));	}	makeMorph { 		zone.decorator.shift(0, 2);		StaticText(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));		zone.decorator.shift(0, 2);		PxPreset(proxy, zone) 	}		makeTopLine { |extras|		editNameView = DragSource(zone, Rect(0,0,90, skin.buttonHeight))			.font_(font).align_(\center)			.background_(Color.white);				Button(zone, Rect(0,0,40, menuHeight)).states_([				["watch",  skin.fontcolor, Color.clear ],				["wait",  skin.fontcolor, Color.clear ]			])			.action_({ |b| [ { this.stopUpdate }, { this.runUpdate } ][b.value].value })			.font_(font);		Button(zone, Rect(0, 0, 20, menuHeight))				.font_(font)				.states_([ ["^", skin.fontcolor, Color.clear] ])				.action_({  this.class.new(proxy, nSliders); });						if (extras.includes(\scope)) {			Button(zone, Rect(0,0,40, menuHeight))				.font_(font)				.states_([["scope", skin.fontcolor, Color.clear]])				.action_({ arg btn; if(proxy.notNil, { proxy.scope }) });		};								if (extras.includes(\reset)) {			Button(zone, Rect(0,0,40, menuHeight))				.states_([["reset",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil) { proxy.nodeMap = ProxyNodeMap.new; this.fullUpdate; } 				})				.font_(font);		};		if (extras.includes(\doc)) {			Button(zone, Rect(0,0,40, menuHeight))				.states_([["doc",  skin.fontcolor, Color.clear ]])				.action_({ 					if(proxy.notNil and: currentEnvironment.isKindOf(ProxySpace)) { 						currentEnvironment.document(proxy.key)							.title_("<" + proxy.key.asString + ">") 					} {
-						"can't currently document  a proxy outside a proxy space.".inform;
-					}				})				.font_(font);		};
-
-		zone.decorator.nextLine.shift(0, 4);
-			}
-			makeSinksSliders { |bigSinks|		var sinkWidth, lay; 
-				sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);			ez.labelView.font_(font).align_(\center);
+		
+		this.makeButtonFuncs; 
+				this.makeTopLine(extras);		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });		this.makeSinksSliders(sinks);		this.makeSkipJack; 	}
+		makePxMon { 		monitor = ProxyMonitorGui(proxy, zone, 
+			zone.bounds.width - 4 @ (skin.buttonHeight), 
+			showName: false);	}	makeMorph { 
+		inform("NodeProxyEditor: preset/morph not finished yet.");//		zone.decorator.shift(0, 2);//		StaticText(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));//		zone.decorator.shift(0, 2);//		PxPreset(proxy, zone);	}		makeTopLine { |extras|
+		nameView = DragBoth(zone, 90@menuHeight)			.font_(font).align_(\center)			.background_(Color.white);
+		nameView.setBoth_(false)
+			.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
+			
+		typeChanView = StaticText(zone, 30@menuHeight).string_("ar 88").align_(0).font_(font);
+		
+		extras.do { |butkey| 
+			buttonFuncs[butkey].value;	
+		};
+		
+		zone.decorator.nextLine.shift(0, 4);	}
+		makeSinksSliders { |bigSinks|		var sinkWidth, lay; 
+				sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
+			ez.visible_(false);			ez.labelView.font_(font).align_(\center);
 			[ez, sink]		}).flop;
 
 		lay = zone.decorator; 
@@ -30,7 +61,103 @@
 			{ |sc| keysRotation = sc.value.asInteger; }
 		).visible_(false);
 		[\scrolly, scrolly.slider.bounds];
-	}		makeSkipJack {		skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 	}	
+	}
+
+	makeButtonFuncs { 
+		buttonFuncs = (
+			CLR: { Button(zone, 30@20).font_(font)
+				.states_([[\CLR, skin.fontColor, Color.clear]])
+				.action_({ proxy.clear }) },
+				
+			reset: { Button(zone, 30@20).font_(font)
+				.states_([[\reset, skin.fontColor, Color.clear]])
+					.action_({ proxy !? { proxy.nodeMap = ProxyNodeMap.new; this.fullUpdate; } }) 
+				},
+
+			pausR: { pauseBut = GUI.button.new(zone, Rect(0,0,30@20)).font_(font)
+						.states_([
+							["paus", skin.fontColor, skin.onColor], 
+							["rsum", skin.fontColor, skin.offColor]
+						])
+						.action_({ arg btn; proxy !? {
+								[ { proxy.resume; }, { proxy.pause; }  ].at(btn.value).value;
+							} });
+				},
+
+			sendR: 	{ sendBut = Button(zone, Rect(0,0,30@20)).font_(font)
+					.states_([ 
+						["send", skin.fontColor, skin.offColor], 
+						["send", skin.fontColor, skin.onColor] 
+					])
+					.action_({ arg btn, mod; 
+								//	mod.postln;
+						if(proxy.notNil and: (btn.value == 0)) { 
+							// alt-click osx, swingosc
+							if ([524576, 24].includes(mod) ) { proxy.rebuild } { proxy.send }
+						};
+						btn.value_(1 - btn.value)
+					})
+			},
+
+			scope: 	{ Button(zone, 36@20).font_(font)
+				.states_([[\scope, skin.fontColor, Color.clear]])
+				.action_({ proxy !? { proxy.scope } }) }, 
+
+			
+			doc: 	{ Button(zone, 30@20).font_(font).states_([[\doc, skin.fontColor, Color.clear]]).action_({ 
+							if(proxy.notNil and: currentEnvironment.isKindOf(ProxySpace)) { 
+								currentEnvironment.document(proxy.key)
+									.title_("<" + proxy.key.asString + ">") 
+							} {
+								"can't currently document a proxy outside a proxy space.".inform;
+							}
+						}) 
+				}, 
+
+			end: 	{ Button(zone, 24@20).font_(font)
+				.states_([[\end, skin.fontColor, Color.clear]])
+				.action_({ proxy !? {  proxy.end } }) },
+			
+			fade: 	{ var nb = EZNumber(zone, 60@20, \fade, [0.001, 100, \exp], 
+								{ |num| proxy.fadeTime_(num.value) }, 
+								try { proxy.fadeTime } ? 0.02, 
+								labelWidth: 24, 
+								numberWidth: 32);
+						nb.labelView.font_(font).background_(Color.clear);
+						nb.numberView.font_(font).background_(Color.clear);
+				},
+				
+				// extras:
+
+			rip: 	{ Button(zone, 15@20).font_(font)
+				.states_([['^', skin.fontColor, Color.clear]])
+				.action_({ this.class.new(proxy, nSliders) }) },
+
+
+			wake: 	{ Button(zone, 30@20).font_(font)
+				.states_([[\wake, skin.fontColor, Color.clear]])
+				.action_({  proxy !? { proxy.wakeUp } }) },
+				
+			send: 	{ Button(zone, 30@20).font_(font)
+				.states_([[\send, skin.fontColor, Color.clear]])
+				.action_({  proxy !? { proxy.send } }) },
+				
+			rebuild: 	{ Button(zone, 30@20).font_(font)
+				.states_([[\rbld, skin.fontColor, Color.clear]])
+				.action_({  proxy !? { proxy.rebuild } }) }
+				
+//			poll: 	{ Button(zone, 30@20).font_(font)
+//				.states_([[\poll, skin.fontColor, Color.clear]])
+//				.action_({  proxy !? { proxy.poll } }) },
+//
+//						// show a little amp view?
+//			amp: 	{ Button(zone, 30@20).font_(font)
+//				.states_([[\amp, skin.fontColor, Color.clear]])
+//				.action_({ "// show a little amp view?".postln }) }
+				
+		);
+	}
+		makeSkipJack {		skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 	}	
 	checkTooMany { 
 		var oversize = (editKeys.size - nSliders).max(0);
 		tooManyKeys = oversize > 0;
