@@ -2138,18 +2138,6 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
-//	if (strcmp(name, "boxColor")==0) {
-//		err = slotColorVal(slot, &mBoxColor);
-//		if (err) return err;
-//		NSColor *color = [NSColor colorWithCalibratedRed: mBoxColor.red
-//                            green: mBoxColor.green 
-//                            blue: mBoxColor.blue 
-//                            alpha: mBoxColor.alpha];
-//		[mTextField setBackgroundColor: color];
-//		refresh();
-//		return errNone;
-//	}
-	
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);

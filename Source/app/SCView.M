@@ -5682,7 +5682,7 @@ SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 SCNumberBox::SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCStaticText(inParent, inObj, inBounds)
 {
-        mBoxColor = SCMakeColor(1,1,1,1);
+        mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
         mEnabled = true;
         mCanFocus = true;
 }
@@ -5706,11 +5706,6 @@ void SCNumberBox::draw(SCRect inDamage)
     CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
 
-    if (mBoxColor.alpha > 0.0) {
-        CGContextSetRGBFillColor(cgc, mBoxColor.red, mBoxColor.green, mBoxColor.blue, mBoxColor.alpha);
-        CGContextFillRect(cgc, rect);
-    }
-
     QDDrawBevelRect(cgc, rect, 1, true);
     CGContextRestoreGState(cgc);
 
@@ -5722,18 +5717,18 @@ void SCNumberBox::draw(SCRect inDamage)
     drawString(sbounds);
 }
 
-int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
-	int err;
-	char *name = symbol->name;
- 	if (strcmp(name, "boxColor")==0) {
-		err = slotColorVal(slot, &mBoxColor);
-                if (err) return err;
-                refresh();
-		return errNone;
-	}
-       return SCStaticText::setProperty(symbol, slot);
-}
+//int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+//{	
+//	int err;
+//	char *name = symbol->name;
+// 	if (strcmp(name, "boxColor")==0) {
+//		err = slotColorVal(slot, &mBoxColor);
+//                if (err) return err;
+//                refresh();
+//		return errNone;
+//	}
+//       return SCStaticText::setProperty(symbol, slot);
+//}
 
 void SCNumberBox::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
@@ -5742,14 +5737,14 @@ void SCNumberBox::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
     } 
 }
 
-int SCNumberBox::getProperty(PyrSymbol *symbol, PyrSlot *slot)
-{
-	char *name = symbol->name;
- 	if (strcmp(name, "boxColor")==0) {
-             return setSlotColor(slot, &mBoxColor);
-       }
-        return SCStaticText::getProperty(symbol, slot);
-}
+//int SCNumberBox::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+//{
+//	char *name = symbol->name;
+// 	if (strcmp(name, "boxColor")==0) {
+//             return setSlotColor(slot, &mBoxColor);
+//       }
+//        return SCStaticText::getProperty(symbol, slot);
+//}
 
 bool SCNumberBox::canReceiveDrag()
 {

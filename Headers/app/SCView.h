@@ -839,14 +839,11 @@ public:
 	virtual void mouseTrack(SCPoint where, int modifiers,NSEvent *theEvent);
 	//virtual void mouseEndTrack(SCPoint where, int modifiers);
 	
-	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
-	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	//virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 
 	virtual bool canReceiveDrag();
 	virtual void receiveDrag();
-
-protected:
-    SCColor mBoxColor;
 };
 SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 

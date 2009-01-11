@@ -19,6 +19,7 @@ SCView {  // abstract class
 	
 	init { arg argParent, argBounds;
 		parent = argParent.asView; // actual view
+		background = Color.clear;
 			// call asView again because parent by this point might be a FlowView
 		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
@@ -1046,6 +1047,7 @@ SCNumberBox : SCStaticTextBase {
 	init { arg argParent, argBounds;
 		typingColor = Color.red;
 		normalColor = Color.black;
+		background = Color.white;
 		parent = argParent.asView; // actual view
 		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
@@ -1097,10 +1099,12 @@ SCNumberBox : SCStaticTextBase {
 		if (object != prev, { this.doAction });
 	}	
 	boxColor {
-		^this.getProperty(\boxColor, Color.new)
+		this.deprecated(thisMethod, SCView.findMethod(\background));
+		^this.background;
 	}
 	boxColor_ { arg color;
-		this.setProperty(\boxColor, color)
+		this.deprecated(thisMethod, SCView.findMethod(\background_));
+		this.background_(color)
 	}
 
 	properties {
