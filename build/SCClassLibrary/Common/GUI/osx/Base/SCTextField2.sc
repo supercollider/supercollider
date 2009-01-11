@@ -40,7 +40,6 @@ a.stringColor_(Color.red)
 a.stringColor
 */
 SCTextField2 : SCStaticTextBase {
-	var <editable;
 	
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds).initBackGround.value_("edit me");
@@ -64,13 +63,6 @@ SCTextField2 : SCStaticTextBase {
 	}
 	valueAction_{|str|
 		^this.string_(str).doAction;
-	}
-	editable_{|bool|
-		editable = bool;
-		this.setProperty(\setEditable, bool);
-	}
-	enabled_{|bool|
-		this.editable_(bool);
 	}
 	boxColor {
 		this.deprecated(thisMethod, SCView.findMethod(\background));

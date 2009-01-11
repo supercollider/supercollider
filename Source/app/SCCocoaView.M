@@ -2045,6 +2045,7 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
 	
 	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
+	
 	setVisibleFromParent();
 }
 
@@ -2145,15 +2146,6 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setBounds(screct);
 		return errNone;
 	}
-	
-	if (strcmp(name, "setEditable")==0) {
-		if(IsTrue(slot))[mTextField setEditable: YES];
-		else{
-			[mTextField setEditable: NO];
-			[mTextField abortEditing]; // If cursor is in cell, this is required to stop it.
-		}
-		return errNone;		
-	}
 
 	if (strcmp(name, "align")==0) {
 		int align;
@@ -2171,6 +2163,17 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			mAlignment = align;
 		} */
 		refresh();
+		return errNone;
+	}
+	
+	if (strcmp(name, "enabled")==0) {
+		bool enabled = IsTrue(slot);
+		if (mEnabled != enabled) {
+			mEnabled = enabled;
+			[mTextField setEnabled:(BOOL)enabled];
+			if (!mEnabled) mTop->resetFocus();
+			refresh();
+		}
 		return errNone;
 	}
 	
