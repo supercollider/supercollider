@@ -1,8 +1,19 @@
-ProxyMonitorGui { 	classvar <>lastOutBus = 99;
-	var <>proxy, <win, <zone, <flow, <skipjack, <usesPlayN, <usesPausSend; 
-		var <ampSl, <playBut, <nameBut, <setOutBox, <playNDialogBut, <pauseBut, <sendBut; 	var <monHasSeriesOut = true; 	var <oldState = #[]; 
-		*new { |px, w, bounds, showLevel=false, showPlayN=true, showPauseSend = true, makeWatcher=true, skin| 		^super.new.init(w, bounds, showLevel, showPlayN, showPauseSend, makeWatcher, skin)
-			.proxy_(px); 	}	init { |w, bounds, showLevel, showPlayN, showPauseSend, makeWatcher, skin| 
+
+ProxyMonitorGui { 	classvar <>lastOutBus = 99;
+	var <proxy, <usesPlayN, <usesName, <usesPausSend; 
+	var <win, <zone, <flow;	var <ampSl, <playBut, <nameView, <setOutBox, <playNDialogBut, <pauseBut, <sendBut; 	var <skipjack, <oldState = #[]; 
+		*new { |proxy, w, bounds, showLevel=false, showPlayN=true, showName=true, showPauseSend = true, 
+		makeWatcher=true, skin| 
+				^super.new.init(w, bounds, showLevel, showPlayN, showName, showPauseSend, makeWatcher, skin)
+			.proxy_(proxy); 	}	proxy_ { |inproxy| 
+		if (proxy.isNil or: proxy.isKindOf(NodeProxy)) {
+			proxy = inproxy; 
+			this.updateAll;
+		} { 
+			warn("ProxyMonitorGui: % is not a nodeproxy.".format(inproxy))
+		};
+	}
+		init { |w, bounds, showLevel, showPlayN, showName, showPauseSend, makeWatcher, skin| 
 		var font; 
 		var nameWid = 60; 
 		var playWid = 34; 
@@ -15,7 +26,8 @@
 
 		skin = skin ? GUI.skin;		font = GUI.font.new(*skin.fontSpecs);
 					
-		usesPlayN = showPlayN; 		usesPausSend = showPauseSend;
+		usesPlayN = showPlayN; 
+		usesName = showName;		usesPausSend = showPauseSend;
 		bounds = bounds ? defaultBounds; 
 				
 		if (w.notNil) { 
@@ -37,7 +49,9 @@
 		if (viewBounds.isKindOf(Rect)) { viewBounds = viewBounds.extent };
 		 
 	//	[\bounds, bounds, \winBounds, winBounds, \viewBounds, viewBounds].postln;		
-		widthSum = nameWid + playWid + outWid 
+		widthSum = 
+			(showName.binaryValue * nameWid)
+			+ playWid + outWid 
 			+ (showPlayN.binaryValue * playNWid)
 			+ (showPauseSend.binaryValue * pausSendWid);
 		sliderWidth = viewBounds.x - widthSum; 
@@ -79,9 +93,13 @@
 					["-<", skin.fontColor, skin.onColor]				])
 				.action_({ |box, mod|					if (proxy.notNil) { proxy.playNDialog };
 					box.value_(1 - box.value);				});		}; 
-
-		nameBut = DragBoth(zone, Rect(0,0, nameWid, height));
-		nameBut.font_(font).align_(0);
+		
+		if (usesName) { 
+			nameView = DragBoth(zone, Rect(0,0, nameWid, height));
+			nameView.font_(font).align_(0)
+				.setBoth_(false)
+				.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
+		};
 		
 		if (usesPausSend) {			pauseBut = GUI.button.new(zone, Rect(0,0,34,height))
 				.font_(font)				.states_([					["paus", skin.fontColor, skin.onColor], 					["rsum", skin.fontColor, skin.offColor]				])
@@ -90,12 +108,12 @@
 				//	mod.postln;					if(proxy.notNil and: (btn.value == 0)) { 
 						// alt-click osx, swingosc						if ([524576, 24].includes(mod) ) { proxy.rebuild } { proxy.send }					};
 					btn.value_(1 - btn.value)				})
-		};			if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			"PxMon" + try { proxy.key }		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
+		};			if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
 		 		var currState;
 		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0; 
 				if (win.isClosed) {skipjack.stop; ^this };
 				if (proxy.notNil) { 
-					pxname = proxy.key;	
+					pxname = proxy.key ? 'anon';	
 			canSend = proxy.objects.notEmpty.binaryValue;			pauses = proxy.paused.binaryValue;
 			
 			isAudio = proxy.rate == \audio;			monitor = proxy.monitor; 
@@ -112,7 +130,8 @@
 		if (currState != oldState) { 
 		//	"ProxyMonitorGui - updating.".postln; 
 			if (currVol.notNil) { ampSl.value_(currVol.ampdb) };
-			nameBut.object_(pxname);
+			if (usesName) { nameView.object_(proxy).string_(pxname) };
+			
 			playBut.value_(plays);
 			if (usesPausSend) { 
 				pauseBut.value_(pauses);
