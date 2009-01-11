@@ -650,7 +650,7 @@ are considered."
  (lambda (args)
    (and args (message "%s" args))))
 
-(defun sclang-dump-interface (class)
+(defun sclang-dump-full-interface (class)
   "Dump interface of CLASS."
   (interactive
    (list
@@ -661,6 +661,18 @@ are considered."
       (sclang-read-symbol "Dump interface of: "
 			  class 'sclang-class-name-p t))))
   (sclang-eval-string (format "%s.dumpFullInterface" class)))
+
+(defun sclang-dump-interface (class)
+  "Dump interface of CLASS."
+  (interactive
+   (list
+    (let* ((symbol (sclang-symbol-at-point))
+	   (class (and (sclang-get-symbol symbol)
+		       (sclang-class-name-p symbol)
+		       symbol)))
+      (sclang-read-symbol "Dump interface of: "
+			  class 'sclang-class-name-p t))))
+  (sclang-eval-string (format "%s.dumpInterface" class)))
 
 ;; =====================================================================
 ;; cscope interface
