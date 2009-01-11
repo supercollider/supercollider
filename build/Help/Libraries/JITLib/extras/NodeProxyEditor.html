@@ -12,15 +12,19 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0a2cb0}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6c2a2a}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0f30ad}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #622c2c}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 9.0px Monaco}
-span.s2 {color: #0a2cb0}
+span.s2 {color: #0f30ad}
 span.s3 {color: #000000}
-span.s4 {color: #007300}
-span.s5 {color: #0428b3}
-span.s6 {color: #5a6a1b}
+span.s4 {color: #307109}
+span.s5 {color: #0a2cb0}
+span.s6 {color: #5e691f}
+span.s7 {color: #0000bf}
+span.s8 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -134,5 +138,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>// setting a param value unmaps a previous control source</p>
 <p class="p5">~test.set(<span class="s6">\freq</span>, rrand(200, 500), <span class="s6">\intv</span>, rrand(-5.5, 5.5));</p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">You can drag and drop proxies between NodeProxyEditors:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5">// p = <span class="s7">ProxySpace</span>.push(s.boot);</p>
+<p class="p2"><br></p>
+<p class="p5">l = <span class="s7">NodeProxyEditor</span>(<span class="s7">nil</span>, 3); l.w.bounds_(l.w.bounds.moveBy(0, 120));</p>
+<p class="p5">m = <span class="s7">NodeProxyEditor</span>(<span class="s7">nil</span>, 3); m.w.bounds_(m.w.bounds.moveBy(0, 240));</p>
+<p class="p5">n = <span class="s7">NodeProxyEditor</span>(<span class="s7">nil</span>, 3); n.w.bounds_(n.w.bounds.moveBy(0, 360));</p>
+<p class="p5">o = <span class="s7">NodeProxyEditor</span>(<span class="s7">nil</span>, 3); o.w.bounds_(o.w.bounds.moveBy(0, 480));</p>
+<p class="p9"><br></p>
+<p class="p5"><span class="s7">Spec</span>.add(<span class="s8">\dens</span>, [0.1, 300, <span class="s8">\exp</span>]);</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>// make 3 kinds of proxies: using tilde/proxyspace, Ndef, and unnamed.</p>
+<p class="p5">~spacy = {<span class="s7">|dens=5|</span> <span class="s7">Formlet</span>.ar(<span class="s7">Dust</span>.ar(dens ! 2), <span class="s7">LFDNoise0</span>.kr(20 ! 2).lag(0.1).linexp(-1, 1, 300, 5000), 0.003, 0.03)<span class="Apple-converted-space">  </span>};</p>
+<p class="p5"><span class="s7">Ndef</span>(<span class="s8">\ndeffy</span>, { <span class="s7">GrayNoise</span>.ar( 0.1 ! 2) });</p>
+<p class="p5">c = <span class="s7">NodeProxy</span>.audio.source_({ <span class="s7">PinkNoise</span>.ar(0.1 ! 2) });</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>// put one in each editor</p>
+<p class="p5">l.proxy_(~spacy);</p>
+<p class="p5">m.proxy_(<span class="s7">Ndef</span>(<span class="s8">\ndeffy</span>));</p>
+<p class="p5">n.proxy_(c);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5">)</p>
 </body>
 </html>
