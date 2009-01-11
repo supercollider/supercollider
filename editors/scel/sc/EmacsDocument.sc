@@ -152,10 +152,16 @@ EmacsDocument
 	}
 	
 	currentLine { |returnFunc|
-		Emacs.evalLispExpression(['with-current-buffer', title, ['thing-at-point', '\'line'] ].asLispString, { |result| returnFunc.value( result ) } )
+		Emacs.evalLispExpression(['sclang-line-at-point'].asLispString, { |result| returnFunc.value( result ) }  );
+		//		['with-current-buffer', title, ['thing-at-point', '\'line'] ].asLispString, { |result| returnFunc.value( result ) } )
 		^nil;
 
 		// '(set-text-properties start end nil)' will remove text properties somehow?
+	}
+
+	currentBlock { |returnFunc|
+		Emacs.evalLispExpression(['sclang-defun-at-point'].asLispString, { |result| returnFunc.value( result ) }  );
+		^nil;
 	}
 
 	currentWord { |returnFunc|

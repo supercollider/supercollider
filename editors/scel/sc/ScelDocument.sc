@@ -250,6 +250,7 @@ ScelDocument : Document{
 //		cond = Condition.new( { currentString.notNil } );
 //		cond.wait;
 		//		while ( { currentString.isNil }, {"wait for string".postln;} );
+		"Asynchronous: retrieve the result with .currentString".postln;
 		^currentString;
 	}
 
@@ -260,8 +261,32 @@ ScelDocument : Document{
 //		cond = Condition.new( { currentString.notNil } );
 //		cond.wait;
 		//		while ( { currentString.isNil }, {"wait for string".postln;} );
+		"Asynchronous: retrieve the result with .currentString".postln;
 		^currentString;
 	}
+
+	currentWord {
+		//		var cond;
+		currentString = nil;
+		thisdoc.currentWord( { |v| currentString = v } );
+//		cond = Condition.new( { currentString.notNil } );
+//		cond.wait;
+		//		while ( { currentString.isNil }, {"wait for string".postln;} );
+		"Asynchronous: retrieve the result with .currentString".postln;
+		^currentString;
+	}
+
+	currentBlock {
+		//		var cond;
+		currentString = nil;
+		thisdoc.currentBlock( { |v| currentString = v } );
+//		cond = Condition.new( { currentString.notNil } );
+//		cond.wait;
+		//		while ( { currentString.isNil }, {"wait for string".postln;} );
+		"Asynchronous: retrieve the result with .currentString".postln;
+		^currentString;
+	}
+
 
 	text {
 		^this.string;
@@ -322,6 +347,6 @@ ScelDocument : Document{
 	prGetLastIndex {
 		^this.shouldNotImplement(thisMethod)
 	}
-	postColor_{
+	*postColor_{
 	}
 }
