@@ -281,6 +281,37 @@ extern PyrSymbol *s_scview;
 
 
 @implementation SCTextFieldResponder
+//
+//- (id)initWithFrame:(NSRect)frameRect
+//{
+//	backGroundColor = [[NSColor whiteColor] retain];
+//	return [super initWithFrame:frameRect];
+//}
+//
+//- (void)dealloc
+//{
+//	[backGroundColor release];
+//	[super dealloc];
+//}
+//
+//- (void)setBackgroundColor:(NSColor *)aColor
+//{
+//	[aColor retain];
+//	[backGroundColor release];
+//	backGroundColor = aColor;
+//}
+
+//- (void)drawRect:(NSRect)aRect
+//{
+//	// draw a background
+//	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+//	CGContextSaveGState(cgc);
+//    CGContextSetRGBFillColor(cgc, 1.0, 0.0, 0.0, 0.5);
+//    CGContextFillRect(cgc, (*(CGRect *)&(aRect)));
+//    CGContextRestoreGState(cgc);
+//	
+//	[super drawRect:aRect]; // call superclass here for everything else
+//}
 
 - (struct PyrObject*)getSCObject
 {
@@ -312,6 +343,19 @@ extern PyrSymbol *s_scview;
 	textReallyChanged = false;
 }
 
+//- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)fieldEditor
+//{
+//	//[(SCFieldEditor*)fieldEditor setCurrentTextField:self];
+//	return YES;
+//}
+//
+//- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
+//{
+//	//[(SCFieldEditor*)fieldEditor setCurrentTextField:nil];
+//	return YES;
+//}
+
+
 //- (void)mouseDown:(NSEvent *)theEvent
 //{
 //	
@@ -322,6 +366,13 @@ extern PyrSymbol *s_scview;
 //		[self selectText:self]; // exit editing and select all for a drag
 //		[self display];
 //	} else [super mouseDown:theEvent];
+//}
+
+//- (void)drawRect:(NSRect)aRect
+//{
+//	[backGroundColor setFill];
+//	NSRectFill(aRect);
+//	[super drawRect:aRect];
 //}
 
 -(void)rightMouseDown:(NSEvent*)theEvent { [self mouseDown:theEvent]; }
@@ -578,11 +629,6 @@ const int circDiam = 20;
 //    return;
 //}
 
-- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
-{
-	return YES;
-}
-
 - (void)setSCView: (struct SCTextField*)inObject
 {
 	mSCViewObject = inObject;
@@ -605,12 +651,23 @@ const int circDiam = 20;
 //	[[self window] endEditingFor:self];
 //	return YES;
 //}
-//- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
-//{
-//	post("ha!\n");
-//	NSLog(@"fr: %@", [[self window] firstResponder]);
-//	return YES;
-//}
+
+// this for keyDowns. KeyUps come in keyUp below. 
+- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
+{	
+	NSEvent* event = [NSApp currentEvent];
+	NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
+    unichar character = 0;
+    if([characters length] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+	if ([event keyCode] == 53){ //escape key breaks from modal or fullscreen windows
+		[[self window] keyDown:event];
+	}
+	mSCViewObject->keyDown(character, modifiers,[event keyCode]);
+	return YES;
+}
 
 // handle tabs and enter
 - (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector
@@ -713,8 +770,19 @@ const int circDiam = 20;
 	return mSCViewObject->performDrag();
 }
 
-@end
+- (void)keyUp:(NSEvent*)event
+{
 
+//	post("doKeyUpAction\n");
+	NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
+    unichar character = 0;
+    if([characters length] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+	mSCViewObject->keyUp(character, modifiers,[event keyCode]);
+}
+@end
 
 @implementation SCNSMenuItem
 
@@ -1970,9 +2038,13 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	[mTextField setSCView: this];
 	[mTextField setDelegate: mTextField];
 	[mTextField setTextReallyChanged:false];
+
+	[mTextField setBordered:YES]; // for some reason, if we don't set this we can't have transparency
+	[mTextField setDrawsBackground:NO]; // SCView will draw for us. This also allows 0 < alpha < 1
+	
+	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
 	
 	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
-	
 	setVisibleFromParent();
 }
 
@@ -2066,17 +2138,17 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
-	if (strcmp(name, "boxColor")==0) {
-		err = slotColorVal(slot, &mBoxColor);
-		if (err) return err;
-		NSColor *color = [NSColor colorWithCalibratedRed: mBoxColor.red
-                            green: mBoxColor.green 
-                            blue: mBoxColor.blue 
-                            alpha: mBoxColor.alpha];
-		[mTextField setBackgroundColor: color];
-		refresh();
-		return errNone;
-	}
+//	if (strcmp(name, "boxColor")==0) {
+//		err = slotColorVal(slot, &mBoxColor);
+//		if (err) return err;
+//		NSColor *color = [NSColor colorWithCalibratedRed: mBoxColor.red
+//                            green: mBoxColor.green 
+//                            blue: mBoxColor.blue 
+//                            alpha: mBoxColor.alpha];
+//		[mTextField setBackgroundColor: color];
+//		refresh();
+//		return errNone;
+//	}
 	
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
