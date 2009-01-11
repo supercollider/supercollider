@@ -91,6 +91,13 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 	showHelpSearch {
 		Help.searchGUI
 	}
+	
+	showClassBrowser {
+		var string, class, method, words;
+		string = interpreter.cmdLine;
+		class = string.asSymbol.asClass;
+		(class ? Object).browse;
+	}
 
 	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
 	

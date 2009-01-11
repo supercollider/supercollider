@@ -84,6 +84,8 @@
 				<string>id</string>
 				<key>runMain</key>
 				<string>id</string>
+				<key>showClassBrowser</key>
+				<string>id</string>
 				<key>showHelp</key>
 				<string>id</string>
 				<key>showHelpBrowser</key>

@@ -69,6 +69,7 @@ extern PyrSymbol *s_closed;
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize;
 
 - (IBAction) showHelp: (id) sender;
+- (IBAction)showClassBrowser:(id)sender;
 
 - (BOOL) textView: (NSTextView *) textView
     clickedOnLink: (id) link

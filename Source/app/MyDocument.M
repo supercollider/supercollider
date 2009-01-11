@@ -786,6 +786,10 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	showHelpFor([textView currentlySelectedText: NULL]);
 }
 
+- (IBAction)showClassBrowser:(id)sender {
+	[self sendSelection: "showClassBrowser"];
+}
+
 #endif
 
 // LINK SUPPORT
