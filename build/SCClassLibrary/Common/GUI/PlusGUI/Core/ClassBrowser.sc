@@ -43,7 +43,7 @@ ClassBrowser {
 		
 		currentClassNameView = gui.textField.new(w, Rect(0,0, 256, 32));
 		currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
-		currentClassNameView.boxColor = Color.clear;
+		currentClassNameView.background = Color.clear;
 		currentClassNameView.align = \center;
 		
 		currentClassNameView.action = {

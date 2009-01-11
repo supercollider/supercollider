@@ -43,7 +43,13 @@ SCTextField2 : SCStaticTextBase {
 	var <editable;
 	
 	*paletteExample { arg parent, bounds;
-		^this.new(parent, bounds).value_("edit me");
+		^this.new(parent, bounds).initBackGround.value_("edit me");
+	}
+	
+	initBackGround {
+		super.init;
+		background = Color.white;
+		
 	}
 	
 	value {
@@ -67,10 +73,12 @@ SCTextField2 : SCStaticTextBase {
 		this.editable_(bool);
 	}
 	boxColor {
-		^this.getProperty(\boxColor, Color.new)
+		this.deprecated(thisMethod, SCView.findMethod(\background));
+		^this.background;
 	}
 	boxColor_ { arg color;
-		this.setProperty(\boxColor, color)
+		this.deprecated(thisMethod, SCView.findMethod(\background_));
+		this.background_(color)
 	}
 	properties {
 		^super.properties ++ #[\boxColor]
