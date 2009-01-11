@@ -431,15 +431,18 @@ bool gIsFullScreen = false;
     [scvm defer: anInvocation];
 }
 
--(IBAction)showHelp:(id)sender {
+- (IBAction)showHelp:(id)sender {
     // a useless waste of a search to get the main page
     showHelpFor( @"Help");
 }
--(IBAction)showHelpBrowser:(id)sender {
+- (IBAction)showHelpBrowser:(id)sender {
 	[self sendMain: "showHelpBrowser"];
 }
--(IBAction)showHelpSearch:(id)sender {
+- (IBAction)showHelpSearch:(id)sender {
 	[self sendMain: "showHelpSearch"];
+}
+- (IBAction)showClassBrowser:(id)sender {
+	[self sendMain: "showClassBrowser"];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification

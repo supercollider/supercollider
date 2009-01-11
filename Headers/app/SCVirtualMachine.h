@@ -66,6 +66,6 @@
 -(IBAction)showHelp:(id)sender;
 -(IBAction)showHelpBrowser:(id)sender;
 -(IBAction)showHelpSearch:(id)sender;
-
+-(IBAction)showClassBrowser:(id)sender;
 
 @end
