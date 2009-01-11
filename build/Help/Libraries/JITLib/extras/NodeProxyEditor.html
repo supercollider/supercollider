@@ -12,14 +12,15 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b6}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862323}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0a2cb0}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6c2a2a}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 9.0px Monaco}
-span.s2 {color: #0023b6}
+span.s2 {color: #0a2cb0}
 span.s3 {color: #000000}
-span.s4 {color: #4d6d13}
-span.s5 {color: #001db9}
+span.s4 {color: #007300}
+span.s5 {color: #0428b3}
+span.s6 {color: #5a6a1b}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,8 +50,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>// number of sliders</p>
 <p class="p6">n = NodeProxyEditor(~test, 6);</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span>// every option on</p>
-<p class="p6">NodeProxyEditor<span class="s3">(extras: [</span><span class="s4">\scope</span><span class="s3">, </span><span class="s4">\reset</span><span class="s3">, </span><span class="s4">\doc</span><span class="s3">], monitor: </span>true, sinks: true<span class="s3">);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>// the top line has a choice of elements:</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\CLR <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to clear proxy</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\reset<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to reset proxy nodemap</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\scope<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to scope proxy</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\doc<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to document proxy as code</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\end<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to end proxy</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\fade<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>EZNumber for setting fadetime</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>not in the default elements:</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\rip<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>button to open a new editor on the proxy (used in ProxyMixer)</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>\pausR<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a button to toggle pause/resume</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\sendR<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a button to re-send; alt-click does Rebuild</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>\send<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>just send</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\rebuild<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>just rebuild</p>
+<p class="p5"><span class="Apple-tab-span">	</span>\poll<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>poll the proxy</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// maybe provide later this?<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>\name -&gt; { func }; <span class="Apple-tab-span">	</span>// add your own element...<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>// The default buttons/controls are:</p>
+<p class="p6">NodeProxyEditor<span class="s3">(extras: nil, monitor: </span>true, sinks: true<span class="s3">);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>// these are:</p>
+<p class="p5"><span class="s2">NodeProxyEditor</span>(extras: [<span class="s4">\CLR</span>, <span class="s4">\reset</span>, <span class="s4">\scope</span>, \doc, \end, \fade], monitor: <span class="s2">true, sinks: true</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>// if no monitor line, you can add pausR and sendR buttons</p>
+<p class="p6">NodeProxyEditor<span class="s3">(extras: [</span><span class="s4">\CLR</span><span class="s3">, </span><span class="s4">\reset</span><span class="s3">, </span><span class="s4">\pausR</span><span class="s3">, </span><span class="s4">\sendR</span><span class="s3">, </span><span class="s4">\scope</span><span class="s3">], monitor: </span>false, sinks: false<span class="s3">);</span></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// barebones</p>
 <p class="p5"><span class="s2">NodeProxyEditor</span>(extras: [], monitor: <span class="s2">false</span>);</p>
@@ -73,10 +100,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s3">~test = { </span>|freq=300, dens=20, amp=0.1, pan, ping=12, tok=13, crak|<span class="s3"><span class="Apple-converted-space"> </span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Pan2</span>.ar(<span class="s2">Ringz</span>.ar(<span class="s2">Dust</span>.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)<span class="Apple-converted-space"> </span></p>
 <p class="p5">};</p>
-<p class="p5"><span class="s2">Spec</span>.add(<span class="s4">\dens</span>, <span class="s2">[</span>0.1, 100, <span class="s4">\exp</span>, 0.01, 10]);</p>
+<p class="p5"><span class="s2">Spec</span>.add(<span class="s6">\dens</span>, <span class="s2">[</span>0.1, 100, <span class="s6">\exp</span>, 0.01, 10]);</p>
 <p class="p5">)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>// gets specs for slider ranges from global lookup in Spec.specs:</p>
-<p class="p5"><span class="s2">Spec</span>.add(<span class="s4">\dens</span>, <span class="s2">[</span>0.1, 100, <span class="s4">\exp</span>, 0.01, 10]);</p>
+<p class="p5"><span class="s2">Spec</span>.add(<span class="s6">\dens</span>, <span class="s2">[</span>0.1, 100, <span class="s6">\exp</span>, 0.01, 10]);</p>
 <p class="p5">n.fullUpdate;</p>
 <p class="p2"><br></p>
 <p class="p7"><span class="s3">(<span class="Apple-tab-span">	</span></span>// keys go away if not needed</p>
@@ -95,16 +122,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>// changes in settings are shown:</p>
-<p class="p5">~test.set(<span class="s4">\freq</span>, exprand(100.0, 2000.0));</p>
+<p class="p5">~test.set(<span class="s6">\freq</span>, exprand(100.0, 2000.0));</p>
 <p class="p5">~test.playN;</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>// mapping kr proxies to controls is shown</p>
 <p class="p5">~lfo = { <span class="s2">LFNoise0</span>.kr(8, 4) };</p>
-<p class="p5">~test.map(<span class="s4">\intv</span>, ~lfo);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5">~test.unmap(<span class="s4">\intv</span>);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
+<p class="p5">~test.map(<span class="s6">\intv</span>, ~lfo);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5">~test.unmap(<span class="s6">\intv</span>);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2">Spec</span>.add(<span class="s4">\intv</span>, <span class="s2">ControlSpec</span>(0, 24, <span class="s4">\lin</span>, 0.01, 0)); n.fullUpdate;</p>
-<p class="p5">~test.set(<span class="s4">\freq</span>, rrand(200, 500), <span class="s4">\intv</span>, rrand(-5.5, 5.5));</p>
+<p class="p5"><span class="s2">Spec</span>.add(<span class="s6">\intv</span>, <span class="s2">ControlSpec</span>(0, 24, <span class="s6">\lin</span>, 0.01, 0)); n.fullUpdate;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>// setting a param value unmaps a previous control source</p>
+<p class="p5">~test.set(<span class="s6">\freq</span>, rrand(200, 500), <span class="s6">\intv</span>, rrand(-5.5, 5.5));</p>
 <p class="p2"><br></p>
 </body>
 </html>

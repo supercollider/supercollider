@@ -11,16 +11,16 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862323}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b6}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #001db9}
+span.s2 {color: #0023b6}
 span.s3 {color: #606060}
 span.s4 {color: #000000}
-span.s5 {color: #426f0e}
-span.s6 {color: #961e1e}
-span.s7 {color: #0014bc}
+span.s5 {color: #4d6d13}
+span.s6 {color: #862323}
+span.s7 {color: #001db9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -49,7 +49,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">~test.ar;<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// activeProxies: proxy appears when it is alive</p>
-<p class="p6"><span class="s4">~test = { </span>|freq=250, intv=19, timescale=1, curve=0, loopnode=10|<span class="s4"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s4">~test = { </span>|freq=250, intv=19, timescale=1, curve=0, loopnode=0|<span class="s4"><span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>var env = EnvGen.kr(</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Env({ 1.0.rand2 }!11, {1.0.rand}!10, <span class="s2">curve, </span>releaseNode: 9, loopNode: <span class="s2">loopnode</span>),<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>timeScale: <span class="s2">timescale</span>);</p>
@@ -135,14 +135,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">m.editor.proxy_(~test);</p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// you can map a kr proxy to a control param;</p>
 <p class="p4">~test.map(<span class="s5">\wide</span>, ~lfnoyz0);</p>
 <p class="p4">~test.unmap(<span class="s5">\wide</span>);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// this also works by dragging the kr proxy name<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the field left of the param name.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">//<span class="Apple-tab-span">	</span>some more tests :</p>
@@ -160,5 +157,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">p.krProxyNames.do { <span class="s2">|key|</span> p.removeAt(key) };</p>
 <p class="p2"><br></p>
 <p class="p4">p.reduce(method: \clear);</p>
+<p class="p2"><br></p>
 </body>
 </html>

@@ -11,12 +11,13 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0014bc}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0014bc; min-height: 12.0px}
-span.s1 {color: #0014bc}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9; min-height: 12.0px}
+span.s1 {color: #001db9}
 span.s2 {color: #000000}
-span.s3 {color: #a91616}
+span.s3 {color: #961e1e}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -65,17 +66,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, bounds: 300@30);</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// place it in an existing window:<span class="Apple-converted-space"> </span></p>
-<p class="p5">ProxyMonitorGui<span class="s2">(~test, </span>Window<span class="s2">(</span><span class="s4">"ProxyMonitor"</span><span class="s2">).front);</span></p>
+<p class="p7"><span class="s1">ProxyMonitorGui</span><span class="s2">(~test, </span><span class="s1">Window</span><span class="s2">(</span>"ProxyMonitor", Rect(200, 200, 400, 100)<span class="s2">).front);</span></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, <span class="s1">Window</span>(<span class="s4">"ProxyMonitor"</span>).front, bounds: 350@40);</p>
 <p class="p2"><br></p>
 <p class="p4">P<span class="s1">roxyMonitorGui</span>(~test, <span class="s1">Window</span>(<span class="s4">"ProxyMonitor"</span>).front, bounds: Rect(20, 20, 360, 20));</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// show level in dB - off by default</p>
 <p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, showLevel: <span class="s1">true</span>, showPlayN: <span class="s1">false</span>);</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// without multichan out button - then uses proxy.play. true = playN by default.</p>
 <p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, showPlayN: <span class="s1">false</span>);</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// show proxy name or not. on by default.</p>
+<p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, showName: <span class="s1">false</span>);</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// show proxy pause and send buttons - true by default</p>
 <p class="p4"><span class="s1">ProxyMonitorGui</span>(~test, showPauseSend: <span class="s1">true</span>, showPlayN: <span class="s1">false</span>);</p>
@@ -89,7 +94,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>// the GUI functions:<span class="Apple-converted-space"> </span></p>
-<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p5">ProxyMonitorGui<span class="s2">(~test);</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span></span>// left slider is vol</p>
 <p class="p4">~test.vol_(0.1);</p>
@@ -128,9 +133,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">//<span class="Apple-tab-span">	</span>ProxyMonitorGui gets its look from GUI.skin, so you could customize it there,<span class="Apple-converted-space"> </span></p>
 <p class="p3">//<span class="Apple-tab-span">	</span>or pass your own look in:<span class="Apple-converted-space"> </span></p>
-<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p5">ProxyMonitorGui(skin: &lt;your look here&gt;)<span class="Apple-converted-space"> </span></p>
-<p class="p7"><br></p>
+<p class="p8"><br></p>
 <p class="p2"><br></p>
 <p class="p3">// <span class="Apple-tab-span">	</span>Quick SwingOsc tests.</p>
 <p class="p2"><br></p>
