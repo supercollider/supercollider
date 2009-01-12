@@ -1,4 +1,4 @@
-Font {
+SCFont {
 	classvar <>default;
 	var <>name, <>size;
 	
