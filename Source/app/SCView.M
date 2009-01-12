@@ -3223,7 +3223,7 @@ int SCButton::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	char *name = symbol->name;
 	if (strcmp(name, "font")==0) {
-            if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+            if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
             PyrSlot *slots = slot->uo->slots;
         
             float fontSize; 
@@ -3416,7 +3416,7 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	char *name = symbol->name;
 	if (strcmp(name, "font")==0) {
-            if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+            if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
             PyrSlot *slots = slot->uo->slots;
         
             float fontSize; 
@@ -4377,7 +4377,7 @@ int SCStaticText::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
 	if (strcmp(name, "font")==0) {
-            if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+            if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
             PyrSlot *slots = slot->uo->slots;
         
             float fontSize; 
@@ -4643,7 +4643,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	if (strcmp(name, "font")==0) {
-		if (!isKindOfSlot(slot, getsym("Font")->u.classobj)) return errWrongType;
+		if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
 		PyrSlot *slots = slot->uo->slots;
 	
 		float fontSize; 

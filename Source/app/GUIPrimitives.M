@@ -3935,7 +3935,7 @@ void initGUIPrimitives()
 	int base, index;
 	
         s_draw = getsym("draw");
-        s_font = getsym("Font");
+        s_font = getsym("SCFont");
         s_closed = getsym("closed");
         s_tick = getsym("tick");
         s_doaction = getsym("doAction");
