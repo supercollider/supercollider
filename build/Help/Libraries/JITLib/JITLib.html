@@ -14,20 +14,22 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #908a76; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8e8a79; min-height: 12.0px}
 span.s1 {font: 3.0px Helvetica}
-span.s2 {color: #0047e4}
-span.s3 {color: #416bbd}
+span.s2 {color: #1d59d3}
+span.s3 {color: #5171b3}
 span.s4 {font: 11.0px Georgia}
-span.s5 {font: 12.0px Helvetica; color: #416bbd}
+span.s5 {font: 12.0px Helvetica; color: #5171b3}
 span.s6 {color: #000000}
 span.s7 {text-decoration: underline}
-span.s8 {color: #0b4ede}
-span.s9 {color: #0033f1}
-span.s10 {text-decoration: underline ; color: #0a48ce}
-span.s11 {color: #0000ff}
-span.s12 {text-decoration: underline ; color: #0041d4}
-span.s13 {color: #0a48ce}
+span.s8 {color: #255ece}
+span.s9 {color: #0b4ede}
+span.s10 {text-decoration: underline ; color: #2357bf}
+span.s11 {color: #003eea}
+span.s12 {text-decoration: underline ; color: #1b53c4}
+span.s13 {color: #2357bf}
+span.s14 {color: #0033f1}
+span.s15 {color: #0024f8}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,7 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><i>Just in time programming</i> (or: <i>live coding</i><span class="s1"><i><sup>1</sup></i></span><i>, on-the fly-programming, interactive programming</i>) is a paradigm that includes the programming activity itself in the program's operation. This means a program is not taken as a tool that is made first, then to be productive, but a dynamic construction process of description and conversation – writing code thus becoming a closer part of musical or experimental practice. SuperCollider, being a dynamic programming language, provides several possibilities for modification of a running program - this library attempts to extend, simplify and develop them, mainly by providing abstract placeholders<i> (</i><b><i>proxies</i></b><i>)</i> that can be modified and used in calculations while playing. There is some specific networking classes which are made to simplify the distribution of<span class="Apple-converted-space">  </span>live coding activity.</p>
 <p class="p2"><br></p>
-<p class="p4">JITLib simplifies and unifies some diverse aspects of SuperCollider.<span class="Apple-converted-space"> </span></p>
+<p class="p4">JITLib simplifies and unifies some orthogonal aspects of SuperCollider.<span class="Apple-converted-space"> </span></p>
 <p class="p4">It consists of a number of <b><i>placeholders</i></b> (server side and client side) and <b><i>schemes of access</i></b>.</p>
 <p class="p4">These two aspects of space corresponding to <i>inclusion</i> and <i>reference,</i> depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.</p>
 <p class="p4">It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their <b>source</b>, they can be used in a set of <b>contexts</b> and have a default source, if none is given.</p>
@@ -109,6 +111,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_fading.html"><span class="s10">jitlib_fading</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(how crossfade of code works)</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_asCompileString.html"><span class="s10">jitlib_asCompileString</span></a><span class="Apple-tab-span">	</span>(storing and reproducing proxies)</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/recursive_phrasing.html"><span class="s10">recursive_phrasing</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(a specific use of Pdef)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="tutorials/jitlib_asCompileString.html"><span class="s14">jitlib_asCompileString</span></a><span class="Apple-tab-span">	</span>(how to reproduce source code from objects)</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/jitlib_networking.html"><span class="s10">jitlib_networking</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(how to collaborative live code with JITLib)</p>
 <p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><a href="tutorials/basic_live_coding_techniques.html"><span class="s3">basic_live_coding_techniques</span></a><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>(live coding without jitlib)</p>
 <p class="p2"><br></p>
@@ -135,11 +138,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Internal classes / abstract classes / other useful things:</b></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/RecNodeProxy.html"><span class="s9">RecNodeProxy</span></a> (for recording NodeProxy)</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/BusPlug.html"><span class="s9">BusPlug</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(listener on a bus)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="extras/SkipJack.html"><span class="s9">SkipJack</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(a task that keeps awake across cmd-period)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="environments/LazyEnvir.html"><span class="s9">LazyEnvir</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(and environment that returns proxies)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/RecNodeProxy.html"><span class="s9">RecNodeProxy</span></a> (for recording NodeProxy)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="environments/EnvironmentRedirect.html"><span class="s9">EnvironmentRedirect</span></a><span class="s9"> </span>(abstract superclass for redirecting environments)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="nodeproxy/EnvGate.html"><span class="s15">EnvGate</span></a><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(singleton fade envelope)</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
