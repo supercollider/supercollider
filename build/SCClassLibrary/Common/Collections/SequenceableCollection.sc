@@ -776,9 +776,9 @@ SequenceableCollection : Collection {
 	
 	// UGen support
 	
-	lag { arg lagTime=0.1; ^this.collect { arg item; item.lag(lagTime) } }
-	lag2 { arg lagTime=0.1; ^this.collect { arg item; item.lag2(lagTime) } }
-	lag3 { arg lagTime=0.1; ^this.collect { arg item; item.lag3(lagTime) } }
+	lag { arg t1=0.1, t2; ^this.collect { arg item; item.lag(t1, t2) } }
+	lag2 { arg t1=0.1, t2; ^this.collect { arg item; item.lag2(t1, t2) } }
+	lag3 { arg t1=0.1, t2; ^this.collect { arg item; item.lag3(t1, t2) } }
 	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 	
 	// sorting

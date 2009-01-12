@@ -28,7 +28,7 @@ Help {
 		if(\SCImageFilter.asClass.notNil) {
 			categoriesSkipThese = categoriesSkipThese.add(\SCImageFilter.asClass)
 		};
-		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads" ];
+		filterUserDirEntries = [ "Extensions", "SuperCollider", "SuperCollider3", "Help", "svn", "share", "classes", "trunk", "Downloads", "Application Support" ];
 		[Platform.systemExtensionDir, Platform.userExtensionDir].do({ |path|
 			path.split(Platform.pathSeparator).do({ |dirname|
 				if(filterUserDirEntries.detect(_ == dirname).isNil) {

@@ -55,6 +55,7 @@ void Loudness_Ctor(Loudness* unit) {
 	//unit->m_phontotal=0; 
 	
 	unit->mCalcFunc = (UnitCalcFunc)&Loudness_next;
+	Loudness_next(unit, 1);
 }
 
 
