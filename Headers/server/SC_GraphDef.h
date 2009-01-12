@@ -39,6 +39,7 @@ struct GraphDef
 	NodeDef mNodeDef;
 	
 	uint32 mNumControls;
+	uint32 mNumAudioControls;
 	
 	uint32 mNumWires;
 	uint32 mNumConstants;
@@ -52,7 +53,7 @@ struct GraphDef
 	struct UnitSpec *mUnitSpecs;
 	
 	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
-	size_t mControlAllocSize, mMapControlsAllocSize;
+	size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize;
 	
 	uint32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,16 +14,18 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #7e493b}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #754a3d}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Helvetica; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #4e224a}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #47244a}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0a36d9}
+span.s3 {color: #113bd5}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -226,6 +228,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Takes a list of triplets of control names or indices, bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone. Any <b>n_set</b>, <b>n_setn</b> and <b>n_fill</b> command will also unmap the control.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>/n_mapa<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>map a node's controls to read from an audio bus</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>int - node ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - control bus index</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Takes a list of pairs of control names or indices and audio bus indices and causes those controls to be read continuously from a global audio bus. If the node is a group, then it maps the controls of every node in the group. If the audio bus index is -1 then any current mapping is undone. Any <b>n_set</b>, <b>n_setn</b> and <b>n_fill</b> command will also unmap the control. For the full audio rate signal, the argument must have its rate set to \ar.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>/n_mapan<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>map a node's controls to read from audio buses</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>int - node ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - control bus index</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of controls to map</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Takes a list of triplets of control names or indices, audio bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the audio bus index is -1 then any current mapping is undone. Any <b>n_set</b>, <b>n_setn</b> and <b>n_fill</b> command will also unmap the control. For the full audio rate signal, the argument must have its rate set to \ar.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>/n_before<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>place a node before another</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
@@ -870,7 +891,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><span class="Apple-tab-span">	</span>cmd_g_dumpTree = <span class="s3">56</span>,</p>
 <p class="p13"><span class="Apple-tab-span">	</span>cmd_g_queryTree = <span class="s3">57</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>NUMBER_OF_COMMANDS = <span class="s3">58</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-converted-space">     </span>cmd_error = 58,</p>
+<p class="p16"><br></p>
+<p class="p15"><span class="Apple-converted-space">     </span>cmd_s_newargs = 59,</p>
+<p class="p14"><br></p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapa = 60,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapan = 61,</p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>NUMBER_OF_COMMANDS = <span class="s3">62</span></p>
 <p class="p13">};</p>
 <p class="p10">copyright © 2002 James McCartney</p>
 </body>

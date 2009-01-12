@@ -252,6 +252,10 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	
 	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
+
+	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
+	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
+
 	
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;

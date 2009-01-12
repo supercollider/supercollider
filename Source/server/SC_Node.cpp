@@ -176,6 +176,26 @@ void Node_MapControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int
 	}
 }
 
+// set a node's control so that it reads from a control bus - index argument
+void Node_MapAudioControl(Node* inNode, int inIndex, int inBus)
+{
+    if (inNode->mIsGroup) {
+	Group_MapAudioControl((Group*)inNode, inIndex, inBus);
+    } else {
+	Graph_MapAudioControl((Graph*)inNode, inIndex, inBus);
+    }
+}
+
+// set a node's control so that it reads from a control bus - name argument
+void Node_MapAudioControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int inBus)
+{
+    if (inNode->mIsGroup) {
+	Group_MapAudioControl((Group*)inNode, inHash, inName, inIndex, inBus);
+    } else {
+	Graph_MapAudioControl((Graph*)inNode, inHash, inName, inIndex, inBus);
+    }
+}
+
 // set a node's control value - index argument
 void Node_SetControl(Node* inNode, int inIndex, float inValue)
 {
