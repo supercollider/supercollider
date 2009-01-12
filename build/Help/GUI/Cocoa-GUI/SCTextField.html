@@ -14,29 +14,28 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #6a708c}
-span.s3 {color: #696f8e}
+span.s2 {color: #6b718a}
+span.s3 {color: #6a708c}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #5461ad}
-span.s7 {color: #3e54c5}
-span.s8 {color: #6f7181}
+span.s6 {color: #5763a9}
+span.s7 {color: #4357c0}
+span.s8 {color: #6f7180}
 span.s9 {font: 9.0px Monaco}
-span.s10 {color: #0000bf}
-span.s11 {color: #6f7184}
+span.s10 {color: #0018b8}
+span.s11 {color: #6f7183}
 span.s12 {font: 14.0px Helvetica}
 span.s13 {color: #606060}
-span.s14 {color: #0018b8}
-span.s15 {color: #356f14}
+span.s14 {color: #0922b2}
+span.s15 {color: #476c1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -62,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s10">TextField</span>(w, <span class="s10">Rect</span>(10, 10, 150, 20));</p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.string = </span>"some default text"<span class="s4">;</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {<span class="s10">arg</span> field; field.value.postln; };</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">)</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p10"><br></p>
 <p class="p11"><b>Accessing Instance and Class Variables</b></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
@@ -106,23 +105,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p11"><b>Examples</b></p>
 <p class="p13"><br></p>
-<p class="p14">(</p>
+<p class="p8">(</p>
 <p class="p8">w = <span class="s10">Window</span>.new.front;</p>
 <p class="p8">a = <span class="s10">TextField</span>(w, <span class="s10">Rect</span>(10, 10, 150, 20));</p>
 <p class="p8">a.string = <span class="s13">"hi there"</span>;</p>
 <p class="p8">a.action = {<span class="s10">arg</span> field; field.value.postln; };</p>
-<p class="p14">)</p>
+<p class="p8">)</p>
 <p class="p13"><br></p>
-<p class="p15">// does not do the action</p>
-<p class="p14">a.value = <span class="s13">"yo"</span>;</p>
-<p class="p14">a.string = <span class="s13">"oy"</span>;</p>
+<p class="p14">// does not do the action</p>
+<p class="p8">a.value = <span class="s13">"yo"</span>;</p>
+<p class="p8">a.string = <span class="s13">"oy"</span>;</p>
 <p class="p13"><br></p>
-<p class="p15"><span class="s4">a.valueAction_(</span><span class="s13">"this is not a pipe"</span><span class="s4">); </span>//does the action, if the value has changed</p>
-<p class="p15"><span class="s4">a.doAction; </span>//evaluates the action with the content of the text field as an argument</p>
+<p class="p14"><span class="s4">a.valueAction_(</span><span class="s13">"this is not a pipe"</span><span class="s4">); </span>//does the action, if the value has changed</p>
+<p class="p14"><span class="s4">a.doAction; </span>//evaluates the action with the content of the text field as an argument</p>
 <p class="p13"><br></p>
-<p class="p14">a.boxColor_(<span class="s14">Color</span>.grey);</p>
-<p class="p14">a.stringColor_(<span class="s14">Color</span>.white);</p>
-<p class="p14">a.align_(<span class="s15">\center</span>);</p>
+<p class="p8">a.boxColor_(<span class="s14">Color</span>.grey);</p>
+<p class="p8">a.stringColor_(<span class="s14">Color</span>.white);</p>
+<p class="p8">a.align_(<span class="s15">\center</span>);</p>
 <p class="p13"><br></p>
 </body>
 </html>
