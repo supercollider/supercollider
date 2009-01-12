@@ -69,7 +69,7 @@ CocoaGUI {
 	*ezRanger { ^EZRanger }		
 	*menuItem { ^CocoaMenuItem }
 	
-	*font { ^Font }
+	*font { ^SCFont }
 	*pen { ^SCPen }
 			
 	///////////////// Common -> Audio /////////////////

@@ -66,6 +66,7 @@ SoundFileView : ViewRedirect { *key { ^\soundFileView }}
 MovieView : ViewRedirect { *key { ^\movieView }}
 TextView : ViewRedirect  {	*key { ^\textView }}
 
+Font : ViewRedirect  {	*key { ^\font }}
 
 
 
