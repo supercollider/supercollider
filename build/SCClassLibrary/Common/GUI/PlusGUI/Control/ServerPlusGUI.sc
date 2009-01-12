@@ -1,31 +1,39 @@
 
 + Server {
 
-	// splitting makeWindow and makeGui, makes sure that makeWindow can be overridden while maintaining the availability of the GUI server window
+	// splitting makeWindow and makeGui, makes sure that makeWindow can be overridden 
+	// while maintaining the availability of the GUI server window
+	
 	makeWindow { arg w;
 		this.makeGui( w );
+	}
+	
+	calculateViewBounds {
+		var width = 288, height = 98, taskBarHeight = 27; // the latter should be in SCWindow
+		var keys = set.asArray.collect(_.name).sort;
+		^Rect(5, keys.indexOf(name) * (height + taskBarHeight) + 5, width, height)
 	}
 	
 	makeGui { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping=false, label, gui, font, volumeNum;
+		var dumping = false, label, gui, font, volumeNum;
 		
-		if (window.notNil, { ^window.front });
+		if (window.notNil) { ^window.front };
 		
 		gui = GUI.current;
 		font = GUI.font.new("Helvetica", 10);
 		
 		if(w.isNil) {
 			label = name.asString + "server";
-			w = window = gui.window.new( label,
-						Rect(5, named.values.indexOf(this) * 125 + 5, 288, 98),
-						resizable: false );
+			w = window = gui.window.new(label, this.calculateViewBounds, resizable: false);
 			w.view.decorator = FlowLayout(w.view.bounds);
-		} { label = w.name };
+		} { 
+			label = w.name 
+		};
 		
-		if(isLocal,{
+		if(isLocal) {
 			booter = gui.button.new(w, Rect(0,0, 44, 18));
 			booter.canFocus = false;
 			booter.font = font;
@@ -48,7 +56,7 @@
 			killer.font = font;
 			killer.canFocus = false;
 			killer.action = { Server.killAll };	
-		});
+		};
 		
 		active = gui.staticText.new(w, Rect(0,0, 78, 18));
 		active.string = this.name.asString;
@@ -89,11 +97,12 @@
 			var startDump, stopDump, stillRunning;
 			
 			case 
-			{char === $n} { this.queryAllNodes(false) }
-			{char === $N} { this.queryAllNodes(true) }
+			{char === $n } { this.queryAllNodes(false) }
+			{char === $N } { this.queryAllNodes(true) }
 			{char === $ } { if(serverRunning.not) { this.boot } }
-			{char === $s and: { gui.stethoscope.isValidServer( this )}} { GUI.use( gui, { this.scope })}
-			{char == $d} {
+			{char === $s and: { gui.stethoscope.isValidServer( this ) } } { 
+				GUI.use( gui, { this.scope })}
+			{char == $d } {
 				if(this.isLocal or: { this.inProcess }) {
 					stillRunning = {
 						SystemClock.sched(0.2, { this.stopAliveThread });
@@ -118,7 +127,7 @@
 				}
 			
 			}
-			{char === $m} { if(this.volume.isMuted) { this.unmute } { this.mute } }
+			{char === $m } { if(this.volume.isMuted) { this.unmute } { this.mute } }
 			{char === $0 and: {volumeNum.hasFocus.not}} { 
 				this.volume = 0.0; 
 				};
@@ -196,7 +205,7 @@
 		#[
 			"Avg CPU :", "Peak CPU :", 
 			"UGens :", "Synths :", "Groups :", "SynthDefs :"
-		].collect({ arg name, i;
+		].collect { arg name, i;
 			var label,numView, pctView;
 			label = gui.staticText.new(w, Rect(0,0, 80, 12));
 			label.string = name;
@@ -219,7 +228,7 @@
 			});
 			
 			numView
-		});
+		};
 
 		if(isLocal or: { options.remoteControlVolume }) {
 		{
