@@ -11,26 +11,24 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9c8f65; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9b8e68; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 20.0px Futura}
-span.s3 {color: #0000ff}
-span.s4 {color: #0033f1}
+span.s3 {color: #0024f8}
+span.s4 {color: #003eea}
 span.s5 {color: #000000}
 span.s6 {text-decoration: underline}
 span.s7 {font: 12.0px Helvetica}
-span.s8 {color: #007300}
+span.s8 {color: #2c7014}
 span.s9 {font: 9.0px Monaco}
 span.s10 {font: 12.0px Futura}
 span.s11 {font: 13.0px Helvetica}
-span.s12 {color: #0000bf}
+span.s12 {color: #001bb9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -165,40 +163,39 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p5">// examples</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6">s = <span class="s12">Server</span>.local;</p>
 <p class="p6">s.boot;</p>
 <p class="p6">p = <span class="s12">ProxySpace</span>.push(s);</p>
 <p class="p6">)</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out.play;</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 407] * 0.9, 0, 0.2) };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * <span class="s12">LFPulse</span>.kr([1, 1.3]) };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * ~x.kr(2) };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~x = { <span class="s12">LFPulse</span>.kr([1, 1.3] * <span class="s12">MouseX</span>.kr(1, 30, 1)) };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * <span class="s12">Lag</span>.kr(0.1 + ~x, 0.3), 0, 0.2) * ~x };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">p.fadeTime = 5;</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 1.1, 0, 0.2) * ~x.kr(2) };</p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
 <p class="p5"><span class="s5">p.end(8); </span>// end all in 8 sec.</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p5"><span class="s5">p.clear.pop; </span>// remove all, move out.</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
-<p class="p12"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 </body>
 </html>
