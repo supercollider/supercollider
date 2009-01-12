@@ -60,6 +60,7 @@ Collection {
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
 	remove { ^this.subclassResponsibility(thisMethod) }
 	removeAll { | list | list.do { | item | this.remove(item) } }
+	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
 	removeAllSuchThat { | function |
 		var removedItems = this.class.new;
 		var copy = this.copy;
