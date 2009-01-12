@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -22,14 +22,15 @@ p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #606060}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Arial; color: #606060}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; color: #606060}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Marker Felt; color: #606060}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #606060}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Arial; color: #606060}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; color: #606060}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Marker Felt; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0c2eee}
-span.s3 {color: #2136a6}
-span.s4 {color: #1638e6}
+span.s2 {color: #2040df}
+span.s3 {color: #2b3d9c}
+span.s4 {color: #2946d8}
 span.s5 {color: #0000bf}
 span.s6 {color: #007300}
 span.s7 {color: #000000}
@@ -41,11 +42,11 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a font object</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p1"><span class="s1"><b>SCFont<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a font object</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">This is the object you pass to other gui objects to set their font name or size.</p>
+<p class="p1">This is the object you pass to other gui objects to set their font name or size.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
@@ -79,7 +80,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>*defaultMonoFace</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the default mono face </span>Font.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the default mono face Font.</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p10"><b>Accessing Instance and Class Variables</b></p>
@@ -127,7 +128,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13">(</p>
 <p class="p13"><span class="s5">var</span> updateFont;</p>
 <p class="p13">w=<span class="s5">SCWindow</span>(<span class="s8">"Fonts"</span>, <span class="s5">Rect</span>(150,<span class="s5">SCWindow</span>.screenBounds.height-500, 400,400)).front;</p>
-<p class="p15">w.view.decorator = <span class="s5">FlowLayout</span>( w.view.bounds);</span></p>
+<p class="p15">w.view.decorator = <span class="s5">FlowLayout</span>( w.view.bounds);</p>
 <p class="p13"><span class="s5">SCStaticText</span>.new(w, <span class="s5">Rect</span>(5,0,30,20)).string_(<span class="s8">"Font"</span>).align_(<span class="s6">\rght</span>);</p>
 <p class="p13">m=<span class="s5">SCPopUpMenu</span>(w, <span class="s5">Rect</span>(40,0,250,20));</p>
 <p class="p13">m.items = <span class="s5">Font</span>.availableFonts;</p>
@@ -166,13 +167,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13">w = <span class="s5">SCWindow</span>(<span class="s8">"Fonts"</span>, <span class="s5">Rect</span>(128, 64, 340, 360));</p>
 <p class="p13">w.view.decorator = f = <span class="s5">FlowLayout</span>(w.view.bounds,<span class="s5">Point</span>(4,4),<span class="s5">Point</span>(4,2));</p>
 <p class="p12"><br></p>
-<p class="p13">[</p>
-<p class="p16"><span class="s9">"</span><b>Helvetica-Bold</b><span class="s9">"</span><span class="s10">,</span></p>
-<p class="p16"><span class="s9">"</span>Helvetica<span class="s9">"</span><span class="s10">,</span></p>
+<p class="p16">[</p>
+<p class="p17"><span class="s9">"</span><b>Helvetica-Bold</b><span class="s9">"</span><span class="s10">,</span></p>
+<p class="p17"><span class="s9">"</span>Helvetica<span class="s9">"</span><span class="s10">,</span></p>
 <p class="p14">"Monaco"<span class="s7">,</span></p>
-<p class="p17"><span class="s9">"</span>Arial<span class="s9">"</span><span class="s10">,</span></p>
-<p class="p18"><span class="s9">"</span>Gadget<span class="s9">"</span><span class="s10">,</span></p>
-<p class="p19"><span class="s9">"</span>MarkerFelt-Thin<span class="s11">"</span></p>
+<p class="p18"><span class="s9">"</span>Arial<span class="s9">"</span><span class="s10">,</span></p>
+<p class="p19"><span class="s9">"</span>Gadget<span class="s9">"</span><span class="s10">,</span></p>
+<p class="p20"><span class="s9">"</span>MarkerFelt-Thin<span class="s11">"</span></p>
 <p class="p12"><br></p>
 <p class="p13">].do({ <span class="s5">arg</span> name;</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="s5">var</span> v, s, n, spec, p, height = 16;</p>
