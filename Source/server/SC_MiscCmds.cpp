@@ -371,6 +371,55 @@ SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 	return kSCErr_None;
 }
 
+SCErr meth_n_mapa(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_mapa(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+    sc_msg_iter msg(inSize, inData);	
+    Node *node = Msg_GetNode(inWorld, msg);
+    if (!node) return kSCErr_NodeNotFound;
+    
+    while (msg.remain() >= 8) {
+	if (msg.nextTag('i') == 's') {
+	    int32* name = msg.gets4();
+	    int bus = msg.geti();
+	    Node_MapAudioControl(node, Hash(name), name, 0, bus);
+	} else {
+	    int32 index = msg.geti();
+	    int32 bus = msg.geti();
+	    Node_MapAudioControl(node, index, bus);
+	}
+    }
+    return kSCErr_None;
+}
+
+SCErr meth_n_mapan(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_mapan(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+    sc_msg_iter msg(inSize, inData);	
+    Node *node = Msg_GetNode(inWorld, msg);
+    if (!node) return kSCErr_NodeNotFound;
+    
+    while (msg.remain() >= 12) {
+	if (msg.nextTag('i') == 's') {
+	    int32* name = msg.gets4();
+	    int32 hash = Hash(name);
+	    int bus = msg.geti();
+	    int n = msg.geti();
+	    for (int i=0; i<n; ++i) {
+		Node_MapAudioControl(node, hash, name, i, bus == -1 ? -1 : bus+i);
+	    }
+	} else {
+	    int32 index = msg.geti();
+	    int32 bus = msg.geti();
+	    int n = msg.geti();
+	    for (int i=0; i<n; ++i) {
+		Node_MapAudioControl(node, index+i, bus == -1 ? -1 : bus+i);
+	    }
+	}
+    }
+    return kSCErr_None;
+}
+
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -401,7 +450,12 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 					Node_MapControl(node, hash, name, i, bus);
 					++i;
 				}
-				break;
+			    if ( *string == 'a') {
+				int bus = sc_atoi(string+1);
+				Node_MapAudioControl(node, hash, name, i, bus);
+				++i;
+			    }
+			    break;
 			}
 			case ']':
 			    msg.count++;
@@ -430,11 +484,16 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			{
 				const char* string = msg.gets();
 				if ( *string == 'c') {
-				int bus = sc_atoi(string+1);
-				Node_MapControl(node, index + i, bus);
-				++i;
+				    int bus = sc_atoi(string+1);
+				    Node_MapControl(node, index + i, bus);
+				    ++i;
 				}
-				break;
+				if ( *string == 'a') {
+				    int bus = sc_atoi(string+1);
+				    Node_MapAudioControl(node, index + i, bus);
+				    ++i;
+				}
+			    break;
 			}
 			case ']':
 			    msg.count++;
@@ -528,6 +587,11 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 						int bus = sc_atoi(string+1);
 						Node_MapControl(node, hash, name, i, bus);
 					}
+					if (*string == 'a') {
+					    int bus = sc_atoi(string+1);
+					    Node_MapAudioControl(node, hash, name, i, bus);
+					}
+				    
 				} else {
 					float32 value = msg.getf();
 					Node_SetControl(node, hash, name, i, value);
@@ -542,6 +606,10 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 					if (*string == 'c') {
 						int bus = sc_atoi(string+1);
 						Node_MapControl(node, index+i, bus);
+					}
+					if (*string == 'a') {
+					    int bus = sc_atoi(string+1);
+					    Node_MapAudioControl(node, index+i, bus);
 					}
 				} else {
 					float32 value = msg.getf();
@@ -1684,8 +1752,10 @@ void initMiscCommands()
 		
 	//NEW_COMMAND(n_cmd);		
 	NEW_COMMAND(n_map);		
-	NEW_COMMAND(n_mapn);		
-	NEW_COMMAND(n_set);		
+	NEW_COMMAND(n_mapn);
+        NEW_COMMAND(n_mapa);
+        NEW_COMMAND(n_mapan);
+        NEW_COMMAND(n_set);		
 	NEW_COMMAND(n_setn);		
 	NEW_COMMAND(n_fill);		
 	

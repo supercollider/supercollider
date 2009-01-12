@@ -1,9 +1,10 @@
-//used to store and cache set, map setn commands
+// used to bundle and cache set, map, mapa, setn, mapn, mapna commands.
 
 
 NodeMap {
-	var <>settings;
-	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs; // cache args
+	var <>settings; // cache args:
+	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs, <>mapaArgs, <>mapanArgs; 
+	
 	
 	*new {
 		^super.new.clear
@@ -23,6 +24,13 @@ NodeMap {
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			this.get(args.at(i)).map(args.at(i+1));
+		});
+		upToDate = false;
+	}
+	
+	mapa { arg ... args;
+		forBy(0, args.size-1, 2, { arg i;
+			this.get(args.at(i)).mapa(args.at(i+1));
 		});
 		upToDate = false;
 	}
@@ -64,7 +72,14 @@ NodeMap {
 	
 	mapn { arg ... args;
 		forBy(0, args.size-1, 3, { arg i;
-			this.get(args.at(i)).map(args.at(i+1), args.at(i+2));
+			this.get(args.at(i)).mapn(args.at(i+1), args.at(i+2));
+		});
+		upToDate = false;
+	}
+	
+	mapna { arg ... args;
+		forBy(0, args.size-1, 3, { arg i;
+			this.get(args.at(i)).mapna(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
 	}
@@ -111,7 +126,7 @@ NodeMap {
 	updateBundle {
 			if(upToDate.not) {
 				upToDate = true;
-				setArgs = setnArgs = mapArgs = mapnArgs = nil;
+				setArgs = setnArgs = mapArgs = mapnArgs = mapaArgs = mapanArgs = nil;
 				settings.do { arg item; item.updateNodeMap(this) };
 			};
 	}
@@ -124,6 +139,8 @@ NodeMap {
 			if(setnArgs.notNil) { bundle.add([16, target] ++ setnArgs) };
 			if(mapArgs.notNil) { bundle.add([14, target] ++ mapArgs) };
 			if(mapnArgs.notNil) { bundle.add([48, target] ++ mapnArgs) };
+			if(mapaArgs.notNil) { bundle.add([60, target] ++ mapaArgs) };
+			if(mapanArgs.notNil) { bundle.add([61, target] ++ mapanArgs) };
 	}
 	
 	unsetArgsToBundle { arg bundle, target, keys;
@@ -232,15 +249,10 @@ ProxyNodeMap : NodeMap {
 			args.pairsDo { arg key, mapProxy;
 				var setting, numChannels;
 				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-				
-				if(mapProxy.rate !== \audio) {
-					if(playing, { mapProxy.wakeUp });
-					setting = this.get(key);
-					if(multiChannel) { setting.mapn(mapProxy) }{ setting.map(mapProxy) };
-					parents = parents.put(key, mapProxy);
-				}{
-					("can only map to control proxy:" + key + mapProxy).inform
-				};
+				if(playing, { mapProxy.wakeUp });
+				setting = this.get(key);
+				if(multiChannel) { setting.mapn(mapProxy) } { setting.map(mapProxy) };
+				parents = parents.put(key, mapProxy);
 			};
 			upToDate = false;
 		}

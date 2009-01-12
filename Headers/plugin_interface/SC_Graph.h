@@ -36,8 +36,11 @@ struct Graph
 	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
-		
-	uint32 mNumUnits;
+	
+	// try this for setting the rate of a control
+	int *mControlRates;
+
+        uint32 mNumUnits;
 	struct Unit **mUnits;
 	
 	int mNumCalcUnits;

@@ -50,6 +50,36 @@ Control : MultiOutUGen {
 	*isControlUGen { ^true }
 }
 
+AudioControl : MultiOutUGen {
+	var <values;
+	
+	*names { arg names;
+		var synthDef, index;
+		synthDef = UGen.buildSynthDef;
+		index = synthDef.controlIndex;
+		names = names.asArray;
+		names.do { |name, i|
+			synthDef.addControlName(
+				ControlName(name.asString, index + i, 'audio', 
+					nil, synthDef.allControlNames.size)
+			);
+		};
+	}
+	*ar { arg values;
+		^this.multiNewList(['audio'] ++ values.asArray)
+	}
+	init { arg ... argValues;
+		values = argValues;
+		if (synthDef.notNil) {
+			specialIndex = synthDef.controls.size;
+			synthDef.controls = synthDef.controls.addAll(values);
+			synthDef.controlIndex = synthDef.controlIndex + values.size;
+		};
+		^this.initOutputs(values.size, rate)
+	}
+	*isAudioControlUGen { ^true }
+}
+
 TrigControl : Control {}
 
 LagControl : Control {	

@@ -1,5 +1,5 @@
 NodeMapSetting {
-	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false;
+	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false, <>mappedRate;
 	
 	*new { arg key, value, busNumChannels;
 		^super.newCopyArgs(key, value, busNumChannels)
@@ -17,6 +17,14 @@ NodeMapSetting {
 		isMultiChannel = true;
 		isMapped = true;
 	}
+	mapa { arg index;
+		this.map(index);
+		mappedRate = \audio;
+	}
+	mapan { arg index, numChannels;
+		this.map(index, numChannels);
+		mappedRate = \audio;
+	}
 	set { arg val;
 		value = val;
 		isMapped = false;
@@ -31,9 +39,17 @@ NodeMapSetting {
 			if(this.isNeutral) { nodeMap.upToDate = false; ^this }; // ignore setting
 			this.updateBusNumChannels;
 			if(isMultiChannel) {
-				nodeMap.mapnArgs = nodeMap.mapnArgs.addAll([key, this.index, busNumChannels]);
+				if(mappedRate === \audio) {
+					nodeMap.mapanArgs = nodeMap.mapanArgs.addAll([key,this.index,busNumChannels])
+				} {
+					nodeMap.mapnArgs = nodeMap.mapnArgs.addAll([key, this.index, busNumChannels])
+				}
 			}{
-				nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, this.index]);
+				if(mappedRate === \audio) {	
+					nodeMap.mapaArgs = nodeMap.mapaArgs.addAll([key, this.index]);
+				} {
+					nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, this.index]);
+				}
 			}
 		} {
 			if(value.notNil) {
@@ -69,6 +85,20 @@ ProxyNodeMapSetting : NodeMapSetting {
 	index { ^value.index }
 	isEmpty {
 		^value.isNil and: { rate.isNil }
+	}
+	map { arg proxy;
+		value = proxy;
+		isMultiChannel = false;
+		isMapped = true;
+		busNumChannels = 1;
+		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
+	}
+	mapn { arg proxy, numChannels;
+		value = proxy;
+		busNumChannels = numChannels;
+		isMultiChannel = true;
+		isMapped = true;
+		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
 	}
 	isNeutral { ^value.isNeutral }
 	storeArgs { ^[value, busNumChannels, rate] }

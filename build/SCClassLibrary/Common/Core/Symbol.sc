@@ -236,4 +236,9 @@ Symbol {
 		^TrigControl.kr(val)
 	}
 
+	ar { | val |
+		val = val.asControlInput;
+		UGen.buildSynthDef.addAr(this, val)
+		^AudioControl.ar(val)
+	}
 }

@@ -131,6 +131,14 @@ SynthDef {
 				};
 				this.addTr(name, value);
 			}
+			{(lag == \ar) or: { c == $a and: { c2 == $_ }}} 
+			{
+				if (lag.isNumber and: { lag != 0 }) {
+					Post << "WARNING: lag value "<< lag <<" for audio arg '"
+						<< name <<"' will be ignored.\n";
+				};
+				this.addAr(name, value);
+			}
 			{
 				if (lag == \kr) { lag = 0.0 };
 				this.addKr(name, value, lag);
@@ -160,6 +168,11 @@ SynthDef {
 		this.addControlName(ControlName(name, controls.size, 'trigger', 
 			values.copy, controlNames.size));
 	}
+	addAr { arg name, values;
+		this.addControlName(ControlName(name, controls.size, 'audio',
+			values.copy, controlNames.size))
+	}
+	
 	buildControls {
 		var controlUGens, index, values, lags, valsize;
 		var def, argNames;
@@ -170,6 +183,7 @@ SynthDef {
 		var irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
 		var krControlNames = controlNames.select {|cn| cn.rate == 'control' };
 		var trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
+		var arControlNames = controlNames.select {|cn| cn.rate == 'audio' };
 
 		if (nonControlNames.size > 0) {
 			nonControlNames.do {|cn|
@@ -217,6 +231,19 @@ SynthDef {
 				controlUGens = Control.kr(values.flat).asArray.reshapeLike(values);
 			};
 			krControlNames.do {|cn, i|
+				cn.index = index;
+				index = index + cn.defaultValue.asArray.size;
+				arguments[cn.argNum] = controlUGens[i];
+			};
+		};
+		if (arControlNames.size > 0) {
+			values = nil;
+			arControlNames.do {|cn| 
+				values = values.add(cn.defaultValue);
+			};
+			index = controlIndex;
+			controlUGens = AudioControl.ar(values.flat).asArray.reshapeLike(values);
+			arControlNames.do {|cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];

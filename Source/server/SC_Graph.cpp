@@ -126,13 +126,20 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mMapControls = (float**)memory;
 	memory += inGraphDef->mMapControlsAllocSize;
 	
+	graph->mControlRates = (int*)memory; 
+	memory += inGraphDef->mMapControlRatesAllocSize;
+    
 	{
 		float*  graphControls = graph->mControls;
 		float*  initialControlValues = inGraphDef->mInitialControlValues;
 		float** graphMapControls = graph->mMapControls;
+		/* add */
+		int* graphControlRates = graph->mControlRates;
 		for (int i=0; i<numControls; ++i, ++graphControls) {
 			*graphControls = initialControlValues[i];
 			graphMapControls[i] = graphControls;
+		        /* add */
+			graphControlRates[i] = 0;  // init to 0 for now... control bus is 1, audio is 2
 		}
 	}
 	
@@ -161,6 +168,11 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 				if ( *string == 'c') {
 					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, hash, name, i, bus);
+				} else {
+				    if (*string == 'a') {
+					int bus = sc_atoi(string+1);
+					Graph_MapAudioControl(graph, hash, name, i, bus);
+				    }
 				}
 				break;
 			}
@@ -194,6 +206,11 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 				if ( *string == 'c') {
 					int bus = sc_atoi(string+1);
 					Graph_MapControl(graph, index + i, bus);
+				} else {
+				    if (*string == 'a') {
+					int bus = sc_atoi(string+1);
+					Graph_MapAudioControl(graph, index + i, bus);
+				    }
 				}
 				break;
 			}
@@ -289,6 +306,11 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 						int bus = sc_atoi(string+1);
 						Graph_MapControl(graph, hash, name, i, bus);
 						//Node_MapControl(node, hash, name, i, bus);
+					} else {
+					    if (*string == 'a') {
+						int bus = sc_atoi(string+1);
+						Graph_MapAudioControl(graph, hash, name, i, bus);
+					    }
 					}
 				} else {
 					float32 value = msg->getf();
@@ -306,6 +328,11 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 						int bus = sc_atoi(string+1);
 						Graph_MapControl(graph, index+i, bus);
 						//Node_MapControl(node, index+i, bus);
+					} else {
+					    if (*string == 'a') {
+						int bus = sc_atoi(string+1);
+						Graph_MapAudioControl(graph, index + i, bus);
+					    }
 					}
 				} else {
 					float32 value = msg->getf();
@@ -528,6 +555,7 @@ int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex
 void Graph_SetControl(Graph* inGraph, uint32 inIndex, float inValue)
 {
 	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
+	inGraph->mControlRates[inIndex] = 0;
 	float *ptr = inGraph->mControls + inIndex;
 	inGraph->mMapControls[inIndex] = ptr; // unmap the control
 	*ptr = inValue;
@@ -553,6 +581,7 @@ void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 {
 	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
 	World *world = inGraph->mNode.mWorld;
+	inGraph->mControlRates[inIndex] = 1;
 	if (inBus >= 0x80000000) {
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumControlBusChannels) {
@@ -560,3 +589,22 @@ void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 	}
 }
 
+void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
+{
+    ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
+    ParamSpec *spec = table->Get(inHash, inName);
+    if (spec) Graph_MapAudioControl(inGraph, spec->mIndex + inIndex, inBus);
+}
+
+void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
+{
+    if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
+    World *world = inGraph->mNode.mWorld;
+    inGraph->mControlRates[inIndex] = 2;
+    /* what is the below doing??? */
+    if (inBus >= 0x80000000) {
+	inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
+    } else if (inBus < world->mNumAudioBusChannels) {
+	inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
+    }
+}
