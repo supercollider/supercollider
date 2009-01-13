@@ -62,7 +62,7 @@ UnaryOpPlug : AbstractOpPlug {
 	}
 	
 	asControlInput {
-		"Cannot calculate this value. Use direct mapping only.".warn;
+		"UnaryOpPlug: Cannot calculate this value. Use direct mapping only.".warn;
 		^this
 	}
 }
@@ -113,7 +113,7 @@ BinaryOpPlug : AbstractOpPlug  {
 		b.wakeUp;
 	}
 	asControlInput {
-		"Cannot calculate this value. Use direct mapping only.".warn;
+		"BinaryOpPlug: Cannot calculate this value. Use direct mapping only.".warn;
 		^this
 	}
 	
