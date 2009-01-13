@@ -26,14 +26,14 @@ p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #485abb}
+span.s2 {color: #505fb1}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {text-decoration: underline ; color: #1534d7}
-span.s6 {color: #6f717a}
-span.s7 {color: #5461ad}
+span.s5 {text-decoration: underline ; color: #2641c9}
+span.s6 {color: #6f7178}
+span.s7 {color: #5a65a5}
 span.s8 {font: 14.0px Helvetica}
-span.s9 {color: #0c2eee}
+span.s9 {color: #2040df}
 span.s10 {text-decoration: underline ; color: #001ee6}
 span.s11 {color: #0000bf}
 span.s12 {color: #007300}
@@ -63,7 +63,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>relativeOrigin_ (bool)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If set to true, child view <b>bounds</b> will be interpreted relative to the parents upper left corner. See the section on relativeOrigin under <a href="SCCompositeView.html"><span class="s7">SCCompositeView</span></a>.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default value is false.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Default value is true.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawFunc_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawFunc</b></p>
@@ -186,6 +186,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">3.do{<span class="s11">|i|</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span>v = <span class="s11">SCUserView</span>(w, <span class="s11">Rect</span>(20+(i*120), 100, 100, 100));</p>
 <p class="p16"><span class="Apple-tab-span">	</span>v.drawFunc = func;</p>
+<p class="p16"><span class="Apple-tab-span">	</span>v.relativeOrigin=<span class="s11">false</span>;</p>
+<p class="p15"><br></p>
 <p class="p16">};</p>
 <p class="p16">w.refresh;</p>
 <p class="p16">)</p>
