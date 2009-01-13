@@ -19,23 +19,32 @@ p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #606060}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a41c14}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #8d261b}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
+p.p22 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #686e90}
-span.s3 {color: #676d92}
+span.s2 {color: #6b718a}
+span.s3 {color: #6a708c}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #6f7180}
+span.s6 {color: #6f717d}
 span.s7 {font: 11.0px Monaco}
-span.s8 {color: #4c5db6}
-span.s9 {color: #0018b8}
-span.s10 {color: #356f14}
-span.s11 {color: #606060}
-span.s12 {color: #3e54c5}
-span.s13 {color: #a41c14}
+span.s8 {color: #5763a9}
+span.s9 {color: #6f7185}
+span.s10 {color: #0922b2}
+span.s11 {color: #476c1d}
+span.s12 {color: #606060}
+span.s13 {color: #4c5db6}
+span.s14 {color: #0000bf}
+span.s15 {color: #007300}
+span.s16 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -68,24 +77,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelHeight </b>- Default value is 20. Not used if <b>layout</b> is \horz.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>layout</b>- \vert or \horz. default is horz;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- A <a href="../../Geometry/Point.html"><span class="s8">Point</span></a>. By default, the view tries to get its parent's gap, otherwise it defaults to 2@2. Setting it overrides these.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin </b>- A <a href="../../Geometry/Point.html"><span class="s9">Point</span></a>. This will inset the bounds occupied<span class="Apple-converted-space">  </span>by the subviews of view.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s9">Window</span>.new.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EZPopUpMenu</span>.new(w,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s10">Window</span>.new.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s10">FlowLayout</span>(w.view.bounds);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s10">EZPopUpMenu</span>.new(w,</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>230@22,</p>
 <p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"A PopUpMenu: "<span class="s4">,</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item0</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 0"</span>).postln},</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item1</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 1"</span>).postln},</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\item2</span> -&gt;{<span class="s9">|a|</span> (<span class="s11">"this is item 2"</span>).postln},</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">\item0</span> -&gt;{<span class="s10">|a|</span> (<span class="s12">"this is item 0"</span>).postln},</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">\item1</span> -&gt;{<span class="s10">|a|</span> (<span class="s12">"this is item 1"</span>).postln},</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">\item2</span> -&gt;{<span class="s10">|a|</span> (<span class="s12">"this is item 2"</span>).postln},</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s11">"this is a global action"</span>.postln},</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>globalAction: {<span class="s12">"this is a global action"</span>.postln},</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initVal: 0,</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s9">true</span>,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>initAction: <span class="s10">true</span>,</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelWidth: 120,</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>labelHeight: 20,</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>layout: <span class="s10">\horz</span>,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>layout: <span class="s11">\horz</span>,</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gap: 2@2</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -93,117 +103,117 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// or a more simple syntax:</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s9">Window</span>.new.front;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EZPopUpMenu</span>.new(w,200@22, <span class="s11">"Menu: "</span>);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w=<span class="s10">Window</span>.new.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s10">FlowLayout</span>(w.view.bounds);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s10">EZPopUpMenu</span>.new(w,200@22, <span class="s12">"Menu: "</span>);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s11">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s11">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.addItem(<span class="s11">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.value=0;</p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><b>Changing Appearance</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>setColors(stringBackground,strColor,menuBackground,menuStringColor,background)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>setColors(stringBackground,stringColor,menuBackground,menuStringColor,background)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>stringBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>background</b> of the label and unit views.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>strColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>stringColor</b> of the label and unit views.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>menuBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>background</b> of the menu.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>menuStringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>stringColor</b> of the menu.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>background </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>backround</b> of the list view.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>stringBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s13">Color</span></a>. The <b>background</b> of the label and unit views.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s13">Color</span></a>. The <b>stringColor</b> of the label and unit views.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>menuBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s13">Color</span></a>. The <b>background</b> of the menu.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>menuStringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s13">Color</span></a>. The <b>stringColor</b> of the menu.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>background </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s13">Color</span></a>. The <b>backround</b> of the list view.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>font_(font)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set the Font used by all the views.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An instance of <a href="../GUI-Tools/Font.html"><span class="s12">Font</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>font </b>- An instance of <a href="../GUI-Tools/Font.html"><span class="s13">Font</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b>Examples</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p16">// try several examples together</p>
-<p class="p14">(</p>
-<p class="p3"><br></p>
+<p class="p17">(</p>
+<p class="p18"><br></p>
 <p class="p16">// many menus</p>
-<p class="p16">// inherits the parent's decorator gap.x</p>
-<p class="p3"><br></p>
-<p class="p14">(</p>
-<p class="p11">w=<span class="s9">Window</span>.new(<span class="s11">"oscillators"</span>, <span class="s9">Rect</span>(200,500,200,160)).front;</p>
-<p class="p11">w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds).gap_(2@2);</p>
-<p class="p11">5.do{<span class="s9">|i|</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span>g = <span class="s9">EZPopUpMenu</span>.new(w,190@22, <span class="s11">"Oscillator % : "</span>.format(i+1));</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\off</span>, {<span class="s11">"off"</span>. postln});</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\sine</span>, {<span class="s11">"sine"</span>. postln});</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\saw</span>, {<span class="s11">"saw"</span>. postln});</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.addItem(<span class="s10">\pulse</span>, {<span class="s11">"pulse"</span>. postln});</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
-<p class="p11"><span class="Apple-tab-span">	</span>g.value=0;</p>
-<p class="p11">};</p>
-<p class="p11">w.bounds=w.bounds.moveBy(300,60);</p>
-<p class="p14">);</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><br></p>
-<p class="p13">// Creates its own window if parentView is nil:</p>
-<p class="p14">(</p>
-<p class="p11">g = <span class="s9">EZPopUpMenu</span>.new(<span class="s9">nil</span>,250@22 ,<span class="s11">" Select : "</span>);</p>
-<p class="p11">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
-<p class="p11">g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
-<p class="p11">g.value=0;</p>
-<p class="p6"><br></p>
-<p class="p14">);</p>
-<p class="p3"><br></p>
+<p class="p16">// inherits the parent's decorator gap</p>
+<p class="p18"><br></p>
+<p class="p17">(</p>
+<p class="p19">w=<span class="s14">Window</span>.new(<span class="s12">"oscillators"</span>, <span class="s14">Rect</span>(200,500,200,160)).front;</p>
+<p class="p19">w.view.decorator = <span class="s14">FlowLayout</span>(w.view.bounds).gap_(2@2);</p>
+<p class="p19">5.do{<span class="s14">|i|</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span>g = <span class="s14">EZPopUpMenu</span>.new(w,190@22, <span class="s12">"Oscillator % : "</span>.format(i+1));</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.addItem(<span class="s15">\off</span>, {<span class="s12">"off"</span>. postln});</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.addItem(<span class="s15">\sine</span>, {<span class="s12">"sine"</span>. postln});</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.addItem(<span class="s15">\saw</span>, {<span class="s12">"saw"</span>. postln});</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.addItem(<span class="s15">\pulse</span>, {<span class="s12">"pulse"</span>. postln});</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.setColors(<span class="s14">Color</span>.grey,<span class="s14">Color</span>.white);</p>
+<p class="p19"><span class="Apple-tab-span">	</span>g.value=0;</p>
+<p class="p19">};</p>
+<p class="p19">w.bounds=w.bounds.moveBy(300,60);</p>
+<p class="p17">);</p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p20"><br></p>
+<p class="p21">// Creates its own window if parentView is nil:</p>
+<p class="p17">(</p>
+<p class="p19">g = <span class="s14">EZPopUpMenu</span>.new(<span class="s14">nil</span>,250@22 ,<span class="s12">" Select : "</span>);</p>
+<p class="p19">g.addItem(<span class="s15">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
+<p class="p19">g.setColors(<span class="s14">Color</span>.grey,<span class="s14">Color</span>.white);</p>
+<p class="p19">g.value=0;</p>
+<p class="p22"><br></p>
+<p class="p17">);</p>
+<p class="p18"><br></p>
 <p class="p16">// layout vertical:</p>
-<p class="p14">(</p>
-<p class="p11">g = <span class="s9">EZPopUpMenu</span>.new(<span class="s9">nil</span>,200@42, <span class="s11">" Choose"</span>,layout:<span class="s10">\vert</span>);</p>
-<p class="p11">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
-<p class="p11">g.setColors(<span class="s9">Color</span>.grey,<span class="s9">Color</span>.white);</p>
-<p class="p11">g.window.bounds=g.window.bounds.moveBy(300,-200);</p>
-<p class="p11">g.value=0;</p>
-<p class="p14">);</p>
-<p class="p3"><br></p>
+<p class="p17">(</p>
+<p class="p19">g = <span class="s14">EZPopUpMenu</span>.new(<span class="s14">nil</span>,200@42, <span class="s12">" Choose"</span>,layout:<span class="s15">\vert</span>);</p>
+<p class="p19">g.addItem(<span class="s15">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
+<p class="p19">g.setColors(<span class="s14">Color</span>.grey,<span class="s14">Color</span>.white);</p>
+<p class="p19">g.window.bounds=g.window.bounds.moveBy(300,-200);</p>
+<p class="p19">g.value=0;</p>
+<p class="p17">);</p>
+<p class="p18"><br></p>
 <p class="p16">// No labelView created, so set the window title;</p>
-<p class="p14">(</p>
-<p class="p11">g = <span class="s9">EZPopUpMenu</span>.new(bounds:180@22); <span class="s13">// no label</span></p>
-<p class="p11">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
-<p class="p11">g.value=0;</p>
-<p class="p11">g.window.name=<span class="s11">" choose item"</span>;</p>
-<p class="p11">g.window.bounds=g.window.bounds.moveBy(0,-200);</p>
-<p class="p14">);</p>
-<p class="p14">)</p>
+<p class="p17">(</p>
+<p class="p19">g = <span class="s14">EZPopUpMenu</span>.new(bounds:180@22); <span class="s16">// no label</span></p>
+<p class="p19">g.addItem(<span class="s15">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
+<p class="p19">g.value=0;</p>
+<p class="p19">g.window.name=<span class="s12">" choose item"</span>;</p>
+<p class="p19">g.window.bounds=g.window.bounds.moveBy(0,-200);</p>
+<p class="p17">);</p>
+<p class="p17">)</p>
 <p class="p16">// insertItem;</p>
-<p class="p6"><br></p>
-<p class="p11">(</p>
-<p class="p11">g = <span class="s9">EZPopUpMenu</span>.new(<span class="s9">nil</span>,200@22, <span class="s11">"Menu:"</span>);</p>
-<p class="p11">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
-<p class="p11">g.value=0;</p>
-<p class="p14">);</p>
-<p class="p3"><br></p>
-<p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p13">// remove Item ;</p>
-<p class="p6"><br></p>
-<p class="p11">(</p>
-<p class="p11">w=<span class="s9">Window</span>.new.front;</p>
-<p class="p11">w.view.decorator = <span class="s9">FlowLayout</span>(w.view.bounds);</p>
-<p class="p11">g = <span class="s9">EZPopUpMenu</span>.new(w,200@22, <span class="s11">"Menu:"</span>);</p>
-<p class="p11">g.addItem(<span class="s10">\item0</span>, {<span class="s11">"this is item 0"</span>. postln});</p>
-<p class="p11">g.addItem(<span class="s10">\item1</span>, {<span class="s11">"this is item 1"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s10">\item2</span>, {<span class="s11">"this is item 2"</span>. postln});</p>
-<p class="p14">g.addItem(<span class="s10">\item4</span>, {<span class="s11">"this is item 4"</span>. postln});</p>
-<p class="p14">g.insertItem(3, <span class="s10">\item3</span>, {<span class="s11">"this is item 3"</span>. postln});</p>
-<p class="p11">g.value=0;</p>
-<p class="p14">)</p>
-<p class="p3"><br></p>
-<p class="p14">g. removeItemAt(0);</p>
-<p class="p3"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p22"><br></p>
+<p class="p19">(</p>
+<p class="p19">g = <span class="s14">EZPopUpMenu</span>.new(<span class="s14">nil</span>,200@22, <span class="s12">"Menu:"</span>);</p>
+<p class="p19">g.addItem(<span class="s15">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p17">g.addItem(<span class="s15">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
+<p class="p17">g.addItem(<span class="s15">\item4</span>, {<span class="s12">"this is item 4"</span>. postln});</p>
+<p class="p19">g.value=0;</p>
+<p class="p17">);</p>
+<p class="p18"><br></p>
+<p class="p17">g.insertItem(3, <span class="s15">\item3</span>, {<span class="s12">"this is item 3"</span>. postln});</p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
+<p class="p21">// remove Item ;</p>
+<p class="p22"><br></p>
+<p class="p19">(</p>
+<p class="p19">w=<span class="s14">Window</span>.new.front;</p>
+<p class="p19">w.view.decorator = <span class="s14">FlowLayout</span>(w.view.bounds);</p>
+<p class="p19">g = <span class="s14">EZPopUpMenu</span>.new(w,200@22, <span class="s12">"Menu:"</span>);</p>
+<p class="p19">g.addItem(<span class="s15">\item0</span>, {<span class="s12">"this is item 0"</span>. postln});</p>
+<p class="p19">g.addItem(<span class="s15">\item1</span>, {<span class="s12">"this is item 1"</span>. postln});</p>
+<p class="p17">g.addItem(<span class="s15">\item2</span>, {<span class="s12">"this is item 2"</span>. postln});</p>
+<p class="p17">g.addItem(<span class="s15">\item4</span>, {<span class="s12">"this is item 4"</span>. postln});</p>
+<p class="p17">g.insertItem(3, <span class="s15">\item3</span>, {<span class="s12">"this is item 3"</span>. postln});</p>
+<p class="p19">g.value=0;</p>
+<p class="p17">)</p>
+<p class="p18"><br></p>
+<p class="p17">g. removeItemAt(0);</p>
+<p class="p18"><br></p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><br></p>
 </body>
 </html>
