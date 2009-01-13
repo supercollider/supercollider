@@ -220,7 +220,7 @@ Server : Model {
 	*all_ { arg dict; set = dict }
 	
 	init { arg argName, argAddr, argOptions, argClientID;
-		name = argName;
+		name = argName.asSymbol;
 		addr = argAddr;
 		clientID = argClientID;
 		options = argOptions ? ServerOptions.new;
