@@ -183,6 +183,10 @@ GLID{
 		);
 	}
 
+	action_{ |act|
+		device.action = act;
+	}
+
 	grab{
 		device.grab;
 	}
