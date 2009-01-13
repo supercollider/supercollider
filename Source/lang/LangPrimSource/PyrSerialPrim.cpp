@@ -471,7 +471,7 @@ void SerialPort::threadLoop()
 	}
 
 done:
-	doneAction();
+	// doneAction();
 	if ( m_open ){
 		tcflush(fd, TCIOFLUSH);
 		tcsetattr(fd, TCSANOW, &m_oldtermio);
@@ -479,6 +479,7 @@ done:
 	};
 	m_open = false;
 	m_running = false;
+	doneAction();
 #ifndef NDEBUG
 	printf("SerialPort closed\n");
 #endif
