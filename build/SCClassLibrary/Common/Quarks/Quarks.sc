@@ -40,8 +40,9 @@ Quarks
 		Class.initClassTree( Platform );
 		allInstances = List(1);
 		known = Dictionary[
-			"https://quarks.svn.sourceforge.net/svnroot/quarks" -> (Platform.userAppSupportDir ++ "/quarks"),
-			"https://svn.sonenvir.at/svnroot/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir ++ "/quarks-sonenvir")
+			"https://quarks.svn.sourceforge.net/svnroot/quarks" -> (Platform.userAppSupportDir +/+ "quarks"),
+			"https://svn.sonenvir.at/svnroot/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir +/+ "quarks-sonenvir"),
+			"https://sc3-plugins.svn.sourceforge.net/svnroot/sc3-plugins/build" -> (Platform.userAppSupportDir +/+ "SC3plugins")
 			];
 	}
 	*forUrl { |url|
@@ -60,7 +61,7 @@ Quarks
 			if((q = local.findQuark(name)).isNil,{
 				Error("Local Quark "+name+" not found, cannot update from repository").throw;
 			});
-			repos.svn("update", (local.path++"/"++q.path).escapeChar($ ));
+			repos.svn("update", (local.path+/+q.path).escapeChar($ ));
 		},{
 			//update all
 			repos.update(local)
@@ -82,7 +83,7 @@ Quarks
 		if(message.isNil,{ 
 			Error("svn log message required to commit").throw;
 		});
-		repos.svn("commit","-m",message,"-F",local.path++"/"++q.path);
+		repos.svn("commit","-m",message,"-F",local.path +/+ q.path);
 	}
 	checkoutDirectory {
 		(repos.checkoutDirectory).if({
@@ -116,7 +117,7 @@ Quarks
 	}
 	checkDir {
 		var d;
-		d = (Platform.userExtensionDir ++ "/" ++ local.name).escapeChar($ );
+		d = (Platform.userExtensionDir +/+ local.name).escapeChar($ );
 		if(d.pathMatch.isEmpty,{
 			("creating: " + d).inform;
 			("mkdir -p" + d).systemCmd;
@@ -129,7 +130,7 @@ Quarks
 		var q;
 		if(name.notNil,{
 			q = local.findQuark(name);
-			repos.svn("status",(local.path ++ "/" ++ q.path).escapeChar($ ));
+			repos.svn("status",(local.path +/+ q.path).escapeChar($ ));
 		},{
 			repos.svn("status",local.path.escapeChar($ ));
 		});
@@ -138,8 +139,8 @@ Quarks
 		// of quarks in local, select those also present in userExtensionDir
 		^local.quarks.select{|q|
 			(Platform.userExtensionDir.escapeChar($ ) 
-				++ "/" ++ local.name 
-				++ "/" ++ q.path
+				+/+ local.name 
+				+/+ q.path
 			).pathMatch.notEmpty
 		}
 	}
@@ -195,13 +196,13 @@ Quarks
 		});
 		
 		// Ensure the correct folder-hierarchy exists first
-		dirname = (Platform.userExtensionDir ++ "/" ++ local.name ++ "/" ++ q.path).dirname;
+		dirname = (Platform.userExtensionDir +/+  local.name +/+ q.path).dirname;
 		if(File.exists(dirname).not, {
 			("mkdir -p " + dirname.escapeChar($ )).systemCmd;
 		});
 		
 		// install via symlink to Extensions/<quarks-dir>
-		("ln -s " +  (local.path ++ "/" ++ q.path).escapeChar($ ) +  (Platform.userExtensionDir ++ "/" ++ local.name ++ "/" ++ q.path).escapeChar($ )).systemCmd;
+		("ln -s " +  (local.path +/+ q.path).escapeChar($ ) +  (Platform.userExtensionDir +/+ local.name +/+ q.path).escapeChar($ )).systemCmd;
 		(q.name + "installed").inform;
 	}
 	listInstalled {
@@ -226,7 +227,7 @@ Quarks
 		});
 
 		// install via symlink to Extensions/Quarks
-		("rm " +  (Platform.userExtensionDir ++ "/" ++ local.name ++ "/" ++ q.path).escapeChar($ )).systemCmd;
+		("rm " +  (Platform.userExtensionDir +/+ local.name +/+ q.path).escapeChar($ )).systemCmd;
 		(q.name + "uninstalled").inform;
 	}
 	
@@ -247,7 +248,7 @@ Quarks
 			("No primary helpdoc listed for Quark"+name).inform;
 		}, {
 			path = Quarks.local.path.select{|c| (c != $\\)}
-				++ "/" ++ q.path ++ "/" ++ helpdoc;
+				+/+ q.path +/+ helpdoc;
 			Document.open(path);
 		});
 	}	
