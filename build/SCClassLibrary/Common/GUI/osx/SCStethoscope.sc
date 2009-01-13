@@ -2,7 +2,7 @@ SCStethoscope {
 	classvar ugenScopes;
 	var <server, <numChannels, <rate,  <index;
 	var <bufsize, buffer, <window, synth;
-	var n, c, d, sl, sl2;
+	var scopeView, indexView, nChanView, xZoomSlider, yZoomSlider;
 	var style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec, zoomspec;
 	
 
@@ -20,7 +20,7 @@ SCStethoscope {
 		^Rect(x, y, 212, 212)
 	}
 	
-	makeBounds { arg size=212; ^Rect(322, 16, size, size) }
+	makeBounds { arg size = 212; ^Rect(322, 16, size, size) }
 	
 	makeWindow { arg view;
 		if(view.isNil) 
@@ -32,53 +32,55 @@ SCStethoscope {
 			window.onClose = { this.free };
 			
 		};
-		n = SCScope(view, Rect(0,0, view.bounds.width - 10 - 20 - 4, view.bounds.height - 40));
-		n.background = Color.black;
-		n.resize = 5;
+		scopeView = SCScope(view, 
+			Rect(0,0, view.bounds.width - 10 - 20 - 4, view.bounds.height - 40)
+		);
+		scopeView.background = Color.black;
+		scopeView.resize = 5;
 		view.keyDownAction = { arg view, char; this.keyDown(char) };
 			
-		zx = n.xZoom.log2;
-		zy = n.yZoom.log2;
+		zx = scopeView.xZoom.log2;
+		zy = scopeView.yZoom.log2;
 		
 		audiospec = ControlSpec(0, server.options.numAudioBusChannels, step:1);
 		controlspec = ControlSpec(0, server.options.numControlBusChannels, step:1);
 		zoomspec = ControlSpec(0.125, 16, \exp);
 						
-		sl = SCSlider(view, Rect(10, 10, view.bounds.width - 80, 20));
-		sl.action = { arg x;
+		xZoomSlider = SCSlider(view, Rect(10, 10, view.bounds.width - 80, 20));
+		xZoomSlider.action = { arg x;
 				/*var i; 
 				i = this.spec.map(x.value);
 				this.index = i;*/
 				this.xZoom = zoomspec.map(x.value)
 			};
-		sl.resize = 8;
-		sl.value = zoomspec.unmap(this.xZoom);
-		sl.background = Color.grey(0.6);
-		sl.focusColor = Color.clear;
+		xZoomSlider.resize = 8;
+		xZoomSlider.value = zoomspec.unmap(this.xZoom);
+		xZoomSlider.background = Color.grey(0.6);
+		xZoomSlider.focusColor = Color.clear;
 		
-		c = SCNumberBox(view, Rect(10, 10, 30, 20)).value_(0);
-		c.action = { this.index = c.value;  };
-		c.resize = 9;
-		c.font = Font("Monaco", 9);
-		d = SCNumberBox(view, Rect(10, 10, 25, 20)).value_(numChannels);
-		d.action = { this.numChannels = d.value.asInteger  };
-		d.resize = 9;
-		d.font = Font("Monaco", 9);
+		indexView = SCNumberBox(view, Rect(10, 10, 30, 20)).value_(0);
+		indexView.action = { this.index = indexView.value;  };
+		indexView.resize = 9;
+		indexView.font = Font("Monaco", 9);
+		nChanView = SCNumberBox(view, Rect(10, 10, 25, 20)).value_(numChannels);
+		nChanView.action = { this.numChannels = nChanView.value.asInteger  };
+		nChanView.resize = 9;
+		nChanView.font = Font("Monaco", 9);
 		SCStaticText(view, Rect(10, 10, 20, 20)).visible_(false);
 		this.updateColors;
 		
 		
 		view.decorator.reset;
-		view.decorator.shift(n.bounds.right, 0);
+		view.decorator.shift(scopeView.bounds.right, 0);
 		
-		sl2 = SCSlider(view, Rect(n.bounds.right, 0, 20, n.bounds.height));
-		sl2.action = { arg x;
+		yZoomSlider = SCSlider(view, Rect(scopeView.bounds.right, 0, 20, scopeView.bounds.height));
+		yZoomSlider.action = { arg x;
 				this.yZoom = zoomspec.map(x.value)
 			};
-		sl2.resize = 6;
-		sl2.value = zoomspec.unmap(this.yZoom);
-		sl2.background = Color.grey(0.6);
-		sl2.focusColor = Color.clear;
+		yZoomSlider.resize = 6;
+		yZoomSlider.value = zoomspec.unmap(this.yZoom);
+		yZoomSlider.background = Color.grey(0.6);
+		yZoomSlider.focusColor = Color.clear;
 	}
 	
 	keyDown { arg char;
@@ -114,7 +116,7 @@ SCStethoscope {
 		bufsize = argbufsize ? bufsize;
 		if(buffer.notNil) { buffer.free };
 		buffer = Buffer.alloc(server, bufsize, numChannels, nil, argbufnum);
-		n.bufnum = buffer.bufnum;
+		scopeView.bufnum = buffer.bufnum;
 		if(synth.isPlaying) { synth.set(\bufnum, buffer.bufnum) };
 	}
 	
@@ -155,7 +157,7 @@ SCStethoscope {
 			if(isPlaying) { synth.free; synth.isPlaying = false; synth = nil }; // immediate
 			numChannels = n;
 			
-			d.value = n;
+			nChanView.value = n;
 			this.allocBuffer;
 			if(isPlaying) {  this.run };
 			this.updateColors;
@@ -168,8 +170,8 @@ SCStethoscope {
 		index = spec.constrain(val);
 		if(synth.isPlaying) { synth.set(\in, index) };
 		if(rate === \audio) { ai = index } { ki = index };
-		c.value = index;
-		// sl.value = spec.unmap(index)
+		indexView.value = index;
+		// xZoomSlider.value = spec.unmap(index)
 	}
 	
 	rate_ { arg argRate=\audio;
@@ -197,19 +199,33 @@ SCStethoscope {
 					{ sizeToggle = 0; this.size_(212) } 
 	}
 	
-	xZoom_ { arg val; n.xZoom = val; zx = val.log2; sl.value = zoomspec.unmap(val); }
-	yZoom_ { arg val; n.yZoom = val; zy = val.log2; sl2.value = zoomspec.unmap(val); }
+	xZoom_ { arg val; 
+		scopeView.xZoom = val; 
+		zx = val.log2; 
+		xZoomSlider.value = zoomspec.unmap(val); 
+	}
+	yZoom_ { arg val; 
+		scopeView.yZoom = val; 
+		zy = val.log2; 
+		yZoomSlider.value = zoomspec.unmap(val); 
+	}
 	xZoom { ^2.0 ** zx }
 	yZoom { ^2.0 ** zy }
 	
 	zoom_ { arg val; this.xZoom_(val ? 1) }
 
-	style_ { arg val; n.style = style = val }
+	style_ { arg val;
+		if(numChannels < 2 and: { val == 2 }) { 
+			"SCStethoscope: can't do x/y scoping with one channel".warn;
+			^this;
+		};
+		scopeView.style = style = val 
+	}
 	
 	
 	
 	updateColors {
-		n.waveColors = if(\audio === rate) { 
+		scopeView.waveColors = if(\audio === rate) { 
 			Array.fill(numChannels, { rgb(255, 218, 000) }); 
 		} { 
 			Array.fill(numChannels, { rgb(125, 255, 205) }); 
@@ -227,7 +243,8 @@ SCStethoscope {
 		this.numChannels = server.options.numOutputBusChannels;
 	}
 	adjustBufferSize {
-		this.allocBuffer(max(256,nextPowerOfTwo(asInteger(n.bounds.width * n.xZoom))))
+		this.allocBuffer(max(256,nextPowerOfTwo(
+			asInteger(scopeView.bounds.width * scopeView.xZoom))))
 	}
 	
 	// ugenScopes
