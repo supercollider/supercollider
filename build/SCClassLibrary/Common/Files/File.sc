@@ -5,6 +5,9 @@ File : UnixFILE {
 	*new { arg pathName, mode; 
 		^super.new.open(pathName, mode);
 	}
+	*open { arg pathName, mode; 
+		^super.new.open(pathName, mode);
+	}
 	*use { arg pathName, mode, function;
 		var file;
 		file = this.new(pathName, mode);
