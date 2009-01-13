@@ -2,32 +2,41 @@
 
 AudioSpec : Spec {
 
-	var <>numChannels=1;
-	*new { arg numChannels=1;
+	var <>numChannels;
+
+	*new { arg numChannels;
 		^super.new.numChannels_(numChannels)
 	}
 	*initClass {
-		var mono,stereo;
-		mono=AudioSpec.new;
+		var mono,stereo,either;
+		either = AudioSpec(nil);
+		mono=AudioSpec(1);
 		stereo=AudioSpec(2);
 		specs.addAll(
 		 [
-			\audio -> mono,
-			\audio1 -> mono,
-			\audio2 -> mono,
+			\audio -> either,
+			\audio1 -> either,
+			\audio2 -> either,
 			\stereo -> stereo,
 			\mono -> mono
 			];
 		)
 	}
-	defaultControl{ 
-		^PlayerInputProxy.new(this)
+	defaultControl{
+		if(numChannels.isNil,{
+			// the purpose is to occupy an input
+			// so a fixed numChannels is needed
+			^PlayerInputProxy.new(\mono.asSpec)
+		},{
+			^PlayerInputProxy.new(this)
+		});
 	}
 	storeArgs { ^[numChannels] }
 	rate { ^\audio }
 	canAccept { arg thing;
 		^(thing.isKindOf(AbstractPlayer) and: { thing.spec == this })
 	}
+
 }
 
 // an array of mono/stereo signals
@@ -170,14 +179,23 @@ StaticIntegerSpec : StaticSpec {
 	}
 }
 
-ScalarSpec : Spec {
+ScalarSpec : ControlSpec {
+	// \scalar means .ir or i_initialValue
 	// SendTrig etc. output a 0.0
 	// this is a scalar spec.
 	canKr { ^false }
 	rate { ^\scalar }
+	*newFrom { arg similar;
+		^this.new(similar.minval, similar.maxval, similar.warp.asSpecifier, similar.step, similar.default, similar.units)
+	}
 }
 
-EnvSpec : ScalarSpec {
+NonControlSpec : Spec {
+	rate { ^\noncontrol }
+	canKr { ^false }
+}
+
+EnvSpec : NonControlSpec {
 
 	var <>prototype;
 	
@@ -202,8 +220,8 @@ EnvSpec : ScalarSpec {
 				\envperc -> this.new(Env.perc),
 				\envadsr -> this.new(Env.adsr),
 				\envasr -> this.new(Env.asr),
-				\env3 -> this.new(Env.newClear(3)),
-				\env3sustain -> this.new(Env.newClear(3,2)),
+				\env3 -> this.new(Env.new([0,1,1,0],[0,1,0])),
+				\env3sustain -> this.new(Env.new([0,1,1,0],[0,1,0]).releaseNode_(2)),
 				\fenv -> this.new(Env.new([ 0, 1, 0.2, 0 ], [ 0.04, 0.4, 0.3 ], [ -6.31, 1.1, -2 ], nil, nil)),
 				\rqenv -> this.new(  Env.new([ 0.194444, 0.0810185, 0.0648148, 0.444444 ], [ 0.01, 0.111111, 0.0833333 ], [ -0.583333, 3.33333, 1.66667 ], nil, nil)),
 				\envpercshort -> this.new(Env.new([ 0, 1, 1, 0.444444, 0 ], [ 0.166667, 1, 0.805556, 0.777778 ], [ -7.16667, -2, 2, -2 ], nil, nil))
@@ -216,7 +234,7 @@ EnvSpec : ScalarSpec {
 	}
 }
 
-BufferProxySpec : ScalarSpec {
+BufferProxySpec : NonControlSpec {
 
 	var <>numFrames=44100,<>numChannels=1,<>sampleRate=44100.0;
 	
@@ -245,14 +263,19 @@ BufferProxySpec : ScalarSpec {
 	}
 }
 
-BusSpec : ScalarSpec {
+BusSpec : NonControlSpec {
+	/* this is not for i_bus inputs but rather for specifying that you need a Bus object 
+	for kr or ir bus indices use 
+		a ControlSpec(0, 4096, 'linear', 1, 0, "Bus")
+		or ScalarSpec(0,4096,'linear',1,0,"Bus")
+	*/ 
 	var <>rate,<>numChannels,<>private;
 	*new { |rate,numChannels,private|
 		^super.new.rate_(rate).numChannels_(numChannels).private_(private)
 	}
 }
 
-SampleSpec : ScalarSpec {
+SampleSpec : NonControlSpec {
 
 	*initClass {
 		specs.addAll(
@@ -268,7 +291,12 @@ SampleSpec : ScalarSpec {
 
 }
 
-ScaleSpec : ScalarSpec {
+ScaleSpec : NonControlSpec {
+	/*
+		this gets tricky.  the rate depends how you are using it.
+		in a pattern
+		loaded into a buffer for degree->note table lookups
+	*/
 	var <>prototype;
 	*new { arg prototype;
 		^super.new.prototype_(prototype)
@@ -283,7 +311,7 @@ ScaleSpec : ScalarSpec {
 
 
 // abstract class for container objects whose content items conform to itemSpec
-HasItemSpec : ScalarSpec {
+HasItemSpec : NonControlSpec {
 	var <>itemSpec;
 	*new { arg itemSpec;
 		var spec;
@@ -333,10 +361,12 @@ StreamSpec : HasItemSpec {
 		^itemSpec.defaultControl(val)
 		//^IrNumberEditor(val ? itemSpec.default, itemSpec) 
 	}
+	minval { ^itemSpec.minval }
+	maxval { ^itemSpec.maxval }
 }
 
 // an EventStream is playable as audio, but its also a stream of events for further pattern work
-EventStreamSpec : Spec {
+EventStreamSpec : NonControlSpec {
 	rate { ^\stream }
 	defaultControl { ^Pbind.new }
 }
