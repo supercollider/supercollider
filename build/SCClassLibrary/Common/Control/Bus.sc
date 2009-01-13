@@ -168,13 +168,9 @@ Bus {
 
 	asMap {
 		^mapSymbol ?? {
-			if(rate == \control) {
-				if(index.isNil) { MethodError("bus not allocated.", this).throw };
-				mapSymbol = ("c" ++ index).asSymbol
-			} {
-				MethodError("Cannot map a synth control to a% %-rate bus."
-				.format(if(rate.asString[0].isVowel, "n", ""), rate), this).throw;
-			}
+			if(index.isNil) { MethodError("bus not allocated.", this).throw };
+			mapSymbol = if(rate == \control) { "c" } { "a" };
+			mapSymbol = (mapSymbol ++ index).asSymbol;
 		}
 	}
 

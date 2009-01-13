@@ -79,18 +79,16 @@ BusPlug : AbstractFunction {
 	busArg { ^busArg ?? { this.makeBusArg } }
 		
 	makeBusArg { 	
-			var index, numChannels;
-			busArg = if(bus.isNil or: { bus.rate === 'audio' }) // audio buses can't be 
-					{ "" } {						// used for control mapping
-						index = this.index;
-						numChannels = this.numChannels;
-						if(numChannels == 1)
-							{ ("\c" ++ index) } 
-							{
-							Array.fill(numChannels, { arg i; "\c" ++ (index + i) })
-							}
-					}; 
-			^busArg     
+			var index, numChannels, prefix;
+			if(bus.isNil) { ^busArg = "" }; // still neutral
+			prefix = if(this.rate == \audio) { "\a" } { "\c" };
+			index = this.index;
+			numChannels = this.numChannels;
+			^busArg = if(numChannels == 1) { 
+				prefix ++ index
+			} { 
+				{ |i| prefix ++ (index + i) }.dup(numChannels)
+			}  
 	}
 	wakeUpToBundle {}
 	wakeUp {}
@@ -132,10 +130,9 @@ BusPlug : AbstractFunction {
 	
 	
 	asControlInput {
-			if(this.rate === \audio) { "cannot map audio rate buses".warn; ^nil };
 			if(this.isPlaying.not) {
 				if(this.isNeutral) { this.defineBus(\control, 1) }; 
-				this.wakeUp 
+				this.wakeUp
 			};
 			^this.busArg;
 	}
