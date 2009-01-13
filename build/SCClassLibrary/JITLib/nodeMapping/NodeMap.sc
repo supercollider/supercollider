@@ -77,9 +77,9 @@ NodeMap {
 		upToDate = false;
 	}
 	
-	mapna { arg ... args;
+	mapan { arg ... args;
 		forBy(0, args.size-1, 3, { arg i;
-			this.get(args.at(i)).mapna(args.at(i+1), args.at(i+2));
+			this.get(args.at(i)).mapan(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
 	}
@@ -238,20 +238,19 @@ ProxyNodeMap : NodeMap {
 			} { nil }
 		}
 				
-						
-		map { arg ... args; this.prMap(false, args) }
+		mapn { arg ... args;
+			this.map(args) // for now, avoid errors.
+		}
 		
-		mapn { arg ... args; this.prMap(true, args) }
-		
-		prMap { arg multiChannel, args;
+		map { arg ... args;
 			var playing;
 			playing = proxy.isPlaying;
 			args.pairsDo { arg key, mapProxy;
 				var setting, numChannels;
 				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-				if(playing, { mapProxy.wakeUp });
+				if(playing) { mapProxy.wakeUp };
 				setting = this.get(key);
-				if(multiChannel) { setting.mapn(mapProxy) } { setting.map(mapProxy) };
+				setting.map(mapProxy);
 				parents = parents.put(key, mapProxy);
 			};
 			upToDate = false;

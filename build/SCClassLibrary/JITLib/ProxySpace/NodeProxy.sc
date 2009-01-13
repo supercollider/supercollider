@@ -924,17 +924,9 @@ NodeProxy : BusPlug {
 		} { nodeMap.map(*args) }
 	}
 	
-	mapn { arg ... args; // key, proxy ... args; proxy is multichannel
-		var bundle;
-		if(this.isPlaying) {
-			bundle = List.new;
-			nodeMap.unmapArgsToBundle(bundle, group.nodeID, args[0,2..args.size-2]);
-			nodeMap.mapn(*args).updateBundle;
-			nodeMap.addToBundle(bundle, group.nodeID);
-			server.listSendBundle(server.latency, bundle);
-		} { nodeMap.mapn(*args) }
+	mapn { arg ... args; // for now, avoid errors.
+		^this.map(*args)
 	}
-	
 	
 	// map to current environment
 	mapEnvir { arg ... keys;
@@ -988,7 +980,7 @@ NodeProxy : BusPlug {
 		this.xFadePerform(\setn, args);
 	}
 	xmapn { arg ... args;
-		this.xFadePerform(\mapn, args);
+		this.xFadePerform(\map, args); // for now, avoid errors.
 	}
 	xunset { arg ... args;
 		this.xFadePerform(\unset, args);
