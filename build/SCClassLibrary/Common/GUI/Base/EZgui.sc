@@ -1,8 +1,8 @@
 EZGui{ // an abstract class
-	var <>labelView, <widget, <view, <gap, popUp=false, 
-	<>action,   <layout, <value, labelSize, <alwaysOnTop=false;
+	var <>labelView, <widget, <view, gap, popUp=false, innerBounds, 
+	<>action,   <layout, <value, labelSize, <alwaysOnTop=false, margin;
 	
-	///// general stuff for all EZ classes. override as needed	
+	// general stuff for all EZ classes. override as needed		
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }
 	
@@ -11,16 +11,14 @@ EZGui{ // an abstract class
 	
 	remove { view.remove}
 	
-	
 	alwaysOnTop_{arg bool;
 		alwaysOnTop=bool;
 		popUp.if{this.window.alwaysOnTop=alwaysOnTop};
 	
 	}
 	font_{ arg font;
-
-			labelView.notNil.if{labelView.font=font};
-			widget.font=font;
+		labelView.notNil.if{labelView.font=font};
+		widget.font=font;
 	}
 
 	window{^ popUp.if{view.parent.findWindow};}
@@ -39,7 +37,7 @@ EZGui{ // an abstract class
 		
 	doAction {this.action.value(this)}
 	
-
+	bounds{^view.bounds}
 	///////// private methods. You can still override these in subclasses
 	
 	prSubViewBounds{arg rect, hasLabel;
@@ -63,7 +61,7 @@ EZGui{ // an abstract class
 					);
 			labelBounds=Rect(0,0, labelSize.x ,widgetBounds.height )}; // to left
 		
-		^[labelBounds, widgetBounds]
+		^[labelBounds, widgetBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
 	
 	
@@ -93,18 +91,21 @@ EZGui{ // an abstract class
 		}{
 			bounds=bounds.asRect;
 			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
-		};
+		}; 
+		
+		innerBounds=view.bounds.insetBy(margin.x,margin.y);
 	^[view,bounds];
 	}
 	
-	prMakeGap{arg parentView, argGap;
-		var gap;
+	prMakeMarginGap{arg parentView, argMargin, argGap;
+		//try to use the parent decorator gap
 		var	decorator = parentView.asView.tryPerform(\decorator);
-		argGap.isNil.if{ 
-			gap = decorator.tryPerform(\gap).copy; // use copy to protect the parent gap
+		argGap.isNil.if{
+			gap = gap ? decorator.tryPerform(\gap).copy; // use copy to protect the parent gap
 			gap = gap ? (2@2)}
 			{gap=argGap};
-		^gap;
+			
+		argMargin.isNil.if{margin=0@0}{margin=argMargin};
 	}
 	
 }
@@ -113,20 +114,19 @@ EZGui{ // an abstract class
 EZLists : EZGui{  // an abstract class
 
 	var <items, <>globalAction, value; 
-	
+		
 	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
-			initAction=false, labelWidth,labelHeight=20, layout, gap;
+			initAction=false, labelWidth,labelHeight=20, layout, gap, margin;
 			
 		^super.new.init(parentView, bounds, label, items, globalAction, initVal, 
-			initAction, labelWidth,labelHeight,layout, gap);
+			initAction, labelWidth,labelHeight,layout, gap, margin);
 			}
 
 	init { arg parentView, bounds, label, argItems, argGlobalAction, initVal, 
-			initAction, labelWidth, labelHeight, layout,  argGap;
+			initAction, labelWidth, labelHeight, layout,  argGap, argMargin;
 			
 		// try to use the parent decorator gap
-		gap=this.prMakeGap(parentView, argGap);	
-		
+		this.prMakeMarginGap(parentView, argMargin, argGap);	
 		
 		// init the views (handled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
@@ -149,6 +149,7 @@ EZLists : EZGui{  // an abstract class
 				}
 			{this.value_(initVal)};
 		};
+		
 	}	
 	
 	initViews{}  // override this for your subclass views
