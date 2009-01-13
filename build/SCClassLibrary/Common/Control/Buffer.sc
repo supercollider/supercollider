@@ -313,11 +313,12 @@ Buffer {
 		});
 	}
 	
-	write { arg path,headerFormat="aiff",sampleFormat="int24",numFrames = -1,
+	write { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
 						startFrame = 0,leaveOpen = false, completionMessage;
+		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg( 
-			this.writeMsg(path,headerFormat,sampleFormat,numFrames,startFrame,
-				leaveOpen,completionMessage) 
+			this.writeMsg(path, headerFormat, sampleFormat, numFrames, startFrame,
+				leaveOpen, completionMessage) 
 			);
 	}
 	writeMsg { arg path,headerFormat="aiff",sampleFormat="int24",numFrames = -1,
