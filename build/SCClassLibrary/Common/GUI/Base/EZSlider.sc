@@ -7,36 +7,38 @@ EZSlider : EZGui {
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
-			unitWidth=0, labelHeight=20,  layout=\horz, gap;
+			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;
 			
 		^super.new.init(parent, bounds, label, controlSpec, action, 
 			initVal, initAction, labelWidth, numberWidth, 
-				unitWidth, labelHeight, layout, gap)
+				unitWidth, labelHeight, layout, gap, margin)
 	}
 	
 	init { arg parentView, bounds, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
-			labelHeight, argLayout, argGap;
+			labelHeight, argLayout, argGap, argMargin;
 			
 		var labelBounds, numBounds, unitBounds,sliderBounds;
 				
-		// try to use the parent decorator gap
-		gap=this.prMakeGap(parentView, argGap);	
+		// Set Margin and Gap
+		this.prMakeMarginGap(parentView, argMargin, argGap);
 				
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
 		layout=argLayout;
 		bounds.isNil.if{bounds = 350@20};
 		
+		
 		// if no parent, then pop up window 
-		# view,bounds = this.prMakeView( parentView,bounds);	
+		# view,bounds = this.prMakeView( parentView,bounds);
+		
 		
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
 		
 		// calculate bounds of all subviews
 		# labelBounds,numBounds,sliderBounds, unitBounds 
-				= this.prSubViewBounds(bounds, label.notNil, unitWidth>0);
+				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
 		
 		// instert the views
 		label.notNil.if{ //only add a label if desired
@@ -82,7 +84,7 @@ EZSlider : EZGui {
 			this.value_(initVal);
 		};
 		this.prSetViewParams;
-		
+				
 	}
 	
 	value_ { arg val; 
@@ -113,25 +115,25 @@ EZSlider : EZGui {
 	}
 		
 	
-	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, knobColor,background ;
+	setColors{arg stringBackground,stringColor,sliderBackground,numBackground,
+		numStringColor,numNormalColor,numTypingColor,knobColor,background;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};
 				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
-			boxColor.notNil.if{		
-				numberView.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				numberView.normalColor_(boxNormalColor);};
-			boxTypingColor.notNil.if{	
-				numberView.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				numberView.stringColor_(boxStringColor);};
-			sliderColor.notNil.if{	
-				sliderView.background_(sliderColor);};
+			stringColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(stringColor)};
+				unitView.notNil.if{unitView.stringColor_(stringColor)};};
+			numBackground.notNil.if{		
+				numberView.background_(numBackground);};
+			numNormalColor.notNil.if{	
+				numberView.normalColor_(numNormalColor);};
+			numTypingColor.notNil.if{	
+				numberView.typingColor_(numTypingColor);};
+			numStringColor.notNil.if{	
+				numberView.stringColor_(numStringColor);};
+			sliderBackground.notNil.if{	
+				sliderView.background_(sliderBackground);};
 			knobColor.notNil.if{	
 				sliderView.knobColor_(knobColor);};
 			background.notNil.if{	
@@ -245,7 +247,7 @@ EZSlider : EZGui {
 				
 			 \horz, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
-				labelSize.y = view.bounds.height;
+				labelSize.y = rect.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; //to left
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right 
 				numBounds = (numSize.x@labelSize.y).asRect
@@ -260,9 +262,8 @@ EZSlider : EZGui {
 		});
 		
 		
-		^[labelBounds, numBounds, sliderBounds, unitBounds]
+		^[labelBounds, numBounds, sliderBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
-	
-	
+		
 }
 			

@@ -2,27 +2,27 @@
 EZRanger : EZGui {
 
 	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec, 
-		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth, gap;
+		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth;
 	var <>round = 0.001;
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
-			unitWidth=0, labelHeight=20,  layout=\horz, gap;
+			unitWidth=0, labelHeight=20,  layout=\horz, gap,margin;
 			
 		^super.new.init(parent, bounds, label, controlSpec, action, 
 			initVal, initAction, labelWidth, numberWidth, 
-				unitWidth, labelHeight, layout, gap)
+				unitWidth, labelHeight, layout, gap, margin)
 	}
 	
 	init { arg parentView, bounds, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
-			labelHeight, argLayout, argGap;
+			labelHeight, argLayout, argGap,argMargin;
 			
 		var labelBounds, hiBounds,loBounds, unitBounds,rangerBounds;
 				
-		// try to use the parent decorator gap
-		gap=this.prMakeGap(parentView, argGap);	
-			
+		// Set Margin and Gap
+		this.prMakeMarginGap(parentView, argMargin, argGap);
+
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
 		layout=argLayout;
@@ -37,7 +37,7 @@ EZRanger : EZGui {
 		
 		// calcualate bounds
 		# labelBounds,hiBounds,loBounds,rangerBounds, unitBounds 
-				= this.prSubViewBounds(bounds, label.notNil, unitWidth>0);
+				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
 
 		label.notNil.if{ //only add a label if desired
 			labelView = GUI.staticText.new(view, labelBounds);
@@ -82,7 +82,6 @@ EZRanger : EZGui {
 			controlSpec.map(slider.value)
 		};
 
-		
 		this.prSetViewParams;
 		
 	}
@@ -103,29 +102,29 @@ EZRanger : EZGui {
 		hiBox.value_(hi.round(round));
 		rangeSlider.hi_(controlSpec.unmap(hi));
 	}
-	setColors{arg stringBackground, strColor, sliderColor,  boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, knobColor,background ;
+	setColors{arg stringBackground, stringColor, sliderColor,  numBackground,numStringColor,
+			 numNormalColor, numTypingColor, knobColor,background ;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};
 				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
+			stringColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(stringColor)};
+				unitView.notNil.if{unitView.stringColor_(stringColor)};};
 			sliderColor.notNil.if{	
 				rangeSlider.background_(sliderColor);};
-			boxColor.notNil.if{		
-				hiBox.boxColor_(boxColor);
-				loBox.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				hiBox.normalColor_(boxNormalColor);
-				loBox.normalColor_(boxNormalColor);};
-			boxTypingColor.notNil.if{	
-				hiBox.typingColor_(boxTypingColor);
-				loBox.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				hiBox.stringColor_(boxStringColor);
-				loBox.stringColor_(boxStringColor);};
+			numBackground.notNil.if{		
+				hiBox.background_(numBackground);
+				loBox.background_(numBackground);};
+			numNormalColor.notNil.if{	
+				hiBox.normalColor_(numNormalColor);
+				loBox.normalColor_(numNormalColor);};
+			numTypingColor.notNil.if{	
+				hiBox.typingColor_(numTypingColor);
+				loBox.typingColor_(numTypingColor);};
+			numStringColor.notNil.if{	
+				hiBox.stringColor_(numStringColor);
+				loBox.stringColor_(numStringColor);};
 			knobColor.notNil.if{	
 				rangeSlider.knobColor_(knobColor);};
 			background.notNil.if{	
@@ -242,7 +241,7 @@ EZRanger : EZGui {
 			 \horz, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				hasUnit.not.if{ gap4 = 0@0; unitWidth = 0};
-				labelSize.y=view.bounds.height;
+				labelSize.y=rect.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect;
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth);
 				loBounds = (numSize.x@labelSize.y).asRect
@@ -259,6 +258,7 @@ EZRanger : EZGui {
 		
 		
 		^[labelBounds, hiBounds, loBounds, rangerBounds, unitBounds]
+			.collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
 	
 	

@@ -13,7 +13,7 @@ EZPopUpMenu : EZLists{
 		# view,bounds = this.prMakeView( parentView,bounds);	
 		
 		// calcualate bounds
-		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
+		# labelBounds,listBounds = this.prSubViewBounds(innerBounds, label.notNil);
 
 		// insert the views	
 
@@ -33,12 +33,12 @@ EZPopUpMenu : EZLists{
 	
 	menu {^ widget}
 	
-	setColors{arg stringBackground, strColor, menuBackground,  menuStringColor,background ;
+	setColors{arg stringBackground, stringColor, menuBackground,  menuStringColor,background ;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};};
+			stringColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(stringColor)};};
 			menuBackground.notNil.if{		
 				this.menu.background_(menuBackground);};
 			menuStringColor.notNil.if{	
