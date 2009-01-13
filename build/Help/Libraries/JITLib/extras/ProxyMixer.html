@@ -11,19 +11,19 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #782727}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862323}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #622c2c}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #961e1e}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6c2a2a}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0428b3}
+span.s2 {color: #0f30ad}
 span.s3 {color: #606060}
 span.s4 {color: #000000}
-span.s5 {color: #0000bf}
-span.s6 {color: #556b17}
-span.s7 {color: #782727}
-span.s8 {color: #0023b6}
+span.s5 {color: #001db9}
+span.s6 {color: #5e691f}
+span.s7 {color: #622c2c}
+span.s8 {color: #0000ff}
+span.s9 {color: #0a2cb0}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -53,17 +53,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// activeProxies: proxy appears when it is alive</p>
 <p class="p7"><span class="s4">~test = { </span>|freq=250, intv=19, timescale=1, curve=0, loopnode=0|<span class="s4"><span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">var</span> env = <span class="s5">EnvGen</span>.kr(</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Env</span>({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>timeScale: timescale);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">var</span> pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">Splay</span>.ar(<span class="s5">Formant</span>.ar(pitch, pitch.scramble * 2, pitch.scramble));</p>
-<p class="p8">};</p>
-<p class="p8">)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> env = <span class="s5">EnvGen</span>.kr(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Env</span>({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>timeScale: timescale);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Splay</span>.ar(<span class="s5">Formant</span>.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;</p>
+<p class="p4">};</p>
+<p class="p4">)</p>
 <p class="p4">~test.lag(<span class="s6">\freq</span>, 4);</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// playingProxies : only those that really play are shown.</p>
-<p class="p4">~test.playN(vol: 0.1);</p>
+<p class="p4">~test.playN(vol: 1);</p>
 <p class="p2"><br></p>
 <p class="p5">// switch back to active proxies...</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -125,14 +125,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">~lfo = { <span class="s2">SinOsc</span>.kr(2) };</p>
 <p class="p4">~lfnoyz0 = { <span class="s2">|lofreq, mul=1, add|</span> <span class="s2">LFDNoise0</span>.kr(lofreq, mul, add) };</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the editor zone is a NodeProxyEditor;<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// open it and set<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the editor zone is a <a href="NodeProxyEditor.html"><span class="s8">NodeProxyEditor</span></a></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// open it and set some params</p>
 <p class="p4">m.openEditZone(1);</p>
 <p class="p4">m.editor.proxy_(~test);</p>
 <p class="p4">~test.set(<span class="s6">\freq</span>, exprand(80, 1250));<span class="Apple-tab-span">	</span>// set ~tests parameters</p>
 <p class="p4">~test.set(<span class="s6">\intv</span>, 1.0.linrand);</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span>//<span class="Apple-tab-span">	</span>if you declare specs for the range of a parameter,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>//<span class="Apple-tab-span">	</span>if you declare global specs for the range of a parameter,<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>they can be used in the editor:</p>
 <p class="p4">Spec.add(\intv, [0, 36, \lin]);</p>
 <p class="p4">Spec.add(\timescale, [0.001, 10, \exp]);</p>
@@ -143,26 +143,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// you can map a kr proxy to a control param;</p>
 <p class="p4">~test.map(<span class="s6">\intv</span>, ~lfnoyz0);</p>
-<p class="p4">~test.unmap(<span class="s6">\wide</span>);</p>
+<p class="p4">~test.unmap(<span class="s6">\intv</span>);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// this also works by dragging the kr proxy name<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// the field left of the param name.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">//<span class="Apple-tab-span">	</span>some more tests :</p>
-<p class="p9"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// test too many arproxies</p>
-<p class="p4">10.do { <span class="s8">|i|</span> p[(<span class="s3">"test"</span> ++ i).asSymbol] = {<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s8">Pan2</span>.ar(<span class="s8">Ringz</span>.ar(<span class="s8">Impulse</span>.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) };<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>//<span class="Apple-tab-span">	</span>some more tests :</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span>// if there are too many </span>ar proxies, a scroller appears</p>
+<p class="p8"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// test too many<span class="Apple-converted-space"> </span></p>
+<p class="p4">10.do { <span class="s9">|i|</span> p[(<span class="s3">"test"</span> ++ i).asSymbol] = {<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s9">Pan2</span>.ar(<span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) };<span class="Apple-converted-space"> </span></p>
 <p class="p4">};</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p4">10.do { |i| p[(<span class="s3">"test"</span> ++ i).asSymbol].playN(vol: linrand(1.0), fadeTime: exprand(0.01, 5)) };</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// test too many kr proxies</p>
+<p class="p4"><span class="Apple-tab-span">	</span>// and the same for kr proxies</p>
 <p class="p4">10.do { <span class="s2">|i|</span> p[(<span class="s3">"kr"</span> ++ i).asSymbol] = { <span class="s2">LFNoise0</span>.kr(exprand(5, 50)) }; };</p>
 <p class="p2"><br></p>
 <p class="p4">p.krProxyNames.do { <span class="s2">|key|</span> p.removeAt(key) };</p>
 <p class="p2"><br></p>
 <p class="p4">p.reduce(method: \clear);</p>
 <p class="p2"><br></p>
+<p class="p4">p.clean;</p>
 </body>
 </html>
