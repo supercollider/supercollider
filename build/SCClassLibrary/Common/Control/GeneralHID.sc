@@ -186,7 +186,11 @@ GeneralHIDDevice{
 	}
 
 	action_{ |key,action|
-		spec.action_( key, action );
+		if ( (key.class == Function) and: action.isNil,{
+			device.action = key;
+		},{
+			spec.action_( key, action );
+		});
 	}
 
 	createBus{ |name,server|

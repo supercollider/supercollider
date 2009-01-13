@@ -26,12 +26,14 @@ HIDDevice {
 	var < elements;
 	var < isQueued = false;
 	var < info, <> closeAction;
+	var <>action;
 	*new{arg manufacturer, product, usage, vendorID, productID, locID, version, serial;
 		^super.newCopyArgs(manufacturer, product, usage, vendorID, productID, locID, version, serial).init;
 	}
 	init{
 		info = HIDInfo.new( product, 0, vendorID, productID, version );
 		closeAction = {};
+		action = {};
 		elements = Array.new;
 	}
 

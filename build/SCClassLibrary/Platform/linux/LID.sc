@@ -439,12 +439,12 @@ LID {
 		^this.primitiveFailed
 	}
 	prHandleEvent { | evtType, evtCode, evtValue |
+		// not either or for the device action. Do slot actions in any case:
+		slots[evtType][evtCode].value_(evtValue);
 		// event callback
 		if (action.notNil) {
-			action.value(evtType, evtCode, evtValue);
-		}{
-			slots[evtType][evtCode].value_(evtValue);
-		}
+			action.value(evtType, evtCode, evtValue, slots[evtType][evtCode].value);
+		};
 	}
 
 	// this prevents a high cpu cycle when device was detached; added by marije
