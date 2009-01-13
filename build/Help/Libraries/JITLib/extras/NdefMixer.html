@@ -9,38 +9,40 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001db9; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #426f0e}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b6; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {font: 9.0px Monaco; color: #001db9}
-span.s3 {color: #001db9}
-span.s4 {color: #426f0e}
-span.s5 {color: #0014bc}
-span.s6 {color: #000000}
+span.s2 {font: 9.0px Monaco; color: #0023b6}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
+span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>NdefMixer</b></span><span class="s2"> </span><b><span class="Apple-tab-span">	</span>- mix control for all Ndefs on a given server<span class="Apple-converted-space"> </span></b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>for more details see superclass: ProxyMixer</b></p>
 <p class="p3"><br></p>
-<p class="p4"><span class="s3">Ndef</span>(<span class="s4">\a</span>, { <span class="s5">Pan2</span>.ar(<span class="s5">Ringz</span>.ar(<span class="s5">Impulse</span>.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) });</p>
+<p class="p4"><span class="s3">Ndef</span>(<span class="s4">\a</span>, { <span class="s3">Pan2</span>.ar(<span class="s3">Ringz</span>.ar(<span class="s3">Impulse</span>.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) });</p>
 <p class="p5"><br></p>
-<p class="p4">n = <span class="s3">NdefMixer</span>(s);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// for the default server</p>
-<p class="p4">n = <span class="s3">NdefMixer</span>(\trala); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// fails, no such server</p>
-<p class="p4">n = <span class="s3">NdefMixer</span>(\internal);</p>
-<p class="p4">n = <span class="s3">NdefMixer</span>(\localhost);</p>
-<p class="p3"><br></p>
+<p class="p6"><span class="s5">n = </span><span class="s3">NdefMixer</span><span class="s5">(s);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// for the default server</p>
+<p class="p6"><span class="s5">n = </span><span class="s3">NdefMixer</span><span class="s5">(</span><span class="s4">\trala</span><span class="s5">); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// fails, no such server</p>
+<p class="p7"><span class="s5">n = </span>NdefMixer<span class="s5">(</span><span class="s4">\internal</span><span class="s5">);</span></p>
+<p class="p8"><span class="s5">n = </span><span class="s3">NdefMixer</span><span class="s5">(</span>\localhost<span class="s5">);</span></p>
+<p class="p5"><br></p>
 <p class="p4">n.proxyspace;</p>
 <p class="p5"><br></p>
 <p class="p4"><span class="s3">Ndef</span>(<span class="s4">\duster</span>, { <span class="s3">Dust</span>.kr(4) });</p>
 <p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6"><span class="s3">Ndef</span><span class="s6">(</span>\a).fadeTime = 2;</p>
-<p class="p6"><span class="s3">Ndef</span><span class="s6">(</span>\a).end</p>
-<p class="p5"><br></p>
+<p class="p4"><span class="s3">Ndef</span>(<span class="s4">\a</span>).ar;</p>
+<p class="p4"><span class="s3">Ndef</span>(<span class="s4">\a</span>).fadeTime = 2;</p>
+<p class="p4"><span class="s3">Ndef</span>(<span class="s4">\a</span>).end;</p>
+<p class="p9"><br></p>
 </body>
 </html>
