@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -19,30 +19,30 @@ p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco
 p.p10 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #b22200}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a2270e}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p15 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #b22200}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a2270e}
 p.p17 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco}
 p.p18 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #b22200}
+p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #a2270e}
 p.p20 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco}
 p.p21 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #606060}
 p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ba1100}
+p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91a0d}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0024f8}
 span.s3 {font: 12.0px Helvetica}
-span.s4 {color: #0031c4}
+span.s4 {color: #0039bf}
 span.s5 {color: #000000}
-span.s6 {color: #0045fc}
-span.s7 {color: #b22200}
+span.s6 {color: #004ef5}
+span.s7 {color: #a2270e}
 span.s8 {font: 9.0px Monaco}
 span.s9 {color: #606060}
-span.s10 {color: #336a0a}
+span.s10 {color: #406816}
 span.s11 {font: 12.0px Helvetica; color: #000000}
-span.s12 {color: #001fbf}
-span.s13 {color: #ba1100}
+span.s12 {color: #002aba}
+span.s13 {color: #a91a0d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -475,6 +475,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Write the contents of the buffer to a file. See <a href="../Files/SoundFile.html"><span class="s2">SoundFile</span></a> for information on valid values for <b>headerFormat</b> and <b>sampleFormat</b>.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>path</b> - A <b>String</b> representing the path of the soundfile to be written.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If no path is given, Buffer writes into the default recording directory with a generic name.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numFrames </b>- The number of frames to write. The default is -1, which will write the whole buffer.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>startFrame</b> - The index of the frame in the buffer from which to start writing. The default is 0, which is the beginning of the buffer.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>leaveOpen</b> - A boolean indicating whether or not the Buffer should be left 'open'. For use with <a href="../UGens/Playback and Recording/DiskOut.html"><span class="s2">DiskOut</span></a> you will want this to be true. The default is false which is the correct value for all other cases.</p>
