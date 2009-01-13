@@ -312,7 +312,7 @@ MXHIDSlot {
 	value_ { | rawValue |
 		value = rawValue;
 		action.value(this);
-		device.action.value( evtType, evtCode, rawValue, this.value );
+		device.action.value( type, code, rawValue, this.value );
 	}
 	next {
 		^this.value
@@ -337,7 +337,7 @@ MXHIDRelSlot : MXHIDSlot {
 		value = value + delta;
 		action.value(this);
 		deltaAction.value(this);
-		device.action.value( evtType, evtCode, dta, value );
+		device.action.value( type, code, dta, value );
 	}
 
 	delta { ^delta }
@@ -352,7 +352,7 @@ MXHIDLedSlot : MXHIDSlot {
 		// FIXME: device.setLEDState( code, value );
 		device.setValueByCookie(cookie);
 		action.value(this);
-		device.action.value( evtType, evtCode, value, value );
+		device.action.value( type, code, value, value );
 	}
 }
 
