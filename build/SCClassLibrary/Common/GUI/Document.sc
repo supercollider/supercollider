@@ -10,6 +10,7 @@ Document {
 	classvar <>wikiBrowse = true;
 	
 	classvar <>implementationClass;
+	classvar <postColor;
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction, <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
@@ -28,6 +29,7 @@ Document {
 		num.do({arg i;
 			doc = this.newFromIndex(i);
 		});
+		postColor = Color.black;
 	}
 	
 	*open { arg path, selectionStart=0, selectionLength=0, envir;
@@ -192,6 +194,7 @@ Document {
 	}
 	
 	*postColor_ { arg col;
+		postColor = col;
 		^Document.implementationClass.postColor_(col);
 	}
 	
