@@ -10,20 +10,20 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #89231f}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4b6c1a}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0127b3}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0024f8}
-span.s4 {color: #255ece}
-span.s5 {color: #001bb9}
+span.s3 {color: #0034f0}
+span.s4 {color: #3b62c8}
+span.s5 {color: #0127b3}
 span.s6 {color: #000000}
-span.s7 {color: #2c7014}
+span.s7 {color: #4b6c1a}
 span.s8 {color: #606060}
-span.s9 {color: #ad140d}
+span.s9 {color: #89231f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -155,7 +155,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>, { <span class="s8">"the end"</span>.postln });</p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>, { <span class="s8">"one more"</span>.postln });</p>
-<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>, { loop({ <span class="s8">"some more"</span>.scramble.postln; 0.25.wait; }) });</p>
+<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>, { 10.do({ <span class="s8">"ten more"</span>.scramble.postln; 0.25.wait; }) });</p>
+<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>, { loop({ <span class="s8">"lots more"</span>.scramble.postln; 0.25.wait; }) });</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s5">TempoClock</span>.default.tempo = 1;</p>
 <p class="p2"><br></p>
@@ -177,7 +178,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain, 0.3), doneAction:2);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p5"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).memStore.send(s);</p>
 <p class="p5">)</p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\x</span>).play;</p>
 <p class="p2"><br></p>
@@ -238,6 +239,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b><i>b) embed and fork: Tdef within other Tasks / Routines</i></b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>// embed plays tdefs in sequence within a task.</p>
 <p class="p5">(</p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\a</span>, { <span class="s8">"one"</span>.postln; 1.wait; <span class="s8">"two"</span>.postln });</p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\c</span>, { <span class="s5">var</span> z; z = <span class="s5">Synth</span>(<span class="s7">\default</span>); 0.5.wait; z.release });</p>
@@ -260,28 +262,42 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">// of course Tdefs can be used in other Tdefs:</p>
 <p class="p5">(</p>
-<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\b</span>, {</p>
-<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span></span>"counting..."<span class="s6">.postln;</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>2.wait;</p>
+<p class="p5">Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait; } });</p>
+<p class="p5">Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait; } });</p>
+<p class="p5">Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait; } });</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\d</span>, {</p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span></span>"embed - sequence."<span class="s6">.postln;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\a</span>).embed;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\c</span>).embed;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\b</span>).embed;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>Tdef(\c).embed;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s8">"done."</span>.postln;</p>
 <p class="p5">});</p>
 <p class="p5">)</p>
-<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\b</span>).fork;</p>
+<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\d</span>).play;</p>
 <p class="p2"><br></p>
-<p class="p4">// if one wants to branch off a stream in a separate thread, asStream is used.</p>
-<p class="p4">// also the method playOnce can be used</p>
+<p class="p4">// to start a tdef in its own separate thread, thus branching into parallel threads,<span class="Apple-converted-space"> </span></p>
+<p class="p4">// one can use .fork, or .playOnce</p>
 <p class="p5">(</p>
-<p class="p7">Routine<span class="s6">({</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\c</span>).fork;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>0.1.wait;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\c</span>).fork;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>0.1.wait;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\a</span>).fork;</p>
+<p class="p5">Tdef(\a, { 10.do { |i| (" a: " + i).postln; 0.3.wait; } });</p>
+<p class="p5">Tdef(\b, { 15.do { |i| ("\t\t b: " + i).postln; 0.2.wait; } });</p>
+<p class="p5">Tdef(\c, { 5.do { |i| ("\t\t\t\t c: " + i).postln; 0.5.wait; } });</p>
 <p class="p2"><br></p>
-<p class="p5">}).play;</p>
+<p class="p5"><span class="s5">Tdef</span>(<span class="s7">\d</span>, {</p>
+<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span></span>"fork - parallel."<span class="s6">.postln;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\a</span>).fork;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Tdef</span>(<span class="s7">\b</span>).fork;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>1.wait;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>Tdef(\c).fork;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s8">"done."</span>.postln;</p>
+<p class="p5">});</p>
 <p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -312,14 +328,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\z</span>, <span class="s5">Pseq</span>([1, 1, 1, 0.5, 0.5], <span class="s5">inf</span>));</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s5">Pset</span><span class="s6">(</span>\instrument<span class="s6">, </span>\pdef_grainlet<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s5">Pset</span><span class="s6">(</span>\instrument<span class="s6">, </span>\pdef_grainlet<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Ppar</span>([</p>
-<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s6">(</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s6">(</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\dur</span>, <span class="s5">Tdef</span>(<span class="s7">\z</span>),</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\note</span>, <span class="s5">Pseq</span>([1, 3, 2, 1, 0], <span class="s5">inf</span>),</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\x</span>, <span class="s5">Pfunc</span> { <span class="s5">TempoClock</span>.default.elapsedBeats.postln } <span class="s9">// posts the onset times</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
-<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s6">(</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s6">(</span></p>
 <p class="p4"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s7">\dur</span><span class="s6">, 4, </span>// reference beat</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\sustain</span>, 0.1,</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\note</span>, 8</p>
@@ -331,8 +347,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><span class="s5">Tdef</span>(<span class="s7">\z</span>, <span class="s5">Prand</span>([1, 1, 0.23, 0.5, 0.5], <span class="s5">inf</span>)); <span class="s9">// exchange time pattern</span></p>
 <p class="p4"><span class="s5">Tdef</span><span class="s6">(</span><span class="s7">\z</span><span class="s6">, </span><span class="s5">Pseq</span><span class="s6">([1, 1, 1, 1], </span><span class="s5">inf</span><span class="s6">)); </span>// pattern stays in sync.</p>
-<p class="p4"><span class="s5">Tdef</span><span class="s6">(</span><span class="s7">\z</span><span class="s6">, </span><span class="s5">Pseq</span><span class="s6">([1, 1, 1, 0.5, 0.5], </span><span class="s5">inf</span><span class="s6">)); </span>// but might be in different order (</p>
-<p class="p4"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// to avoid this, set the quant to a appropriate value.</p>
+<p class="p4"><span class="s5">Tdef</span><span class="s6">(</span><span class="s7">\z</span><span class="s6">, </span><span class="s5">Pseq</span><span class="s6">([1, 1, 1, 0.5, 0.5], </span><span class="s5">inf</span><span class="s6">)); </span>// but might be in different order.</p>
+<p class="p4"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// to avoid this, set quant to an appropriate value.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 </body>
