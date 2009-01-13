@@ -25,17 +25,17 @@ p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #5d67a2}
-span.s3 {color: #6d7187}
-span.s4 {color: #636a99}
-span.s5 {color: #6e7186}
+span.s2 {color: #61699c}
+span.s3 {color: #6f7185}
+span.s4 {color: #666c94}
+span.s5 {color: #6f7184}
 span.s6 {font: 11.0px Monaco}
-span.s7 {color: #3e54c5}
+span.s7 {color: #485abb}
 span.s8 {color: #000000}
 span.s9 {color: #0000bf}
 span.s10 {color: #007300}
 span.s11 {color: #606060}
-span.s12 {color: #2946d8}
+span.s12 {color: #3850cb}
 span.s13 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -68,6 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>labelHeight </b>- Default value is 20. Not used if <b>layout</b> is \horz.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>layout</b>- \vert or \horz. default is vert;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap </b>- A <a href="../../Geometry/Point.html"><span class="s7">Point</span></a>. By default, the view tries to get its parent's gap, otherwise it defaults to 2@2. Setting it overrides these.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin </b>- A <a href="../../Geometry/Point.html"><span class="s3">Point</span></a>. This will inset the bounds occupied<span class="Apple-converted-space">  </span>by the subviews of view.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -106,11 +107,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><b>Changing Appearance</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>setColors(stringBackground,strColor,listBackground,listStringColor,</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>setColors(stringBackground,stringColor,listBackground,listStringColor,</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>selectedStringColor,hiliteColor,background)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>stringBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>background</b> of the label and unit views.</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>strColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>stringColor</b> of the label and unit views.</p>
+<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>stringColor</b> of the label and unit views.</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listBackground </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>background</b> of the list view.</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>listStringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>stringColor</b> of the list view.</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>selectedStringColor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s12">Color</span></a>. The <b>selectedStringColor</b> of the listView.</p>
