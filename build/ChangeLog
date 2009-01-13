@@ -33,6 +33,7 @@ Headlines:
 * 2009-01-06 SendReply UGen - jr
 * 2009-01-06 VDiskIn sends file position to client - jr
 * 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
+* 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative. 
 
 Bugfixes:
 ---------
