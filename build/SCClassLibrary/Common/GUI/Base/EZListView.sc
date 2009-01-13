@@ -12,7 +12,7 @@ EZListView : EZLists{
 		// if no parent, then pop up window 
 		# view,bounds = this.prMakeView( parentView,bounds);	
 		// calcualate bounds
-		# labelBounds,listBounds = this.prSubViewBounds(bounds, label.notNil);
+		# labelBounds,listBounds = this.prSubViewBounds(innerBounds, label.notNil);
 		
 		// insert the views	
 		label.notNil.if{ //only add a label if desired
@@ -31,13 +31,13 @@ EZListView : EZLists{
 
 	listView{^widget}
 	
-	setColors{arg stringBackground, strColor, listBackground,  listStringColor,
+	setColors{arg stringBackground, stringColor, listBackground,  listStringColor,
 	 selectedStringColor,hiliteColor, background ;
 			
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};};
+			stringColor.notNil.if{	
+				labelView.notNil.if{labelView.stringColor_(stringColor)};};
 			listBackground.notNil.if{		
 				this.listview.background_(listBackground);};
 			listStringColor.notNil.if{	

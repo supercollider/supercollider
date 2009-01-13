@@ -6,21 +6,22 @@ EZNumber : EZGui{
 	
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
-			unitWidth=0, labelHeight=20,  layout=\horz, gap;
+			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;
 			
 		^super.new.init(parent, bounds, label, controlSpec, action, 
 			initVal, initAction, labelWidth, numberWidth, 
-				unitWidth, labelHeight, layout, gap)
+				unitWidth, labelHeight, layout, gap, margin)
 	}
 	
 	init { arg parentView, bounds, label, argControlSpec, argAction, initVal, 
 			initAction, labelWidth, argNumberWidth,argUnitWidth, 
-			labelHeight, argLayout, argGap;
+			labelHeight, argLayout, argGap, argMargin;
 			
 		var labelBounds, numBounds, unitBounds;
 						
-		// try to use the parent decorator gap
-		gap=this.prMakeGap(parentView, argGap);	
+		// Set Margin and Gap
+		this.prMakeMarginGap(parentView, argMargin, argGap);
+		
 		
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
@@ -36,7 +37,7 @@ EZNumber : EZGui{
 		
 		// calcualate bounds
 		# labelBounds,numBounds, unitBounds 
-				= this.prSubViewBounds(bounds, label.notNil, unitWidth>0);
+				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
 			
 		// insert the views	
 		
@@ -96,26 +97,26 @@ EZNumber : EZGui{
 		};
 	}
 				
-	setColors{ arg stringBackground, strColor,boxColor,boxStringColor,
-			 boxNormalColor, boxTypingColor, background ;
+	setColors{ arg stringBackground, stringColor,numBackground,numStringColor,
+			 numNormalColor, numTypingColor, background ;
+
+		stringBackground.notNil.if{
+			labelView.notNil.if{labelView.background_(stringBackground)};
+			unitView.notNil.if{unitView.background_(stringBackground)};};
+		stringColor.notNil.if{	
+			labelView.notNil.if{labelView.stringColor_(stringColor)};
+			unitView.notNil.if{unitView.stringColor_(stringColor)};};
+		numBackground.notNil.if{		
+			numberView.background_(numBackground);	};
+		numNormalColor.notNil.if{	
+			numberView.normalColor_(numNormalColor);};
 			
-			stringBackground.notNil.if{
-				labelView.notNil.if{labelView.background_(stringBackground)};
-				unitView.notNil.if{unitView.background_(stringBackground)};};
-			strColor.notNil.if{	
-				labelView.notNil.if{labelView.stringColor_(strColor)};
-				unitView.notNil.if{unitView.stringColor_(strColor)};};
-			boxColor.notNil.if{		
-				numberView.boxColor_(boxColor);	};
-			boxNormalColor.notNil.if{	
-				numberView.normalColor_(boxNormalColor);};
-				
-			boxTypingColor.notNil.if{	
-				numberView.typingColor_(boxTypingColor);};
-			boxStringColor.notNil.if{	
-				numberView.stringColor_(boxStringColor);};
-			background.notNil.if{	
-				view.background=background;};
+		numTypingColor.notNil.if{	
+			numberView.typingColor_(numTypingColor);};
+		numStringColor.notNil.if{	
+			numberView.stringColor_(numStringColor);};
+		background.notNil.if{	
+			view.background=background;};
 	}
 
 
@@ -169,15 +170,15 @@ EZNumber : EZGui{
 						
 				numSize.y=numSize.y-gap1.y;
 				numY=labelBounds.height+gap1.y;
-				unitBounds = Rect( view.bounds.width - unitWidth, // //adjust to fit
-					numY, unitWidth, view.bounds.height-labelSize.y-gap1.y);
+				unitBounds = Rect( rect.width - unitWidth, // //adjust to fit
+					numY, unitWidth, rect.height-labelSize.y-gap1.y);
 				numBounds = Rect(0, numY, 
-					rect.width-unitWidth-gap2.x, view.bounds.height-labelSize.y-gap1.y); // to right
+					rect.width-unitWidth-gap2.x, rect.height-labelSize.y-gap1.y); // to right
 					
 				},
 							
 			 \horz, {
-				labelSize.y=view.bounds.height;
+				labelSize.y=rect.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; // to left
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right
 				numBounds  =  Rect( //adjust to fit
@@ -189,7 +190,7 @@ EZNumber : EZGui{
 		});
 		
 		
-		^[labelBounds, numBounds, unitBounds]
+		^[labelBounds, numBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
 	
 
