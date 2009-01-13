@@ -10,19 +10,19 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002eaf}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0d32ac}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #80251c}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #486b24}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1c4598; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #506a26}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #254696; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #1d59d3}
-span.s3 {color: #0024f8}
-span.s4 {color: #0000ff}
+span.s2 {color: #2b5bd0}
+span.s3 {color: #002df4}
+span.s4 {color: #001afb}
 span.s5 {font: 9.0px Monaco}
 span.s6 {color: #000000}
-span.s7 {color: #486b24}
-span.s8 {color: #002eaf}
+span.s7 {color: #506a26}
+span.s8 {color: #0d32ac}
 span.s9 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -187,8 +187,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><span class="s8">Pset</span><span class="s6">(</span>\instrument<span class="s6">, </span>\Pdefhelp<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><span class="s6"><span class="Apple-tab-span">	</span></span>Ppar<span class="s6">([</span></p>
-<p class="p7"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s8">Pbind</span><span class="s6">(</span>\degree<span class="s6">, </span><span class="s8">Pdefn</span><span class="s6">(</span>\deg<span class="s6">)),</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\deg</span>), <span class="s7">\dur</span>, 1/3)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\deg</span>), \pan, -0.8),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\deg</span>), <span class="s7">\dur</span>, 1/3, \pan, 0.8)</p>
 <p class="p6">])</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
@@ -241,13 +241,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">called <b>count(n).</b></p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
-<p class="p6">z = <span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\x</span>), <span class="s7">\dur</span>, 0.25).play;</p>
+<p class="p6">z = <span class="s8">Pbind</span>(<span class="s7">\degree</span>, <span class="s8">Pdefn</span>(<span class="s7">\x, \</span>), <span class="s7">\dur</span>, 0.25).play;</p>
 <p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..5), <span class="s8">inf</span>)).condition_({ <span class="s8">|val, i|</span> i.postln % 6 == 0 });</p>
-<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..8), <span class="s8">inf</span>)).condition_({ <span class="s8">|val, i|</span> i.postln % 9 == 0 });</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((7..0), <span class="s8">inf</span>)).condition_({ <span class="s8">|val, i|</span> i.postln % 8 == 0 });</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5">// the above is equvalent to:</p>
-<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((0..8), <span class="s8">inf</span>)).count(9);</p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>, <span class="s8">Pseq</span>((7..0), <span class="s8">inf</span>)).count(8);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>reset</b></p>
@@ -255,6 +255,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// reset to change immediately:</p>
 <p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>).reset;</p>
 <p class="p2"><br></p>
+<p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\x</span>).stop;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -300,7 +301,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>, <span class="s8">Pseq</span>([1, 2, 3], 1));<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p6">e = <span class="s8">Pdefn</span>(<span class="s7">\z</span>).envir</p>
-<p class="p6">d</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).set(<span class="s7">\a</span>, 3);</p>
 <p class="p2"><br></p>
@@ -308,6 +309,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s8">Pdefn</span>(<span class="s7">\z</span>).set(<span class="s7">\a</span>, <span class="s8">Pseq</span>([1, 2, 3], <span class="s8">inf</span>));</p>
 <p class="p2"><br></p>
+<p class="p6">t.reset;</p>
 <p class="p6">t.nextN(3);</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s8">Pdefn</span><span class="s6">(</span><span class="s7">\z</span><span class="s6">).envir; </span>// post the envir</p>

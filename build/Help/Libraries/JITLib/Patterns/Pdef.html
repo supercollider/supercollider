@@ -11,24 +11,24 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #486b24}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002eaf}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #5d3024; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1c4598; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #506a26}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #80251c}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0d32ac}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #563126; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91616}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000ff}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #254696; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #1d59d3}
-span.s4 {color: #0024f8}
-span.s5 {text-decoration: underline ; color: #002fe0}
-span.s6 {color: #003eea}
-span.s7 {color: #002eaf}
+span.s3 {color: #2b5bd0}
+span.s4 {color: #002df4}
+span.s5 {text-decoration: underline ; color: #0935dc}
+span.s6 {color: #1143e6}
+span.s7 {color: #0d32ac}
 span.s8 {color: #606060}
 span.s9 {color: #000000}
-span.s10 {color: #486b24}
-span.s11 {color: #8f2116}
+span.s10 {color: #506a26}
+span.s11 {color: #80251c}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -319,8 +319,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s7">TempoClock</span>.default.tempo = 1.0;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p9">// GUI example:</p>
-<p class="p10">PdefAllGui<span class="s9">(18);</span></p>
+<p class="p9">// GUI example: see also<span class="Apple-converted-space"> </span></p>
+<p class="p10"><a href="../extras/PdefAllGui.html">PdefAllGui</a><span class="s9">(18);</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>recursion:</b></p>
@@ -428,7 +428,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s7">Pdef</span>(<span class="s10">\x</span>, <span class="s7">Pbind</span>(<span class="s10">\degree</span>, <span class="s7">Pseq</span>((0..5), <span class="s7">inf</span>), <span class="s10">\dur</span>, 0.3)).condition_({ <span class="s7">|val, i|</span> i.postln % 6 == 0 });</p>
 <p class="p4"><span class="s7">Pdef</span>(<span class="s10">\x</span>, <span class="s7">Pbind</span>(<span class="s10">\degree</span>, <span class="s7">Pseq</span>((0..7) + 5.rand, <span class="s7">inf</span>), <span class="s10">\dur</span>, 0.3)).condition_({ <span class="s7">|val, i|</span> (i % 8).postln == 0 });</p>
 <p class="p2"><br></p>
-<p class="p6">// the above is equvalent to:</p>
+<p class="p6">// the above is equivalent to:</p>
 <p class="p4"><span class="s7">Pdef</span>(<span class="s10">\x</span>, <span class="s7">Pbind</span>(<span class="s10">\degree</span>, <span class="s7">Pseq</span>((0..7) + 5.rand, <span class="s7">inf</span>), <span class="s10">\dur</span>, 0.3)).count(8);</p>
 <p class="p2"><br></p>
 <p class="p6">// the value that is sent in is the event, so decisions can be made dependent on the event's fields</p>

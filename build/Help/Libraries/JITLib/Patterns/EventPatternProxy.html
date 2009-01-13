@@ -5,23 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.33">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #752c1e; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3f6e17}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a1d18}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0022b6}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6a2e22; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0047e4}
-span.s4 {color: #001bb9}
+span.s3 {color: #174be0}
+span.s4 {color: #0022b6}
 span.s5 {color: #606060}
 span.s6 {color: #000000}
-span.s7 {color: #2c7014}
+span.s7 {color: #3f6e17}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -198,15 +198,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">// load a synthdef</p>
 <p class="p4">s.boot;</p>
 <p class="p7">SynthDef<span class="s6">(</span><span class="s5">"gpdef"</span><span class="s6">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05, amp=0.1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05, amp=0.1, pan;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain), doneAction:2) * amp;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, Pan2.ar(<span class="s4">SinOsc</span>.ar(freq, 0, env), pan))</p>
 <p class="p4"><span class="Apple-tab-span">	</span>}).store;</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">#x, y = {<span class="s4">EventPatternProxy</span>.basicNew} ! 2;</p>
+<p class="p4">#x, y = {<span class="s4">EventPatternProxy</span>.new} ! 2;</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="s6">x.play; </span>// play them. A silent resting pattern is used.</p>
 <p class="p4">y.play;<span class="Apple-converted-space"> </span></p>
@@ -214,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">// assign various patterns to it:</p>
 <p class="p2"><br></p>
-<p class="p4">x.source = <span class="s4">Pbind</span>(<span class="s7">\dur</span>, 0.25, <span class="s7">\instrument</span>, <span class="s7">\gpdef</span>));<span class="Apple-converted-space"> </span></p>
+<p class="p4">x.source = <span class="s4">Pbind</span>(<span class="s7">\dur</span>, 0.25, <span class="s7">\instrument</span>, <span class="s7">\gpdef</span>);<span class="Apple-converted-space"> </span></p>
 <p class="p4">x.source = <span class="s4">Pbind</span>(<span class="s7">\dur</span>, 0.25, <span class="s7">\degree</span>, <span class="s4">Pseq</span>([3, 4, 5b, 6], <span class="s4">inf</span>), <span class="s7">\instrument</span>, <span class="s7">\gpdef</span>);</p>
 <p class="p4">x.source = <span class="s4">Pbind</span>(<span class="s7">\dur</span>, 0.25, <span class="s7">\degree</span>, <span class="s4">Pseq</span>([3, 4, 5b, 6]+1, <span class="s4">inf</span>), <span class="s7">\instrument</span>, <span class="s7">\gpdef</span>);</p>
 <p class="p4">y.source = <span class="s4">Pbind</span>(<span class="s7">\dur</span>, 0.25, <span class="s7">\degree</span>, <span class="s4">Pseq</span>([3, 4, 5b, 6]-1, <span class="s4">inf</span>), <span class="s7">\instrument</span>, <span class="s7">\gpdef</span>);</p>
