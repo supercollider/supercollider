@@ -14,10 +14,10 @@
 		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
 	}
 	addServer { |server|
-		servers = servers.add(server);
+		servers = servers.asArray.add(server);
 	}
 	removeServer { |server|
-		servers.remove(server);
+		servers.tryPerform(\remove, server);
 	}
 }
 
