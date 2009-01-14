@@ -181,6 +181,16 @@ static id sharedSCVM = nil;
     [self sendMain: "stop"];
 }
 
+- (void)hardStopMain:(id)sender
+{
+    [self sendMain: "hardStop"];
+}
+
+- (IBAction) preferences: (id) sender
+{
+    [self sendMain: "preferences"];
+}
+
 - (IBAction) newSCWindow: (id) sender
 {
 	[self sendMain: "newSCWindow"];

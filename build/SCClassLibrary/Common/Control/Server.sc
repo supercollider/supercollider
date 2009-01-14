@@ -240,6 +240,7 @@ Server : Model {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 		this.sendMsg("/g_new", 1);
 		tree.value(this);
+		ServerTree.run(this);
 	}
 	newAllocators {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
@@ -365,6 +366,9 @@ Server : Model {
 			if (val != serverRunning) {
 				serverRunning = val;
 				if (serverRunning.not) { 
+					
+					ServerQuit.run(this);
+					
 					AppClock.sched(5.0, {
 						// still down after 5 seconds, assume server is really dead
 						// if you explicitly shut down the server then newAllocators
@@ -374,6 +378,9 @@ Server : Model {
 						};
 						recordNode = nil;
 					})
+					
+				}{
+					ServerBoot.run(this);
 				};
 				{ this.changed(\serverRunning); }.defer;
 			}
@@ -646,6 +653,7 @@ Server : Model {
 		this.sendMsg("/clearSched");
 		this.initTree;
 	}
+/*
 	*freeAll {
 		set.do({ arg server;
 			if(server.remoteControlled, { // debatable?
@@ -653,7 +661,17 @@ Server : Model {
 			})
 		})
 	}
-	
+*/
+	*freeAll { arg evenRemote = false;
+		if(evenRemote) {
+			set.do { arg server; server.freeAll }
+		} {
+			set.do { arg server;
+				if(server.isLocal) { server.freeAll }
+			}
+		}
+	}
+
 	// bundling support
 	
 	

@@ -10,6 +10,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
 	var	<>nowExecutingPath;
+	var <>preferencesAction;
 
 	startup {
 		// setup the platform first so that class initializers can call platform methods.
@@ -44,14 +45,15 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 	}
 	
 	stop { // called by command-.
-
-		SystemClock.clear;
-		AppClock.clear;
-//		TempoClock.default.clear;
-		CmdPeriod.clear;
-		
-		Server.freeAll; // stop all sounds on local servers
-		Server.resumeThreads;
+		CmdPeriod.run;
+	}
+	
+	hardStop { // called by command alt dot
+		CmdPeriod.hardRun;
+	}
+	
+	preferences {
+		preferencesAction.value(this)
 	}
 	
 	recvOSCmessage { arg time, replyAddr, msg;

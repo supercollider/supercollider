@@ -47,6 +47,8 @@
 
 - (IBAction) runMain: (id) sender;
 - (IBAction) stopMain: (id) sender;
+- (IBAction) hardStopMain: (id) sender;
+- (IBAction) preferences: (id) sender;
 - (IBAction) compileLibrary: (id) sender;
 - (IBAction) newSCWindow: (id) sender;
 - (IBAction)clearPostWindow:(id)sender;
