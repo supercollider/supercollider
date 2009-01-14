@@ -1065,6 +1065,7 @@ if PLATFORM == 'darwin':
         )
     libsclangSources += Split('''
 Source/lang/LangPrimSource/SC_HID.cpp
+Source/lang/LangPrimSource/SC_CoreAudioPrim.cpp
 Source/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
 Source/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
 Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
