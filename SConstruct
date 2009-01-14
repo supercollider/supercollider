@@ -961,7 +961,7 @@ langEnv.Append(
     LIBPATH = 'build'
     )
 
-if env['amd64']:
+if env.has_key('amd64') and env['amd64']:
 	langEnv.Append( CXXFLAGS = ['-m32'] )
 
 # functionality of libdl is included in libc on freebsd
