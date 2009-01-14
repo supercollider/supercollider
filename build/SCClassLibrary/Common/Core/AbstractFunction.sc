@@ -311,6 +311,9 @@ FunctionList : AbstractFunction {
 		var res = array.collect(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
+	do { arg function;
+		array.do(function)
+	}
 	flop {
 		if(flopped.not) {array = array.collect(_.flop) }; flopped = true;
 	}
