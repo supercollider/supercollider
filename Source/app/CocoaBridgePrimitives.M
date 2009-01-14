@@ -96,7 +96,7 @@ PyrSymbol *s_nsObject;
 //NSAutoreleasePool *nsAutoReleasePool;
 
 #if COCOABRIDGE_STORE_OBJECTS_IN_ARRAY
-NSMutableArray *nsobjects = nil;
+NSMutableSet *nsobjects = nil;
 #endif
 
 
