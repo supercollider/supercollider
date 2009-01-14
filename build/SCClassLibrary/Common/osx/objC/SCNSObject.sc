@@ -121,7 +121,7 @@ SCNSObjectAbstract {
 	
 	init{|cn, in, args, defer|
 		var result;
-		className = cn;
+	//	className = cn; // set upon return
 		if(cn.isKindOf(String) and:{in.isKindOf(String)}, {
 			result = this.prAllocInit(cn, in, args, defer);
 			^result;
@@ -211,15 +211,16 @@ SCNSObjectAbstract {
 	*/
 	
 	registerNotification {
-		|aNotificationName, aFunc|
+		|aNotificationName, aFunc, obj=1|
 		if(nsDelegate.isNil, {
 			this.setDelegate;
 		});
 		nsDelegate.prRegisterNotification(aNotificationName, aFunc);
-		this.prRegisterNotification(aNotificationName);
+		if (obj.notNil and:{ obj == 1 }) { obj = this };
+		this.prRegisterNotification(aNotificationName, obj);
 	}
 	
-	prRegisterNotification {|aNotificationName|
+	prRegisterNotification {|aNotificationName, obj|
 		_ObjC_RegisterNotification
 	}
 }
@@ -233,11 +234,11 @@ CocoaAction : SCNSObjectAbstract{
 	}
 	
 	doNotificationAction {
-		|notif, nsNotification|
+		|notif, nsNotification, obj|
 		var func;
 		func = notificationActions.at(notif.asSymbol);
 		if(func.notNil, {
-			func.value(notif, nsNotification);
+			func.value(notif, nsNotification, obj);
 		});
 	}
 	

@@ -598,8 +598,9 @@ extern bool compiledOK;
 		PyrString* pyrString = newPyrString(g->gc,[[aNotification name] cString],0,true);
 		++g->sp;  SetObject(g->sp, pyrString);
 		++g->sp;  SetPtr(g->sp, (void*)aNotification); 
+		++g->sp;  SetPtr(g->sp, (void*)[aNotification object]);
 		
-		runInterpreter(g, method, 3);
+		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
     pthread_mutex_unlock (&gLangMutex);		
@@ -1017,7 +1018,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: &cval atIndex: i+2];
 			}
 			else {
-				post("wrong type (Float / Double) at arg: %i excepted float\n", i); 
+				post("wrong type (Float / Double) at arg: %i expected float\n", i); 
 				return errWrongType;
 			}
 			
@@ -1052,7 +1053,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				fval = (double)val;
 				[anInvocation setArgument: &fval atIndex: i+2];
 			}else{
-				post("wrong type (Integer) at arg: %i excepted %c \n", i, *cType); return errWrongType;
+				post("wrong type (Integer) at arg: %i expected %c \n", i, *cType); return errWrongType;
 			}				
 		} 
 		else if(
@@ -1061,7 +1062,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		)
 		{
 			if(*cType != _C_ID) {
-				post("wrong type (SCNSObject) at arg: %i excepted %c \n", i, *cType);
+				post("wrong type (SCNSObject) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
 			id val = (id) slot->uo->slots[0].ui;
@@ -1089,7 +1090,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: &cval atIndex: i+2];
 			}
 			else{
-				post("wrong type (Boolean False) at arg: %i excepted %c \n", i, *cType); return errWrongType;
+				post("wrong type (Boolean False) at arg: %i expected %c \n", i, *cType); return errWrongType;
 			}	
 		}
 		else if(IsTrue(slot)) {
@@ -1114,7 +1115,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: &cval atIndex: i+2];
 			}
 			else{
-				post("wrong type (Boolean True) at arg: %i excepted %c \n", i, *cType); return errWrongType;
+				post("wrong type (Boolean True) at arg: %i expected %c \n", i, *cType); return errWrongType;
 			}	
 		}
 		else if(IsNil(slot))
@@ -1127,13 +1128,13 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				void *ptr = NULL;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
-				post("wrong type (Nil) at arg: %i excepted %c \n", i, *cType); return errWrongType;
+				post("wrong type (Nil) at arg: %i expected %c \n", i, *cType); return errWrongType;
 			}
 		}
 		else if (isKindOfSlot(slot, s_rect->u.classobj))
 		{
 			if(*cType != _C_STRUCT_B) {
-				post("wrong type (Rect) at arg: %i excepted %c \n", i, *cType); 
+				post("wrong type (Rect) at arg: %i expected %c \n", i, *cType); 
 				return errWrongType;
 			}
 			
@@ -1145,7 +1146,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_color->u.classobj))
 		{
 			if(*cType != _C_ID) {
-				post("wrong type (Color) at arg: %i excepted %c \n", i, *cType);
+				post("wrong type (Color) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
 			
@@ -1178,8 +1179,14 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				if(!s) return errFailed;
 				[anInvocation setArgument: (void*)&s atIndex: i+2];
 			}
+			else if(*cType == _C_SEL) { // blackrain
+				NSString *s = nsStringFromPyrSlot(slot);
+				if(!s) return errFailed;
+				SEL sel = NSSelectorFromString(s);
+				[anInvocation setArgument: (void*)&sel atIndex: i+2];
+			}
 			else {
-				post("wrong type (String) at arg: %i excepted %c \n", i, *cType); 
+				post("wrong type (String) at arg: %i expected %c \n", i, *cType); 
 				return errWrongType;
 			}
 		} 
@@ -1344,6 +1351,10 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 			if([newThing isKindOfClass:[NSWindow class]])
 				[newThing setReleasedWhenClosed:NO]; // prevent user crash for this specific UI
 				
+			NSString *classNameString = NSStringFromClass( [newThing class] );
+			PyrString *pyrClassNameString = newPyrString(g->gc,[classNameString UTF8String],0,true);
+			SetObject(receiver->uo->slots + 1, pyrClassNameString);
+
 			if(isInstanceMethod) 
 				[newThing release]; // retained and added already in ObjcTypeFillPyrSlot
 		}
@@ -1395,8 +1406,9 @@ int prObjcSetActionForControl(struct VMGlobals *g, int numArgsPushed)
 int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed);
 int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1;
-    PyrSlot *b  = g->sp;
+	PyrSlot *c = g->sp;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *a = g->sp - 2;
 	id objc = (id) a->uo->slots[0].ui;
 	id delegate = nil;
 	if(!objc) return errFailed;
@@ -1420,8 +1432,14 @@ int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 	}
 	
 	NSString *notificationName = nsStringFromPyrSlot(b);
-	NSLog(@"Registering Notification: %@", notificationName);
+	post([[NSString stringWithFormat:@"Registering Notification: %@\n", notificationName] UTF8String]);
 	
+	if (IsNil(c)) { // br
+		objc = nil;
+		post("Listening to Notifications from any Object.\n");
+	} else
+		objc = (id) c->uo->slots[0].ui;
+
 	[[NSNotificationCenter defaultCenter] addObserver:delegate
 		selector:@selector(notificationReceived:)
 		name:notificationName object:objc // apply only to object
@@ -2043,7 +2061,7 @@ void initCocoaBridgePrimitives()
 		[nsobjects release]; // will release all references
 		nsobjects = nil;
 	}
-	nsobjects = [[NSMutableArray arrayWithCapacity: 8]retain];
+	nsobjects = [[NSMutableSet setWithCapacity: 8]retain];
 	
     definePrimitive(base, index++, "_ObjC_AllocInit", prObjcAllocInit, 5, 0);	
     definePrimitive(base, index++, "_ObjC_Dealloc", prObjcDealloc, 1, 0);	
@@ -2057,7 +2075,7 @@ void initCocoaBridgePrimitives()
     definePrimitive(base, index++, "_ObjC_LoadBundle", prObjcLoadBundle, 2, 0);	
     definePrimitive(base, index++, "_ObjcBundleAllocPrincipalClass", prObjcBundleAllocPrincipalClass, 1, 0);	
     definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 5, 0);	
-	definePrimitive(base, index++, "_ObjC_RegisterNotification", prObjcRegisterNotification, 2, 0);	 // added cp
+	definePrimitive(base, index++, "_ObjC_RegisterNotification", prObjcRegisterNotification, 3, 0);	 // added cp
 	definePrimitive(base, index++, "_ObjC_NSDataToSCArray", prObjcNSDataToPyrArray, 3, 0);
 	definePrimitive(base, index++, "_ObjC_NSStringToPyrString", prObjcNSStringToPyrString, 1, 0);
 	definePrimitive(base, index++, "_ObjC_IsSubclassOfNSClass", prObjcIsSubclassOfNSClass, 2, 0);
