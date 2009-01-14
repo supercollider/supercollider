@@ -170,7 +170,7 @@ SCWindow {
 			
 	// PRIVATE
 	// primitives
-	prInit { arg argName, argBounds, resizable, border, scroll, view, appmodal;
+	prInit { arg argName, argBounds, resizable, border, scroll, view, appmodal = false;
 		_SCWindow_New
 		^this.primitiveFailed
 	}
