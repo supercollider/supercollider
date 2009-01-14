@@ -367,7 +367,7 @@ int initMIDI(int numIn, int numOut)
         
         CFRelease(outputPortName);
     }
-    gNumMIDIOutPorts = numIn;
+    gNumMIDIOutPorts = numOut;
     return errNone;
 }
 
@@ -378,13 +378,14 @@ int midiCleanUp()
 	 * MIDIClientDispose should normally dispose the ports attached to it
 	 * but clean up the pointers in case
 	 */
-    for (int i=0; i<gNumMIDIOutPorts; ++i) {
+	int i = 0;
+    for (i=0; i<gNumMIDIOutPorts; ++i) {
         MIDIPortDispose(gMIDIOutPort[i]);
 		gMIDIOutPort[i] = 0;
     }
 	gNumMIDIOutPorts = 0;
 	
-    for (int i=0; i<gNumMIDIInPorts; ++i) {
+    for (i=0; i<gNumMIDIInPorts; ++i) {
         MIDIPortDispose(gMIDIInPort[i]);
 		gMIDIInPort[i] = 0;
     }

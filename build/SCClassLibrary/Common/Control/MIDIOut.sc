@@ -15,15 +15,13 @@ MIDIClient {
 	classvar <initialized=false;
 	*init { arg inports, outports; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
-
-		if ( inports.isNil and: outports.isNil, {
-			this.prInitClient;
-			this.list;
-			if(inports.isNil,{inports = sources.size});
-			if(outports.isNil,{outports = destinations.size});
+		
+		this.prInitClient;
+		this.list;
+		if(inports.isNil,{inports = sources.size});
+		if(outports.isNil,{outports = destinations.size});
 //			this.disposeClient;
-		});
-
+		
 		this.prInit(inports,outports);
 		initialized = true;
 		// might ask for 1 and get 2 if your device has it
