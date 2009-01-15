@@ -84,6 +84,19 @@
 
 @end
 
+@interface SCNSLevelIndicator : NSLevelIndicator {
+	BOOL drawPeak, isVertical;
+	float peakSubtract, peakLevel, peakY, peakHeight;
+}
+
+- (void)setDrawPeak:(BOOL)flag;
+- (void)setIsVertical:(BOOL)flag;
+- (void)setPeakSubtract:(float)val;
+- (void)setPeakLevel:(float)val;
+- (void)prepPeakBounds;
+
+@end
+
 class SCCocoaTextView : public SCView
 {
 public:	
@@ -188,8 +201,33 @@ protected:
 	QCView *mQCView;
 };
 
+class SCLevelIndicator : public SCView
+	{
+	public:	
+		SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+		virtual ~SCLevelIndicator();
+		virtual void setBounds(SCRect inBounds);
+		void setImage();
+		void resetParams();
+		virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+		virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+		virtual void setVisibleFromParent();
+		void tabPrevFocus();
+		void tabNextFocus();
+		virtual NSView* focusResponder() { return mLevelIndicator; }
+		
+	protected:
+		SCNSLevelIndicator *mLevelIndicator;
+		NSImage *mImage;
+		int mStyle;
+		double mNumSteps, mWarning, mCritical;
+		float mTickHeight;
+		bool mIsVertical;
+	};
+
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+SCView* NewSCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
