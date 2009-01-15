@@ -15,6 +15,7 @@ Clock {
 	*timeToNextBeat { ^0 }
 	*nextTimeOnGrid { | quant = 1, phase = 0| 
 		if (quant ==0) { ^this.beats + phase };
+		if (phase < 0) { phase = phase % quant };
 		^roundUp(this.beats - (phase % quant), quant) + phase;
 	}
 }
@@ -246,6 +247,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	nextTimeOnGrid { arg quant = 1, phase = 0;
 		if (quant == 0) { ^this.beats + phase };
 		if (quant < 0) { quant = beatsPerBar * quant.neg };
+		if (phase < 0) { phase = phase % quant };
 		^roundUp(this.beats - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
 	}
 	
