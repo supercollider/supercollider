@@ -810,7 +810,7 @@ SCImageKernel {
 +Integer {
 	*fromRGBA {|r, g, b, a|
 		^(
-			((r & 16r000000FF) << 24) | ((g & 16r000000FF) << 16) | ((b & 16r000000FF) << 8) | (a & 16r000000FF)
+			((r.asInteger & 16r000000FF) << 24) | ((g.asInteger & 16r000000FF) << 16) | ((b.asInteger & 16r000000FF) << 8) | (a.asInteger & 16r000000FF)
 		);
 	}
 	
