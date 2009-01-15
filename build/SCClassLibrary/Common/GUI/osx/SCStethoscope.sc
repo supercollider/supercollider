@@ -13,14 +13,14 @@ SCStethoscope {
 	
 	*tileBounds {
 		var screenBounds = SCWindow.screenBounds;
-		var x = 544 + (ugenScopes.size * 222);
-		var right = x + 212;
-		var y = floor(right / screenBounds.width) * 242 + 10;
-		if(right > screenBounds.right) { x = floor(right % screenBounds.width / 222) * 222 };
-		^Rect(x, y, 212, 212)
+		var x = 520 + (ugenScopes.size * (223 + 5)) + 5;
+		var right = x + 223;
+		var y = floor(right / screenBounds.width) * 297 + 10;
+		if(right > screenBounds.right) { x = floor(right % screenBounds.width / 223) * (223 + 5) };
+		^Rect(x, y, 223, 223)
 	}
 	
-	makeBounds { arg size = 212; ^Rect(322, 16, size, size) }
+	makeBounds { arg size = 223; ^Rect(297, 5, size, size) }
 	
 	makeWindow { arg view;
 		if(view.isNil) 
