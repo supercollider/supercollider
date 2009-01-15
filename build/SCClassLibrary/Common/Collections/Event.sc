@@ -147,17 +147,25 @@ Event : Environment {
 				stepsPerOctave: 12.0,
 				detune: 0.0,					// detune in Hertz
 				harmonic: 1.0,				// harmonic ratio
+				octaveRatio: 2.0,
 				
 					// abstract these out to facilitate non-ET tunings
 				midiToCps: _.midicps,
 				cpsToMidi: _.cpsmidi,
 				
 				note: #{
-					(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
+					(~degree + ~mtranspose).degreeToKey(
+						~scale, 
+						~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave },
+							~stepsPerOctave
+						)
+					);
 				},
 				midinote: #{
-					((~note.value + ~gtranspose + ~root) / ~stepsPerOctave + ~octave) * 12.0; 
-				},
+					(((~note.value + ~gtranspose + ~root) / 
+						~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave },							~stepsPerOctave) + ~octave - 5.0) * 						(12.0 * ~scale.respondsTo(\octaveRatio).if						({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);				},
 				detunedFreq: #{
 					~freq.value + ~detune
 				},
@@ -167,14 +175,20 @@ Event : Environment {
 				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
 						var midinote;
+						var steps = ~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave }, ~stepsPerOctave
+						);
 						midinote = (~cpsToMidi.value(freq / ~harmonic) - ~ctranspose);
-						midinote / 12.0 - ~octave * ~stepsPerOctave - ~root - ~gtranspose
+						midinote / 12.0 - ~octave * steps - ~root - ~gtranspose
 					}
 				},
 				freqToScale: #{ arg self, freq; 
 					// conversion from frequency to scale value. 
 					self.use {
-						var degree = self.freqToNote(freq).keyToDegree(~scale, ~stepsPerOctave) - ~mtranspose;
+						var steps = ~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave }, ~stepsPerOctave
+						);
+						var degree = self.freqToNote(freq).keyToDegree(~scale, steps) - ~mtranspose;
 						degree.asArray.collect {|x, i|
 							x = x.round(0.01);
 							if(x.floor != x) { 
