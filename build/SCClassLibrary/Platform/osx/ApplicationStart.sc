@@ -1,16 +1,19 @@
 
 ApplicationStart : StartUp {
-	classvar <>functions, <done=false;
+	classvar <>objects;
 	
 	*run {
-		done = true;
-		functions.do{|func|
-			func.try{|error|
+		this.objects.do({ arg item; item.doOnApplicationStart;  });
+	}
+}
+
++ Function {
+	doOnApplicationStart {
+		this.try{|error|
 				"ApplicationStart: an error has occurred.".postln;
 				error.reportError;
 				"Thrown during function:".postln;
-				func.postcs;
-			}
-		};
+				this.postcs;
+		}
 	}
 }
