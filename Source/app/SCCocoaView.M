@@ -815,6 +815,80 @@ const int circDiam = 20;
 
 @end
 
+@implementation SCNSLevelIndicator 
+
+- (void)drawRect:(NSRect)aRect
+{
+	[super drawRect:aRect];
+	if(drawPeak) {
+		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		CGContextSetRGBFillColor(cgc, 1.0, 1.0, 0.0, 0.5);
+		CGRect peakRect;
+		//peakRect = CGRectMake(peakLevel, aRect.origin.y + peakSubtract, 3.f, aRect.size.height - peakSubtract);
+		peakRect = CGRectMake(peakLevel, peakY, 3.f, peakHeight);
+		CGContextFillRect(cgc, peakRect); 
+		CGContextRestoreGState(cgc);
+	}
+}
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+	if (![super initWithFrame:frameRect])
+		return nil;
+	drawPeak = NO;
+	isVertical = NO;
+	peakSubtract = 0.f;
+	peakLevel = 0.f;
+	[self prepPeakBounds];
+	return self;
+}
+
+- (void)setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+	[self prepPeakBounds];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)setDrawPeak:(BOOL)flag
+{
+	drawPeak = flag;
+	[self prepPeakBounds];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)setIsVertical:(BOOL)flag
+{
+	isVertical = flag;
+	[self prepPeakBounds];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)setPeakSubtract:(float)val
+{
+	peakSubtract = val;
+	[self prepPeakBounds];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)setPeakLevel:(float)val
+{
+	peakLevel = val * ([self bounds].size.width - 3);
+	//NSLog(@"peakLevel %f", peakLevel);
+	[self setNeedsDisplay:YES];
+}
+
+- (void)prepPeakBounds
+{
+	NSRect bounds = [self bounds];
+	peakY = bounds.origin.y + peakSubtract;
+	peakHeight = bounds.size.height - peakSubtract;
+}
+
+@end
+
+
 NSRect SCtoNSRect(SCRect screct);
 
 SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
@@ -2296,3 +2370,443 @@ void SCTextField::beginDrag(SCPoint where)
 	NSPoint point = NSMakePoint(where.x, where.y);
     [mTextField beginDragFrom: point of: &slot string: string label: label];
 }
+
+////////////////////
+SCView* NewSCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCLevelIndicator(inParent, inObj, inBounds);
+}
+
+SCLevelIndicator::SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+: SCView(inParent, inObj, inBounds)
+{
+	NSRect matrect = SCtoNSRect(getDrawBounds());
+	mLevelIndicator = [[SCNSLevelIndicator alloc] initWithFrame:matrect];
+	NSView *view = mTop->GetNSView();	
+	[view addSubview: mLevelIndicator];
+	
+	[[mLevelIndicator cell] setLevelIndicatorStyle:NSContinuousCapacityLevelIndicatorStyle];
+	[mLevelIndicator setMinValue:0.0];
+	[mLevelIndicator setMaxValue:1.0];
+	mStyle = 1;
+	mNumSteps = 1;
+	if(matrect.size.height > matrect.size.width) {
+		[mLevelIndicator setBoundsRotation: 90.0]; // vertical
+		[mLevelIndicator setIsVertical:YES];
+		[mLevelIndicator setNeedsDisplay: YES];
+		mIsVertical = true;
+	} else mIsVertical = false;
+	
+	mWarning = 0.0;
+	mCritical = 0.0;
+	mTickHeight = 0.f;
+	
+	mImage = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
+	setImage();
+	
+	setVisibleFromParent();
+}
+
+SCLevelIndicator::~SCLevelIndicator()
+{
+	[mLevelIndicator removeFromSuperview];
+	[mLevelIndicator release];
+	[mImage release];
+}
+
+void SCLevelIndicator::setBounds(SCRect screct)
+{
+	mBounds = screct;
+	if(mParent->relativeOrigin()){
+		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;	
+	} else {
+		mLayout.bounds = mBounds;
+	}
+	
+	if(mBounds.height > mBounds.width) {
+		[mLevelIndicator setBoundsRotation: 90.0]; // vertical
+		mIsVertical = true;
+		[mLevelIndicator setIsVertical:YES];
+	} else {
+		[mLevelIndicator setBoundsRotation: 0.0]; // horizontal
+		mIsVertical = false;
+		[mLevelIndicator setIsVertical:NO];
+	}
+	
+	if([mLevelIndicator numberOfTickMarks] > 0) 
+		mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
+	else 
+		mTickHeight = 0.f;
+	
+	[mLevelIndicator setPeakSubtract:mTickHeight];
+	
+	setImage();
+	[mLevelIndicator setFrame: SCtoNSRect(mLayout.bounds)];
+	[mLevelIndicator setNeedsDisplay: YES];
+}
+
+void SCLevelIndicator::setImage()
+{
+	NSImage* newImage = nil;
+	
+	NSSize imageSize = [mImage size];
+	float width = imageSize.width;
+	float height = imageSize.height;
+	
+	SCRect bounds = getDrawBounds();
+	NSSize targetSize;
+	if(mIsVertical) {
+		targetSize = NSMakeSize(bounds.height / mNumSteps, bounds.width - mTickHeight);
+	} else {
+		targetSize = NSMakeSize(bounds.width / mNumSteps, bounds.height - mTickHeight);
+	}
+	
+	float targetWidth = targetSize.width;
+	float targetHeight = targetSize.height;
+	
+	float scaleFactor = 0.0; 
+	float scaledWidth = targetWidth;
+	float scaledHeight = targetHeight;
+	
+	NSPoint newPoint = NSMakePoint(0,0);
+	
+	if ( NSEqualSizes( imageSize, targetSize ) == NO )
+	{ 
+		float widthFactor, heightFactor;
+		if(mIsVertical){
+			widthFactor = targetHeight / width;
+			heightFactor = targetWidth / height;
+		} else {
+			widthFactor = targetWidth / width;
+			heightFactor = targetHeight / height;
+		}
+		
+		if ( widthFactor < heightFactor)
+			scaleFactor = widthFactor;
+		else
+			scaleFactor = heightFactor;
+		
+		scaledWidth = width * scaleFactor;
+		scaledHeight = height * scaleFactor;
+		
+		if(mIsVertical) {
+			if ( widthFactor < heightFactor)
+				newPoint.y = (targetWidth - scaledHeight) * 0.5;
+			else if ( widthFactor > heightFactor )
+				newPoint.x = (targetHeight - scaledWidth) * 0.5;
+		} else {
+			if ( widthFactor < heightFactor)
+				newPoint.y = (targetHeight - scaledHeight) * 0.5;
+			else if ( widthFactor > heightFactor )
+				newPoint.x = (targetWidth - scaledWidth) * 0.5;
+		}
+	}
+	
+	//NSLog(@"targetSize: %@", NSStringFromSize(targetSize));
+
+	// create a new image to draw into 
+	newImage = [[NSImage alloc] initWithSize:targetSize]; 
+	
+	[newImage lockFocus];
+	
+	NSRect newRect;
+	newRect.origin = newPoint;
+	newRect.size.width = scaledWidth;
+	newRect.size.height = scaledHeight;
+	
+	//NSLog(@"newPoint: %@", NSStringFromRect(newRect));
+	
+	if(mIsVertical) {
+		
+		NSAffineTransform *rotateTF = [NSAffineTransform transform];
+		NSPoint centerPoint = NSMakePoint(targetSize.width / 2, targetSize.height / 2);
+		
+		[rotateTF translateXBy: centerPoint.x yBy: centerPoint.y];
+		[rotateTF rotateByDegrees: - 90];
+		[rotateTF translateXBy: -centerPoint.y yBy: -centerPoint.x];
+		[rotateTF concat];
+	}
+	
+	[mImage drawInRect: newRect fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1.0];
+	
+	[newImage unlockFocus];
+
+	[[mLevelIndicator cell] setImage:newImage];
+	
+	[newImage autorelease];
+}
+void SCLevelIndicator::resetParams()
+{
+	if(mStyle >= 2) {
+		[mLevelIndicator setWarningValue:mWarning * mNumSteps];
+		[mLevelIndicator setCriticalValue:mCritical * mNumSteps];
+		[mLevelIndicator setMaxValue: mNumSteps];
+	} else {
+		[mLevelIndicator setWarningValue:mWarning];
+		[mLevelIndicator setCriticalValue:mCritical];
+		[mLevelIndicator setMaxValue: 1.0];
+	}
+}
+
+int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	char *name = symbol->name;
+	
+	if (strcmp(name, "value")==0) {
+		double value;
+		err = slotDoubleVal(slot, &value);
+		if (err) return err;
+		if(mStyle >= 2) value = value * mNumSteps;
+		[mLevelIndicator setDoubleValue:value];
+		return errNone;
+	}
+	
+	if (strcmp(name, "warning")==0) {
+		double value;
+		err = slotDoubleVal(slot, &value);
+		if (err) return err;
+		mWarning = value;
+		resetParams();
+		return errNone;
+	}
+
+	if (strcmp(name, "critical")==0) {
+		double value;
+		err = slotDoubleVal(slot, &value);
+		if (err) return err;
+		mCritical = value;
+		resetParams();
+		return errNone;
+	}
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		mVisible = visible;
+		setVisibleFromParent();
+		return errNone;
+	}
+	
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		err = slotGetSCRect(slot, &screct);
+		if (err) return err;
+		setBounds(screct);
+		return errNone;
+	}
+	
+	if (strcmp(name, "enabled")==0) {
+		bool enabled = IsTrue(slot);
+		if (mEnabled != enabled) {
+			mEnabled = enabled;
+			[mLevelIndicator setEnabled:(BOOL)enabled];
+			if (!mEnabled) mTop->resetFocus();
+			refresh();
+		}
+		return errNone;
+	}
+	
+	if (strcmp(name, "style")==0) {
+		int style;
+		err = slotIntVal(slot, &style);
+		if (err) return err;
+		if(style <= 0) {
+			[[mLevelIndicator cell] setLevelIndicatorStyle:NSContinuousCapacityLevelIndicatorStyle];
+			mStyle = 0;
+		} else if(style == 1) {
+			[[mLevelIndicator cell] setLevelIndicatorStyle:NSRelevancyLevelIndicatorStyle];
+			mStyle = 1;
+		} else if(style == 2) {
+			[[mLevelIndicator cell] setLevelIndicatorStyle:NSDiscreteCapacityLevelIndicatorStyle];
+			mStyle = 2;
+		} else {
+			[[mLevelIndicator cell] setLevelIndicatorStyle:NSRatingLevelIndicatorStyle];
+			mStyle = 3;
+			setImage();
+		}
+		resetParams();
+		return errNone;
+	}
+	
+	if (strcmp(name, "numSteps")==0) {
+		int numSteps;
+		err = slotIntVal(slot, &numSteps);
+		if (err) return err;
+		mNumSteps = numSteps >= 1 ? (double)numSteps : 1.0;
+		resetParams();
+		setImage();
+		return errNone;
+	}
+	
+	if (strcmp(name, "numTicks")==0) {
+		int numTicks;
+		err = slotIntVal(slot, &numTicks);
+		if (err) return err;
+		[mLevelIndicator setNumberOfTickMarks:numTicks];
+		if(numTicks > 0) 
+			mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
+		else 
+			mTickHeight = 0.f;
+		[mLevelIndicator setPeakSubtract:mTickHeight];
+		setImage();
+		return errNone;
+	}
+	
+	if (strcmp(name, "numMajorTicks")==0) {
+		int numTicks;
+		err = slotIntVal(slot, &numTicks);
+		if (err) return err;
+		[mLevelIndicator setNumberOfMajorTickMarks:numTicks];
+		if([mLevelIndicator numberOfTickMarks] > 0) 
+			mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
+		else 
+			mTickHeight = 0.f;
+		[mLevelIndicator setPeakSubtract:mTickHeight];
+		setImage();
+		return errNone;
+	}
+	
+	if (strcmp(name, "image")==0) {
+		if(isKindOfSlot(slot, s_scimage->u.classobj)) { // it's an SCImage : )
+			SCImage *scimage = (SCImage *)slot->uo->slots[0].uptr;
+			if(scimage) {
+				NSImage *oldImage = mImage;
+				mImage = [[scimage nsimage] retain];
+				setImage();
+				[oldImage release];
+				return errNone;
+			}
+			else {
+				post("Invalid Image");
+				return errWrongType;
+			}
+		} else {
+			return errWrongType;
+		}
+	}
+	
+	if (strcmp(name, "drawsPeak")==0) {
+		bool drawsPeak = IsTrue(slot);
+		[mLevelIndicator setDrawPeak:drawsPeak];
+		return errNone;
+	}
+	
+	if (strcmp(name, "peakLevel")==0) {
+		float value;
+		err = slotFloatVal(slot, &value);
+		if (err) return err;
+		[mLevelIndicator setPeakLevel:sc_clip(value, 0.f, 1.f)];
+		return errNone;
+	}
+	
+	return SCView::setProperty(symbol, slot);
+}
+
+
+int SCLevelIndicator::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	
+	if (strcmp(name, "value")==0) {
+		double value = [mLevelIndicator doubleValue];
+		SetFloat(slot, value);
+		return errNone;
+	}
+	
+	return SCView::getProperty(symbol, slot);
+}
+
+
+void SCLevelIndicator::setVisibleFromParent()
+{
+	if(mVisible && mParent->isVisible()) {
+		[mLevelIndicator setHidden:NO];
+	} else {
+		[mLevelIndicator setHidden:YES];
+	}	
+	[mLevelIndicator setNeedsDisplay:YES];
+	mTop->resetFocus();
+	refresh();
+}
+
+void SCLevelIndicator::tabPrevFocus()
+{
+	mTop->tabPrevFocus();
+}
+void SCLevelIndicator::tabNextFocus()
+{
+	//post("next focus\n");
+	mTop->tabNextFocus();
+}
+
+//extern PyrSymbol* s_canReceiveDrag;
+//
+//bool SCTextField::canReceiveDrag()
+//{
+//    PyrSlot result;
+//    sendMessage(s_canReceiveDrag, 0, 0, &result);
+//    return IsTrue(&result);
+//}
+//
+//NSDragOperation SCTextField::draggingEntered()
+//{
+//	bool flag = canReceiveDrag();
+//	mTop->setDragView(flag ? this : 0);
+//	[mTextField displayIfNeeded];
+//	return flag ? NSDragOperationEvery : NSDragOperationNone;	
+//}
+//
+//extern PyrSymbol* s_receiveDrag;
+//
+//BOOL SCTextField::performDrag()
+//{	
+//	bool flag = canReceiveDrag();
+//	if (flag) {
+//		mTop->setDragView(this);
+//		sendMessage(s_receiveDrag, 0, 0, 0);
+//	} else {
+//		mTop->setDragView(0);
+//	}
+//	[mTextField displayIfNeeded];
+//	return flag ? YES : NO;
+//}
+//
+//void SCTextField::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+//{
+//    if (modifiers & NSCommandKeyMask) {
+//        beginDrag(where);
+//    } 
+//}
+//
+//extern PyrSymbol *s_beginDrag;
+//
+//void SCTextField::beginDrag(SCPoint where)
+//{
+//    sendMessage(s_beginDrag, 0, 0, 0);
+//    
+//    PyrSlot slot;
+//    PyrSlot stringSlot;
+//	NSString *string = 0;
+//	NSString *label = 0;
+//    pthread_mutex_lock (&gLangMutex);
+//    if (mObj) {
+//        VMGlobals *g = gMainVMGlobals;
+//        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+//        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
+//        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+//		if (isKindOfSlot(&stringSlot, class_string)) {
+//			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
+//		}
+//		if(mDragLabel) label = mDragLabel;
+//    }
+//    pthread_mutex_unlock (&gLangMutex);
+//    
+//    //mTop->beginDragCallback(where, &slot, string, label);
+//	NSPoint point = NSMakePoint(where.x, where.y);
+//    [mTextField beginDragFrom: point of: &slot string: string label: label];
+//}
+

@@ -6018,6 +6018,7 @@ extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, S
 extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+extern SCView* NewSCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 void registerSCViewClasses()
 {
@@ -6053,6 +6054,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCTextField2", NewSCTextField);
 	new SCViewMaker("SCScrollTopView", NewSCScrollTopView);
 	new SCViewMaker("SCScrollView", NewSCScrollView);
+	new SCViewMaker("SCLevelIndicator", NewSCLevelIndicator);
 }
 
 
