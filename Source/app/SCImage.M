@@ -1822,8 +1822,8 @@ int prSCImage_updatePixels(struct VMGlobals *g, int numArgsPushed)
 	pixelsData	= (uint32*)pixels->i;
 	bytesLeft	= bytesPerRow - (width*4);
 	
-	if(pixels->size < (width*height /* *4 */)) {
-		post("Error: pixel array is not of good size ! should be %i bytes long\n", (width*height/**4*/));
+	if(pixels->size < (int)(width*height /* *4 */)) {
+		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(width*height/**4*/));
 		return errNone;
 	}
 	
@@ -1904,14 +1904,17 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 	rect.origin.y = sc_max(rect.origin.y, 0);
 	rect.size.width = sc_min(rect.size.width, width);
 	rect.size.height = sc_min(rect.size.height, width);
-	if(rect.origin.x + rect.size.width > width) 
-		rect.origin.x = width - rect.size.width;
-	if(rect.origin.y + rect.size.height > height) 
-		rect.origin.y = height - rect.size.height;
-		
+	if( (rect.origin.x + rect.size.width) > width ) {
+		post("rect dimensions exceeds image width ! trying to clip bounds \n");
+		rect.origin.x = sc_max(0, width - rect.size.width);
+	}
+	if( (rect.origin.y + rect.size.height) > height) {
+		post("rect dimensions exceeds image height ! trying to clip bounds \n");
+		rect.origin.y = sc_max(0, height - rect.size.height);
+	}
 	bytesLeft	= (bytesPerRow - (rect.size.width * 4));
 	if(pixels->size < (int)(rect.size.width * rect.size.height)) {
-		post("Error: pixel array is not of good size ! should be %i bytes long\n", (rect.size.width * rect.size.height));
+		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(rect.size.width * rect.size.height));
 		return errNone;
 	}
 	
