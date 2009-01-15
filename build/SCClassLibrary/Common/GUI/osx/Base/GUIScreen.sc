@@ -37,7 +37,9 @@ SCWindow {
 	add { arg aView; view.add(aView) }
 	
 	addFlowLayout { |margin, gap| 
-		view.decorator_( FlowLayout( view.bounds, margin, gap ) );
+		view.relativeOrigin.if
+			{view.decorator_( FlowLayout( view.bounds.moveTo(0,0), margin, gap ) )}
+			{view.decorator_( FlowLayout( view.bounds, margin, gap ) )};
 		^this.view.decorator;
 		 }
 	
