@@ -150,10 +150,10 @@ static const float	oneOn255			= (1.f/255.f);
 #define COLOR_SCALE2(channel, alpha)	MultiplyAlpha(alpha, channel)
 
 // none of those are ok :(
-#define COLOR_UNSCALE					COLOR_UNSCALE1
-#define COLOR_UNSCALE1(channel, alpha)	(255 * channel) / alpha // vImage Formula - rounding errors if scale - unscale !!! so...
-#define COLOR_UNSCALE2(channel, alpha)	((channel) * 256 - 1) / (alpha) // ...modified one...
-#define COLOR_UNSCALE3(channel, alpha)	(65025 - (255 - fa) * (255 - ba)) // from libnr - sodipodi
+#define COLOR_UNSCALE					COLOR_UNSCALE3
+#define COLOR_UNSCALE1(channel, alpha)	((channel) * 255) / alpha // simple Formula - rounding errors if scale - unscale !!! so...
+#define COLOR_UNSCALE2(channel, alpha)	((channel) * 256 - 1) / (alpha) // ...modified one... beware
+#define COLOR_UNSCALE3(channel, alpha)	((((channel) * 255) + (alpha >> 1)) / alpha) // should be better - from libnr - sodipodi
 
 // more Macros see libnr - sodipodi here:
 // http://sodipodi.cvs.sourceforge.net/sodipodi/libnr/nr-pixops.h
@@ -1561,7 +1561,13 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	
 	[image getPixel:pixelAsArray atX:x y:y];
-	SetInt(receiver, ((pixelAsArray[0] << 24) | (pixelAsArray[1] << 16) | (pixelAsArray[2] << 8) | pixelAsArray[3]));
+	//SetInt(receiver, ((pixelAsArray[0] << 24) | (pixelAsArray[1] << 16) | (pixelAsArray[2] << 8) | pixelAsArray[3]));
+	SetInt(receiver, 
+		COLOR_UNSCALE( pixelAsArray[0], pixelAsArray[3] ) << 24 | 
+		COLOR_UNSCALE( pixelAsArray[1], pixelAsArray[3] ) << 16 | 
+		COLOR_UNSCALE( pixelAsArray[2], pixelAsArray[3] ) <<  8 |
+		pixelAsArray[3]
+	);
 	
 	return errNone;
 }
@@ -1593,9 +1599,9 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(ySlot, &y);
 	if(err) return err;
 	
-	pixelData[0] = PIXEL_RED(pixel);
-	pixelData[1] = PIXEL_GREEN(pixel);
-	pixelData[2] = PIXEL_BLUE(pixel);
+	pixelData[0] = COLOR_SCALE(PIXEL_RED(pixel), PIXEL_ALPHA(pixel));
+	pixelData[1] = COLOR_SCALE(PIXEL_GREEN(pixel), PIXEL_ALPHA(pixel));
+	pixelData[2] = COLOR_SCALE(PIXEL_BLUE(pixel), PIXEL_ALPHA(pixel));
 	pixelData[3] = PIXEL_ALPHA(pixel);
 	
 	[image setPixel:pixelData atX:x y:y];
@@ -1736,10 +1742,9 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	for(y=0; y < height; y++) {
 		for(x=0; x < width; x++) {
 			
-			// all the unscale routines seems wrong when dealing with accurate data
-			// introduce aliasing...ect...
-			// seems better / accurate to use the getter method
-			// until we find better conversion macro
+			// most of the unscale routines may be not as precise as we need
+			// especially when dealing with CIImage <-> NSImage conversion...
+			// it should be better to use vImage framework directly !
 			
 			#if 0
 			alpha = bitmapData[3];
@@ -1754,16 +1759,22 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 				SET_PIXEL_BLUE(*pixelsData, bitmapData[2]);
 				SET_PIXEL_ALPHA(*pixelsData, alpha);
 			}
-			//bitmapData += 4;
+			bitmapData += 4;
 			++pixelsData;
 			#else
-			
-			//[bitmap getPixel:pixelsData++ atX:x y:y];
+
 			[bitmap getPixel:pixel atX:x y:y];
-			SET_PIXEL_RED(*pixelsData, pixel[0]);
-			SET_PIXEL_GREEN(*pixelsData, pixel[1]);
-			SET_PIXEL_BLUE(*pixelsData, pixel[2]);
-			SET_PIXEL_ALPHA(*pixelsData, pixel[3]);
+			if(alpha > 0) {
+				SET_PIXEL_RED  ( *pixelsData, COLOR_UNSCALE(pixel[0], pixel[3]) );
+				SET_PIXEL_GREEN( *pixelsData, COLOR_UNSCALE(pixel[1], pixel[3]) );
+				SET_PIXEL_BLUE ( *pixelsData, COLOR_UNSCALE(pixel[2], pixel[3]) );
+				SET_PIXEL_ALPHA( *pixelsData, pixel[3]);
+			}else{
+				SET_PIXEL_RED  ( *pixelsData, pixel[0] );
+				SET_PIXEL_GREEN( *pixelsData, pixel[1] );
+				SET_PIXEL_BLUE ( *pixelsData, pixel[2] );
+				SET_PIXEL_ALPHA( *pixelsData, pixel[3] );
+			}
 			++pixelsData;
 			
 			#endif
@@ -1900,18 +1911,22 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 	pixelsData	= (uint32*)pixels->i;
 	
 	// clipping
-	rect.origin.x = sc_max(rect.origin.x, 0);
-	rect.origin.y = sc_max(rect.origin.y, 0);
-	rect.size.width = sc_min(rect.size.width, width);
-	rect.size.height = sc_min(rect.size.height, width);
-	if( (rect.origin.x + rect.size.width) > width ) {
-		post("rect dimensions exceeds image width ! trying to clip bounds \n");
-		rect.origin.x = sc_max(0, width - rect.size.width);
-	}
-	if( (rect.origin.y + rect.size.height) > height) {
-		post("rect dimensions exceeds image height ! trying to clip bounds \n");
-		rect.origin.y = sc_max(0, height - rect.size.height);
-	}
+	rect.origin.x = sc_max(rect.origin.x, 0); // negative idx not allowed
+	rect.origin.y = sc_max(rect.origin.y, 0); // negative idx not allowed
+	rect.size.width = sc_min(rect.size.width, width); // clip to image width max
+	rect.size.height = sc_min(rect.size.height, width); // clip to image height max
+	
+	// what is the best : 
+	//		1 - clipping + wrapping thus giving strange results  ?
+	//		2 - throw an error ?
+	// just throw an error for now -> so no strange results and no scratching head... :)
+	// zero tolerance >:^(
+	if( 
+		((rect.origin.x + rect.size.width) > width) ||
+		((rect.origin.y + rect.size.height) > height)
+	)
+		return errIndexOutOfRange;
+	
 	bytesLeft	= (bytesPerRow - (rect.size.width * 4));
 	if(pixels->size < (int)(rect.size.width * rect.size.height)) {
 		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(rect.size.width * rect.size.height));
