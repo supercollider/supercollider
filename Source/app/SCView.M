@@ -2006,10 +2006,7 @@ void SCScrollView::drawSubViewIfNecessary(SCRect inDamage)
 
 void SCScrollView::setBounds(SCRect inBounds)
 {
-	NSRect oldFrame = [mNSScrollView frame];
-	
 	[mNSScrollView setFrame: SCtoNSRect(inBounds)];
-
 }
 
 SCRect SCScrollView::getBounds()
@@ -2026,6 +2023,11 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
 		refreshFocus();
+		if(mParent->relativeOrigin()){
+			SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+			screct.x += pbounds.x;
+			screct.y += pbounds.y;	
+		}
 		setBounds(screct);
 		refreshFocus();
 		return errNone;
