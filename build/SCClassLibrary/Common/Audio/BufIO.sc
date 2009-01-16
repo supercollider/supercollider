@@ -141,7 +141,7 @@ LocalBuf : UGen {
 			UGen.buildSynthDef.maxLocalBufs = maxLocalBufs;
 		};
 		maxLocalBufs.increment;
-		^super.new.rate_(rate).addToSynth.init( *args ) 
+		^super.new.rate_(rate).addToSynth.init( *args ++ maxLocalBufs ) 
 	}
 		
 	*newFrom { arg list;
