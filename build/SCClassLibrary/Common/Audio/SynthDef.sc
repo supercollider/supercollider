@@ -216,6 +216,19 @@ SynthDef {
 				arguments[cn.argNum] = controlUGens[i];
 			};
 		};
+		if (arControlNames.size > 0) {
+			values = nil;
+			arControlNames.do {|cn| 
+				values = values.add(cn.defaultValue);
+			};
+			index = controlIndex;
+			controlUGens = AudioControl.ar(values.flat).asArray.reshapeLike(values);
+			arControlNames.do {|cn, i|
+				cn.index = index;
+				index = index + cn.defaultValue.asArray.size;
+				arguments[cn.argNum] = controlUGens[i];
+			};
+		};
 		if (krControlNames.size > 0) {
 			values = nil;
 			lags = nil;
@@ -231,19 +244,6 @@ SynthDef {
 				controlUGens = Control.kr(values.flat).asArray.reshapeLike(values);
 			};
 			krControlNames.do {|cn, i|
-				cn.index = index;
-				index = index + cn.defaultValue.asArray.size;
-				arguments[cn.argNum] = controlUGens[i];
-			};
-		};
-		if (arControlNames.size > 0) {
-			values = nil;
-			arControlNames.do {|cn| 
-				values = values.add(cn.defaultValue);
-			};
-			index = controlIndex;
-			controlUGens = AudioControl.ar(values.flat).asArray.reshapeLike(values);
-			arControlNames.do {|cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
