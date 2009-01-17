@@ -4880,8 +4880,9 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	strcpy(mFontName, "Helvetica");
 	mFontSize = 12.;
 	mDrawCenteredConnection = true;
-	xGridMultiplier = 0.2;
-
+	mGridOn = false;
+	mGridColor = SCMakeColor(0, 0, 0.8, 0.3);
+	mGrid = SCMakePoint(0.1, 0.1);
 }
 SCEnvelopeView::~SCEnvelopeView()
 {
@@ -4989,14 +4990,51 @@ void SCEnvelopeView::draw(SCRect inDamage)
 	
     QDDrawBevelRect(cgc, rect, 1, true);
     
-    CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
-    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
+
     
     CGRect drawRect;
     SCColor fillcolor;
     SCEnvObject * envobj;
 	
-    //draw lines
+	//draw grid
+	if(mGridOn){
+		float xgrid, ygrid, xgridpos, ygridpos;
+		float maxwidth =  (bounds.width + bounds.x) - 2.f;
+		float maxheight =  (bounds.height + bounds.y) - 2.f;
+
+		xgrid = mGrid.x;
+		ygrid = mGrid.y;	
+
+		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);	
+		xgrid = xgrid*bounds.width;		
+		xgridpos = bounds.x+1.f + xgrid;
+		ygrid = ygrid*bounds.height;		
+		ygridpos = bounds.y+1.f + ygrid;		
+		while(xgridpos < maxwidth)
+		{
+			drawRect = CGRectMake(xgridpos, 
+								  bounds.y + 1.f, 
+								  1.f, 
+								  bounds.height-2.f);	
+			CGContextFillRect (cgc, drawRect); 	
+			xgridpos += xgrid;
+		}
+		
+		while(ygridpos < maxheight)
+		{
+			drawRect = CGRectMake(bounds.x+1.f, 
+								  ygridpos, 
+								  bounds.width-2.f, 
+								  1.f);	
+			CGContextFillRect (cgc, drawRect); 	
+			ygridpos += ygrid;
+		}		
+	}
+	
+    CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
+    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);	
+    
+	//draw lines
     if (mDrawLinesActive) {
 		
 		int numConnection, num;
@@ -5022,7 +5060,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 					gcoy = envobj->mDrawPoint.y;
 					gcx = conObj->mDrawPoint.x;
 					gcy =  conObj->mDrawPoint.y;	
-					post("shape at i: %i, is: %i\n", i, conObj->shape);
+//					post("shape at i: %i, is: %i\n", i, conObj->shape);
 					switch(conObj->shape){
 						case shape_Step:
 							CGContextMoveToPoint(cgc, gcox, gcoy);
@@ -5909,31 +5947,51 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			refresh();
 			return errNone;
 		}	
-	// set curves for all segments 
-	if (strcmp(name, "setCurves")==0) {
-		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		int size = slot->uo->size;
-		size = sc_clip(size, 0, mTabSize);
-		for(int i=0; i<size; i++)
-		{
-			PyrSlot * shapeCurveSlot = slot->uo->slots+i;
-			int shape;
-			float curve;
-			if(isKindOfSlot(shapeCurveSlot, class_array))
+		// set curves for all segments 
+		if (strcmp(name, "setCurves")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			int size = slot->uo->size;
+			size = sc_clip(size, 0, mTabSize);
+			for(int i=0; i<size; i++)
 			{
-				int err = slotIntVal(shapeCurveSlot->uo->slots+0, &shape);
-				if (err) return err;
-				err = slotFloatVal(shapeCurveSlot->uo->slots+1, &curve);
-				if (err) return err;	
-				(mEnvObj+i)->shape = shape;
-				(mEnvObj+i)->curve = curve;				
+				PyrSlot * shapeCurveSlot = slot->uo->slots+i;
+				int shape;
+				float curve;
+				if(isKindOfSlot(shapeCurveSlot, class_array))
+				{
+					int err = slotIntVal(shapeCurveSlot->uo->slots+0, &shape);
+					if (err) return err;
+					err = slotFloatVal(shapeCurveSlot->uo->slots+1, &curve);
+					if (err) return err;	
+					(mEnvObj+i)->shape = shape;
+					(mEnvObj+i)->curve = curve;				
+				}
 			}
+			refresh();
+			return errNone;
 		}
-		refresh();
-		return errNone;
-	}
 	
-        /*
+		if (strcmp(name, "showGrid")==0) {
+			mGridOn = IsTrue(slot);
+			refresh();
+			return errNone;
+		}
+		
+		if (strcmp(name, "setGrid")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;			
+			err = slotFloatVal(slot->uo->slots+0, &mGrid.x);
+			if (err) return err;	
+			err = slotFloatVal(slot->uo->slots+1, &mGrid.y);
+			if(mGridOn) refresh();
+ 			return errNone;
+		}
+		
+		if (strcmp(name, "setGridColor")==0) {
+			err = slotColorVal(slot, &mGridColor);
+			if(mGridOn) refresh();			
+			return errNone;		
+		}	
+		/*
         if (strcmp(name, "selectionSize")==0) {
             slotIntVal(slot, &mSelectionSize);
             refresh();
