@@ -19,7 +19,6 @@ Headlines:
 * 2008-xx-xx various behind-the-scenes efficiency improvements, for a sleeker audio server that can do more on a given machine - various contributors
 * 2008-11-01 add BEQSuite filter UGens (blackrain, jp)
 * 2008-11-11 add Pfxb pattern - jr
-* 2008-11-21 support for LocalBuf in FFT UGens - jr
 * 2008-11-25 new EZPopUpMenu - jm
 * 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
 * 2008-12-03 added PV_Div ugen for complex division - ds
@@ -34,16 +33,25 @@ Headlines:
 * 2009-01-06 VDiskIn sends file position to client - jr
 * 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
 * 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative. 
+* 2009-01-16 Scale and Tuning classes added - tw
+* 2009-01-17 SuperColliderAU (scsynth as a Mac OSX "Audio Unit") added to main distribution - gr
 
 Bugfixes:
 ---------
 * 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
 * 2008-05-20 fix slight mistake in the defaults printed by scsynth on command-line (bug id 1953392) - ds
+* 2008-07-24 Routine / AppClock fix setting the clock of the thread (bug id 2023852) - jr
 * 2008-09-16 stability fixes to FFT and IFFT - ds
 * 2008-09-27 fix TExpRand.ar - ds
 * 2008-11-11 SystemSynthDefs.numChannels can now be set from the startup file - jr
 * 2008-11-24 avoid FFT failure when buffer not allocated - jr
 * 2008-11-29 resolved inconsistency in Server:waitForBoot - function is always executed in a Routine, whether or not the server is booted - ds
+* 2008-12-07 FlowView setting inital margin and gap fixed (bug id 1986059) - jh
+* 2008-12-07 OSCpathResponder fixed (bug id 2021481) - jh
+* 2009-01-08 b_readChannel fixed (bug id 1938480) - mb
+* 2009-01-08 MIDIIn.connect on Linux fixed (bug id 1986850) - mb
+* 2008-08-23 fix for sclang crashing sometimes when compiling erroneous code (bug id 2022297) - rb
+* 2009-01-16 SCScrollView relativeOrigin glitch fixed (bug id 2508451) - jr
 
 Other additions/improvements:
 -----------------------------
@@ -52,7 +60,7 @@ Other additions/improvements:
 * 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
 * 2008-10-03 improvements to standalone build - jp
 * 2008-10-31 thisProcess.pid - sclang now can know what its process id is - ds
-* 2008-11-21 modify FFT examples to use LocalBuf where recommended - jr
+* 2008-11-21 support for LocalBuf in FFT UGens - jr
 * 2008-11-27 SC3 will ignore ugens/class-files in folders named "ignore". Previously the name has been "test" - ignoring folders named "test" is now deprecated and will be removed - ds
 * 2008-12-15 Buffer's done osc reply now includes the bufnum - jt
 * 2008-12-24 EZSLider and EZNumber now have an enclosing containers, as well labelPosition =\left, \right, or \stack modes - jm
