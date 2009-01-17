@@ -103,9 +103,8 @@ Scale {
 	}
 	
 	*doesNotUnderstand { |selector, args|
-		var scale = ScaleInfo.at(selector);
-		scale.isNil.if({ ^super.doesNotUnderstand(selector, args) });
-		^args.notNil.if({ scale.tuning_(args) }, { scale })
+		var scale = this.newFromKey(selector, args);
+		^scale.isNil.if({ ^super.doesNotUnderstand(selector, args) }, { scale });
 	}
 	
 	
@@ -183,7 +182,7 @@ Tuning {
 	}
 	
 	*doesNotUnderstand { |selector, args|
-		var tuning = TuningInfo.at(selector);
+		var tuning = this.newFromKey(selector, args);
 		^tuning.notNil.if({ tuning }, { super.doesNotUnderstand(selector, args) })
 	}
 	
