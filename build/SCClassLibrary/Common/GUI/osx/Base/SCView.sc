@@ -1516,6 +1516,7 @@ SCEnvelopeView : SCView {
 	var <>metaAction;
 	var <>size ;
 	var <editable = true;
+	var <curves = \linear;
 
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
@@ -1636,6 +1637,102 @@ SCEnvelopeView : SCView {
 	fillColor_ { arg color; 
 		this.setFillColor(-1, color);
 	}
+	
+	curves_{arg inCurves;
+		var curveNumbers;
+		var shapeNum, curveNum=0;
+		curves = inCurves;
+		if(curves.isKindOf(Array)){
+			curveNumbers = curves.collect{|it|
+				shapeNum = this.shapeNumber(it);
+				if(shapeNum == 5){
+					curveNum = it;
+				}{
+					curveNum = 0;
+				};
+				[shapeNum, curveNum]
+			};
+			this.debug(curveNumbers);
+			this.prSetCurves(curveNumbers);
+		}{ 				
+			shapeNum = this.shapeNumber(curves);
+				if(shapeNum == 5){
+					curveNum = curves;
+				}{
+					curveNum = 0;
+				};
+			this.prSetCurve([-1, shapeNum, curveNum]);
+		}
+	}
+	
+	setEnv{arg env;
+		var times, levels, minValue, maxValue ;
+		var spec;
+
+		times = Array.newClear(env.times.size + 1);
+		times[0] = 0;
+		for(1, env.times.size, { arg i;
+			times[i] = times[i-1] + env.times[i-1];
+		});
+		
+		levels = env.levels;
+		minValue = levels.minItem;
+		maxValue = levels.maxItem; 
+		
+		levels = levels.linlin(minValue, maxValue, 0, 1);
+		times = times.linlin(0, times.last, 0, 1);
+		
+		this.value_([times.asFloat, levels.asFloat]);
+		this.curves_(env.curves);
+		
+	}
+	
+	editEnv{arg env, minValue, maxValue, duration;
+		var vals, levels, times, lastTime = 0;
+		vals = this.value;
+		levels = vals[0].linlin(0,1, minValue, maxValue);
+		times = vals[1].collect{|it|
+			var out;
+			out = it - lastTime;
+			lastTime = it;
+			out
+		};
+		env.times_(times);
+		env.levels_(levels);
+		env.curves_(this.curves);
+	}
+	
+	asEnv{arg env, minValue, maxValue, duration;
+		var vals, levels, times, lastTime = 0;
+		vals = this.value;
+		levels = vals[0].linlin(0,1, minValue, maxValue);
+		times = vals[1].collect{|it|
+			var out;
+			out = it - lastTime;
+			lastTime = it;
+			out
+		};
+		env.times_(times);
+		env.levels_(levels);
+		env.curves_(this.curves);
+		^Env(levels, times, this.curves); 
+	}	
+		
+	prSetCurves{|arr|
+		this.setProperty(\setCurves, arr);
+	}
+	
+	prSetCurve{|arr|
+		this.debug([\setCurves, arr]);
+		this.setProperty(\setCurve, arr);
+	}
+	
+	shapeNumber { arg shapeName;
+		var shape;
+		shape = Env.shapeNames.at(shapeName);
+		if (shape.notNil) { ^shape }{^5};
+	}
+	
 	connect { arg from, aconnections; 
 		this.setProperty(\connect, [from, aconnections.asFloat]);
 	}
@@ -1688,6 +1785,7 @@ SCEnvelopeView : SCView {
 			this.value_(currentDrag);
 		});
 	}
+	
 	addValue { arg xval, yval;
 		var arr, arrx, arry, aindx;
 		aindx = this.lastIndex;

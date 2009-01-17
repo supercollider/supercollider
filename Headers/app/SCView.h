@@ -695,6 +695,19 @@ protected:
 SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 ////
 //by jan truetzschler jt[at]kandos[dot]de
+
+//enum taken from PyrArrayPrimitives should move to a header file 
+enum {
+	shape_Step,
+	shape_Linear,
+	shape_Exponential,
+	shape_Sine,
+	shape_Welch,
+	shape_Curve,
+	shape_Squared,
+	shape_Cubed
+};
+
 struct SCEnvObject {
     SCColor mColor; //changes between selected and mObjectColor
 	SCColor mObjectColor; //if its not selected
@@ -706,6 +719,8 @@ struct SCEnvObject {
 	double x, y;
     bool mIsSelected, mIsVisible, mEditable;
 	char *mString;	
+	int shape;
+	float curve;
 };
 typedef struct SCEnvObject SCEnvObject;
 

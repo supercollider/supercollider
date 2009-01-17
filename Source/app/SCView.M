@@ -4926,6 +4926,8 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 				(scenv+i)->mNumConnection = 0;
 				(scenv+i)->mRect.height = mThumbSizeY;
 				(scenv+i)->mRect.width = mThumbSize;
+				(scenv+i)->shape = 1;
+				(scenv+i)->curve = 1.0;
 
 			}
 		} else { //meaning size < mTabSize
@@ -4945,6 +4947,8 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 			(scenv+i)->mNumConnection = 0;
 			(scenv+i)->mRect.height = mThumbSizeY;
 			(scenv+i)->mRect.width = mThumbSize;
+			(scenv+i)->shape = 1;
+			(scenv+i)->curve = 1.0;			
 		}	
 	}
 	
@@ -4955,6 +4959,17 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 	return errNone;
 }
 
+// helper constants for shape calculation
+#define		EXPM1	(float) exp(-1.f)
+#define		EXPM1R	(float) (1.f - exp(-1.f))
+
+inline double linlinNoClip(double x, double a, double b, double c, double d)
+{
+//    if (x <= a) return c;
+//    if (x >= b) return d;
+    return (x-a)/(b-a) * (d-c) + c;
+}
+
 void SCEnvelopeView::draw(SCRect inDamage)
 {
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
@@ -4963,15 +4978,15 @@ void SCEnvelopeView::draw(SCRect inDamage)
 	
     CGRect rect = SCtoCGRect(bounds);
     CGContextClipToRect(cgc, rect);
-
+	
     int xpixels = mActiveSize;
     int xstart = 0;
-       
+	
     if (mBackground) mBackground->draw(cgc, rect);
-
+	
     if (mBackgroundImage)
 		mBackgroundImage->draw(cgc, rect);
-
+	
     QDDrawBevelRect(cgc, rect, 1, true);
     
     CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
@@ -4980,43 +4995,333 @@ void SCEnvelopeView::draw(SCRect inDamage)
     CGRect drawRect;
     SCColor fillcolor;
     SCEnvObject * envobj;
-   
+	
     //draw lines
     if (mDrawLinesActive) {
-       
+		
 		int numConnection, num;
 		
         for(int i = xstart; i < xpixels; i++){
-		//	float gcoDx;
+			//	float gcoDx;
             envobj = &mEnvObj[i];
             setEnvRect(envobj->x, envobj->y, envobj);
 			
 			if(mIsEnvView){	//straight connection
 				if(i == xstart) 
                     CGContextMoveToPoint(cgc, envobj->mDrawPoint.x,  envobj->mDrawPoint.y);
-                else
-                    CGContextAddLineToPoint(cgc, envobj->mDrawPoint.x,  envobj->mDrawPoint.y);
+                else {
+					float  gcx, gcy, gcox, gcoy;				
+					SCEnvObject * conObj = (mEnvObj + (i-1));
+					float curve;
+					float dur, numpointsY, yLevel, pos;
+					float begTime, endTime, begLevel, endLevel, stepsize, ar, br, yrange;
+					int numsteps;
+					float startPointX, endPointX, startPointY, endPointY;
+					curve = conObj->curve;
+					gcox = envobj->mDrawPoint.x;
+					gcoy = envobj->mDrawPoint.y;
+					gcx = conObj->mDrawPoint.x;
+					gcy =  conObj->mDrawPoint.y;	
+					post("shape at i: %i, is: %i\n", i, conObj->shape);
+					switch(conObj->shape){
+						case shape_Step:
+							CGContextMoveToPoint(cgc, gcox, gcoy);
+							CGContextAddLineToPoint(cgc, gcox, gcy);
+							CGContextAddLineToPoint(cgc, gcx, gcy);							
+							break;
+						case shape_Linear:
+							CGContextMoveToPoint(cgc, gcox, gcoy);
+							CGContextAddLineToPoint(cgc, gcx, gcy);
+							break;
+
+						case shape_Exponential:
+
+							if(conObj->x <= envobj->x)
+							{
+								startPointX = gcx;
+								endPointX = gcox;
+								
+								startPointY = gcy;
+								endPointY= gcoy;
+								
+								begTime = conObj->x;
+								begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
+								
+								endTime = envobj->x;
+								endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+
+							} else {
+								startPointX = gcox;
+								endPointX = gcx;
+								
+								startPointY = gcoy;
+								endPointY= gcy;	
+								
+								begTime = envobj->x;
+								begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+								
+								endTime = conObj->x;
+								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+							}
+								
+							numsteps = (int) endPointX - startPointX;								
+							dur = endTime - begTime;
+							stepsize = dur/numsteps;
+							CGContextMoveToPoint(cgc, startPointX, startPointY);	
+							
+							for(int i=1; i<=numsteps+1; i++){
+								double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
+								double pos = step  / dur;
+								yLevel =  begLevel * pow(endLevel / begLevel, pos);
+								CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
+							}
+							CGContextAddLineToPoint(cgc, endPointX, endPointY);
+							
+							
+							break;
+						
+						case shape_Sine:
+							CGContextMoveToPoint(cgc, gcox, gcoy);	
+							CGContextAddCurveToPoint(cgc, gcox * EXPM1R + gcx * EXPM1, gcoy, gcox * EXPM1 + gcx * EXPM1R, gcy, gcx, gcy );
+							break;
+							
+						case shape_Welch:
+							CGContextMoveToPoint(cgc, gcox, gcoy);						
+							if( gcoy < gcy ) {
+								CGContextAddCurveToPoint(cgc, gcox * 0.556f + gcx * 0.444f, gcoy * 0.278f + gcy * 0.722f, gcox * 0.29f + gcx * 0.71f, gcy, gcx, gcy );
+							} else {
+								CGContextAddCurveToPoint(cgc, gcx * 0.29f + gcox * 0.71f, gcoy, gcx * 0.556f + gcox * 0.444f, gcy * 0.278f + gcoy * 0.722f, gcx, gcy );
+							}
+							break;
+						case shape_Curve:
+							
+							if(conObj->x <= envobj->x)
+							{
+								startPointX = gcx;
+								endPointX = gcox;
+								
+								startPointY = gcy;
+								endPointY= gcoy;
+								
+								begTime = conObj->x;
+								begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
+								
+								endTime = envobj->x;
+								endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+								
+							} else {
+								startPointX = gcox;
+								endPointX = gcx;
+								
+								startPointY = gcoy;
+								endPointY= gcy;	
+								
+								begTime = envobj->x;
+								begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+								
+								endTime = conObj->x;
+								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+							}
+							
+							numsteps = (int) endPointX - startPointX;								
+							dur = endTime - begTime;
+							stepsize = dur/numsteps;
+							CGContextMoveToPoint(cgc, startPointX, startPointY);	
+							
+							for(int i=1; i<=numsteps+1; i++){
+								double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
+								double pos = step  / dur;								
+								if (fabs(curve) < 0.0001) {
+									yLevel = pos * (endLevel - begLevel) + begLevel;
+								} else {
+									double denom = 1. - exp(curve);
+									double numer = 1. - exp(pos * curve);
+									yLevel = begLevel + (endLevel - begLevel) * (numer/denom);
+								}
+								
+								CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
+							}
+							CGContextAddLineToPoint(cgc, endPointX, endPointY);
+							
+
+							break;
+							
+						case shape_Squared:
+							CGContextMoveToPoint(cgc, gcox, gcoy);
+							if( gcoy < gcy ) {
+								CGContextAddCurveToPoint(cgc, gcox * 0.9f + gcx * 0.1f, gcoy, gcox * 0.5f + gcx * 0.5f, gcoy, gcx, gcy );
+							} else {
+								CGContextAddCurveToPoint(cgc,  gcx * 0.5f + gcox * 0.5f, gcy, gcx * 0.9f + gcox * 0.1f, gcy, gcx, gcy );
+							}
+							break;
+							
+						case shape_Cubed:
+							CGContextMoveToPoint(cgc, gcox, gcoy);
+							if( gcoy < gcy ) {
+								CGContextAddCurveToPoint(cgc, gcox * 0.6667f + gcx * 0.3333f, gcoy, gcox * 0.3333f + gcx * 0.6667f, gcoy, gcx, gcy );
+							} else {
+								CGContextAddCurveToPoint(cgc, gcx * 0.3333f + gcox * 0.6667f, gcy, gcx * 0.6667f + gcox * 0.3333f, gcy, gcx, gcy );
+							}
+							break;								
+							
+					}
+				}
             } else {
-	
+				
 				numConnection = envobj->mNumConnection;
-			
+				
 				for(int j = 0; j < numConnection; j++){
-					float  gcx, gcy, gcox, gcoy;
+					float  gcx, gcy, gcox, gcoy, curve;
 					num = (int) (envobj->mConnections[j]);
 					SCEnvObject * conObj = (mEnvObj + num);
+					curve = conObj->curve;
+	
 					if (num >=0 ){
-						//centr
-						if(mDrawCenteredConnection){
-							gcox = envobj->mDrawPoint.x;
-							gcoy = envobj->mDrawPoint.y;
-							gcx = conObj->mDrawPoint.x;
-							gcy =  conObj->mDrawPoint.y;
-						
-							CGContextMoveToPoint(cgc, gcox, gcoy);
-							//CGPathCreateCopy
-							CGContextAddLineToPoint(cgc, gcox, gcoy);
-							CGContextAddLineToPoint(cgc, gcx, gcy);
+						switch(conObj->shape){
+							case shape_Step:
+								CGContextMoveToPoint(cgc, gcox, gcoy);
+								CGContextAddLineToPoint(cgc, gcox, gcy);
+								CGContextAddLineToPoint(cgc, gcx, gcy);							
+								break;
+							case shape_Linear:
+								CGContextMoveToPoint(cgc, gcox, gcoy);
+								CGContextAddLineToPoint(cgc, gcx, gcy);
+								break;
+							case shape_Sine:
+								CGContextMoveToPoint(cgc, gcox, gcoy);
+								CGContextAddCurveToPoint(cgc, gcox * EXPM1R + gcx * EXPM1, gcox, gcox * EXPM1 + gcx * EXPM1R, gcy, gcx, gcy );
+								break;
+								
+							case shape_Exponential:
+								float dur, numpointsY, yLevel, pos;
+								float begTime, endTime, begLevel, endLevel, stepsize, ar, br, yrange;
+								int numsteps;
+								float startPointX, endPointX, startPointY, endPointY;
+								
+								if(conObj->x <= envobj->x)
+								{
+									startPointX = gcx;
+									endPointX = gcox;
+									
+									startPointY = gcy;
+									endPointY= gcoy;
+									
+									begTime = conObj->x;
+									begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
+									
+									endTime = envobj->x;
+									endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+									
+								} else {
+									startPointX = gcox;
+									endPointX = gcx;
+									
+									startPointY = gcoy;
+									endPointY= gcy;	
+									
+									begTime = envobj->x;
+									begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+									
+									endTime = conObj->x;
+									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+								}
+								
+								numsteps = (int) endPointX - startPointX;								
+								dur = endTime - begTime;
+								stepsize = dur/numsteps;
+								CGContextMoveToPoint(cgc, startPointX, startPointY);	
+								
+								for(int i=1; i<=numsteps+1; i++){
+									double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
+									double pos = step  / dur;
+									yLevel =  begLevel * pow(endLevel / begLevel, pos);
+									CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
+								}
+								CGContextAddLineToPoint(cgc, endPointX, endPointY);
+								
+								
+								break;
+								
+							case shape_Welch:
+								CGContextMoveToPoint(cgc, gcox, gcoy);						
+								if( gcoy < gcy ) {
+									CGContextAddCurveToPoint(cgc, gcox * 0.556f + gcx * 0.444f, gcoy * 0.278f + gcy * 0.722f, gcox * 0.29f + gcx * 0.71f, gcy, gcx, gcy );
+								} else {
+									CGContextAddCurveToPoint(cgc, gcx * 0.29f + gcox * 0.71f, gcoy, gcx * 0.556f + gcox * 0.444f, gcy * 0.278f + gcoy * 0.722f, gcx, gcy );
+								}
+								break;
+							case shape_Curve:
+								
+								if(conObj->x <= envobj->x)
+								{
+									startPointX = gcx;
+									endPointX = gcox;
+									
+									startPointY = gcy;
+									endPointY= gcoy;
+									
+									begTime = conObj->x;
+									begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
+									
+									endTime = envobj->x;
+									endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+									
+								} else {
+									startPointX = gcox;
+									endPointX = gcx;
+									
+									startPointY = gcoy;
+									endPointY= gcy;	
+									
+									begTime = envobj->x;
+									begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
+									
+									endTime = conObj->x;
+									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+								}
+								
+								numsteps = (int) endPointX - startPointX;								
+								dur = endTime - begTime;
+								stepsize = dur/numsteps;
+								CGContextMoveToPoint(cgc, startPointX, startPointY);	
+								
+								for(int i=1; i<=numsteps+1; i++){
+									double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
+									double pos = step  / dur;								
+									if (fabs(curve) < 0.0001) {
+										yLevel = pos * (endLevel - begLevel) + begLevel;
+									} else {
+										double denom = 1. - exp(curve);
+										double numer = 1. - exp(pos * curve);
+										yLevel = begLevel + (endLevel - begLevel) * (numer/denom);
+									}
+									
+									CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
+								}
+								CGContextAddLineToPoint(cgc, endPointX, endPointY);
+								
+								
+								break;
+								
+							case shape_Squared:
+								CGContextMoveToPoint(cgc, gcox, gcoy);
+								if( gcoy < gcy ) {
+									CGContextAddCurveToPoint(cgc, gcox * 0.9f + gcx * 0.1f, gcoy, gcox * 0.5f + gcx * 0.5f, gcoy, gcx, gcy );
+								} else {
+									CGContextAddCurveToPoint(cgc,  gcx * 0.5f + gcox * 0.5f, gcy, gcx * 0.9f + gcox * 0.1f, gcy, gcx, gcy );
+								}
+								break;	
+							case shape_Cubed:
+								CGContextMoveToPoint(cgc, gcox, gcoy);
+								if( gcoy < gcy ) {
+									CGContextAddCurveToPoint(cgc, gcox * 0.6667f + gcx * 0.3333f, gcoy, gcox * 0.3333f + gcx * 0.6667f, gcoy, gcx, gcy );
+								} else {
+									CGContextAddCurveToPoint(cgc, gcx * 0.3333f + gcox * 0.6667f, gcy, gcx * 0.6667f + gcox * 0.3333f, gcy, gcx, gcy );
+								}
+								break;								
+								
 						}
+						
 					}
 				}
 				
@@ -5037,15 +5342,15 @@ void SCEnvelopeView::draw(SCRect inDamage)
 			CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
 			CGContextFillRect (cgc, drawRect);
 			if(envobj->mRect.width > 1.0 || envobj->mRect.height > 1.0)
-			CGContextStrokeRect(cgc,drawRect);
+				CGContextStrokeRect(cgc,drawRect);
 			if(envobj->mString) 
 				stringDrawCenteredInRect(envobj->mString, envobj->mRect, mFontName, mFontSize, mStrokeColor);
-				//draw outputs
+			//draw outputs
 			CGContextSetRGBFillColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
 			
         }
     }
-
+	
     //draw selection:
     CGContextRestoreGState(cgc);
     
@@ -5575,6 +5880,59 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			mIsEnvView = false;
 			return errNone;
 		}
+		// set curve for one segment or one curve type for all segments
+		if (strcmp(name, "setCurve")==0) {
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			PyrSlot *slots = slot->uo->slots;
+			int err, idx, curve, shape;
+			
+			err = slotIntVal(slots+0, &idx);
+			if (err) return err;
+			
+			err = slotIntVal(slots+1, &shape);
+			if (err) return err;
+			
+			err = slotIntVal(slots+2, &curve);
+			if (err) return err;
+			
+			if(idx >= mTabSize) return errNone;
+			if(idx < 0) {
+				for(int i=0; i<mTabSize; i++){
+					(mEnvObj+i)->shape = shape;
+					(mEnvObj+i)->curve = curve;
+				}
+			} else {
+				(mEnvObj+idx)->shape = shape;
+				(mEnvObj+idx)->curve = curve;
+
+			}
+			refresh();
+			return errNone;
+		}	
+	// set curves for all segments 
+	if (strcmp(name, "setCurves")==0) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		int size = slot->uo->size;
+		size = sc_clip(size, 0, mTabSize);
+		for(int i=0; i<size; i++)
+		{
+			PyrSlot * shapeCurveSlot = slot->uo->slots+i;
+			int shape;
+			float curve;
+			if(isKindOfSlot(shapeCurveSlot, class_array))
+			{
+				int err = slotIntVal(shapeCurveSlot->uo->slots+0, &shape);
+				if (err) return err;
+				err = slotFloatVal(shapeCurveSlot->uo->slots+1, &curve);
+				if (err) return err;	
+				(mEnvObj+i)->shape = shape;
+				(mEnvObj+i)->curve = curve;				
+			}
+		}
+		refresh();
+		return errNone;
+	}
+	
         /*
         if (strcmp(name, "selectionSize")==0) {
             slotIntVal(slot, &mSelectionSize);
