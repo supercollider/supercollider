@@ -1150,7 +1150,13 @@ bool AudioQuitCmd::Stage2()
 
 bool AudioQuitCmd::Stage3()
 {
+#if SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
+	SendFailure(&mReplyAddress, "/quit", "not allowed in AU host\n");
+	scprintf("/quit : quit not allowed in AU host\n");
+	return false;
+#else
 	return true;
+#endif	
 }
 
 void AudioQuitCmd::Stage4()

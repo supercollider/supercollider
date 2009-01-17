@@ -32,7 +32,9 @@
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2
 #define SC_AUDIO_API_PORTAUDIO  3
+#define SC_AUDIO_API_AUDIOUNITS  4
 
+ 
 #ifdef SC_WIN32
 # ifndef SC_INNERSC
 #  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
@@ -45,7 +47,7 @@
 # define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
 #endif // SC_AUDIO_API
 
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 # include <CoreAudio/AudioHardware.h>
 # include <CoreAudio/HostTime.h>
 #endif
@@ -160,8 +162,11 @@ public:
 	double GetActualSampleRate() const { return mSmoothSampleRate; }	
 };
 
+extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
+
+
 // the following classes should be split out into separate source files.
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 class SC_CoreAudioDriver : public SC_AudioDriver
 {
 
@@ -179,13 +184,13 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 									AudioBufferList* outOutputData, 
 									const AudioTimeStamp* inOutputTime,
 									void* defptr);
-
+									
 	friend OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow, 
-						const AudioBufferList* inInputData,
-						const AudioTimeStamp* inInputTime, 
-						AudioBufferList* outOutputData, 
-						const AudioTimeStamp* inOutputTime,
-						void* defptr);
+									const AudioBufferList* inInputData,
+									const AudioTimeStamp* inInputTime, 
+									AudioBufferList* outOutputData, 
+									const AudioTimeStamp* inOutputTime,
+									void* defptr);
 
 protected:
     // Driver interface methods
@@ -208,18 +213,8 @@ public:
 	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	
 };
 
-inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
-{
-    return new SC_CoreAudioDriver(inWorld);
-}
-#endif // SC_AUDIO_API_COREAUDIO
+#endif
 
-
-#if SC_AUDIO_API == SC_AUDIO_API_JACK
-
-extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
-
-#endif // SC_AUDIO_API_JACK
 
 
 #if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
