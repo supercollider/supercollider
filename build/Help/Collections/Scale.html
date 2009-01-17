@@ -111,21 +111,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">Returns a tuned array of ratios.</p>
 <p class="p4"><br></p>
-<p class="p3"><b>as(FloatArray)</b></p>
+<p class="p3"><b>as(LocalBuf)</b></p>
 <p class="p4"><br></p>
 <p class="p3">Useful for server-side work.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s2">var</span> scale, buffer;</p>
-<p class="p5">scale = <span class="s2">Scale</span>.choose;</p>
-<p class="p5">(<span class="s6">"scale chosen : "</span> ++ [scale.name, scale.tuning.name].asString).postln;</p>
-<p class="p5">buffer = <span class="s2">Buffer</span>.alloc(s, scale.size,1, { <span class="s2">|b|</span> b.setnMsg(0, scale.as(<span class="s2">FloatArray</span>)) });</p>
-<p class="p7"><br></p>
-<p class="p5">r = play({</p>
+<p class="p5">r = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> scale = <span class="s2">Scale</span>.choose.postln;</p>
 <p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s3">.ar(</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>DegreeToKey<span class="s3">.kr(</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>buffer,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale.as(<span class="s2">LocalBuf</span>),</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">MouseX</span><span class="s3">.kr(0,15), </span>// mouse indexes into scale</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale.stepsPerOctave,</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1, </span>// mul = 1</p>
@@ -136,7 +132,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.25</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">})</p>
+<p class="p5">}.play;</p>
 <p class="p5">)</p>
 <p class="p12"><br></p>
 <p class="p5">r.free;</p>
