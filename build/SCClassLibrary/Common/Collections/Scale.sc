@@ -1,24 +1,24 @@
 Scale {
 
-	var <degrees, <descDegrees, <pitchesPerOctave, <tuning, <>name, lastIndex = 0, 
-		setStepsNextTuning = false;
+	var <degrees, <descDegrees, <pitchesPerOctave, <tuning, <>name, lastIndex = 0;
 	
-	*new { | degrees, tuning, descDegrees |
-		// can't use arg defaults because nils are passed in by doesNotUnderstand
-		// nils in tuning handled after pitchesPerOctave determined
-		// nil for descDegrees is OK
-		^super.new.init(degrees ? \ionian, tuning, descDegrees);
+	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
+		^super.new.init(degrees ? \ionian, pitchesPerOctave, descDegrees, tuning, name);
 	}
 	
-	init { | inDegrees, inTuning, inDescDegrees |
-		// Degrees may or may not set the pitchesPerOctave
-		this.degrees_(inDegrees);
-		// Tuning will use pitchesPerOctave if set; if not
-		// will guess based on scale contents
-		this.tuning_(inTuning);
-		this.descDegrees_(inDescDegrees ? inDegrees);
-		pitchesPerOctave = pitchesPerOctave ? tuning.size;
-		^this.checkForMismatch
+	init { | inDegrees, inPitchesPerOctave, inDescDegrees, inTuning, inName |
+		degrees = inDegrees.asArray.asInteger;
+		descDegrees = inDescDegrees !? inDescDegrees.asArray.asInteger;
+		pitchesPerOctave = inPitchesPerOctave ? this.guessPPO(degrees);
+		name = inName;
+		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
+	}
+	
+	*newFromKey { |key, tuning|
+		var scale = ScaleInfo.at(key);
+		scale.isNil.if({ ("Unknown scale " ++ key.asString).warn; ^nil });
+		tuning.notNil.if({ scale.tuning_(tuning.asTuning) });
+		^scale
 	}
 	
 	checkForMismatch {
@@ -33,90 +33,31 @@ Scale {
 		^this
 	}
 	
-	degrees_ { | inDegrees |
-		var key;
-		inDegrees.isKindOf(SequenceableCollection).if({			degrees = inDegrees.asArray;
-			(degrees != degrees.asInteger).if({
-				"Truncating non-integer scale degrees.".warn;
-				degrees = degrees.asInteger;
-			});
-			name = "scale" ++ UniqueID.next.asString;
-			setStepsNextTuning = true;
-		}, {
-			key = inDegrees ? \ionian;
-			#degrees, descDegrees, pitchesPerOctave = ScaleInfo.at(key);
-			name = key.asString
-		})
-	}
-	
-	descDegrees_ { | inDescDegrees |
-		inDescDegrees.isKindOf(SequenceableCollection).if({
-			descDegrees = inDescDegrees.asArray;
-		}, {
-			^descDegrees = ScaleInfo.descDegrees(inDescDegrees)
-		});
-	}
-	
 	tuning_ { | inTuning |
-		var targetSteps;
-		targetSteps = setStepsNextTuning.if({ this.guessSPO }, { pitchesPerOctave });
-		inTuning.isKindOf(Tuning).if({
-			tuning = inTuning;
-		}, {
-			tuning = inTuning.notNil.if({
-				Tuning.new(inTuning, targetSteps);
-			}, {
-				Tuning.default(targetSteps);
-			})
-		});
-		setStepsNextTuning.if({ setStepsNextTuning = false; pitchesPerOctave = tuning.size });
+		tuning = inTuning.asTuning;
+		^this.checkForMismatch
 	}
 	
-	guessSPO {
+	guessPPO {
 		// most common flavors of ET
 		// pick the smallest one that contains all scale degrees
 		var etTypes = #[12, 19, 24, 53, 128];
 		^etTypes[etTypes.indexInBetween(degrees.maxItem).ceil];
 	}
 	
-	scale_ { | degrees, tuning, descDegrees |
-		degrees.notNil.if({ this.degrees_(degrees) });
-		tuning.notNil.if({ this.tuning_(tuning) });
-		this.descDegrees_(descDegrees ? degrees);
+	as { |class|
+		^this.semitones.as(class)
 	}
-	
-	asArray {
-		^this.semitones
-	}
-	
-	asADArray {
-		^this.semitones(false) ++ this.semitones(true).reverse.drop(1)
-	}
-	
-	adDegrees {
-		^degrees ++ (descDegrees ? degrees).reverse.drop(1)
-	}
-	
-	adRatios {
-		^this.asADArray.midiratio
-	}
-	
-	asFloatArray {
-		var array, fa;
-		array = this.asArray;
-		^FloatArray.new(array.size).addAll(array);
-	}
-	
+		
 	size {
 		^degrees.size
 	}
 	
 	semitones { |desc = false|
 		desc.if({
-			^descDegrees !? descDegrees.collect({ |x| tuning.wrapAt(x) });
+			^descDegrees !? descDegrees.collect(tuning.wrapAt(_));
 		},{
-			this.checkForMismatch;
-			^degrees.collect({ |x| tuning.wrapAt(x) });
+			^degrees.collect(tuning.wrapAt(_));
 		})
 	}
 	
@@ -149,50 +90,27 @@ Scale {
 		^this.degreeToRatio(degree, octave) * rootFreq;
 	}
 	
-	*choose { |size, tuning|
-		// this is a bit pretzely, but allows steps and tuning to be constrained
-		// independently, while still making sure everything matches up
-		var randomScale, randomTuning, steps, selectFunc;
-		randomTuning = tuning !? tuning.isKindOf(Tuning).if({ tuning }, { Tuning.new(tuning) });
-		selectFunc = size.isNil.if({
-			randomTuning.isNil.if({
-				{ true }
-			}, {
-				{ |k| ScaleInfo.pitchesPerOctave(k) == randomTuning.size }
-			})
-		}, {
-			{ |k| ScaleInfo.degrees(k).size == size }
+	*choose { |size = 7, pitchesPerOctave = 12|
+		var scale = ScaleInfo.choose({ 
+			|x| (x.size == size) && (x.pitchesPerOctave == pitchesPerOctave) 
 		});
-		randomScale = ScaleInfo.choose(selectFunc);
-		randomTuning = randomScale.isNil.if({
-			("No scales matching criteria " ++ [size, tuning].asString ++ " available.").warn;
-			\et12
-		}, {
-			randomTuning ? Tuning.choose(ScaleInfo.pitchesPerOctave(randomScale))
+		scale.isNil.if({ 
+			("No known scales with size " ++ size.asString ++ 
+				" and pitchesPerOctave " ++ pitchesPerOctave.asString).warn;
+			^nil
 		});
-		^super.new.init(randomScale ? \ionian, randomTuning)
+		^scale
 	}
 	
 	*doesNotUnderstand { |selector, args|
-		^(ScaleInfo.includesKey(selector)).if({
-			this.new(selector, args)
-		}, {
-			super.doesNotUnderstand(selector, args)
-		})
+		var scale = ScaleInfo.at(selector);
+		scale.isNil.if({ ^super.doesNotUnderstand(selector, args) });
+		^args.notNil.if({ scale.tuning_(args) }, { scale })
 	}
 	
-	doesNotUnderstand { |selector, args|
-		var target;
-		target = this.semitones;
-		^target.respondsTo(selector).if({
-			target.perform(selector, args)
-		}, {
-			super.doesNotUnderstand(selector, args)
-		})
-	}
 	
-	*names {
-		^ScaleInfo.names
+	*directory {
+		^ScaleInfo.directory
 	}
 
 	octaveRatio {
@@ -206,460 +124,410 @@ Scale {
 
 Tuning {
 
-	var <tuning, <>name, <octaveRatio;
+	var <tuning, <octaveRatio, <>name;
 	
-	*new { | tuning, pitchesPerOctave, octaveRatio |
-		^super.new.init(tuning, pitchesPerOctave ? 12, octaveRatio ? 2.0);
+	*new { | tuning, octaveRatio = 2.0, name = "Unknown Tuning" |
+		^super.newCopyArgs(tuning, octaveRatio, name);
+	}
+		
+	*newFromKey { | key |
+		^TuningInfo.at(key)
 	}
 	
 	*default { | pitchesPerOctave |
-		var defaultTuning, octaveRatio;
-		defaultTuning = TuningInfo.default(pitchesPerOctave);
-		octaveRatio = defaultTuning.isNil.if(2.0, { TuningInfo.octaveRatio(defaultTuning) });
-		^super.new.init(defaultTuning ? this.calcDefault(pitchesPerOctave), 
-			pitchesPerOctave, octaveRatio).
-			name_(defaultTuning ? this.defaultName(pitchesPerOctave))
+		^this.et(pitchesPerOctave);
 	}
 	
-	*et { |pitchesPerOctave|
-		^super.new.init(this.calcET(pitchesPerOctave)).name_(this.etName);
+	*et { |pitchesPerOctave = 12 |
+		^this.new(this.calcET(pitchesPerOctave), 2.0, this.etName(pitchesPerOctave));
 	}
 	
 	*calcET { | pitchesPerOctave |
 		^(0..(pitchesPerOctave - 1)) * (12/pitchesPerOctave)
 	}
 	
-	*calcDefault { | pitchesPerOctave |
-		^this.calcET(pitchesPerOctave)
+	*etName { |pitchesPerOctave|
+		^"ET" ++ pitchesPerOctave.asString
 	}
 	
 	*choose { |size = 12|
-		^super.new.init(TuningInfo.choose(size))
+		^TuningInfo.choose({ |x| x.size == size })
 	}
-	
-	*defaultName { |pitchesPerOctave|
-		^this.etName(pitchesPerOctave)
-	}
-	
-	*etName { |pitchesPerOctave|
-		^"et" ++ pitchesPerOctave.asString
-	}
-	
-	init { | inTuning, inpitchesPerOctave, inOctaveRatio |
-		^this.tuning_(inTuning, inpitchesPerOctave, inOctaveRatio);
-	}
-		
-	tuning_ { | inTuning, inPitchesPerOctave = 12, inOctaveRatio = 2.0 |
-		var newTuning;
-		inTuning.isKindOf(SequenceableCollection).if({
-			tuning = inTuning.asArray;
-			name = "tuning" ++ UniqueID.next.asString;
-			octaveRatio = inOctaveRatio;
-		}, {
-			newTuning = TuningInfo.at(inTuning.asSymbol);
-			newTuning.notNil.if({
-				tuning = newTuning;
-				name = inTuning.asString;
-				octaveRatio = TuningInfo.octaveRatio(inTuning.asSymbol);
-			}, {
-				inTuning.notNil.if({ ("Unknown tuning: " ++ inTuning).warn });
-				tuning = this.class.calcDefault(inPitchesPerOctave);
-				name = this.class.defaultName(inPitchesPerOctave);
-				octaveRatio = inOctaveRatio;
-			})	
-		});
-	}
-
-	cents_ { |cents|
-		^this.tuning_(cents / 100)
-	}
-	
-		
+			
 	ratios {
 		^tuning.midiratio
-	}
-	
-	ratioAt {
-		|index|
-		^this.ratios.at(index)
 	}
 	
 	semitones {
 		^tuning
 	}
 	
-	asArray {
-		^this.semitones
+	cents {
+		^this.semitones * 100
 	}
 	
-	asFloatArray {
-		^FloatArray.newClear(tuning.size).addAll(tuning);
+	as { |class|
+		^this.semitones.as(class)
 	}
 	
 	size {
-		^tuning.size;
+		^tuning.size
+	}
+	
+	at { |index|
+		^tuning.at(index)
+	}
+	
+	wrapAt { |index|
+		^tuning.wrapAt(index)
 	}
 	
 	*doesNotUnderstand { |selector, args|
-		^(TuningInfo.includesKey(selector)).if({
-			this.new(selector, args)
-		}, {
-			super.doesNotUnderstand(selector, args)
-		})
+		var tuning = TuningInfo.at(selector);
+		^tuning.notNil.if({ tuning }, { super.doesNotUnderstand(selector, args) })
 	}
 	
-	doesNotUnderstand { |selector, args|
-		^tuning.respondsTo(selector).if({
-			tuning.perform(selector, args)
-		}, {
-			super.doesNotUnderstand(selector, args)
-		})
-	}
-	
-	*names {
-		^TuningInfo.names
+	*directory {
+		^TuningInfo.directory
 	}
 	
 	stepsPerOctave {
 		^octaveRatio.log2 * 12.0
 	}
+	
+	asTuning {
+		^this
+	}
+	
 }
 
 ScaleInfo {
 
-	classvar dict;
-	*initClass {
+	classvar scales, dirDoc, dirString;
 	
-		dict = IdentityDictionary[
+	*initClass {
+
+		Class.initClassTree(TuningInfo);
+		
+		scales = IdentityDictionary[
 			
 			// TWELVE TONES PER OCTAVE
 			// 5 note scales
-			\minorPentatonic -> [ #[0,3,5,7,10], nil, 12 ],
-			\majorPentatonic -> [ #[0,2,4,7,9], nil, 12 ],
-			\ritusen -> [ #[0,2,5,7,9], nil, 12 ], // another mode of major pentatonic
-			\egyptian -> [ #[0,2,5,7,10], nil, 12 ], // another mode of major pentatonic
+			\minorPentatonic -> Scale.new(#[0,3,5,7,10], 12, name: "Minor Pentatonic"),
+			\majorPentatonic -> Scale.new(#[0,2,4,7,9], 12, name: "Major Pentatonic"),
+			// another mode of major pentatonic
+			\ritusen -> Scale.new(#[0,2,5,7,9], 12, name: "Ritusen"), 
+ 			// another mode of major pentatonic
+ 			\egyptian -> Scale.new(#[0,2,5,7,10], 12, name: "Egyptian"),
 			
-			\kumoi -> [ #[0,2,3,7,9], nil, 12 ],
-			\hirajoshi -> [ #[0,2,3,7,8], nil, 12 ],
-			\iwato -> [ #[0,1,5,6,10], nil, 12 ], // mode of hirajoshi
-			\chinese -> [ #[0,4,6,7,11], nil, 12 ], // mode of hirajoshi
-			\indian -> [ #[0,4,5,7,10], nil, 12 ],
-			\pelog -> [ #[0,1,3,7,8], nil, 12 ],
+			\kumoi -> Scale.new(#[0,2,3,7,9], 12, name: "Kumai"),
+			\hirajoshi -> Scale.new(#[0,2,3,7,8], 12, name: "Hirajoshi"),
+			\iwato -> Scale.new(#[0,1,5,6,10], 12, name: "Iwato"), // mode of hirajoshi
+			\chinese -> Scale.new(#[0,4,6,7,11], 12, name: "Chinese"), // mode of hirajoshi
+			\indian -> Scale.new(#[0,4,5,7,10], 12, name: "Indian"),
+			\pelog -> Scale.new(#[0,1,3,7,8], 12, name: "Pelog"),
 			
-			\prometheus -> [ #[0,2,4,6,11], nil, 12 ],
-			\scriabin -> [ #[0,1,4,7,9], nil, 12 ],
+			\prometheus -> Scale.new(#[0,2,4,6,11], 12, name: "Prometheus"),
+			\scriabin -> Scale.new(#[0,1,4,7,9], 12, name: "Scriabin"),
 			
 			// han chinese pentatonic scales
-			\gong -> [ #[0,2,4,7,9], nil, 12 ],
-			\shang -> [ #[0,2,5,7,10], nil, 12 ],
-			\jiao -> [ #[0,3,5,8,10], nil, 12 ],
-			\zhi -> [ #[0,2,5,7,9], nil, 12 ],
-			\yu -> [ #[0,3,5,7,10], nil, 12 ],
+			\gong -> Scale.new(#[0,2,4,7,9], 12, name: "Gong"),
+			\shang -> Scale.new(#[0,2,5,7,10], 12, name: "Shang"),
+			\jiao -> Scale.new(#[0,3,5,8,10], 12, name: "Jiao"),
+			\zhi -> Scale.new(#[0,2,5,7,9], 12, name: "Zhi"),
+			\yu -> Scale.new(#[0,3,5,7,10], 12, name: "Yu"),
 			
 			
 			// 6 note scales
-			\whole -> [ (0,2..10), nil, 12 ],
-			\augmented -> [ #[0,3,4,7,8,11], nil, 12 ],
-			\augmented2 -> [ #[0,1,4,5,8,9], nil, 12 ],
+			\whole -> Scale.new((0,2..10), 12, name: "Whole Tone"),
+			\augmented -> Scale.new(#[0,3,4,7,8,11], 12, name: "Augmented"),
+			\augmented2 -> Scale.new(#[0,1,4,5,8,9], 12, name: "Augmented 2"),
 			
 			// Partch's Otonalities and Utonalities
-			\partch_o1 -> [ #[0,8,14,20,25,34], nil, 43 ],
-			\partch_o2 -> [ #[0,7,13,18,27,35], nil, 43 ],
-			\partch_o3 -> [ #[0,6,12,21,29,36], nil, 43 ],
-			\partch_o4 -> [ #[0,5,15,23,30,37], nil, 43 ],
-			\partch_o5 -> [ #[0,10,18,25,31,38], nil, 43 ],
-			\partch_o6 -> [ #[0,9,16,22,28,33], nil, 43 ],
-			\partch_u1 -> [ #[0,9,18,23,29,35], nil, 43 ],
-			\partch_u2 -> [ #[0,8,16,25,30,36], nil, 43 ],
-			\partch_u3 -> [ #[0,7,14,22,31,37], nil, 43 ],
-			\partch_u4 -> [ #[0,6,13,20,28,38], nil, 43 ],
-			\partch_u5 -> [ #[0,5,12,18,25,33], nil, 43 ],
-			\partch_u6 -> [ #[0,10,15,21,27,34], nil, 43 ],
+			\partch_o1 -> Scale.new(#[0,8,14,20,25,34], 43, nil, 
+				Tuning.partch, "Partch Otonality 1"),
+			\partch_o2 -> Scale.new(#[0,7,13,18,27,35], 43, nil, 
+				Tuning.partch, "Partch Otonality 2"),
+			\partch_o3 -> Scale.new(#[0,6,12,21,29,36], 43, nil, 
+				Tuning.partch, "Partch Otonality 3"),
+			\partch_o4 -> Scale.new(#[0,5,15,23,30,37], 43, nil, 
+				Tuning.partch, "Partch Otonality 4"),
+			\partch_o5 -> Scale.new(#[0,10,18,25,31,38], 43, nil, 
+				Tuning.partch, "Partch Otonality 5"),
+			\partch_o6 -> Scale.new(#[0,9,16,22,28,33], 43, nil, 
+				Tuning.partch, "Partch Otonality 6"),
+			\partch_u1 -> Scale.new(#[0,9,18,23,29,35], 43, nil, 
+				Tuning.partch, "Partch Utonality 1"),
+			\partch_u2 -> Scale.new(#[0,8,16,25,30,36], 43, nil, 
+				Tuning.partch, "Partch Utonality 2"),
+			\partch_u3 -> Scale.new(#[0,7,14,22,31,37], 43, nil, 
+				Tuning.partch, "Partch Utonality 3"),
+			\partch_u4 -> Scale.new(#[0,6,13,20,28,38], 43, nil, 
+				Tuning.partch, "Partch Utonality 4"),
+			\partch_u5 -> Scale.new(#[0,5,12,18,25,33], 43, nil, 
+				Tuning.partch, "Partch Utonality 5"),
+			\partch_u6 -> Scale.new(#[0,10,15,21,27,34], 43, nil, 
+				Tuning.partch, "Partch Utonality 6"),
 			
 			// hexatonic modes with no tritone
-			\hexMajor7 -> [ #[0,2,4,7,9,11], nil, 12 ],
-			\hexDorian -> [ #[0,2,3,5,7,10], nil, 12 ],
-			\hexPhrygian -> [ #[0,1,3,5,8,10], nil, 12 ],
-			\hexSus -> [ #[0,2,5,7,9,10], nil, 12 ],
-			\hexMajor6 -> [ #[0,2,4,5,7,9], nil, 12 ],
-			\hexAeolian -> [ #[0,3,5,7,8,10], nil, 12 ],
+			\hexMajor7 -> Scale.new(#[0,2,4,7,9,11], 12, name: "Hex Major 7"),
+			\hexDorian -> Scale.new(#[0,2,3,5,7,10], 12, name: "Hex Dorian"),
+			\hexPhrygian -> Scale.new(#[0,1,3,5,8,10], 12, name: "Hex Phrygian"),
+			\hexSus -> Scale.new(#[0,2,5,7,9,10], 12, name: "Hex Sus"),
+			\hexMajor6 -> Scale.new(#[0,2,4,5,7,9], 12, name: "Hex Major 6"),
+			\hexAeolian -> Scale.new(#[0,3,5,7,8,10], 12, name: "Hex Aeolian"),
 			
 			// 7 note scales
-			\major -> [ #[0,2,4,5,7,9,11], nil, 12 ],
-			\ionian -> [ #[0,2,4,5,7,9,11], nil, 12 ],
-			\dorian -> [ #[0,2,3,5,7,9,10], nil, 12 ],
-			\phrygian -> [ #[0,1,3,5,7,8,10], nil, 12 ],
-			\lydian -> [ #[0,2,4,6,7,9,11], nil, 12 ],
-			\mixolydian -> [ #[0,2,4,5,7,9,10], nil, 12 ],
-			\aeolian -> [ #[0,2,3,5,7,8,10], nil, 12 ],
-			\minor -> [ #[0,2,3,5,7,8,10], nil, 12 ],
-			\locrian -> [ #[0,1,3,5,6,8,10], nil, 12 ],
+			\major -> Scale.new(#[0,2,4,5,7,9,11], 12, name: "Major"),
+			\ionian -> Scale.new(#[0,2,4,5,7,9,11], 12, name: "Ionian"),
+			\dorian -> Scale.new(#[0,2,3,5,7,9,10], 12, name: "Dorian"),
+			\phrygian -> Scale.new(#[0,1,3,5,7,8,10], 12, name: "Phrygian"),
+			\lydian -> Scale.new(#[0,2,4,6,7,9,11], 12, name: "Lydian"),
+			\mixolydian -> Scale.new(#[0,2,4,5,7,9,10], 12, name: "Mixolydian"),
+			\aeolian -> Scale.new(#[0,2,3,5,7,8,10], 12, name: "Aeolian"),
+			\minor -> Scale.new(#[0,2,3,5,7,8,10], 12, name: "Natural Minor"),
+			\locrian -> Scale.new(#[0,1,3,5,6,8,10], 12, name: "Locrian"),
 			
-			\harmonicMinor -> [ #[0,2,3,5,7,8,11], nil, 12 ],
-			\harmonicMajor -> [ #[0,2,4,5,7,8,11], nil, 12 ],
+			\harmonicMinor -> Scale.new(#[0,2,3,5,7,8,11], 12, name: "Harmonic Minor"),
+			\harmonicMajor -> Scale.new(#[0,2,4,5,7,8,11], 12, name: "Harmonic Major"),
 			
-			\melodicMinor -> [ #[0,2,3,5,7,9,11], #[0,2,3,5,7,8,10], 12 ],
-			\melodicMajor -> [ #[0,2,4,5,7,8,10], nil, 12 ],
+			\melodicMinor -> Scale.new(#[0,2,3,5,7,9,11], 12, #[0,2,3,5,7,8,10], 
+				name: "Melodic Minor"),
+			\melodicMajor -> Scale.new(#[0,2,4,5,7,8,10], 12, name: "Melodic Major"),
 			
-			\bartok -> [ #[0,2,4,5,7,8,10], nil, 12 ], // jazzers call this the hindu scale
-			
+			\bartok -> Scale.new(#[0,2,4,5,7,8,10], 12, name: "Bartok"),
+			\hindu -> Scale.new(#[0,2,4,5,7,8,10], 12, name: "Hindu"),
+						
 			// raga modes
-			\todi -> [ #[0,1,3,6,7,8,11], nil, 12 ], // maqam ahar kurd
-			\purvi -> [ #[0,1,4,6,7,8,11], nil, 12 ],
-			\marva -> [ #[0,1,4,6,7,9,11], nil, 12 ],
-			\bhairav -> [ #[0,1,4,5,7,8,11], nil, 12 ],
-			\ahirbhairav -> [ #[0,1,4,5,7,9,10], nil, 12 ],
+			\todi -> Scale.new(#[0,1,3,6,7,8,11], 12, name: "Todi"),
+			\purvi -> Scale.new(#[0,1,4,6,7,8,11], 12, name: "Purvi"),
+			\marva -> Scale.new(#[0,1,4,6,7,9,11], 12, name: "Marva"),
+			\bhairav -> Scale.new(#[0,1,4,5,7,8,11], 12, name: "Bhairav"),
+			\ahirbhairav -> Scale.new(#[0,1,4,5,7,9,10], 12, name: "Ahirbhairav"),
 			
-			\superLocrian -> [ #[0,1,3,4,6,8,10], nil, 12 ],
-			\romanianMinor -> [ #[0,2,3,6,7,9,10], nil, 12 ], // maqam nakriz
-			\hungarianMinor -> [ #[0,2,3,6,7,8,11], nil, 12 ],       
-			\neapolitanMinor -> [ #[0,1,3,5,7,8,11], nil, 12 ],
-			\enigmatic -> [ #[0,1,4,6,8,10,11], nil, 12 ],
-			\spanish -> [ #[0,1,4,5,7,8,10], nil, 12 ],
+			\superLocrian -> Scale.new(#[0,1,3,4,6,8,10], 12, name: "Super Locrian"),
+			\romanianMinor -> Scale.new(#[0,2,3,6,7,9,10], 12, name: "Romanian Minor"),			\hungarianMinor -> Scale.new(#[0,2,3,6,7,8,11], 12, name: "Hungarian Minor"),       
+			\neapolitanMinor -> Scale.new(#[0,1,3,5,7,8,11], 12, name: "Neapolitan Minor"),
+			\enigmatic -> Scale.new(#[0,1,4,6,8,10,11], 12, name: "Enigmatic"),
+			\spanish -> Scale.new(#[0,1,4,5,7,8,10], 12, name: "Spanish"),
 			
 			// modes of whole tones with added note ->
-			\leadingWhole -> [ #[0,2,4,6,8,10,11], nil, 12 ],
-			\lydianMinor -> [ #[0,2,4,6,7,8,10], nil, 12 ],
-			\neapolitanMajor -> [ #[0,1,3,5,7,9,11], nil, 12 ],
-			\locrianMajor -> [ #[0,2,4,5,6,8,10], nil, 12 ],
+			\leadingWhole -> Scale.new(#[0,2,4,6,8,10,11], 12, name: "Leading Whole Tone"),
+			\lydianMinor -> Scale.new(#[0,2,4,6,7,8,10], 12, name: "Lydian Minor"),
+			\neapolitanMajor -> Scale.new(#[0,1,3,5,7,9,11], 12, name: "Neapolitan Major"),
+			\locrianMajor -> Scale.new(#[0,2,4,5,6,8,10], 12, name: "Locrian Major"),
 			
 			// 8 note scales
-			\diminished -> [ #[0,1,3,4,6,7,9,10], nil, 12 ],
-			\diminished2 -> [ #[0,2,3,5,6,8,9,11], nil, 12 ],
+			\diminished -> Scale.new(#[0,1,3,4,6,7,9,10], 12, name: "Diminished"),
+			\diminished2 -> Scale.new(#[0,2,3,5,6,8,9,11], 12, name: "Diminished 2"),
 			
 			// 12 note scales
-			\chromatic -> [ (0..11), nil, 12 ],
+			\chromatic -> Scale.new((0..11), 12, name: "Chromatic"),
 			
 			// TWENTY-FOUR TONES PER OCTAVE
 			
-			\chromatic24 -> [ (0..23), nil, 24 ],
+			\chromatic24 -> Scale.new((0..23), 24, name: "Chromatic 24"),
 			
 			// maqam ajam
-			\ajam -> [ #[0,4,8,10,14,18,22], nil, 24 ],
-			\jiharkah -> [ #[0,4,8,10,14,18,21], nil, 24 ],
-			\shawqAfza -> [ #[0,4,8,10,14,16,22], nil, 24 ],
+			\ajam -> Scale.new(#[0,4,8,10,14,18,22], 24, name: "Ajam"),
+			\jiharkah -> Scale.new(#[0,4,8,10,14,18,21], 24, name: "Jiharkah"),
+			\shawqAfza -> Scale.new(#[0,4,8,10,14,16,22], 24, name: "Shawq Afza"),
 			
 			// maqam sikah
-			\sikah -> [ #[0,3,7,11,14,17,21], #[0,3,7,11,13,17,21], 24 ],
-			\huzam -> [ #[0,3,7,9,15,17,21], nil, 24 ],
-			\iraq -> [ #[0,3,7,10,13,17,21], nil, 24 ],
-			\bastanikar -> [ #[0,3,7,10,13,15,21], nil, 24 ],
-			\mustar -> [ #[0,5,7,11,13,17,21], nil, 24 ],
+			\sikah -> Scale.new(#[0,3,7,11,14,17,21], 24, #[0,3,7,11,13,17,21], name: "Sikah"),
+			\huzam -> Scale.new(#[0,3,7,9,15,17,21], 24, name: "Huzam"),
+			\iraq -> Scale.new(#[0,3,7,10,13,17,21], 24, name: "Iraq"),
+			\bastanikar -> Scale.new(#[0,3,7,10,13,15,21], 24, name: "Bastanikar"),
+			\mustar -> Scale.new(#[0,5,7,11,13,17,21], 24, name: "Mustar"),
 			
 			// maqam bayati
-			\bayati -> [ #[0,3,6,10,14,16,20], nil, 24 ],
-			\karjighar -> [ #[0,3,6,10,12,18,20], nil, 24 ],
-			\husseini -> [ #[0,3,6,10,14,17,21], nil, 24 ],
+			\bayati -> Scale.new(#[0,3,6,10,14,16,20], 24, name: "Bayati"),
+			\karjighar -> Scale.new(#[0,3,6,10,12,18,20], 24, name: "Karjighar"),
+			\husseini -> Scale.new(#[0,3,6,10,14,17,21], 24, name: "Husseini"),
 			
 			// maqam nahawand
-			\nahawand -> [ #[0,4,6,10,14,16,22], #[0,4,6,10,14,16,20], 24 ],
-			\farahfaza -> [ #[0,4,6,10,14,16,20], nil, 24 ],
-			\murassah -> [ #[0,4,6,10,12,18,20], nil, 24 ],
-			\ushaqMashri -> [ #[0,4,6,10,14,17,21], nil, 24 ],
+			\nahawand -> Scale.new(#[0,4,6,10,14,16,22], 24, #[0,4,6,10,14,16,20], 
+				name: "Nahawand"),
+			\farahfaza -> Scale.new(#[0,4,6,10,14,16,20], 24, name: "Farahfaza"),
+			\murassah -> Scale.new(#[0,4,6,10,12,18,20], 24, name: "Murassah"),
+			\ushaqMashri -> Scale.new(#[0,4,6,10,14,17,21], 24, name: "Ushaq Mashri"),
 			
 			// maqam rast
-			\rast -> [ #[0,4,7,10,14,18,21], #[0,4,7,10,14,18,20], 24 ],
-			\suznak -> [ #[0,4,7,10,14,16,22], nil, 24 ],
-			\nairuz -> [ #[0,4,7,10,14,17,20], nil, 24 ],
-			\yakah -> [ #[0,4,7,10,14,18,21], #[0,4,7,10,14,18,20], 24 ],
-			\mahur -> [ #[0,4,7,10,14,18,22], nil, 24 ],
+			\rast -> Scale.new(#[0,4,7,10,14,18,21], 24, #[0,4,7,10,14,18,20], name: "Rast"),
+			\suznak -> Scale.new(#[0,4,7,10,14,16,22], 24, name: "Suznak"),
+			\nairuz -> Scale.new(#[0,4,7,10,14,17,20], 24, name: "Nairuz"),
+			\yakah -> Scale.new(#[0,4,7,10,14,18,21], 24, #[0,4,7,10,14,18,20], name: "Yakah"),
+			\mahur -> Scale.new(#[0,4,7,10,14,18,22], 24, name: "Mahur"),
 			
 			// maqam hijaz
-			\hijaz -> [ #[0,2,8,10,14,17,20], #[0,2,8,10,14,16,20], 24 ],
-			\zanjaran -> [ #[0,2,8,10,14,18,20], nil, 24 ],
+			\hijaz -> Scale.new(#[0,2,8,10,14,17,20], 24, #[0,2,8,10,14,16,20], name: "Hijaz"),
+			\zanjaran -> Scale.new(#[0,2,8,10,14,18,20], 24, name: "Zanjaran"),
 			
 			// maqam hijazKar
-			\zanjaran -> [ #[0,2,8,10,14,16,22], nil, 24 ],
+			\zanjaran -> Scale.new(#[0,2,8,10,14,16,22], 24, name: "Zanjaran"),
 			
 			// maqam saba
-			\saba -> [ #[0,3,6,8,12,16,20], nil, 24 ],
-			\zamzam -> [ #[0,2,6,8,14,16,20], nil, 24 ],
+			\saba -> Scale.new(#[0,3,6,8,12,16,20], 24, name: "Saba"),
+			\zamzam -> Scale.new(#[0,2,6,8,14,16,20], 24, name: "Zamzam"),
 			
 			// maqam kurd
-			\kurd -> [ #[0,2,6,10,14,16,20], nil, 24 ],
-			\kijazKarKurd -> [ #[0,2,8,10,14,16,22], nil, 24 ],
+			\kurd -> Scale.new(#[0,2,6,10,14,16,20], 24, name: "Kurd"),
+			\kijazKarKurd -> Scale.new(#[0,2,8,10,14,16,22], 24, name: "Kijaz Kar Kurd"),
 			
 			// maqam nawa Athar
-			\nawaAthar -> [ #[0,4,6,12,14,16,22], nil, 24 ],
-			\nikriz -> [ #[0,4,6,12,14,18,20], nil, 24 ],
-			\atharKurd -> [ #[0,2,6,12,14,16,22], nil, 24 ],
+			\nawaAthar -> Scale.new(#[0,4,6,12,14,16,22], 24, name: "Nawa Athar"),
+			\nikriz -> Scale.new(#[0,4,6,12,14,18,20], 24, name: "Nikriz"),
+			\atharKurd -> Scale.new(#[0,2,6,12,14,16,22], 24, name: "Athar Kurd"),
 		];
+		
+		dirString = scales.keys.asArray.sort.collect({ |k|
+			"\\" ++ k.asString ++ ": " ++ scales.at(k).name
+		}).join("\n");
 	}
 	
-	*doesNotUnderstand { |selector, args|
-		^dict.perform(selector, args)
+	*at { |key|
+		^scales.includesKey(key).if({ scales[key].deepCopy }, { nil })
 	}
 	
-	*getParam {
-		|name, index|
-		^this.includesKey(name.asSymbol).if({ 
-			dict.at(name).at(index)
-		}, {
-			("Unknown scale: " ++ name.asString).warn;
-			nil 
-		})
-	}
-	
-	*descDegrees {
-		|name|
-		^this.getParam(name, 1) ? this.getParam(name, 0)
-	}
-	
-	*degrees {
-		|name|
-		^this.getParam(name, 0)
-	}
-	
-	*pitchesPerOctave {
-		|name|
-		^this.getParam(name, 2)
-	}
-	
+//	*doesNotUnderstand { |selector, args|
+//		^this.at(selector) ? super.doesNotUnderstand(selector, args)
+//	}
+		
 	*choose {
 		|selectFunc|
-		^dict.keys.select(selectFunc ? { true }).choose;
+		^scales.values.select(selectFunc ? { true }).choose.deepCopy;
 	}
 	
 	*names {
-		^dict.keys.asArray.sort
+		^scales.keys.asArray.sort
+	}
+
+	*directory {
+		dirDoc.notNil.if({
+			dirDoc.front
+		}, {
+			dirDoc = Document.new("Scale Directory", dirString).onClose_({ 
+				dirDoc.free; dirDoc = nil 
+			});
+		});
+		^this
 	}
 }
 
 TuningInfo {
 
-	classvar dict, defaults, octaveRatios;
+	classvar tunings, dirDoc, dirString;
 	
 	*initClass {
-		defaults = IdentityDictionary[
-			43 -> \partch,
-			13 -> \bp,
-			19 -> \et19,
-			24 -> \et24,
-			53 -> \et53
-		];
 		
-		octaveRatios = IdentityDictionary[
-			\bp -> 3.0,
-			\wcAlpha -> (15 * 0.78).midiratio,
-			\wcBeta -> (19 * 0.638).midiratio,
-			\wcGamma -> (34 * 0.351).midiratio
-		];
-		
-		dict = IdentityDictionary[
+		tunings = IdentityDictionary[
 
 			//TWELVE-TONE TUNINGS
-			\et12 -> (0..11),
+			\et12 -> Tuning.new((0..11)),
 
-			//pythagorean
-			\pythagorean -> [1, 256/243, 9/8, 32/27, 81/64, 4/3, 729/512, 3/2,
-				128/81, 27/16, 16/9, 243/128].ratiomidi,
-			
-			//5-limit tritone
-			\just -> [1, 16/15, 9/8, 6/5, 5/4, 4/3, 45/32, 3/2, 8/5, 5/3, 9/5, 15/8].ratiomidi,
-			
-			//septimal tritone
-			\sept1 -> [1, 16/15, 9/8, 6/5, 5/4, 4/3, 7/5, 3/2, 8/5, 5/3, 9/5, 15/8].ratiomidi,
-			
-			//septimal tritone and minor seventh
-			\sept2 -> [1, 16/15, 9/8, 6/5, 5/4, 4/3, 7/5, 3/2, 8/5, 5/3, 7/4, 15/8].ratiomidi,
-		
-			//meantone, 1/4 syntonic comma
-			\mean4 -> #[0, 0.755, 1.93, 3.105, 3.86, 5.035, 5.79, 6.965, 7.72, 8.895, 10.07, 10.82],
-		
-			//meantone, 1/5 Pythagorean comma
-			\mean5 -> #[0, 0.804, 1.944, 3.084, 3.888, 5.028, 5.832, 6.972, 7.776, 8.916, 10.056, 10.86],
-		
-			//meantone, 1/6 Pythagorean comma
-			\mean6 -> #[0, 0.86, 1.96, 3.06, 3.92, 5.02, 5.88, 6.98, 7.84, 8.94, 10.04, 10.9],		
-			//Kirnberger III
-			\kirnberger -> [1, 256/243, (5.sqrt)/2, 32/27, 5/4, 4/3, 45/32, 5 ** 0.25,
-				128/81, (5 ** 0.75)/2, 16/9, 15/8].ratiomidi,
-		
-			//Werckmeister III
-			\werckmeister -> #[0, 0.92, 1.93, 2.94, 3.915, 4.98, 5.9, 6.965, 7.93, 8.895, 9.96, 10.935],	
-			//Vallotti
-			\vallotti -> #[0, 0.94135, 1.9609, 2.98045, 3.92180, 5.01955, 5.9218, 6.98045,
-				7.9609, 8.94135, 10, 10.90225],
-				
-			//Young
-			\young -> #[0, 0.9, 1.96, 2.94, 3.92, 4.98, 5.88, 6.98, 7.92, 8.94, 9.96, 10.9],
-				
-			//Mayumi Reinhard
-			\reinhard -> [1, 14/13, 13/12, 16/13, 13/10, 18/13, 13/9, 20/13, 13/8, 22/13,
-				13/7, 208/105].ratiomidi,
-				
-			//Wendy Carlos Harmonic
-			\wcHarm -> [1, 17/16, 9/8, 19/16, 5/4, 21/16, 11/8, 3/2, 13/8, 27/16, 7/4, 15/8].ratiomidi,
-			
-			//Wendy Carlos Super Just
-			\wcSJ -> [1, 17/16, 9/8, 6/5, 5/4, 4/3, 11/8, 3/2, 13/8, 5/3, 7/4, 15/8].ratiomidi,
+			\pythagorean -> Tuning.new([1, 256/243, 9/8, 32/27, 81/64, 4/3, 729/512, 3/2,
+				128/81, 27/16, 16/9, 243/128].ratiomidi, 2, "Pythagorean"),
+			\just -> Tuning.new([1, 16/15, 9/8, 6/5, 5/4, 4/3, 45/32, 3/2, 8/5, 5/3, 
+				9/5, 15/8].ratiomidi, 2, "5-Limit Just Intonation"),
+			\sept1 -> Tuning.new([1, 16/15, 9/8, 6/5, 5/4, 4/3, 7/5, 3/2, 8/5, 5/3, 
+				9/5, 15/8].ratiomidi, 2, "Septimal Tritone Just Intonation"),
+			\sept2 -> Tuning.new([1, 16/15, 9/8, 6/5, 5/4, 4/3, 7/5, 3/2, 8/5, 5/3, 
+				7/4, 15/8].ratiomidi, 2, "7-Limit Just Intonation"),
+			\mean4 -> Tuning.new(#[0, 0.755, 1.93, 3.105, 3.86, 5.035, 5.79, 6.965, 
+				7.72, 8.895, 10.07, 10.82], 2, "Meantone, 1/4 Syntonic Comma"),
+			\mean5 -> Tuning.new(#[0, 0.804, 1.944, 3.084, 3.888, 5.028, 5.832, 6.972, 
+				7.776, 8.916, 10.056, 10.86], 2, "Meantone, 1/5 Pythagorean Comma"),
+			\mean6 -> Tuning.new(#[0, 0.86, 1.96, 3.06, 3.92, 5.02, 5.88, 6.98, 7.84, 
+				8.94, 10.04, 10.9], 2, "Meantone, 1/6 Pythagorean Comma"),
+			\kirnberger -> Tuning.new([1, 256/243, (5.sqrt)/2, 32/27, 5/4, 4/3, 
+				45/32, 5 ** 0.25, 128/81, (5 ** 0.75)/2, 16/9, 15/8].ratiomidi, 2, 
+				"Kirnberger III"),
+			\werckmeister -> Tuning.new(#[0, 0.92, 1.93, 2.94, 3.915, 4.98, 5.9, 6.965, 
+				7.93, 8.895, 9.96, 10.935], 2, "Werckmeister III"),
+			\vallotti -> Tuning.new(#[0, 0.94135, 1.9609, 2.98045, 3.92180, 5.01955, 
+				5.9218, 6.98045, 7.9609, 8.94135, 10, 10.90225], 2, "Vallotti"),
+			\young -> Tuning.new(#[0, 0.9, 1.96, 2.94, 3.92, 4.98, 5.88, 6.98, 7.92, 
+				8.94, 9.96, 10.9], 2, "Young"),
+			\reinhard -> Tuning.new([1, 14/13, 13/12, 16/13, 13/10, 18/13, 13/9, 
+				20/13, 13/8, 22/13, 13/7, 208/105].ratiomidi, 2, "Mayumi Reinhard"),
+			\wcHarm -> Tuning.new([1, 17/16, 9/8, 19/16, 5/4, 21/16, 11/8, 3/2, 13/8, 
+				27/16, 7/4, 15/8].ratiomidi, 2, "Wendy Carlos Harmonic"),
+			\wcSJ -> Tuning.new([1, 17/16, 9/8, 6/5, 5/4, 4/3, 11/8, 3/2, 13/8, 5/3, 
+				7/4, 15/8].ratiomidi, 2, "Wendy Carlos Super Just"),
 			
 			//MORE THAN TWELVE-TONE ET
-			\et19 -> ((0 .. 18) * 12/19),
-			\et22 -> ((0 .. 21) * 6/11),
-			\et24 -> ((0 .. 23) * 0.5),
-			\et31 -> ((0 .. 30) * 12/31),
-			\et41 -> ((0 .. 40) * 12/41),
-			\et53 -> ((0 .. 52) * 12/53),
+			\et19 -> Tuning.new((0 .. 18) * 12/19, 2, "ET19"),
+			\et22 -> Tuning.new((0 .. 21) * 6/11, 2, "ET22"),
+			\et24 -> Tuning.new((0 .. 23) * 0.5, 2, "ET24"),
+			\et31 -> Tuning.new((0 .. 30) * 12/31, 2, "ET31"),
+			\et41 -> Tuning.new((0 .. 40) * 12/41, 2, "ET41"),
+			\et53 -> Tuning.new((0 .. 52) * 12/53, 2, "ET53"),
 		
 			//NON-TWELVE-TONE JI	
-			//Ben Johnston
-			\johnston -> [1, 25/24, 135/128, 16/15, 10/9, 9/8, 75/64, 6/5, 5/4, 81/64, 32/25, 
-				4/3, 27/20, 45/32, 36/25, 3/2, 25/16, 8/5, 5/3, 27/16, 225/128, 16/9, 9/5,
-				15/8, 48/25].ratiomidi,
-				
-			//Harry Partch
-			\partch -> [1, 81/80, 33/32, 21/20, 16/15, 12/11, 11/10, 10/9, 9/8, 8/7, 7/6,
-				32/27, 6/5, 11/9, 5/4, 14/11, 9/7, 21/16, 4/3, 27/20, 11/8, 7/5, 10/7, 16/11,
-				40/27, 3/2, 32/21, 14/9, 11/7, 8/5, 18/11, 5/3, 27/16, 12/7, 7/4, 16/9, 9/5, 
-				20/11, 11/6, 15/8, 40/21, 64/33, 160/81].ratiomidi,
-				
-			//Jon Catler
-			\catler -> [1, 33/32, 16/15, 9/8, 8/7, 7/6, 6/5, 128/105, 16/13, 5/4, 21/16,
-				4/3, 11/8, 45/32, 16/11, 3/2, 8/5, 13/8, 5/3, 27/16, 7/4, 16/9, 24/13, 15/8].ratiomidi,
-				
-			//John Chalmers
-			\chalmers -> [1, 21/20, 16/15, 9/8, 7/6, 6/5, 5/4, 21/16, 4/3, 7/5, 35/24, 3/2,
-				63/40, 8/5, 5/3, 7/4, 9/5, 28/15, 63/32].ratiomidi,
-				
-			//Lou Harrison
-			\harrison -> [1, 16/15, 10/9, 8/7, 7/6, 6/5, 5/4, 4/3, 17/12, 3/2, 8/5, 5/3,
-				12/7, 7/4, 9/5, 15/8].ratiomidi,
-		
-			//sruti
-			\sruti -> [1, 256/243, 16/15, 10/9, 9/8, 32/27, 6/5, 5/4, 81/64, 4/3, 27/20,
-				45/32, 729/512, 3/2, 128/81, 8/5, 5/3, 27/16, 16/9, 9/5, 15/8, 243/128].ratiomidi,
+			\johnston -> Tuning.new([1, 25/24, 135/128, 16/15, 10/9, 9/8, 75/64, 6/5, 
+				5/4, 81/64, 32/25, 4/3, 27/20, 45/32, 36/25, 3/2, 25/16, 8/5, 5/3, 
+				27/16, 225/128, 16/9, 9/5, 15/8, 48/25].ratiomidi, 2, "Ben Johnston"),
+			\partch -> Tuning.new([1, 81/80, 33/32, 21/20, 16/15, 12/11, 11/10, 10/9, 9/8, 
+				8/7, 7/6, 32/27, 6/5, 11/9, 5/4, 14/11, 9/7, 21/16, 4/3, 27/20, 11/8, 
+				7/5, 10/7, 16/11, 40/27, 3/2, 32/21, 14/9, 11/7, 8/5, 18/11, 5/3, 27/16, 
+				12/7, 7/4, 16/9, 9/5, 20/11, 11/6, 15/8, 40/21, 64/33, 160/81].ratiomidi, 2,
+				"Harry Partch"),
+			\catler -> Tuning.new([1, 33/32, 16/15, 9/8, 8/7, 7/6, 6/5, 128/105, 16/13, 
+				5/4, 21/16, 4/3, 11/8, 45/32, 16/11, 3/2, 8/5, 13/8, 5/3, 27/16, 7/4, 
+				16/9, 24/13, 15/8].ratiomidi, 2, "Jon Catler"),
+			\chalmers -> Tuning.new([1, 21/20, 16/15, 9/8, 7/6, 6/5, 5/4, 21/16, 4/3, 7/5, 
+				35/24, 3/2, 63/40, 8/5, 5/3, 7/4, 9/5, 28/15, 63/32].ratiomidi, 2, 
+				"John Chalmers"),
+			\harrison -> Tuning.new([1, 16/15, 10/9, 8/7, 7/6, 6/5, 5/4, 4/3, 17/12, 3/2, 
+				8/5, 5/3, 12/7, 7/4, 9/5, 15/8].ratiomidi, 2, "Lou Harrison"),
+			\sruti -> Tuning.new([1, 256/243, 16/15, 10/9, 9/8, 32/27, 6/5, 5/4, 81/64, 
+				4/3, 27/20, 45/32, 729/512, 3/2, 128/81, 8/5, 5/3, 27/16, 16/9, 9/5, 
+				15/8, 243/128].ratiomidi, 2, "Sruti"),
 		
 			//HARMONIC SERIES -- length arbitary
-			\harmonic -> (1 .. 24).ratiomidi,
+			\harmonic -> Tuning.new((1 .. 24).ratiomidi, 2, "Harmonic Series 24"),
 		
 			//STRETCHED/SHRUNK OCTAVE
 			//Bohlen-Pierce
-			\bp -> ((0 .. 12) * (3.ratiomidi/13)),
+			\bp -> Tuning.new((0 .. 12) * (3.ratiomidi/13), 3.0, "Bohlen-Pierce"),
 			
-			\wcAlpha -> ((0 .. 14) * 0.78),
-			\wcBeta -> ((0 .. 18) * 0.638),
-			\wcGamma -> ((0 .. 33) * 0.351)
+			\wcAlpha -> Tuning.new((0 .. 14) * 0.78, (15 * 0.78).midiratio, "Wendy Carlos Alpha"),
+			\wcBeta -> Tuning.new((0 .. 18) * 0.638, (19 * 0.638).midiratio, "Wendy Carlos Beta"),
+			\wcGamma -> Tuning.new((0 .. 33) * 0.351, (34 * 0.351).midiratio, 
+				"Wendy Carlos Gamma")
 		];
-	}	
+		
+		dirString = tunings.keys.asArray.sort.collect({ |k|
+			"\\" ++ k.asString ++ ": " ++ tunings.at(k).name 
+		}).join("\n");
 
-	*choose { |size|
-		^dict.keys.select({ |t| dict[t].size == size }).choose;
+	}			
+
+	*choose { |selectFunc|
+		^tunings.values.select(selectFunc ? { true }).choose;
 	}
 
 	*names {
-		^dict.keys.asArray.sort
+		^tunings.keys.asArray.sort
 	}
 	
-	*default { |pitchesPerOctave|
-		^defaults[pitchesPerOctave]
-	}
-
-	*doesNotUnderstand { |selector, args|
-		^dict.perform(selector, args)
+	*at { |key|
+		^tunings.includesKey(key).if({ tunings[key].deepCopy }, { nil })
 	}
 	
-	*octaveRatio { |sym|
-		^octaveRatios[sym] ? 2.0
+//	*doesNotUnderstand { |selector, args|
+//		^this.at(selector) ? super.doesNotUnderstand(selector, args)
+//	}
+	
+	*directory {
+		dirDoc.notNil.if({
+			dirDoc.front
+		}, {
+			dirDoc = Document.new("Tuning Directory", dirString).onClose_({ 
+				dirDoc.free; dirDoc = nil 
+			});
+		});
+		^this
 	}
 }
+
