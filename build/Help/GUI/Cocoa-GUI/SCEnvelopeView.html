@@ -21,9 +21,10 @@ p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #5c672e}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #5c672e}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
@@ -36,10 +37,11 @@ span.s9 {color: #686d91}
 span.s10 {color: #696e8f}
 span.s11 {color: #4b5bb8}
 span.s12 {color: #0000ff}
-span.s13 {color: #6c7189}
-span.s14 {color: #666c94}
-span.s15 {font: 14.0px Helvetica}
-span.s16 {font: 12.0px Helvetica}
+span.s13 {font: 12.0px Monaco}
+span.s14 {color: #6c7189}
+span.s15 {color: #666c94}
+span.s16 {font: 14.0px Helvetica}
+span.s17 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -153,6 +155,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set a shape to draw the connection between points. Same shapes as in Env are excepted.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>incurves - An<span class="Apple-converted-space">  </span><a href="../../Collections/Array.html"><span class="s11">Array</span></a> of Symbols, An<span class="Apple-converted-space">  </span><a href="../../Collections/Array.html"><span class="s11">Array</span></a> of <a href="../../Math/SimpleNumber.html"><span class="s12">SimpleNumber</span></a>s, a <a href="../../Core/Symbol.html"><span class="s12">Symbol</span></a> or a <a href="../../Math/SimpleNumber.html"><span class="s12">SimpleNumber</span></a></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>setEnv_(env)</b></p>
+<p class="p7"><span class="s13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Setn an <a href="../../Control/Env.html"><span class="s12">Env</span></a> to be shown in the view.</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>connect (from, aconnections)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Replaces the connections which were drawn at init time, and then draws new ones from the index, <b>from,</b> to the each of the <b>aconnections </b>indexes .</p>
@@ -163,20 +168,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>metaAction</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Gets/sets a function to be evaluate on Ctrl-click</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 - </b>An instance of <a href="../../Core/Kernel/Function.html"><span class="s13">Function</span></a>. Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 - </b>An instance of <a href="../../Core/Kernel/Function.html"><span class="s14">Function</span></a>. Default value is nil.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><b>Customizing Appearance</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>strokeColor_ (acolor)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The line and text color of the view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>acolor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s14">Color</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>acolor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s15">Color</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>colors_ (strokec, fillc)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the stroke and fill colors of the view.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>strokec </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s14">Color</span></a>.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fillc </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s14">Color</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>strokec </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s15">Color</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fillc </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s15">Color</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawLines (abool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>drawLines_ (abool)</b></p>
@@ -217,7 +222,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>acolor </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s11">Color</span></a>.</p>
 <p class="p6"><br></p>
 <p class="p13"><b>Subclassing and Internal Methods</b></p>
-<p class="p7"><span class="s15"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
+<p class="p7"><span class="s16"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -242,7 +247,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The method called by default when attempting to place a drag in this object. Will recieve any drag, but the drag should be an array of values of the form:</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]</p>
+<p class="p12"><span class="s17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]</p>
 <p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -252,7 +257,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s4">SCView</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s2">, </span>\visible<span class="s2">, </span>\enabled<span class="s2">, </span>\canFocus<span class="s2">, </span>\resize<span class="s2">, </span>\background<span class="s2">, </span>\minWidth<span class="s2">, </span>\maxWidth<span class="s2">, </span>\minHeight<span class="s2">, </span>\maxHeight<span class="s2">, </span>\value<span class="s2">, </span>\thumbSize<span class="s2">, </span>\fillColor<span class="s2">, </span>\strokeColor<span class="s2">, </span>\xOffset<span class="s2">, </span>\x<span class="s2">, </span>\y<span class="s2">, </span>\showIndex<span class="s2">, </span>\drawLines<span class="s2">, </span>\drawRects<span class="s2">, </span>\selectionSize<span class="s2">, </span>\startIndex<span class="s2">, </span>\thumbWidth<span class="s2">, </span>\absoluteX<span class="s2">, </span>\isFilled<span class="s2">, </span>\step<span class="s2"> ]</span></p>
+<p class="p16"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s2">, </span>\visible<span class="s2">, </span>\enabled<span class="s2">, </span>\canFocus<span class="s2">, </span>\resize<span class="s2">, </span>\background<span class="s2">, </span>\minWidth<span class="s2">, </span>\maxWidth<span class="s2">, </span>\minHeight<span class="s2">, </span>\maxHeight<span class="s2">, </span>\value<span class="s2">, </span>\thumbSize<span class="s2">, </span>\fillColor<span class="s2">, </span>\strokeColor<span class="s2">, </span>\xOffset<span class="s2">, </span>\x<span class="s2">, </span>\y<span class="s2">, </span>\showIndex<span class="s2">, </span>\drawLines<span class="s2">, </span>\drawRects<span class="s2">, </span>\selectionSize<span class="s2">, </span>\startIndex<span class="s2">, </span>\thumbWidth<span class="s2">, </span>\absoluteX<span class="s2">, </span>\isFilled<span class="s2">, </span>\step<span class="s2"> ]</span></p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>size_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>size</b></p>
@@ -286,9 +291,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p13"><b>Examples</b></p>
 <p class="p14"><br></p>
-<p class="p16">// use as envelope view</p>
+<p class="p17">// use as envelope view</p>
 <p class="p11">(</p>
-<p class="p16">//use shift-click to keep a node selected</p>
+<p class="p17">//use shift-click to keep a node selected</p>
 <p class="p11">w = <span class="s6">Window</span>(<span class="s7">"envelope"</span>, <span class="s6">Rect</span>(150 , <span class="s6">Window</span>.screenBounds.height-250, 250, 100)).front;</p>
 <p class="p11">w.view.decorator = <span class="s6">FlowLayout</span>(w.view.bounds);</p>
 <p class="p3"><br></p>
@@ -306,13 +311,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">)</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p16">// make the first point unmoveable</p>
+<p class="p17">// make the first point unmoveable</p>
 <p class="p3"><br></p>
 <p class="p11">(</p>
 <p class="p11">b.setEditable(0,<span class="s6">false</span>);</p>
 <p class="p11">)</p>
 <p class="p3"><br></p>
-<p class="p16">// use shift click to select/unselect the points</p>
+<p class="p17">// use shift click to select/unselect the points</p>
 <p class="p3"><br></p>
 <p class="p11">(</p>
 <p class="p11">w = <span class="s6">Window</span>(<span class="s7">"envelope"</span>, <span class="s6">Rect</span>(150 , <span class="s6">Window</span>.screenBounds.height-250, 400, 150)).front;</p>
@@ -331,7 +336,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">)</p>
 <p class="p3"><br></p>
 <p class="p11">(</p>
-<p class="p17"><span class="s2">r = </span>Routine<span class="s2">({</span></p>
+<p class="p18"><span class="s2">r = </span>Routine<span class="s2">({</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="s6">var</span> j = 0;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>20.do({ <span class="s6">arg</span> i;</p>
 <p class="p11"><span class="Apple-tab-span">	</span>b.select((b.size -1).rand.abs);</p>
@@ -347,7 +352,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">)<span class="Apple-tab-span">	</span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p16">//show boxes with a string in it:</p>
+<p class="p17">//show boxes with a string in it:</p>
 <p class="p11">(</p>
 <p class="p11">a = <span class="s6">Window</span>(<span class="s7">"text-boxes"</span>, <span class="s6">Rect</span>(200 , 450, 450, 450));</p>
 <p class="p11">a.view.decorator = <span class="s6">FlowLayout</span>(a.view.bounds);</p>
@@ -367,7 +372,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">)</p>
 <p class="p3"><br></p>
 <p class="p11">(</p>
-<p class="p16"><span class="s2">b.connect(3, [2.0,0.0,1.0]); </span>// the text objects can be connected</p>
+<p class="p17"><span class="s2">b.connect(3, [2.0,0.0,1.0]); </span>// the text objects can be connected</p>
 <p class="p11">b.connect(0,[2.0,3.0,1.0]);</p>
 <p class="p11">)</p>
 </body>
