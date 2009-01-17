@@ -1427,7 +1427,7 @@
 				PRODUCT_NAME = SuperColliderAU;
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
-					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
+					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
 				);
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = component;
@@ -1466,7 +1466,7 @@
 				PRODUCT_NAME = SuperColliderAU;
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
-					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
+					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
 				);
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = component;
