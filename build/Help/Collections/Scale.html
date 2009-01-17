@@ -203,16 +203,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">s.waitForBoot({</p>
 <p class="p5"><span class="Apple-tab-span">	</span>a = <span class="s2">Scale</span>.ionian;</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>p = { <span class="s2">|scale|</span></p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pseq</span>([0, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1, 0, <span class="s4">\rest</span>], <span class="s2">inf</span>),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\scale</span>, <span class="s2">Pfunc</span>({ a }, <span class="s2">inf</span>),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p5"><span class="Apple-tab-span">	</span>p = <span class="s2">Pbind</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pseq</span>([0, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1, 0, <span class="s4">\rest</span>], <span class="s2">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\scale</span>, <span class="s2">Pfunc</span>({ a }, <span class="s2">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
+<p class="p5"><span class="Apple-tab-span">	</span>);</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>q = p.value(a);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>r = q.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>q = p.play;</p>
 <p class="p5">})</p>
 <p class="p5">)</p>
 <p class="p7"><br></p>
@@ -254,7 +251,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5">a = <span class="s2">Scale</span>.lydian(t);</p>
 <p class="p7"><br></p>
-<p class="p5">r.stop;</p>
+<p class="p5">q.stop;</p>
 <p class="p7"><br></p>
 <p class="p6">// getting info</p>
 <p class="p5">a.name;</p>
