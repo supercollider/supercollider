@@ -1517,7 +1517,15 @@ SCEnvelopeView : SCView {
 	var <>size ;
 	var <editable = true;
 	var <curves = \linear;
-
+	var gridOn, gridColor, grid;
+	
+	init{arg argParent, argBounds;
+		super.init(argParent, argBounds);
+		gridOn = false; 
+		gridColor = Color(0,0,0.8, 0.3);
+		grid = Point(0.1, 0.1);
+	}
+	
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
 	mouseTrack { arg x, y, modifiers; 	}
@@ -1525,8 +1533,23 @@ SCEnvelopeView : SCView {
 		mouseUpAction.value(this);
 	}
 	
+	grid_{arg point;
+		this.setProperty(\setGrid, [point.x, point.y]);
+		grid = point;
+	}
+	
+	gridOn_{arg bool;
+		this.setProperty(\showGrid, bool);
+		gridOn = bool;
+	}
+	
+	gridColor_{arg color;
+		this.setProperty(\setGridColor, color);
+		gridColor = color;
+	}
+	
 	properties {
-		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step]
+		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step, \setCurve, \setCurves, \showGrid, setGridColor, \setGrid]
 	}	
 		
 	step_ { arg stepSize;

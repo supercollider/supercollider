@@ -760,8 +760,11 @@ protected:
 	bool  mDrawLinesActive, mShowIndex, mDrawRectsActive, mIsFilled, mIsFixedSelection, mIsEnvView, mIsTracking;
 	int mSelectedIndex;
 	SCPoint mMousePoint;
-
-	double xGridMultiplier;
+	
+	//grid
+	bool mGridOn;
+	SCColor mGridColor;
+	SCPoint mGrid;
 
 	//draw string in box
     char mFontName[kFontNameSize];
@@ -771,6 +774,7 @@ protected:
 	bool mDrawCenteredConnection;
 	int *drawOrder;
 	SCPoint trackOffset;
+
     
 };
 SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
