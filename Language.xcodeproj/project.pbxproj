@@ -406,6 +406,13 @@
 			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
 			remoteInfo = libscsynth;
 		};
+		D56F8FCF0F225867007C81D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9456F5BC0C19E25900634E4D /* Synth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */;
+			remoteInfo = SuperColliderAU;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -689,7 +696,7 @@
 		949318150C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		949318160C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		949318170C192C120018AB50 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
-		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
@@ -863,6 +870,7 @@
 			children = (
 				9456F5C70C19E25900634E4D /* scsynth */,
 				94F5FC1A0C1E6D33005CDF9F /* libscsynth.a */,
+				D56F8FD00F225867007C81D9 /* SuperColliderAU.component */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1341,6 +1349,7 @@
 		F50D04F702E68E8201CA2799 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
@@ -1374,6 +1383,13 @@
 			fileType = archive.ar;
 			path = libscsynth.a;
 			remoteRef = 94F5FC190C1E6D33005CDF9F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D56F8FD00F225867007C81D9 /* SuperColliderAU.component */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SuperColliderAU.component;
+			remoteRef = D56F8FCF0F225867007C81D9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

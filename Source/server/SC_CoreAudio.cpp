@@ -52,7 +52,7 @@ double gSampleRate, gSampleDur;
 // =====================================================================
 // Timing (CoreAudio)
 
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 
 int64 gOSCoffset = 0; 
 
@@ -228,7 +228,7 @@ int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *in
 		scprintf("FAILURE %s Command not found\n", inData);
 		return kSCErr_NoSuchCommand;
 	}
-	
+
 	int err = cmdObj->Perform(inWorld, inSize - cmdNameLen, inData + cmdNameLen, inReply);
 	//scprintf("<-PerformOSCMessage %d\n", inData[0]);
 	return err;
@@ -486,8 +486,17 @@ bool SC_AudioDriver::Stop()
 
 // =====================================================================
 // Audio driver (CoreAudio)
-
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+
+SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_CoreAudioDriver(inWorld);
+}
+
+#endif
+
+#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO ||  SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
+
 SC_CoreAudioDriver::SC_CoreAudioDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
         , mInputBufList(0)
@@ -835,7 +844,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			mInputBufList->mBuffers[i].mData = zalloc(1, mInputBufList->mBuffers[i].mDataByteSize);
 		}
 	
-	/*
+		/*
 		AudioTimeStamp	now;
 		now.mFlags = kAudioTimeStampHostTimeValid;
 		now.mHostTime = AudioGetCurrentHostTime();
@@ -846,7 +855,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			scprintf("get kAudioDevicePropertyRegisterBufferList error %4.4s\n", (char*)&err);
 			return false;
 		}
-	*/
+		*/
 	}
 
 	*outNumSamplesPerCallback = mHardwareBufferSize / outputStreamDesc.mBytesPerFrame;
@@ -888,13 +897,14 @@ OSStatus appIOProc2 (AudioDeviceID inDevice, const AudioTimeStamp* inNow,
 }
 */
 
+
 OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow, 
 					const AudioBufferList* inInputData,
 					const AudioTimeStamp* inInputTime, 
 					AudioBufferList* outOutputData, 
 					const AudioTimeStamp* inOutputTime,
 					void* defptr)
-{			
+{		
 	SC_CoreAudioDriver* def = (SC_CoreAudioDriver*)defptr;
 
 	// copy input data to driver's private buffer list
@@ -948,6 +958,7 @@ OSStatus appIOProc (AudioDeviceID device, const AudioTimeStamp* inNow,
 		return kAudioHardwareNoError;
 	}
 	
+
 	def->Run(def->mInputBufList, outOutputData, oscTime);
 	return kAudioHardwareNoError;
 }
