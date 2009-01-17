@@ -119,6 +119,25 @@ Scale {
 	stepsPerOctave {
 		^tuning.stepsPerOctave
 	}
+	
+	postln {
+		name.postln;
+		^this
+	}
+	
+	storeOn { |stream|
+		stream << this.class.name << "( " << degrees << ", " << pitchesPerOctave << ", "
+			<< descDegrees << ", ";
+		tuning.storeOn(stream);
+		stream << ", ";
+		name.storeOn(stream);
+		stream << " )";
+	}
+
+	printOn { |stream|
+		name.printOn(stream)
+	}
+	
 }
 
 Tuning {
@@ -197,7 +216,16 @@ Tuning {
 	asTuning {
 		^this
 	}
+		
+	storeOn { |stream|
+		stream << this.class.name << "(" << tuning << ", " << octaveRatio << ", ";
+		name.storeOn(stream);
+		stream << " )"
+	}
 	
+	printOn { |stream|
+		name.printOn(stream)
+	}
 }
 
 ScaleInfo {
@@ -422,7 +450,7 @@ TuningInfo {
 		tunings = IdentityDictionary[
 
 			//TWELVE-TONE TUNINGS
-			\et12 -> Tuning.new((0..11)),
+			\et12 -> Tuning.new((0..11), 2, "ET12"),
 
 			\pythagorean -> Tuning.new([1, 256/243, 9/8, 32/27, 81/64, 4/3, 729/512, 3/2,
 				128/81, 27/16, 16/9, 243/128].ratiomidi, 2, "Pythagorean"),
