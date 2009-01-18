@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.48">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+span.s1 {color: #0000ff}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
+span.s5 {color: #606060}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SuperColliderAU<span class="Apple-tab-span">	</span>SC's server can become an Audio Unit</b></p>
+<p class="p2"><br></p>
+<p class="p3">SuperColliderAU is a project by Gerard Roma that embeds a SuperCollider <a href="../ServerArchitecture/Server.html"><span class="s1">Server</span></a> as an "effect" Audio Unit, so that it can be directly used to generate/process audio within Mac OSX software such as Logic or Ableton Live.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>Installing:</b></p>
+<p class="p2"><br></p>
+<p class="p3">Copy the bundle "SuperColliderAU.component" into /Library/Audio/Plug-ins/Components</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Quick Start:</b></p>
+<p class="p2"><br></p>
+<p class="p3">Start up some piece of software that can use Audio Units. If you don't have Logic or whatever, you can use the free "AU Lab" program provided by Apple as part of their Developer Tools. Set it up so that you have some source sound (e.g. an audio input) and then add an "effect" unit of type SuperColliderAU. A panel will appear telling you which port the server is listening to for OSC messages.</p>
+<p class="p2"><br></p>
+<p class="p3">Now you can run this code from within the SuperCollider language to talk directly with the embedded server:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s2">u = </span><span class="s3">Server</span><span class="s2">(</span><span class="s4">\scau</span><span class="s2">, </span><span class="s3">NetAddr</span><span class="s2">(</span><span class="s5">"127.0.0.1"</span><span class="s2">, 9989)); </span>// Change the port from 9989 to the right one for you</p>
+<p class="p5">u.serverRunning = <span class="s3">true</span>;</p>
+<p class="p4"><span class="s2">u.ping(10); </span>// Gives about 0.02 for me - confirms that communication is working</p>
+<p class="p4">// Now let's create a quick ring-modulator effect:</p>
+<p class="p5">z = { <span class="s3">AudioIn</span>.ar([1,2]) * <span class="s3">SinOsc</span>.ar(<span class="s3">MouseX</span>.kr(100, 1000)) }.play(u)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Making standalone plugins:</b></p>
+<p class="p2"><br></p>
+<p class="p3">You can create standalone plugins that don't need to be controlled from SuperCollider. Gerard will probably put a note here about how to do it (using a quark)...</p>
+<p class="p2"><br></p>
+</body>
+</html>
