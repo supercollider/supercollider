@@ -13,6 +13,7 @@ CocoaDocument : Document {
 			post = this.listener; 
 			if(post.notNil) { post.name_(" post ") } 
 		}, AppClock);
+		this.setTheme('default');
 	}
 
 	*new { arg title="Untitled", string="", makeListener=false;
@@ -26,6 +27,10 @@ CocoaDocument : Document {
 	
 	*prSetDefaultFont{|font|
 		_TextWindow_SetDefaultFont
+	}
+	
+	*prSetSyntaxColorTheme {|textC, classC, stringC, symbolC, commentC, numberC|
+		_TextWindow_SetSyntaxColorTheme
 	}
 	
 	front {
