@@ -127,7 +127,10 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
 	}
 	
-	
+	// for now, force multichannel expansion in streams early.
+	embedInStream { arg inval;
+		^this.asControlInput.embedInStream(inval);
+	}
 	
 	asControlInput {
 			if(this.isPlaying.not) {
