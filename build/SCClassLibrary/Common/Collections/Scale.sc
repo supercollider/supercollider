@@ -138,6 +138,13 @@ Scale {
 		name.printOn(stream)
 	}
 	
+	reset {
+		lastIndex = 0
+	}
+	
+	asStream {
+		^this.copy.reset
+	}
 }
 
 Tuning {
