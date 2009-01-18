@@ -140,8 +140,7 @@ void SyntaxColorize(NSTextView* textView)
 	[textStorage addAttribute:NSForegroundColorAttributeName value: textColor range: range];
 
 	bool bracket = false;
-	bool isSubtraction = false;
-
+	
 	for (;;) {
 		yylen = 0;
 		c = input();
