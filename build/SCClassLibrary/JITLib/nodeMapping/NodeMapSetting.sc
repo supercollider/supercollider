@@ -90,7 +90,7 @@ ProxyNodeMapSetting : NodeMapSetting {
 		value = proxy;
 		isMapped = true;
 		busNumChannels = proxy.numChannels;
-		isMultiChannel = busNumChannels > 1;
+		busNumChannels !? { isMultiChannel = busNumChannels > 1 };
 		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
 	}
 	// can be thrown out.
