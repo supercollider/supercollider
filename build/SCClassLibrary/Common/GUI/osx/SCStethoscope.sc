@@ -38,7 +38,7 @@ SCStethoscope {
 		scopeView.background = Color.black;
 		scopeView.resize = 5;
 		view.keyDownAction = { arg view, char; this.keyDown(char) };
-			
+		view.background = Color.grey(0.6);
 		zx = scopeView.xZoom.log2;
 		zy = scopeView.yZoom.log2;
 		
