@@ -54,10 +54,10 @@
 	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime, name;
 		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asString },
 			this, rates, prependArgs, outClass, fadeTime
-		);	
+		);
 	}
 	
-	play { arg target, outbus = 0, fadeTime=0.02, addAction=\addToHead;
+	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
@@ -66,7 +66,7 @@
 		};
 		def = this.asSynthDef(
 			fadeTime:fadeTime, 
-			name: SystemSynthDefs.tempNamePrefix ++ this.identityHash.abs.asString
+			name: SystemSynthDefs.generateTempName
 		);
 		synth = Synth.basicNew(def.name, server);
 		bytes = def.asBytes;
