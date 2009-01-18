@@ -39,7 +39,7 @@ Help {
 		})
 	}
 	
-	*tree { |sysext=true, userext=true, allowCached=true|
+	*tree { |sysext=true, userext=true, allowCached=false|
 		var classes, node, subc, helpRootLen;
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
@@ -275,7 +275,7 @@ Help {
 		^dict
 	}
 
-*gui { |sysext=true,userext=true, allowCached=true|
+*gui { |sysext=true,userext=true, allowCached=false|
 	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
 	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
