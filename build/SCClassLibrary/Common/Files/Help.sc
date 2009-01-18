@@ -18,10 +18,11 @@ Class.browse
 
 Help {
 	classvar tree, categoriesSkipThese, fileslist;
-	classvar <filterUserDirEntries;
+	classvar <filterUserDirEntries, <>cachePath;
 	
 	*initClass {
 		var	dir;
+		cachePath = Platform.userAppSupportDir +/+ "SC_helptree.cache.txt";
 		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
 			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
@@ -38,13 +39,18 @@ Help {
 		})
 	}
 	
-	*tree { |sysext=true,userext=true|
+	*tree { |sysext=true, userext=true, allowCached=true|
 		var classes, node, subc, helpRootLen;
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
 		var thisHelpExt;
+		if(allowCached and: {tree.isNil and: {File.exists(this.cachePath)}}){
+			"Help tree read from cache in % seconds".format({
+				this.readTextArchive(this.cachePath); // Attempt to read cached version
+			}.bench(false)).postln;
+		};
 		if(tree.isNil, { "Help files scanned in % seconds".format({
-			// Building the tree - base class was originally UGen
+			// Building the tree
 			
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
@@ -63,11 +69,14 @@ Help {
 			classes.do({|class| this.addCatsToTree(class, fileslist)});
 			
 			// Now add the remaining ones to the tree - they're everything except the classes which 
-	//      have declared their own categorisation(s).
+			//      have declared their own categorisation(s).
 			
 			helpDirs.do{ |helpDir|
 				this.addDirTree( helpDir,tree );
 			};
+			{
+				this.writeTextArchive(this.cachePath);
+			}.defer(4.312);
 		}.bench(false)).postln});
 		^tree;
 	}
@@ -266,7 +275,7 @@ Help {
 		^dict
 	}
 
-*gui { |sysext=true,userext=true|
+*gui { |sysext=true,userext=true, allowCached=true|
 	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
 	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
@@ -275,7 +284,7 @@ Help {
 	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false, fUpdateWinTitle;
 	
 	// Call to ensure the tree has been built
-	this.tree( sysext, userext );
+	this.tree( sysext, userext, allowCached );
 	
 	// Now for a GUI
 	screenBounds = Window.screenBounds;
