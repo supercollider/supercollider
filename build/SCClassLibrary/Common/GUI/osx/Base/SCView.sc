@@ -513,6 +513,14 @@ SCScrollView : SCScrollTopView {
 		this.setProperty(\border, bool);
 	}
 	
+	init { |argParent, argBounds|
+		super.init(argParent, argBounds);
+
+		relativeOrigin = false; // scroll views are never relative, although they really are ;-)
+	}
+	
+	relativeOrigin_ {  }
+	
 	handleKeyModifiersChangedBubbling { arg view, modifiers;
 		var result;
 		// nil from keyDownAction --> pass it on
