@@ -20,12 +20,15 @@
 
 
 #include <Cocoa/Cocoa.h>
+#include <SCGeom.h>
 
 
 static int linepos, lineno, charno, yylen;
 static int textpos, textlen, totallen;
 static unichar *text;
 static unichar yytext[256];
+
+SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber;
 
 static bool streq(char *cstr, unichar *ustr)
 {
@@ -120,22 +123,24 @@ void SyntaxColorize(NSTextView* textView)
 	long startrun = 0, endrun;
 	NSRange range;
 	int startline, clevel, prevc;
-	NSColor* black = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0. alpha: 1.];
-	NSColor* darkRed = [NSColor colorWithCalibratedRed: 0.75 green: 0. blue: 0. alpha: 1.];
-	NSColor* darkBlue = [NSColor colorWithCalibratedRed: 0. green: 0. blue: 0.75 alpha: 1.];
-	NSColor* darkGreen = [NSColor colorWithCalibratedRed: 0. green: 0.45 blue: 0. alpha: 1.];
-	NSColor* darkGray = [NSColor colorWithCalibratedRed: 0.375 green: 0.375 blue: 0.375 alpha: 1.];
+	NSColor* textColor = [NSColor colorWithCalibratedRed: synColText.red green: synColText.green blue: synColText.blue alpha: synColText.alpha];
+	NSColor* commentColor = [NSColor colorWithCalibratedRed: synColComment.red green: synColComment.green blue: synColComment.blue alpha: synColComment.alpha];
+	NSColor* classColor = [NSColor colorWithCalibratedRed: synColClass.red green: synColClass.green blue: synColClass.blue alpha: synColClass.alpha];
+	NSColor* symbolColor = [NSColor colorWithCalibratedRed: synColSymbol.red green: synColSymbol.green blue: synColSymbol.blue alpha: synColSymbol.alpha];
+	NSColor* stringColor = [NSColor colorWithCalibratedRed: synColString.red green: synColString.green blue: synColString.blue alpha: synColString.alpha];
+	NSColor* numberColor = [NSColor colorWithCalibratedRed: synColNumber.red green: synColNumber.green blue: synColNumber.blue alpha: synColNumber.alpha];
 	NSTextStorage *textStorage = [textView textStorage];
 	
 	if (!startColorizer(textView)) return;
 	
 	[textStorage beginEditing];
 	
-	// reset to black	        
+	// reset to textColor	        
 	range = NSMakeRange(textpos, textlen - textpos);
-	[textStorage addAttribute:NSForegroundColorAttributeName value: black range: range];
+	[textStorage addAttribute:NSForegroundColorAttributeName value: textColor range: range];
 
 	bool bracket = false;
+	bool isSubtraction = false;
 
 	for (;;) {
 		yylen = 0;
@@ -168,7 +173,10 @@ void SyntaxColorize(NSTextView* textView)
 				c = input0();
 			}
 			continue; 
-		} else {
+		}
+		else if(c == '-')	goto negnumber; //might be a negative number
+		else if(c >= '0' && c <= '9')	goto number;
+		else {
 			continue; 
 		}
 	ident:
@@ -187,10 +195,10 @@ void SyntaxColorize(NSTextView* textView)
 			startrun = textpos - yylen;
 			range = NSMakeRange(startrun, endrun - startrun);
 			if (yytext[0] == '_') {
-			  [textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			  [textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 			}
 			else if (yytext[0] >= 'A' && yytext[0] <= 'Z') {
-			  [textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			  [textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 			}
 			else if (  streq("var",yytext)
 					|| streq("arg",yytext)
@@ -198,7 +206,7 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("const",yytext)
 			) {
 				range = NSMakeRange(startrun, endrun - startrun);
-				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 			}
 			else if (  streq("this",yytext)
 					|| streq("super",yytext)
@@ -208,14 +216,14 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("thisFunctionDef",yytext)
 					|| streq("thisFunction",yytext)
 			) {
-				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 			}
 			else if (  streq("nil",yytext)
 					|| streq("false",yytext)
 					|| streq("true",yytext) 
 					|| streq("inf",yytext)
 			) {
-				[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 			}
 			continue;
 		}
@@ -240,7 +248,7 @@ void SyntaxColorize(NSTextView* textView)
 			unput(c);
 			endrun = textpos;
 			range = NSMakeRange(startrun, endrun - startrun);
-			[textStorage addAttribute:NSForegroundColorAttributeName value: darkGreen range: range];
+			[textStorage addAttribute:NSForegroundColorAttributeName value: symbolColor range: range];
 			continue;
 		}
 	symbol3 : {	
@@ -262,7 +270,7 @@ void SyntaxColorize(NSTextView* textView)
 			} else {
 				endrun = textpos;
 				range = NSMakeRange(startrun, endrun - startrun);
-				[textStorage addAttribute:NSForegroundColorAttributeName value: darkGreen range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: symbolColor range: range];
 				continue;
 			}
 		}
@@ -288,7 +296,7 @@ void SyntaxColorize(NSTextView* textView)
 			} else {
 				endrun = textpos;
 				range = NSMakeRange(startrun, endrun - startrun);
-				[textStorage addAttribute:NSForegroundColorAttributeName value: darkGray range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: stringColor range: range];
 				continue;
 			}
 		}
@@ -300,7 +308,7 @@ void SyntaxColorize(NSTextView* textView)
 		endrun = textpos;
 		if(c != 0){ 
 			range = NSMakeRange(startrun, endrun - startrun);
-			[textStorage addAttribute:NSForegroundColorAttributeName value: darkBlue range: range];
+			[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
 		}
 		continue;
 	comment1:	/* comment -- to end of line */
@@ -310,7 +318,7 @@ void SyntaxColorize(NSTextView* textView)
 		} while (c != '\n' && c != '\r' && c != 0);
 		endrun = textpos;
 		range = NSMakeRange(startrun, endrun - startrun - 1);
-		[textStorage addAttribute:NSForegroundColorAttributeName value: darkRed range: range];
+		[textStorage addAttribute:NSForegroundColorAttributeName value: commentColor range: range];
 		continue;
 
 	comment2 : 
@@ -330,9 +338,41 @@ void SyntaxColorize(NSTextView* textView)
 		} else {
 			endrun = textpos;
 			range = NSMakeRange(startrun, endrun - startrun);
-			[textStorage addAttribute:NSForegroundColorAttributeName value: darkRed range: range];
+			[textStorage addAttribute:NSForegroundColorAttributeName value: commentColor range: range];
 			continue;
 		}
+	number:
+ 		startrun = textpos -1;
+ 		do {
+ 			c = input0();
+ 			if(c == '.') { c = input0(); if(c < '0' || c > '9') { unput(c); break; }; }; 
+ 		}	while ((c >= '0' && c <= '9') || c == '.' || c == ' ');
+ 		endrun = textpos - 1;
+ 		range = NSMakeRange(startrun, endrun - startrun);
+ 		[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
+ 		continue;
+	negnumber:
+		bool numFound = false; //no digit found yet, after minus sign
+		int tempTextpos = textpos, tempCharno = charno, tempYylen = yylen, tempLineno = lineno;
+		do { //go backwards until you find stg. other than whitespace and numbers
+			unput(c); unput(c); 
+			c = input0();
+		} while (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r' || c == 0 || (c >= '0' && c <= '9'));
+		textpos = tempTextpos; charno = tempCharno; yylen = tempYylen; lineno = tempLineno; //restore original position
+		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') continue; //it must be a subtraction operator, skip.
+		startrun = textpos - 1;
+		do {
+			c = input0();
+			if(c >= '0' && c <= '9') numFound = true;
+			if(c == '.') { c = input0(); if(c < '0' || c > '9') { unput(c); break; }; }; 
+		} while(c == ' ' || (c >= '0' && c <= '9') || c == '.');
+		endrun = textpos - 1;
+		if(numFound)
+		{
+			range = NSMakeRange(startrun, endrun - startrun);
+			[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
+		};
+		continue;
 	}
 	
 error2:

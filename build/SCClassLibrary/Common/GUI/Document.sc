@@ -11,6 +11,7 @@ Document {
 	
 	classvar <>implementationClass;
 	classvar <postColor;
+	classvar <theme, <themes;
 
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction, <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
@@ -30,6 +31,17 @@ Document {
 			doc = this.newFromIndex(i);
 		});
 		postColor = Color.black;
+		themes = (
+			default: (
+				classColor: Color(0, 0, 0.75, 1),
+				textColor: Color(0, 0, 0, 1),
+				stringColor: Color(0.375, 0.375, 0.375, 1),
+				commentColor: Color(0.75, 0, 0, 1),
+				symbolColor: Color(0, 0.45, 0, 1),
+				numberColor: Color(0, 0, 0, 1)
+				)
+			);
+		theme = themes.default;
 	}
 	
 	*open { arg path, selectionStart=0, selectionLength=0, envir;
@@ -262,6 +274,18 @@ Document {
 		^this.subclassResponsibility
 	}
 	
+	*setTheme { arg themeName;
+		theme = themes[themeName];
+		Document.implementationClass.prSetSyntaxColorTheme(
+			theme.textColor,
+			theme.classColor,
+			theme.stringColor,
+			theme.symbolColor,
+			theme.commentColor,
+			theme.numberColor
+		);
+	}
+	
 // state info
 	isEdited {
 		^this.subclassResponsibility
@@ -475,6 +499,10 @@ Document {
 	prSetBounds { arg argBounds;
 		^this.subclassResponsibility
 	}
+	
+	*prSetSyntaxColorTheme{|textC, classC, stringC, symbolC, commentC, numberC|
+		^this.subclassResponsibility;
+	}
 
 	//if range is -1 apply to whole doc
 	setFont {arg font, rangeStart= -1, rangeSize=100;
@@ -674,9 +702,7 @@ Document {
 	*prBasicNew {
 		^super.new
 	}
-	
-
-	
+		
 }
 
 

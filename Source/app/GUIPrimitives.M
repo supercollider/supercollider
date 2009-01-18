@@ -226,6 +226,59 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 }
 
+extern SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber; 
+
+int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed);
+int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *colText;
+	PyrSlot *colClass;
+	PyrSlot *colString;
+	PyrSlot *colSymbol;
+	PyrSlot *colComment;
+	PyrSlot *colNumber;
+	
+	colText = g->sp - numArgsPushed + 2;
+	colClass = colText + 1;
+	colString = colClass + 1;
+	colSymbol = colString + 1;
+	colComment = colSymbol + 1;
+	colNumber = colComment + 1;
+	
+	if (isKindOfSlot(colText, s_color->u.classobj)) {
+		int err = slotColorVal(colText, &synColText);
+		if(err) return err;
+	}	
+	
+	if (isKindOfSlot(colClass, s_color->u.classobj)) {
+		int err = slotColorVal(colClass, &synColClass);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colString, s_color->u.classobj)) {
+		int err = slotColorVal(colString, &synColString);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colSymbol, s_color->u.classobj)) {
+		int err = slotColorVal(colSymbol, &synColSymbol);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colComment, s_color->u.classobj)) {
+		int err = slotColorVal(colComment, &synColComment);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colNumber, s_color->u.classobj)) {
+		int err = slotColorVal(colNumber, &synColNumber);
+		if(err) return err;
+	};
+	
+	return errNone;
+	
+}
+
 int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 {
@@ -4001,6 +4054,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);	
 	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);
 	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 6, 0);
 
 
 
