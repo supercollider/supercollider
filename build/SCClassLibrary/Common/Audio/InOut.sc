@@ -49,30 +49,6 @@ Control : MultiOutUGen {
 	}
 	*isControlUGen { ^true }
 	
-	*from { arg name, values = [0], lags;
-		var prefix, ctlName, ctl;
-		values = values.asArray;
-		
-		name !? {
-			name = name.asString;
-			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
-			this.names([ctlName.asSymbol]);
-		};
-		
-		if(lags.notNil and: prefix.isNil) { 
-			ctl = LagControl.kr(values.flat, lags)
-		} {
-			ctl = if(prefix == $a) { AudioControl.ar(values.flat) } {
-				if(prefix == $t) { TrigControl.kr(values.flat) } {
-					Control.kr(values.flat)
-				}
-			};
-			lags !? { ctl = ctl.lag(lags.asArray) };
-		};
-		
-		
-		^ctl.asArray.reshapeLike(values)
-	}
 }
 
 AudioControl : MultiOutUGen {
