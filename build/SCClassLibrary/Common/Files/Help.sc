@@ -39,14 +39,14 @@ Help {
 		})
 	}
 	
-	*tree { |sysext=true, userext=true, allowCached=false|
+	*tree { |sysext=true, userext=true, allowCached=true|
 		var classes, node, subc, helpRootLen;
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
 		var thisHelpExt;
 		if(allowCached and: {tree.isNil and: {File.exists(this.cachePath)}}){
 			"Help tree read from cache in % seconds".format({
-				this.readTextArchive(this.cachePath); // Attempt to read cached version
+				this.readTextArchive; // Attempt to read cached version
 			}.bench(false)).postln;
 		};
 		if(tree.isNil, { "Help files scanned in % seconds".format({
@@ -75,7 +75,7 @@ Help {
 				this.addDirTree( helpDir,tree );
 			};
 			{
-				this.writeTextArchive(this.cachePath);
+				this.writeTextArchive;
 			}.defer(4.312);
 		}.bench(false)).postln});
 		^tree;
@@ -226,8 +226,11 @@ Help {
 	}
 
 	*writeTextArchive{ |path|
-		var fp = File(path, "w");
+		var fp;
+		if(path.isNil){ path = this.cachePath };
+		fp = File(path, "w");
 		this.prRecurseTreeToFile(fp, this.tree); // Must use this.tree - will create if not exists
+		fp.write(fileslist.asTextArchive);
 		fp.close;
 	}
 
@@ -244,11 +247,20 @@ Help {
 	}
 
 	*readTextArchive{ |path|
-		var fp = File(path, "r");
+		var fp, filesliststr;
+		if(path.isNil){ path = this.cachePath };
+		fp = File(path, "r");
 		try{
 			tree = this.prRecurseTreeFromFile(fp);
 		}{
-			"Failure in Help.treeFromFile(%)".format(path).warn;
+			"Failure to read tree in Help.treeFromFile(%)".format(path).warn;
+			this.forgetTree;
+		};
+		try{
+			filesliststr = fp.readAllString;
+			fileslist = filesliststr.interpret;
+		}{
+			"Failure to read fileslist in Help.treeFromFile(%)".format(path).warn;
 			this.forgetTree;
 		};
 		fp.close;
@@ -275,7 +287,7 @@ Help {
 		^dict
 	}
 
-*gui { |sysext=true,userext=true, allowCached=false|
+*gui { |sysext=true,userext=true, allowCached=true|
 	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
 	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
