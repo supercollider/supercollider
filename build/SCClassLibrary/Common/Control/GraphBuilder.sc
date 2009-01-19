@@ -64,3 +64,71 @@ EnvGate {
 
 }
 
+
+NamedControl {
+	classvar currentControls, buildSynthDef;
+	var <name, <values, <lags, <fixedLag;
+	var <control;
+	
+	*new { arg name, values = [0], lags, fixedLag = false;
+		var res;
+		values = values.asArray;
+		
+		this.initDict;
+		res = currentControls.at(name);
+		
+		if(res.isNil) {
+			res = super.newCopyArgs(name, values, lags, fixedLag).init;
+			currentControls.put(name, res);
+		} {
+			if(res.values != values) { 
+				Error("NamedControl: cannot have two sets of default values.").throw;
+			};
+		};
+		
+		if(res.fixedLag and: { res.lags != lags }) {
+			Error("NamedControl: cannot have more than one set of fixed lag values.").throw;
+		};
+		^if(lags.notNil) {
+			res.control.lag(lags.asArray)
+		} {
+			res.control
+		}
+	}
+	
+	*initDict {
+		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {
+			buildSynthDef = UGen.buildSynthDef;
+			currentControls = IdentityDictionary.new;
+		};
+	}
+	
+	init {
+		var prefix, ctlName, ctl;
+		
+		name !? {
+			name = name.asString;
+			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
+			Control.names([ctlName.asSymbol]);
+		};
+		
+		if(fixedLag && lags.notNil && prefix.isNil) { 
+			control = LagControl.kr(values.flat, lags);
+		} {
+			if(prefix == $a) { 
+				control = AudioControl.ar(values.flat);
+			} {
+				if(prefix == $t) { 
+					control = TrigControl.kr(values.flat);
+				} {
+					control = Control.kr(values.flat);
+				}
+			};
+		};
+		
+		control = control.asArray.reshapeLike(values);
+	}
+	
+
+}
+

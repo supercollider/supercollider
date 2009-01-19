@@ -92,8 +92,8 @@ Symbol {
 		^firstArg.performList(this, args)
 	}
 	
-	ctl { arg default, lag;
-		^Control.from(this, default, lag)
+	ctl { arg default, lag, fixedLag = false;
+		^NamedControl(this, default, lag, fixedLag)
 	}
 
 	// support for math on symbols
