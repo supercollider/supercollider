@@ -5,26 +5,31 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #1638e6}
+span.s2 {color: #1141e0}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #0000bf}
-span.s6 {color: #007300}
+span.s5 {color: #001bb9}
+span.s6 {color: #2c7014}
+span.s7 {color: #0000bf}
+span.s8 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -48,15 +53,45 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p11">// basic usage</p>
 <p class="p12">(</p>
-<p class="p12">w=<span class="s5">Window</span>.new.front;</p>
-<p class="p12">w.view.background=<span class="s5">Gradient</span>(<span class="s5">Color</span>.yellow,<span class="s5">Color</span>.white);</p>
+<p class="p12">w = <span class="s5">Window</span>.new.front;</p>
+<p class="p12">w.view.background = <span class="s5">Gradient</span>(<span class="s5">Color</span>.yellow,<span class="s5">Color</span>.white);</p>
 <p class="p12">)</p>
 <p class="p10"><br></p>
 <p class="p11">// change direction and resolution</p>
 <p class="p12">(</p>
-<p class="p12">w=<span class="s5">Window</span>.new.front;</p>
-<p class="p12">w.view.background=<span class="s5">Gradient</span>(<span class="s5">Color</span>.red,<span class="s5">Color</span>.white,<span class="s6">\v</span>, 5);</p>
+<p class="p12">w = <span class="s5">Window</span>.new.front;</p>
+<p class="p12">w.view.background = <span class="s5">Gradient</span>(<span class="s5">Color</span>.red,<span class="s5">Color</span>.white,<span class="s6">\v</span>, 5);</p>
 <p class="p12">)</p>
 <p class="p10"><br></p>
+<p class="p13">// almost unnoticeable variations can be pleasant</p>
+<p class="p14">(</p>
+<p class="p14">w = <span class="s7">Window</span>.new.front;</p>
+<p class="p14">v = <span class="s7">CompositeView</span>(w, <span class="s7">Rect</span>(50,50,300,300));</p>
+<p class="p14">c = <span class="s7">Color</span>.rand;</p>
+<p class="p14">d = c.vary(0.15);</p>
+<p class="p14">v.background = <span class="s7">Gradient</span>(c, d, <span class="s8">\v</span>);</p>
+<p class="p14">[c, d].postln</p>
+<p class="p14">)</p>
+<p class="p15"><br></p>
+<p class="p14">(</p>
+<p class="p14"><span class="s7">var</span> w, k, c, d, e, c1, c2, f, g;</p>
+<p class="p14">w = <span class="s7">Window</span>.new.front;</p>
+<p class="p14">k = <span class="s7">Slider2D</span>(w, <span class="s7">Rect</span>(50,50,300,300));</p>
+<p class="p14">f = {</p>
+<p class="p14"><span class="Apple-tab-span">	</span>c = <span class="s7">Color</span>.rand;</p>
+<p class="p14"><span class="Apple-tab-span">	</span>d = c.vary(0.5);</p>
+<p class="p14"><span class="Apple-tab-span">	</span>e = d.vary(0.5);</p>
+<p class="p14">};</p>
+<p class="p14">g = {<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>c1 = d.hueBlend(e, k.y).round(0.01);<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>c2 = c.hueBlend(e, k.x).round(0.01);<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>k.background = <span class="s7">Gradient</span>(c1, c2, <span class="s8">\v</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p14">};</p>
+<p class="p14">f.value; g.value;</p>
+<p class="p14">k.action = g;</p>
+<p class="p14">k.mouseUpAction = { [c1, c2].postln };</p>
+<p class="p13"><span class="s3">k.keyDownAction = f; </span>// hit any key for new color</p>
+<p class="p14">)</p>
+<p class="p15"><br></p>
 </body>
 </html>
