@@ -59,16 +59,17 @@ Control : MultiOutUGen {
 			this.names([ctlName.asSymbol]);
 		};
 		
-		ctl = if(lags.notNil) { 
-			if(prefix.notNil) { Error("Control: cannot combine prefix with lag.").throw };
-			LagControl.kr(values.flat, lags)
+		if(lags.notNil and: prefix.isNil) { 
+			ctl = LagControl.kr(values.flat, lags)
 		} {
-			if(prefix == $a) { AudioControl.ar(values.flat) } {
+			ctl = if(prefix == $a) { AudioControl.ar(values.flat) } {
 				if(prefix == $t) { TrigControl.kr(values.flat) } {
 					Control.kr(values.flat)
 				}
-			}
+			};
+			lags !? { ctl = ctl.lag(lags.asArray) };
 		};
+		
 		
 		^ctl.asArray.reshapeLike(values)
 	}
