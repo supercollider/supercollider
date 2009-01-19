@@ -53,6 +53,9 @@ Color {
 			(alpha + alphaVal.rand2).clip(0,1)
 		) 
 	}
+	round { arg val=0.01;
+		^Color.fromArray([red, green, blue].round(val) ++ alpha)
+	}
 	
 	complementary {
 		^Color.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
