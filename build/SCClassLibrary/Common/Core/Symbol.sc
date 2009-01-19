@@ -91,6 +91,10 @@ Symbol {
 	applyTo { arg firstArg ... args;
 		^firstArg.performList(this, args)
 	}
+	
+	ctl { arg default, lag;
+		^Control.from(this, default, lag)
+	}
 
 	// support for math on symbols
 	
