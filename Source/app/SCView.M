@@ -4106,9 +4106,22 @@ void SCUserView::draw(SCRect inDamage)
 	NSGraphicsContext* lGCtx;
 	if(mRelativeOrigin){
 		CGSize size = CGSizeMake(bounds.width, bounds.height);
+//		post("bounds.width: %f, bounds.height: %f\n",bounds.width, bounds.height);
 		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-		if(!mCGLayer) mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-		CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
+		if(!mCGLayer) 
+		{
+			mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+			CGLayerRetain(mCGLayer);
+		} else {
+			//check whether size has changed
+			CGSize layerSize = CGLayerGetSize(mCGLayer);
+			if(layerSize.width != size.width || layerSize.height != size.height){
+				CGLayerRelease(mCGLayer);
+				mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+				CGLayerRetain(mCGLayer);
+			}
+		}
+		CGRect cgrect = CGRectMake(0, 0, bounds.width, bounds.height);
 		lGCtx = [NSGraphicsContext currentContext];
 		lCGContext = CGLayerGetContext(mCGLayer);
 
