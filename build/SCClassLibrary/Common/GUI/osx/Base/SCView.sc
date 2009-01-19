@@ -1214,7 +1214,7 @@ SCListView : SCControlView {
 	}
 	
 	properties {
-		^super.properties ++ #[\value, \font, \items, \stringColor]
+		^super.properties ++ #[\value, \font, \items, \stringColor, \align, \itemColors]
 	}
 
 	defaultGetDrag { 
