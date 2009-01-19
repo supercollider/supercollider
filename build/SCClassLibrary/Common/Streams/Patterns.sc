@@ -299,70 +299,14 @@ Pmono : Pattern {
 	}
 	
 	embedInStream { | inevent |
-		var id, server, cleanup;
-		var event;
-		var streamout, name;
-		var streampairs = patternpairs.copy;
-		var endval = patternpairs.size - 1;
-		var msgFunc, hasGate, synthLib, desc, schedBundleArray,schedBundle;
-		cleanup = EventStreamCleanup.new;
-		forBy (1, endval, 2) { | i | streampairs[i] = patternpairs[i].asStream };
-
-		inevent ?? { ^nil.yield };
-
-		event = inevent.copy;
-		event.use {
-			synthLib = ~synthLib ?? { SynthDescLib.global };
-			~synthDesc = desc = synthLib.match(synthName);
-			if (desc.notNil) {
-				~hasGate = desc.hasGate;
-				~msgFunc = desc.msgFunc;
-			}{
-				~msgFunc = ~defaultMsgFunc;
-			};
-			msgFunc = ~msgFunc;
-
-			if (~id.notNil) {	
-				~type = \monoSet;	
-			} {
-				~type = \monoNote; 
-				~instrument = synthName;
-				~updatePmono = { | argID, argServer | 
-					 id = argID;
-					 server = argServer;
-					 schedBundleArray = ~schedBundleArray;
-					 schedBundle = ~schedBundle;
-					 
-				};
-				cleanup.addFunction(event, { | flag |
-					if (flag) { (id: id, server: server, type: \off, 
-									schedBundleArray: schedBundleArray,
-									schedBundle: schedBundle).play }
-				}); 
-			}
-		};
-		loop {
-			forBy (0, endval, 2) { | i |
-				name = streampairs[i];
-				streamout = streampairs[i+1].next(event);
-				streamout ?? { ^cleanup.exit(inevent) };
-				if (name.isSequenceableCollection) {
-					name.do { | n, i | event[n] = streamout[i] };
-				}{
-					event[name] = streamout;
-				};			
-			};
-			cleanup.update(event);
-			inevent = event.yield;			
-			event = inevent.copy;
-			event.use{
-				~server = server;
-				~id = id; 
-				~type = \monoSet;
-				~msgFunc= msgFunc;
-			};
-		}
+		^PmonoStream(this).embedInStream(inevent)
 	}	
+}
+
+PmonoArtic : Pmono {
+	embedInStream { |inevent|
+		^PmonoArticStream(this).embedInStream(inevent)
+	}
 }
 
 
