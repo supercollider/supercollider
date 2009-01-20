@@ -288,7 +288,7 @@ SCModalWindow : SCAbstractModalWindow {
 
 	classvar <current;
 	
-	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
+	*new { arg name = "panel", bounds, resizable = false, border = true, server, scroll = false;
 		// app modal flag is true
 		^super.new(name, bounds, resizable, border, nil, scroll).setCurrent.runModal;
 	}
@@ -320,7 +320,7 @@ SCModalWindow : SCAbstractModalWindow {
 SCModalSheet : SCAbstractModalWindow {
 	var parentWindow;
 	
-	*new { arg window, bounds, resizable = true, border = true, server, scroll = false;
+	*new { arg window, bounds, resizable = false, border = true, server, scroll = false;
 		^window.isClosed.not.if({
 			super.new("", bounds !? {bounds.asRect}, resizable, border, nil, scroll)
 				.setCurrent(window)
