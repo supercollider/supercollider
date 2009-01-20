@@ -18,29 +18,28 @@ p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8d261b}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #4a5bb5}
-span.s3 {color: #2040df}
-span.s4 {color: #3e54c5}
+span.s2 {color: #4e5db0}
+span.s3 {color: #2946d8}
+span.s4 {color: #4357c0}
 span.s5 {color: #000000}
 span.s6 {text-decoration: underline}
-span.s7 {color: #485abb}
-span.s8 {color: #4357c0}
-span.s9 {text-decoration: underline ; color: #3e51b3}
-span.s10 {text-decoration: underline ; color: #334abd}
-span.s11 {color: #0000bf}
-span.s12 {color: #0020f6}
-span.s13 {color: #2946d8}
-span.s14 {color: #0922b2}
+span.s7 {color: #4c5db6}
+span.s8 {color: #485abb}
+span.s9 {text-decoration: underline ; color: #4354ae}
+span.s10 {text-decoration: underline ; color: #394eb8}
+span.s11 {color: #0000ff}
+span.s12 {color: #0000bf}
+span.s13 {color: #0c2eee}
+span.s14 {color: #314bd1}
 span.s15 {color: #606060}
-span.s16 {color: #8d261b}
+span.s16 {color: #bf0000}
 span.s17 {font: 9.0px Monaco}
 span.s18 {color: #007300}
 span.Apple-tab-span {white-space:pre}
@@ -59,6 +58,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="s5"><b>See also: </b><a href="SCView.html"><span class="s6">SCView</span></a>, <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a>, <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>, <a href="SCPen.html"><span class="s3">SCPen</span></a></span><span class="s7">, <a href="SCUserView.html"><span class="s8">SCUserView</span></a></span><span class="s8">, <a href="SCImage/SCImage.html"><span class="s9">SCImage</span></a></span><span class="s9">,</span><span class="s5"> <a href="SCModalWindow.html"><span class="s4">SCModalWindow</span></a>, <a href="SCModalSheet.html"><span class="s10">SCModalSheet</span></a></span></p>
 <p class="p2"><br></p>
+<p class="p5"><b>Some Important Issues Regarding SCWindow</b></p>
+<p class="p2"><br></p>
+<p class="p1">If you try to set parameters of a Window or a GUI widget from a<span class="Apple-converted-space">  </span>Routine , which uses the <a href="../../Scheduling/SystemClock.html"><span class="s11">SystemClock</span></a> by default, you must wrap it in a deferred function: { myWindow.bounds_( Rect(100,500,200,200) ) }.defer .<span class="Apple-converted-space">  </span>You do not need to use .defer, if you use the <a href="../../Scheduling/AppClock.html"><span class="s11">AppClock</span></a>.</p>
+<p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*new(name, bounds, resizable, border, server, scroll)</b></p>
@@ -71,9 +74,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s2">GUI</span></a> for more details.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s2">SCScrollTopView</span></a>. The default is false.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s11">Window</span>.new;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>.new;</p>
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front; </span>// draw it and bring it to the front</p>
-<p class="p6"><br></p>
+<p class="p12"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*allWindows</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns an <a href="../../Collections/Array.html"><span class="s2">Array</span></a> of all open SCWindows.</p>
@@ -82,7 +85,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>*initAction_(func)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Get/set and action to be performed when any window is created.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>func</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s12">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s12">FunctionList</span></a></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>func</b> - An instance of <a href="../../Core/Kernel/Function.html"><span class="s13">Function</span></a> or <a href="../../Core/Kernel/FunctionList.html"><span class="s13">FunctionList</span></a></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>*closeAll</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -93,13 +96,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> indicating the bounds of the current screen in pixels.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><br></p>
-<p class="p12"><b>Instance Methods</b></p>
+<p class="p13"><b>Instance Methods</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>addFlowLayout(margin, gap)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A convenience utility which sets view.decorator to FlowLayout and returens the decorator. See FlowLayout for examples.</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../../Geometry/Point.html"><span class="s13">Point</span></a></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../../Geometry/Point.html"><span class="s13">Point</span></a></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>margin</b> - An instance of <a href="../../Geometry/Point.html"><span class="s14">Point</span></a></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>gap</b> - An instance of <a href="../../Geometry/Point.html"><span class="s14">Point</span></a></p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsClickThrough_(boolean)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>acceptsClickThrough</b></p>
@@ -125,13 +128,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or return a <a href="../../Geometry/Rect.html"><span class="s7">Rect</span></a> corresponding to the location and size of the window. The size does not include the title bar. <b>N.B. </b>Location is measured from the <i>bottom left</i> of the screen. This is different from view location, which is measured from the <i>upper left</i> of the window (not including the title bar). Note that because of the way Cocoa applications work, setting the bounds doesn't complete until the application finishes its current application event cycle. Thus, if you check the bounds in the same chunk of code, the SCWindow will not yet return the updated values.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s14">Window</span>.new(<span class="s15">"test"</span>);</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = <span class="s14">Rect</span>(150, 450, 150, 150);</p>
-<p class="p15"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds.postln; </span>// still the old bounds</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ w.bounds.postln; <span class="s14">nil</span> }.defer(0.1); <span class="s16">// next application event cycle</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>.new(<span class="s15">"test"</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = <span class="s12">Rect</span>(150, 450, 150, 150);</p>
+<p class="p16"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds.postln; </span>// still the old bounds</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ w.bounds.postln; <span class="s12">nil</span> }.defer(0.1); <span class="s16">// next application event cycle</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">)</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>close</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -152,11 +155,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Puts the window in or out of full screen mode. Putting a window into fullScreen mode may change its bounds. Make sure to include a button to close the window, or you will have to restart you computer.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s17">(</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s11">Window</span>.new(border: <span class="s11">false</span>);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background_(<span class="s11">Color</span>.rand);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>.new(border: <span class="s12">false</span>);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background_(<span class="s12">Color</span>.rand);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.fullScreen;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Button</span>.new(w, <span class="s11">Rect</span>(200,200,200,200)).states_([[<span class="s15">"Close Window"</span>]]).action_({w.endFullScreen;w.close});</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Button</span>.new(w, <span class="s12">Rect</span>(200,200,200,200)).states_([[<span class="s15">"Close Window"</span>]]).action_({w.endFullScreen;w.close});</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">)</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s17"><span class="Apple-tab-span">	</span></span><b>isClosed</b></p>
@@ -199,114 +202,114 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returnscurrent modal sheet attached to this window, if it exists. See <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><b>Examples</b></p>
+<p class="p13"><b>Examples</b></p>
 <p class="p3"><br></p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
-<p class="p17">//how to add views</p>
-<p class="p18">(</p>
-<p class="p18"><span class="s11">var</span> w;</p>
-<p class="p18">w = <span class="s11">Window</span>(<span class="s15">"my name is... panel"</span>, <span class="s11">Rect</span>(128, 64, 340, 360));</p>
-<p class="p16"><br></p>
-<p class="p18">32.do({ <span class="s11">arg</span> i;</p>
-<p class="p18"><span class="Apple-tab-span">	</span>b = <span class="s11">Button</span>(w, <span class="s11">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
-<p class="p18"><span class="Apple-tab-span">	</span>b.states = [[<span class="s15">"Start "</span>++i, <span class="s11">Color</span>.black, <span class="s11">Color</span>.rand],</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s15">"Stop "</span>++i, <span class="s11">Color</span>.white, <span class="s11">Color</span>.red]];</p>
-<p class="p18">});</p>
-<p class="p18">w.front;</p>
-<p class="p18">)</p>
-<p class="p16"><br></p>
-<p class="p17">// using a decorator on this window's top view</p>
-<p class="p18">(</p>
-<p class="p18"><span class="s11">var</span> w;</p>
-<p class="p18">w = <span class="s11">Window</span>(<span class="s15">"my name is... panel"</span>, <span class="s11">Rect</span>(128, 64, 340, 360));</p>
-<p class="p16"><br></p>
-<p class="p18">w.view.decorator = <span class="s11">FlowLayout</span>(w.view.bounds);</p>
-<p class="p17">// w.addFlowLayout; // you can als write this instead of the line above</p>
-<p class="p16"><br></p>
-<p class="p18">w.view.background = <span class="s11">Color</span>(0.6,0.8,0.8);</p>
-<p class="p18">32.do({ <span class="s11">arg</span> i;</p>
-<p class="p18"><span class="Apple-tab-span">	</span>b = <span class="s11">Button</span>(w, <span class="s11">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
-<p class="p18"><span class="Apple-tab-span">	</span>b.states = [[<span class="s15">"Start "</span>++i, <span class="s11">Color</span>.black, <span class="s11">Color</span>.rand],</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s15">"Stop "</span>++i, <span class="s11">Color</span>.white, <span class="s11">Color</span>.red]];</p>
-<p class="p18">});</p>
-<p class="p16"><br></p>
-<p class="p18">w.front;</p>
-<p class="p18">)</p>
-<p class="p16"><br></p>
-<p class="p17">// setting bounds</p>
-<p class="p17">// use screenbounds for precise placement from the top</p>
-<p class="p16"><br></p>
-<p class="p18">(</p>
-<p class="p18">x = <span class="s11">Window</span>.new(<span class="s15">"test"</span>, <span class="s11">Rect</span>(100,<span class="s11">Window</span>.screenBounds.height-180,300,100));x.front;</p>
-<p class="p18">)</p>
-<p class="p16"><br></p>
-<p class="p17">// bounds.top refers to the bottom edge of the window,</p>
-<p class="p17">// measured from the bottom of the screen. Different than in View.</p>
-<p class="p18">x.bounds_(<span class="s11">Rect</span>(100,400,300,300));</p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
-<p class="p17">// borderless windows</p>
-<p class="p17"><span class="s5">w = </span><span class="s11">Window</span><span class="s5">.new(border:</span><span class="s11">false</span><span class="s5">).front; </span>// can't be manually closed</p>
-<p class="p17"><span class="s5">w.close; </span>// so close it in code</p>
-<p class="p16"><br></p>
-<p class="p17">// onClose</p>
-<p class="p18">(</p>
-<p class="p18">x = <span class="s11">Window</span>.new.front;</p>
-<p class="p18">x.alpha = 0.8;</p>
-<p class="p17"><span class="s5">x.onClose_({ y = </span><span class="s11">Synth</span><span class="s5">.new(</span><span class="s18">\default</span><span class="s5">) }); </span>//close the window and the synth plays</p>
-<p class="p18">)</p>
-<p class="p18">x.close;</p>
-<p class="p18">y.free;</p>
-<p class="p16"><br></p>
-<p class="p17">// a window with scrollers</p>
-<p class="p18">(</p>
-<p class="p17"><span class="s5">w = </span><span class="s11">Window</span><span class="s5">(scroll: </span><span class="s11">true</span><span class="s5">); </span>// you must set this when the window is created</p>
-<p class="p18">c = <span class="s11">Slider2D</span>(w, <span class="s11">Rect</span>(0, 0, 1500, 300));</p>
-<p class="p18">d = <span class="s11">Slider</span>(w, <span class="s11">Rect</span>(0, 310, 20, 300));</p>
-<p class="p18">c.background = <span class="s11">Color</span>.grey.alpha = 0.6;</p>
-<p class="p18">d.background = <span class="s11">Color</span>.grey.alpha = 0.6;</p>
-<p class="p18">w.front;</p>
-<p class="p18">)</p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
-<p class="p17">// drawing dynamically in a window with <a href="../../../../../../../../../Users/fuo/Desktop/Cocoa-GUI/SCPen.html"><span class="s6">Pen</span></a></p>
-<p class="p18">(</p>
-<p class="p18"><span class="s11">var</span> w, much = 0.02, string, synth;</p>
-<p class="p16"><br></p>
-<p class="p18">w = <span class="s11">GUI</span>.window.new(<span class="s15">"swing"</span>, <span class="s11">Rect</span>(100, 100, 300, 500)).front;</p>
-<p class="p18">w.view.background_(<span class="s11">Color</span>.new255(153, 255, 102).vary);</p>
-<p class="p16"><br></p>
-<p class="p18">string = <span class="s15">"swing "</span>.dup(24).join;</p>
-<p class="p16"><br></p>
-<p class="p18">w.drawHook = <span class="s11">Routine</span> {<span class="Apple-tab-span">	</span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s11">var</span> i = 0;</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s11">var</span> size = 40;</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s11">var</span> func = { <span class="s11">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s11">var</span> scale;</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="s11">Pen</span>.font = <span class="s11">Font</span>(<span class="s15">"Helvetica-Bold"</span>, 40);</p>
-<p class="p18"><span class="Apple-tab-span">	</span>loop {<span class="Apple-tab-span">	</span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span><span class="s11">|char, j|</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale = func.value(i, j).dup(6);</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Pen</span>.fillColor = <span class="s11">Color</span>.new255(0, 120, 120).vary;</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Pen</span>.stringAtPoint(char.asString,</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p17"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
-<p class="p18"><span class="Apple-tab-span">	</span>}</p>
-<p class="p18">};</p>
-<p class="p16"><br></p>
-<p class="p18">fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };</p>
-<p class="p16"><br></p>
-<p class="p18">w.front;</p>
-<p class="p16"><br></p>
-<p class="p18">)</p>
-<p class="p16"><br></p>
+<p class="p3"><br></p>
+<p class="p17"><br></p>
+<p class="p16">//how to add views</p>
+<p class="p15">(</p>
+<p class="p15"><span class="s12">var</span> w;</p>
+<p class="p15">w = <span class="s12">Window</span>(<span class="s15">"my name is... panel"</span>, <span class="s12">Rect</span>(128, 64, 340, 360));</p>
+<p class="p17"><br></p>
+<p class="p15">32.do({ <span class="s12">arg</span> i;</p>
+<p class="p15"><span class="Apple-tab-span">	</span>b = <span class="s12">Button</span>(w, <span class="s12">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p15"><span class="Apple-tab-span">	</span>b.states = [[<span class="s15">"Start "</span>++i, <span class="s12">Color</span>.black, <span class="s12">Color</span>.rand],</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s15">"Stop "</span>++i, <span class="s12">Color</span>.white, <span class="s12">Color</span>.red]];</p>
+<p class="p15">});</p>
+<p class="p15">w.front;</p>
+<p class="p15">)</p>
+<p class="p17"><br></p>
+<p class="p16">// using a decorator on this window's top view</p>
+<p class="p15">(</p>
+<p class="p15"><span class="s12">var</span> w;</p>
+<p class="p15">w = <span class="s12">Window</span>(<span class="s15">"my name is... panel"</span>, <span class="s12">Rect</span>(128, 64, 340, 360));</p>
+<p class="p17"><br></p>
+<p class="p15">w.view.decorator = <span class="s12">FlowLayout</span>(w.view.bounds);</p>
+<p class="p16">// w.addFlowLayout; // you can als write this instead of the line above</p>
+<p class="p17"><br></p>
+<p class="p15">w.view.background = <span class="s12">Color</span>(0.6,0.8,0.8);</p>
+<p class="p15">32.do({ <span class="s12">arg</span> i;</p>
+<p class="p15"><span class="Apple-tab-span">	</span>b = <span class="s12">Button</span>(w, <span class="s12">Rect</span>(rrand(20,300),rrand(20,300), 75, 24));</p>
+<p class="p15"><span class="Apple-tab-span">	</span>b.states = [[<span class="s15">"Start "</span>++i, <span class="s12">Color</span>.black, <span class="s12">Color</span>.rand],</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s15">"Stop "</span>++i, <span class="s12">Color</span>.white, <span class="s12">Color</span>.red]];</p>
+<p class="p15">});</p>
+<p class="p17"><br></p>
+<p class="p15">w.front;</p>
+<p class="p15">)</p>
+<p class="p17"><br></p>
+<p class="p16">// setting bounds</p>
+<p class="p16">// use screenbounds for precise placement from the top</p>
+<p class="p17"><br></p>
+<p class="p15">(</p>
+<p class="p15">x = <span class="s12">Window</span>.new(<span class="s15">"test"</span>, <span class="s12">Rect</span>(100,<span class="s12">Window</span>.screenBounds.height-180,300,100));x.front;</p>
+<p class="p15">)</p>
+<p class="p17"><br></p>
+<p class="p16">// bounds.top refers to the bottom edge of the window,</p>
+<p class="p16">// measured from the bottom of the screen. Different than in View.</p>
+<p class="p15">x.bounds_(<span class="s12">Rect</span>(100,400,300,300));</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p16">// borderless windows</p>
+<p class="p16"><span class="s5">w = </span><span class="s12">Window</span><span class="s5">.new(border:</span><span class="s12">false</span><span class="s5">).front; </span>// can't be manually closed</p>
+<p class="p16"><span class="s5">w.close; </span>// so close it in code</p>
+<p class="p17"><br></p>
+<p class="p16">// onClose</p>
+<p class="p15">(</p>
+<p class="p15">x = <span class="s12">Window</span>.new.front;</p>
+<p class="p15">x.alpha = 0.8;</p>
+<p class="p16"><span class="s5">x.onClose_({ y = </span><span class="s12">Synth</span><span class="s5">.new(</span><span class="s18">\default</span><span class="s5">) }); </span>//close the window and the synth plays</p>
+<p class="p15">)</p>
+<p class="p15">x.close;</p>
+<p class="p15">y.free;</p>
+<p class="p17"><br></p>
+<p class="p16">// a window with scrollers</p>
+<p class="p15">(</p>
+<p class="p16"><span class="s5">w = </span><span class="s12">Window</span><span class="s5">(scroll: </span><span class="s12">true</span><span class="s5">); </span>// you must set this when the window is created</p>
+<p class="p15">c = <span class="s12">Slider2D</span>(w, <span class="s12">Rect</span>(0, 0, 1500, 300));</p>
+<p class="p15">d = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(0, 310, 20, 300));</p>
+<p class="p15">c.background = <span class="s12">Color</span>.grey.alpha = 0.6;</p>
+<p class="p15">d.background = <span class="s12">Color</span>.grey.alpha = 0.6;</p>
+<p class="p15">w.front;</p>
+<p class="p15">)</p>
+<p class="p17"><br></p>
+<p class="p17"><br></p>
+<p class="p16">// drawing dynamically in a window with <a href="../../../../../../../../../Users/fuo/Desktop/Cocoa-GUI/SCPen.html"><span class="s6">Pen</span></a></p>
+<p class="p15">(</p>
+<p class="p15"><span class="s12">var</span> w, much = 0.02, string, synth;</p>
+<p class="p17"><br></p>
+<p class="p15">w = <span class="s12">GUI</span>.window.new(<span class="s15">"swing"</span>, <span class="s12">Rect</span>(100, 100, 300, 500)).front;</p>
+<p class="p15">w.view.background_(<span class="s12">Color</span>.new255(153, 255, 102).vary);</p>
+<p class="p17"><br></p>
+<p class="p15">string = <span class="s15">"swing "</span>.dup(24).join;</p>
+<p class="p17"><br></p>
+<p class="p15">w.drawHook = <span class="s12">Routine</span> {<span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s12">var</span> i = 0;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s12">var</span> size = 40;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s12">var</span> func = { <span class="s12">|i, j|</span> sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s12">var</span> scale;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s12">Pen</span>.font = <span class="s12">Font</span>(<span class="s15">"Helvetica-Bold"</span>, 40);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>loop {<span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string.do {<span class="Apple-tab-span">	</span><span class="s12">|char, j|</span></p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale = func.value(i, j).dup(6);</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Pen</span>.fillColor = <span class="s12">Color</span>.new255(0, 120, 120).vary;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Pen</span>.matrix = scale * #[1, 0, 0, 1, 1, 0];</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">Pen</span>.stringAtPoint(char.asString,</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p16"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
+<p class="p15"><span class="Apple-tab-span">	</span>}</p>
+<p class="p15">};</p>
+<p class="p17"><br></p>
+<p class="p15">fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };</p>
+<p class="p17"><br></p>
+<p class="p15">w.front;</p>
+<p class="p17"><br></p>
+<p class="p15">)</p>
+<p class="p17"><br></p>
 </body>
 </html>
