@@ -1188,6 +1188,15 @@ SCListView : SCControlView {
 		items = array;
 		this.setProperty(\items, items);
 	}
+	
+	colors_{arg incolors;
+		this.setProperty(\itemColors, incolors);
+	}
+	
+	colors{
+		^this.getProperty(\itemColors, {Color.new}!items.size);	
+	}
+	
 	stringColor {
 		^this.getProperty(\stringColor, Color.new)
 	}

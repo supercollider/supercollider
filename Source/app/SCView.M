@@ -4756,6 +4756,19 @@ int SCListView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             return setSlotColor(slot, &mStringColor);
 	}
 
+	if (strcmp(name, "itemColors")==0) {
+		int size, err;
+		PyrSlot * slots;
+		slots = slot->uo->slots;
+		size = slot->uo->size;
+		for(int i=0; i<size; i++)
+		{
+			err = setSlotColor(slots+i, &mItemBackgroundColor[i]);
+			if(err) return err;
+		}
+		 return errNone;
+	}
+	
 	return SCView::getProperty(symbol, slot);
 }
 
