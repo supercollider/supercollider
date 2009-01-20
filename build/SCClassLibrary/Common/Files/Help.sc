@@ -258,7 +258,12 @@ Help {
 		};
 		try{
 			filesliststr = fp.readAllString;
-			fileslist = filesliststr.interpret;
+			if(filesliststr.size < 10){ // Old version of cache didn't store it...
+				"Help.tree cache has no fileslisttree. Will regenerate it".warn;
+				this.forgetTree;
+			}{
+				fileslist = filesliststr.interpret;
+			};
 		}{
 			"Failure to read fileslist in Help.treeFromFile(%)".format(path).warn;
 			this.forgetTree;
