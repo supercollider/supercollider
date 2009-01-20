@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.43">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {color: #0000bf}
+span.s2 {color: #007300}
+</style>
+</head>
+<body>
+<p class="p1"><b>NamedControl</b></p>
+<p class="p2"><br></p>
+<p class="p3">superclass: Object</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p5">a = {</p>
+<p class="p5"><span class="s1">var</span> x, y;</p>
+<p class="p5">x = <span class="s1">NamedControl.kr</span>(<span class="s2">\freq</span>, 440, 3.5);</p>
+<p class="p5">y = <span class="s1">NamedControl.kr</span>(<span class="s2">\freq</span>, 440, 1);</p>
+<p class="p5"><span class="s1">SinOsc</span>.ar([x, y] * [2, 1.2]) * 0.1</p>
+<p class="p5">}.play;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p4">a.set(\freq, 1220)</p>
+<p class="p4">a.set(\freq, 120)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p5">a = { <span class="s1">SinOsc</span>.ar(<span class="s2">\freq</span>.ctl(440, 3.5)) + <span class="s1">Saw</span>.ar(<span class="s2">\freq</span>.ctl(440, 0.05) * 0.5) * 0.1 }.play;</p>
+<p class="p5">)</p>
+<p class="p7"><br></p>
+<p class="p5">a.set(<span class="s2">\freq</span>, 1220)</p>
+<p class="p5">a.set(<span class="s2">\freq</span>, 120)</p>
+</body>
+</html>

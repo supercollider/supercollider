@@ -93,7 +93,7 @@ Symbol {
 	}
 	
 	ctl { arg default, lag, fixedLag = false;
-		^NamedControl(this, default, lag, fixedLag)
+		^NamedControl(this, default, \control, lag, fixedLag)
 	}
 
 	// support for math on symbols
