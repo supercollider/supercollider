@@ -5484,7 +5484,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
     bool sel = false;
     //single selection
 	mMousePoint = where;
-    if(mSelectedIndex >= 0){
+    if(mSelectedIndex >= 0 && !mIsFixedSelection){
         (mEnvObj + mSelectedIndex)->mIsSelected = false;
         (mEnvObj + mSelectedIndex)->mColor =(&mEnvObj[mSelectedIndex])->mObjectColor;
         mSelectedIndex = -1;
@@ -5497,25 +5497,37 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
 		int i = drawOrder[count];
         envo = &mEnvObj[i]; // check in reverse drawOrder so that 'on top' gets selected first
         sel = SCPointInRect(where, envo->mRect);
+		post("in SCEnvelopeView::setSelection: where.x %f, where.y %f, sel %i\n", where.x, where.y, (int) sel);
         if(sel){
-            envo->mIsSelected = true;
-            envo->mColor = mSelectedColor;
-            mSelectedIndex = i;
-            mLastIndex = i;
-            if(fixed) mIsFixedSelection = true;
-			int newdrawOrder[mActiveSize];
-			// iterate over
-			newdrawOrder[mActiveSize - 1] = i;
-			int j = 0, k = 0;
-			while (j < mActiveSize) {
-				if(drawOrder[j] != i) {
-					newdrawOrder[k] = drawOrder[j];
-					k++;
+			// toggle fixed selection
+			if(envo->mIsSelected && mIsFixedSelection){
+				post("toggle\n");
+				
+				envo->mIsSelected = false;
+				envo->mColor = envo->mObjectColor;	
+				mSelectedIndex = -1;
+				mIsFixedSelection = false;	
+				return;
+			} else {
+				envo->mIsSelected = true;
+				envo->mColor = mSelectedColor;
+				mSelectedIndex = i;
+				mLastIndex = i;
+				if(fixed) mIsFixedSelection = true;
+				int newdrawOrder[mActiveSize];
+				// iterate over
+				newdrawOrder[mActiveSize - 1] = i;
+				int j = 0, k = 0;
+				while (j < mActiveSize) {
+					if(drawOrder[j] != i) {
+						newdrawOrder[k] = drawOrder[j];
+						k++;
+					}
+					j++;
 				}
-				j++;
+				memcpy(drawOrder, newdrawOrder, mActiveSize * sizeof(int));
+				return;
 			}
-			memcpy(drawOrder, newdrawOrder, mActiveSize * sizeof(int));
-            return;
         } 
     }
    /*
@@ -5537,9 +5549,9 @@ void SCEnvelopeView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theE
 
 void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent){
 //    sendMessage(getsym("mouseEndTrack"), 0, 0, 0);
-    if (modifiers & NSShiftKeyMask) {
-        mouseTrack(where, modifiers,theEvent);
-    }
+//    if (modifiers & NSShiftKeyMask) {
+//        mouseTrack(where, modifiers,theEvent);
+//    }
     if(!mIsFixedSelection){
      if(mSelectedIndex >= 0){
         (&mEnvObj[mSelectedIndex])->mIsSelected = false;
