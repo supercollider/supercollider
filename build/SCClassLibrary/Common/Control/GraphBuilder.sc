@@ -67,33 +67,96 @@ EnvGate {
 
 NamedControl {
 	classvar currentControls, buildSynthDef;
-	var <name, <values, <lags, <fixedLag;
+	
+	var <name, <values, <lags, <rate, <fixedLag;
 	var <control;
 	
-	*new { arg name, values = [0], lags, fixedLag = false;
+	*ar { arg  name, values, lags;
+		^this.new(name, values, \audio, lags, false)
+	}
+	
+	*kr { arg  name, values, lags, fixedLag = false;
+		^this.new(name, values, \control, lags, fixedLag)
+	}
+	
+	*ir { arg  name, values, lags;
+		^this.new(name, values, \scalar, lags, false)
+	}
+	
+	*tr { arg  name, values, lags;
+		^this.new(name, values, \trigger, lags, false)
+	}
+	
+	*new { arg name, values, rate, lags, fixedLag = false;
 		var res;
-		values = values.asArray;
+		values = (values ? [0.0]).asArray;
 		
 		this.initDict;
 		res = currentControls.at(name);
 		
 		if(res.isNil) {
-			res = super.newCopyArgs(name, values, lags, fixedLag).init;
+			res = super.newCopyArgs(name, values, lags, rate, fixedLag).init;
 			currentControls.put(name, res);
 		} {
 			if(res.values != values) { 
-				Error("NamedControl: cannot have two sets of default values.").throw;
+				Error("NamedControl: cannot  more than one set of "
+						"default values in the same control.").throw;
 			};
+			if(res.rate != rate) {
+				Error("NamedControl: cannot have  more than one set of "
+						"rates in the same control.").throw;
+			}
 		};
 		
-		if(res.fixedLag and: { res.lags != lags }) {
-			Error("NamedControl: cannot have more than one set of fixed lag values.").throw;
+		if(res.fixedLag) {
+			if( res.lags != lags ) {
+				Error("NamedControl: cannot have more than one set of "
+					"fixed lag values in the same control.").throw;
+			} {
+				^res.control;
+			}
 		};
+		
 		^if(lags.notNil) {
 			res.control.lag(lags.asArray)
 		} {
 			res.control
 		}
+	}
+	
+	init {
+		var prefix, ctlName, ctl, selector;
+		
+		name !? {
+			name = name.asString;
+			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
+		};
+		
+		if(fixedLag && lags.notNil && prefix.isNil) {
+			buildSynthDef.addKr(name, values);
+			control = LagControl.kr(values.flat, lags);
+		} {
+			if(prefix == $a or: {rate === \audio}) {
+				buildSynthDef.addAr(name, values);
+				control = AudioControl.ar(values.flat);
+				
+			} {
+				if(prefix == $t or: {rate === \trigger}) {
+					buildSynthDef.addTr(name, values);
+					control = TrigControl.kr(values.flat);
+				} {
+					if(prefix == $i or: {rate === \scalar}) {
+						buildSynthDef.addIr(name, values); 
+						control = Control.ir(values.flat);
+					} {
+						buildSynthDef.addKr(name, values);
+						control = Control.kr(values.flat);
+					}
+				}
+			};
+		};
+		
+		control = control.asArray.reshapeLike(values);
 	}
 	
 	*initDict {
@@ -103,32 +166,5 @@ NamedControl {
 		};
 	}
 	
-	init {
-		var prefix, ctlName, ctl;
-		
-		name !? {
-			name = name.asString;
-			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
-			Control.names([ctlName.asSymbol]);
-		};
-		
-		if(fixedLag && lags.notNil && prefix.isNil) { 
-			control = LagControl.kr(values.flat, lags);
-		} {
-			if(prefix == $a) { 
-				control = AudioControl.ar(values.flat);
-			} {
-				if(prefix == $t) { 
-					control = TrigControl.kr(values.flat);
-				} {
-					control = Control.kr(values.flat);
-				}
-			};
-		};
-		
-		control = control.asArray.reshapeLike(values);
-	}
-	
 
 }
-
