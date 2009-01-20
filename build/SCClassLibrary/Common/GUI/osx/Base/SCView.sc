@@ -668,10 +668,6 @@ SCSlider : SCSliderBase
 	}
 }
 
-SCKnob : SCSlider
-{
-}
-
 SCRangeSlider : SCSliderBase {
 
 	*paletteExample { arg parent, bounds;
