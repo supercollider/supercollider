@@ -99,6 +99,7 @@
 			case 
 			{char === $n } { this.queryAllNodes(false) }
 			{char === $N } { this.queryAllNodes(true) }
+			{char === $l } { this.meter }
 			{char === $ } { if(serverRunning.not) { this.boot } }
 			{char === $s and: { gui.stethoscope.isValidServer( this ) } } { 
 				GUI.use( gui, { this.scope })}
