@@ -4864,7 +4864,7 @@ SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect in
 }
 
 SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mThumbSize(12), mStepSize(0.),mStepScale(0.)
+	: SCView(inParent, inObj, inBounds), mThumbSize(5), mStepSize(0.),mStepScale(0.)
 {
 
 	mTabSize = 0;
@@ -4881,9 +4881,9 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	mEnvObj = 0;
 	drawOrder = 0;
 
-	mFillColor = mStrokeColor = mSelectedColor = SCMakeColor(0,0,0,1); // black
-
-	mIsFilled = mDrawLinesActive = false;
+	mFillColor = mStrokeColor = SCMakeColor(0,0,0,1); // black
+	mSelectedColor = SCMakeColor(1.f,0,0,1);
+	mIsFilled = mDrawLinesActive = true;
 	mDrawRectsActive = true;
 //	setVisibleSize();
 	mSelectedIndex = -1;
