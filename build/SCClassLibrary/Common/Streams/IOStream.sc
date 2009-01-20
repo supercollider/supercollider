@@ -25,11 +25,13 @@ IOStream : Stream {
 	readUpTo { arg delimiter = $\f;
 		var string, char;
 		string = String.new;
+		char = this.next;
+		if(char.isNil) { ^nil };
 		while ({
-			char = this.next;
 			char.notNil and: { char != delimiter }
 		},{
 			string = string.add(char);
+			char = this.next;
 		});
 		^string
 	}
