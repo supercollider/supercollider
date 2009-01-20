@@ -201,7 +201,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
-			};
+				};
 		};
 		if (trControlNames.size > 0) {
 			values = nil;
@@ -214,6 +214,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
+				controlUGens[i].name_(cn.name);
 			};
 		};
 		if (arControlNames.size > 0) {
@@ -227,6 +228,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
+				controlUGens[i].name_(cn.name);
 			};
 		};
 		if (krControlNames.size > 0) {
@@ -247,6 +249,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
+				controlUGens[i].name_(cn.name);
 			};
 		};
 		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };

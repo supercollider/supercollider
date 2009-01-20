@@ -409,7 +409,7 @@ MultiOutUGen : UGen {
 }	
 
 OutputProxy : UGen {
-	var <>source, <>outputIndex;
+	var <>source, <>outputIndex, <>name;
 	*new { arg rate, itsSourceUGen, index;
 		^super.new1(rate, itsSourceUGen, index)
 	}
@@ -421,7 +421,7 @@ OutputProxy : UGen {
 		outputIndex = argIndex;
 		synthIndex = source.synthIndex;
 	}
-	
+		
 	dumpName {
 		^this.source.dumpName ++ "[" ++ outputIndex ++ "]"
 	}
