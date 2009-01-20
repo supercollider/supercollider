@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.41">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+span.s1 {color: #005400}
+span.s2 {color: #0000bf}
+span.s3 {color: #007300}
+span.s4 {color: #000000}
+span.s5 {color: #606060}
+span.s6 {color: #bf0000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>SCKnob<span class="Apple-tab-span">	</span>a gui control with round, horizontal or vertical action</b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>SCKnob.new</b>(parent, bounds)</p>
+<p class="p3"><b>value -</b> set or get the control's value.</p>
+<p class="p3"><b>valueAction(newValue) -</b> sets the knob's value and performs the <b>action</b> function.</p>
+<p class="p3"><b>action(view, x, y, modifiers) -</b> user defined action hook function.</p>
+<p class="p3"><b>mouseOverAction(view, x, y) -</b> user defined action hook for mouse over event. <b>acceptsMouseOver</b> must be set to <b>true</b> in the parent window for the <b>mouseOverAction</b> hook to to work.</p>
+<p class="p3"><b>color -</b> array of colors: <b>[</b>center <b>Color</b>,<span class="Apple-converted-space">  </span>value <b>Color</b>, range <b>Color</b>, dial <b>Color]</b>.</p>
+<p class="p3"><b>canFocus_(bool) - </b>enables/disables focus gain for the control</p>
+<p class="p3"><b>mode -</b> knob's tracking mode. can be \round, \horiz or \vert. defaults to \round<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>centered -</b> <b>bool</b>. the knob's center scale, 0.5 is zero in the value scale. eg. as in a pan control. defaults to <b>false</b>.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b>step -</b> step in which the value is incremented/decremented while draging in \horiz and \vert modes. defaults to 0.01.</p>
+<p class="p3"><b>keystep -</b> step in which the value is incremented/decremented with the keyboard. defaults to 0.01.</p>
+<p class="p3"><b>visible -</b> boolean; set knob's visibility true/false.</p>
+<p class="p3"><b>enabled -</b> boolean; enable/disable the knob.</p>
+<p class="p3"><b>refresh -</b> redraws the knob.</p>
+<p class="p3"><b>canFocus -</b> enable/disable the knob's capability to gain focus.</p>
+<p class="p3"><b>canReceiveDragHandler - </b>customize drag methods see example.</p>
+<p class="p3"><b>receiveDragHandler - </b>customize drag methods see example.</p>
+<p class="p3"><b>beginDragAction - </b>customize drag methods see example.</p>
+<p class="p4"><br></p>
+<p class="p3">Keys work like on <b>SCSlider</b> when the Knob gains focus:</p>
+<p class="p3"><b>arrow up</b>, <b>arrow right</b> or <b>]</b> - increment value by keystep</p>
+<p class="p3"><b>arrow dn</b>, <b>arrow left </b>or <b>[</b> decrement value by keystep</p>
+<p class="p3"><b>x </b>- set value to 1.0</p>
+<p class="p3"><b>c</b> - set value to 0.5</p>
+<p class="p3"><b>n</b> - set value to 0.0</p>
+<p class="p3"><b>r</b><span class="Apple-converted-space">  </span>- random value from 0.0 to 1.0</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Behavior:</b></p>
+<p class="p3">Knob's default tracking mode is <span class="s1">\round</span>.</p>
+<p class="p3">Pressing the <b>Control</b> key and drag places the knob temporarily into <span class="s1">\vert</span> tracking mode.</p>
+<p class="p3">Pressing the <b>Option</b> key and drag places the knob temporarily into <span class="s1">\horiz</span> tracking mode.</p>
+<p class="p3">Pressing the <b>Command</b> or <b>Apple</b> key drags out the knob's value. like for other views.</p>
+<p class="p4"><br></p>
+<p class="p3">In <span class="s1">\round</span> mode, draging farther from the knob's center increases the control's precision.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>*defaultMode</b> - Class variable that states the default tracking mode for new knobs.</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s2">SCKnob</span>.defaultMode;</p>
+<p class="p5"><span class="s2">SCKnob</span>.defaultMode=<span class="s3">'vert'</span>;</p>
+<p class="p5"><span class="s2">SCKnob</span>.defaultMode=<span class="s3">'round'</span>;</p>
+<p class="p2"><br></p>
+<p class="p3">see also: [<b>EZKnob</b>], [<b>KnobEditor</b>]</p>
+<p class="p6"><br></p>
+<p class="p7">// examples</p>
+<p class="p5">(</p>
+<p class="p7"><span class="s2">var</span><span class="s4"> window, size = 32; </span>// try different sizes - from 15 to 200 or more!</p>
+<p class="p5">window = <span class="s2">SCWindow</span>.new(<span class="s5">"SCKnob"</span>, <span class="s2">Rect</span>(640,630,270,70)).front;</p>
+<p class="p5">k = <span class="s2">SCKnob</span>.new(window, <span class="s2">Rect</span>(20, 10, size, size));</p>
+<p class="p5">k.action_({<span class="s2">|v,x,y,m|</span> postf(<span class="s5">"action func called: %\n"</span>, v.value); });</p>
+<p class="p7">//k.color[1] = Color.gray(alpha:0);</p>
+<p class="p5">)</p>
+<p class="p5">k.value</p>
+<p class="p5">k.value = 0.25</p>
+<p class="p5">k.valueAction = 0.125</p>
+<p class="p6"><br></p>
+<p class="p7">// modes</p>
+<p class="p5">k.mode = <span class="s3">\vert</span>;</p>
+<p class="p5">k.mode = <span class="s3">\horiz</span>;</p>
+<p class="p5">k.mode = <span class="s3">\round</span>; <span class="s6">// default</span></p>
+<p class="p6"><br></p>
+<p class="p5">k.visible</p>
+<p class="p5">k.visible = <span class="s2">false</span></p>
+<p class="p5">k.visible = <span class="s2">true</span></p>
+<p class="p5">k.enabled = <span class="s2">false</span></p>
+<p class="p5">k.enabled_(<span class="s2">true</span>)</p>
+<p class="p5">k.canFocus = <span class="s2">false</span></p>
+<p class="p5">k.canFocus = <span class="s2">true</span></p>
+<p class="p6"><br></p>
+<p class="p7">// centered mode - like in a pan or eq gain control etc.</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">var</span> window;</p>
+<p class="p5">window = <span class="s2">SCWindow</span>.new(<span class="s5">"Pan SCKnob"</span>, <span class="s2">Rect</span>(640,630,270,70)).front;</p>
+<p class="p5">k = <span class="s2">SCKnob</span>.new(window, <span class="s2">Rect</span>(20,10,36,36));</p>
+<p class="p5">k.action_({<span class="s2">|v,x,y,m|</span> <span class="s3">\pan</span>.asSpec.map(v.value).postln; })</p>
+<p class="p7">//<span class="Apple-tab-span">	</span>.mode_(\horiz)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.centered_(<span class="s2">false</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>.value_(<span class="s3">\pan</span>.asSpec.unmap(0)); <span class="s6">// 0.5</span></p>
+<p class="p7">//k.color[1] = Color.gray(alpha:0);</p>
+<p class="p5">)</p>
+<p class="p5">k.centered</p>
+<p class="p5">k.centered = <span class="s2">true</span></p>
+<p class="p5">k.centered = <span class="s2">false</span></p>
+<p class="p6"><br></p>
+<p class="p7">// mouseOverAction</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">var</span> size = 28;</p>
+<p class="p5"><span class="s2">GUI</span>.skins.default.knob.mySkin = ( );</p>
+<p class="p5">w = <span class="s2">SCWindow</span>.new(<span class="s5">"Knobs"</span>, <span class="s2">Rect</span>(384,630,320,80));</p>
+<p class="p7"><span class="s4">w.acceptsMouseOver=</span><span class="s2">true</span><span class="s4">; </span>// true in parent window!</p>
+<p class="p5">w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds, 10@4, 10@4);</p>
+<p class="p5">h = <span class="s2">SCStaticText</span>(w, 300 @ 16).background_(<span class="s2">Color</span>.blue(0.2,0.1));</p>
+<p class="p5">w.view.decorator.nextLine;</p>
+<p class="p5">k = <span class="s2">Array</span>.fill(8, {<span class="s2">|item, i|</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> knob;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>knob = <span class="s2">SCKnob</span>.new(w, size @ size)</p>
+<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>.canFocus_(false)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v,x,y,m|</span> h.string = <span class="s5">"value: "</span> ++ v.value.asString; })</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseOverAction_({<span class="s2">|v,x,y|</span> h.string = <span class="s5">"value: "</span> ++ v.value.asString; });</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.skins.default.knob.mySkin.center_(<span class="s2">Color</span>.rand);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>knob.skin_( <span class="s2">GUI</span>.skins.default.knob.mySkin );</p>
+<p class="p5"><span class="Apple-tab-span">	</span>knob;</p>
+<p class="p5">});</p>
+<p class="p5">w.front</p>
+<p class="p5">)</p>
+<p class="p5">k.collect(<span class="s2">_</span>.value);</p>
+<p class="p6"><br></p>
+<p class="p7">// step - 'horiz' and 'vert' modes only</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">var</span> window, midispec;</p>
+<p class="p5">midispec = [0,127,<span class="s3">'linear'</span>,1].asSpec;</p>
+<p class="p5">window = <span class="s2">SCWindow</span>.new(<span class="s5">"step SCKnob"</span>, <span class="s2">Rect</span>(640,630,270,70)).front;</p>
+<p class="p5">k = <span class="s2">SCKnob</span>.new(window, <span class="s2">Rect</span>(20,10,32,32));</p>
+<p class="p5">k.action_({<span class="s2">|v,x,y,m|</span> midispec.map(v.value).postln; })</p>
+<p class="p5"><span class="Apple-converted-space">       </span>.value_(midispec.unmap(0));</p>
+<p class="p6"><br></p>
+<p class="p5">k.mode = <span class="s3">\vert</span>;</p>
+<p class="p6"><br></p>
+<p class="p5">)</p>
+<p class="p5">k.step</p>
+<p class="p5">k.step = 10/127 // step by 10</p>
+<p class="p6"><br></p>
+<p class="p5">k.mode = <span class="s3">\horiz</span>;</p>
+<p class="p5">k.mode = <span class="s3">\round</span>;</p>
+<p class="p6"><br></p>
+<p class="p7">// on Sheet</p>
+<p class="p5">(</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span></span>Sheet<span class="s4">({ </span>arg<span class="s4"> l;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l.view.decorator.gap=4@4;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l.view.decorator.margin=4@4;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c = <span class="s2">Array</span>.fill(8, { <span class="s2">SCKnob</span>.new(l, 28@28) });</p>
+<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span>}, </span>"SCKnob"<span class="s4">)</span></p>
+<p class="p5">)</p>
+<p class="p5">c</p>
+<p class="p5">c.collect(<span class="s2">_</span>.value);</p>
+<p class="p6"><br></p>
+<p class="p7">// GUI Kit</p>
+<p class="p5">(</p>
+<p class="p5"><span class="Apple-tab-span">	</span>f = {</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> size = 32;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">GUI</span>.window.new(<span class="s5">"GUI.knob Test"</span>, <span class="s2">Rect</span>(580,590,300,80));</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>k = <span class="s2">GUI</span>.knob.new(w, <span class="s2">Rect</span>(20, 10, size, size));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>k.action_({<span class="s2">|v|</span> v.value.postln; });</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>};</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s2">GUI</span><span class="s4">.cocoa; </span>// select cocoa gui</p>
+<p class="p5">f.value;</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s2">GUI</span><span class="s4">.swing; </span>// select swing gui</p>
+<p class="p5">f.value;</p>
+<p class="p6"><br></p>
+<p class="p7">// GUI skins</p>
+<p class="p7">//<span class="Apple-tab-span">	</span>default skin</p>
+<p class="p7">//<span class="Apple-tab-span">	</span>GUI.skins.knob.default = (</p>
+<p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale: Color.black.alpha_(0.3),</p>
+<p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dial: Color.black.alpha_(0.7),</p>
+<p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>center: Color.blue(0.7, 0.5),</p>
+<p class="p7">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>level: Color.green(0.8, 0.8)</p>
+<p class="p7">//<span class="Apple-tab-span">	</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">GUI</span>.skins.knob.default.level</p>
+<p class="p5"><span class="s2">GUI</span>.skins.knob.default.center</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">GUI</span>.skins.keys</p>
+<p class="p5"><span class="s2">GUI</span>.skins.default.keys</p>
+<p class="p6"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">GUI</span>.skins.default.knob.mySkin = ( );</p>
+<p class="p6"><br></p>
+<p class="p8">Sheet<span class="s4">({ </span>arg<span class="s4"> l;</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>a = <span class="s2">Array</span>.fill( 8, {</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.skins.default.knob.mySkin.center_(<span class="s2">Color</span>.rand);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SCKnob</span>(l, 32@32).skin_( <span class="s2">GUI</span>.skins.default.knob.mySkin );</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s4">}, </span>"SCKnobs"<span class="s4">);</span></p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p5">a.collect(<span class="s2">_</span>.value);</p>
+<p class="p6"><br></p>
+<p class="p7">// drag and drop</p>
+<p class="p5">(</p>
+<p class="p5"><span class="s2">var</span> w, txt, size = 36;</p>
+<p class="p5">w = <span class="s2">SCWindow</span>.new(<span class="s5">"SCKnobs"</span>, <span class="s2">Rect</span>(400,400,250,100)).front;</p>
+<p class="p5">w.acceptsMouseOver=<span class="s2">true</span>;</p>
+<p class="p5">w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds).gap_(10 @ 10).margin_(10 @10);</p>
+<p class="p5">txt = <span class="s2">SCStaticText</span>(w, 200 @ 14);</p>
+<p class="p5">w.view.decorator.nextLine;</p>
+<p class="p6"><br></p>
+<p class="p5">k = <span class="s2">SCKnob</span>(w, size @ size);</p>
+<p class="p5">k.action = {<span class="s2">arg</span> v,x,y;<span class="Apple-converted-space">  </span>v.value.postln; txt.string_(<span class="s5">"value: "</span> ++ v.value); };</p>
+<p class="p5">k.mouseOverAction = {<span class="s2">|v|</span> txt.string_(<span class="s5">"value: "</span> ++ v.value); };</p>
+<p class="p6"><br></p>
+<p class="p5">j = <span class="s2">SCKnob</span>(w, size @ size);</p>
+<p class="p5">j.action = {<span class="s2">arg</span> v,x,y;<span class="Apple-converted-space">  </span>j.value.postln; txt.string_(<span class="s5">"value: "</span> ++ v.value); };</p>
+<p class="p5">j.mouseOverAction = { txt.string_(<span class="s5">"value: "</span> ++ j.value); };</p>
+<p class="p6"><br></p>
+<p class="p5">n = <span class="s2">SCNumberBox</span>(w, 100 @ 20);</p>
+<p class="p7">//n.setProperty(\boxColor,Color.grey(alpha:0.0));</p>
+<p class="p5">n.value = 0.0;</p>
+<p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p7">// customize drag and drop methods</p>
+<p class="p5">k.canReceiveDragHandler</p>
+<p class="p5">k.canReceiveDragHandler = <span class="s2">false</span>; <span class="s6">// don't accept drops</span></p>
+<p class="p6"><br></p>
+<p class="p5">k.canReceiveDragHandler = { <span class="s2">SCView</span>.currentDrag.isFloat }; <span class="s6">// accept only if drag is float</span></p>
+<p class="p6"><br></p>
+<p class="p5">k.receiveDragHandler = { (<span class="s5">"value droped in: "</span> ++ <span class="s2">SCView</span>.currentDrag).postln }</p>
+<p class="p6"><br></p>
+<p class="p5">k.receiveDragHandler = { k.valueAction = <span class="s2">SCView</span>.currentDrag.clip(0.0, 1.0); }</p>
+<p class="p6"><br></p>
+<p class="p5">k.beginDragAction = { (<span class="s5">"drag out -&gt; "</span> ++ k.value).postln; }</p>
+<p class="p6"><br></p>
+<p class="p5">k.beginDragAction = { k.value.asFloat; }</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+</body>
+</html>

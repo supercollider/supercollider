@@ -69,6 +69,8 @@ CocoaGUI {
 	*ezRanger { ^EZRanger }		
 	*menuItem { ^CocoaMenuItem }
 	
+	*knob { ^SCKnob }
+
 	*font { ^SCFont }
 	*pen { ^SCPen }
 			
