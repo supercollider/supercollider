@@ -6482,7 +6482,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
     new SCViewMaker("SCMovieView", NewSCMovieView);
 	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
-    new SCViewMaker("SCTextField2", NewSCTextField);
+    new SCViewMaker("SCTextField", NewSCTextField);
 	new SCViewMaker("SCScrollTopView", NewSCScrollTopView);
 	new SCViewMaker("SCScrollView", NewSCScrollView);
 	new SCViewMaker("SCLevelIndicator", NewSCLevelIndicator);

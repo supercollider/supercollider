@@ -1,6 +1,6 @@
 
 
-SCTextField : SCNumberBox {
+SCTextFieldOld : SCNumberBox {
 
 	*viewClass { ^SCNumberBox }
 	
