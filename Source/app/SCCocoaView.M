@@ -823,7 +823,7 @@ const int circDiam = 20;
 	if(drawPeak) {
 		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		CGContextSaveGState(cgc);
-		CGContextSetRGBFillColor(cgc, 1.0, 1.0, 0.0, 0.5);
+		CGContextSetRGBFillColor(cgc, 1.0, 1.0, 0.0, 0.6);
 		CGRect peakRect;
 		//peakRect = CGRectMake(peakLevel, aRect.origin.y + peakSubtract, 3.f, aRect.size.height - peakSubtract);
 		peakRect = CGRectMake(peakLevel, peakY, 3.f, peakHeight);
@@ -2742,71 +2742,4 @@ void SCLevelIndicator::tabNextFocus()
 	//post("next focus\n");
 	mTop->tabNextFocus();
 }
-
-//extern PyrSymbol* s_canReceiveDrag;
-//
-//bool SCTextField::canReceiveDrag()
-//{
-//    PyrSlot result;
-//    sendMessage(s_canReceiveDrag, 0, 0, &result);
-//    return IsTrue(&result);
-//}
-//
-//NSDragOperation SCTextField::draggingEntered()
-//{
-//	bool flag = canReceiveDrag();
-//	mTop->setDragView(flag ? this : 0);
-//	[mTextField displayIfNeeded];
-//	return flag ? NSDragOperationEvery : NSDragOperationNone;	
-//}
-//
-//extern PyrSymbol* s_receiveDrag;
-//
-//BOOL SCTextField::performDrag()
-//{	
-//	bool flag = canReceiveDrag();
-//	if (flag) {
-//		mTop->setDragView(this);
-//		sendMessage(s_receiveDrag, 0, 0, 0);
-//	} else {
-//		mTop->setDragView(0);
-//	}
-//	[mTextField displayIfNeeded];
-//	return flag ? YES : NO;
-//}
-//
-//void SCTextField::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
-//{
-//    if (modifiers & NSCommandKeyMask) {
-//        beginDrag(where);
-//    } 
-//}
-//
-//extern PyrSymbol *s_beginDrag;
-//
-//void SCTextField::beginDrag(SCPoint where)
-//{
-//    sendMessage(s_beginDrag, 0, 0, 0);
-//    
-//    PyrSlot slot;
-//    PyrSlot stringSlot;
-//	NSString *string = 0;
-//	NSString *label = 0;
-//    pthread_mutex_lock (&gLangMutex);
-//    if (mObj) {
-//        VMGlobals *g = gMainVMGlobals;
-//        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-//        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
-//        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
-//		if (isKindOfSlot(&stringSlot, class_string)) {
-//			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
-//		}
-//		if(mDragLabel) label = mDragLabel;
-//    }
-//    pthread_mutex_unlock (&gLangMutex);
-//    
-//    //mTop->beginDragCallback(where, &slot, string, label);
-//	NSPoint point = NSMakePoint(where.x, where.y);
-//    [mTextField beginDragFrom: point of: &slot string: string label: label];
-//}
 
