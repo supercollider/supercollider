@@ -358,14 +358,16 @@ void SyntaxColorize(NSTextView* textView)
 			c = input0();
 		} while (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r' || c == 0 || (c >= '0' && c <= '9'));
 		textpos = tempTextpos; charno = tempCharno; yylen = tempYylen; lineno = tempLineno; //restore original position
-		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') continue; //it must be a subtraction operator, skip.
+		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c == ')' || c == ']') continue; //it must be a subtraction operator, skip.
 		startrun = textpos - 1;
 		do {
-			c = input0();
-			if(c >= '0' && c <= '9') numFound = true;
-			if(c == '.') { c = input0(); if(c < '0' || c > '9') { unput(c); break; }; }; 
-		} while(c == ' ' || (c >= '0' && c <= '9') || c == '.');
-		endrun = textpos - 1;
+			c = input0();			
+		} while(c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r');
+		if(c >= '0' && c <= '9') { 
+			numFound = true;	
+			unput(c);
+			endrun = textpos;
+		};		
 		if(numFound)
 		{
 			range = NSMakeRange(startrun, endrun - startrun);
