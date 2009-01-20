@@ -241,6 +241,9 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 
 	if (result == noErr)
 	{
+
+		theInput->CopyBufferContentsTo (theOutput->GetBufferList());
+		
 		if(ProcessesInPlace()) theOutput->SetBufferList(theInput->GetBufferList());
 		if (ShouldBypassEffect())
 		{
