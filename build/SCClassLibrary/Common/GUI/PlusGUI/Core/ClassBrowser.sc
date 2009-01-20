@@ -1,5 +1,7 @@
 
 ClassBrowser {
+		// avoid creating extra garbage by constantly creating new Color objects
+	classvar	black, gray, clear;
 		// moving jmc's Class-browse method into a separate object
 		// with some customizability
 		
@@ -8,7 +10,7 @@ ClassBrowser {
 	var w;
 	var currentClassNameView;
 	var superClassNameView;
-	var subclassTitle, subclassView, <methodView, argView;
+	var subclassTitle, subclassView, methodTitle, <methodView, argView;
 	var instVarView, classVarView;
 	var filenameView;
 	var svnButton;
@@ -22,7 +24,13 @@ ClassBrowser {
 	var updateViews, setNewClass;
 	var hvBold12;
 	var history, historyPos=0;
-	var searchViews, searchField, searchMenu, searchButton, matchCaseButton;
+	var searchViews, searchField, searchMenu, searchButton, matchCaseButton, isClassSearch;
+
+	*initClass {
+		black = Color.black;
+		gray = Color.gray;
+		clear = Color.clear;
+	}
 
 	*new { arg class;
 		^super.new.init(class)
@@ -36,14 +44,14 @@ ClassBrowser {
 		
 		gui	= GUI.current;
 		
-		w = gui.window.new("class browser", Rect(128, 320, 640, 560))
+		w = gui.window.new("class browser", Rect(128, 320, 720, 560))
 			.onClose_({ this.free });
 
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
 		currentClassNameView = gui.textField.new(w, Rect(0,0, 256, 32));
 		currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
-		currentClassNameView.background = Color.clear;
+		currentClassNameView.background = clear;
 		currentClassNameView.align = \center;
 		
 		currentClassNameView.action = {
@@ -56,7 +64,7 @@ ClassBrowser {
 		w.view.decorator.nextLine;
 		
 		bakButton = gui.button.new(w, Rect(0,0, 24, 24));
-		bakButton.states = [["<", Color.black, Color.clear]];
+		bakButton.states = [["<", black, clear]];
 		bakButton.action = {
 			if (historyPos > 0) {
 				historyPos = historyPos - 1;
@@ -65,7 +73,7 @@ ClassBrowser {
 		};
 		
 		fwdButton = gui.button.new(w, Rect(0,0, 24, 24));
-		fwdButton.states = [[">", Color.black, Color.clear]];
+		fwdButton.states = [[">", black, clear]];
 		fwdButton.action = {
 			if (historyPos < (history.size - 1)) {
 				historyPos = historyPos + 1;
@@ -75,7 +83,7 @@ ClassBrowser {
 		
 		
 		superButton = gui.button.new(w, Rect(0,0, 50, 24));
-		superButton.states = [["super", Color.black, Color.clear]];
+		superButton.states = [["super", black, clear]];
 		
 		superButton.action = {
 			if(this.currentClass.notNil) {
@@ -84,7 +92,7 @@ ClassBrowser {
 		};
 		
 		metaButton = gui.button.new(w, Rect(0,0, 50, 24));
-		metaButton.states = [["meta", Color.black, Color.clear]];
+		metaButton.states = [["meta", black, clear]];
 		
 		metaButton.action = {
 			if(this.currentClass.notNil) {
@@ -94,7 +102,7 @@ ClassBrowser {
 		
 		
 		helpButton = gui.button.new(w, Rect(0,0, 50, 24));
-		helpButton.states = [["help", Color.black, Color.clear]];
+		helpButton.states = [["help", black, clear]];
 		
 		helpButton.action = {	
 			if(this.currentClass.notNil) {
@@ -103,7 +111,7 @@ ClassBrowser {
 		};
 		
 		classSourceButton = gui.button.new(w, Rect(0,0, 90, 24));
-		classSourceButton.states = [["class source", Color.black, Color.clear]];
+		classSourceButton.states = [["class source", black, clear]];
 		
 		classSourceButton.action = {
 			if(this.currentClass.notNil) {
@@ -112,27 +120,27 @@ ClassBrowser {
 		};
 		
 		methodSourceButton = gui.button.new(w, Rect(0,0, 90, 24));
-		methodSourceButton.states = [["method source", Color.black, Color.clear]];
+		methodSourceButton.states = [["method source", black, clear]];
 		
 		methodSourceButton.action = {
-			if(currentClass.isArray.not) {
+			if(isClassSearch.not or: { currentClass.isArray.not }) {
 				currentMethod.openCodeFile;
 			};
 		};
 		
 		implementationButton = gui.button.new(w, Rect(0,0, 100, 24));
-		implementationButton.states = [["implementations", Color.black, Color.clear]];
+		implementationButton.states = [["implementations", black, clear]];
 		implementationButton.action = {
-			if(currentClass.isArray.not) {
+			if(isClassSearch.not or: { currentClass.isArray.not }) {
 				thisProcess.interpreter.cmdLine = currentMethod.name.asString;
 				thisProcess.methodTemplates;
 			};
 		};
 		
 		refsButton = gui.button.new(w, Rect(0,0, 70, 24));
-		refsButton.states = [["references", Color.black, Color.clear]];
+		refsButton.states = [["references", black, clear]];
 		refsButton.action = {
-			if(currentClass.isArray.not) {
+			if(isClassSearch.not or: { currentClass.isArray.not }) {
 				thisProcess.interpreter.cmdLine = currentMethod.name.asString;
 				thisProcess.methodReferences;
 			};
@@ -140,7 +148,7 @@ ClassBrowser {
 		
 		if(this.respondsTo(\openSVN)) {
 			svnButton = gui.button.new(w, Rect(0,0, 32, 24));
-			svnButton.states = [["svn", Color.black, Color.clear]];
+			svnButton.states = [["svn", black, clear]];
 			svnButton.action = {
 				var filename, svnAddr;
 				if(this.currentClass.notNil) {
@@ -173,12 +181,12 @@ ClassBrowser {
 		searchViews = GUI.compositeView.new(w, Rect(0, 0, 205, 80));
 		searchViews.decorator = FlowLayout(searchViews.bounds, Point(1, 1));
 		searchButton = GUI.button.new(searchViews, Rect(0, 0, 60, 20))
-			.states_([["Search", Color.black, Color.clear]])
+			.states_([["Search", black, clear]])
 			.action_({
 				this.searchClasses(searchField.string, searchMenu.value, matchCaseButton.value);
 			});
 		matchCaseButton = GUI.button.new(searchViews, Rect(0, 0, 100, 20))
-			.states_([["Case insensitive", Color.black, Color.clear], ["Match case", Color.black, Color.clear]]);
+			.states_([["Case insensitive", black, clear], ["Match case", black, clear]]);
 		searchViews.decorator.nextLine;
 		searchField = GUI.textField.new(searchViews, Rect(0, 0, 200, 20))
 			.string_("Search for...")
@@ -192,15 +200,15 @@ ClassBrowser {
 		
 		subclassTitle = gui.staticText.new(w, Rect(0,0, 220, 24))
 			.font_(hvBold12).align_(\center).string_("subclasses  (press return)");
-		gui.staticText.new(w, Rect(0,0, 180, 24))
+		methodTitle = gui.staticText.new(w, Rect(0,0, 240, 24))
 			.font_(hvBold12).align_(\center).string_("methods");
-		gui.staticText.new(w, Rect(0,0, 180, 24))
+		gui.staticText.new(w, Rect(0,0, 200, 24))
 			.font_(hvBold12).align_(\center).string_("arguments");
 		w.view.decorator.nextLine;
 		
 		subclassView = gui.listView.new(w, Rect(0,0, 220, 260));
-		methodView = gui.listView.new(w, Rect(0,0, 180, 260));
-		argView = gui.listView.new(w, Rect(0,0, 180, 260));
+		methodView = gui.listView.new(w, Rect(0,0, 240, 260));
+		argView = gui.listView.new(w, Rect(0,0, 200, 260));
 		subclassView.resize = 4;
 		methodView.resize = 4;
 		argView.resize = 4;
@@ -240,7 +248,11 @@ ClassBrowser {
 
 	currentClass {
 		^if(currentClass.isArray) {
-			currentClass[subclassView.value]
+			if(isClassSearch) {
+				currentClass[subclassView.value]
+			} {
+				currentMethod.ownerClass
+			}
 		} { currentClass };
 	}
 	
@@ -264,134 +276,204 @@ ClassBrowser {
 	}
 
 	restoreHistory {
+		isClassSearch = history[historyPos].isArray
+			and: { history[historyPos].first.isKindOf(Class) };
 		this.currentClass_(history[historyPos], false);
 	}
 	
-	updateViews {
-		var classMethodNames, methodNames;
+		// normally class arg is nil and uses currentClass
+		// but class search subclassView can update methodView
+		// so 'class' can override currentClass
+	updateViews { |class|
+		var classMethodNames, methodNames, classWasNil = true;
 		
-		if(currentClass.isArray) {
+		if(currentClass.isArray and: { class.isNil }) {
 			this.updateViewsForSearch(currentClass);
 		} {
-			currentClassNameView.string = currentClass.name.asString;
+			if(class.isNil) { class = currentClass } { classWasNil = false };
+		
+			currentClassNameView.string = class.name.asString;
 			subclassTitle.string = "subclasses  (press return)";
-			if (currentClass.superclass.notNil) {
+			if (class.superclass.notNil) {
 				superClassNameView.string = "superclass: "
-						++ currentClass.superclass.name.asString;
+						++ class.superclass.name.asString;
 			}{
 				superClassNameView.string = "superclass: nil";
 			};
 		
-			if (currentClass.subclasses.isNil) { subclassArray = []; }{
-				subclassArray = currentClass.subclasses.copy.sort {|a,b| a.name <= b.name };
+			if(classWasNil) {
+				if (class.subclasses.isNil) { subclassArray = []; }{
+					subclassArray = class.subclasses.copy.sort {|a,b| a.name <= b.name };
+				};
+				subclassView.items = subclassArray.collect({|class| class.name.asString });
+				subclassView.action = nil;
 			};
-			subclassView.items = subclassArray.collect({|class| class.name.asString });
-			subclassView.action = nil;
 
-			if (currentClass.class.methods.isNil) { classMethodArray = []; }{
-				classMethodArray = currentClass.class.methods.asArray.copy.sort
-									{|a,b| a.name <= b.name };
-									
-				classMethodNames = classMethodArray.collect {|method|
-					"*" ++ method.name.asString
+			if(currentClass.isArray.not or: { currentClass.first.isKindOf(Class) }) {
+				if (class.class.methods.isNil) { classMethodArray = []; }{
+					classMethodArray = class.class.methods.asArray.copy.sort
+										{|a,b| a.name <= b.name };
+										
+					classMethodNames = classMethodArray.collect {|method|
+						"*" ++ method.name.asString
+					};
 				};
-			};
-			
-			if (currentClass.methods.isNil) { methodArray = [] }{
-				methodArray = currentClass.methods.asArray.copy.sort
-									{|a,b| a.name <= b.name };
-									
-				methodNames = methodArray.collect {|method|
-					method.name.asString
+				
+				if (class.methods.isNil) { methodArray = [] }{
+					methodArray = class.methods.asArray.copy.sort
+										{|a,b| a.name <= b.name };
+										
+					methodNames = methodArray.collect {|method|
+						method.name.asString
+					};
 				};
-			};
 			
-			methodArray = classMethodArray ++ methodArray;
-			methodView.items = classMethodNames ++ methodNames;
+				methodArray = classMethodArray ++ methodArray;
+				methodView.items = classMethodNames ++ methodNames;
+			};
 			
 			currentMethod = methodArray[methodView.value];
-			
-			if (currentMethod.isNil or: { currentMethod.argNames.isNil }) {
-				argView.items = ["this"];
-			}{
-				argView.items = currentMethod.argNames.collectAs( {|name, i|
-					var defval;
-					defval = currentMethod.prototypeFrame[i];
-					if (defval.isNil) { name.asString }{
-						name.asString ++ "     = " ++ defval.asString
-					}
-				}, Array);
-			};
+			this.updateArgView(currentMethod);
 			
 			classVarView.items =
-				currentClass.classVarNames.asArray.collectAs
+				class.classVarNames.asArray.collectAs
 					({|name| name.asString }, Array).sort;
 		
 			instVarView.items =
-				currentClass.instVarNames.asArray.collectAs
+				class.instVarNames.asArray.collectAs
 					({|name| name.asString }, Array).sort;
 					
-			filenameView.string = currentClass.filenameSymbol.asString;
+			filenameView.string = class.filenameSymbol.asString;
 
-			searchMenu.items = this.makeSearchItems(currentClass);
+			searchMenu.items = this.makeSearchItems(class);
 
-			methodSourceButton.states = [["method source", Color.black, Color.clear]];
-			implementationButton.states = [["implementations", Color.black, Color.clear]];
-			refsButton.states = [["references", Color.black, Color.clear]];
-			superButton.states = [["super", Color.black, Color.clear]];
-			metaButton.states = [["meta", Color.black, Color.clear]];
-			helpButton.states = [["help", Color.black, Color.clear]];
-			classSourceButton.states = [["class source", Color.black, Color.clear]];
-			svnButton !? { svnButton.states = [["svn", Color.black, Color.clear]] };
+			if(classWasNil) {
+				methodTitle.string = "methods";
+				methodSourceButton.states = [["method source", black, clear]];
+				implementationButton.states = [["implementations", black, clear]];
+				refsButton.states = [["references", black, clear]];
+				superButton.states = [["super", black, clear]];
+				metaButton.states = [["meta", black, clear]];
+				helpButton.states = [["help", black, clear]];
+				classSourceButton.states = [["class source", black, clear]];
+				svnButton !? { svnButton.states = [["svn", black, clear]] };
+			};
 			w.refresh;
 		}
 	}
+	
+	updateArgView { |method|
+		if (method.isNil or: { method.argNames.isNil }) {
+			argView.items = ["this"];
+		}{
+			argView.items = method.argNames.collectAs( {|name, i|
+				var defval;
+				defval = method.prototypeFrame[i];
+				if (defval.isNil) { name.asString }{
+					name.asString ++ "     = " ++ defval.asString
+				}
+			}, Array);
+		};
+	}
 
 	updateViewsForSearch { |searchResults|
-		var classMethodNames, methodNames;
+		var classMethodNames, methodNames, methodRelatedColor;
 		
 		currentClassNameView.string = "Search results";
 		superClassNameView.string = "";
 
-		subclassArray = searchResults;
-		subclassView.items_(searchResults.collect({|class| class.name.asString }))
-			.value_(0)
-			.action_({
-				searchMenu.items = this.makeSearchItems(this.currentClass);
-			});
-
-		classMethodArray = [];
-		methodArray = [];
-		methodView.items = [];
-		
-		currentMethod = nil;
-		argView.items = [];
-		classVarView.items = [];
-		instVarView.items = [];
-				
-		filenameView.string = "";
 		searchMenu.items_(this.makeSearchItems(searchResults[0]));
 
-		methodSourceButton.states = [["method source", Color.gray, Color.clear]];
-		implementationButton.states = [["implementations", Color.gray, Color.clear]];
-		refsButton.states = [["references", Color.gray, Color.clear]];
+		if(isClassSearch) {
+			subclassArray = searchResults;
+			subclassView.items_(searchResults.collect({|class| class.name.asString }))
+				.value_(0)
+				.action_({ |view|
+					searchMenu.items = this.makeSearchItems(this.currentClass);
+					filenameView.string = subclassArray[view.value].filenameSymbol.asString;
+					this.updateViews(subclassArray[view.value]);
+				});
+	
+			subclassView.doAction;
+			methodTitle.string = "methods";
+//			classMethodArray = [];
+//			methodArray = [];
+//			methodView.items = [];
+//			
+//			currentMethod = nil;
+//			argView.items = [];
+//			classVarView.items = [];
+//			instVarView.items = [];
+			searchMenu.value = 0;
+		} {
+			methodArray = searchResults;
+			methodTitle.string = "matching methods (press enter)";
+			methodView
+				.items_(methodArray.collect({ |method|
+					method.name ++ " (" ++ method.ownerClass.name ++ ")"
+				}))
+				.value_(0)
+				.action_({ |view|
+					var	method = methodArray[view.value], class;
+					if(method.notNil) {
+						currentMethod = method;
+						class = this.getClass(currentMethod);
+//						this.updateArgView(currentMethod);
+						filenameView.string = currentMethod.filenameSymbol;
+						subclassView.value_(subclassArray.indexOf(class) ? 0);
+						this.updateViews(class);
+					};
+				})
+				.enterKeyAction_({ |view|
+					var	method = methodArray[view.value];
+					if(method.notNil) {
+						this.currentClass = this.getClass(method);
+						view.enterKeyAction = this.normalMethodEnterKey;
+						searchMenu.value = 0;
+					};
+				});
+			methodView.doAction;	// this will also set currentMethod
+			
+			subclassArray = IdentitySet.new
+				.addAll(methodArray.collect { |method| this.getClass(method) })
+				.asArray.sort({ |a, b| a.name < b.name });
+			subclassView.items_(subclassArray.collect(_.asString))
+				.value_(subclassArray.indexOf(this.getClass(currentMethod)) ? 0)
+				.action_(nil);
+			
+			searchMenu.value = 3;
+		};
+
+		methodRelatedColor = if(isClassSearch) { gray } { black };
+		methodSourceButton.states = [["method source", methodRelatedColor, clear]];
+		implementationButton.states = [["implementations", methodRelatedColor, clear]];
+		refsButton.states = [["references", methodRelatedColor, clear]];
 		if(searchResults.isEmpty) {
-			subclassTitle.string = "no matching classes (try again)";
-			superButton.states = [["super", Color.gray, Color.clear]];
-			metaButton.states = [["meta", Color.gray, Color.clear]];
-			helpButton.states = [["help", Color.gray, Color.clear]];
-			classSourceButton.states = [["class source", Color.gray, Color.clear]];
-			svnButton !? { svnButton.states = [["svn", Color.gray, Color.clear]] };
+			subclassTitle.string = "no matches found (try again)";
+			superButton.states = [["super", gray, clear]];
+			metaButton.states = [["meta", gray, clear]];
+			helpButton.states = [["help", gray, clear]];
+			classSourceButton.states = [["class source", gray, clear]];
+			svnButton !? { svnButton.states = [["svn", gray, clear]] };
 			searchMenu.value = 0;
 		} {
 			subclassTitle.string = "matching classes (press return)";
-			superButton.states = [["super", Color.black, Color.clear]];
-			metaButton.states = [["meta", Color.black, Color.clear]];
-			helpButton.states = [["help", Color.black, Color.clear]];
-			classSourceButton.states = [["class source", Color.black, Color.clear]];
-			svnButton !? { svnButton.states = [["svn", Color.black, Color.clear]] };
+			superButton.states = [["super", black, clear]];
+			metaButton.states = [["meta", black, clear]];
+			helpButton.states = [["help", black, clear]];
+			classSourceButton.states = [["class source", black, clear]];
+			svnButton !? { svnButton.states = [["svn", black, clear]] };
 		};
 		w.refresh;
+	}
+	
+		// workaround for the fact that you can't get a non-metaclass from a metaclass
+	getClass { |method|
+		var	class;
+		if(method.isNil) { ^nil };
+		^if((class = method.ownerClass).isMetaClass) {
+			class.name.asString[5..].asSymbol.asClass;
+		} { class }
 	}
 	
 	free {
@@ -407,33 +489,49 @@ ClassBrowser {
 	//////// Support methods for class searches
 
 	makeSearchItems { |class|
-		^if(class.notNil) {
+		^if(class.isKindOf(Class)) {
 			[	"All classes",
 				"Subclasses of " ++ class.name,
-				"Folder " ++ PathName(class.filenameSymbol.asString).allFolders.last
+				"Folder " ++ PathName(class.filenameSymbol.asString).allFolders.last,
+				"Methods of all classes",
+				"% + subclass methods".format(class.name)
 			]
 		} {
-			#["All classes"]
+			#["All classes", "Methods"]
 		};
 	}
 
 	searchClasses { |string, rootNumber, matchCase, addHistory = true|
-		var	pool, rootdir;
+		var	pool, rootdir, result;
 		matchCase = matchCase > 0;
+			// hack, ugh
+		if(searchMenu.items.size == 2) { rootNumber = rootNumber * 3 };
 		pool = switch(rootNumber)
 			{ 0 } {
+				isClassSearch = true;
 				Class.allClasses
 			}
 			{ 1 } {
+				isClassSearch = true;
 				this.currentClass.allSubclasses
 			}
 			{ 2 } {
+				isClassSearch = true;
 				rootdir = PathName(this.currentClass.filenameSymbol.asString).pathOnly;
 				Class.allClasses.select({ |class|
 					PathName(class.filenameSymbol.asString).pathOnly == rootdir
 				});
+			}
+			{ 3 } {
+				isClassSearch = false;
+				Class.allClasses;
+			}
+			{ 4 } {
+				isClassSearch = false;
+				this.currentClass.allSubclasses ++ this.currentClass
 			};
-		this.currentClass = (if(matchCase) {
+		if(isClassSearch) {
+			this.currentClass = (if(matchCase) {
 				pool.select({ |class|
 					class.isMetaClass.not and: { class.name.asString.contains(string) }
 				})
@@ -442,5 +540,25 @@ ClassBrowser {
 					class.isMetaClass.not and: { class.name.asString.containsi(string) }
 				})
 			}).sort({ |a, b| a.name < b.name });
+		} {
+			result = Array.new;
+			if(matchCase) {
+				pool.do({ |class|
+					result = result.addAll(class.methods.select({ |method|
+						method.name.asString.contains(string)
+					}));
+				});
+			} {
+				pool.do({ |class|
+					result = result.addAll(class.methods.select({ |method|
+						method.name.asString.containsi(string)
+					}));
+				});
+			};
+			this.currentClass = result.sort({ |a, b|
+				if(a.name == b.name) { a.ownerClass.name < b.ownerClass.name }
+					{ a.name < b.name };
+			});
+		}
 	}
 }
