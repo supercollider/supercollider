@@ -663,11 +663,25 @@ Server : Model {
 	}
 */
 	*freeAll { arg evenRemote = false;
-		if(evenRemote) {
-			set.do { arg server; server.freeAll }
+		if (evenRemote) {
+			set.do { arg server; 
+				if ( server.serverRunning ) { server.freeAll }
+			}
 		} {
 			set.do { arg server;
-				if(server.isLocal) { server.freeAll }
+				if (server.isLocal and:{ server.serverRunning }) { server.freeAll }
+			}
+		}
+	}
+
+	*hardFreeAll { arg evenRemote = false;
+		if (evenRemote) {
+			set.do { arg server; 
+				server.freeAll
+			}
+		} {
+			set.do { arg server;
+				if (server.isLocal) { server.freeAll }
 			}
 		}
 	}
