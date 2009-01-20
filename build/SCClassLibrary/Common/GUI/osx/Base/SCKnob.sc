@@ -10,13 +10,13 @@
 //
 //	01.20.2009 - SCKnob
 //		- a subclass of SCUserView again.
-//		- equalSize option
+//		- isSquare option
 //
 
 SCKnob : SCUserView {
-	classvar <>defaultMode, <>equalSize=false, <>compactRatio=0.87;
-	var size, widthDiv2, center, hit;
-	var <>color, <value, prevValue, <>step, <>keystep, <>mode, isCentered = false;
+	classvar <>defaultMode, <>isSquare=false, <>compactRatio=0.87;
+	var size, widthDiv2, center, aw8, aw12, aw14, hit;
+	var <>color, <value, prevValue, <>step, <>keystep, <>mode, <centered = false;
 	var <skin;
 
 	*viewClass { ^SCUserView }
@@ -43,52 +43,62 @@ SCKnob : SCUserView {
 
 	init { arg argParent, argBounds;
 	
-		if ( equalSize ) {
-			argBounds = argBounds.asRect.height_( argBounds.asRect.width );
-		}{
-			argBounds = argBounds.asRect.height_( 
-				(argBounds.asRect.width * compactRatio).ceil
-			);
-		};
-
+		argBounds = this.calcConsts(argBounds);
+		
 		super.init(argParent, argBounds);
 		
 		value = 0.0;
-		mode = defaultMode;
 		keystep = 0.01;
 		step = 0.01;
+		mode = defaultMode;
 		
 		skin = GUI.skins.default.knob.default;
 
 		this.oldMethodsCompat(skin);
-		
-		size = this.bounds.width;
-		widthDiv2 = size * 0.5;
-		center = Point(widthDiv2, widthDiv2);
-		
-		if (relativeOrigin.not) {
-			center = center + (this.bounds.left @ this.bounds.top);
-		};
 		
 		this.receiveDragHandler = { this.valueAction_(SCView.currentDrag); };
 		this.beginDragAction = { value.asFloat; };
 		this.canReceiveDragHandler = { SCView.currentDrag.isNumber };
 	}
 
+	calcConsts { arg rect;
+		if ( isSquare ) {
+			rect = rect.asRect.height_( rect.asRect.width );
+		}{
+			rect = rect.asRect.height_( (rect.asRect.width * compactRatio).ceil );
+		};
+		size = rect.width;
+		widthDiv2 = size * 0.5;
+		aw8  = widthDiv2 - (0.08 * size);
+		aw12 = widthDiv2 - (0.12 * size);
+		aw14 = widthDiv2 - (0.14 * size);
+		center = Point(widthDiv2, widthDiv2);
+		if (relativeOrigin.not) {
+			center = center + (this.bounds.left @ this.bounds.top);
+		};
+				
+		^rect
+	}
+
+	bounds_ { arg rect;
+		rect = this.calcConsts(rect);
+		super.bounds_(rect);
+	}
+
 	draw {
-		var startAngle, arcAngle, aw;
+		var startAngle, arcAngle;
 
 		color[2].set;
 		SCPen.addAnnularWedge(
 			center,
-			widthDiv2 - (0.08 * size), 
+			aw8, 
 			widthDiv2, 	
 			0.25pi, 
 			-1.5pi
 		);
 		SCPen.perform(\fill);
 
-		if (isCentered.not, {
+		if (centered.not, {
 			startAngle = 0.75pi; 
 			arcAngle = 1.5pi * value;
 		}, {
@@ -99,7 +109,7 @@ SCKnob : SCUserView {
 		color[1].set;
 		SCPen.addAnnularWedge(
 			center, 
-			widthDiv2 - (0.12 * size), 
+			aw12, 
 			widthDiv2, 	
 			startAngle, 
 			arcAngle
@@ -107,14 +117,13 @@ SCKnob : SCUserView {
 		SCPen.perform(\fill);
 
 		color[0].set;
-		aw = widthDiv2 - (0.14 * size);
-		SCPen.addWedge(center, aw, 0, 2pi);
+		SCPen.addWedge(center, aw14, 0, 2pi);
 		SCPen.perform(\fill);
 
 		color[3].set;
 		SCPen.width = (0.08 * size);
 		SCPen.moveTo(center);
-		SCPen.lineTo(Polar.new(aw, 0.75pi + (1.5pi * value)).asPoint + center);
+		SCPen.lineTo(Polar.new(aw14, 0.75pi + (1.5pi * value)).asPoint + center);
 		SCPen.stroke;
 	}
 
@@ -191,23 +200,19 @@ SCKnob : SCUserView {
 
 		mouseMoveAction.value(this, x, y, modifiers);	
 	}	
-		
-//	mouseOver { arg x, y;
-//		mouseOverAction.value(this, x, y);
-//	}
 
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		// standard keydown
-		if (char == $r, { this.valueAction = 1.0.rand; });
-		if (char == $n, { this.valueAction = 0.0; });
-		if (char == $x, { this.valueAction = 1.0; });
-		if (char == $c, { this.valueAction = 0.5; });
-		if (char == $[, { this.decrement; this});
-		if (char == $], { this.increment; this });
-		if (unicode == 16rF700, { this.increment; this });
-		if (unicode == 16rF703, { this.increment; this });
-		if (unicode == 16rF701, { this.decrement; this });
-		if (unicode == 16rF702, { this.decrement; this });
+		if (char == $r, { this.valueAction = 1.0.rand; ^this });
+		if (char == $n, { this.valueAction = 0.0; ^this });
+		if (char == $x, { this.valueAction = 1.0; ^this });
+		if (char == $c, { this.valueAction = 0.5; ^this });
+		if (char == $[, { this.decrement; ^this });
+		if (char == $], { this.increment; ^this });
+		if (unicode == 16rF700, { this.increment; ^this });
+		if (unicode == 16rF703, { this.increment; ^this });
+		if (unicode == 16rF701, { this.decrement; ^this });
+		if (unicode == 16rF702, { this.decrement; ^this });
 		^nil		// bubble if it's an invalid key
 	}
 
@@ -227,12 +232,8 @@ SCKnob : SCUserView {
 	}
 
 	centered_ { arg bool;
-		isCentered = bool;
+		centered = bool;
 		this.refresh;
-	}
-	
-	centered {
-		^isCentered
 	}
 	
 	skin_ { arg newskin;
