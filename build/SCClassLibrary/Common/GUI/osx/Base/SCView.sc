@@ -1039,9 +1039,11 @@ SCStaticText : SCStaticTextBase {
 	}
 }
 
+
 SCNumberBox : SCStaticTextBase {
 	var <> keyString, <>step=1;
-	var	<>typingColor, <>normalColor;
+	var <>typingColor, <>normalColor;
+	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=false, <>shift_step=0.1, <>ctrl_step=10;
 	
 	*paletteExample { arg parent, bounds;
 		var v;
@@ -1091,19 +1093,21 @@ SCNumberBox : SCStaticTextBase {
 		});
 		^nil		// bubble if it's an invalid key
 	}
+
 	value { ^object }
 	value_ { arg val;
 		keyString = nil;
 		this.stringColor = normalColor;
-		object = val;
+		object = val !? { val.clip(clipLo, clipHi) };
 		this.string = object.asString;
 	}	
 	valueAction_ { arg val;
 		var prev;
 		prev = object;
-		this.value = val;
+		this.value = val !? { val.clip(clipLo, clipHi) };
 		if (object != prev, { this.doAction });
-	}	
+	}
+
 	boxColor {
 		this.deprecated(thisMethod, SCView.findMethod(\background));
 		^this.background;
@@ -1125,9 +1129,33 @@ SCNumberBox : SCStaticTextBase {
 	defaultReceiveDrag {
 		this.valueAction = currentDrag;	
 	}
+
+	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
+		hit = Point(x,y);
+		if (scroll == true, {
+			inc = 1.0;
+			case
+				{ modifiers & 131072 == 131072 } // shift defaults to step x 0.1
+					{ inc = shift_step }
+				{ modifiers & 262144 == 262144 } // control defaults to step x 10
+					{ inc = ctrl_step };
+		});			
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+	}
+
+	mouseMove { arg x, y, modifiers;
+		var direction;
+		if (scroll == true, {
+			direction = 1.0;
+				// horizontal or vertical scrolling:
+			if ( (x - hit.x) < 0 or: { (y - hit.y) > 0 }) { direction = -1.0; };
+
+			this.valueAction = (this.value + (inc * this.step * direction));
+			hit = Point(x, y);
+		});
+		mouseMoveAction.value(this, x, y, modifiers);	
+	}
 }
-
-
 
 SCListView : SCControlView {
 	var <font, <items, <>enterKeyAction;
