@@ -23,15 +23,16 @@ p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #6f7184}
-span.s3 {color: #686e90}
+span.s2 {color: #6f7183}
+span.s3 {color: #696f8e}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #6d7187}
+span.s6 {color: #6e7186}
 span.s7 {color: #6f7178}
 span.s8 {color: #0000bf}
 span.s9 {color: #51535a}
@@ -142,8 +143,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s7">SCView</span></a>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns:</p>
-<p class="p17"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\value<span class="s4">, </span>\font<span class="s4">, </span>\items<span class="s4">, </span>\stringColor<span class="s4">, </span>\align<span class="s4">, </span>\itemColors<span class="s4"> ]</span></p>
+<p class="p17"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns:</p>
+<p class="p18"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\value<span class="s4">, </span>\font<span class="s4">, </span>\items<span class="s4">, </span>\stringColor<span class="s4">, </span>\align<span class="s4">, </span>\itemColors<span class="s4">, </span>\focusColor<span class="s4"> ]</span></p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -162,11 +163,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. Performs <b>valueAction_</b> with the <b>currentDrag</b> as an argument.</p>
 <p class="p7"><br></p>
 <p class="p14"><b>Examples</b></p>
-<p class="p18"><br></p>
+<p class="p19"><br></p>
 <p class="p12">(</p>
-<p class="p18"><br></p>
+<p class="p19"><br></p>
 <p class="p12">w = <span class="s8">Window</span>.new.front;</p>
-<p class="p18"><br></p>
+<p class="p19"><br></p>
 <p class="p12">v = <span class="s8">ListView</span>(w,<span class="s8">Rect</span>(10,10,120,70))</p>
 <p class="p13"><span class="s4"><span class="Apple-tab-span">	</span>.items_([ </span>"SinOsc"<span class="s4">, </span>"Saw"<span class="s4">, </span>"LFSaw"<span class="s4">, </span>"WhiteNoise"<span class="s4">, </span>"PinkNoise"<span class="s4">, </span>"BrownNoise"<span class="s4">, </span>"Osc"<span class="s4"> ])</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>.background_(<span class="s8">Color</span>.clear)</p>
@@ -175,9 +176,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[sbs.value, v.items[sbs.value]].postln;<span class="Apple-tab-span">	</span><span class="s12">// .value returns the integer</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>});</p>
 <p class="p12">)</p>
-<p class="p18"><br></p>
-<p class="p18"><br></p>
-<p class="p19">// Sound example use to switch Filters</p>
+<p class="p19"><br></p>
+<p class="p19"><br></p>
+<p class="p20">// Sound example use to switch Filters</p>
 <p class="p12">(</p>
 <p class="p12"><span class="s8">Server</span>.default = s = <span class="s8">GUI</span>.stethoscope.defaultServer.boot;</p>
 <p class="p12">s.waitForBoot({</p>
@@ -198,17 +199,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4,{try{f.free};f={<span class="s8">ReplaceOut</span>.ar(0,<span class="s8">Resonz</span>.ar(<span class="s8">In</span>.ar(0,2),<span class="s8">In</span>.kr(0,1),0.2,2))}.play(addAction:<span class="s14">\addToTail</span>)},</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5,{try{f.free};f={<span class="s8">ReplaceOut</span>.ar(0,<span class="s8">MoogFF</span>.ar(<span class="s8">In</span>.ar(0,2),<span class="s8">In</span>.kr(0,1),1.5))}.play(addAction:<span class="s14">\addToTail</span>)}</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>ww=<span class="s8">FreqScope</span>.new(400, 200, 0);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w.bounds=<span class="s8">Rect</span>(50,<span class="s8">Window</span>.screenBounds.height-300,200,200);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>ww.window.bounds=ww.window.bounds.moveTo(255,<span class="s8">Window</span>.screenBounds.height-328);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s8">CmdPeriod</span>.doOnce({{ww.window.close}.defer(0.5);w.close;});</p>
-<p class="p19"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//defer or crash, because FreqScopeWindow Class contains its own routine for cleaning up on CmdPeriod</p>
+<p class="p20"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//defer or crash, because FreqScopeWindow Class contains its own routine for cleaning up on CmdPeriod</p>
 <p class="p12"><span class="Apple-tab-span">	</span>w.onClose_({n.free;f.free;freq.free});</p>
 <p class="p12">});</p>
 <p class="p12">)</p>
-<p class="p18"><br></p>
+<p class="p19"><br></p>
 </body>
 </html>

@@ -246,7 +246,7 @@ SCView {  // abstract class
 	
 	properties {
 		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background,
-				\minWidth,\maxWidth,\minHeight,\maxHeight]
+				\minWidth,\maxWidth,\minHeight,\maxHeight,\focusColor]
 	}
 	getPropertyList {
 		^this.properties.collect({ arg name;
