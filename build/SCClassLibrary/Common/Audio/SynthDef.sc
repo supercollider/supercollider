@@ -201,7 +201,8 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
-				};
+				this.setControlNames(controlUGens[i], cn);
+			};
 		};
 		if (trControlNames.size > 0) {
 			values = nil;
@@ -214,7 +215,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
-				controlUGens[i].name_(cn.name);
+				this.setControlNames(controlUGens[i], cn);
 			};
 		};
 		if (arControlNames.size > 0) {
@@ -228,7 +229,7 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
-				controlUGens[i].name_(cn.name);
+				this.setControlNames(controlUGens[i], cn);
 			};
 		};
 		if (krControlNames.size > 0) {
@@ -249,13 +250,24 @@ SynthDef {
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
-				controlUGens[i].name_(cn.name);
+				this.setControlNames(controlUGens[i], cn);
 			};
 		};
 		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };
 		
 		^arguments
 	}
+	
+	setControlNames {arg controlUGens, cn;
+		controlUGens.isArray.if({
+			controlUGens.do({arg thisCtrl;
+				thisCtrl.name_(cn.name);
+				}, {
+			controlUGens.name_(cn.name)
+			});
+		})
+	}
+		
 	finishBuild {
 
 		this.optimizeGraph;
