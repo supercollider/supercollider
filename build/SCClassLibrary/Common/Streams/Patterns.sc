@@ -511,7 +511,7 @@ Pstep3add : Pattern {
 PstepNfunc : Pattern {
 	var <function, <>patterns;
 	*new { arg function, patterns;
-		^super.newCopyArgs(function, patterns)
+		^super.newCopyArgs(function ? { |x| x }, patterns)
 	}
 	storeArgs { ^[function,patterns] }
 	embedInStream { arg inval;
@@ -528,7 +528,7 @@ PstepNfunc : Pattern {
 					val.notNil;
 				}{
 					if(level < max) {
-						f.value(inval, level + 1)
+						inval = f.value(inval, level + 1)
 					}{
 						inval = yield(function.value(vals));
 					}
