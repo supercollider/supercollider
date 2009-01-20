@@ -5226,7 +5226,11 @@ void SCEnvelopeView::draw(SCRect inDamage)
 					num = (int) (envobj->mConnections[j]);
 					SCEnvObject * conObj = (mEnvObj + num);
 					curve = conObj->curve;
-	
+//					post("shape at num: %i, is: %i\n", num, conObj->shape);
+					gcox = envobj->mDrawPoint.x;
+					gcoy = envobj->mDrawPoint.y;
+					gcx = conObj->mDrawPoint.x;
+					gcy =  conObj->mDrawPoint.y;	
 					if (num >=0 ){
 						switch(conObj->shape){
 							case shape_Step:
