@@ -110,7 +110,7 @@ Help {
 	}
 
 	*addDirTree{ |helppath,tree|
-		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
+		var helpExtensions = #['html', 'scd', 'rtf', 'rtfd'];
 		var subfileslist;
 		var node, subc, helpRootLen, thisHelpExt;
 
@@ -118,8 +118,8 @@ Help {
 
 		PathName.new(helppath.standardizePath).filesDo({|pathname|
 				if( helpExtensions.includes(pathname.extension.asSymbol)
-					&& pathname.fullPath.contains("3vs2").not
-					&& pathname.fullPath.contains("help-scripts").not
+					and: { pathname.fullPath.contains("3vs2").not
+					and: { pathname.fullPath.contains("help-scripts").not } }
 					, {
 						subfileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
 						fileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
