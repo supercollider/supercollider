@@ -39,7 +39,7 @@ a.stringColor
 a.stringColor_(Color.red)
 a.stringColor
 */
-SCTextField2 : SCStaticTextBase {
+SCTextField : SCStaticTextBase {
 	
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds).initBackGround.value_("edit me");
