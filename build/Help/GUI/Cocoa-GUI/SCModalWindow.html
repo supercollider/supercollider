@@ -18,19 +18,18 @@ p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #001dfd}
+span.s2 {color: #002afb}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #0000ff}
-span.s6 {color: #0030f3}
-span.s7 {color: #0000bf}
+span.s5 {color: #001dfd}
+span.s6 {color: #0038f1}
+span.s7 {color: #0016bd}
 span.s8 {color: #606060}
-span.s9 {color: #007300}
+span.s9 {color: #2b7000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,15 +40,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">SCModalWindow is an application modal version of SCWindow. This means that it blocks all other user input until it is dismissed. It is thus useful for alerts, preference panels and other situations which should limit user input.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also: </b><a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a></span></span></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="SCWindow.html"><span class="s4">SCWindow</span></a>, <a href="SCModalSheet.html"><span class="s4">SCModalSheet</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Dismissing App Modal Windows</b></p>
 <p class="p2"><br></p>
-<p class="p1">SCModalWindows have non-functional OSX close buttons. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to close the window. As an 'escape hatch' pressing the esc key will kill any application modal window.</span></p>
+<p class="p1">SCModalWindows have non-functional OSX close buttons. It is therefore very important that you add an SCButton or some other GUI widget to allow the user to close the window. As an 'escape hatch' pressing the esc key will kill any application modal window.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Blocking and Multiple App Modal Windows</b></p>
 <p class="p6"><br></p>
-<p class="p1">There can only be one active SCModalWindow at any given time. If you attempt to create more than one they will be cued and launched in turn as each is dismissed.</span></p>
+<p class="p1">There can only be one active SCModalWindow at any given time. If you attempt to create more than one they will be cued and launched in turn as each is dismissed.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>N.B.</b> If you launch multiple app modal windows which will alter the same data, you may need to take special care. You can use the <b>*current </b>class method to check if an app modal window is currently running, and add a <a href="../../Core/Kernel/Function.html"><span class="s5">Function</span></a> to its onClose in order to check if the additional window is still needed once the first one has closed. See below for an example of how to do this.</p>
 <p class="p2"><br></p>
@@ -59,8 +58,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Creates a new SCModalWindow instance. You do not need to call <b>front</b> on it to make it visible.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- The name that will be displayed in the title bar. An instance of <a href="../../Collections/String.html"><span class="s6">String</span></a> or <a href="../../Core/Symbol.html"><span class="s6">Symbol</span></a>. The default is 'panel'.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</span></b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window. The size does not include the title bar. <b>N.B. </b>App Modal windows are centred on the screen when created, so if you wish to move it for some reason you will need to call <b>bounds_</b> on the window after creation.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is true.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</b> - A <a href="../../Geometry/Rect.html"><span class="s6">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> specifying the size of the window. The size does not include the title bar. <b>N.B. </b>App Modal windows are centred on the screen when created, so if you wish to move it for some reason you will need to call <b>bounds_</b> on the window after creation.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>resizable</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window can be resized by the user. The default is false.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>border</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window has a border. Borderless windows have no title bar. The default is true.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server</b> - This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect. See <a href="../GUI-Tools/GUI.html"><span class="s6">GUI</span></a> for more details.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>scroll</b> - A <a href="../../Core/Boolean.html"><span class="s6">Boolean</span></a> indicating whether this window will add scrollers if its contents exceed its bounds. If this is set to true resize settings will be ignored for enclosed views. See <a href="SCScrollTopView.html"><span class="s6">SCScrollTopView</span></a>. The default is false.</p>
@@ -89,14 +88,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><span class="Apple-tab-span">	</span>.onClose_({(<span class="s8">"You're a"</span> + person).postln})</p>
 <p class="p13"><span class="Apple-tab-span">	</span>.action_({ win.close });</p>
 <p class="p13">)</p>
-<p class="p15"><br></p>
+<p class="p3"><br></p>
 <p class="p12">// multiple windows with state check</p>
 <p class="p12">// checks against data1 and data2 to see if windows are still needed</p>
 <p class="p13">(</p>
 <p class="p13"><span class="s7">var</span> window1, window2, window3;</p>
 <p class="p13"><span class="s7">var</span> func2, func3;</p>
 <p class="p13"><span class="s7">var</span> data1 = <span class="s7">false</span>, data2 = <span class="s7">false</span>;</p>
-<p class="p15"><br></p>
+<p class="p3"><br></p>
 <p class="p12">// 1</p>
 <p class="p13">window1 = <span class="s7">SCModalWindow</span>.new(<span class="s8">"1"</span>);</p>
 <p class="p13"><span class="s7">SCButton</span>(window1, <span class="s7">Rect</span>(20,20,340,30))</p>
@@ -107,7 +106,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>data1 = </span><span class="s7">true</span><span class="s3">; </span>// we will still need 2</p>
 <p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>window1.close;</p>
 <p class="p13"><span class="Apple-tab-span">	</span>});</p>
-<p class="p15"><br></p>
+<p class="p3"><br></p>
 <p class="p12">// 2</p>
 <p class="p13">func2 = {</p>
 <p class="p13"><span class="s7">var</span> curr;</p>
@@ -127,7 +126,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13">}, {curr.onClose = curr.onClose.addFunc(func2)});</p>
 <p class="p13">};</p>
 <p class="p13">func2.value;</p>
-<p class="p15"><br></p>
+<p class="p3"><br></p>
 <p class="p12">// 3</p>
 <p class="p13">func3 = {</p>
 <p class="p13"><span class="s7">var</span> curr;</p>
@@ -146,6 +145,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13">};</p>
 <p class="p13">func3.value;</p>
 <p class="p13">)</p>
-<p class="p15"><br></p>
+<p class="p3"><br></p>
 </body>
 </html>
