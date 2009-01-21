@@ -778,6 +778,7 @@ SCRangeSlider : SCSliderBase {
 		// changed to x,y instead of lo, hi
 		this.lo = currentDrag.x;
 		this.hi = currentDrag.y;
+		this.doAction		
 	}
 }
 
