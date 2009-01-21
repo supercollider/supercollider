@@ -42,7 +42,9 @@ a.stringColor
 SCTextField : SCStaticTextBase {
 	
 	*paletteExample { arg parent, bounds;
-		^this.new(parent, bounds).initBackGround.value_("edit me");
+//		^this.new(parent, bounds).initBackGround.value_("edit me");
+		^this.new(parent, bounds).value_("edit me");
+
 	}
 	
 	initBackGround {
