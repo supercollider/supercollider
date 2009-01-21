@@ -227,6 +227,10 @@ searchViews = w;
 		subclassView.enterKeyAction = {
 			this.currentClass_( subclassArray[subclassView.value] );
 		};
+		subclassView.mouseDownAction_{|v,x, y, modifiers, buttonNumber, clickCount|			if(clickCount==2){
+				v.enterKeyAction.value;
+			}
+		};
 		methodView.enterKeyAction = this.normalMethodEnterKey;
 		
 		methodView.action = {
