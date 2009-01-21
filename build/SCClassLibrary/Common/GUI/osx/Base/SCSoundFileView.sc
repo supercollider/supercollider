@@ -309,6 +309,16 @@ SCSoundFileView : SCScope{
 		zoomOne = dataFrames / (this.bounds.width-2);
 		viewFrames = dataFrames * block * (this.xZoom / zoomOne);
 	}
+	
+	*paletteExample { arg parent, bounds;
+		var example, file;
+		example = this.new(parent, bounds);
+		file = SoundFile.new;
+		file.openRead("sounds/a11wlk01.wav");
+		example.soundfile = file;
+		example.read(0, file.numFrames);
+		^example
+	}	
 
 }
 

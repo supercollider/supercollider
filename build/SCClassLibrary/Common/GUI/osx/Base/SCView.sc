@@ -1544,6 +1544,12 @@ SCMultiSliderView : SCView {
 		^nil		// bubble if it's an invalid key
 	}
 	
+	*paletteExample{ arg parent, bounds;
+		var example;
+		example = this.new(parent, bounds).valueThumbSize_(2);
+		^example
+	}	
+		
 	doMetaAction{ 
 		metaAction.value(this)
 	} //on ctrl click
@@ -1729,8 +1735,8 @@ SCEnvelopeView : SCView {
 		}
 	}
 	
-	setEnv{arg env;
-		var times, levels, minValue, maxValue ;
+	setEnv{arg env, minValue, maxValue, minTime, maxTime;
+		var times, levels;
 		var spec;
 
 		times = Array.newClear(env.times.size + 1);
@@ -1738,13 +1744,14 @@ SCEnvelopeView : SCView {
 		for(1, env.times.size, { arg i;
 			times[i] = times[i-1] + env.times[i-1];
 		});
-		
+		maxTime = maxTime ? times.last;
+		minTime = minTime ? 0;
 		levels = env.levels;
-		minValue = levels.minItem;
-		maxValue = levels.maxItem; 
+		minValue = minValue ? levels.minItem;
+		maxValue = maxValue ? levels.maxItem; 
 		
 		levels = levels.linlin(minValue, maxValue, 0, 1);
-		times = times.linlin(0, times.last, 0, 1);
+		times = times.linlin(minTime, maxTime, 0, 1);
 		
 		this.value_([times.asFloat, levels.asFloat]);
 		this.curves_(env.curves);
@@ -1780,6 +1787,10 @@ SCEnvelopeView : SCView {
 		env.levels_(levels);
 		env.curves_(this.curves);
 		^Env(levels, times, this.curves); 
+	}	
+	
+	*paletteExample { arg parent, bounds;
+		^this.new(parent, bounds).setEnv(Env([0.1, 0.3, 0.4, 0.01], [0.3, 1, 3]));
 	}	
 		
 	prSetCurves{|arr|
