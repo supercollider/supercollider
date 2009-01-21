@@ -262,10 +262,10 @@ SynthDef {
 		controlUGens.isArray.if({
 			controlUGens.do({arg thisCtrl;
 				thisCtrl.name_(cn.name);
-				}, {
+				})
+			}, {
 			controlUGens.name_(cn.name)
 			});
-		})
 	}
 		
 	finishBuild {
