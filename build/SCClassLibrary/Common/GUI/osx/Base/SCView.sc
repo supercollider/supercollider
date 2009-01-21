@@ -840,8 +840,7 @@ SC2DSlider : SCSliderBase {
 		^currentDrag.isKindOf(Point);
 	}
 	defaultReceiveDrag {
-		this.x = currentDrag.x;
-		this.y = currentDrag.y;
+		this.setXYActive(currentDrag.x, currentDrag.y);
 	}
 }
 
