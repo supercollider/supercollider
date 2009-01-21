@@ -255,4 +255,9 @@ SCKnob : SCUserView {
 		];
 		defaultMode = skin.defaultMode;
 	}
+	
+	*paletteExample{arg parent, bounds;
+		^this.new(parent, bounds.asRect.height@bounds.asRect.height);	
+	}
+	
 }

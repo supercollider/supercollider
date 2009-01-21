@@ -106,6 +106,10 @@ SCTextView : SCView{
 		path = path.replace(" ", "%20");
 		this.setProperty(\open, path);
 	}
+
+	*paletteExample{ arg parent, bounds;
+		^this.new(parent, bounds).string_("The quick brown fox jumps over the lazy dog.");
+	}	
 }
 
 SCMovieView : SCView{
@@ -199,4 +203,9 @@ SCMovieView : SCView{
 	paste{
 		this.setProperty(\paste);
 	}	
+
+	*paletteExample{ arg parent, bounds;
+		^this.new(parent, bounds).path_("Help/GUI/Cocoa-GUI/SCImage/flowers2.jpg");
+	}	
+	
 }

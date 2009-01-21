@@ -1,7 +1,7 @@
 SCLevelIndicator : SCView {
 
 	*paletteExample { arg parent, bounds;
-		^this.new(parent, bounds);
+		^this.new(parent, bounds).value_(0.7);
 	}
 	
 	value {
