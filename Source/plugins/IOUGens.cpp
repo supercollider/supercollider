@@ -152,7 +152,6 @@ void Control_next_1(Unit *unit, int inNumSamples)
 
 void Control_Ctor(Unit* unit)
 {
-	//Print("Control_Ctor\n");
 	if (unit->mNumOutputs == 1) {
 		SETCALC(Control_next_1);
 		Control_next_1(unit, 1);
@@ -175,7 +174,7 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 	int mapRate;
 	float nextVal, curVal, valSlope;
 	mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
-	mapRate = mapRatep[0];
+	mapRate = mapRatep[i];
 	switch (mapRate) {
 	    case 0 : {
 		for(int j = 0; j < inNumSamples; j++){
