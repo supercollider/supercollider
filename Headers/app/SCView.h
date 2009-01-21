@@ -805,6 +805,7 @@ public:
 	virtual void clearDrawing();
 	virtual void refreshInRect(SCRect b);
 protected:
+	bool mDrawingEnabled;
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
 	SCPoint mRealtiveMousePoint;

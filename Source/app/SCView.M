@@ -4082,6 +4082,7 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 {
 	mClearOnRefresh = true;
 	mRelativeOrigin = false;
+	mDrawingEnabled = true;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	mCGLayer =  NULL;
 #endif
@@ -4095,10 +4096,9 @@ SCUserView::~SCUserView()
 void SCUserView::draw(SCRect inDamage)
 {
 
-	SCView::draw(inDamage); // draw background
-
 	SCRect bounds = getDrawBounds();
-
+	SCView::draw(bounds); // draw background	
+	if(!mDrawingEnabled) return;
 	if(bounds.width == 0 || bounds.height == 0) return;
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGContextRef lCGContext;
@@ -4280,7 +4280,11 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "clearDrawing")==0) {
 		clearDrawing();
 		return errNone;		
-	};
+	}
+	if (strcmp(name, "drawingEnabled")==0) {
+		mDrawingEnabled = IsTrue(slot);
+		return errNone;				
+	}
     return SCView::setProperty(symbol, slot);
 }
 
@@ -5510,7 +5514,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
 		int i = drawOrder[count];
         envo = &mEnvObj[i]; // check in reverse drawOrder so that 'on top' gets selected first
         sel = SCPointInRect(where, envo->mRect);
-		post("in SCEnvelopeView::setSelection: where.x %f, where.y %f, sel %i\n", where.x, where.y, (int) sel);
+//		post("in SCEnvelopeView::setSelection: where.x %f, where.y %f, sel %i\n", where.x, where.y, (int) sel);
         if(sel){
 			// toggle fixed selection
 			if(envo->mIsSelected && mIsFixedSelection){

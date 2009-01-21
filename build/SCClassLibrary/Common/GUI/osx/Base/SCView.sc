@@ -1296,6 +1296,7 @@ SCUserView : SCView {
 	var <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	var < clearOnRefresh = true, < relativeOrigin = true;
+	var < drawingEnabled = true;
 	
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
@@ -1307,7 +1308,8 @@ SCUserView : SCView {
 	}
 	
 	clearDrawing{
-			this.setProperty(\clearDrawing);	}
+			this.setProperty(\clearDrawing);	
+	}
 
 	mousePosition{
 		^this.getProperty(\mousePosition, Point.new)
@@ -1321,6 +1323,10 @@ SCUserView : SCView {
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);			}	
 	
+	drawingEnabled_{|bool|
+		drawingEnabled = bool;
+		this.setProperty(\drawingEnabled, bool);	}	
+
 	/* backwards compatibility */
 	keyDownFunc_{|action|
 		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
