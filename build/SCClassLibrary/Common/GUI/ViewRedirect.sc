@@ -1,10 +1,26 @@
 ViewRedirect { // Abstract class
-	*implClass { ^GUI.scheme.perform(this.key) }
-	*new { arg parent, bounds; ^this.implClass.new(parent, bounds) }
-	*browse { ^this.implClass.browse }
-	*doesNotUnderstand{|selector ... args|	^this.implClass.perform(selector, *args)  }
+	*implClass {
+		^GUI.scheme.perform(this.key)
+	}
+	*key { ^\viewRedirect }
+	*new { arg parent, bounds;
+		var	impl;
+		if((impl = this.implClass).notNil) {
+			^impl.new(parent, bounds)
+		} {
+			MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;
+		}
+	}
+	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
+	*doesNotUnderstand{|selector ... args|	
+		var	impl;
+		if((impl = this.implClass).notNil) {
+			^this.implClass.perform(selector, *args)
+		} {
+			DoesNotUnderstandError(this, selector, args).throw;
+		}
+	}
 }
-
 
 Window : ViewRedirect { 
 	*key { ^\window }
