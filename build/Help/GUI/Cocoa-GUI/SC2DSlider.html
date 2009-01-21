@@ -20,27 +20,26 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #5f6533}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #6f717d}
-span.s3 {color: #636a99}
+span.s2 {color: #6f717c}
+span.s3 {color: #656b96}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {text-decoration: underline ; color: #676975}
-span.s7 {color: #6d7187}
-span.s8 {color: #61699c}
+span.s6 {text-decoration: underline ; color: #676974}
+span.s7 {color: #6e7186}
+span.s8 {color: #636a99}
 span.s9 {color: #6f7178}
 span.s10 {color: #0000bf}
 span.s11 {color: #606060}
 span.s12 {color: #007300}
 span.s13 {font: 14.0px Helvetica}
-span.s14 {color: #6f717c}
+span.s14 {color: #6f717b}
 span.s15 {font: 9.0px Monaco}
-span.s16 {color: #0018b8}
-span.s17 {color: #356f14}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -141,7 +140,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s15"><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>defaultReceiveDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. The default action performed when receiving a drag. Sets <b>x</b> and <b>y</b> respectively using the <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> ( currentDrag.x@currentDrag.y) . Does <b>not</b> perform the action.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been recieved. The default action performed when receiving a drag. Sets <b>x</b> and <b>y</b> respectively using the <a href="../../Geometry/Point.html"><span class="s2">Point</span></a> ( currentDrag.x@currentDrag.y) . Performs the action.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -152,74 +151,74 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><b>Examples</b></p>
 <p class="p15"><br></p>
-<p class="p10">(</p>
-<p class="p10">w = <span class="s16">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s16">Rect</span>(100,100, 140 ,140));</p>
-<p class="p10">t = <span class="s16">Slider2D</span>(w, <span class="s16">Rect</span>(20, 20,80, 80))</p>
+<p class="p11">(</p>
+<p class="p11">w = <span class="s10">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s10">Rect</span>(100,100, 140 ,140));</p>
+<p class="p11">t = <span class="s10">Slider2D</span>(w, <span class="s10">Rect</span>(20, 20,80, 80))</p>
 <p class="p16"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.5)<span class="Apple-tab-span">	</span></span>// initial location of x</p>
 <p class="p16"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(1)<span class="Apple-tab-span">	</span></span>// initial location of y</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s16">|sl|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s17">\sliderX</span>, sl.x, <span class="s17">\sliderY</span>, sl.y].postln;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10">w.front;</p>
-<p class="p10">)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s10">|sl|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s12">\sliderX</span>, sl.x, <span class="s12">\sliderY</span>, sl.y].postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p11">w.front;</p>
+<p class="p11">)</p>
 <p class="p15"><br></p>
 <p class="p16"><span class="s4">t.x <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// get the x loc</p>
 <p class="p16"><span class="s4">t.x_(0.25) <span class="Apple-tab-span">	</span></span>// set the x loc</p>
 <p class="p15"><br></p>
 <p class="p15"><br></p>
 <p class="p16">// drag an drop Points</p>
-<p class="p10">(</p>
-<p class="p10">w = <span class="s16">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s16">Rect</span>(100,100, 500 ,300));</p>
-<p class="p10">w.view.decorator = <span class="s16">FlowLayout</span>(w.view.bounds);</p>
-<p class="p10">t = <span class="s16">Slider2D</span>(w, <span class="s16">Rect</span>(20, 20,280, 280))</p>
+<p class="p11">(</p>
+<p class="p11">w = <span class="s10">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s10">Rect</span>(100,100, 500 ,300));</p>
+<p class="p11">w.view.decorator = <span class="s10">FlowLayout</span>(w.view.bounds);</p>
+<p class="p11">t = <span class="s10">Slider2D</span>(w, <span class="s10">Rect</span>(20, 20,280, 280))</p>
 <p class="p16"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.5)<span class="Apple-tab-span">	</span></span>// initial location of x</p>
 <p class="p16"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(1)<span class="Apple-tab-span">	</span></span>// initial location of y</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s16">Color</span>.rand )</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s16">|sl|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s17">\sliderX</span>, sl.x, <span class="s17">\sliderY</span>, sl.y].postln;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p10">t.step_(0.01);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s10">Color</span>.rand )</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s10">|sl|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="s12">\sliderX</span>, sl.x, <span class="s12">\sliderY</span>, sl.y].postln;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p11">t.step_(0.01);</p>
 <p class="p15"><br></p>
-<p class="p10">n=<span class="s16">CompositeView</span>.new(w, 200@300);</p>
-<p class="p10">n.decorator= <span class="s16">FlowLayout</span>(n.bounds);</p>
+<p class="p11">n=<span class="s10">CompositeView</span>.new(w, 200@300);</p>
+<p class="p11">n.decorator= <span class="s10">FlowLayout</span>(n.bounds);</p>
 <p class="p15"><br></p>
-<p class="p10">v = { <span class="s16">|i|</span> <span class="s16">GUI</span>.dragBoth.new(n, <span class="s16">Rect</span>(0, i * 20, 200, 20)).background_( <span class="s16">Color</span>.rand ).align_(<span class="s17">\center</span>) }.dup(5);</p>
+<p class="p11">v = { <span class="s10">|i|</span> <span class="s10">GUI</span>.dragBoth.new(n, <span class="s10">Rect</span>(0, i * 20, 200, 20)).background_( <span class="s10">Color</span>.rand ).align_(<span class="s12">\center</span>) }.dup(5);</p>
 <p class="p15"><br></p>
-<p class="p17"><span class="s16">StaticText</span><span class="s4">.new(n,200@150).string_(</span>"hold down cmd and drag points from the slider to the drag slots, or reverse"<span class="s4">).stringColor_(</span><span class="s16">Color</span><span class="s4">.white);</span></p>
+<p class="p17"><span class="s10">StaticText</span><span class="s4">.new(n,200@150).string_(</span>"hold down cmd and drag points from the slider to the drag slots, or reverse"<span class="s4">).stringColor_(</span><span class="s10">Color</span><span class="s4">.white);</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10">w.front;</p>
-<p class="p10">)</p>
+<p class="p11">w.front;</p>
+<p class="p11">)</p>
 <p class="p15"><br></p>
 <p class="p16">// Shape a Sound</p>
-<p class="p10">(</p>
-<p class="p10">s.waitForBoot({</p>
-<p class="p10"><span class="Apple-tab-span">	</span>a={<span class="s16">arg</span> mod=0.05, index=0.05;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s16">var</span> r,out,out2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r=<span class="s16">Saw</span>.ar(8,0.03);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s16">PMOsc</span>.ar(440,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>660*mod,3*index, 0,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s16">Lag</span>.ar(r,0.01,1));</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[out,<span class="s16">Delay1</span>.ar(out)];</p>
+<p class="p11">(</p>
+<p class="p11">s.waitForBoot({</p>
+<p class="p11"><span class="Apple-tab-span">	</span>a={<span class="s10">arg</span> mod=0.05, index=0.05;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">var</span> r,out,out2;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r=<span class="s10">Saw</span>.ar(8,0.03);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s10">PMOsc</span>.ar(440,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>660*mod,3*index, 0,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Lag</span>.ar(r,0.01,1));</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[out,<span class="s10">Delay1</span>.ar(out)];</p>
 <p class="p15"><br></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
 <p class="p15"><br></p>
-<p class="p10"><span class="Apple-tab-span">	</span>w = <span class="s16">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s16">Rect</span>(100,<span class="s16">Window</span>.screenBounds.height-400, 300 ,300));</p>
-<p class="p10"><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s16">FlowLayout</span>(w.view.bounds);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>t = <span class="s16">Slider2D</span>(w, <span class="s16">Rect</span>(0, 0,292, 292))</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(0.05)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.05)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s16">Color</span>.rand )</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.knobColor_(<span class="s16">Color</span>.rand)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s16">|sl|</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s17">\mod</span>,sl.x,<span class="s17">\index</span>,sl.y);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w = <span class="s10">Window</span>(<span class="s11">"Slider2D"</span>, <span class="s10">Rect</span>(100,<span class="s10">Window</span>.screenBounds.height-400, 300 ,300));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s10">FlowLayout</span>(w.view.bounds);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>t = <span class="s10">Slider2D</span>(w, <span class="s10">Rect</span>(0, 0,292, 292))</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.y_(0.05)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.x_(0.05)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_( <span class="s10">Color</span>.rand )</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.knobColor_(<span class="s10">Color</span>.rand)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({<span class="s10">|sl|</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s12">\mod</span>,sl.x,<span class="s12">\index</span>,sl.y);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p15"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s16">CmdPeriod</span>.doOnce({w.close});</p>
-<p class="p10">})</p>
-<p class="p10">)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s10">CmdPeriod</span>.doOnce({w.close});</p>
+<p class="p11">})</p>
+<p class="p11">)</p>
 <p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p18"><br></p>
 </body>
 </html>
