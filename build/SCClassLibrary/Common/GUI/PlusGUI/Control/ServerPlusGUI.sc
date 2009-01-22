@@ -167,9 +167,9 @@
 			};
 		},{	
 			running = {
-				active.stringColor = Color.red;
+				active.stringColor_(Color.new255(74, 120, 74));
 				active.string = "running";
-				active.background = Color.red;
+				active.background = Color.white;
 				recorder.enabled = true;
 			};
 			stopped = {
