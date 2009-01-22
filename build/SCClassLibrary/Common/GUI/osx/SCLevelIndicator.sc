@@ -385,18 +385,16 @@ SCLevelIndicator : SCView {
 		numIns = options.numInputBusChannels;
 		numOuts = options.numOutputBusChannels;
 		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
-		window = Window.new(this.name ++ " levels (dBFS)", Rect(5, 305, viewWidth + 20, 215));
+		window = Window.new(this.name ++ " levels (dBFS)", Rect(5, 305, viewWidth + 20, 230));
 		window.view.background = Color.grey(0.4);
 		
-		view = HLayoutView(window, Rect(10,25, viewWidth, 180) );
-		//view.background = Color.grey(0.2);
-		view.spacing = gapWidth;
-		view.resize = 5;
+		view = SCCompositeView(window, Rect(10,25, viewWidth, 180) );
+		view.addFlowLayout(0@0, gapWidth@gapWidth);
 		
 		// dB scale
-		UserView(view, Rect(0,0,meterWidth,180)).drawFunc_({
+		UserView(view, Rect(0,0,meterWidth,195)).drawFunc_({
 			"0".drawCenteredIn(Rect(0, 0, meterWidth, 12), Font("Helvetica-Bold", 10), Color.white);
-			"-80".drawCenteredIn(Rect(0, 168, meterWidth, 12), Font("Helvetica-Bold", 10), Color.white);
+			"-80".drawCenteredIn(Rect(0, 170, meterWidth, 12), Font("Helvetica-Bold", 10), Color.white);
 		});
 		
 		// ins
@@ -405,10 +403,16 @@ SCLevelIndicator : SCView {
 			.stringColor_(Color.white)
 			.string_("Inputs");
 		inmeters = Array.fill( numIns, { arg i;
-			SCLevelIndicator( view, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+			var comp;
+			comp = SCCompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
+			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
 				.numMajorTicks_(3);
+			StaticText(comp, Rect(0, 180, meterWidth, 15))
+				.font_(Font("Helvetica-Bold", 9))
+				.stringColor_(Color.white)
+				.string_((i + 1).asString);
 		});
 		
 		// divider
@@ -424,10 +428,16 @@ SCLevelIndicator : SCView {
 			.stringColor_(Color.white)
 			.string_("Outputs");
 		outmeters = Array.fill( numOuts, { arg i;
-			SCLevelIndicator( view, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+			var comp;
+			comp = SCCompositeView(view, Rect(0,0,meterWidth,195));
+			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
 				.numMajorTicks_(3);
+			StaticText(comp, Rect(0, 180, meterWidth, 15))
+				.font_(Font("Helvetica-Bold", 9))
+				.stringColor_(Color.white)
+				.string_((i + 1).asString);
 		});
 
 		window.front;
