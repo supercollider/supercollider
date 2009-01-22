@@ -44,6 +44,7 @@
 #import "MyDocument.h"
 #import "SCImage.h"
 
+
 extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
 
@@ -2131,7 +2132,16 @@ SCTextField::~SCTextField()
 
 void SCTextField::setBounds(SCRect screct)
 {
-	[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
+	if(
+		mBounds.x == screct.x &&
+		mBounds.x == screct.y &&
+		mBounds.width == screct.width &&
+		mBounds.height == screct.height
+	) { // in case - prevent a refresh if the bounds are the same
+		return;
+	}
+	
+	//[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
 	mBounds = screct;
 	if(mParent->relativeOrigin()){
 		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
@@ -2144,8 +2154,7 @@ void SCTextField::setBounds(SCRect screct)
 	}
 
 	[mTextField setFrame: SCtoNSRect(mLayout.bounds)];
-	//[mTextField setBounds: SCtoNSRect(mBounds)]; //?
-	[mTextField setNeedsDisplay: YES];
+	//[mTextField setNeedsDisplay: YES];
 }
 
 int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
