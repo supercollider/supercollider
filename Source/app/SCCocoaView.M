@@ -344,6 +344,14 @@ extern PyrSymbol *s_scview;
 	textReallyChanged = false;
 }
 
+//- (BOOL)textShouldBeginEditing:(NSText *)fieldEditor
+//{
+//	post("foo\n");
+//	if(mSCViewObject->isFocus()) return YES;
+//	
+//	return NO;
+//}
+
 //- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)fieldEditor
 //{
 //	//[(SCFieldEditor*)fieldEditor setCurrentTextField:self];
@@ -634,12 +642,26 @@ const int circDiam = 20;
 {
 	mSCViewObject = inObject;
 }
+
+-(BOOL) acceptsFirstResponder
+{
+	return mAcceptsFirstResponder;
+}
+
+-(void) setAcceptsFirstResponder: (BOOL) flag
+{
+	mAcceptsFirstResponder = flag;
+}
+
 //
-//// TEST: For tab-index
+// TEST: For tab-index
 //- (BOOL)becomeFirstResponder
 //{
-//	post("becomeFirstResponder\n");
-//	return YES;
+//	if(!mSCViewObject->isFocus()){
+//		[self resignFirstResponder];
+//		[mSCViewObject->getTop()->focusView()->focusResponder() becomeFirstResponder];
+//		return NO;
+//	} else return [super becomeFirstResponder];
 //}
 //-(BOOL) acceptsFirstResponder
 //{
@@ -2120,7 +2142,8 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
 	
 	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
-	
+	//This is a hack, otherwise the mTextField always has focus even if makeFirstResponder: view is called...
+	[mTextField setAcceptsFirstResponder:NO];
 	setVisibleFromParent();
 }
 
@@ -2301,6 +2324,21 @@ void SCTextField::setVisibleFromParent()
 	[mTextField setFrame: frame];
 	mTop->resetFocus();
 	refresh();
+}
+
+void SCTextField::makeFocus(bool focus)
+{
+    if (focus) {
+        if (canFocus() && !isFocus()) {
+			[mTextField setAcceptsFirstResponder:YES];
+			//[[mTextView window] makeFirstResponder: mTextView];	
+        }
+    } else {
+        if (isFocus()) {
+			[mTextField setAcceptsFirstResponder:NO];
+        }
+    }
+	SCView::makeFocus(focus);
 }
 
 void SCTextField::tabPrevFocus()
