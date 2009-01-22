@@ -28,7 +28,16 @@ static int textpos, textlen, totallen;
 static unichar *text;
 static unichar yytext[256];
 
-SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber;
+//initializing to default SC colors, these will get overriden 
+//by CocoaDocument.sc upon lang compilation, defaults are given
+//here so when lang compilation fails, we still have some colors 
+//over the text to debug.
+SCColor synColText = SCMakeColor(0, 0, 0, 1), 
+		synColClass = SCMakeColor(0, 0, 0.75, 1), 
+		synColString = SCMakeColor(0.375, 0.375, 0.375, 1), 
+		synColSymbol = SCMakeColor(0, 0.45, 0, 1), 
+		synColComment = SCMakeColor(0.75, 0, 0, 1), 
+		synColNumber = SCMakeColor(0, 0, 0, 1);
 
 static bool streq(char *cstr, unichar *ustr)
 {
