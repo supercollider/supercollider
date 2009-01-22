@@ -64,6 +64,7 @@
 	struct SCTextField *mSCViewObject;
 	bool textReallyChanged;
 	BOOL mDragStarted;
+	BOOL mAcceptsFirstResponder;
 }
 
 - (struct PyrObject*)getSCObject;
@@ -72,6 +73,7 @@
 - (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
 - (void)setSCView: (struct SCTextField*)inObject;
 - (void)setTextReallyChanged:(bool)changed;
+- (void) setAcceptsFirstResponder: (BOOL) flag;
 @end
 
 @interface SCNSMenuItem : NSMenuItem {
@@ -159,6 +161,7 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void setVisibleFromParent();
+	virtual void makeFocus(bool focus);
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual NSView* focusResponder() { return mTextField; }
