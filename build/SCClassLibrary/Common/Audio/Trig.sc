@@ -37,9 +37,6 @@ SendReply : SendTrig {
 		^0.0		// SendReply has no output
 	}
 	
-	/*
-	// audio rate version is causing trouble, remove for now.
-	
 	*ar { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		if(values.containsSeqColl.not) { values = values.bubble };
 		[trig, cmdName, values, replyID].flop.do { |args|
@@ -47,8 +44,6 @@ SendReply : SendTrig {
 		};
 		^0.0		// SendReply has no output
 	}
-	
-	*/
 	
 	*new1 { arg rate, trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		var ascii = cmdName.ascii;
