@@ -5,18 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #000000}
-span.s4 {color: #0019b7}
+span.s3 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -30,17 +29,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b><span class="Apple-tab-span">	</span>*ir</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b><span class="s2"><span class="Apple-tab-span">	</span></span></p>
 <p class="p4">// example</p>
-<p class="p2"><br></p>
-<p class="p5"><span class="s3">s.sendMsg(</span>"/b_allocRead"<span class="s3">, 0, </span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
-<p class="p2"><br></p>
+<p class="p5"><br></p>
+<p class="p6">{ <span class="s3">SampleRate</span>.ir.poll }.play;</p>
+<p class="p5"><br></p>
 <p class="p4">// compares a 441 Hz sine tone derived from sample rate (44100 * 0.01, left)<span class="Apple-converted-space"> </span></p>
 <p class="p4">// with a 440 Hz tone (right), resultin in a 1 Hz beating</p>
 <p class="p6">(</p>
 <p class="p6">{<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">var</span> freq;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>freq = [ <span class="s4">SampleRate</span>.ir(0) * 0.01, 440];</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">SinOsc</span>.ar(freq, 0, 0.1)<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">var</span> freq;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>freq = [ <span class="s3">SampleRate</span>.ir(0) * 0.01, 440];</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar(freq, 0, 0.1)<span class="Apple-converted-space"> </span></p>
 <p class="p6">}.play;<span class="Apple-converted-space"> </span></p>
 <p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p4">// play a pulse chord at power of two divisions of sample rate</p>
+<p class="p5"><br></p>
+<p class="p6">{ <span class="s3">LFPulse</span>.ar(<span class="s3">SampleRate</span>.ir * (2 ** (1..14).neg).postln).mean * 0.1 }.play;</p>
 </body>
 </html>

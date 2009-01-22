@@ -260,6 +260,7 @@ extern "C"
 	void SampleRate_Ctor(Unit *unit, int inNumSamples);
 	void ControlRate_Ctor(Unit *unit, int inNumSamples);
 	void SampleDur_Ctor(Unit *unit, int inNumSamples);
+	void ControlDur_Ctor(Unit *unit, int inNumSamples);
 	void SubsampleOffset_Ctor(Unit *unit, int inNumSamples);
 	void RadiansPerSample_Ctor(Unit *unit, int inNumSamples);
 	void NumInputBuses_Ctor(Unit *unit, int inNumSamples);
@@ -450,6 +451,10 @@ void SampleDur_Ctor(Unit *unit, int inNumSamples)
 	ZOUT0(0) = unit->mWorld->mFullRate.mSampleDur;
 }
 
+void ControlDur_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->mWorld->mFullRate.mBufDuration;
+}
 
 void RadiansPerSample_Ctor(Unit *unit, int inNumSamples)
 {
@@ -7572,6 +7577,7 @@ void load(InterfaceTable *inTable)
 	DefineInfoUnit(ControlRate);
 	DefineInfoUnit(SampleRate);
 	DefineInfoUnit(SampleDur);
+	DefineInfoUnit(ControlDur);
 	DefineInfoUnit(SubsampleOffset);
 	DefineInfoUnit(RadiansPerSample);
 	DefineInfoUnit(NumInputBuses);
