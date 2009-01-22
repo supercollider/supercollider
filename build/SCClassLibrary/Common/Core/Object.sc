@@ -210,6 +210,7 @@ Object  {
 	isSequenceableCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
+	containsSeqColl { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
 	isFunction { ^false }

@@ -356,6 +356,7 @@ ArrayedCollection : SequenceableCollection {
 		^this.collect {|item| item.bubble(depth-1, levels) } 
 	}
 	
+	
 	slice { arg ... cuts;
 		var firstCut, index, list;
 		if (cuts.size == 0) { ^this.copy };
