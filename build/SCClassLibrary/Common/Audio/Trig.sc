@@ -30,18 +30,31 @@ SendTrig : UGen {
 
 SendReply : SendTrig {
 	*kr { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
-		var ascii;
-		if(cmdName.isKindOf(Array)) { Error("SendReply: cmdNames cannot be array").throw };
-		ascii = cmdName.ascii;
-		this.multiNewList(['control', trig, replyID, ascii.size].addAll(ascii).addAll(values));
+		if(values.containsSeqColl.not) { values = values.bubble };
+		
+		[trig, cmdName, values, replyID].flop.postln.do { |args|
+			this.new1('control', *args);
+		};
 		^0.0		// SendReply has no output
 	}
+	/*
+	// audio rate version is causing trouble, remove for now.
+	
 	*ar { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
-		var ascii;
-		if(cmdName.isKindOf(Array)) { Error("SendReply: cmdNames cannot be array").throw };
-		ascii = cmdName.ascii;	
-		this.multiNewList(['audio', trig, replyID, ascii.size].addAll(ascii).addAll(values));
+		if(values.containsSeqColl.not) { values = values.bubble };
+		[trig, cmdName, values, replyID].flop.do { |args|
+			this.new1('audio', *args);
+		};
 		^0.0		// SendReply has no output
+	}
+	
+	*/
+	
+	*new1 { arg rate, trig = 0.0, cmdName = '/reply', values, replyID = -1;
+		var ascii = cmdName.ascii;
+		values = values.dereference;
+		values.postln;
+		^super.new1(*[rate, trig, replyID, ascii.size].addAll(ascii).addAll(values).postcs);
 	}
 }
 
