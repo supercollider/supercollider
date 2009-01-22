@@ -754,9 +754,6 @@ SequenceableCollection : Collection {
 	asRect { ^Rect(this[0] ? 0, this[1] ? 0, this[2] ? 0, this[3] ? 0) }
 	ascii { ^this.collect { arg item; item.ascii } }
 
-	asBufferInput {
-		^this.collect { |item| item.asLocalBuf } 
-	}
 	
 	// support UGen rate access
 	
