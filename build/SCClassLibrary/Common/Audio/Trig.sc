@@ -31,12 +31,12 @@ SendTrig : UGen {
 SendReply : SendTrig {
 	*kr { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		if(values.containsSeqColl.not) { values = values.bubble };
-		
-		[trig, cmdName, values, replyID].flop.postln.do { |args|
+		[trig, cmdName, values, replyID].flop.do { |args|
 			this.new1('control', *args);
 		};
 		^0.0		// SendReply has no output
 	}
+	
 	/*
 	// audio rate version is causing trouble, remove for now.
 	
@@ -52,8 +52,6 @@ SendReply : SendTrig {
 	
 	*new1 { arg rate, trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		var ascii = cmdName.ascii;
-		values = values.dereference;
-		values.postln;
 		^super.new1(*[rate, trig, replyID, ascii.size].addAll(ascii).addAll(values).postcs);
 	}
 }

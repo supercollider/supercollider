@@ -12,18 +12,14 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {color: #255ece}
-span.s2 {color: #16439e}
-span.s3 {color: #5c6435}
+span.s2 {color: #0000bf}
+span.s3 {color: #007300}
 span.s4 {color: #000000}
-span.s5 {color: #007300}
-span.s6 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -43,35 +39,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>SendReply</span>.kr(<span class="s2">Impulse</span>.kr(3), <span class="s3">'the_answer', </span>[40, 41, 42, 43] + <span class="s2">MouseX</span>.kr, 1905);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">SendReply</span>.kr(<span class="s2">Impulse</span>.kr(3), <span class="s3">'the_answer'</span>, [40, 41, 42, 43] + <span class="s2">MouseX</span>.kr, 1905);</p>
 <p class="p6">}.play(s);</p>
 <p class="p6">)</p>
-<p class="p5"><br></p>
-<p class="p6">o.remove; o = <span class="s2">OSCresponder</span>(<span class="s2">nil</span>, <span class="s3">'the_answer'</span>, { <span class="s2">|t, r, msg|</span> [t, msg[0]].postln }).add;</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p7">// multichannel expansion</p>
-<p class="p8">(</p>
-<p class="p8">{</p>
+<p class="p7"><br></p>
+<p class="p6">o.remove; o = <span class="s2">OSCresponder</span>(<span class="s2">nil</span>, <span class="s3">'the_answer'</span>, { <span class="s2">|t, r, msg|</span> msg.postln }).add;</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p8">// multichannel expansion</p>
+<p class="p6">(</p>
+<p class="p6">{</p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>SendReply<span class="s4">.kr(</span>Impulse<span class="s4">.kr(3),<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">'the_answer'</span>, [[40, 80], [41, 56], 42, [43, 100, 200]], [1905, 1906, 1907, 1908]</p>
-<p class="p8"><span class="Apple-tab-span">	</span>);</p>
-<p class="p8">}.play(s);</p>
-<p class="p8">)</p>
-<p class="p10"><br></p>
-<p class="p8">(</p>
-<p class="p8">{</p>
-<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>SendReply<span class="s4">.kr(</span>Impulse<span class="s4">.kr(3),<span class="Apple-converted-space"> </span></span></p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</span>'/the_answer/0'<span class="s4">, </span>'/the_answer/1'<span class="s4">, </span>'/the_answer/2'<span class="s4">],<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[[40, 80], [41, 56], 42, [43, 100, 200]],<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[1905, 1906, 1907]</p>
-<p class="p8"><span class="Apple-tab-span">	</span>);</p>
-<p class="p8">}.play(s);</p>
-<p class="p10"><br></p>
-<p class="p8">o.remove;</p>
-<p class="p8">o = { <span class="s6">OSCresponder</span>(s.addr, <span class="s5">'/the_answer/'</span>++<span class="s6">_</span>, { <span class="s6">|t, r, msg|</span> msg.postln }).add } ! 3;</p>
-<p class="p10"><br></p>
-<p class="p8">)</p>
-<p class="p10"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">'the_answer'</span>, [[40, 80], [41, 56], 42, [43, 100, 200]], [1905, 1906, 1907, 1908]</p>
+<p class="p6"><span class="Apple-tab-span">	</span>);</p>
+<p class="p6">}.play(s);</p>
+<p class="p6">)</p>
 </body>
 </html>
