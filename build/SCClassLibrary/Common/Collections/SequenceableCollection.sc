@@ -503,6 +503,7 @@ SequenceableCollection : Collection {
 	// supports a variation of Mikael Laurson's rhythm list RTM-notation.	convertRhythm {		var list, tie;		list = List.new;		tie = this.convertOneRhythm(list);		if (tie > 0.0, { list.add(tie) });  // check for tie at end of rhythm		^list	}	sumRhythmDivisions {		var sum = 0;		this.do {|beats|			sum = sum + abs(if (beats.isSequenceableCollection) {				beats[0];			}{				beats			});		};		^sum	}	convertOneRhythm { arg list, tie = 0.0, stretch = 1.0;		var beats, divisions, repeats;		#beats, divisions, repeats = this;		repeats = repeats ? 1;		stretch = stretch * beats / divisions.sumRhythmDivisions;		repeats.do({			divisions.do { |val|				if (val.isSequenceableCollection) {					tie = val.convertOneRhythm(list, tie, stretch)				}{										val = val * stretch;					if (val > 0.0) {						list.add(val + tie);						tie = 0.0;					}{						tie = tie - val					};				};			};		});		^tie	}
 	
 	isSequenceableCollection { ^true }
+	containsSeqColl { ^this.any(_.isSequenceableCollection) }
 	
 	// unary math ops
 	neg { ^this.performUnaryOp('neg') }
@@ -753,6 +754,10 @@ SequenceableCollection : Collection {
 	asRect { ^Rect(this[0] ? 0, this[1] ? 0, this[2] ? 0, this[3] ? 0) }
 	ascii { ^this.collect { arg item; item.ascii } }
 
+	asBufferInput {
+		^this.collect { |item| item.asLocalBuf } 
+	}
+	
 	// support UGen rate access
 	
 	rate { 
