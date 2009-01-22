@@ -381,8 +381,7 @@ SCLevelIndicator : SCView {
 		var updateFreq = 10, dBLow = -80;
 		var numRMSSamps, numRMSSampsRecip;
 		
-		numRMSSamps = sampleRate / updateFreq;
-		numRMSSampsRecip = 1 / numRMSSamps;
+
 		numIns = options.numInputBusChannels;
 		numOuts = options.numOutputBusChannels;
 		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
@@ -411,15 +410,6 @@ SCLevelIndicator : SCView {
 				.numTicks_(9)
 				.numMajorTicks_(3);
 		});
-		inresp = OSCresponder(this.addr, "/" ++ this.name ++ "InLevels", { |t, r, msg| 			{try {
-			msg.copyToEnd(3).pairsDo({|val, peak, i| 
-				var meter;
-				i = i * 0.5;
-				meter = inmeters[i];
-				meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-				meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
-			}) }}.defer; 
-		}).add;
 		
 		// divider
 		UserView(view, Rect(0,0,meterWidth,180)).drawFunc_({
@@ -439,18 +429,30 @@ SCLevelIndicator : SCView {
 				.numTicks_(9)
 				.numMajorTicks_(3);
 		});
-		outresp = OSCresponder(this.addr, "/" ++ this.name ++ "OutLevels", { |t, r, msg| 			{try {
-			msg.copyToEnd(3).pairsDo({|val, peak, i| 
-				var meter;
-				i = i * 0.5;
-				meter = outmeters[i];
-				meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-				meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
-			}) }}.defer; 
-		}).add;
+
 		window.front;
 		
 		func = {
+			numRMSSamps = sampleRate / updateFreq;
+			numRMSSampsRecip = 1 / numRMSSamps;
+			inresp = OSCresponder(this.addr, "/" ++ this.name ++ "InLevels", { |t, r, msg| 			{try {
+				msg.copyToEnd(3).pairsDo({|val, peak, i| 
+					var meter;
+					i = i * 0.5;
+					meter = inmeters[i];
+					meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
+				}) }}.defer; 
+			}).add;
+			outresp = OSCresponder(this.addr, "/" ++ this.name ++ "OutLevels", { |t, r, msg| 			{try {
+				msg.copyToEnd(3).pairsDo({|val, peak, i| 
+					var meter;
+					i = i * 0.5;
+					meter = outmeters[i];
+					meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
+				}) }}.defer; 
+			}).add;
 			this.bind({
 			insynth = SynthDef(this.name ++ "InputLevels", {
 				var in, imp;
@@ -487,6 +489,6 @@ SCLevelIndicator : SCView {
 		});
 		
 		ServerTree.add(func);
-		func.value;
+		if(serverRunning, func); // otherwise starts when booted
 	}
 }
