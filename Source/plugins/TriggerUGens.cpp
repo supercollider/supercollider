@@ -607,7 +607,7 @@ void SendReply_next(SendReply *unit, int inNumSamples)
 			for(int i=0; i<valueSize; i++) {
 					values[i] = IN(i + valueOffset)[0];
 			}
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName, unit->m_cmdNameSize);
 		}
 		prevtrig = curtrig;
 	}
@@ -628,7 +628,7 @@ void SendReply_next_aka(SendReply *unit, int inNumSamples)
 			for(int i=0; i<valueSize; i++) {
 					values[i] = IN(i + valueOffset)[j];
 			}
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName, unit->m_cmdNameSize);
 		}
 		prevtrig = curtrig;
 	}

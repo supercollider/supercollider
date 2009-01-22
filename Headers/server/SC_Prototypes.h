@@ -137,8 +137,8 @@ void Node_MapAudioControl(Node* inNode, int inIndex, int inBus);
 void Node_MapAudioControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int inBus);
 void Node_StateMsg(Node* inNode, int inState);
 void Node_Trace(Node* inNode);
-void Node_SendReply(Node* inNode, int replyID, int numArgs, float* values, char* cmdName);
-void Node_SendReply(Node* inNode, int replyID, float value, char* cmdName);
+void Node_SendReply(Node* inNode, int replyID, int numArgs, float* values, char* cmdName, int cmdNameSize);
+void Node_SendReply(Node* inNode, int replyID, float value, char* cmdName, int cmdNameSize);
 
 extern "C" {
 void Node_SetRun(Node* inNode, int inRun);

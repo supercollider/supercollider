@@ -82,7 +82,7 @@ struct InterfaceTable
 	void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);	
 	
 	// send a reply message from a Node to clients
-	void (*fSendNodeReply)(struct Node* inNode, int replyID, int numArgs, float* values, char* cmdName);	
+	void (*fSendNodeReply)(struct Node* inNode, int replyID, int numArgs, float* values, char* cmdName, int cmdNameSize);	
 	
 	// sending messages between real time and non real time levels.
 	bool (*fSendMsgFromRT)(World *inWorld, struct FifoMsg& inMsg);
