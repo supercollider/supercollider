@@ -478,7 +478,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 				if((int)ZIN0(3)) {
 				//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
 					float outval = bufPos + (float)(unit->m_count * bufFrames2);
-					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin");
+					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin", 7);
 				}
 
 		} else {
@@ -596,7 +596,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 					
 					// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
 					float outval = bufPos + (float)(unit->m_count * bufFrames2);
-					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin");
+					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin", 7);
 				}
 				
 		} else {
