@@ -451,36 +451,35 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
-		DoneAction((int)ZIN0(3), unit);
 		}
 	    }
 	if ( test ){
 		unit->m_count++;
-	    if(unit->mWorld->mRealTime){
-		test = false;
-		DiskIOMsg msg;
-		msg.mWorld = unit->mWorld;
-		msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
-		msg.mBufNum = (int)fbufnum;
-		uint32 thisPos;
-		if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
-		msg.mPos = thisPos;
-		msg.mFrames = bufFrames2;
-		msg.mChannels = bufChannels;
-#ifndef SC_WIN32
-		gDiskFifo.Write(msg);
-		gDiskFifoHasData.Signal();
-#else //#ifndef SC_WIN32
-		pgDiskFifo->Write(msg);
-		pgDiskFifoHasData->Signal();
-#endif //#ifndef SC_WIN32
-		
+	    if(unit->mWorld->mRealTime) {
+				test = false;
+				DiskIOMsg msg;
+				msg.mWorld = unit->mWorld;
+				msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
+				msg.mBufNum = (int)fbufnum;
+				uint32 thisPos;
+				if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
+				msg.mPos = thisPos;
+				msg.mFrames = bufFrames2;
+				msg.mChannels = bufChannels;
+			#ifndef SC_WIN32
+				gDiskFifo.Write(msg);
+				gDiskFifoHasData.Signal();
+			#else //#ifndef SC_WIN32
+				pgDiskFifo->Write(msg);
+				pgDiskFifoHasData->Signal();
+			#endif //#ifndef SC_WIN32
+				
 
-		if((int)ZIN0(4)) {
-		//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-			float outval = bufPos + (float)(unit->m_count * bufFrames2);
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
-		}
+				if((int)ZIN0(3)) {
+				//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
+					float outval = bufPos + (float)(unit->m_count * bufFrames2);
+					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin");
+				}
 
 		} else {
 		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
@@ -498,7 +497,6 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 			    }
 		    } else { // non-loop
 			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
-				DoneAction((int)ZIN0(3), unit);
 			    if (count < bufFrames2) {
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }
@@ -571,37 +569,36 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	    if (bufPos >= (fbufFrames + 1)){
 		test = true;
 		bufPos -= fbufFrames;
-		DoneAction((int)ZIN0(3), unit);
 		}
 	    }
 	if ( test ){
 		unit->m_count++;
 	    if(unit->mWorld->mRealTime){
-		test = false;
-		DiskIOMsg msg;
-		msg.mWorld = unit->mWorld;
-		msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
-		msg.mBufNum = (int)fbufnum;
-		uint32 thisPos;
-		if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
-		msg.mPos = thisPos;
-		msg.mFrames = bufFrames2;
-		msg.mChannels = bufChannels;
-#ifndef SC_WIN32
-		gDiskFifo.Write(msg);
-		gDiskFifoHasData.Signal();
-#else //#ifndef SC_WIN32
-		pgDiskFifo->Write(msg);
-		pgDiskFifoHasData->Signal();
-#endif //#ifndef SC_WIN32
+				test = false;
+				DiskIOMsg msg;
+				msg.mWorld = unit->mWorld;
+				msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
+				msg.mBufNum = (int)fbufnum;
+				uint32 thisPos;
+				if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
+				msg.mPos = thisPos;
+				msg.mFrames = bufFrames2;
+				msg.mChannels = bufChannels;
+			#ifndef SC_WIN32
+				gDiskFifo.Write(msg);
+				gDiskFifoHasData.Signal();
+			#else //#ifndef SC_WIN32
+				pgDiskFifo->Write(msg);
+				pgDiskFifoHasData->Signal();
+			#endif //#ifndef SC_WIN32
 
-		if((int)ZIN0(4)) {
-			
-			// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-			float outval = bufPos + (float)(unit->m_count * bufFrames2);
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(4), 1, &outval, "/diskin");
-		}
-		
+				if((int)ZIN0(3)) {
+					
+					// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
+					float outval = bufPos + (float)(unit->m_count * bufFrames2);
+					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), 1, &outval, "/diskin");
+				}
+				
 		} else {
 		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int)fbufnum);
 		    uint32 mPos;
@@ -618,7 +615,6 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 			    }
 		    } else { // non-loop
 			    count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
-				DoneAction((int)ZIN0(3), unit);
 			    if (count < bufFrames2) {
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }

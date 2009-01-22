@@ -29,11 +29,11 @@ DiskIn : MultiOutUGen {
 }
 
 VDiskIn : MultiOutUGen {
-	*ar { arg numChannels, bufnum, rate = 1, loop = 0, doneAction = 0, sendID = 0;
-		^this.multiNew('audio', numChannels, bufnum, rate, loop, doneAction, sendID)
+	*ar { arg numChannels, bufnum, rate = 1, loop = 0, sendID = 0;
+		^this.multiNew('audio', numChannels, bufnum, rate, loop, sendID)
 	}
-	init { arg numChannels, bufnum, argRate = 1, loop = 0, doneAction = 0, sendID = 0;
-		inputs = [bufnum, argRate, loop, doneAction, sendID];
+	init { arg numChannels, bufnum, argRate = 1, loop = 0, sendID = 0;
+		inputs = [bufnum, argRate, loop, sendID];
 		^this.initOutputs(numChannels, rate)
 	}
 }
