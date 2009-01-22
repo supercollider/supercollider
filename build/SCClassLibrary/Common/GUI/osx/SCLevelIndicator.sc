@@ -405,14 +405,14 @@ SCLevelIndicator : SCView {
 		inmeters = Array.fill( numIns, { arg i;
 			var comp;
 			comp = SCCompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
-			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
-				.drawsPeak_(true)
-				.numTicks_(9)
-				.numMajorTicks_(3);
 			StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font("Helvetica-Bold", 9))
 				.stringColor_(Color.white)
 				.string_((i + 1).asString);
+			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				.drawsPeak_(true)
+				.numTicks_(9)
+				.numMajorTicks_(3);
 		});
 		
 		// divider
@@ -430,14 +430,14 @@ SCLevelIndicator : SCView {
 		outmeters = Array.fill( numOuts, { arg i;
 			var comp;
 			comp = SCCompositeView(view, Rect(0,0,meterWidth,195));
-			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
-				.drawsPeak_(true)
-				.numTicks_(9)
-				.numMajorTicks_(3);
 			StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font("Helvetica-Bold", 9))
 				.stringColor_(Color.white)
 				.string_((i + 1).asString);
+			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				.drawsPeak_(true)
+				.numTicks_(9)
+				.numMajorTicks_(3);
 		});
 
 		window.front;
