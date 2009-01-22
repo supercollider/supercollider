@@ -91,10 +91,6 @@ Symbol {
 	applyTo { arg firstArg ... args;
 		^firstArg.performList(this, args)
 	}
-	
-	ctl { arg default, lag, fixedLag = false;
-		^NamedControl(this, default, \control, lag, fixedLag)
-	}
 
 	// support for math on symbols
 	
@@ -219,31 +215,18 @@ Symbol {
 	archiveAsCompileString { ^true }
 		
 	kr { | val, lag |
-		val = val.asControlInput;
-		UGen.buildSynthDef.addKr(this, val);
-		if (lag.isNil) {
-			^Control.kr(val)
-		} {
-			#val, lag = [val, lag].flop.flop;
-			^LagControl.kr(val, lag)
-		}
+		^NamedControl.kr(this, val, lag)
 	}
 	
 	ir { | val |
-		val = val.asControlInput;
-		UGen.buildSynthDef.addIr(this, val)
-		^Control.ir(val)
+		^NamedControl.ir(this, val)
 	}
 	
 	tr { | val |
-		val = val.asControlInput;
-		UGen.buildSynthDef.addTr(this, val)
-		^TrigControl.kr(val)
+		^NamedControl.tr(this, val)
 	}
 
 	ar { | val |
-		val = val.asControlInput;
-		UGen.buildSynthDef.addAr(this, val)
-		^AudioControl.ar(val)
+		^NamedControl.ar(this, val)
 	}
 }
