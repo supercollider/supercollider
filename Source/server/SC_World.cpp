@@ -1172,7 +1172,7 @@ void TriggerMsg::Perform()
 void NodeReplyMsg::Perform()
 {
 	small_scpacket packet;
-	packet.adds(mCmdName);
+	packet.adds(mCmdName, mCmdNameSize);
 	packet.maketags(3 + mNumArgs);
 	packet.addtag(',');
 	packet.addtag('i');
