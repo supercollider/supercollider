@@ -136,8 +136,8 @@ EZLists : EZGui{  // an abstract class
 		globalAction=argGlobalAction;
 		
 		widget.action={arg obj;
-			items.at(obj.value).value.value(obj);
-			globalAction.value(obj);
+			items.at(obj.value).value.value(this);
+			globalAction.value(this);
 			};		
 			
 		this.value_(initVal);
@@ -146,21 +146,21 @@ EZLists : EZGui{  // an abstract class
 			if(initAction){
 					items.at(initVal).value.value(this); // You must do this like this
 					globalAction.value(this);	// since listView's array is not accessible yet
-				}
-			{this.value_(initVal)};
+				};
+			this.value_(initVal);
 		};
 		
 	}	
 	
 	initViews{}  // override this for your subclass views
 	
-	value{ ^widget.value }
+	value{ ^value }
 	
-	value_{|val| widget.value_(val)}
+	value_{|val| value=val; widget.value_(val)}
 	
 	valueAction_{|val| this.value_(val); this.doAction}
 		
-	doAction {items.at(this.value).value.value(this); globalAction.value}
+	doAction {widget.doAction}
 
 	items_{arg assocArray; 
 		items=assocArray;
