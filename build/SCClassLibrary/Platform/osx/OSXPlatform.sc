@@ -1,5 +1,7 @@
 OSXPlatform : UnixPlatform
 {
+	var <>preferencesAction;
+
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
