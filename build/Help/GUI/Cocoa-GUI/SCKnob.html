@@ -35,11 +35,12 @@ span.s4 {font: 9.0px Monaco}
 span.s5 {color: #0000bf}
 span.s6 {color: #606060}
 span.s7 {color: #0020f6}
-span.s8 {color: #0018b8}
-span.s9 {color: #356f14}
-span.s10 {font: 14.0px Helvetica}
-span.s11 {color: #007300}
-span.s12 {color: #bf0000}
+span.s8 {color: #0000ff}
+span.s9 {color: #0018b8}
+span.s10 {color: #356f14}
+span.s11 {font: 14.0px Helvetica}
+span.s12 {color: #007300}
+span.s13 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -74,20 +75,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>centered</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>centered_ (bool)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If ture, the knob's center scale, 0.5 is zero in the value scale. eg. as in a pan control. .</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of Boolean.<span class="Apple-converted-space">  </span>Default is false.</p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>If true, the knob's center scale, 0.5 is zero in the value scale. eg. as in a pan control. .</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bool </b>- An instance of <a href="../../Core/Boolean.html"><span class="s8">Boolean</span></a>.<span class="Apple-converted-space">  </span>Default is false.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mode</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>mode_(arg1)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The knob's tracking mode .</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of Symbol. \round, \horiz or \vert. Default<span class="Apple-converted-space">  </span>is<span class="Apple-converted-space">  </span>\round .</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1</b> - An instance of <a href="../../Core/Symbol.html"><span class="s8">Symbol</span></a>. \round, \horiz or \vert. Default<span class="Apple-converted-space">  </span>is<span class="Apple-converted-space">  </span>\round .</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>value</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>value_ (val)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Gets/sets the the <b>value</b>. This will not do the <b>action</b>.</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val</b> -<span class="Apple-converted-space">  </span>A Number.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val</b> -<span class="Apple-converted-space">  </span>A <a href="../../Math/Number.html"><span class="s8">Number</span></a>.</p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>valueAction_ (val)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -129,15 +130,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>newskin </b>- An instance of Symobl. The default is \default:</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale:<span class="Apple-tab-span">	</span><span class="s8">Color</span>.black.alpha_(0.3),</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>center:<span class="Apple-tab-span">	</span><span class="s8">Color</span>.blue(0.7, 0.5),</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>level:<span class="Apple-tab-span">	</span><span class="s8">Color</span>.green(0.8, 0.8),</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dial:<span class="Apple-tab-span">	</span><span class="s8">Color</span>.black.alpha_(0.7),</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>defaultMode: <span class="s9">'round'</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>scale:<span class="Apple-tab-span">	</span><span class="s9">Color</span>.black.alpha_(0.3),</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>center:<span class="Apple-tab-span">	</span><span class="s9">Color</span>.blue(0.7, 0.5),</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>level:<span class="Apple-tab-span">	</span><span class="s9">Color</span>.green(0.8, 0.8),</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dial:<span class="Apple-tab-span">	</span><span class="s9">Color</span>.black.alpha_(0.7),</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>defaultMode: <span class="s10">'round'</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p16"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><b>Subclassing and Internal Methods</b></p>
-<p class="p6"><span class="s10"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
+<p class="p6"><span class="s11"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultKeyDownAction (char, modifiers, unicode)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -186,9 +187,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p19">k.valueAction = 0.125</p>
 <p class="p17"><br></p>
 <p class="p18">// modes</p>
-<p class="p19">k.mode = <span class="s11">\vert</span>;</p>
-<p class="p19">k.mode = <span class="s11">\horiz</span>;</p>
-<p class="p19">k.mode = <span class="s11">\round</span>; <span class="s12">// default</span></p>
+<p class="p19">k.mode = <span class="s12">\vert</span>;</p>
+<p class="p19">k.mode = <span class="s12">\horiz</span>;</p>
+<p class="p19">k.mode = <span class="s12">\round</span>; <span class="s13">// default</span></p>
 <p class="p17"><br></p>
 <p class="p19">k.visible</p>
 <p class="p19">k.visible = <span class="s5">false</span></p>
@@ -203,10 +204,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p19"><span class="s5">var</span> window;</p>
 <p class="p19">window = <span class="s5">SCWindow</span>.new(<span class="s6">"Pan SCKnob"</span>, <span class="s5">Rect</span>(640,630,270,70)).front;</p>
 <p class="p19">k = <span class="s5">SCKnob</span>.new(window, <span class="s5">Rect</span>(20,10,36,36));</p>
-<p class="p19">k.action_({<span class="s5">|v,x,y,m|</span> <span class="s11">\pan</span>.asSpec.map(v.value).postln; })</p>
+<p class="p19">k.action_({<span class="s5">|v,x,y,m|</span> <span class="s12">\pan</span>.asSpec.map(v.value).postln; })</p>
 <p class="p18">//<span class="Apple-tab-span">	</span>.mode_(\horiz)</p>
 <p class="p19"><span class="Apple-tab-span">	</span>.centered_(<span class="s5">false</span>)</p>
-<p class="p19"><span class="Apple-tab-span">	</span>.value_(<span class="s11">\pan</span>.asSpec.unmap(0)); <span class="s12">// 0.5</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span>.value_(<span class="s12">\pan</span>.asSpec.unmap(0)); <span class="s13">// 0.5</span></p>
 <p class="p18">//k.color[1] = Color.gray(alpha:0);</p>
 <p class="p19">)</p>
 <p class="p19">k.centered</p>
@@ -240,20 +241,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18">// step - 'horiz' and 'vert' modes only</p>
 <p class="p19">(</p>
 <p class="p19"><span class="s5">var</span> window, midispec;</p>
-<p class="p19">midispec = [0,127,<span class="s11">'linear'</span>,1].asSpec;</p>
+<p class="p19">midispec = [0,127,<span class="s12">'linear'</span>,1].asSpec;</p>
 <p class="p19">window = <span class="s5">SCWindow</span>.new(<span class="s6">"step SCKnob"</span>, <span class="s5">Rect</span>(640,630,270,70)).front;</p>
 <p class="p19">k = <span class="s5">SCKnob</span>.new(window, <span class="s5">Rect</span>(20,10,32,32));</p>
 <p class="p19">k.action_({<span class="s5">|v,x,y,m|</span> midispec.map(v.value).postln; })</p>
 <p class="p19"><span class="Apple-converted-space">       </span>.value_(midispec.unmap(0));</p>
 <p class="p17"><br></p>
-<p class="p19">k.mode = <span class="s11">\vert</span>;</p>
+<p class="p19">k.mode = <span class="s12">\vert</span>;</p>
 <p class="p17"><br></p>
 <p class="p19">)</p>
 <p class="p19">k.step</p>
 <p class="p19">k.step = 10/127 // step by 10</p>
 <p class="p17"><br></p>
-<p class="p19">k.mode = <span class="s11">\horiz</span>;</p>
-<p class="p19">k.mode = <span class="s11">\round</span>;</p>
+<p class="p19">k.mode = <span class="s12">\horiz</span>;</p>
+<p class="p19">k.mode = <span class="s12">\round</span>;</p>
 <p class="p17"><br></p>
 <p class="p18">// on Sheet</p>
 <p class="p19">(</p>
@@ -342,9 +343,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><br></p>
 <p class="p18">// customize drag and drop methods</p>
 <p class="p19">k.canReceiveDragHandler</p>
-<p class="p19">k.canReceiveDragHandler = <span class="s5">false</span>; <span class="s12">// don't accept drops</span></p>
+<p class="p19">k.canReceiveDragHandler = <span class="s5">false</span>; <span class="s13">// don't accept drops</span></p>
 <p class="p17"><br></p>
-<p class="p19">k.canReceiveDragHandler = { <span class="s5">SCView</span>.currentDrag.isFloat }; <span class="s12">// accept only if drag is float</span></p>
+<p class="p19">k.canReceiveDragHandler = { <span class="s5">SCView</span>.currentDrag.isFloat }; <span class="s13">// accept only if drag is float</span></p>
 <p class="p17"><br></p>
 <p class="p19">k.receiveDragHandler = { (<span class="s6">"value droped in: "</span> ++ <span class="s5">SCView</span>.currentDrag).postln }</p>
 <p class="p17"><br></p>
