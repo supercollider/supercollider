@@ -54,13 +54,15 @@ EZNumber : EZGui{
 		};
 
 		// set view parameters and actions
-
-		controlSpec = argControlSpec.asSpec;
+		argControlSpec = argControlSpec ? ControlSpec(0.0, 1.0, 'linear', 0.01, 0.0, "");
+		controlSpec = argControlSpec.asSpec ;
 		(unitWidth>0).if{ unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
 		numberView = GUI.numberBox.new(view, numBounds).resize_(2);
+		numberView.step=controlSpec.step;
+		numberView.scroll=true;
 		numberView.action = {
 			this.valueAction_(numberView.value);
 		};
