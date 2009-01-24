@@ -328,19 +328,26 @@ AutoCompClassSearch : AutoCompClassBrowser {
 		savedClass = reducedList[listView.value];
 		classBrowser = savedClass.browse;
 			// set enter key action to drop a method template into the document
-		classBrowser.methodView.focus
-			.enterKeyAction_({
-				var str, newstart, newsize;
+			// methodView's enter key action can change
+			// based on what you do in the browser;
+			// save the custom action into the browser instance's environment
+			// so that this customization persists
+		classBrowser.views.put(\methodEnterKeyAction, {
+			var str, newstart, newsize;
+				// can't close unless a method is really chosen
+			if(classBrowser.currentMethod.notNil) {
 				doc.selectRange(start, size)
 					.selectedString_(str = this.finishString);
 				#newstart, newsize = this.finalSelection(str);
 				doc.selectRange(newstart, newsize);
-				classBrowser.methodView.enterKeyAction = classBrowser.normalMethodEnterKey;
 				classBrowser.close;
-			})
+			};
+		});
+		classBrowser.views.methodView.focus
+			.enterKeyAction_(classBrowser.views[\methodEnterKeyAction])
 			.keyDownAction_({ |list, char, modifiers, unicode|
 				(char == $^).if({
-					classBrowser.superButton.doAction;
+					classBrowser.views.superButton.doAction;
 				}, {
 					list.defaultKeyDownAction(char, modifiers, unicode)
 				});
@@ -350,23 +357,21 @@ AutoCompClassSearch : AutoCompClassBrowser {
 	
 	*finishString { 
 		var meth, classname;
-		meth = classBrowser.methodArray[classBrowser.methodView.value];
-		meth.ownerClass.isMetaClass.if({
+		meth = classBrowser.currentMethod;
+		if(meth.ownerClass.isMetaClass) {
 				// if the method chosen comes from this class or a superclass,
 				// use this class, otherwise use the class selected in the class browser
-			(savedClass.metaclass == meth.ownerClass
-				or: { savedClass.metaclass.superclasses.includes(meth.ownerClass) }
-			).if({
+			if(savedClass.metaclass == meth.ownerClass
+				or: { savedClass.metaclass.superclasses.includes(meth.ownerClass) }) {
 				classname = savedClass.name
-			}, {
+			} {
 				classname = meth.ownerClass.name.asString.copyRange(5, 2000)
-			});
-				// I'll cheat: rather than get the exact size, this should be faster
+			};
 			^classname.asString
 				++ "." ++ meth.name ++ meth.argList
-		}, {
+		} {
 			^meth.name ++ meth.argList
-		});
+		};
 	}
 	
 	*listItem { |cl|
