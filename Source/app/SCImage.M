@@ -1914,7 +1914,7 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 	rect.origin.x = sc_max(rect.origin.x, 0); // negative idx not allowed
 	rect.origin.y = sc_max(rect.origin.y, 0); // negative idx not allowed
 	rect.size.width = sc_min(rect.size.width, width); // clip to image width max
-	rect.size.height = sc_min(rect.size.height, width); // clip to image height max
+	rect.size.height = sc_min(rect.size.height, height); // clip to image height max
 	
 	// what is the best : 
 	//		1 - clipping + wrapping thus giving strange results  ?
