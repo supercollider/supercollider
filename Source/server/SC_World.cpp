@@ -1169,6 +1169,12 @@ void TriggerMsg::Perform()
 	}
 }
 
+static void NodeReplyMsg_RTFree(FifoMsg* msg)
+{
+	//scprintf("NodeReplyMsg_RTFree()\n");
+	World_Free(msg->mWorld, msg->mData);
+}
+
 void NodeReplyMsg::Perform()
 {
 	small_scpacket packet;
@@ -1176,13 +1182,11 @@ void NodeReplyMsg::Perform()
 	packet.maketags(3 + mNumArgs);
 	packet.addtag(',');
 	packet.addtag('i');
-	packet.addtag('i');
-	for(int i=0; i<mNumArgs; ++i) {
-		packet.addtag('f');
-	}
 	packet.addi(mNodeID);
+	packet.addtag('i');
 	packet.addi(mID);
 	for(int i=0; i<mNumArgs; ++i) {
+		packet.addtag('f');
 		packet.addf(mValues[i]);
 	}
 
@@ -1191,6 +1195,11 @@ void NodeReplyMsg::Perform()
 	for (int i=0; i<numUsers; ++i) {
 		SendReply(users+i, packet.data(), packet.size());
 	}
+	
+	// Free memory in realtime thread
+	FifoMsg msg;
+	msg.Set(mWorld, NodeReplyMsg_RTFree, 0, mRTMemory);
+	AudioDriver(mWorld)->SendMsgToEngine(msg);
 }
 
 

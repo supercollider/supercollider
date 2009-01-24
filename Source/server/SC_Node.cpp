@@ -28,6 +28,7 @@
 #include <limits.h>
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
+#include "Unroll.h"
 
 void Node_StateMsg(Node* inNode, int inState);
 
@@ -282,42 +283,40 @@ void Node_SendTrigger(Node* inNode, int triggerID, float value)
 	world->hw->mTriggers.Write(msg);
 }
 
-// send a reply from a node to a client program.
-// this function puts the reply on a FIFO which is harvested by another thread that
+// Send a reply from a node to a client program.
+//
+// This function puts the reply on a FIFO which is harvested by another thread that
 // actually does the sending.
-void Node_SendReply(Node* inNode, int replyID, int numArgs,  float* values, char* cmdName, int cmdNameSize)
+//
+// NOTE: Only to be called from the realtime thread.
+void Node_SendReply(Node* inNode, int replyID, const char* cmdName, int numArgs,  const float* values)
 {
 	World *world = inNode->mWorld;
 	if (!world->mRealTime) return;
 
+	const int cmdNameSize = strlen(cmdName);
+	void* mem = World_Alloc(world, cmdNameSize + numArgs*sizeof(float));
+	if (mem == 0)
+		return;
+	
 	NodeReplyMsg msg;
 	msg.mWorld = world;
 	msg.mNodeID = inNode->mID;
 	msg.mID = replyID;
-	msg.mValues = values;
+	msg.mValues = (float*)((char*)mem + cmdNameSize);
+	memcpy(msg.mValues, values, numArgs*sizeof(float));
 	msg.mNumArgs = numArgs;
-	msg.mCmdName = cmdName;
+	msg.mCmdName = (char*)mem;
+	memcpy(msg.mCmdName, cmdName, cmdNameSize);
 	msg.mCmdNameSize = cmdNameSize;
+	msg.mRTMemory = mem;
 	world->hw->mNodeMsgs.Write(msg);
 }
 
-void Node_SendReply(Node* inNode, int replyID, float value, char* cmdName, int cmdNameSize)
+void Node_SendReply(Node* inNode, int replyID, const char* cmdName, float value)
 {
-	World *world = inNode->mWorld;
-	if (!world->mRealTime) return;
-
-	NodeReplyMsg msg;
-	msg.mWorld = world;
-	msg.mNodeID = inNode->mID;
-	msg.mID = replyID;
-	msg.mValues = &value;
-	msg.mNumArgs = 1;
-	msg.mCmdName = cmdName;
-	msg.mCmdNameSize = cmdNameSize;
-	world->hw->mNodeMsgs.Write(msg);
+	Node_SendReply(inNode, replyID, cmdName, 1, &value);
 }
-
-
 
 // notify a client program of a node's state change.
 // this function puts the message on a FIFO which is harvested by another thread that

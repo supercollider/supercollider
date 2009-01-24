@@ -50,9 +50,10 @@ struct NodeReplyMsg {
 	int32 mNodeID;
 	int32 mID;
 	int32 mNumArgs;
-	int mCmdNameSize;
 	float *mValues;
+	int32 mCmdNameSize;
 	char *mCmdName;
+	void *mRTMemory;
 	void Perform();
 };
 
