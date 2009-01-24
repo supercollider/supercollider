@@ -46,10 +46,10 @@ struct SendTrig : public Unit
 struct SendReply : public Unit
 {
 	float m_prevtrig;
-	int m_cmdNameSize;
 	int m_valueSize;
 	int m_valueOffset;
 	float *m_values;
+	int m_cmdNameSize;
 	char *m_cmdName;
 };
 
@@ -562,24 +562,24 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 
 void SendReply_Ctor(SendReply *unit)
 {
+	const int kVarOffset = 3;
 	
 	unit->m_prevtrig = 0.f;
 	unit->m_cmdNameSize = IN0(2);
-	unit->m_valueSize = unit->mNumInputs - unit->m_cmdNameSize - 3;
+	unit->m_valueSize = unit->mNumInputs - unit->m_cmdNameSize - kVarOffset;
 	
 	// allocations
-	int offset = 3;
-	unit->m_cmdName = (char*)RTAlloc(unit->mWorld, ((int)unit->m_cmdNameSize) * sizeof(char));	
+	unit->m_cmdName = (char*)RTAlloc(unit->mWorld, (unit->m_cmdNameSize + 1) * sizeof(char));
 	for(int i = 0; i < (int)unit->m_cmdNameSize; i++){
-		unit->m_cmdName[i] = (char)IN0(offset+i);
+		unit->m_cmdName[i] = (char)IN0(kVarOffset+i);
 	};
+	// terminate string
+	unit->m_cmdName[unit->m_cmdNameSize] = 0;
 	
-	offset = 3 + unit->m_cmdNameSize;
+	unit->m_valueOffset = kVarOffset + unit->m_cmdNameSize;
 	unit->m_values = (float*)RTAlloc(unit->mWorld, unit->m_valueSize * sizeof(float));	
-	
-	unit->m_valueOffset = offset;
-	
-	if (INRATE(offset) == calc_FullRate) {
+		
+	if (INRATE(kVarOffset) == calc_FullRate) {
 		SETCALC(SendReply_next_aka);
 	} else {
 		SETCALC(SendReply_next);
@@ -605,9 +605,9 @@ void SendReply_next(SendReply *unit, int inNumSamples)
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			for(int i=0; i<valueSize; i++) {
-					values[i] = IN(i + valueOffset)[0];
+				values[i] = IN(i + valueOffset)[0];
 			}
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName, unit->m_cmdNameSize);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_cmdName, unit->m_valueSize, values);
 		}
 		prevtrig = curtrig;
 	}
@@ -626,9 +626,9 @@ void SendReply_next_aka(SendReply *unit, int inNumSamples)
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			for(int i=0; i<valueSize; i++) {
-					values[i] = IN(i + valueOffset)[j];
+				values[i] = IN(i + valueOffset)[j];
 			}
-			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_valueSize, values, unit->m_cmdName, unit->m_cmdNameSize);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_cmdName, unit->m_valueSize, values);
 		}
 		prevtrig = curtrig;
 	}
