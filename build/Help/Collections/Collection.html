@@ -12,22 +12,22 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 12.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 9.0px Monaco; color: #007300}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; font: 9.0px Monaco; color: #2c7014}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; font: 9.0px Monaco; color: #ad140d}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -0.0px; font: 9.0px Monaco; min-height: 12.0px}
-span.s1 {color: #003eea}
-span.s2 {color: #2c62cd}
-span.s3 {color: #0000bf}
+span.s1 {color: #0047e4}
+span.s2 {color: #3366c8}
+span.s3 {color: #001bb9}
 span.s4 {color: #000000}
-span.s5 {color: #007300}
-span.s6 {color: #bf0000}
+span.s5 {color: #2c7014}
+span.s6 {color: #007300}
+span.s7 {color: #ad140d}
 </style>
 </head>
 <body>
@@ -120,6 +120,13 @@ span.s6 {color: #bf0000}
 <p class="p8">a.removeAllSuchThat({ <span class="s3">arg</span> item, i; item &lt; 3 });</p>
 <p class="p8">a;</p>
 <p class="p8">)</p>
+<p class="p3"><b>putEach(keys, values)</b></p>
+<p class="p6">Put the <b>values</b> in the corresponding indices given by <b>keys</b>. If one of the two argument arrays is longer then it will wrap.</p>
+<p class="p9"><br></p>
+<p class="p8">y = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];</p>
+<p class="p8">y.putEach([4, 7], [<span class="s6">\smelly</span>, <span class="s6">\head</span>])</p>
+<p class="p8">y.putEach([2, 3, 5, 6], <span class="s6">\wotsits</span>);</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Testing:</b></p>
@@ -185,13 +192,13 @@ span.s6 {color: #bf0000}
 <p class="p6">In functional programming, the operation known as a fold.</p>
 <p class="p6">inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection. The function takes two arguments and returns the new value. The accumulated value is initialzed to initialValue.</p>
 <p class="p9"><br></p>
-<p class="p8">[1,2,3,4,5].inject(0, <span class="s3">_</span>+<span class="s3">_</span>); <span class="s6">// 15</span></p>
+<p class="p8">[1,2,3,4,5].inject(0, <span class="s3">_</span>+<span class="s3">_</span>); <span class="s7">// 15</span></p>
 <p class="p13"><br></p>
-<p class="p8">[1,2,3,4,5].inject(1, <span class="s3">_</span>*<span class="s3">_</span>); <span class="s6">// 120</span></p>
+<p class="p8">[1,2,3,4,5].inject(1, <span class="s3">_</span>*<span class="s3">_</span>); <span class="s7">// 120</span></p>
 <p class="p13"><br></p>
 <p class="p12">// same as .collect(_.squared)</p>
-<p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ b.squared }); <span class="s6">// [ 1, 4, 9, 16, 25 ]</span></p>
-<p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> [b] ++ a ++ [b]}); <span class="s6">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
+<p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ b.squared }); <span class="s7">// [ 1, 4, 9, 16, 25 ]</span></p>
+<p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> [b] ++ a ++ [b]}); <span class="s7">// [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]</span></p>
 <p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ b ++ a});</p>
 <p class="p8">[1,2,3,4,5].inject([], {<span class="s3">|a,b|</span> a ++ a ++ b});</p>
 <p class="p14"><br></p>
@@ -266,7 +273,7 @@ span.s6 {color: #bf0000}
 <p class="p8">r.next;</p>
 <p class="p8">r.next;</p>
 <p class="p8">r.next;</p>
-<p class="p8">r.next; <span class="s6">// nil.</span></p>
+<p class="p8">r.next; <span class="s7">// nil.</span></p>
 <p class="p14"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -295,7 +302,7 @@ span.s6 {color: #bf0000}
 <p class="p2"><br></p>
 <p class="p3"><b>powerset</b></p>
 <p class="p6">Returns all possible combinations of the collection's elements.</p>
-<p class="p15"><br></p>
+<p class="p13"><br></p>
 <p class="p8"><span class="s3">Set</span>[1, 2, 3].powerset;</p>
 <p class="p13"><br></p>
 <p class="p12">// generate the von neumann ordinals. (warning: only count to four at maximum!)</p>
@@ -305,23 +312,23 @@ span.s6 {color: #bf0000}
 <p class="p8">a = a.powerset;</p>
 <p class="p13"><br></p>
 <p class="p12"><span class="s4">u = { </span><span class="s3">|set|</span><span class="s4"> set.unify }; </span>// union (count down)</p>
-<p class="p8">n = { <span class="s3">|set|</span> set.powerset }; <span class="s6">// powerset (count up)</span></p>
+<p class="p8">n = { <span class="s3">|set|</span> set.powerset }; <span class="s7">// powerset (count up)</span></p>
 <p class="p12"><span class="s4">a = </span><span class="s3">Set</span><span class="s4">[]; </span>// empty set (zero)</p>
-<p class="p8">n.(n.(a)); <span class="s6">// two</span></p>
-<p class="p8">u.(n.(n.(a))) == n.(a); <span class="s6">// two - one == one</span></p>
-<p class="p8">u.(u.(n.(n.(a)))) == u.(n.(a)); <span class="s6">// two - two == one - one<span class="Apple-converted-space"> </span></span></p>
+<p class="p8">n.(n.(a)); <span class="s7">// two</span></p>
+<p class="p8">u.(n.(n.(a))) == n.(a); <span class="s7">// two - one == one</span></p>
+<p class="p8">u.(u.(n.(n.(a)))) == u.(n.(a)); <span class="s7">// two - two == one - one<span class="Apple-converted-space"> </span></span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>flopDict(unbubble)</b></p>
 <p class="p6">Takes a collection of dictionaries and returns a single dictionary with arrays of all dictionaries' elements.</p>
 <p class="p6">If unbubble is true (default), and if one element is singular, the array is replaced by this element.</p>
-<p class="p15"><br></p>
+<p class="p13"><br></p>
 <p class="p8">[(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict;</p>
 <p class="p8">[(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict(<span class="s3">false</span>);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>histo(steps, min, max)</b></p>
 <p class="p6">Returns a histogram of the collection by counting the number of values that fall into each slot of <b>size (default: 100)</b> subdivisions between <b>min</b> and <b>max</b>. If there are any values outside this range, it posts a note. If min or max is not given, the smallest (or largest value respectively) is used.</p>
-<p class="p15"><br></p>
+<p class="p13"><br></p>
 <p class="p8">{ 1.0.linrand }.dup(10000).histo(1000).plot;</p>
 <p class="p8">{ 8.rand }.dup(10000).histo(8).plot(discrete: <span class="s3">true</span>);</p>
 <p class="p2"><br></p>
