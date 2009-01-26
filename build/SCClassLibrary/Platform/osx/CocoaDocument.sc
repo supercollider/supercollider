@@ -77,6 +77,16 @@ CocoaDocument : Document {
 		_TextWindow_UnderlineSelection
 	}
 	
+	balanceParens { arg levels = 1;
+		var prev = this.selectionStart, next;
+		levels.do {
+			this.prBalanceParens;
+			prev = next;
+			next = this.selectionStart;
+			if(prev == next) { ^this };
+		}
+	}
+	
 	*postColor_{ arg color;
 		_PostWindow_SetTextColor
 	}
@@ -115,6 +125,10 @@ CocoaDocument : Document {
 		_TextWindow_SetBounds
 		^this.primitiveFailed
 	}
+	prBalanceParens {
+		_TextWindow_BalanceParens
+	}
+
 
 	//if range is -1 apply to whole doc
 	setFont {arg font, rangeStart= -1, rangeSize=100;
