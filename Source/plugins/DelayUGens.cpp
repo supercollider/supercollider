@@ -1233,7 +1233,7 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 void RecordBuf_Ctor(RecordBuf *unit)
 {	
 	
-	uint32 numInputs = unit->mNumInputs - 7;
+	uint32 numInputs = unit->mNumInputs - 8;
 	unit->m_fbufnum = -1e9f;
 	unit->mIn = 0;
 	unit->m_writepos = (int32)ZIN0(1) * numInputs;
