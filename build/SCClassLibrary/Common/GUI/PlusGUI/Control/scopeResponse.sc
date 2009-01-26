@@ -42,7 +42,7 @@ Slew.scopeResponse
 		fs.active_(true);
 		
 		Task{
-			1.1.wait;
+			1.5.wait;
 			server.sync;
 			// Create a synth using this function and the busses
 			synth = {
