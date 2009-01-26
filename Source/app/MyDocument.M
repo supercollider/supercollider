@@ -535,7 +535,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString* candidate;
 	NSString* fullName;
     while (candidate = [dirEnumerator nextObject]) {
-		if([[candidate lastPathComponent] isEqualToString: @".svn"]) {
+		if([[candidate lastPathComponent] isEqualToString: @".svn"]
+			|| [[candidate lastPathComponent] isEqualToString: @"ignore"]
+			|| [[candidate lastPathComponent] isEqualToString: @".git"]
+			|| [[candidate lastPathComponent] isEqualToString: @"_darcs"]
+			) {
 			[dirEnumerator skipDescendents];
 		} else {
 			NSString* trialName = [helpFolderPath stringByAppendingString: candidate];
@@ -547,12 +551,12 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
 			fullName = [NSString stringWithCString:resolvedName];
 			// compare with valid extensions
-			if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
+			if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtf"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
-				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".htm"]]
 				) {
 				helpFilePath = fullName;
