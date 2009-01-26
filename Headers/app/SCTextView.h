@@ -42,4 +42,7 @@
 
 - (IBAction)methodTemplates: (id)sender;
 - (IBAction)methodReferences: (id)sender;
+- (void) balanceParens: (id) sender;
 @end
+
+bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);

@@ -385,6 +385,154 @@ NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir); //
     return [super performDragOperation:sender];
 }
 
+#define GETTEXTCHAR(pos, text, textlen)	(((int)pos<0) ? 0 : (((int)pos>=(int)textlen) ? 0 : text[pos]))
+#define MAXBRAX 256
+unichar braks[MAXBRAX];
+int brakptr = 0;
+
+bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int length);
+bool checkBraks(unsigned int startpos, unsigned int endpos, unichar *text, int length)
+{
+	unsigned int pos;
+	unichar c;
+	
+	brakptr = 0;
+	pos = startpos;
+	for (; pos < endpos; ++pos) {
+		c = GETTEXTCHAR(pos, text, length);
+		if (c == 0) return false;
+		
+		if (c == '(') {
+			if (brakptr+1 < MAXBRAX) {
+				braks[brakptr++] = ')';
+			} else return false;
+		} else if (c == '[') {
+			if (brakptr+1 < MAXBRAX) {
+				braks[brakptr++] = ']';
+			} else return false;
+		} else if (c == '{') {
+			if (brakptr+1 < MAXBRAX) {
+				braks[brakptr++] = '}';
+			} else return false;
+		} else if (c == ')' || c == ']' || c == '}') {
+			if (brakptr > 0) {
+				if (braks[--brakptr] != c) return false;
+			}
+		} 
+	}
+	return brakptr == 0;
+}
+
+//bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
+bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens)
+{
+    unichar c, d;
+    
+    // check selection internally
+    if (!rightBrak && *endpos > *startpos && !checkBraks(*startpos, *endpos, text, length)) return false;	
+    
+    c = GETTEXTCHAR(((*startpos)-1), text, length);
+    d = GETTEXTCHAR(*endpos, text, length);
+    
+    if (ignoreImmediateParens) {
+            if ((c == '(' || c == '[' || c == '{') && (d == ')' || d == ']' || d == '}')) {
+                    // if selection is bounded by brackets but they do not match then fail
+                    if (!((c == '(' && d == ')') || (c == '[' && d == ']') || (c == '{' && d == '}'))) {
+                            return false;
+                    } else {
+                            // else expand selection by one before searching for next outer pair
+                            --(*startpos);
+                            ++(*endpos);
+                    }
+            }
+    }
+    
+    brakptr = 0;
+	if (rightBrak) {
+		d = rightBrak;
+	}
+
+	do {
+			--(*startpos);
+			c = GETTEXTCHAR(*startpos, text, length);
+			if (c == ')') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '(';
+					} else return false;
+			} else if (c == ']') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '[';
+					} else return false;
+			} else if (c == '}') {
+					if (brakptr+1 < MAXBRAX) {
+							braks[brakptr++] = '{';
+					} else return false;
+			} else if (c == '(' || c == '[' || c == '{') {
+					if (brakptr > 0) {
+							if (braks[--brakptr] != c) return false;
+					} else break;
+			} 
+	} while (c);
+	if (c == 0) return false;
+	
+	if (!rightBrak) {
+		do {
+				d = GETTEXTCHAR(*endpos, text, length);
+				(*endpos)++;
+				if (d == '(') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = ')';
+						} else return false;
+				} else if (d == '[') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = ']';
+						} else return false;
+				} else if (d == '{') {
+						if (brakptr+1 < MAXBRAX) {
+								braks[brakptr++] = '}';
+						} else return false;
+				} else if (d == ')' || d == ']' || d == '}') {
+						if (brakptr > 0) {
+								if (braks[--brakptr] != d) return false;
+						} else break;
+				} 
+		} while (d);
+		if (d == 0) return false;
+	}
+	
+    if (!((c == '(' && d == ')') || (c == '[' && d == ']') || (c == '{' && d == '}'))) {
+            return false;
+    }
+	
+	if (!rightBrak) {
+		// success. shrink selection by one.
+		++(*startpos);
+		--(*endpos);
+	}
+    
+    return true;
+}
+
+
+- (void)balanceParens: (id)sender
+{
+    NSRange selectedRange = [self selectedRange];
+    NSString *string = [self string];
+
+    int length = [string length];
+    unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
+    [string getCharacters: buffer];
+    
+    unsigned int start, end;
+    start = selectedRange.location;
+    end = start + selectedRange.length;
+    bool res = matchBraks(&start, &end, buffer, length, 0, true);
+    free(buffer);
+    if (res) {
+        NSRange newSelectedRange = NSMakeRange(start, end - start);
+        [self setSelectedRange: newSelectedRange];
+    }
+}
 
 - (IBAction)openCode:(id)sender
 {

@@ -1226,6 +1226,21 @@ int prSetPostTextColor(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prBalanceParens(struct VMGlobals *g, int numArgsPushed);
+int prBalanceParens(struct VMGlobals *g, int numArgsPushed)
+{
+ if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp;
+        
+	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	if (!doc) return errFailed;
+	[[doc textView] balanceParens: nil];
+
+	return errNone;
+}
+
+
 int slotGetNSRect(PyrSlot* a, NSRect *r)
 {
 	PyrSlot *slots = a->uo->slots;
@@ -4055,6 +4070,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);
 	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 6, 0);
+	definePrimitive(base, index++, "_TextWindow_BalanceParens", prBalanceParens, 1, 0);	
 
 
 
@@ -4088,7 +4104,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_RunModalSheet", prSCWindow_RunModalSheet, 2, 0);	
 	definePrimitive(base, index++, "_SCWindow_StopModalSheet", prSCWindow_StopModalSheet, 1, 0);	
 	definePrimitive(base, index++, "_ShowCursor", prShowCursor, 2, 0);	
-	
+
 	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
 	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);	
 	definePrimitive(base, index++, "_String_DrawInRect", prString_DrawInRect, 4, 0);	
