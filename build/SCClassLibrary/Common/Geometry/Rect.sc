@@ -39,7 +39,9 @@ Rect {
 	}
         
 	origin { ^Point.new(left, top) }
+	origin_ { | pt | left = pt.x; top = pt.y }
 	extent { ^Point.new(width, height) }
+	extent_ { | pt | width = pt.x; height = pt.y }
 	center { ^Point.new(left + (width * 0.5), top + (height * 0.5)) }
 	center_ { arg center; ^this.class.aboutPoint(center, width * 0.5, height * 0.5) }
 	
