@@ -84,6 +84,7 @@ TextView : ViewRedirect  {	*key { ^\textView }}
 
 Font : ViewRedirect  {	*key { ^\font }}
 
+Knob : ViewRedirect  {	*key { ^\knob }}
 
 
 
