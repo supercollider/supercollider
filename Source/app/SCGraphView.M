@@ -354,6 +354,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
     mTopView->setDamageCallback(damageFunc, (void*)self);
     mTopView->setDragCallback(dragFunc);
 	mTopView->SetNSView(self);
+	oldBounds = NSMakeRect(0, 0, 0, 0);
 }
 
 - (void)dealloc
@@ -723,6 +724,9 @@ const int circDiam = 20;
 
 - (void)drawRect: (NSRect)drawBounds
 {
+	
+#define VIEWHACK	1
+	
 	if (mTopView) {
         
         SCRect screct;
@@ -732,47 +736,80 @@ const int circDiam = 20;
 		screct.y = bounds.origin.y;
 		screct.width = bounds.size.width;
 		screct.height = bounds.size.height;
-		mTopView->setInternalBounds(screct);
+		
+#if VIEWHACK		
+		if(!NSEqualRects(bounds, oldBounds)){
+#endif
+			mTopView->setInternalBounds(screct);
+#if VIEWHACK
+			oldBounds = bounds;
+		}
+#endif
         
         screct.x = drawBounds.origin.x;
         screct.y = drawBounds.origin.y;
         screct.width = drawBounds.size.width;
         screct.height = drawBounds.size.height;
         
-        /*CGRect cgrect = *(CGRect*)&drawBounds;
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGContextSaveGState(cgc);
-        CGContextClipToRect(cgc, cgrect);*/
-        
-        Rect qdrect;
-        SetRect(&qdrect, (int)screct.x, (int)screct.y, 
-            (int)(screct.x + screct.width), (int)(screct.y + screct.height));
-        ClipRect(&qdrect);
+		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		CGContextClipToRect(cgc, CGRectMake(screct.x, screct.y, screct.width, screct.height));
+		
+        /*
+		 Rect qdrect;
+		 SetRect(&qdrect, (int)screct.x, (int)screct.y, 
+		 (int)(screct.x + screct.width), (int)(screct.y + screct.height));
+		 ClipRect(&qdrect);
+		 */
 		
 		if(mTopView->isSubViewScroller()) {
 			((SCScrollView*)mTopView)->drawSubViewIfNecessary(screct);
 		} else {
-			mTopView->drawIfNecessary(screct);
+#if VIEWHACK
+			const CGRect *dirtyRects;
+			CGRect	curRect;
+			int		numDirtyRects;
+			
+			[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:&numDirtyRects];
+			
+			int i=0;
+			for(; i < numDirtyRects; ++i) {
+				curRect = *(dirtyRects+i);
+				screct.x = curRect.origin.x;
+				screct.y = curRect.origin.y;
+				screct.width = curRect.size.width;
+				screct.height = curRect.size.height;
+				
+				CGContextSaveGState(cgc);
+				CGContextClipToRect(cgc, curRect);
+#endif				
+				mTopView->drawIfNecessary(screct);
+#if VIEWHACK
+				CGContextRestoreGState(cgc);
+			}
+#endif
 		}
-        //CGContextRestoreGState(cgc);
+		CGContextRestoreGState(cgc);
     }
+	
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj && NotNil(mWindowObj->slots+6)) {
         CGRect cgrect = *(CGRect*)&drawBounds;
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
         CGContextSaveGState(cgc);
         CGContextClipToRect(cgc, cgrect);
-
+		
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
         runInterpreter(g, s_callDrawHook, 1);
         g->canCallOS = false;
-
+		
         CGContextRestoreGState(cgc);
     }
     pthread_mutex_unlock (&gLangMutex);
 }
+
 
 NSDictionary *makeFontAttrDict(char *cFontName, float fontSize, SCColor sccolor)
 {

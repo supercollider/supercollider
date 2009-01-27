@@ -30,6 +30,7 @@
     bool windowShouldClose;
 	bool acceptsClickThrough;
 	bool autoScrolls;
+	NSRect oldBounds;
 }
 
 - (void)drawRect: (NSRect)bounds;
