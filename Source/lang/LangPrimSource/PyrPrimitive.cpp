@@ -296,7 +296,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 		case errNotAnIndexableObject : str = "Not an indexable object."; break;
 		case errStackOverflow : str = "Stack overflow."; break;
 		case errOutOfMemory : str = "Out of memory."; break;
-		case errCantCallOS : str = "operation cannot be called from this Process."; break;
+		case errCantCallOS : str = "Operation cannot be called from this Process. Try using AppClock instead of SystemClock."; break;
 		
 		default : str = "Failed.";
 	}
