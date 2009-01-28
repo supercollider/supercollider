@@ -1665,11 +1665,12 @@ SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCR
 SCQuartzComposerView::SCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 : SCView(inParent, inObj, inBounds)
 {
-	NSRect matrect = SCtoNSRect(mBounds);
+	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mQCView = [[QCView alloc] initWithFrame:matrect];
 	[mQCView setEventForwardingMask: NSAnyEventMask];
 	NSView *view = mTop->GetNSView();	
 	[view addSubview: mQCView];
+	
 	setVisibleFromParent();
 }
 
