@@ -164,10 +164,12 @@ SCImage {
 		format("SCImage:write invalid instance.").error;
 	}
 	url_ { arg new_url;
-		url = new_url.standardizePath.replace(" ", "%20");
+		if(new_url.isKindOf(String), {
+			url = new_url.standardizePath.replace(" ", "%20");
+		}, {url=""});
 	}
 	crop {|aRect|
-		var filter;
+		var filter, transform;
 		if(aRect.isKindOf(Rect).not, {
 			"SCImage: bad argument for cropping image !".warn;
 			^this;
@@ -176,7 +178,9 @@ SCImage {
 		if(autoMode, {this.accelerated_(true)});
 		filter = SCImageFilter(\CICrop);
 		filter.rectangle_(aRect);
-		this.applyFilters(filter);
+		transform = SCImageFilter(\CIAffineTransform);
+		transform.transform_([aRect.left.neg, aRect.top.neg]);
+		this.applyFilters([filter, transform]);
 		^this;
 	}
 	invert {

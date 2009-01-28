@@ -153,7 +153,7 @@ static const float	oneOn255			= (1.f/255.f);
 #define COLOR_UNSCALE					COLOR_UNSCALE3
 #define COLOR_UNSCALE1(channel, alpha)	((channel) * 255) / alpha // simple Formula - rounding errors if scale - unscale !!! so...
 #define COLOR_UNSCALE2(channel, alpha)	((channel) * 256 - 1) / (alpha) // ...modified one... beware
-#define COLOR_UNSCALE3(channel, alpha)	((((channel) * 255) + (alpha >> 1)) / alpha) // should be better - from libnr - sodipodi
+#define COLOR_UNSCALE3(channel, alpha)	((((channel) * 255) + ((alpha) >> 1)) / (alpha)) // should be better - from libnr - sodipodi
 
 // more Macros see libnr - sodipodi here:
 // http://sodipodi.cvs.sourceforge.net/sodipodi/libnr/nr-pixops.h
@@ -1562,13 +1562,20 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 	
 	[image getPixel:pixelAsArray atX:x y:y];
 	//SetInt(receiver, ((pixelAsArray[0] << 24) | (pixelAsArray[1] << 16) | (pixelAsArray[2] << 8) | pixelAsArray[3]));
-	SetInt(receiver, 
-		COLOR_UNSCALE( pixelAsArray[0], pixelAsArray[3] ) << 24 | 
-		COLOR_UNSCALE( pixelAsArray[1], pixelAsArray[3] ) << 16 | 
-		COLOR_UNSCALE( pixelAsArray[2], pixelAsArray[3] ) <<  8 |
-		pixelAsArray[3]
-	);
-	
+	if( pixelAsArray[3] == 0 ) { // avoid EXC_ARITHMETIC
+		SetInt(receiver,
+			(pixelAsArray[0] << 24) |
+			(pixelAsArray[1] << 16) |
+			(pixelAsArray[2] << 8)
+		);
+	}else{
+		SetInt(receiver, 
+			   (COLOR_UNSCALE( pixelAsArray[0], pixelAsArray[3] ) << 24) | 
+			   (COLOR_UNSCALE( pixelAsArray[1], pixelAsArray[3] ) << 16) | 
+			   (COLOR_UNSCALE( pixelAsArray[2], pixelAsArray[3] ) <<  8) |
+			   pixelAsArray[3]
+			   );
+	}
 	return errNone;
 }
 
@@ -2151,19 +2158,43 @@ CIImage*	CropAndCenterCIImage(CIImage *image, CGRect originalExtent, CGRect* cro
 		// Crop to specified rectangle.
 		if(extent.size.width > cropRegion.size.width || extent.size.height > cropRegion.size.height)
 		{
+			if(extent.origin.x > 0) {cropRegion.origin.x = extent.origin.x;}
+			if(extent.origin.y > 0) {cropRegion.origin.y = extent.origin.y;}
+			
+			
+			// quite strange but happens sometime...
+			if(extent.origin.x < 0 && ((extent.origin.x + extent.size.width) < cropRegion.size.width)) {
+				float diff = extent.size.width + extent.origin.x;
+				cropRegion.origin.x -= (cropRegion.size.width - diff);
+			}
+			
+			if(extent.origin.y < 0 && ((extent.origin.y + extent.size.height) < cropRegion.size.height)) {
+				float diff = extent.size.height + extent.origin.y;
+				cropRegion.origin.y -= (cropRegion.size.height - diff);
+			}
+
 #if SCIMAGE_FILTER_DEBUG
-			NSLog(@"SCImageFilter: Cropping To Size: (%4.2f, %4.2f, %4.2f, %4.2f)", cropRegion.origin.x,cropRegion.origin.y,cropRegion.size.width,cropRegion.size.height);
+			NSLog(@"SCImageFilter: Cropping To Size: (%4.2f, %4.2f, %4.2f, %4.2f) fromExtent: (%4.2f, %4.2f, %4.2f, %4.2f)", 
+				cropRegion.origin.x,cropRegion.origin.y,cropRegion.size.width,cropRegion.size.height,
+				extent.origin.x,extent.origin.y,extent.size.width,extent.size.height
+				);
 #endif
+			
 			ciFilter = [CIFilter filterWithName:@"CICrop"]; // crop the final result according
 			[ciFilter setValue:image forKey:@"inputImage"];
 			[ciFilter setValue:[CIVector vectorWithX:cropRegion.origin.x Y:cropRegion.origin.y Z:cropRegion.size.width W:cropRegion.size.height] forKey:@"inputRectangle"];
 			image = [ciFilter valueForKey:@"outputImage"];
 			extent = [image extent];
-			//NSLog(@"SCImageFilter: After CROP Extent: (%4.2f, %4.2f, %4.2f, %4.2f)", destExtent.origin.x,destExtent.origin.y,destExtent.size.width, destExtent.size.height);
+#if SCIMAGE_FILTER_DEBUG
+			NSLog(@"SCImageFilter: After CROP Extent: (%4.2f, %4.2f, %4.2f, %4.2f)", extent.origin.x,extent.origin.y,extent.size.width, extent.size.height);
+#endif
 		}
 	}
 	
 	// translating origin and center it if we need it
+	// currently auto translation is now deactivated by default - let the user choose
+
+	/*
 	if(extent.origin.x != 0 || extent.origin.y != 0) {
 		ciFilter = [CIFilter filterWithName:@"CIAffineTransform"];
 		NSAffineTransform* trs = [NSAffineTransform transform];
@@ -2171,8 +2202,12 @@ CIImage*	CropAndCenterCIImage(CIImage *image, CGRect originalExtent, CGRect* cro
 		[ciFilter setValue:trs forKey:@"inputTransform"];
 		[ciFilter setValue:image forKey:@"inputImage"];
 		image = [ciFilter valueForKey:@"outputImage"];
+		#if SCIMAGE_FILTER_DEBUG
+			NSLog(@"SCImageFilter: After Translate: (%4.2f, %4.2f, %4.2f, %4.2f)", extent.origin.x,extent.origin.y,extent.size.width, extent.size.height);
+		#endif	
 	}
-	
+	*/
+
 	return image;
 }
 
@@ -2232,7 +2267,7 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 			// array containing [Tx, Ty, Sx, Sy, Rot in radians]
 			PyrObject* array = slot->uo;
 			int size = sc_min(array->size, 5), err;
-			float attributes[5] = {0.f, 0.f, 0.f, 0.f, 0.f};
+			float attributes[5] = {0.f, 0.f, 1.f, 1.f, 0.f};
 			for(int i=0; i < size; ++i) {
 				err = slotFloatVal(array->slots+i, attributes+i);
 				if(err) 
@@ -2465,6 +2500,9 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 			{
 				receiverObj = receiver->uo;
 			}
+			#if SCIMAGE_FILTER_DEBUG
+				NSLog(@"SCImageFilter: New Extent (%4.2f, %4.2f, %4.2f, %4.2f)", destExtent.origin.x, destExtent.origin.y, destExtent.size.width, destExtent.size.height);
+			#endif
 	}
 	else 
 	{
@@ -2476,7 +2514,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	
-#if SCIMAGE_DEBUG
+#if SCIMAGE_DEBUG || SCIMAGE_FILTER_DEBUG
 	NSLog(@"SCImageFilter: Creating New SCImage Class");
 	NSLog(@"SCImageFilter: OriginalImage Extent: (%4.2f, %4.2f, %4.2f, %4.2f) NewImage Extent: (%4.2f, %4.2f, %4.2f, %4.2f)",
 		  origExtent.origin.x, origExtent.origin.y, origExtent.size.width, origExtent.size.height,
