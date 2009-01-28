@@ -17,7 +17,7 @@
 		oscFilePath = "temp_oscscore" ++ UniqueID.next;
 		score = this.asScore(maxTime);
 		score.recordNRT(
-			oscFilePath, path, inputFilePath, sampleRate = 44100, headerFormat, sampleFormat, 
+			oscFilePath, path, inputFilePath, sampleRate, headerFormat, sampleFormat, 
 			options, "; rm" + oscFilePath
 		);
 	}

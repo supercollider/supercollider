@@ -108,7 +108,7 @@ Score {
 	
 	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
 		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
-		this.new(list).recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, 
+		this.new(list).recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate, 
 		headerFormat, sampleFormat, options, completionString, duration);
 	}
 	
