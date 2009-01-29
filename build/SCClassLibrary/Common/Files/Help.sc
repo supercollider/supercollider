@@ -739,7 +739,14 @@ Help {
 							results.add(HelpSearchResult(docname, path, pos.size, docstr[pos[0] ..  pos[0]+50], catpath.deepCopy));
 						}
 					}{
-						"File:isOpen failure: %".format(path).postln;
+						"Help.search will rebuild help cache, since an expected file was not found: %".format(path).postln;
+						// EXPERIMENTAL:
+						// File:isOpen failure means that the help tree cache is out of date.
+						// So let's explicitly destroy and recreate it.
+						// There may be a danger of infinite loops if some weird filesystem stuff is happening...?
+						this.forgetTree;
+						this.tree(allowCached: false);
+						^this.search(query, ignoreCase);
 					}
 				}
 			}{
