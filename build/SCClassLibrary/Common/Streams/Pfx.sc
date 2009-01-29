@@ -82,10 +82,10 @@ Pfxb : Pfx {
 Pgroup : FilterPattern {
 
 	embedInStream { arg inevent;
-	
-		var server, groupID, event, ingroup, cleanup;
-		var stream, lag, cleanupEvent;
-		
+		var	server, groupID, event, ingroup, cleanup;
+		var	stream, lag = 0, clock = thisThread.clock,
+			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1, cleanupEvent;
+
 		cleanup = EventStreamCleanup.new;
 		server = inevent[\server] ?? { Server.default };
 		groupID = server.nextNodeID;
@@ -99,7 +99,7 @@ Pgroup : FilterPattern {
 		cleanupEvent = (type: \kill, parent: event);
 		
 		cleanup.addFunction(event, { | flag |
-			if (flag) { cleanupEvent.play }
+			if (flag) { cleanupEvent.lag_(lag - clock.beats + groupReleaseTime).play }
 		});
 		inevent = event.yield;
 		
@@ -107,13 +107,13 @@ Pgroup : FilterPattern {
 //		^this.class.embedLoop(inevent, pattern.asStream, groupID, ingroup, cleanup);
 		stream = pattern.asStream;
 		 loop {
-			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			lag = event.use { ~sustain.value + 0.1};	
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
+			lag = max(lag, clock.beats + event.use { ~sustain.value });	
 			inevent = event.yield;
-			inevent.put(\group, groupID); 
+			inevent.put(\group, groupID);
 		}
-		
 	}
-
+	
 	*embedLoop { arg inevent, stream, groupID, ingroup, cleanup;
 		var event, lag;
 		 loop {

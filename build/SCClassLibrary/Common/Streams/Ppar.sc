@@ -106,8 +106,10 @@ Ptpar : Ppar {
 Pgpar : Ppar {
 	
 	embedInStream { arg inevent;
-		var server, ids, patterns, event, ingroup, cleanup, stream;
-		var lag = 0;
+		var	server, ids, patterns, event, ingroup, cleanup, stream;
+		var	lag = 0, clock = thisThread.clock,
+			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1;
+		
 		server = inevent[\server] ?? { Server.default };
 		ingroup = inevent[\group];		
 		ids = { server.nextNodeID } ! this.numberOfGroups;
@@ -122,7 +124,8 @@ Pgpar : Ppar {
 		inevent = event.yield.copy;
 		cleanup = EventStreamCleanup.new;
 		cleanup.addFunction(inevent, { | flag |
-			if (flag) { ( lag: lag, type: \kill, id: ids, server: server).play }; 
+			if (flag) { ( lag: lag - clock.beats + groupReleaseTime,
+				type: \kill, id: ids, server: server).play }; 
 		});
 		
 		patterns = this.wrapPatterns(ids);
@@ -131,7 +134,7 @@ Pgpar : Ppar {
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
 		 loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			cleanup.update(event);	
-			lag = event.use { ~sustain.value + 0.1};
+			lag = max(lag, clock.beats + event.use { ~sustain.value });
 			inevent = event.yield;
 		}
 
