@@ -5,17 +5,19 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #0019b7}
-span.s3 {color: #326f17}
+span.s2 {color: #0000bf}
+span.s3 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,7 +31,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Pgroup(pattern)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Starts a new group and plays the pattern in this group.<span class="Apple-converted-space"> </span></p>
-<p class="p3">The group is released when the stream has ended.<span class="Apple-converted-space"> </span></p>
+<p class="p3">The group is released when the stream has ended. The group's release is delayed (default 0.1 beats) until after the last note releases. But, Pgroup does not know how long the synths' envelopes last. You can extend the lag by putting the number of beats into the event prototype's \groupReleaseTime key:</p>
+<p class="p2"><br></p>
+<p class="p3">Pgroup(...).play(protoEvent: Event.default.put(\groupReleaseTime, releaseLag));</p>
 <p class="p2"><br></p>
 <p class="p3">Example:</p>
 <p class="p2"><br></p>
@@ -37,10 +41,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p5"><span class="s2">var</span> p, q, r, o;</p>
 <p class="p5">p = <span class="s2">Pbind</span>(<span class="s3">\degree</span>, <span class="s2">Prand</span>((0..7),12), <span class="s3">\dur</span>, 0.3, <span class="s3">\legato</span>, 0.2);</p>
-<p class="p4"><br></p>
+<p class="p6"><br></p>
 <p class="p5"><span class="s2">Pgroup</span>(p).play;</p>
-<p class="p4"><br></p>
-<p class="p6">// post the node structure:</p>
+<p class="p6"><br></p>
+<p class="p7">// post the node structure:</p>
 <p class="p5">fork {</p>
 <p class="p5"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>3.wait;</p>
@@ -49,6 +53,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
 <p class="p5">}</p>
 <p class="p5">)</p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
