@@ -12,17 +12,21 @@ EventStreamCleanup {
 	}
 	
 	addFunction { |event, function |
-		functions = functions.add(function);
-		event[\addToCleanup] = event[\addToCleanup].add(function);
+		if(event.respondsTo(\keysValuesDo)) {
+			functions = functions.add(function);
+			event[\addToCleanup] = event[\addToCleanup].add(function);
+		};
 	}
 
 	addNodeCleanup { |event, function |
-		functions = functions.add(function);
-		event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
+		if(event.respondsTo(\keysValuesDo)) {
+			functions = functions.add(function);
+			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
+		};
 	}
 	
 	update { | event |
-		event !? {
+		if(event.respondsTo(\keysValuesDo)) {
 			functions = functions.addAll(event[\addToNodeCleanup]);
 			functions = functions.addAll(event[\addToCleanup]);
 			functions = functions.removeAll(event[\removeFromCleanup]);
@@ -31,10 +35,12 @@ EventStreamCleanup {
 	}
 	
 	exit { | event, freeNodes = true |
-		this.update(event);
-		functions.do(_.value(freeNodes) );
-		event[\removeFromCleanup] = event[\removeFromCleanup].addAll(functions);
-		this.clear;
+		if(event.respondsTo(\keysValuesDo)) {
+			this.update(event);
+			functions.do(_.value(freeNodes) );
+			event[\removeFromCleanup] = event[\removeFromCleanup].addAll(functions);
+			this.clear;
+		};
 		^event
 	}
 		
