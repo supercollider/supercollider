@@ -23,6 +23,7 @@
 #import "VMGlobals.h"
 #import "SCGeom.h"
 #import "SCVirtualMachine.h"
+#import "GC.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -2884,35 +2885,111 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 		goto BailErr;
 	}
 	
-	PyrObject* pyrArray = returnedArraySlot->uo; // should be an array of size 2
+	PyrObject* pyrArray = returnedArraySlot->uo; // should be an array of size 3
 	NSString* attrType = [attribute objectForKey:kCIAttributeType];
+
+	id minmax[3];
+	minmax[0] = [attribute objectForKey: kCIAttributeSliderMin] ? [attribute objectForKey: kCIAttributeSliderMin] : [attribute objectForKey: kCIAttributeMin];
+	minmax[1] = [attribute objectForKey: kCIAttributeSliderMax] ? [attribute objectForKey: kCIAttributeSliderMax] : [attribute objectForKey: kCIAttributeMax];
+	minmax[2] = [attribute objectForKey: kCIAttributeDefault];
 	
+	if(!minmax[0] && !minmax[1] && !minmax[2]) // if no slider min or slider max or default - set to nil directly
+			goto BailErr;
+				
 	if(attrType == kCIAttributeTypeBoolean)
 	{
 		SetFalse(pyrArray->slots+0);
 		SetTrue(pyrArray->slots+1);
+		SetBool(pyrArray->slots+2, ([ minmax[2] floatValue ] > 0.f));
 	}
-	else
-	{
-		// extra check in case
-		id minmax[2];
-		minmax[0] = [attribute objectForKey: kCIAttributeSliderMin] ? [attribute objectForKey: kCIAttributeSliderMin] : [attribute objectForKey: kCIAttributeMin];
-		minmax[1] = [attribute objectForKey: kCIAttributeSliderMax] ? [attribute objectForKey: kCIAttributeSliderMax] : [attribute objectForKey: kCIAttributeMax];
-		
-		if(!minmax[0] && !minmax[1])
-			goto BailErr;
-		
+	else if(
+		attrType == kCIAttributeTypeAngle  || attrType == kCIAttributeTypeDistance ||
+		attrType == kCIAttributeTypeScalar || attrType == kCIAttributeTypeTime
+	)
+	{	
 		NSString *attrType;
 		if(minmax[0])
-			SetFloat(pyrArray->slots+0, [ minmax[0] floatValue]);
+			SetFloat(pyrArray->slots+0, [minmax[0] doubleValue]);
 		else
 			SetNil(pyrArray->slots+0);
 		
 		if(minmax[1])
-			SetFloat(pyrArray->slots+1, [ minmax[1] floatValue]);
+			SetFloat(pyrArray->slots+1, [minmax[1] doubleValue]);
+		else
+			SetNil(pyrArray->slots+1);
+			
+		if(minmax[2])
+			SetFloat(pyrArray->slots+2, [minmax[2] doubleValue]);
 		else
 			SetNil(pyrArray->slots+1);
 	}
+	else if( attrType == kCIAttributeTypePosition ||  attrType == kCIAttributeTypeOffset )
+	{
+		// 2-element vector
+		PyrObject* vector[3];
+		for(int i=0; i < 3; ++i) {
+			if( ! minmax[i] ) {
+				SetNil(pyrArray->slots+i); continue;
+			}
+			vector[i] = newPyrArray(g->gc, sizeof(double) * 2, 0, true);
+			SetFloat( vector[i]->slots+0, [ (CIVector*)minmax[i] X ]);
+			SetFloat( vector[i]->slots+1, [ (CIVector*)minmax[i] Y ]);
+			vector[i]->size = 2;
+			SetObject(pyrArray->slots+i, vector[i]);
+				g->gc->GCWrite(pyrArray, vector[i]);
+		}
+	}
+	else if( attrType == kCIAttributeTypePosition3 )
+	{
+		// 3-element vector
+		PyrObject* vector[3];
+		for(int i=0; i < 3; ++i) {
+			if( ! minmax[i] ) {
+				SetNil(pyrArray->slots+i); continue;
+			}
+			vector[i] = newPyrArray(g->gc, sizeof(double) * 3, 0, true);
+			SetFloat( vector[i]->slots+0, [ (CIVector*)minmax[i] X ]);
+			SetFloat( vector[i]->slots+1, [ (CIVector*)minmax[i] Y ]);
+			SetFloat( vector[i]->slots+2, [ (CIVector*)minmax[i] Z ]);
+			vector[i]->size = 3;
+			SetObject(pyrArray->slots+i, vector[i]);
+				g->gc->GCWrite(pyrArray, vector[i]);
+		}
+	}
+	else if( attrType == kCIAttributeTypeRectangle )
+	{
+		// 4-element vector
+		PyrObject* vector[3];
+		for(int i=0; i < 3; ++i) {
+			if( ! minmax[i] ) {
+				SetNil(pyrArray->slots+i); continue;
+			}
+			vector[i] = newPyrArray(g->gc, sizeof(double) * 4, 0, true);
+			SetFloat( vector[i]->slots+0, [ (CIVector*)minmax[i] X ]);
+			SetFloat( vector[i]->slots+1, [ (CIVector*)minmax[i] Y ]);
+			SetFloat( vector[i]->slots+2, [ (CIVector*)minmax[i] Z ]);
+			SetFloat( vector[i]->slots+3, [ (CIVector*)minmax[i] W ]);
+			vector[i]->size = 4;
+			SetObject(pyrArray->slots+i, vector[i]);
+				g->gc->GCWrite(pyrArray, vector[i]);
+		}
+	}
+	else if( attrType == kCIAttributeTypeOpaqueColor )
+	{
+		// 4-element vector
+		PyrObject* vector[3];
+		for(int i=0; i < 3; ++i) {
+			vector[i] = ::instantiateObject(g->gc, s_color->u.classobj, 0, false, true);
+			SetFloat( vector[i]->slots+0, (double)[ (CIColor*)minmax[i] red ]);
+			SetFloat( vector[i]->slots+1, (double)[ (CIColor*)minmax[i] green ]);
+			SetFloat( vector[i]->slots+2, (double)[ (CIColor*)minmax[i] blue ]);
+			SetFloat( vector[i]->slots+3, (double)[ (CIColor*)minmax[i] alpha ]);
+			SetObject(pyrArray->slots+i, vector[i]);
+				g->gc->GCWrite(pyrArray, vector[i]);
+		}
+	}
+	else 
+		goto BailErr;
 	
 	SetObject(receiver, pyrArray);
 	return errNone;
