@@ -420,10 +420,10 @@ ArrayedCollection : SequenceableCollection {
 	// random distribution table
 	
 	asRandomTable { arg size;
-		var a=this, b, sum=0;
+		var a=this, b;
 		if(size.isNil) { size = this.size } { a = a.resamp1(size) };
-		a = a.collect { |el| sum = sum + el }; // incrementally integrate
-		a = a.normalize(0, size-1); // divide by sum (maximum value) and scale by max index
+		a = a.integrate; // incrementally integrate
+		a = a.normalize(0, size-1); // normalize and scale by max index
         	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
         	b = b / size // rescale to 0..1
         	^b
