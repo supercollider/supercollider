@@ -125,7 +125,7 @@ FlowView : SCViewHolder {
 		},{
 			bounds = parentView.bounds;//.insetAll(2,2,2,2);
 			if(parentView.tryPerform(\relativeOrigin) ? false) {
-				bounds = bounds.setOriginRelativeTo(parent);
+				bounds = bounds.setOriginRelativeTo(parentView);
 			};
 		});
 		// this adds the composite view to the parent composite view
