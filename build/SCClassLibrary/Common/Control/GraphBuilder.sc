@@ -20,10 +20,11 @@ GraphBuilder {
 		})
 	}
 
-	*makeFadeEnv { arg fadeTime;
-		var dt, gate;
-		#dt, gate = Control.names(['fadeTime', 'gate']).kr([fadeTime, 1.0]);
-		^Linen.kr(gate, dt, 1.0, dt, 2);
+	*makeFadeEnv { arg fadeTime = (0);
+		var dt, gate, startVal;
+		dt = NamedControl.kr(\fadeTime, fadeTime);
+		gate = NamedControl.kr(\gate, 1.0);
+		^EnvGen.kr(Env.new([1, 1, 0], #[1, 1], \lin, 1), gate, 1.0, 0.0, dt, 2)
 	
 	}
 
@@ -33,6 +34,21 @@ GraphBuilder {
 
 
 EnvGate {
+				
+		*new { arg i_level=1, gate, fadeTime, doneAction=2, curve='sin';
+			var synthGate = gate ?? { NamedControl.kr(\gate, 1.0) };
+			var synthFadeTime = fadeTime ?? { NamedControl.kr(\fadeTime, 0.02) };
+			var startVal = (synthFadeTime <= 0);
+			^EnvGen.kr(
+				Env.new([ startVal, 1.0, 0.0], #[1.0, 1.0], curve, 1),
+				synthGate, i_level, 0.0, synthFadeTime, doneAction
+			)
+		}
+
+}
+
+
+/*EnvGate {
 		classvar currentControl, buildSynthDef;
 	
 				
@@ -63,7 +79,7 @@ EnvGate {
 		}
 
 }
-
+*/
 
 NamedControl {
 	classvar currentControls, buildSynthDef;
@@ -108,7 +124,7 @@ NamedControl {
 			}
 		};
 		
-		if(res.fixedLag) {
+		if(res.fixedLag and: lags.notNil) {
 			if( res.lags != lags ) {
 				Error("NamedControl: cannot have more than one set of "
 					"fixed lag values in the same control.").throw;
