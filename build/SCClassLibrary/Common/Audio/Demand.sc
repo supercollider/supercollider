@@ -14,10 +14,10 @@ Demand : MultiOutUGen {
 
 Duty : UGen {
 	
-	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
 	}
-	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+	*kr { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('control', dur, reset, doneAction, level)
 	}
 	checkInputs {
@@ -33,32 +33,32 @@ Duty : UGen {
 }
 
 TDuty : Duty {
-	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0, gapFirst=0;
+	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0, gapFirst = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level, gapFirst)
 	}
-	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0, gapFirst=0;
+	*kr { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0, gapFirst = 0;
 		^this.multiNew('control', dur, reset, doneAction, level, gapFirst)
 	}
 }
 
 // old version with gap first
 TDuty_old  {
-	*ar { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^TDuty.ar(dur, reset, level, doneAction, 1)
 	}
-	*kr { arg dur=1.0, reset=0.0, level=1.0, doneAction=0;
+	*kr { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^TDuty.kr(dur, reset, level, doneAction, 1)
 	}
 }
 
 DemandEnvGen : UGen {
 
-	*kr { arg level, dur, shape=1, curve=0, gate=1.0, reset=1.0,
+	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
 				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
 		^this.multiNew('control', level, dur, shape, curve, gate, reset, 
 				levelScale, levelBias, timeScale, doneAction)
 	}
-	*ar { arg level, dur, shape=1, curve=0, gate=1.0, reset=1.0, 
+	*ar { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0, 
 				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
 					if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
 						if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
@@ -100,31 +100,31 @@ DUGen : UGen {
 }
 
 Dseries : DUGen {
-	*new { arg start = 1, step = 1, length = 100;
+	*new { arg start = 1, step = 1, length = inf;
 		^this.multiNew('demand', length, start, step)
 	}	
 }
 
 Dgeom : DUGen {
-	*new { arg start = 1, grow = 2, length=100;
+	*new { arg start = 1, grow = 2, length = inf;
 		^this.multiNew('demand', length, start, grow)
 	}	
 }
 
 Dbufrd : DUGen {
-	*new { arg bufnum=0, phase=0.0, loop=1.0;
+	*new { arg bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, loop)	
 	}
 }
 
 Dbufwr : DUGen {
-	*new { arg input=0.0, bufnum=0, phase=0.0, loop=1.0;
+	*new { arg input = 0.0, bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, input, loop)
 	}
 }
 
 ListDUGen : DUGen {
-	*new { arg list, repeats=1;
+	*new { arg list, repeats = 1;
 		^this.multiNewList(['demand', repeats] ++ list)
 	}
 }
@@ -144,7 +144,7 @@ Dswitch1 : DUGen {
 Dswitch : Dswitch1 {}
 
 Dwhite : DUGen {
-	*new { arg lo = 0.0, hi = 1.0, length=inf;
+	*new { arg lo = 0.0, hi = 1.0, length = inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
 }
@@ -152,7 +152,7 @@ Dwhite : DUGen {
 Diwhite : Dwhite {}
 
 Dbrown : DUGen {
-	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length=inf;
+	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length = inf;
 		^this.multiNew('demand', length, lo, hi, step)
 	}
 }
@@ -178,7 +178,7 @@ Dpoll : DUGen {
 	
 	*new1 { arg rate, in, label, run, trigid;
 		label = label ?? { "DemandUGen(%)".format(in.class) };
-		label = label.asString.ascii;
+		label = label.ascii;
 		^super.new.rate_(rate).addToSynth.init(*[in, trigid, run, label.size] ++ label);
 	}
 }
