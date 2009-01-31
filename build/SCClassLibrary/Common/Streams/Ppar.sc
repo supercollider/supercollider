@@ -129,25 +129,24 @@ Pgpar : Ppar {
 		});
 		
 		patterns = this.wrapPatterns(ids);
-		stream = Ppar(patterns, repeats).asStream;
+		stream = this.class.implClass.new(patterns, repeats).asStream;
 		
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
-		 loop {
-			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			cleanup.update(event);	
+		loop {
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
+			cleanup.update(event);	
 			lag = max(lag, clock.beats + event.use { ~sustain.value });
 			inevent = event.yield;
 		}
 
 	}
 	
-
-	
-	numberOfGroups { ^list.size	}
+	numberOfGroups { ^list.size }
 	wrapPatterns { arg ids;
 		^ids.collect { |id, i| Psetpre(\group, id, list[i]) };
 	}
 	
-
+	*implClass { ^Ppar }
 }
 
 Pgtpar : Pgpar {
@@ -155,8 +154,9 @@ Pgtpar : Pgpar {
 	
 	wrapPatterns { arg ids;
 		var patterns = list.copy;
-		ids.do { |id, i| list[i+1] = Psetpre(\group, id, list[i+1]) };
+		ids.do { |id, i| patterns[((i << 1) + 1)] = Psetpre(\group, id, patterns[(i << 1) + 1]) };
 		^patterns
 	}
 
+	*implClass { ^Ptpar }
 }
