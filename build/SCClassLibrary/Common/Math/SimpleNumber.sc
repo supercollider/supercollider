@@ -412,4 +412,8 @@ SimpleNumber : Number {
 		_SimpleNumberSeries
 		^this.primitiveFailed
 	}
+
+	asBufWithValues {
+		^this
+	}
 }
