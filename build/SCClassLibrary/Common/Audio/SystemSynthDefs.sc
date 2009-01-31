@@ -5,10 +5,11 @@ SystemSynthDefs {
 	classvar <>numChannels = 2;
 	classvar <>tempNamePrefix = "temp__";
 	classvar tempDefCount = 0;
+	classvar <>maxTempDefNames = 512;
 	
 	*generateTempName {
 		var name = tempNamePrefix ++ tempDefCount;
-		tempDefCount = tempDefCount + 1 % 512;
+		tempDefCount = tempDefCount + 1 % maxTempDefNames;
 		^name
 	}
 		
