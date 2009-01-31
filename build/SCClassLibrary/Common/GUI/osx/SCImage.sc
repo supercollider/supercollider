@@ -736,7 +736,7 @@ SCImageFilter {
 	}
 	
 	attributeRange { |attributeName|
-		var result = [nil, nil];
+		var result = [nil, nil, nil];
 		this.prAttributeRange(attributeName.asSymbol, result);
 		^result;
 	}
