@@ -5,25 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #16439e}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #78281c}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6e2a1e}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {color: #0000bf}
 span.s2 {color: #007300}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #16439e}
-span.s6 {color: #001bb9}
-span.s7 {color: #5c6435}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -38,15 +36,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>makeFunction<span class="Apple-converted-space"> </span></b> "makes" the protoEvent (i.e.protoEvent is currentEnvironment).<span class="Apple-converted-space">  </span>Typically, it defines and yields a sequence of events that create the needed resources using the following eventTypes:</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>\allocRead<span class="Apple-tab-span">	</span>// load a file</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>\cue<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// cue a file for DiskIn</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>\allocRead<span class="Apple-tab-span">	</span>// load a file from ~path</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// starting at ~firstFileFrame</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// reading ~numFrames sample frames</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>\cue<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// cue a file for DiskIn, with ~bufferSize frames</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>\table<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// load ~amps directly into a buffer</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>\sine1<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// generate a buffer from ~amps</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>\sine2<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// generate a buffer from ~freqs, ~amps</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>\sine3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// generate a buffer from ~freq, ~amps, ~pahses</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>\sine3<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// generate a buffer from ~freqs, ~amps, ~pahses</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>\cheby<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// generate a waveshape buffer from ~amps</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>\audioBus<span class="Apple-tab-span">	</span>// allocate audio buses</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span>\controlBus<span class="Apple-tab-span">	</span>// allocate control buses</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>\audioBus<span class="Apple-tab-span">	</span>// allocate ~channels consecutive audio buses</b></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>\controlBus<span class="Apple-tab-span">	</span>// allocate ~channels consecutive control buses</b></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>\on<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// create a synth</b></p>
 <p class="p2"><br></p>
 <p class="p3">(<b>Note: </b>these eventTypes will allocate their own buffers and buses unless they are specified.<span class="Apple-converted-space">  </span>To support this, the key <b>\bufNum </b>is used rather than <b>\bufnum </b>which has a default value assigned. These eventTypes will respond to the method <b>cleanup </b>by deallocating any resources they have allocated,<span class="Apple-converted-space">  </span>See <b>EventCleanup </b>for details.)</p>
@@ -54,167 +54,166 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The function yields each event.<span class="Apple-converted-space">  </span>That event is then performed with possible modifications by enclosing patterns and the player (either an EventStreamPlayer or a ScoreStreamPlayer).<span class="Apple-converted-space">  </span>The resultant event is returned to the function where it can be assigned to a key within the protoEvent.</p>
 <p class="p2"><br></p>
 <p class="p3">The patternarray is played using Pfpar, a variant of Ppar that ends when any of its subpatterns end.<span class="Apple-converted-space">  </span>In this way,</p>
-<p class="p3">you can use Pproto to create effects that can be controlled by a pattern that runs in parallel with the note generating</p>
-<p class="p3">pattern and ends together with that note generating pattern (see example 0 below).</p>
+<p class="p3">you can use Pproto to create effects that can be controlled by a pattern that runs in parallel with the note generating pattern and ends together with that note generating pattern (see example 0 below).</p>
 <p class="p2"><br></p>
 <p class="p3">A <b>cleanupFunction</b> that deallocates resources when the pattern ends or is stopped is automatically created. It<span class="Apple-converted-space">  </span>can be replaced with a user defined cleanup if needed.<span class="Apple-converted-space">  </span>This function receives two arguments: <b>proto</b>, the prototype event, and <b>flag</b>, which is set false if all nodes have been freed already by <b>CmdPeriod.</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Example 0, using an effect with parallel control.</b></p>
-<p class="p3">(</p>
-<p class="p4"><span class="s1">SynthDef</span>(<span class="s2">\echo</span>, { <span class="s1">arg</span> out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> env, in;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s1">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s1">In</span>.ar(out, 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">XOut</span>.ar(out, env, <span class="s1">CombL</span>.ar(in * env, maxdtime, <span class="s1">Lag</span>.kr(dtime, 4), decay, 1, in));</p>
-<p class="p4">}, [<span class="s2">\ir</span>, <span class="s2">\ir</span>, 0.1, 0.1, 0]).store;</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p4"><span class="s1">SynthDef</span>(<span class="s2">\fm</span>, { <span class="s1">arg</span> out=0,<span class="Apple-converted-space">  </span>freq, index, decay=2, gate=1;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> env, in;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s1">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s1">In</span>.ar(out, 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">XOut</span>.ar(out, env, SinOsc.ar(freq, in * index));</p>
-<p class="p4">}).store;</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6">Pproto<span class="s3">({</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>~fsynth = ( type: <span class="s2">\on</span>, instrument: <span class="s2">\fm</span>, freq: 4, index: 1, addAction: 1, db: -30).yield;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>~fControl = [\set, ~fsynth[\id], ~fsynth[<span class="s2">\msgFunc</span>] ];</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>~synth = ( type: <span class="s2">\on</span>, instrument: <span class="s2">\echo</span>, addAction: 1).yield;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>~sControl = [\set, ~synth[\id], ~synth[<span class="s2">\msgFunc</span>] ];</p>
-<p class="p5"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span>}, [<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[type, id, msgFunc],<span class="Apple-tab-span">	</span>Pkey(\fControl),</p>
-<p class="p5"><br></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span>Pseg([0,1], 10).linexp(0,1, 0.1, 1000),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>index:<span class="Apple-tab-span">	</span>Pseg([0,1], 10).linexp(0,1, 0.1, 100),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:  0.1,</p>
-<p class="p4"><span class="Apple-tab-span">	</span>]),</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[type, id, msgFunc],<span class="Apple-tab-span">	</span>Pkey(\sControl),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dtime:<span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(0,0.2),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>decay:<span class="Apple-tab-span">	</span>Pwhite(0.1,2),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:  1,</p>
-<p class="p4"><span class="Apple-tab-span">	</span>]),</p>
-<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: \default,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s1">Pwhite</span>(1,16) * 100,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span>0</p>
-<p class="p4"><span class="Apple-tab-span">	</span>])</p>
-<p class="p4"><span class="Apple-tab-span">	</span>]</p>
-<p class="p4">).play</p>
-<p class="p3">)</p>
+<p class="p4">(</p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s2">\echo</span>, { <span class="s1">arg</span> out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> env, in;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>env = <span class="s1">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s1">In</span>.ar(out, 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">XOut</span>.ar(out, env, <span class="s1">CombL</span>.ar(in * env, maxdtime, <span class="s1">Lag</span>.kr(dtime, 4), decay, 1, in));</p>
+<p class="p5">}, [<span class="s2">\ir</span>, <span class="s2">\ir</span>, 0.1, 0.1, 0]).store;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s2">\fm</span>, { <span class="s1">arg</span> out=0,<span class="Apple-converted-space">  </span>freq, index, decay=2, gate=1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> env, in;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>env = <span class="s1">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>in = <span class="s1">In</span>.ar(out, 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">XOut</span>.ar(out, env, <span class="s1">SinOsc</span>.ar(freq, in * index));</p>
+<p class="p5">}).store;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">Pproto<span class="s3">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>~fsynth = ( type: <span class="s2">\on</span>, instrument: <span class="s2">\fm</span>, freq: 4, index: 1, addAction: 1, db: -30).yield;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>~fControl = [<span class="s2">\set</span>, ~fsynth[<span class="s2">\id</span>], ~fsynth[<span class="s2">\msgFunc</span>] ];</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>~synth = ( type: <span class="s2">\on</span>, instrument: <span class="s2">\echo</span>, addAction: 1).yield;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>~sControl = [<span class="s2">\set</span>, ~synth[<span class="s2">\id</span>], ~synth[<span class="s2">\msgFunc</span>] ];</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span>}, [<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[type, id, msgFunc],<span class="Apple-tab-span">	</span><span class="s1">Pkey</span>(<span class="s2">\fControl</span>),</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span><span class="s1">Pseg</span>([0,1], 10).linexp(0,1, 0.1, 1000),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>index:<span class="Apple-tab-span">	</span><span class="s1">Pseg</span>([0,1], 10).linexp(0,1, 0.1, 100),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:  0.1,</p>
+<p class="p5"><span class="Apple-tab-span">	</span>]),</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#[type, id, msgFunc],<span class="Apple-tab-span">	</span><span class="s1">Pkey</span>(<span class="s2">\sControl</span>),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dtime:<span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(0,0.2),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>decay:<span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(0.1,2),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:  1,</p>
+<p class="p5"><span class="Apple-tab-span">	</span>]),</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="s2">\default</span>,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s1">Pwhite</span>(1,16) * 100,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span>0</p>
+<p class="p5"><span class="Apple-tab-span">	</span>])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>]</p>
+<p class="p5">).play</p>
+<p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Example 1, loading and granulating a sound file.</b></p>
 <p class="p2"><br></p>
-<p class="p5"><br></p>
+<p class="p6"><br></p>
 <p class="p7">SynthDef<span class="s3">(</span><span class="s4">"playbuf"</span><span class="s3">, { </span>| out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1, sustain = 1, pan = 0, loop = 1|</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>rate = rate * <span class="s5">BufRateScale</span>.kr(bufnum);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>startPos = startPos * <span class="s5">BufFrames</span>.kr(bufnum);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s6">BufRd</span>.ar(1, bufnum, <span class="s6">Phasor</span>.ar(0, rate, startPos, <span class="s6">BufFrames</span>.ir(bufnum)), 1, 1);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">EnvGen</span>.ar(<span class="s5">Env</span>.sine, 1, timeScale: sustain, doneAction: 2) * audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">Pan2</span>.ar(audio, pan, amp);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">OffsetOut</span>.ar(out, audio);</p>
-<p class="p4">}).store;</p>
-<p class="p5"><br></p>
-<p class="p4">a = Pproto({</p>
-<p class="p4"><span class="Apple-tab-span">	</span>~newgroup = (type:<span class="Apple-tab-span">	</span>\group).yield;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>~sf1 =<span class="Apple-converted-space">  </span>SoundFile(<span class="s4">"sounds/a11wlk01-44_1.aiff")</span>.asEvent.yield;</p>
-<p class="p8">//<span class="Apple-tab-span">	</span>(type: \on).yield</p>
-<p class="p4">},<span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>rate = rate * <span class="s1">BufRateScale</span>.kr(bufnum);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>startPos = startPos * <span class="s1">BufFrames</span>.kr(bufnum);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">BufRd</span>.ar(1, bufnum, <span class="s1">Phasor</span>.ar(0, rate, startPos, <span class="s1">BufFrames</span>.ir(bufnum)), 1, 1);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>.sine, 1, timeScale: sustain, doneAction: 2) * audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">Pan2</span>.ar(audio, pan, amp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">OffsetOut</span>.ar(out, audio);</p>
+<p class="p5">}).store;</p>
+<p class="p6"><br></p>
+<p class="p5">a = <span class="s1">Pproto</span>({</p>
+<p class="p5"><span class="Apple-tab-span">	</span>~newgroup = (type:<span class="Apple-tab-span">	</span><span class="s2">\group</span>).yield;</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span>~sf1 =<span class="Apple-converted-space">  </span></span><span class="s1">SoundFile</span><span class="s3">(</span>"sounds/a11wlk01-44_1.aiff"<span class="s3">).asEvent.yield;</span></p>
+<p class="p9">//<span class="Apple-tab-span">	</span>(type: \on).yield</p>
+<p class="p5">},<span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(*[</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument:<span class="Apple-tab-span">	</span><span class="s4">"playbuf"</span>,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="s5">Pseg</span>([0,0,0.25,0.5, 0.75, 1],10).linexp(0,1,0.01,2),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>startPos:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pn</span>(<span class="s5">Pseg</span>([0,1], 20), <span class="s5">inf</span>),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rate:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pwhite</span>(1, 1).midiratio,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>group:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pkey(\newgroup),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufnum:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pkey</span>(<span class="s7">\sf1</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>])</p>
-<p class="p4">);</p>
-<p class="p4">a.play;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument:<span class="Apple-tab-span">	</span><span class="s4">"playbuf"</span>,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="s1">Pseg</span>([0,0,0.25,0.5, 0.75, 1],10).linexp(0,1,0.01,2),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>startPos:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pn</span>(<span class="s1">Pseg</span>([0,1], 20), <span class="s1">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rate:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(1, 1).midiratio,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>group:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pkey</span>(<span class="s2">\newgroup</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufnum:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pkey</span>(<span class="s2">\sf1</span>)</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>])</p>
+<p class="p5">);</p>
+<p class="p5">a.play;</p>
 <p class="p9">//a.render("sounds/test.aif", 40)</p>
 <p class="p9">//SoundFile.openRead("sounds/test.aif").play</p>
-<p class="p5"><br></p>
+<p class="p10"><br></p>
 <p class="p3"><b>Example 2, loading a waveform buffer and modifying it in performance</b></p>
-<p class="p5"><br></p>
-<p class="p4"><span class="s5">SynthDef</span>(<span class="s4">"osc"</span>,{ <span class="s5">arg</span> out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">Osc</span>.ar(bufnum, freq);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">EnvGen</span>.ar(<span class="s5">Env</span>.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: 2) * audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">Pan2</span>.ar(audio, pan, amp);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">OffsetOut</span>.ar(out, audio);</p>
-<p class="p4">}).store;</p>
-<p class="p5"><br></p>
-<p class="p4">b = Pproto({</p>
-<p class="p4"><span class="Apple-tab-span">	</span>~bufnum =<span class="Apple-tab-span">	</span> (type: <span class="s7">\sine1</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
-<p class="p4">},</p>
+<p class="p10"><br></p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s4">"osc"</span>,{ <span class="s1">arg</span> out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">Osc</span>.ar(bufnum, freq);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: 2) * audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">Pan2</span>.ar(audio, pan, amp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">OffsetOut</span>.ar(out, audio);</p>
+<p class="p5">}).store;</p>
+<p class="p6"><br></p>
+<p class="p5">b = <span class="s1">Pproto</span>({</p>
+<p class="p5"><span class="Apple-tab-span">	</span>~bufnum =<span class="Apple-tab-span">	</span> (type: <span class="s2">\sine1</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
+<p class="p5">},</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Ppar<span class="s3">([</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(*[</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span><span class="s7">\osc</span>,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pwhite</span>(1, 16) * 100,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pfunc</span> { <span class="s5">Array</span>.fill(3.rand + 1, {3.0.rand}) },</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Prand([2,2,2.5,1],10),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5) ),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pwhite(0.0,1).linexp(0,1,0.1, 3)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(*[</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>type:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\sine1</span>,<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseg</span>(<span class="s5">Pfunc</span>{ | ev | <span class="s5">Array</span>.fill(10, {1.0.rand}) }, 1),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numOvertones:<span class="Apple-tab-span">	</span>Pseg(Pwhite(0, 9), 10).asInteger,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pfunc{ | ev | ev[\amps].copyRange(0, ev[\numOvertones]) },</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufNum:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pkey</span>(<span class="s7">\bufnum</span>)</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
-<p class="p4"><span class="Apple-tab-span">	</span>])</p>
-<p class="p4">);</p>
-<p class="p4">b.play</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbind</span>(*[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span><span class="s2">\osc</span>,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(1, 16) * 100,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span> { <span class="s1">Array</span>.fill(3.rand + 1, {3.0.rand}) },</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Prand</span>([2,2,2.5,1],10),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pn</span>(<span class="s1">Pstep</span>([-10, -20, -20, -15, -20, -20, -20], 0.5) ),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(0.0,1).linexp(0,1,0.1, 3)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbind</span>(*[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>type:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">\sine1</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseg</span>(<span class="s1">Pfunc</span>{ <span class="s1">| ev |</span> <span class="s1">Array</span>.fill(10, {1.0.rand}) }, 1),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numOvertones:<span class="Apple-tab-span">	</span><span class="s1">Pseg</span>(<span class="s1">Pwhite</span>(0, 9), 10).asInteger,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span>{ <span class="s1">| ev |</span> ev[<span class="s2">\amps</span>].copyRange(0, ev[<span class="s2">\numOvertones</span>]) },</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufNum:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pkey</span>(<span class="s2">\bufnum</span>)</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>])</p>
+<p class="p5">);</p>
+<p class="p5">b.play</p>
 <p class="p9">//b.render("sounds/test.aif", 40)</p>
 <p class="p9">//SoundFile.openRead("sounds/test.aif").play</p>
-<p class="p5"><br></p>
+<p class="p10"><br></p>
 <p class="p3"><b>Example 3, loading a waveshaper buffer and modifying it in performance</b></p>
-<p class="p2"><br></p>
-<p class="p4"><span class="s5">SynthDef</span>(<span class="s4">"shaper"</span>,{ <span class="s5">arg</span> out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">SinOsc</span>.ar(freq);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">EnvGen</span>.ar(<span class="s5">Env</span>.linen(0.4, 0.50,0.9), 1, timeScale: sustain, doneAction: 2) * audio;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">Shaper</span>.ar(bufnum, audio);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s5">Pan2</span>.ar(audio, pan, amp);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">OffsetOut</span>.ar(out, LeakDC.ar(audio));</p>
-<p class="p4">}).store;</p>
-<p class="p5"><br></p>
-<p class="p7">c = Pproto<span class="s3">({</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>~bufnum = (type: <span class="s7">\cheby</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
-<p class="p4">},</p>
+<p class="p11"><br></p>
+<p class="p5"><span class="s1">SynthDef</span>(<span class="s4">"shaper"</span>,{ <span class="s1">arg</span> out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">SinOsc</span>.ar(freq);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>.linen(0.4, 0.50,0.9), 1, timeScale: sustain, doneAction: 2) * audio;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">Shaper</span>.ar(bufnum, audio);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>audio = <span class="s1">Pan2</span>.ar(audio, pan, amp);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">OffsetOut</span>.ar(out, <span class="s1">LeakDC</span>.ar(audio));</p>
+<p class="p5">}).store;</p>
+<p class="p6"><br></p>
+<p class="p5">c = <span class="s1">Pproto</span>({</p>
+<p class="p5"><span class="Apple-tab-span">	</span>~bufnum = (type: <span class="s2">\cheby</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
+<p class="p5">},</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Ppar<span class="s3">([</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(*[</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span><span class="s7">\shaper</span>,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pwhite</span>(1, 16) * 100,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pfunc</span> { <span class="s5">Array</span>.fill(3.rand + 1, {3.0.rand}) },</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Prand([2,2,2.5,1],inf),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pn(Pstep([-10, -20, -20, -15, -20, -20, -20], 0.5) ),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Pwhite(0.0,1).linexp(0,1,1.1, 5)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(*[</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>type:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\cheby</span>,<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseg</span>(<span class="s5">Pfunc</span>{ | ev | <span class="s5">Array</span>.fill(10, {1.0.rand}) }, 4),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
-<p class="p4"><span class="Apple-tab-span">	</span>])</p>
-<p class="p4">);</p>
-<p class="p4">c.play</p>
-<p class="p10">//c.render("sounds/test.aif", 40)</p>
-<p class="p10">//SoundFile("sounds/test.aif").play</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbind</span>(*[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="Apple-tab-span">	</span><span class="s2">\shaper</span>,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(1, 16) * 100,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pfunc</span> { <span class="s1">Array</span>.fill(3.rand + 1, {3.0.rand}) },</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Prand</span>([2,2,2.5,1],<span class="s1">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>db:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pn</span>(<span class="s1">Pstep</span>([-10, -20, -20, -15, -20, -20, -20], 0.5) ),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>legato:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pwhite</span>(0.0,1).linexp(0,1,1.1, 5)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pbind</span>(*[</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>type:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">\cheby</span>,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>amps:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseg</span>(<span class="s1">Pfunc</span>{ <span class="s1">| ev |</span> <span class="s1">Array</span>.fill(10, {1.0.rand}) }, 4),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.05</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>])</p>
+<p class="p5">);</p>
+<p class="p5">c.play</p>
+<p class="p9">//c.render("sounds/test.aif", 40)</p>
+<p class="p9">//SoundFile("sounds/test.aif").play</p>
 <p class="p9">//</p>
-<p class="p5"><br></p>
+<p class="p10"><br></p>
 </body>
 </html>
