@@ -621,4 +621,9 @@ Buffer {
 
 	asUGenInput { ^this.bufnum }
 	asControlInput { ^this.bufnum }
+
+	asBufWithValues {
+		^this
+	}
+
 }
