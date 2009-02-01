@@ -175,8 +175,8 @@ Array[slot] : ArrayedCollection {
 		^result
 	}
 
-	shift { arg n;
-		var fill = Array.fill(n.abs, 0.0);
+	shift { arg n, filler = 0.0;
+		var fill = Array.fill(n.abs, filler);
 		var remain = this.drop(n.neg);
 		^if (n<0) { remain ++ fill } { fill ++ remain }
 	}
@@ -207,7 +207,7 @@ Array[slot] : ArrayedCollection {
 			Error("source: Not an Array of OutputProxy(s)\n").throw;
 		});
 	}
-	asUGenInput { ^this.collect(_.asUGenInput) }
+	asUGenInput { arg for; ^this.collect(_.asUGenInput(for)) }
 	asControlInput { ^this.collect(_.asControlInput) }
 
 	isValidUGenInput { ^true }
