@@ -110,22 +110,34 @@ void PartConv_Ctor( PartConv* unit ) {
 	memset(unit->m_inputbuf, 0, unit->m_fftsize * sizeof(float));
 	unit->m_pos=0; 		
 	
-	
 	//get passed in buffer		
 	unit->m_fd_accumulate=NULL;
 	
 	uint32 bufnum = (uint32)ZIN0(2);
 	SndBuf *buf;
+	
 	if (bufnum >=  unit->mWorld->mNumSndBufs) {
-		printf("PartConv Error: Invalid Spectral data bufnum %d \n", bufnum); 
+	
+		int localBufNum = bufnum - unit->mWorld->mNumSndBufs; 
+		Graph *parent = unit->mParent; 
+		if(localBufNum <= parent->localMaxBufNum) { 
+			buf = parent->mLocalSndBufs + localBufNum;
+		
+		} else { 
+		
+			printf("PartConv Error: Invalid Spectral data bufnum %d \n", bufnum); 
 		SETCALC(*ClearUnitOutputs);
 		unit->mDone = true; 
-		return;  
+		return; 
+			
+		}
 	}
+	
+	buf = unit->mWorld->mSndBufs + bufnum; 
 	
 	unit->m_specbufnumcheck = bufnum;
 	
-	buf = unit->mWorld->mSndBufs + bufnum; 
+	//buf = unit->mWorld->mSndBufs + bufnum; 
 	
 	
 	if (!buf->data) { 
