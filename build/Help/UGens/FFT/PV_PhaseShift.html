@@ -5,25 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0026b4}
-span.s4 {color: #0000bf}
-span.s5 {color: #bf0000}
-span.s6 {color: #001bb9}
-span.s7 {color: #2c7014}
+span.s3 {color: #0000bf}
+span.s4 {color: #bf0000}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -39,9 +37,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">// internal server for scoping</p>
 <p class="p7"><span class="s3">Server</span>.default = s = <span class="s3">Server</span>.internal; s.boot;</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
@@ -51,61 +49,86 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>0.2 * [in, <span class="s3">IFFT</span>(chain)]; <span class="Apple-converted-space"> </span></p>
 <p class="p7">}.scope;</p>
 <p class="p7">)</p>
-<p class="p5"><br></p>
+<p class="p8"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">Impulse</span>.ar(30);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">Impulse</span>.ar(130);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), in);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_PhaseShift</span>(chain, <span class="s3">LFNoise2</span>.kr(1, pi, pi));<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>0.2 * [in, <span class="s3">IFFT</span>(chain)]; <span class="Apple-converted-space"> </span></p>
+<p class="p7">}.scope(zoom: 9);</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p7">b = <span class="s3">Buffer</span>.alloc(s, 2048);</p>
+<p class="p7">c = <span class="s3">Buffer</span>.alloc(s, 2048);</p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chainA, chainB;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(500);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(b, in);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chainA, c);</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span><span class="s3">PV_PhaseShift</span><span class="s1">(chainB, pi); </span>// shifted by 180 degrees</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.2 * <span class="s3">IFFT</span>([chainA, chainB]);<span class="Apple-converted-space">  </span><span class="s4">// normal, shifted</span></p>
 <p class="p7">}.scope;</p>
 <p class="p7">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p8">// does not work. why?</p>
-<p class="p9">(</p>
-<p class="p9">{</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chainA, chainB;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(500);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>chainA = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(2048), in);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>chainB = <span class="s4">PV_Copy</span>(chainA, <span class="s4">LocalBuf</span>(2048));</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span><span class="s4">PV_PhaseShift</span><span class="s1">(chainB, pi); </span>// shifted by 180 degrees</p>
-<p class="p9"><span class="Apple-tab-span">	</span>0.2 * <span class="s4">IFFT</span>([chainA, chainB]);<span class="Apple-converted-space">  </span><span class="s5">// normal, shifted</span></p>
-<p class="p9">}.play;</p>
-<p class="p9">)</p>
-<p class="p10"><br></p>
+<p class="p8"><br></p>
 <p class="p7">(</p>
-<p class="p7">{ <span class="s6">var</span> in, chain, chainB, pan;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s6">PlayBuf</span>.ar(1, d, <span class="s6">BufRateScale</span>.kr(d), loop: 1);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s6">FFT</span>(<span class="s6">LocalBuf</span>(2048), in);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s6">PV_Copy</span>(chain, <span class="s6">LocalBuf</span>(2048));</p>
-<p class="p7"><span class="Apple-tab-span">	</span>pan = <span class="s6">MouseX</span>.kr(0.001, 1.001, <span class="s7">'exponential'</span>) - 0.001;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s6">PV_BrickWall</span>(chain, pan);<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s6">PV_BrickWall</span>(chainB, -1 + pan); <span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>0.5 * <span class="s6">IFFT</span>([chain, chainB]);</p>
-<p class="p7">}.play;</p>
+<p class="p7">{ <span class="s3">var</span> in, chain, chainB, pan;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">PlayBuf</span>.ar(1, d, <span class="s3">BufRateScale</span>.kr(d), loop: 1) * 2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b, in);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chain, c);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>pan = <span class="s3">MouseX</span>.kr(0.001, 1.001, <span class="s5">'exponential'</span>) - 0.001;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_BrickWall</span>(chain, pan);<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_BrickWall</span>(chainB, -1 + pan); <span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.5 * <span class="s3">IFFT</span>([chain, chainB]);</p>
+<p class="p7">}.scope;</p>
 <p class="p7">)</p>
-<p class="p10"><br></p>
-<p class="p8">// this works.</p>
-<p class="p10"><br></p>
-<p class="p9">b = <span class="s4">Buffer</span>.alloc(s, 2048);</p>
-<p class="p9">c = <span class="s4">Buffer</span>.alloc(s, 2048);</p>
-<p class="p10"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p6">// LocalBuf does not work for PV_PhaseShift and PV_Copy yet. Reason still unclear.</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
 <p class="p9">(</p>
 <p class="p9">{</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chainA, chainB;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>in = <span class="s4">SinOsc</span>.ar(500);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>chainA = <span class="s4">FFT</span>(b, in);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>chainB = <span class="s4">PV_Copy</span>(chainA, c);</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span><span class="s4">PV_PhaseShift</span><span class="s1">(chainB, pi); </span>// shifted by 180 degrees</p>
-<p class="p9"><span class="Apple-tab-span">	</span>0.2 * <span class="s4">IFFT</span>([chainA, chainB]);<span class="Apple-converted-space">  </span><span class="s5">// normal, shifted</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chainA, chainB;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(500);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), in);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chainA, <span class="s3">LocalBuf</span>(2048));</p>
+<p class="p9"><span class="Apple-tab-span">	</span>0.2 * <span class="s3">IFFT</span>([chainA, chainB]);<span class="Apple-converted-space">  </span><span class="s4">// normal, shifted</span></p>
 <p class="p9">}.scope;</p>
 <p class="p9">)</p>
-<p class="p5"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chainA, chainB;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">SinOsc</span>.ar(500);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainA = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), in);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chainB = <span class="s3">PV_Copy</span>(chainA, <span class="s3">LocalBuf</span>(2048));</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span><span class="s3">PV_PhaseShift</span><span class="s1">(chainB, pi); </span>// shifted by 180 degrees</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.2 * <span class="s3">IFFT</span>([chainA, chainB]);<span class="Apple-converted-space">  </span><span class="s4">// normal, shifted</span></p>
+<p class="p7">}.scope;</p>
+<p class="p7">)</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s1">d = </span><span class="s3">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
+<p class="p8"><br></p>
+<p class="p7">(</p>
+<p class="p7">{ <span class="s3">var</span> in, chain, chainB, pan;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s3">PlayBuf</span>.ar(1, d, <span class="s3">BufRateScale</span>.kr(d), loop: 1) * 2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(<span class="s3">LocalBuf</span>(2048), in);</p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>//chainB = PV_Copy(chain, LocalBuf(2048));</p>
+<p class="p7"><span class="Apple-tab-span">	</span>pan = <span class="s3">MouseX</span>.kr(0.001, 1.001, <span class="s5">'exponential'</span>) - 0.001;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_BrickWall</span>(chain, pan);<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>//chainB = PV_BrickWall(chainB, -1 + pan); <span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>//0.5 * IFFT([chain, chainB]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>0.5 * <span class="s3">IFFT</span>(chain)</p>
+<p class="p7">}.scope;</p>
+<p class="p7">)</p>
 </body>
 </html>
