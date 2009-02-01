@@ -57,7 +57,7 @@
 		);
 	}
 	
-	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead;
+	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
@@ -70,7 +70,7 @@
 		);
 		synth = Synth.basicNew(def.name, server);
 		bytes = def.asBytes;
-		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus], addAction);
+		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
 		if(bytes.size > (65535 div: 4)) { // preliminary fix until full size works
 			if(server.isLocal) {
 				def.load(server, synthMsg)
