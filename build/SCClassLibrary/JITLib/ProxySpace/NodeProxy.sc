@@ -139,7 +139,9 @@ BusPlug : AbstractFunction {
 			};
 			^this.busArg;
 	}
-
+	asUGenInput {
+		^this.value;
+	}
 		
 	
 	/////  math support  /////////
