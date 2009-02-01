@@ -20,11 +20,12 @@ GraphBuilder {
 		})
 	}
 
-	*makeFadeEnv { arg fadeTime = (0);
-		var dt, gate, startVal;
-		dt = NamedControl.kr(\fadeTime, fadeTime);
-		gate = NamedControl.kr(\gate, 1.0);
-		^EnvGen.kr(Env.new([1, 1, 0], #[1, 1], \lin, 1), gate, 1.0, 0.0, dt, 2)
+	*makeFadeEnv { arg fadeTime = (0.02);
+		var dt = NamedControl.kr(\fadeTime, fadeTime);
+		var gate = NamedControl.kr(\gate, 1.0);
+		var startVal = (dt <= 0);
+
+		^EnvGen.kr(Env.new([startVal, 1, 0], #[1, 1], \lin, 1), gate, 1.0, 0.0, dt, 2)
 	
 	}
 
