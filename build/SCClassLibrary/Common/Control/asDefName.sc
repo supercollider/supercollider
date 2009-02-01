@@ -69,6 +69,14 @@
 			name: SystemSynthDefs.generateTempName
 		);
 		synth = Synth.basicNew(def.name, server);
+			// if notifications are enabled on the server,
+			// use the n_end signal to remove the temp synthdef
+		if(server.notified) {
+			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { |time, resp, msg|
+				server.sendMsg(\d_free, def.name);
+				resp.remove;
+			}).add;
+		};
 		bytes = def.asBytes;
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
 		if(bytes.size > (65535 div: 4)) { // preliminary fix until full size works
