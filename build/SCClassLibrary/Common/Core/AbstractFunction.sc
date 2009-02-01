@@ -188,7 +188,7 @@ AbstractFunction {
 	}
 
 	// embed in ugen graph
-	asUGenInput { ^this.value }
+	asUGenInput { arg for; ^this.value(for) }
 	// convert to control input
 	asControlInput { ^this.value }
 	isValidUGenInput { ^true }
