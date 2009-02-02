@@ -5,26 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
 span.s4 {color: #606060}
-span.s5 {color: #001bb9}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>resize</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>resize behavior for SCView and its subclasses</b></p>
+<p class="p1"><span class="s1"><b>resize</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>resize behavior for </b><span class="s2"><b>SCView</b></span><b> and its subclasses</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>resize</b> takes nine different arguments defining the behavior when window is resized.</p>
@@ -47,58 +44,56 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>9 - fixed to right, fixed to bottom</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Examples</b></p>
+<p class="p5"><b>Examples</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">// resize behaviours</p>
+<p class="p6">// resize behaviours</p>
 <p class="p4">(</p>
-<p class="p6"><span class="s2">var</span> a;</p>
-<p class="p7"><span class="s2">var</span><span class="s3"> relative=</span><span class="s2">true</span><span class="s3">; </span>// relative or absolute origin</p>
-<p class="p6">a = { <span class="s2">|i|</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, b, x;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>i = i + 1;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>(<span class="s4">"resize:"</span>+i, <span class="s2">Rect</span>(10 + (i * 110), 300, 100, 80));</p>
-<p class="p6"><span class="Apple-tab-span">	</span>w.view.relativeOrigin = relative;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>b = w.view.bounds;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s2">SCCompositeView</span>(w, w.view.bounds)</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>x.decorator = <span class="s2">FlowLayout</span>(x.bounds).gap_(0.0 @ 0.0);</p>
-<p class="p8"><br></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> t;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>t = <span class="s2">SCStaticText</span>(x, <span class="s2">Rect</span>(0, 0, 40, 40))</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i)</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(i)</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_(<span class="s2">Font</span>(<span class="s4">"Helvetica"</span>, 26));</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}.dup;</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>w.onClose = {a.do(<span class="s2">_</span>.close) };</p>
-<p class="p8"><br></p>
-<p class="p8"><br></p>
-<p class="p6">} ! 9;</p>
+<p class="p4"><span class="s3">var</span> a;</p>
+<p class="p4">a = { <span class="s3">|i|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> w, b, x;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = i + 1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>w = <span class="s3">Window</span>(<span class="s4">"resize:"</span>+i, <span class="s3">Rect</span>(10 + (i * 110), 300, 100, 80));</p>
+<p class="p4"><span class="Apple-tab-span">	</span>b = w.view.bounds;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s3">CompositeView</span>(w, w.view.bounds)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s3">Color</span>.rand)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x.decorator = <span class="s3">FlowLayout</span>(x.bounds).gap_(0.0 @ 0.0);</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>{</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">var</span> t;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>t = <span class="s3">StaticText</span>(x, <span class="s3">Rect</span>(0, 0, 40, 40))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s3">Color</span>.rand)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(i)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_(<span class="s3">Font</span>(<span class="s4">"Helvetica"</span>, 26));</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}.dup;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>w.onClose = { a.do({ arg win; if( win.isClosed.not, { win.close })})};</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">} ! 9;</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5">// the popupmenu contains the various modes</p>
+<p class="p6">// the popupmenu contains the various modes</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
-<p class="p4">w = <span class="s5">GUI</span>.window.new(<span class="s4">"soundfile test"</span>, <span class="s5">Rect</span>(200, 200, 720, 250));</p>
+<p class="p4">w = <span class="s3">Window</span>(<span class="s4">"soundfile test"</span>, <span class="s3">Rect</span>(200, 200, 720, 250));</p>
 <p class="p2"><br></p>
-<p class="p4">p = <span class="s5">GUI</span>.popUpMenu.new(w, <span class="s5">Rect</span>(10,10,80,24))</p>
-<p class="p4"><span class="Apple-tab-span">	</span>.items_( <span class="s5">Array</span>.fill(9, {<span class="s5">arg</span> i; (i+1).asString;}) )</p>
-<p class="p4"><span class="Apple-tab-span">	</span>.action_({ <span class="s5">arg</span> sbs;</p>
+<p class="p4">p = <span class="s3">PopUpMenu</span>(w, <span class="s3">Rect</span>(10,10,80,24))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.items_( <span class="s3">Array</span>.fill(9, {<span class="s3">arg</span> i; (i+1).asString;}) )</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.action_({ <span class="s3">arg</span> sbs;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resize_(sbs.value+1);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>});</p>
 <p class="p2"><br></p>
-<p class="p4">f = <span class="s5">SoundFile</span>.new;</p>
+<p class="p4">f = <span class="s3">SoundFile</span>.new;</p>
 <p class="p4">f.openRead(<span class="s4">"sounds/a11wlk01.wav"</span>.absolutePath);</p>
 <p class="p2"><br></p>
-<p class="p4">a = <span class="s5">GUI</span>.soundFileView.new(w, <span class="s5">Rect</span>(10,40, 700, 180))</p>
+<p class="p4">a = <span class="s3">SoundFileView</span>(w, <span class="s3">Rect</span>(10,40, 700, 180))</p>
 <p class="p4"><span class="Apple-tab-span">	</span>.soundfile_(f)</p>
-<p class="p4"><span class="Apple-tab-span">	</span>.read(0, f.numFrames)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.readWithTask(0, f.numFrames, showProgress: <span class="s3">false</span> )</p>
 <p class="p4"><span class="Apple-tab-span">	</span>.resize_(1);</p>
 <p class="p2"><br></p>
 <p class="p4">w.front;</p>
