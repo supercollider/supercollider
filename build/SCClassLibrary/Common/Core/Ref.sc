@@ -38,7 +38,7 @@ Ref : AbstractFunction
 	at { | key | ^value.at(key) }
 	put  { | key, val | value.put(key, val) }
 	seq { | pat | value = pat.embedInStream(this) } 
-	asControlInput { ^value }
+	asControlInput { ^value.asControlInput }
 
 	// Some UGens take Buffer data which 
 	// the user might want to specify simply as `[0.9, 0.1, 0.3]
