@@ -277,7 +277,7 @@ void Convolution_next(Convolution *unit, int numSamples)
 
 
 //include local buffer test in one place
-SndBuf * ConvGetBuffer(Unit * unit, int bufnum) {
+SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum) {
 	
 	SndBuf *buf;
 	World *world = unit->mWorld; 
@@ -459,7 +459,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0; 
 		//SndBuf *buf = world->mSndBufs + bufnum;
 		
-		SndBuf *buf = ConvGetBuffer(unit,(int)ZIN0(1));
+		SndBuf *buf = ConvGetBuffer(unit,(uint32)ZIN0(1));
 		
 		memcpy(unit->m_fftbuf2, buf->data, insize);
 		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
