@@ -84,9 +84,10 @@ Help {
 	*findKeysForValue{|val|
 		var func, node, keyPath;
 		keyPath =[];
-		if(val.contains("://"), {
-			// only file scheme urls in tree
-			if(val.beginsWith("file://"), {val = val.copyToEnd(7)}, {^keyPath});
+		if( val.beginsWith( "SC://" ), {Ê^keyPath });
+		// only file scheme urls in tree
+		if( val.beginsWith( "file:" ), {
+			val = val.copyToEnd( if( val.copyRange( 5, 6 ) == "//", 7, 5 ));
 		});
 		val = val.replace("%20", " ");
 		func = {|dict, depth = 0|
