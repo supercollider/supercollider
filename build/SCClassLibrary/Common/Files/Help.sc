@@ -84,7 +84,7 @@ Help {
 	*findKeysForValue{|val|
 		var func, node, keyPath;
 		keyPath =[];
-		if( val.beginsWith( "SC://" ), {Ê^keyPath });
+		if( val.beginsWith( "SC://" ), { ^keyPath });
 		// only file scheme urls in tree
 		if( val.beginsWith( "file:" ), {
 			val = val.copyToEnd( if( val.copyRange( 5, 6 ) == "//", 7, 5 ));
