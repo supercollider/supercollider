@@ -391,7 +391,9 @@ String[char] : RawArray {
 		^PathName(this).asRelativePath(relativeTo)
 	}
 	asAbsolutePath {
-		^PathName(this).asAbsolutePath
+			// changed because there is no need to create a separate object
+			// when String already knows how to make an absolute path
+		^this.absolutePath;  // was ^PathName(this).asAbsolutePath
 	}
 	
 	// runs a unix command and returns the result code.
