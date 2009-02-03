@@ -1,14 +1,13 @@
 Scale {
 
-	var <degrees, <descDegrees, <pitchesPerOctave, <tuning, <>name, lastIndex = 0;
+	var <degrees, <pitchesPerOctave, <tuning, <>name;
 	
-	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
-		^super.new.init(degrees ? \ionian, pitchesPerOctave, descDegrees, tuning, name);
+	*new { | degrees, pitchesPerOctave, tuning, name = "Unknown Scale" |
+		^super.new.init(degrees ? \ionian, pitchesPerOctave, tuning, name);
 	}
 	
-	init { | inDegrees, inPitchesPerOctave, inDescDegrees, inTuning, inName |
+	init { | inDegrees, inPitchesPerOctave, inTuning, inName |
 		degrees = inDegrees.asArray.asInteger;
-		descDegrees = inDescDegrees !? inDescDegrees.asArray.asInteger;
 		pitchesPerOctave = inPitchesPerOctave ? this.guessPPO(degrees);
 		name = inName;
 		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
@@ -53,15 +52,11 @@ Scale {
 		^degrees.size
 	}
 	
-	semitones { |desc = false|
-		desc.if({
-			^descDegrees !? descDegrees.collect(tuning.wrapAt(_));
-		},{
-			^degrees.collect(tuning.wrapAt(_));
-		})
+	semitones {
+		^degrees.collect(tuning.wrapAt(_));
 	}
 	
-	cents { |desc = false|
+	cents {
 		^this.semitones * 100
 	}
 	
@@ -69,17 +64,12 @@ Scale {
 		^this.semitones.midiratio
 	}
 	
-	descending {
-		|index|
-		^descDegrees.notNil && (index < lastIndex)
-	}
-	
 	at { |index|
-		^this.semitones(this.descending(index)).at(index) <! ( lastIndex = index )
+		^this.semitones.at(index)
 	}
 	
 	wrapAt { |index|
-		^this.semitones(this.descending(index)).wrapAt(index) <! ( lastIndex = index )
+		^this.semitones.wrapAt(index)
 	}
 	
 	degreeToRatio { |degree, octave = 0|
@@ -121,13 +111,12 @@ Scale {
 	}
 	
 	postln {
-		name.postln;
+		(name + "Scale").postln;
 		^this
 	}
 	
 	storeOn { |stream|
-		stream << this.class.name << "( " << degrees << ", " << pitchesPerOctave << ", "
-			<< descDegrees << ", ";
+		stream << this.class.name << "( " << degrees << ", " << pitchesPerOctave << ", ";
 		tuning.storeOn(stream);
 		stream << ", ";
 		name.storeOn(stream);
@@ -135,16 +124,17 @@ Scale {
 	}
 
 	printOn { |stream|
-		name.printOn(stream)
+		(name + "Scale").printOn(stream)
 	}
 	
-	reset {
-		lastIndex = 0
-	}
-	
-	asStream {
-		^this.copy.reset
-	}
+//	asStream {
+//		^this.copy.resetIndex
+//	}
+//	
+//	embedInStream { |inval|
+//		^this.copy.yield
+//	}
+
 }
 
 Tuning {
@@ -278,29 +268,29 @@ ScaleInfo {
 			\augmented2 -> Scale.new(#[0,1,4,5,8,9], 12, name: "Augmented 2"),
 			
 			// Partch's Otonalities and Utonalities
-			\partch_o1 -> Scale.new(#[0,8,14,20,25,34], 43, nil, 
+			\partch_o1 -> Scale.new(#[0,8,14,20,25,34], 43, 
 				Tuning.partch, "Partch Otonality 1"),
-			\partch_o2 -> Scale.new(#[0,7,13,18,27,35], 43, nil, 
+			\partch_o2 -> Scale.new(#[0,7,13,18,27,35], 43, 
 				Tuning.partch, "Partch Otonality 2"),
-			\partch_o3 -> Scale.new(#[0,6,12,21,29,36], 43, nil, 
+			\partch_o3 -> Scale.new(#[0,6,12,21,29,36], 43, 
 				Tuning.partch, "Partch Otonality 3"),
-			\partch_o4 -> Scale.new(#[0,5,15,23,30,37], 43, nil, 
+			\partch_o4 -> Scale.new(#[0,5,15,23,30,37], 43, 
 				Tuning.partch, "Partch Otonality 4"),
-			\partch_o5 -> Scale.new(#[0,10,18,25,31,38], 43, nil, 
+			\partch_o5 -> Scale.new(#[0,10,18,25,31,38], 43, 
 				Tuning.partch, "Partch Otonality 5"),
-			\partch_o6 -> Scale.new(#[0,9,16,22,28,33], 43, nil, 
+			\partch_o6 -> Scale.new(#[0,9,16,22,28,33], 43, 
 				Tuning.partch, "Partch Otonality 6"),
-			\partch_u1 -> Scale.new(#[0,9,18,23,29,35], 43, nil, 
+			\partch_u1 -> Scale.new(#[0,9,18,23,29,35], 43, 
 				Tuning.partch, "Partch Utonality 1"),
-			\partch_u2 -> Scale.new(#[0,8,16,25,30,36], 43, nil, 
+			\partch_u2 -> Scale.new(#[0,8,16,25,30,36], 43, 
 				Tuning.partch, "Partch Utonality 2"),
-			\partch_u3 -> Scale.new(#[0,7,14,22,31,37], 43, nil, 
+			\partch_u3 -> Scale.new(#[0,7,14,22,31,37], 43, 
 				Tuning.partch, "Partch Utonality 3"),
-			\partch_u4 -> Scale.new(#[0,6,13,20,28,38], 43, nil, 
+			\partch_u4 -> Scale.new(#[0,6,13,20,28,38], 43, 
 				Tuning.partch, "Partch Utonality 4"),
-			\partch_u5 -> Scale.new(#[0,5,12,18,25,33], 43, nil, 
+			\partch_u5 -> Scale.new(#[0,5,12,18,25,33], 43, 
 				Tuning.partch, "Partch Utonality 5"),
-			\partch_u6 -> Scale.new(#[0,10,15,21,27,34], 43, nil, 
+			\partch_u6 -> Scale.new(#[0,10,15,21,27,34], 43, 
 				Tuning.partch, "Partch Utonality 6"),
 			
 			// hexatonic modes with no tritone
@@ -325,8 +315,9 @@ ScaleInfo {
 			\harmonicMinor -> Scale.new(#[0,2,3,5,7,8,11], 12, name: "Harmonic Minor"),
 			\harmonicMajor -> Scale.new(#[0,2,4,5,7,8,11], 12, name: "Harmonic Major"),
 			
-			\melodicMinor -> Scale.new(#[0,2,3,5,7,9,11], 12, #[0,2,3,5,7,8,10], 
-				name: "Melodic Minor"),
+			\melodicMinor -> Scale.new(#[0,2,3,5,7,9,11], 12, name: "Melodic Minor"),
+			\melodicMinorDesc -> Scale.new(#[0,2,3,5,7,8,10], 12, 
+				name: "Melodic Minor Descending"),
 			\melodicMajor -> Scale.new(#[0,2,4,5,7,8,10], 12, name: "Melodic Major"),
 			
 			\bartok -> Scale.new(#[0,2,4,5,7,8,10], 12, name: "Bartok"),
@@ -368,7 +359,8 @@ ScaleInfo {
 			\shawqAfza -> Scale.new(#[0,4,8,10,14,16,22], 24, name: "Shawq Afza"),
 			
 			// maqam sikah
-			\sikah -> Scale.new(#[0,3,7,11,14,17,21], 24, #[0,3,7,11,13,17,21], name: "Sikah"),
+			\sikah -> Scale.new(#[0,3,7,11,14,17,21], 24, name: "Sikah"),
+			\sikahDesc -> Scale.new(#[0,3,7,11,13,17,21], 24, name: "Sikah Descending"),
 			\huzam -> Scale.new(#[0,3,7,9,15,17,21], 24, name: "Huzam"),
 			\iraq -> Scale.new(#[0,3,7,10,13,17,21], 24, name: "Iraq"),
 			\bastanikar -> Scale.new(#[0,3,7,10,13,15,21], 24, name: "Bastanikar"),
@@ -380,21 +372,24 @@ ScaleInfo {
 			\husseini -> Scale.new(#[0,3,6,10,14,17,21], 24, name: "Husseini"),
 			
 			// maqam nahawand
-			\nahawand -> Scale.new(#[0,4,6,10,14,16,22], 24, #[0,4,6,10,14,16,20], 
-				name: "Nahawand"),
+			\nahawand -> Scale.new(#[0,4,6,10,14,16,22], 24, name: "Nahawand"),
+			\nahawandDesc -> Scale.new(#[0,4,6,10,14,16,20], 24, name: "Nahawand Descending"),
 			\farahfaza -> Scale.new(#[0,4,6,10,14,16,20], 24, name: "Farahfaza"),
 			\murassah -> Scale.new(#[0,4,6,10,12,18,20], 24, name: "Murassah"),
 			\ushaqMashri -> Scale.new(#[0,4,6,10,14,17,21], 24, name: "Ushaq Mashri"),
 			
 			// maqam rast
-			\rast -> Scale.new(#[0,4,7,10,14,18,21], 24, #[0,4,7,10,14,18,20], name: "Rast"),
+			\rast -> Scale.new(#[0,4,7,10,14,18,21], 24, name: "Rast"),
+			\rastDesc -> Scale.new(#[0,4,7,10,14,18,20], 24, name: "Rast Descending"),
 			\suznak -> Scale.new(#[0,4,7,10,14,16,22], 24, name: "Suznak"),
 			\nairuz -> Scale.new(#[0,4,7,10,14,17,20], 24, name: "Nairuz"),
-			\yakah -> Scale.new(#[0,4,7,10,14,18,21], 24, #[0,4,7,10,14,18,20], name: "Yakah"),
+			\yakah -> Scale.new(#[0,4,7,10,14,18,21], 24, name: "Yakah"),
+			\yakahDesc -> Scale.new(#[0,4,7,10,14,18,20], 24, name: "Yakah Descending"),
 			\mahur -> Scale.new(#[0,4,7,10,14,18,22], 24, name: "Mahur"),
 			
 			// maqam hijaz
-			\hijaz -> Scale.new(#[0,2,8,10,14,17,20], 24, #[0,2,8,10,14,16,20], name: "Hijaz"),
+			\hijaz -> Scale.new(#[0,2,8,10,14,17,20], 24, name: "Hijaz"),
+			\hijazDesc -> Scale.new(#[0,2,8,10,14,16,20], 24, name: "Hijaz Descending"),
 			\zanjaran -> Scale.new(#[0,2,8,10,14,18,20], 24, name: "Zanjaran"),
 			
 			// maqam hijazKar
@@ -422,10 +417,6 @@ ScaleInfo {
 	*at { |key|
 		^scales.includesKey(key).if({ scales[key].deepCopy }, { nil })
 	}
-	
-//	*doesNotUnderstand { |selector, args|
-//		^this.at(selector) ? super.doesNotUnderstand(selector, args)
-//	}
 		
 	*choose {
 		|selectFunc|
