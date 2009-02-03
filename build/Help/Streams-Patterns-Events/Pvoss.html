@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.48">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000ff}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
+span.s5 {color: #007300}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>Pvoss</b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1/f noise generator</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: Pattern</p>
+<p class="p2"><br></p>
+<p class="p1">This class implements the classic Gardner-Voss algorithm for 1/f noise. This type of signal is noteworthy for algorithmic composition because of its self-similar (fractal) qualities.</p>
+<p class="p2"><br></p>
+<p class="p1">See also:<span class="Apple-tab-span">	</span><a href="Pmcvoss.html"><span class="s2">Pmcvoss</span></a></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Pvoss(lo, hi, generators, length)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>lo, hi</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>lower and upper boundary of values (default: 0.0 and 1.0)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>generators</b><span class="Apple-tab-span">	</span>number of random number generators to use (default: 8)</p>
+<p class="p3"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>length</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>number of values produced (default: inf)</p>
+<p class="p4"><br></p>
+<p class="p3">The higher the number of generators, the smoother the signal.</p>
+<p class="p4"><br></p>
+<p class="p5">// plot</p>
+<p class="p6">(a = <span class="s4">Pvoss</span>.new.asStream.nextN(350)).plot(minval: a.minItem.floor, maxval: a.maxItem.ceil);</p>
+<p class="p7"><br></p>
+<p class="p5">// for pitch (non-tempered) -- default number of generators</p>
+<p class="p6">p = <span class="s4">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s4">Pvoss</span>(48, 72),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.125</p>
+<p class="p6">).play;</p>
+<p class="p7"><br></p>
+<p class="p6">p.stop;</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p5">// for pitch (non-tempered) -- fewer generators = 4</p>
+<p class="p5">// leaps between notes are larger on average</p>
+<p class="p6">p = <span class="s4">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s4">Pvoss</span>(48, 72, 4),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.125</p>
+<p class="p6">).play;</p>
+<p class="p7"><br></p>
+<p class="p6">p.stop;</p>
+</body>
+</html>
