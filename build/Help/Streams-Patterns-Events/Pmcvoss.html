@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="824.48">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0014f4}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {text-decoration: underline}
+span.s4 {color: #0016ff}
+span.s5 {color: #0000bf}
+span.s6 {color: #007300}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>Pmcvoss</b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1/f noise generator</b></p>
+<p class="p2"><br></p>
+<p class="p1">superclass: Pvoss</p>
+<p class="p2"><br></p>
+<p class="p1">This class implements James McCartney's variant on the Gardner-Voss algorithm for 1/f noise. In the original Gardner-Voss algorithm, the number of calculations varies from value to value -- it isn't time-constant to evaluate. This version rearranges the calculations so that only one random number generator has to be updated per output value, for improved efficiency.</p>
+<p class="p2"><br></p>
+<p class="p1">More on the difference between these algorithms may be found at:</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2"><span class="Apple-tab-span">	</span><a href="http://swiki.hfbk-hamburg.de:8888/MusicTechnology/738"><span class="s3">http://swiki.hfbk-hamburg.de:8888/MusicTechnology/738</span></a></span></p>
+<p class="p2"><br></p>
+<p class="p1">See also: <a href="Pvoss.html"><span class="s4">Pvoss</span></a></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Pmcvoss(lo, hi, generators, length)</b></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>lo, hi</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>lower and upper boundary of values (default: 0.0 and 1.0)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>generators</b><span class="Apple-tab-span">	</span>number of random number generators to use (default: 8)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>length</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>number of values produced (default: inf)</p>
+<p class="p2"><br></p>
+<p class="p1">The higher the number of generators, the smoother the signal.</p>
+<p class="p2"><br></p>
+<p class="p4">// plot</p>
+<p class="p5">(a = <span class="s5">Pmcvoss</span>.new.asStream.nextN(350)).plot(minval: a.minItem.floor, maxval: a.maxItem.ceil);</p>
+<p class="p6"><br></p>
+<p class="p4">// for pitch (non-tempered) -- default number of generators</p>
+<p class="p5">p = <span class="s5">Pbind</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\midinote</span>, <span class="s5">Pmcvoss</span>(48, 72),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, 0.125</p>
+<p class="p5">).play;</p>
+<p class="p6"><br></p>
+<p class="p5">p.stop;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">// for pitch (non-tempered) -- fewer generators = 4</p>
+<p class="p4">// leaps between notes are larger on average</p>
+<p class="p5">p = <span class="s5">Pbind</span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\midinote</span>, <span class="s5">Pmcvoss</span>(48, 72, 4),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, 0.125</p>
+<p class="p5">).play;</p>
+<p class="p6"><br></p>
+<p class="p5">p.stop;</p>
+</body>
+</html>

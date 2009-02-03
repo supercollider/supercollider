@@ -627,3 +627,40 @@ Pif : Pattern {
 		})
 	}
 }
+
+Pvoss : Pattern {
+	var	<>lo, <>hi, <>generators, <>length;
+	*new { |lo = 0, hi = 1, generators = 8, length = inf|
+		^super.new.lo_(lo).hi_(hi).generators_(generators).length_(length)
+	}
+	embedInStream { |inval|
+		var	localGenerators = generators.value;
+		^Pfin(length.value,
+			Pn(PstepNadd(*(Pwhite(0.0, 1.0, 2) ! localGenerators)), inf)
+				/ localGenerators * (hi - lo) + lo
+		).embedInStream(inval);
+	}
+}
+
+Pmcvoss : Pvoss {	
+	embedInStream { |inval|
+		var	counter = 1,
+			localGenerators = generators.value,
+			maxCounter = 1 << (localGenerators-1),
+			gens = { 1.0.rand } ! localGenerators,
+			total = gens.sum,
+			i, new;
+		
+		length.value.do {
+			inval = ((total / localGenerators) * (hi - lo) + lo).yield;
+			
+			i = counter.trailingZeroes;
+			new = 1.0.rand;
+			total = total - gens[i] + new;
+			gens[i] = new;
+			
+			counter = (counter + 1).wrap(1, maxCounter);
+		};
+		^inval
+	}
+}
