@@ -5,24 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0014f4}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0025b2}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #982316}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #416d1f}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0000bf}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #007300}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
+span.s2 {color: #0016ff}
 span.s3 {color: #000000}
-span.s4 {color: #416d1f}
-span.s5 {color: #606060}
-span.s6 {color: #0025b2}
+span.s4 {text-decoration: underline}
+span.s5 {color: #007300}
+span.s6 {color: #606060}
+span.s7 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -39,7 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">You must only rely on equality for the keys (e.g. symbols are ok, strings not).<span class="Apple-converted-space"> </span></p>
 <p class="p1">For identity matching see: <a href="IdentityDictionary.html"><span class="s2">IdentityDictionary</span></a>.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s3">Related: <a href="Environment.html">Environment</a></span></p>
+<p class="p3"><span class="s3">Related: <a href="Environment.html"><span class="s4">Environment</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -57,12 +60,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">If the key value pair already exists in the Dictionary, the key's value will be replaced.</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
-<p class="p8"><span class="s3">d = </span>Dictionary<span class="s3">.new;</span></p>
-<p class="p7">d.add(<span class="s4">'monkey'</span> -&gt; 0).postln;</p>
+<p class="p8"><span class="s3">d = Dictionary.new;</span></p>
+<p class="p7">d.add(<span class="s5">'monkey'</span> -&gt; 0).postln;</p>
 <p class="p9">// Add robot as a key with a value of 1</p>
-<p class="p7">d.add(<span class="s4">'robot'</span> -&gt; 1).postln;</p>
+<p class="p7">d.add(<span class="s5">'robot'</span> -&gt; 1).postln;</p>
 <p class="p9">// Replaces the value for the key monkey with 2</p>
-<p class="p7">d.add(<span class="s4">'monkey'</span> -&gt; 2).postln;</p>
+<p class="p7">d.add(<span class="s5">'monkey'</span> -&gt; 2).postln;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p1"><b>put(key, obj)</b></p>
@@ -71,13 +74,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>key </b>- key to associate with object</p>
 <p class="p1"><b>obj<span class="Apple-converted-space"> </span></b> - an object</p>
 <p class="p2"><br></p>
-<p class="p7">d.put(<span class="s5">"abc"</span>, 10).postln;</p>
+<p class="p7">d.put(<span class="s6">"abc"</span>, 10).postln;</p>
 <p class="p6"><br></p>
 <p class="p1"><b>removeAt(key)</b></p>
 <p class="p6"><br></p>
 <p class="p1">Remove the key and the value associated with it from the Dictionary.</p>
-<p class="p6"><br></p>
-<p class="p7">d.removeAt(<span class="s4">'monkey'</span>).postln;</p>
+<p class="p10"><br></p>
+<p class="p7">d.removeAt(<span class="s5">'monkey'</span>).postln;</p>
 <p class="p6"><br></p>
 <p class="p4"><b>Accessing:</b></p>
 <p class="p6"><br></p>
@@ -86,9 +89,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Access the value associated with the key.</p>
 <p class="p6"><br></p>
 <p class="p9">// Get the value associated with key</p>
-<p class="p7">d.at(<span class="s4">'robot'</span>);</p>
+<p class="p7">d.at(<span class="s5">'robot'</span>);</p>
 <p class="p9">// Key doesn't exist</p>
-<p class="p10"><span class="s3">d.at(</span>'monkey'<span class="s3">);</span></p>
+<p class="p11"><span class="s3">d.at('monkey');</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>matchAt(item)</b></p>
 <p class="p2"><br></p>
@@ -99,18 +102,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">If the key is an object, the item will be matched by identity (if key === item, the value will be returned).<span class="Apple-converted-space"> </span></p>
 <p class="p1">If the key is a collection, the item is matched if it's contained in the collection.<span class="Apple-converted-space"> </span></p>
 <p class="p1">If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function returns true.</p>
-<p class="p2"><br></p>
-<p class="p8"><span class="s3">d = </span>Dictionary<span class="s3">[</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>0 -&gt; <span class="s4">'zero'</span>,</p>
-<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>'abc'<span class="s3"> -&gt; </span>'alpha'<span class="s3">,</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>[1, 2, 3, 5, 8, 13, 21] -&gt; <span class="s4">'fibonacci'</span>,</p>
-<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s6">|x|</span> x.even } -&gt; <span class="s4">'even'</span></p>
+<p class="p12"><br></p>
+<p class="p8"><span class="s3">d = Dictionary[</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>0 -&gt; <span class="s5">'zero'</span>,</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span>'abc' -&gt; 'alpha',</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>[1, 2, 3, 5, 8, 13, 21] -&gt; <span class="s5">'fibonacci'</span>,</p>
+<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// == true is needed because it might not be a number passed in</p>
+<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s7">|x|</span> x.tryPerform(<span class="s5">\even</span>) == <span class="s7">true</span> } -&gt; <span class="s5">'even'</span></p>
 <p class="p7">];</p>
-<p class="p6"><br></p>
+<p class="p10"><br></p>
 <p class="p7">d.matchAt(0)</p>
 <p class="p7">d.matchAt(1)</p>
-<p class="p9"><span class="s3">d.matchAt(2)<span class="Apple-converted-space">  </span></span>// matches both 'fibonacci' and 'even', but 'fibonacci' is returned</p>
+<p class="p9"><span class="s3">d.matchAt(2)<span class="Apple-converted-space">  </span>// matches both 'fibonacci' and 'even', either may be returned</p>
 <p class="p7">d.matchAt(4)</p>
-<p class="p7">d.matchAt('abc')</p>
+<p class="p7">d.matchAt(<span class="s5">'abc'</span>)</p>
 </body>
 </html>
