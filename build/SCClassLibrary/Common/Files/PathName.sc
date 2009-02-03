@@ -113,7 +113,9 @@ PathName {
 			^fullPath
 		},{
 			// this assumes relative to the sc app
-			^scroot ++ "/" ++ fullPath;
+			// deprecated b/c String:absolutePath uses File.getcwd, more robust
+//			^scroot ++ "/" ++ fullPath;
+			^fullPath.absolutePath
 		})
 	}
 	allFolders { 	

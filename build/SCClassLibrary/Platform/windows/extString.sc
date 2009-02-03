@@ -23,4 +23,35 @@
 		//hackOpenWinTextFile(PathName(this).asAbsolutePath , selectionStart, selectionLength); // standardizePath on win32 yet
 		hackOpenWinTextFile(this, selectionStart, selectionLength);
 	}
+
+		// windows expresses absolute paths differently from posix
+	absolutePath {
+		var first, sep;
+		sep = thisProcess.platform.pathSeparator;
+			// 2 styles of absolute path:
+			// C:\... or \\machine_name\...
+		if((this[0].isAlpha and: { this[1] == $: and: { this[2] == sep } })
+				or: { this[0] == sep and: { this[1] == sep } }) {
+			^this
+		} {
+				// let's also try to convert unix-style dirs
+				// assume starting from root dir of drive letter where SC is installed
+			if(this[0] == $/ and: { this[1] != $/ }) {
+				^File.getcwd[..1] ++ this
+			};
+				// currently we can't support this on windows
+				// though it would be nice to have a primitive to get the user's home dir
+//			if(first == $~){^this.standardizePath};
+			^File.getcwd ++ sep ++ this;
+		}
+	}
+}
+
+
++ PathName {
+	isAbsolutePath {
+		^(this[0].isAlpha and: { this[1] == $: and: { this[2] == sep } })
+				or: { this[0] == sep and: { this[1] == sep } }
+				or: { this[0] == $/ and: { this[1] != $/ } }
+	}
 }
