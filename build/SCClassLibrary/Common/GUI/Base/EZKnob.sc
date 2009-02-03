@@ -60,7 +60,7 @@ EZKnob : EZGui {
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
-		if((controlSpec.minVal + controlSpec.maxVal)==0){knobView.centered=true};
+		if((controlSpec.minval + controlSpec.maxval)==0){knobView.centered=true};
 		
 		knobView.action = {
 			this.valueAction_(controlSpec.map(knobView.value));
