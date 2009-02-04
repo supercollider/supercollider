@@ -117,10 +117,12 @@ Help {
 
 		subfileslist = IdentityDictionary.new;
 
-		PathName.new(helppath.standardizePath).filesDo({|pathname|
-				if( helpExtensions.includes(pathname.extension.asSymbol)
-					and: { pathname.fullPath.contains("3vs2").not
-					and: { pathname.fullPath.contains("help-scripts").not } }
+		PathName.new(helppath.standardizePath).helpFilesDo({|pathname|
+				if( pathname.fullPath.contains("ignore")){
+					"Not ignoring: %".format(pathname.fullPath).postln;
+				};
+				if( pathname.fullPath.contains("3vs2").not
+					and: { pathname.fullPath.contains("help-scripts").not } 
 					, {
 						subfileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
 						fileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
@@ -184,6 +186,11 @@ Help {
 			// "node" should now be the tiniest branch
 			node[classsym.asClass ? classsym] = path;
 		});
+	}
+	
+	*rebuildTree {
+		this.forgetTree;
+		this.tree(allowCached:false);
 	}
 	
 	*forgetTree {
@@ -685,12 +692,9 @@ Help {
 		].do{ |it|
 			PathName.new( it ).foldersWithoutSVN.do{ |folderPn|
 				str << folderPn.fullPath << Char.nl;
-				folderPn.filesDo { |filePn|
-					if 
-					(helpExtensions.includes(filePn.extension.asSymbol)) {
-						str << Char.tab << 
-						filePn.fileNameWithoutExtension  << Char.nl;
-					}
+				folderPn.helpFilesDo { |filePn|
+					str << Char.tab << 
+					filePn.fileNameWithoutExtension  << Char.nl;
 				};
 			}
 		};
