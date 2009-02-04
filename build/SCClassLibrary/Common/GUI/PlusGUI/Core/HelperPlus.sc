@@ -1,9 +1,9 @@
 + Helper{
 
-*updateRedirectStubs { |wpath|
+*updateRedirectStubs { |wpath, relativeLinks=true|
 	var template, tfile, classesArray, path;
 	path= Platform.helpDir+/+"/GUI/Main-GUI/";
-	wpath = wpath ? Platform.helpDir;
+	wpath = wpath ? Platform.helpDir.asRelativePath;
 	wpath= wpath +/+"/GUI/Main-GUI/";
 	
 	tfile=File(path+/+"StubTemplate.html","r");  // read the html template file
@@ -27,10 +27,11 @@
 			
 				{ 
 					helpFilePath=nm.findHelpFile;
-					if ( PathName( helpFilePath ).isAbsolutePath, {
-						helpFilePath = "file://" ++ helpFilePath;
+					if ( relativeLinks.not, {
+						helpFilePath = "file://" ++ helpFilePath;"true".postln;
 					},{
-						helpFilePath = helpFilePath.asRelativePath(Platform.helpDir+/+"/GUI/Main-GUI")
+						helpFilePath = helpFilePath.asRelativePath(Platform.helpDir+/+"/GUI/Main-GUI");
+						"true".postln;
 					});
 				}.try({helpFilePath=nm++".html"});
 						
