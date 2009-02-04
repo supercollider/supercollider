@@ -138,6 +138,11 @@ Punop : Pattern {
 	
 	storeOn { arg stream; stream <<< a << "." << operator }
 
+		// op-patterns can take advantage of the embedInStream optimization too
+	embedInStream { |inval|
+		^this.asStream.embedInStream(inval)
+	}
+
 	asStream {
 		var stream = a.asStream;
 		^UnaryOpStream.new(operator, stream);
@@ -154,6 +159,10 @@ Pbinop : Pattern {
 			stream << "(" <<< a << " " << operator.asBinOpString;
 			if(adverb.notNil) { stream << "." << adverb };
 			stream << " " <<< b << ")"
+	}
+
+	embedInStream { |inval|
+		^this.asStream.embedInStream(inval)
 	}
 
 	asStream {
@@ -175,6 +184,10 @@ Pnaryop : Pattern {
 		^super.newCopyArgs(operator, a, arglist)
 	}
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
+
+	embedInStream { |inval|
+		^this.asStream.embedInStream(inval)
+	}
 	asStream {
 		var streamA = a.asStream;
 		var streamlist = arglist.collect({ arg item; item.asStream });
