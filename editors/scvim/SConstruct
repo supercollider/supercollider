@@ -17,7 +17,10 @@ ANY_FILE_RE = re.compile('.*')
 HOME_DIR_RE = re.compile(os.environ.get('HOME') + '.*')
 
 DEFAULT_PREFIX = '/usr/local/'
-if PLATFORM == 'darwin':
+
+if os.path.isdir(os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')):
+	DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
+elif os.path.isdir('../../build/Help/'):
 	DEFAULT_SC_HELP = '../../build/Help/'
 else:
 	DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
