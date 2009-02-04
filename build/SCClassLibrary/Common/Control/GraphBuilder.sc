@@ -25,6 +25,7 @@ GraphBuilder {
 		var gate = NamedControl.kr(\gate, 1.0);
 		var startVal = (dt <= 0);
 
+
 		^EnvGen.kr(Env.new([startVal, 1, 0], #[1, 1], \lin, 1), gate, 1.0, 0.0, dt, 2)
 	
 	}
@@ -116,7 +117,7 @@ NamedControl {
 			currentControls.put(name, res);
 		} {
 			if(res.values != values) { 
-				Error("NamedControl: cannot  more than one set of "
+				Error("NamedControl: cannot have more than one set of "
 						"default values in the same control.").throw;
 			};
 			if(res.rate != rate) {

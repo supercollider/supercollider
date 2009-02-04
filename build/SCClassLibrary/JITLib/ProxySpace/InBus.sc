@@ -299,7 +299,7 @@ Monitor {
 	}
 
 	
-	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group;
+	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction;
 		var size;
 		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
@@ -310,7 +310,7 @@ Monitor {
 			 	+ bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
-		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group)
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction: addAction)
 	}
 	
 		
