@@ -28,10 +28,10 @@
 				{ 
 					helpFilePath=nm.findHelpFile;
 					if ( relativeLinks.not, {
-						helpFilePath = "file://" ++ helpFilePath;"true".postln;
+						helpFilePath = "file://" ++ helpFilePath;
 					},{
 						helpFilePath = helpFilePath.asRelativePath(Platform.helpDir+/+"/GUI/Main-GUI");
-						"true".postln;
+						
 					});
 				}.try({helpFilePath=nm++".html"});
 						
