@@ -114,6 +114,10 @@
 	asOSCArgArray {}
 }
 
++Ref {
+	asOSCArgEmbeddedArray { | array| ^value.asOSCArgEmbeddedArray(array) }
+}
+
 +AbstractFunction {
 
 	eq { arg function, adverb; ^this.composeBinaryOp('==', function, adverb) }
