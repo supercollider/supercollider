@@ -30,18 +30,51 @@ FuncFilterPattern : FilterPattern {
 }
 
 Pcollect : FuncFilterPattern {
+	embedInStream { arg inval;
+		var stream, outval;
+		stream = pattern.asStream;
+		loop {
+			outval = stream.next(inval);
+			if (outval.isNil) { ^inval };
+			inval = yield(func.value(outval));
+		}
+	}
 	asStream {
 		^pattern.asStream.collect(func);
 	}
 }
 
 Pselect : FuncFilterPattern {
+	embedInStream { arg inval;
+		var stream, outval;
+		stream = pattern.asStream;
+		loop {
+			while ({ 
+				outval = stream.next(inval);
+				if (outval.isNil) { ^inval };
+				func.value(outval).not 
+			});
+			inval = yield(outval);
+		}
+	}
 	asStream {
 		^pattern.asStream.select(func);
 	}
 }
 
 Preject : FuncFilterPattern {
+	embedInStream { arg inval;
+		var stream, outval;
+		stream = pattern.asStream;
+		loop {
+			while ({ 
+				outval = stream.next(inval);
+				if (outval.isNil) { ^inval };
+				func.value(outval); 
+			});
+			inval = yield(outval);
+		}
+	}
 	asStream {
 		^pattern.asStream.reject(func);
 	}
@@ -59,7 +92,7 @@ Pfset : FuncFilterPattern {
 			inevent = stream.next(event);
 			if (inevent.isNil) { ^event };
 			event = yield(inevent);
-			if(event.isNil) { stream.next(nil); nil.yield; ^inevent }
+			if(event.isNil) { ^inevent }
 		};
 	}
 }

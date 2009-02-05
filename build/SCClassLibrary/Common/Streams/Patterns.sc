@@ -138,9 +138,14 @@ Punop : Pattern {
 	
 	storeOn { arg stream; stream <<< a << "." << operator }
 
-		// op-patterns can take advantage of the embedInStream optimization too
-	embedInStream { |inval|
-		^this.asStream.embedInStream(inval)
+	embedInStream { arg inval;
+		var stream, outval;
+		stream = a.asStream;
+		loop { 
+			outval = stream.next(inval);
+			if (outval.isNil) { ^inval };
+			inval = yield(outval.perform(operator));
+		}
 	}
 
 	asStream {
@@ -161,8 +166,37 @@ Pbinop : Pattern {
 			stream << " " <<< b << ")"
 	}
 
-	embedInStream { |inval|
-		^this.asStream.embedInStream(inval)
+	embedInStream { arg inval;
+		var streamA, streamB, vala, valb;
+		streamA = a.asStream;
+		streamB = b.asStream;
+		if (adverb.isNil) {
+			loop {
+				vala = streamA.next(inval);
+				if (vala.isNil) { ^inval };
+				valb = streamB.next(inval);
+				if (valb.isNil) { ^inval };
+				inval = yield(vala.perform(operator, valb));
+			};
+		};
+		if (adverb == 'x') {
+			if (vala.isNil) { 
+				vala = a.next(inval);
+				if (vala.isNil) { ^inval };
+				valb = b.next(inval);
+				if (valb.isNil, { ^inval });
+			}{
+				valb = b.next(inval);
+				if (valb.isNil) { 
+					vala = a.next(inval);
+					if (vala.isNil) { ^inval };
+					b.reset;
+					valb = b.next(inval);
+					if (valb.isNil) { ^inval };
+				};
+			};
+			^inval = yield(vala.perform(operator, valb));
+		};
 	}
 
 	asStream {
@@ -185,9 +219,33 @@ Pnaryop : Pattern {
 	}
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
 
-	embedInStream { |inval|
-		^this.asStream.embedInStream(inval)
+	embedInStream { arg inval;
+		var streamA, streamlist, vala, values, isNumeric;
+		streamA = a.asStream;
+		isNumeric = arglist.every { arg item; 
+			item.isNumber or: {item.class === Symbol} }; // optimization
+		
+		if (isNumeric) {
+			loop {
+				vala = streamA.next(inval);
+				if (vala.isNil) { ^inval };
+				inval = yield(vala.performList(operator, arglist));
+			}
+		}{		
+			streamlist = arglist.collect({ arg item; item.asStream });
+			loop {
+				vala = streamA.next(inval);
+				if (vala.isNil) { ^inval };
+				values = streamlist.collect({ arg item;
+					var result = item.next(inval);
+					if (result.isNil) { ^inval };
+					result
+				});
+				inval = yield(vala.performList(operator, values));
+			}
+		};
 	}
+
 	asStream {
 		var streamA = a.asStream;
 		var streamlist = arglist.collect({ arg item; item.asStream });
@@ -644,7 +702,7 @@ Pif : Pattern {
 Pvoss : Pattern {
 	var	<>lo, <>hi, <>generators, <>length;
 	*new { |lo = 0, hi = 1, generators = 8, length = inf|
-		^super.new.lo_(lo).hi_(hi).generators_(generators).length_(length)
+		^super.newCopyArgs(lo, hi, generators, length)
 	}
 	embedInStream { |inval|
 		var	localGenerators = generators.value;
