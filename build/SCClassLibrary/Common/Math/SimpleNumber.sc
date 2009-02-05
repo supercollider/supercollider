@@ -348,11 +348,10 @@ SimpleNumber : Number {
 	}
 	
 	
-	degreeToKey { arg scale, stepsPerOctave=12;
-		var size = scale.size;
+	degreeToKey { arg scale, stepsPerOctave = 12;
 		var scaleDegree = this.round.asInteger;
-		var accidental = ((this - scaleDegree) * 10.0) * (stepsPerOctave / 12.0);
-		^(stepsPerOctave * (scaleDegree div: size)) + scale.wrapAt(scaleDegree) + accidental
+		var accidental = (this - scaleDegree) * 10.0;
+		^scale.performDegreeToKey(scaleDegree, stepsPerOctave, accidental)
 	}
 			
 	keyToDegree { arg scale, stepsPerOctave=12;
@@ -362,13 +361,11 @@ SimpleNumber : Number {
 	}
 	
 	nearestInList { arg list;  // collection is sorted
-		^list.at(list.indexIn(this))
+		^list.performNearestInList(this);
 	}
-	
+
 	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
-		var root = this.trunc(stepsPerOctave);
-		var key = this % stepsPerOctave;
-		^key.nearestInList(scale) + root
+		^scale.performNearestInScale(this, stepsPerOctave);
 	}
 	
 	partition { arg parts=2, min=1;

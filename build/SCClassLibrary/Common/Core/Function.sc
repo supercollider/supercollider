@@ -198,6 +198,12 @@ Function : AbstractFunction {
 	matchItem { arg item;
 		^this.value(item)
 	}
+	
+	// scale suppoert
+	
+	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
+		^this.value(scaleDegree, stepsPerOctave, accidental)
+	}
 
 	// multichannel expand function return values
 	
@@ -248,4 +254,13 @@ Thunk : AbstractFunction {
 	valueArrayEnvir { ^this.value }
 }
 
-
+UGenThunk : Thunk {
+	var ugens;
+	value {
+		var res;
+		ugens = ugens ?? { IdentityDictionary.new };
+		res = ugens.at(UGen.buildSynthDef);
+		if(res.isNil) { res = super.value; ugens.put(UGen.buildSynthDef, res) };
+		^res
+	}
+}
