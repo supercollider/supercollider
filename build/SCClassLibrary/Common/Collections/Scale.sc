@@ -246,6 +246,50 @@ Tuning {
 	}
 }
 
+ScaleAD : Scale {
+	var <>descScale;
+	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
+		^super.new.init(degrees ? \ionian, pitchesPerOctave, tuning, name)
+			.descScale_(Scale(descDegrees ? \ionian, pitchesPerOctave, tuning, name ++ "desc")) 
+		;
+	}
+	asStream { ^ScaleStream(this, 0) }
+	embedInStream { ScaleStream(this).yield }
+
+}
+
+ScaleStream {
+	var <>scale, <>curDegree;
+	
+	*new { | scale, startDegree = 0 | ^super.newCopyArgs(scale, startDegree) }
+	
+	chooseScale { |scaleDegree |
+		if (scaleDegree >= curDegree) {
+			curDegree = scaleDegree;
+			^scale
+		} {
+			curDegree = scaleDegree;
+			^scale.descScale
+		}
+	}
+	performDegreeToKey { | degree, stepsPerOctave, accidental = 0 |
+		^this.chooseScale(degree).performDegreeToKey(degree, stepsPerOctave, accidental);
+	}
+
+
+	performKeyToDegree { | degree, stepsPerOctave = 12 |
+		^this.chooseScale(degree).performKeyToDegree(degree, stepsPerOctave)
+	}
+
+	performNearestInList { | degree |
+		^this.chooseScale(degree).performNearestInList(degree)
+	}
+
+	performNearestInScale { | degree, stepsPerOctave=12 | // collection is sorted
+		^this.chooseScale(degree).performNearestInScale(degree, stepsPerOctave)
+	}
+}
+
 ScaleInfo {
 
 	classvar <scales, dirDoc;
@@ -428,6 +472,12 @@ ScaleInfo {
 			\nawaAthar -> Scale.new(#[0,4,6,12,14,16,22], 24, name: "Nawa Athar"),
 			\nikriz -> Scale.new(#[0,4,6,12,14,18,20], 24, name: "Nikriz"),
 			\atharKurd -> Scale.new(#[0,2,6,12,14,16,22], 24, name: "Athar Kurd"),
+
+
+			// Ascending/descending scales
+			\melodicMinor -> ScaleAD(#[0,2,3,5,7,9,11], 12, #[0,2,3,5,7,8,10], name: "Melodic Minor"),
+			\sikah -> ScaleAD(#[0,3,7,11,14,17,21], 24, #[0,3,7,11,13,17,21], name: "Sikah"),
+			\nahawand -> ScaleAD(#[0,4,6,10,14,16,22], 24, #[0,4,6,10,14,16,20], name: "Nahawand"),
 		];
 		
 	}
