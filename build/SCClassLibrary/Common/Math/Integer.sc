@@ -22,6 +22,9 @@ Integer : SimpleNumber {
 		res = (2 * this).rand - this;
 		if (res == exclude, { ^this },{ ^res });
 	}
+	degreeToKey { arg scale, stepsPerOctave = 12;
+		^scale.performDegreeToKey(this, stepsPerOctave)
+	}
 	
 	// iteration
 	do { arg function;

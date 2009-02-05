@@ -68,6 +68,25 @@ Scale {
 		^tuning.wrapAt(degrees.wrapAt(index))
 	}
 	
+	performDegreeToKey { | scaleDegree, stepsPerOctave, accidental = 0 |
+		var baseKey;
+		stepsPerOctave = stepsPerOctave ? tuning.stepsPerOctave;
+		baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+	}
+
+	performKeyToDegree { | degree, stepsPerOctave = 12 |
+		^degrees.performKeyToDegree(degree, stepsPerOctave)
+	}
+
+	performNearestInList { | degree |
+		^degrees.performNearestInList(degree)
+	}
+
+	performNearestInScale { | degree, stepsPerOctave=12 | // collection is sorted
+		^degrees.performNearestInScale(degree, stepsPerOctave)
+	}
+	
 	degreeToRatio { |degree, octave = 0|
 		^this.ratios.at(degree) * (this.octaveRatio ** octave);
 	}

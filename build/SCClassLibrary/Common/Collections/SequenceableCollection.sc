@@ -499,6 +499,27 @@ SequenceableCollection : Collection {
 	mode { arg degree, octave=12;
 		^(rotate(this, degree.neg) - this.wrapAt(degree)) % octave
 	}
+	
+	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
+		var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+	}
+	
+	performKeyToDegree { | degree, stepsPerOctave = 12 |
+		var n = degree div: stepsPerOctave * this.size;
+		var key = degree % stepsPerOctave;
+		^this.indexInBetween(key) + n
+	}
+
+	performNearestInList { | degree |
+		^this.at(this.indexIn(degree))
+	}
+
+	performNearestInScale { arg degree, stepsPerOctave=12; // collection is sorted
+		var root = degree.trunc(stepsPerOctave);
+		var key = degree % stepsPerOctave;
+		^key.nearestInList(this) + root
+	}
 
 	// supports a variation of Mikael Laurson's rhythm list RTM-notation.	convertRhythm {		var list, tie;		list = List.new;		tie = this.convertOneRhythm(list);		if (tie > 0.0, { list.add(tie) });  // check for tie at end of rhythm		^list	}	sumRhythmDivisions {		var sum = 0;		this.do {|beats|			sum = sum + abs(if (beats.isSequenceableCollection) {				beats[0];			}{				beats			});		};		^sum	}	convertOneRhythm { arg list, tie = 0.0, stretch = 1.0;		var beats, divisions, repeats;		#beats, divisions, repeats = this;		repeats = repeats ? 1;		stretch = stretch * beats / divisions.sumRhythmDivisions;		repeats.do({			divisions.do { |val|				if (val.isSequenceableCollection) {					tie = val.convertOneRhythm(list, tie, stretch)				}{										val = val * stretch;					if (val > 0.0) {						list.add(val + tie);						tie = 0.0;					}{						tie = tie - val					};				};			};		});		^tie	}
 	
