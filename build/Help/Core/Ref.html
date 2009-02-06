@@ -5,27 +5,30 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #783222}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6f3324}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-span.s1 {color: #072aad}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+span.s1 {color: #0031a8}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {font: 12.0px Monaco}
-span.s5 {font: 9.0px Monaco}
-span.s6 {color: #062aaf}
-span.s7 {color: #606060}
-span.s8 {color: #0000bf}
+span.s5 {color: #0031aa}
+span.s6 {color: #007300}
+span.s7 {color: #0000bf}
+span.s8 {color: #001bb9}
+span.s9 {font: 9.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -101,42 +104,51 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><b>Typical uses of Ref:</b></p>
 <p class="p3"><br></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span>preventing multi-channel expansion:</b></p>
+<p class="p2"><b>preventing multi-channel expansion:</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.</p>
+<p class="p2">Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s6">Klank</span>.ar(`[[800, 1071, 1153, 1723], <span class="s6">nil</span>, [1, 1, 1, 1]], <span class="s6">Impulse</span>.ar(2, 0, 0.1)) }.play;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s5">Klank</span>.ar(`[[800, 1071, 1153, 1723], <span class="s5">nil</span>, [1, 1, 1, 1]], <span class="s5">Impulse</span>.ar(2, 0, 0.1)) }.play;</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><br></p>
-<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>Refs also prevent multi-channel expansion in a Pattern. In this example, a SynthDef with an arrayed freq argument is defined and controlled</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>with a pattern:</p>
+<p class="p8"><br></p>
+<p class="p2">Refs also prevent multi-channel expansion in a Pattern. In this example, a SynthDef with an arrayed freq argument is defined and controlled with a pattern. <b>Note: </b>Currently, these arguments must not belong to one of the standard event keys which are evaluated, such as freq, note, midinote, amp.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s6">\multi</span><span class="s2">, { </span>| out, freqN = #[100,200,300], amp = 0.1, pan = 0, sustain = 1|</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> audio, env;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s7">EnvGen</span>.kr(<span class="s7">Env</span>.perc(0.01, sustain), doneAction:2);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s7">Mix</span>(<span class="s7">Saw</span>.ar(freqN));</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s7">Pan2</span>.ar(audio * env, pan, amp);<span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">OffsetOut</span>.ar(out, audio)</p>
+<p class="p9"><span class="Apple-tab-span">	</span>}).memStore;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>// Note that it is equivalent to write Pbind(\key, val, ...) and Pbind(*[key: val, ...]).</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>Pbind<span class="s2">(*[</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="s6">\multi</span>,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freqN: <span class="s7">Prand</span>([<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>`[100, 141, 103],<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>`[100, 310, 190],<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>`[100, 100.1, 110],<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>], <span class="s7">inf</span>),</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 0.3</p>
+<p class="p9"><span class="Apple-tab-span">	</span>]).play;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p2">The message <b>ref</b>, defined in AbstractFunction, converts the values specified by a Pattern, Stream or Function into Refs.<span class="Apple-converted-space">  </span>Thus, the previous example can also be written as:</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s7">"multi"</span><span class="s2">, { </span>| gate, out, freq = #[100,200,300], amp = 0.1, pan = 0|</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> audio, env;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s8">Linen</span>.kr(gate, doneAction:2);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Mix</span>(<span class="s8">Saw</span>.ar(freq));</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Pan2</span>.ar(audio * env, pan, amp);<span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">OffsetOut</span>.ar(out, audio)</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).store</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(*[</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s8">Prand</span>([ `[100, 101, 103], `[100,110, 190], `[100,100.1, 110], `[100,110, 120], ], <span class="s8">inf</span>) * 4,</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-1.0,1.0),</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 2</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]).play</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p2"><span class="s5"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>The message <b>ref</b>, defined in AbstractFunction, converts the values specified by a Pattern, Stream or Function into Refs.<span class="Apple-converted-space">  </span>Thus, the previous</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>example can also be written:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(</p>
+<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>Pbind<span class="s2">(*[</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>instrument: <span class="s6">\multi</span>,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freqN: <span class="s8">Prand</span>([[100, 141, 203], [100, 310, 190], [100, 100.1, 110]], <span class="s8">inf</span>).ref,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 0.3</p>
+<p class="p4"><span class="Apple-tab-span">	</span>]).trace.play</p>
+<p class="p4"><span class="Apple-tab-span">	</span>)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Pbind</span>(*[</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq: <span class="s8">Prand</span>([ [100, 101, 103], [100,110, 190], [100,100.1, 110], [100,110, 120], ], <span class="s8">inf</span>).ref * 4,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune:<span class="Apple-tab-span">	</span><span class="s8">Pwhite</span>(-1.0,1.0),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur: 0.2,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sustain: 2</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>]).play</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5"><span class="Apple-tab-span">	</span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9"><span class="Apple-tab-span">	</span></span></p>
 </body>
 </html>
