@@ -354,7 +354,18 @@ Quarks
 		caption.string = this.name;
 		window.view.decorator.nextLine;
 
-		resetButton = GUI.button.new(window, Rect(15,15,150,20));
+		GUI.button.new(window, Rect(0, 0, 150, 20))
+			.states_([["browse all help", Color.black, Color.gray(0.5)]])
+			.action_({ Help(this.local.path).gui });
+
+		// add open directory button (open is only implemented in OS X)
+		(thisProcess.platform.name == \osx).if{
+			GUI.button.new(window, Rect(15,15,150,20)).states_([["open quark directory", Color.black, Color.gray(0.5)]]).action_{ arg butt;
+				"open %".format(this.local.path.escapeChar($ )).unixCmd;
+			};
+		};
+		
+		resetButton = GUI.button.new(window, Rect(15,15,75,20));
 		resetButton.states = [
 			["reset", Color.black, Color.gray(0.5)]
 		];
@@ -362,7 +373,7 @@ Quarks
 			views.do(_.reset);
 		};
 		
-		saveButton = GUI.button.new(window, Rect(15,15,150,20));
+		saveButton = GUI.button.new(window, Rect(15,15,75,20));
 		saveButton.states = [
 			["save", Color.black, Color.blue(1, 0.5)]
 		];
@@ -378,13 +389,6 @@ Quarks
 				})
 			};
 			warning.string = "You should now recompile sclang"
-		};
-		
-		// add open directory button (open is only implemented in OS X)
-		(thisProcess.platform.name == \osx).if{
-			GUI.button.new(window, Rect(15,15,150,20)).states_([["open quark directory", Color.black, Color.gray(0.5)]]).action_{ arg butt;
-				"open %".format(this.local.path.escapeChar($ )).unixCmd;
-			};
 		};
 		
 		window.view.decorator.nextLine;

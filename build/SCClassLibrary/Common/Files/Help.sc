@@ -17,9 +17,11 @@ Class.browse
 */
 
 Help {
-	classvar tree, categoriesSkipThese, fileslist;
+	classvar <global, categoriesSkipThese;
 	classvar <filterUserDirEntries, <>cachePath;
 	
+	var	tree, fileslist, <root;
+
 	*initClass {
 		var	dir;
 		cachePath = Platform.userAppSupportDir +/+ "SC_helptree.cache.txt";
@@ -36,10 +38,28 @@ Help {
 					filterUserDirEntries = filterUserDirEntries.add(dirname);
 				};
 			});
-		})
+		});
+		global = this.new;
+	}
+
+	*new { |root|
+		if(root.isNil and: { global.notNil }) {
+			^global
+		} {
+			^super.new.init(root)
+		}
 	}
 	
-	*tree { |sysext=true, userext=true, allowCached=true|
+	init { |rootdir|
+		root = rootdir !? { rootdir.absolutePath };
+		if(root.isNil or: { root.size == 0 }) {
+			this.tree;
+		} {
+			this.tree(false, false, false, root, false);
+		}
+	}
+	
+	tree { |sysext=true, userext=true, allowCached=true, root, writeCache=true|
 		var classes, node, subc, helpRootLen;
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
@@ -55,7 +75,11 @@ Help {
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
-			helpDirs = helpDirs.add( Platform.helpDir );
+			if(root.isNil) {
+				helpDirs = helpDirs.add( Platform.helpDir );
+			} {
+				helpDirs = helpDirs.add(root);
+			};
 			if ( sysext ,{
 				helpDirs = helpDirs.add( Platform.systemExtensionDir );
 			});
@@ -65,6 +89,10 @@ Help {
 			
 			// Now check each class's ".categories" response
 			classes = Object.allSubclasses.difference(categoriesSkipThese).reject({|c| c.asString.beginsWith("Meta_")});
+			if(root.notNil) {
+					// consider only classes whose main definition is in the root folder
+				classes = classes.select({ |c| c.filenameSymbol.asString.beginsWith(root) });
+			};
 			tree = Dictionary.new(8);
 			classes.do({|class| this.addCatsToTree(class, fileslist)});
 			
@@ -74,14 +102,16 @@ Help {
 			helpDirs.do{ |helpDir|
 				this.addDirTree( helpDir,tree );
 			};
-			{
-				this.writeTextArchive;
-			}.defer(4.312);
+			if(writeCache) {
+				{
+					this.writeTextArchive;
+				}.defer(4.312);
+			};
 		}.bench(false)).postln});
 		^tree;
 	}
 	
-	*findKeysForValue{|val|
+	findKeysForValue{|val|
 		var func, node, keyPath;
 		keyPath =[];
 		if( val.beginsWith( "SC://" ), { ^keyPath });
@@ -105,12 +135,12 @@ Help {
 		^[];
 	}
 
-	*addUserFilter{ |subpath|
+	addUserFilter{ |subpath|
 		filterUserDirEntries = filterUserDirEntries.add( subpath );
 		this.forgetTree;
 	}
 
-	*addDirTree{ |helppath,tree|
+	addDirTree{ |helppath,tree|
 		var helpExtensions = #['html', 'scd', 'rtf', 'rtfd'];
 		var subfileslist;
 		var node, subc, helpRootLen, thisHelpExt;
@@ -132,15 +162,16 @@ Help {
 		helpRootLen = (helppath.standardizePath).size + 1;
 		subfileslist.keysValuesDo({ |classsym, path|
 
+			subc = path[helpRootLen..].split(Platform.pathSeparator);
 			if ( helppath == Platform.helpDir,
 				{
-					subc = path[helpRootLen..].split(Platform.pathSeparator);
 					subc = subc[0..subc.size-2]; // Ignore "Help" and the filename at the end
+//					subc = path[helpRootLen..].split(Platform.pathSeparator);
 				},{
 					//helpRootLen = "~".standardizePath;
 					if ( helppath == Platform.systemExtensionDir,
 						{
-							subc = path[helpRootLen..].split(Platform.pathSeparator);
+//							subc = path[helpRootLen..].split(Platform.pathSeparator);
 							subc = [ "SystemExtensions" ] ++ subc;
 							//subc.postcs;
 						});
@@ -164,11 +195,32 @@ Help {
 								});
 							};
 						});
+					if ( helppath == root,
+						{
+								// exactly the same as the previous if,
+								// but it isn't right to change helpRootLen
+							// check for common superfluous names that may confuse the categorisation;
+							filterUserDirEntries.do{ |spath|
+								subc = subc.reject{ |it| 
+									it == spath;
+								};
+							};
+							// check for double entries (e.g. SwingOSC)
+							subc[..subc.size-2].do{ |it,i|
+								var subset;
+								subset = subc[..i-1];
+								if ( subset.detect( { |jt| jt == it } ).size > 0, {
+									subc = subc[..i-1] ++ subc[i+1..];
+								});
+							};
+						});
 					subc = subc[..subc.size-2];
 				}
 			);
-			thisHelpExt = helpExtensions.select{ |ext|
-				subc.last.endsWith("."++ext)
+			if(subc.size > 0) {
+				thisHelpExt = helpExtensions.select{ |ext|
+					subc.last.endsWith("."++ext)
+				};
 			};
 			if ( thisHelpExt.size > 0 , {
 				subc = subc[..subc.size-2];
@@ -188,16 +240,20 @@ Help {
 		});
 	}
 	
-	*rebuildTree {
+	rebuildTree {
 		this.forgetTree;
-		this.tree(allowCached:false);
+		if(root.isNil) {
+			this.tree(allowCached:false);
+		} {
+			this.tree(false, false, false, root, false);
+		}
 	}
-	
-	*forgetTree {
+
+	forgetTree {
 		tree = nil;
 	}
 	
-	*dumpTree { |node, prefix=""|
+	dumpTree { |node, prefix=""|
 		node = node ?? {this.tree};
 		node.keysValuesDo({ |key, val|
 			if(val.isKindOf(Dictionary), {
@@ -209,7 +265,7 @@ Help {
 		});
 	}
 	
-	*addCatsToTree { |class, fileslist|
+	addCatsToTree { |class, fileslist|
 		var subc, node;
 		
 		if(class.categories.isNil.not, {
@@ -233,7 +289,7 @@ Help {
 		
 	}
 
-	*writeTextArchive{ |path|
+	writeTextArchive{ |path|
 		var fp;
 		if(path.isNil){ path = this.cachePath };
 		fp = File(path, "w");
@@ -242,7 +298,7 @@ Help {
 		fp.close;
 	}
 
-	*prRecurseTreeToFile{ | fp, treeBit, numtabs=0 |
+	prRecurseTreeToFile{ | fp, treeBit, numtabs=0 |
 		fp.write("%%\n".format($\t.dup(numtabs).join, treeBit.size));
 		treeBit.keysValuesDo{| key, val |
 			fp.write("%%\n".format($\t.dup(numtabs).join, key.asString));
@@ -254,7 +310,7 @@ Help {
 		};
 	}
 
-	*readTextArchive{ |path|
+	readTextArchive{ |path|
 		var fp, filesliststr;
 		if(path.isNil){ path = this.cachePath };
 		fp = File(path, "r");
@@ -279,7 +335,7 @@ Help {
 		fp.close;
 	}
 
-	*prRecurseTreeFromFile{ | fp, numtabs=0 |
+	prRecurseTreeFromFile{ | fp, numtabs=0 |
 		var line, numentries, dict, key;
 		line = fp.getLine[numtabs..];
 		numentries = line.asInteger;
@@ -300,7 +356,7 @@ Help {
 		^dict
 	}
 
-*gui { |sysext=true,userext=true, allowCached=true|
+gui { |sysext=true,userext=true, allowCached=true|
 	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
 	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
@@ -675,12 +731,17 @@ Help {
 	
 	win.front;
 	listviews[0].focus;
-	fSelectTreePath.([], "Help"); // Select the "Help" entry in the root
-	selecteditem = "Help";
+	if(listviews[0].items.detect({ |item| item == "Help" }).notNil) {
+		fSelectTreePath.([], "Help"); // Select the "Help" entry in the root
+		selecteditem = "Help";
+	} {
+		selecteditem = listviews[0].items.first;
+		fSelectTreePath.([], selecteditem);
+	}
 } 
-// end *gui
+// end gui
 
-	*all {
+	all {
 		//		^this.new("Help/").dumpToDoc("all-helpfiles");
 		var doc;
 		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
@@ -702,10 +763,10 @@ Help {
 	}
 	
 	// Iterates the tree, finding the help-doc paths and calling action.value(docname, path)
-	*do { |action|
+	do { |action|
 		this.pr_do(action, this.tree, []);
 	}
-	*pr_do { |action, curdict, catpath|
+	pr_do { |action, curdict, catpath|
 		curdict.keysValuesDo{|key, val|
 			if(val.class == Dictionary){
 				this.pr_do(action, val, catpath ++ [key]) // recurse
@@ -715,13 +776,13 @@ Help {
 		}
 	}
 	
-	*searchGUI {
+	searchGUI {
 		this.deprecated(thisMethod, Meta_Help.findRespondingMethodFor(\gui));
 		^this.gui
 	}
 	
 	// Returns an array of hits as HelpSearchResult instances
-	*search { |query, ignoreCase=true|
+	search { |query, ignoreCase=true|
 		var results = List.new, file, ext, docstr, pos;
 		this.do{ |docname, path, catpath|
 			if(path != ""){	
@@ -763,7 +824,7 @@ Help {
 		^results
 	}
 	// This iterates the Help.tree to find the file. Can be used instead of platform-specific approaches
-	*findHelpFile { |str|
+	findHelpFile { |str|
 		var ret = nil;
 		str = str.asString;
 		block{|break| this.do{|key, val| if(key==str){ ret=val; break.value }}};
@@ -771,12 +832,34 @@ Help {
 	}
 
 	// does the same as findHelpFile, but replaces the string with "Help" if the string is empty. This makes it possible in sced to open the main help if nothing is selected.
-	*findHelpFileOrElse { |str|
+	findHelpFileOrElse { |str|
 		str = str.asString;
 		if ( str.isEmpty ) { str = "Help" };
 		^Help.findHelpFile( str );
 	}
 
+// class method interface
+
+	*tree { |sysext = true, userext = true, allowCached = true| ^global.tree(sysext, userext, allowCached) }
+	*addUserFilter { |subpath| addUserFilter(subpath) }
+	*addDirTree { |helppath, tree| ^global.addDirTree(helppath, tree) }
+	*rebuildTree { ^global.rebuildTree }
+	*forgetTree { ^global.forgetTree }
+	*dumpTree { |node, prefix = ""| ^global.dumpTree(node, prefix) }
+	*addCatsToTree { |class, fileslist| ^global.addCatsToTree(class, fileslist) }
+	*gui { |sysext = true, userext = true| ^global.gui(sysext, userext) }
+	*all { ^global.all }
+	*do { |action| ^global.do(action) }
+	*pr_do { |action, curdict| ^global.pr_do(action, curdict) }
+	*searchGUI { ^global.searchGUI }
+	*search { |query, ignoreCase| ^global.search(query, ignoreCase) }
+	*findHelpFile { |str| ^global.findHelpFile(str) }
+	*makeHelp { |undocumentedObject, path| ^global.makeHelp(undocumentedObject, path) }
+	*makeAutoHelp { |andocumentedClass, path| ^global.makeAutoHelp(andocumentedClass, path) }
+
+		// instance-based getters
+	filterUserDirEntries { ^filterUserDirEntries }
+	cachePath { ^cachePath }
 } // End class
 
 
