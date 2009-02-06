@@ -172,7 +172,7 @@ Quark
 
 QuarkView {
 	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
-		nameView, authorView, infoButton, srcButton;
+		nameView, authorView, infoButton, srcButton, browseHelpButton;
 	*new { |parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
@@ -184,8 +184,8 @@ QuarkView {
 		infoBounds = Rect(0,0, 25, extent.y);
 		sourceBounds = Rect(0, 0, 20, extent.y);
 		checkoutBounds = Rect(0,0,50,extent.y);
-		remainder = extent.x - infoBounds.width  - sourceBounds.width -
-			checkoutBounds.width - (3*pad);
+		remainder = extent.x - (infoBounds.width*2)  - sourceBounds.width -
+			checkoutBounds.width - (4*pad);
 		descrBounds = Rect(0, 0, (remainder * 0.60).asInteger, extent.y);
 		authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
 		quark = aQuark;
@@ -201,6 +201,11 @@ QuarkView {
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 			.states_([["info"]]).action_{this.fullDescription};
 		
+		browseHelpButton = GUI.button.new(parent, infoBounds)
+			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+			.states_([["help"]])
+			.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
+			
 		if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
 			srcButton = GUI.button.new(parent, sourceBounds)
 				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
