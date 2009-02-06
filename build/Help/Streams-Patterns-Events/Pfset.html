@@ -20,15 +20,17 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Pfset<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>create an environment to modify values in the incoming stream</b></p>
-<p class="p2"><br></p>
+<p class="p1"><span class="s1"><b>Pfset<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>Maintains an environment to insert into the event prototype before evaluating the supplied pattern.</b></p>
+<p></p>
 <p class="p1"><b>superclass: FuncFilterPattern</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Pfset(name, value, pattern)</b></p>
+<p class="p1">Good for setting default values or loading server objects.</p>
 <p class="p2"><br></p>
+<p class="p1"><b>Pfset(func, pattern, cleanupFunc)</b></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+<p class="p2"><br><b>func:</b> Use environment variable syntax (e.g., ~x = 0) to store values in the internal environment. These values are copied into the event prototype before running the supplied pattern.</p>
+<p class="p2"><br><b>pattern:</b> An event pattern (such as Pbind).</p>
+<p class="p2"><br><b>cleanupFunc:</b> Optional. A function to evaluate when the pattern is stopped, or when the supplied pattern runs out of values. For example, if you loaded a Buffer in the initializer function, you could free it in the cleanupFunc.</p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
 <p class="p3"><span class="s2">var</span> a, b;</p>
@@ -40,7 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">9.do({ x.next(<span class="s2">Event</span>.new).postln; });</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
-<p class="p1">Pfset does not override incoming values:</p>
+<p class="p1">Pfset does not override values placed into the event by the inner pattern:</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
