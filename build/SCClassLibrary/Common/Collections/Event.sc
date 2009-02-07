@@ -149,10 +149,6 @@ Event : Environment {
 				harmonic: 1.0,				// harmonic ratio
 				octaveRatio: 2.0,
 				
-					// abstract these out to facilitate non-ET tunings
-				midiToCps: _.midicps,
-				cpsToMidi: _.cpsmidi,
-				
 				note: #{
 					(~degree + ~mtranspose).degreeToKey(
 						~scale, 
@@ -170,7 +166,7 @@ Event : Environment {
 					~freq.value + ~detune
 				},
 				freq: #{
-					~midiToCps.value(~midinote.value + ~ctranspose) * ~harmonic;
+					(~midinote.value + ~ctranspose).midicps * ~harmonic;
 				},
 				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
