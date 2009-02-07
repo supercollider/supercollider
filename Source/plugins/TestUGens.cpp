@@ -68,6 +68,7 @@ extern "C"
 	void CheckBadValues_Ctor(CheckBadValues* unit);
 	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
 	const char *CheckBadValues_fpclassString(int fpclass);
+	inline int CheckBadValues_fold_fpclasses(int fpclass);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +120,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		case 2:
 			LOOP(inNumSamples,
 				samp = ZXP(in);
-				classification = std::fpclassify(samp);
+				classification = CheckBadValues_fold_fpclasses(std::fpclassify(samp));
 				if(classification != unit->prevclass) {
 					if(unit->sameCount == 0) {
 						printf("CheckBadValues: %s found in Synth %d, ID %d\n",
@@ -176,10 +177,21 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 const char *CheckBadValues_fpclassString(int fpclass)
 {
 	switch(fpclass) {
-		case FP_INFINITE: return "infinity";
-		case FP_NAN: return "NaN";
-		case FP_SUBNORMAL: return "denormal";
-		default: return "normal";
+		case FP_NORMAL:       return "normal";
+		case FP_NAN:          return "NaN";
+		case FP_INFINITE:     return "infinity";
+		case FP_ZERO:         return "zero";
+		case FP_SUBNORMAL:    return "denormal";
+		case FP_SUPERNORMAL:  return "supernormal";
+		default:              return "unknown";
+	}
+}
+
+inline int CheckBadValues_fold_fpclasses(int fpclass)
+{
+	switch(fpclass) {
+		case FP_ZERO:   return FP_NORMAL; // a bit hacky. we mean "zero is fine too".
+		default:        return fpclass;
 	}
 }
 
