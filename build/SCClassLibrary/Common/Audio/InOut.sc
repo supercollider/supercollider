@@ -195,29 +195,6 @@ AbstractOut : UGen {
  	}
  	
  	*isOutputUGen { ^true }
- 	*replaceZeroesWithSilence { arg array;
- 		// this replaces zeroes with audio rate silence.
- 		// sub collections are deep replaced
- 		var numZeroes, silentChannels, pos = 0;
- 		
- 		numZeroes = array.count({ arg item; item == 0.0 });
- 		if (numZeroes == 0, { ^array });
- 		
- 		silentChannels = Silent.ar(numZeroes).asCollection;
- 		array.do({ arg item, i;
- 			var res; 
- 			if (item == 0.0, { 
- 				array.put(i, silentChannels.at(pos)); 
- 				pos = pos + 1;
- 			}, { 
- 				if(item.isSequenceableCollection, {
- 					res = this.replaceZeroesWithSilence(item);
- 					array.put(i, res);
- 				});
- 			});
- 		});
- 		^array;
- 	}
  	
  	numAudioChannels {
  		^inputs.size - this.class.numFixedArgs
