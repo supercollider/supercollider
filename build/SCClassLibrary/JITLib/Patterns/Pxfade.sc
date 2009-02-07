@@ -37,7 +37,7 @@ PfadeOut : PfadeIn {
 	embedInStream { arg inval, cleanup;
 		var outval, elapsed=0, stream, c;
 		stream = pattern.asStream;
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 		loop {
 			inval = stream.next(inval) ?? { ^cleanup.exit(inval) };
 			cleanup.update(inval);
