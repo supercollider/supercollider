@@ -174,7 +174,7 @@ Event : Environment {
 						var steps = ~scale.respondsTo(\stepsPerOctave).if(
 							{ ~scale.stepsPerOctave }, ~stepsPerOctave
 						);
-						midinote = (~cpsToMidi.value(freq / ~harmonic) - ~ctranspose);
+						midinote = cpsmidi((freq / ~harmonic) - ~ctranspose);
 						midinote / 12.0 - ~octave * steps - ~root - ~gtranspose
 					}
 				},
