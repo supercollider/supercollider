@@ -841,7 +841,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 // class method interface
 
 	*tree { |sysext = true, userext = true, allowCached = true| ^global.tree(sysext, userext, allowCached) }
-	*addUserFilter { |subpath| addUserFilter(subpath) }
+	*addUserFilter { |subpath| ^global.addUserFilter(subpath) }
 	*addDirTree { |helppath, tree| ^global.addDirTree(helppath, tree) }
 	*rebuildTree { ^global.rebuildTree }
 	*forgetTree { ^global.forgetTree }
