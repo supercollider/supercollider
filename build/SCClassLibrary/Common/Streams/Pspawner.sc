@@ -47,7 +47,7 @@ Spawner : Pattern {
 	
 		var outevent, stream, nexttime;
 		event = inevent;					// gives genStream access to the event
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { EventStreamCleanup.new };
 		
 		while({
 			priorityQ.notEmpty
@@ -92,7 +92,7 @@ Pspawner : Proutine {
 	}
 	embedInStream { | inevent, cleanup |
 	
-		^Spawner(routineFunc).embedInStream(inevent, cleanup ? EventStreamCleanup.new);
+		^Spawner(routineFunc).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new });
 			
 	}
 	

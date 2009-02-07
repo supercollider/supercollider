@@ -350,7 +350,7 @@ Pfin : FilterPattern {
 	embedInStream { arg event, cleanup;
 		var inevent;
 		var stream = pattern.asStream;
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup = cleanup ?? { cleanup = EventStreamCleanup.new };
 		
 		count.value.do({
 			inevent = stream.next(event) ?? { ^event };
@@ -392,7 +392,7 @@ Pfindur : FilterPattern {
 		var item, delta, elapsed = 0.0, nextElapsed, inevent; 
 	
 		var stream = pattern.asStream;
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 		loop {
 			inevent = stream.next(event) ?? { ^event };
 			cleanup.update(inevent);
