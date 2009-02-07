@@ -10,7 +10,7 @@ Pfpar : ListPattern {
 	embedInStream { arg inval, cleanup;
 		var assn;
 		var priorityQ = PriorityQueue.new;
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 	
 		repeats.value.do({ arg j;
 			var outval, stream, nexttime, now = 0.0;

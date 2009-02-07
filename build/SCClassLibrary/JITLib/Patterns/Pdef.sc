@@ -437,7 +437,7 @@ EventPatternProxy : TaskProxy {
 		var resetTest = reset;
 		var stream = pattern.asStream;
 		
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 		
 		while {
 			this.receiveEvent(inval);	

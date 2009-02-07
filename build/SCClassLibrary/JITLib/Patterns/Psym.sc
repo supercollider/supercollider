@@ -103,7 +103,7 @@ Psym1 : Psym {
 		var str, which, streams, outval, pat, currentStream;
 		str = pattern.asStream;
 		streams = IdentityDictionary.new;
-		cleanup = cleanup ? EventStreamCleanup.new;
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 		
 		while {
 			which = str.next(inval);
