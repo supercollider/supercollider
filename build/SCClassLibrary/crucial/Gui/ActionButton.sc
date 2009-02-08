@@ -117,11 +117,16 @@ FlowView : SCViewHolder {
 		^super.new.init(parent, bounds,margin,gap);
 	}
 	init { arg argParent, bounds,margin,gap;
-		var w,parentView;
-		parent = argParent ?? { GUI.window.new("",bounds).front };
+		var w, parentView, iMadeParent = false;
+		parent = argParent ?? {
+			iMadeParent = true;
+			GUI.window.new("",bounds).front
+		};
 		parentView = parent.asView;
 		if(bounds.notNil,{
-			bounds = bounds.asRect
+			bounds = bounds.asRect;
+				// this covers FlowView(nil, Rect(...))
+			if(iMadeParent) { bounds = bounds.moveTo(0, 0) };
 		},{
 			bounds = parentView.bounds;//.insetAll(2,2,2,2);
 			if(parentView.tryPerform(\relativeOrigin) ? false) {
