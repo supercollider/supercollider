@@ -1131,7 +1131,10 @@ int headerFormatFromString(const char *name)
 	if (strcasecmp(name, "AVR")==0) return SF_FORMAT_AVR;
 	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
 	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
+// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
+#if SC_DARWIN
 	if (strcasecmp(name, "vorbis")==0) return SF_FORMAT_VORBIS;
+#endif
 	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
 	return 0;
 }

@@ -1234,9 +1234,12 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 		case SF_FORMAT_FLAC :
 				*string = "FLAC";
 				break ;
+// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
+#if SC_DARWIN
 		case SF_FORMAT_VORBIS :
 				*string = "vorbis";
 				break ;
+#endif
 /*
 		case SF_FORMAT_PAF :
 
@@ -1397,7 +1400,10 @@ int headerFormatFromString(const char *name)
 	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
 	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
 	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
+// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
+#if SC_DARWIN
 	if (strcasecmp(name, "VORBIS")==0) return SF_FORMAT_VORBIS;
+#endif
 	return 0;
 }
 
