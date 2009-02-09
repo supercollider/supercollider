@@ -23,8 +23,8 @@ p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
+p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #356f14}
 p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
@@ -33,14 +33,14 @@ span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {color: #5c5e65}
-span.s5 {color: #595e76}
-span.s6 {color: #465294}
+span.s5 {color: #5a5e75}
+span.s6 {color: #495491}
 span.s7 {font: 9.0px Monaco}
 span.s8 {color: #0000bf}
 span.s9 {color: #606060}
-span.s10 {color: #0018b8}
+span.s10 {color: #0922b2}
 span.s11 {font: 14.0px Helvetica}
-span.s12 {color: #5c5e6c}
+span.s12 {color: #5c5e6b}
 span.s13 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -54,7 +54,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCNumberBox</b></p>
 <p class="p2"><br></p>
-<p class="p5">Whatever is entered into the number box is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../../Math/Number.html"><span class="s5">Number</span></a>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s6">SCStaticTextBase</span></a>.</p>
+<p class="p5">Whatever is entered into the number box is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../../Math/Number.html"><span class="s5">Number</span></a>. Inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s6">SCStaticTextBase</span></a>. If you set <b>scroll</b> to true, then you can use mouse scrolling in the SCNumberBox.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
@@ -147,7 +147,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">)</span></p>
 <p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 12;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 12;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>typingColor_(arg1)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>typingColor</b></p>
@@ -205,7 +205,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been received. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument<span class="Apple-tab-span">	</span></p>
 <p class="p12"><b>Examples</b></p>
-<p class="p16"><br></p>
+<p class="p19"><br></p>
 <p class="p15">(</p>
 <p class="p15"><span class="Apple-tab-span">	</span>w = <span class="s8">Window</span>(<span class="s9">"NumberBox Example"</span>, <span class="s8">Rect</span>(100, 500, 400, 120));</p>
 <p class="p15"><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s8">NumberBox</span>(w, <span class="s8">Rect</span>(150, 10, 100, 20));</p>
@@ -257,7 +257,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15">)</p>
 <p class="p19"><br></p>
 <p class="p19"><br></p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
+<p class="p19"><br></p>
+<p class="p19"><br></p>
 </body>
 </html>
