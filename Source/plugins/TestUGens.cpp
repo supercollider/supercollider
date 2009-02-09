@@ -182,7 +182,6 @@ const char *CheckBadValues_fpclassString(int fpclass)
 		case FP_INFINITE:     return "infinity";
 		case FP_ZERO:         return "zero";
 		case FP_SUBNORMAL:    return "denormal";
-		case FP_SUPERNORMAL:  return "supernormal";
 		default:              return "unknown";
 	}
 }
