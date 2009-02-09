@@ -110,6 +110,8 @@ int headerFormatFromSymbol(PyrSymbol *inSymbol)
 	if (strcmp(name, "Raw")==0) return raw_sound_file;
 	if (strcmp(name, "raw")==0) return raw_sound_file;
 	if (strcmp(name, "RAW")==0) return raw_sound_file;
+	if (strcmp(name, "vorbis")==0) return vorbis_sound_file;
+	if (strcmp(name, "FLAC")==0) return flac_sound_file;
 	//if (strcmp(name, "BICSF")==0) return BICSF_sound_file;	
 	return unsupported_sound_file;
 }
