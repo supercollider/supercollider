@@ -1231,6 +1231,12 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 		case SF_FORMAT_W64 :
 				*string = "WAV";
 				break ;
+		case SF_FORMAT_FLAC :
+				*string = "FLAC";
+				break ;
+		case SF_FORMAT_VORBIS :
+				*string = "vorbis";
+				break ;
 /*
 		case SF_FORMAT_PAF :
 
@@ -1391,6 +1397,7 @@ int headerFormatFromString(const char *name)
 	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
 	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
 	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
+	if (strcasecmp(name, "VORBIS")==0) return SF_FORMAT_VORBIS;
 	return 0;
 }
 

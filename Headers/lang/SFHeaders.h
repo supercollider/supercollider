@@ -30,7 +30,9 @@ enum {
 	NeXT_sound_file,
 	IRCAM_sound_file,
 	SD2_sound_file,
-	raw_sound_file
+	raw_sound_file,
+	flac_sound_file,
+	vorbis_sound_file
 };
 
 enum {
