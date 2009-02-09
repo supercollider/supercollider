@@ -5,16 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #95241b}
 span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #0019b7}
-span.s3 {color: #000000}
+span.s2 {color: #0000ff}
+span.s3 {color: #0020b4}
+span.s4 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -23,15 +24,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>superclass: FilterPatterns</b></p>
 <p class="p2"><br></p>
-<p class="p3">repeats the enclosed pattern a number of times<span class="Apple-converted-space"> </span></p>
+<p class="p3">Repeats the enclosed pattern repeats times.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Pn(pattern, repeats)</b></p>
+<p class="p3">If key is non-nil, it sets the value of that key to true whenever it restarts the pattern.</p>
+<p class="p3">This can be used to advance Patterns enclosed by <a href="Pgate.html"><span class="s2">Pgate</span></a></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Pn(pattern, repeats, key)</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
-<p class="p4"><span class="s2">var</span> a, b;</p>
-<p class="p5"><span class="s3">a = Pn(</span><span class="s2">Pseq</span><span class="s3">(#[1, 2, 3], 1), 4);<span class="Apple-tab-span">	</span></span>// repeat pattern four times</p>
+<p class="p4"><span class="s3">var</span> a, b;</p>
+<p class="p5"><span class="s4">a = Pn(</span><span class="s3">Pseq</span><span class="s4">(#[1, 2, 3], 1), 4);<span class="Apple-tab-span">	</span></span>// repeat pattern four times</p>
 <p class="p4">b = a.asStream;</p>
 <p class="p4">16.do({ b.next.postln; });</p>
 <p class="p4">)</p>
