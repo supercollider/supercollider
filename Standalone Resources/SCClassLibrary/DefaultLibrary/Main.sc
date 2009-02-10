@@ -123,6 +123,11 @@ classvar scVersionMajor=3, scVersionMinor=2, scVersionPostfix="1";
 		};
 	}
 	
+	pid {
+		_GetPid
+		^this.primitiveFailed
+	}
+	
 	// PRIVATE
 	prArgv {
 		_Argv
