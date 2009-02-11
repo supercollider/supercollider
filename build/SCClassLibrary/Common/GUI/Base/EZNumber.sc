@@ -61,8 +61,8 @@ EZNumber : EZGui{
 		action = argAction;
 		
 		numberView = GUI.numberBox.new(view, numBounds).resize_(2);
-		numberView.step=controlSpec.step;
-		numberView.scroll=true;
+		numberView.step=controlSpec.step*10;
+		//numberView.scroll=true;
 		numberView.action = {
 			this.valueAction_(numberView.value);
 		};

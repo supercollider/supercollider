@@ -53,7 +53,6 @@ EZRanger : EZGui {
 		loBox = GUI.numberBox.new(view, loBounds);
 		rangeSlider = GUI.rangeSlider.new(view, rangerBounds);
 		
-		
 		controlSpec = argControlSpec.asSpec;
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		action = argAction;
@@ -70,9 +69,13 @@ EZRanger : EZGui {
 		if (initAction) { this.doAction };
 		
 		
-		if (controlSpec.step == 0) {
+		if (controlSpec.step != 0) {
 			rangeSlider.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
+		
+		hiBox.step=controlSpec.step*10;
+		loBox.step=controlSpec.step*10;
+
 
 		rangeSlider.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);

@@ -59,14 +59,16 @@ EZKnob : EZGui {
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
-		
+		numberView.step=controlSpec.step*10;
+
+
 		if((controlSpec.minval + controlSpec.maxval)==0){knobView.centered=true};
 		
 		knobView.action = {
 			this.valueAction_(controlSpec.map(knobView.value));
 		};
 		
-		if (controlSpec.step == 0) {
+		if (controlSpec.step != 0) {
 			knobView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 

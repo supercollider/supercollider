@@ -1043,7 +1043,7 @@ SCStaticText : SCStaticTextBase {
 SCNumberBox : SCStaticTextBase {
 	var <> keyString, <>step=1;
 	var <>typingColor, <>normalColor;
-	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=false, <>shift_step=0.1, <>ctrl_step=10;
+	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true, <>shift_step=0.1, <>ctrl_step=10;
 	
 	*paletteExample { arg parent, bounds;
 		var v;
