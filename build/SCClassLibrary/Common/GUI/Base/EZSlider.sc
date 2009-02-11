@@ -64,7 +64,7 @@ EZSlider : EZGui {
 			this.valueAction_(controlSpec.map(sliderView.value));
 		};
 		
-		if (controlSpec.step == 0) {
+		if (controlSpec.step != 0) {
 			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 
@@ -77,6 +77,7 @@ EZSlider : EZGui {
 		};
 
 		numberView.action = { this.valueAction_(numberView.value) };
+		numberView.step=controlSpec.step*10;
 		
 		if (initAction) {
 			this.valueAction_(initVal);
