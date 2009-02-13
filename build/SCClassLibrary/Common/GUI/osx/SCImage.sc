@@ -401,9 +401,9 @@ SCImage {
 		var strbounds;
 		if (string.notNil) {
 			strbounds = string.bounds(font);
-			Pen.use { // for now
-				Pen.translate(0, this.height);
-				Pen.scale(1,-1);
+			SCPen.use { // for now
+				SCPen.translate(0, this.height);
+				SCPen.scale(1,-1);
 				point.y = this.height - point.y - strbounds.height;
 				string.drawAtPoint(point, font, color);
 			}
@@ -436,16 +436,16 @@ SCImage {
 		});
 		uview.drawFunc_({
 			
-			Pen.use {
+			SCPen.use {
 				this.drawInRect(window.view.bounds, this.bounds, 2, 1.0);
 			};
 			
-			Pen.use {
-				Pen.width_(0.5);
+			SCPen.use {
+				SCPen.width_(0.5);
 				Color.black.alpha_(0.4).setFill;
 				Color.white.setStroke;
-				Pen.fillRect(Rect(5.5,5.5,100,20));
-				Pen.strokeRect(Rect(5.5,5.5,100,20));
+				SCPen.fillRect(Rect(5.5,5.5,100,20));
+				SCPen.strokeRect(Rect(5.5,5.5,100,20));
 				
 				info.drawAtPoint(10@10, Font.default, Color.white);
 			};
