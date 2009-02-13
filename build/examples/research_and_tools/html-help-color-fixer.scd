@@ -195,7 +195,8 @@ Library.put(\colorFix, Environment.make {
 		color = colorStr.collectAs(_.digit, Array).clump(2)
 			.collect({ |row| (row[0] << 4) | row[1] });
 		signature = color.maxIndex;
-		if(colorStr != ~signatures[signature] and: { signature != 0 or: { color.differentiate[1..].sum != 0 } }) {
+		if(colorStr != ~signatures[signature] and:
+				{ signature != 0 or: { color.differentiate[1..].abs.sum != 0 } }) {
 			~fseek.(stream, -6, 1);
 			~signatures[signature].do({ |ch| stream.put(ch) });
 			numFixes.value = numFixes.value + 1;
