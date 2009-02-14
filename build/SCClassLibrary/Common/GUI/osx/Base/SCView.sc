@@ -1728,7 +1728,7 @@ SCEnvelopeView : SCView {
 				};
 				[shapeNum, curveNum]
 			};
-			this.debug(curveNumbers);
+//			this.debug(curveNumbers);
 			this.prSetCurves(curveNumbers);
 		}{ 				
 			shapeNum = this.shapeNumber(curves);
@@ -1804,7 +1804,7 @@ SCEnvelopeView : SCView {
 	}
 	
 	prSetCurve{|arr|
-		this.debug([\setCurves, arr]);
+//		this.debug([\setCurves, arr]);
 		this.setProperty(\setCurve, arr);
 	}
 	
