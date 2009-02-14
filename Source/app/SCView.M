@@ -5518,7 +5518,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
         if(sel){
 			// toggle fixed selection
 			if(envo->mIsSelected && mIsFixedSelection){
-				post("toggle\n");
+//				post("toggle\n");
 				
 				envo->mIsSelected = false;
 				envo->mColor = envo->mObjectColor;	
