@@ -1281,10 +1281,8 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_FixedRight :
 					if(!child->relativeOrigin()){
-						if(!this->relativeOrigin()){
 							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
 							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
-							}
 					} else {
 						if(child->isContainer()){
 							if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
@@ -1309,10 +1307,8 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_FixedBottom :
 					if(!child->relativeOrigin()){
-						if(!this->relativeOrigin()){
 							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
 							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
-							}					
 					} else {
 						if(child->isContainer()){
 							if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
