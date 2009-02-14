@@ -1,9 +1,11 @@
 // html help color correction -- James Harkins
 
 /*
-Usage:
+Purpose:
+OSX applies a color correction profile to HTML files as they are opened in SC. Then, when the document is resaved to disk, the colors are slightly altered. Over time, they fade. This utility scans the HTML and replaces colors with the standard OSX syntax-colorize scheme.
 
-This code loads all the functions into an environment saved in the global library. In OSX, a menu item is added to fix the colors in the current open document -- just make sure the document is the frontmost window and go to the Library menu > HTML Color Fix to process that document.
+Usage:
+This code loads all the functions into an environment saved in the global library. In OSX, a menu item is added to fix the colors in the current open document -- just make sure the document is the frontmost window and go to the Library menu > HTML Color Fix to process that document. It must be an HTML document.
 
 To use the commandline utility, you need to enter the environment first.
 
@@ -96,7 +98,7 @@ Library.put(\colorFix, Environment.make {
 				op.envirGet.value(stream, path, root, outRoot);
 			};
 		} {
-			"Error occurred while scanning %. Continuing.".format(path).warn;
+			"Error occurred while scanning %. Output file was not written.".format(path).warn;
 			success = false;
 		};
 	} {
@@ -192,17 +194,25 @@ Library.put(\colorFix, Environment.make {
 	var	colorStr, color, signature;
 	colorStr = try { stream.nextN(6) } { "" };
 	if(colorStr.size == 6) {
-		color = colorStr.collectAs(_.digit, Array).clump(2)
-			.collect({ |row| (row[0] << 4) | row[1] });
-		signature = color.maxIndex;
-		if(colorStr != ~signatures[signature] and:
-				{ signature != 0 or: { color.differentiate[1..].abs.sum != 0 } }) {
-			~fseek.(stream, -6, 1);
-			~signatures[signature].do({ |ch| stream.put(ch) });
-			numFixes.value = numFixes.value + 1;
+			// if any of the 6 chars is not a digit, an error gets thrown here
+			//  and caught by ~scanStream
+		color = colorStr.collectAs(_.digit, Array);
+			// they all must be hex digits
+		if(color.every(_ < 16)) {
+			color = color.clump(2)
+				.collect({ |row| (row[0] << 4) | row[1] });
+			signature = color.maxIndex;
+			if(colorStr != ~signatures[signature] and:
+					{ signature != 0 or: { color.differentiate[1..].abs.sum != 0 } }) {
+				~fseek.(stream, -6, 1);
+				~signatures[signature].do({ |ch| stream.put(ch) });
+				numFixes.value = numFixes.value + 1;
+			};
 		};
+			// we must return true even if non-hex digits found
+			// because in this func, 'false' means we hit the end of the file
 		true
-	} { false };	// if the color string was too short, we're at the end of the file
+	} { false };	// if the color string was too short, we're at EOF
 };
 
 
@@ -245,7 +255,8 @@ if(~cocoaMenu.notNil) {
 	};
 	
 	~confirmWrite = { |prompt, checkFunc = true|
-		var	w, c, bigFont = Font(Font.default.name, 36).boldVariant;
+		var	w, c,
+			bigFont = Font(GUI.skin.fontSpecs[0], 28);
 		var	docPath;
 		var	continue, sb = Window.screenBounds;
 
