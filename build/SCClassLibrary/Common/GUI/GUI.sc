@@ -191,7 +191,7 @@ GUI {
 	 *  Note that if you wanted to do this in an *initClass that the scheme and GUI must be initialized
 	 * and the scheme must be created in CocoaGUI.initClass (class varies on platform) so you cannot
 	 * explicitly init that class by name since it varies across platforms.  so you can't really setSkin
-	 * in an initClass.  so do it in your startup.
+	 * in an initClass. Your initClass method could do StartUp.add { GUI.setSkin(...) };
 	 */
 	*setSkin { arg skinName;
 		skin = skins[skinName];
