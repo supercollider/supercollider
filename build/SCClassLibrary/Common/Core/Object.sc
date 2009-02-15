@@ -580,6 +580,7 @@ Object  {
 	source { ^this }
 	asUGenInput { ^this }
 	asControlInput { ^this }
+	asAudioRateInput { ^if(this.rate != \audio) { K2A.ar(this) } { this } }
 
 
 	// these are the same as new and newCopyArgs, but should not be overridden by any class.
@@ -594,10 +595,7 @@ Object  {
 	*prNewCopyArgs { arg ... args; 
 		_BasicNewCopyArgsToInstVars 
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize 
-		// indexable slots. the indexed size will be zero.
-		// to actually put things in the object you need to
-		// add them.
+		// creates a new instance which holds the args as slots
 	}
 	
 	//////
