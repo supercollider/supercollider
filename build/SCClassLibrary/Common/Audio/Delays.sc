@@ -18,7 +18,7 @@ Delay2 : Delay1 { }
 DelayN : UGen {
 	
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, maxdelaytime, delaytime).madd(mul, add)
+		^this.multiNew('audio', in.asAudioRateInput, maxdelaytime, delaytime).madd(mul, add)
 	}
 	*kr { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('control', in, maxdelaytime, delaytime).madd(mul, add)
@@ -32,7 +32,7 @@ DelayC : DelayN { }
 CombN : UGen {
 	
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, maxdelaytime, delaytime, decaytime).madd(mul, add)
+		^this.multiNew('audio', in.asAudioRateInput, maxdelaytime, delaytime, decaytime).madd(mul, add)
 	}
 	*kr { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('control', in, maxdelaytime, delaytime, decaytime).madd(mul, add)
@@ -53,7 +53,7 @@ AllpassC : CombN { }
 BufDelayN : UGen {
 	
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', buf, in, delaytime).madd(mul, add)
+		^this.multiNew('audio', buf, in.asAudioRateInput, delaytime).madd(mul, add)
 	}
 	*kr { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('control', buf, in, delaytime).madd(mul, add)
@@ -67,7 +67,7 @@ BufDelayC : BufDelayN { }
 BufCombN : UGen {
 	
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', buf, in, delaytime, decaytime).madd(mul, add)
+		^this.multiNew('audio', buf, in.asAudioRateInput, delaytime, decaytime).madd(mul, add)
 	}
 }
 

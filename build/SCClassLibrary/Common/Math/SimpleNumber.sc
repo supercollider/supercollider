@@ -295,6 +295,7 @@ SimpleNumber : Number {
 	
 
 	rate { ^'scalar' } // scalarRate constant
+	asAudioRateInput { ^if(this == 0) { Silent.ar } { DC.ar(this) } }
 	
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;
