@@ -362,7 +362,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 	var classButt, browseButt, bwdButt, fwdButt;
 	var isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
 	var screenBounds, bounds, textViewBounds, results, resultsview, statictextloc;
-	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false, fUpdateWinTitle;
+	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false, fUpdateWinTitle, fLoadError;
 	
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext, allowCached );
@@ -400,11 +400,23 @@ gui { |sysext=true,userext=true, allowCached=true|
 		fwdButt.enabled = historyIdx < (history.size -	1);
 	};
 	
+	fLoadError = { |error|
+		error.reportError;
+		"\n\nA discrepancy was found in the help tree.".postln;
+		if(allowCached) {
+			"The help tree cache may be out of sync with the file system. Rebuilding cache. Please reopen the Help GUI when this is finished.".postln;
+			this.rebuildTree;
+			win.close;
+		} {
+			"Please report the above error dump on the sc-users mailing list.".postln;
+		};
+	};
+	
 	// cuts the redo history, adds and performs a new text open action
 	fHistoryDo = { arg selector, argum;
 		history		= history.copyFromStart( historyIdx ).add([ selector, argum ]);
 		historyIdx	= history.size - 1;
-		textView.perform( selector, argum );
+		try({ textView.perform( selector, argum ) }, fLoadError);
 		fBwdFwd.value;
 	};
 	
@@ -412,7 +424,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 	fHistoryMove = { arg incr; var entry;
 		historyIdx	= historyIdx + incr;
 		entry		= history[ historyIdx ];
-		textView.perform( entry[ 0 ], entry[ 1 ]);
+		try({ textView.perform( entry[ 0 ], entry[ 1 ]) }, fLoadError);
 		fBwdFwd.value;
 	};
 	
