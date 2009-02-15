@@ -1280,17 +1280,33 @@ void SCCompositeView::setBounds(SCRect inBounds)
             case layout_FixedLeft : 
                 break;
             case layout_FixedRight :
+				if(child->isContainer()){
 					if(!child->relativeOrigin()){
+					
+						offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
+						bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+						
+					} else {
+						
+						if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
 							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
 							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
-					} else {
-						if(child->isContainer()){
-							if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
-								offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-								bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
-							}
 						}
+						
 					}
+				}else{
+				
+					if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
+						offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
+						bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+					}else{
+						if(!child->parent()->relativeOrigin()){
+							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
+							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+						} 
+					}
+									
+				}
 			
                 break;
             case layout_HElastic :
@@ -1306,17 +1322,29 @@ void SCCompositeView::setBounds(SCRect inBounds)
             case layout_FixedTop : 
                 break;
             case layout_FixedBottom :
+				if(child->isContainer()){
 					if(!child->relativeOrigin()){
 							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
 							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
 					} else {
-						if(child->isContainer()){
-							if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
-								offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-								bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
-							}
+						if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
+							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
 						}
 					}
+				} else{
+					if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
+								offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+								bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+					}else{
+								
+						if(!child->parent()->relativeOrigin()){
+							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+						} 
+					}
+								
+				}
                 break;
             case layout_VElastic :
                 offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
