@@ -1252,6 +1252,10 @@ SCCompositeView::~SCCompositeView()
 void SCCompositeView::setBounds(SCRect inBounds)
 {
     SCView *child = mChildren;
+	SCView *myTop = mTop;
+	SCRect topBounds = myTop->getBounds();
+	SCRect topPBounds = myTop->getLayout().bounds;
+	
 //    float right = mBounds.x + mBounds.width;
 //    float bottom = mBounds.y + mBounds.height;
 	mLayout.bounds = inBounds;
@@ -1281,28 +1285,25 @@ void SCCompositeView::setBounds(SCRect inBounds)
                 break;
             case layout_FixedRight :
 				if(child->isContainer()){
-					if(!child->relativeOrigin()){
-					
-						offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-						bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
-						
-					} else {
-						
-						if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
+					// if the parent is a top container, then relative or absolute are irrelevant.
+					if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
 							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); 
+					}else{
+						if(!child->relativeOrigin()){ //absolute
+							offset = (topBounds.x + topBounds.width) - (bounds.x + bounds.width);
+							bounds.x = (topPBounds.x + topPBounds.width) - (bounds.width + offset); 
 						}
-						
 					}
 				}else{
-				
+					// if the parent is a top container, then relative or absolute are irrelevant.
 					if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
 						offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-						bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+						bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); 
 					}else{
-						if(!child->parent()->relativeOrigin()){
-							offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-							bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); //absolute
+						if(!child->parent()->relativeOrigin()){ //absolute
+							offset = (topBounds.x + topBounds.width) - (bounds.x + bounds.width);
+							bounds.x = (topPBounds.x + topPBounds.width) - (bounds.width + offset); 
 						} 
 					}
 									
@@ -1310,6 +1311,10 @@ void SCCompositeView::setBounds(SCRect inBounds)
 			
                 break;
             case layout_HElastic :
+				if(!child->relativeOrigin() && !child->parent()->isTopContainer()){
+					offset = topBounds.width - (bounds.x + bounds.width);
+					bounds.width = topPBounds.width - (bounds.x + offset); //absolute
+				}else{
                 offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
                /* bounds.width = sc_clip(
                                     (inBounds.width) - (bounds.x + offset),
@@ -1317,36 +1322,45 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                     sc_min(layout.mMaxWidth,right - bounds.x)
                                 );*/
                 bounds.width = (inBounds.width) - ((bounds.x - mBounds.x) + offset);
+				}
         }
         switch (layout.mVResize) {
             case layout_FixedTop : 
                 break;
             case layout_FixedBottom :
 				if(child->isContainer()){
-					if(!child->relativeOrigin()){
-							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
-					} else {
-						if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
-							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
-						}
+					// if the parent is a top container, then relative or absolute are irrelevant.
+					if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
+						offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
+						bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+					}else{
+						if(!child->relativeOrigin()){
+								offset = (topBounds.y + topBounds.height) - (bounds.y + bounds.height);
+								bounds.y = (topPBounds.y + topPBounds.height) - (bounds.height + offset);
+						} 
 					}
-				} else{
+				} else {
+				
+					// if the parent is a top container, then relative or absolute are irrelevant.
 					if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
 								offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
 								bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
 					}else{
 								
 						if(!child->parent()->relativeOrigin()){
-							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
-							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
+							offset = (topBounds.y + topBounds.height) - (bounds.y + bounds.height);
+							bounds.y = (topPBounds.y + topPBounds.height) - (bounds.height + offset);
 						} 
 					}
 								
 				}
                 break;
+				
             case layout_VElastic :
+				if(!child->relativeOrigin() && !child->parent()->isTopContainer()){
+					offset = topBounds.height - (bounds.y + bounds.height);
+					bounds.height = topPBounds.height - (bounds.y + offset); //absolute
+				}else{
                 offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
                 /*bounds.height = sc_clip(
                                     (inBounds.height) - (bounds.y + offset),
@@ -1354,6 +1368,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
                                     sc_min(layout.mMaxHeight,bottom - bounds.y)
                                 );*/
                 bounds.height = (inBounds.height) - ((bounds.y - mBounds.y) + offset);
+				}
         }
 
         child->setBounds(bounds); 
