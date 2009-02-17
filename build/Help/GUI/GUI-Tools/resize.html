@@ -27,6 +27,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>resize</b> takes nine different arguments defining the behavior when window is resized.</p>
 <p class="p3"><br></p>
+<p class="p1">If relativeOrigin is true, then each view responds relatively to the stretches of its parent view.</p>
+<p class="p1">If relativeOrigin is false, then each view responds relatively to the stretches of the top view, even if the top view is not its parent.</p>
+<p class="p3"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 2 3</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>4 5 6</p>
@@ -48,8 +51,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Examples</b></p>
 <p class="p5"><br></p>
 <p class="p6">// resize behaviours</p>
+<p class="p6">// use the PopUpMenus to mix resize modes</p>
 <p class="p7">(</p>
-<p class="p6"><span class="s2">var</span><span class="s3"> a,relative=</span><span class="s2">true</span><span class="s3">; </span>//change to absolute for absolute origin behaviour</p>
+<p class="p6"><span class="s2">var</span><span class="s3"> a,<span class="Apple-converted-space">  </span>relative=</span><span class="s2">true</span><span class="s3">; </span>//change to absolute for absolute origin behaviour</p>
 <p class="p5"><br></p>
 <p class="p7">a = { <span class="s2">|i|</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, b, x,k,t,p;</p>
@@ -109,6 +113,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p7">w.front;</p>
 <p class="p7">)</p>
-<p class="p5"><br></p>
+<p class="p2"><br></p>
 </body>
 </html>
