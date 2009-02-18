@@ -13,7 +13,19 @@
 	}
 		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
 		monitor=true, sinks=true, morph=false; 
-				^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}	proxy_ { arg px; 		if (px.isKindOf(NodeProxy), { 			proxy = px;			nameView.object_(px).string_(px.key ? 'anon proxy');			if (monitor.notNil) { monitor.proxy_(proxy) };			this.fullUpdate;		})	}
+				^super.new.nSliders_(nSliders).init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}	proxy_ { arg px; 
+		var typeStr;
+		if (px.isNil) { 
+			proxy = nil; 
+			nameView.object_(px).string_('-');
+			typeChanView.string_('-'); 
+			this.fullUpdate;
+		} { 			if (px.isKindOf(NodeProxy)) { 				proxy = px;				nameView.object_(px).string_(px.key ? 'anon proxy');				typeStr = if(proxy.rate === 'audio') { "ar" } { 
+						if(proxy.rate === 'control', { "kr" }, { "ir" })
+						} +  proxy.numChannels;
+				typeChanView.string_('-');
+				if (monitor.notNil) { monitor.proxy_(proxy) };				this.fullUpdate;			} 
+		}	}
 	
 	name { ^nameView.string.asSymbol }
 	name_ { |key| nameView.string_(key.asString); }
@@ -23,9 +35,11 @@
 	pxKey_ { |key| ^this.name_(key) }
 	clear {		proxy = nil; 		{ nameView.object_(nil).string_("-"); }.defer;		this.fullUpdate;	}
 			init { arg win, comp, extras, monitor, sinks, morph;
-						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? { "NodeProxyEditor: making internal win.".postln; 
+						var bounds;						skin = GUI.skin; 				font = GUI.font.new(*GUI.skin.fontSpecs);				bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? { 
+			// "NodeProxyEditor: making internal win.".postln; 
 			Window(this.class.name, bounds.resizeBy(4, 4)) 
-		};		w = win; 			zone = comp ?? { "NodeProxyEditor: making internal zone.".postln;  
+		};		w = win; 			zone = comp ?? { 
+			// "NodeProxyEditor: making internal zone.".postln;  
 			CompositeView(w, bounds); 
 		};		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(0@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;		
 		replaceKeys = replaceKeys ?? { () };
@@ -207,7 +221,11 @@
 		 
 	}	updateAllEdits {
 	//	var keyPressed = false;
-			
+		if (proxy.isNil) { 
+			[sinks, edits].do(_.do(_.visible_(false)));
+			^this;
+		};
+		
 		edits.do { arg sl, i;
 			var key, val, mappx, spec, slider, number, sink, mapKey;
 			var keyString, labelKey, isWet, isMix; 
