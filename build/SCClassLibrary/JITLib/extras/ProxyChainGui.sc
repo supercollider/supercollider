@@ -11,6 +11,7 @@ ProxyChainGui {
 		try { 
 			editor.proxy_(inchain.proxy);
 			chain = inchain;
+			chain.informEditor(editor);
 		} { 
 			"ProxyChainGui: chain not changed.".inform; 
 		};
