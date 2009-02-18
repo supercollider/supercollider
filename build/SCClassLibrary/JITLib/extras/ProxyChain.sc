@@ -83,11 +83,11 @@ ProxyChain {
 		proxy.playN(outs, amps, ins, vol, fadeTime, group, addAction);
 	}
 	
-	stop { arg fadeTime, reset;
+	stop { arg fadeTime, reset=false;
 		proxy.stop(fadeTime, reset);
 	}
 	
-	end { arg fadeTime, reset;
+	end { arg fadeTime, reset=false;
 		proxy.end(fadeTime, reset);
 	}
 	

@@ -40,10 +40,10 @@ ProxyChainGui {
 		guiFuncs =  (			
 			btlabel: { |but, name| but.states_([[name, Color.black, Color(1, 0.5, 0)]]) },
 			label: { |but, name| but.states_([[name, Color.white, Color(1, 0.5, 0)]]) },
-			slotCtl: { | but, name| 
+			slotCtl: { | but, name, level=0| 
 				but.states_([["[" + name + "]"], [name, Color.black, Color.green(5/7)], ]);
 				but.action_({ |but| 
-					[ { chain.remove(name) }, { chain.add(name) } ][but.value].value 
+					[ { chain.remove(name) }, { chain.add(name, level) } ][but.value].value 
 				});
 			}, 
 			

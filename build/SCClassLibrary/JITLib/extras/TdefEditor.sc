@@ -45,12 +45,11 @@ TaskProxyEditor {
 	}
 
 	init { |w, height, width, makeWatcher| 
-		var sys = GUI.scheme; 
 		var skin = GUI.skin; 
-		var font = sys.font.new(*skin.fontSpecs);
+		var font = Font(*skin.fontSpecs);
 
-		win = w ?? { sys.window.new("task px edit", Rect(0, 0, 190, 30)) };
-		zone = sys.compositeView.new(win, Rect(0, 0, 190, height)); 
+		win = w ?? { Window("task px edit", Rect(0, 0, 190, 30)) };
+		zone = CompositeView(win, Rect(0, 0, 190, height)); 
 		zone.resize_(5);
 		zone.background_(skin.foreground);
 		
@@ -58,7 +57,7 @@ TaskProxyEditor {
 		zone.decorator = flow; 
 		try { win.front };
 
-		nameBut = sys.button.new(zone, Rect(0,0, 70, height))
+		nameBut = Button(zone, Rect(0,0, 70, height))
 			.font_(font)
 			.states_([
 				[" ", skin.fontColor, skin.onColor]
@@ -73,7 +72,7 @@ TaskProxyEditor {
 			.resize_(2)
 		;
 
-		playBut = sys.button.new(zone, Rect(0,0, width, height))
+		playBut = Button(zone, Rect(0,0, width, height))
 			.font_(font)
 			.resize_(3)
 			.states_([
@@ -98,7 +97,7 @@ TaskProxyEditor {
 				};
 			});
 
-		pauseBut = sys.button.new(zone, Rect(0,0, width, height))
+		pauseBut = Button(zone, Rect(0,0, width, height))
 			.font_(font)
 			.resize_(3)
 			.states_([
@@ -121,7 +120,7 @@ TaskProxyEditor {
 				};
 			});
 
-		srcBut = sys.button.new(zone, Rect(0,0, width, height))
+		srcBut = Button(zone, Rect(0,0, width, height))
 			.font_(font)
 			.resize_(3)
 			.states_([ 
@@ -133,7 +132,7 @@ TaskProxyEditor {
 				but.value_(proxy.hasSource.binaryValue)
 			});
 
-		envBut = sys.button.new(zone, Rect(0,0, width, height))
+		envBut = Button(zone, Rect(0,0, width, height))
 			.font_(font)
 			.resize_(3)
 			.states_([ 
@@ -260,25 +259,24 @@ TaskProxyAllGui {
 	
 	init { | size, w|
 		var zone, flow;
-		var sys = GUI.scheme; 
 		var name = "" ++ this.observedClass ++ "AllGui";
-		win = w ?? { sys.window.new(name, Rect(0, 0, 210, 16 * size + 5)) };
-		zone = sys.compositeView.new(win, Rect(0, 0, 210, 16 * size + 5)); 
-		zone.background_(sys.foreground);
+		win = w ?? { Window(name, Rect(0, 0, 210, 16 * size + 5)) };
+		zone = CompositeView(win, Rect(0, 0, 210, 16 * size + 5)); 
+//		zone.background_(skin.foreground);
 		zone.resize_(2);
 		
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow; 
 		try { win.front };
 		
-		filtBut = GUI.button.new(zone, Rect(0,0,60,20))
+		filtBut = Button(zone, Rect(0,0,60,20))
 			.canFocus_(false)
 			.states_([["all"], ["filt"]])
 			.action_({ |btn| 
 				this.filtering_(btn.value > 0);
 			});
 					
-		filTextV = GUI.textView.new(zone, Rect(60,0,60,20))
+		filTextV = TextView(zone, Rect(60,0,60,20))
 			.string_("")
 			.enterInterpretsSelection_(false)
 			.resize_(2)
@@ -298,7 +296,6 @@ TaskProxyAllGui {
 			}
 		).visible_(false);
 		scrolly.slider
-			// .background_(sys.foreground)
 			.resize_(3);
 
 		SkipJack({ 
