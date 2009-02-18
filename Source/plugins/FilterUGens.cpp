@@ -5851,6 +5851,8 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)){
+	Print("%3,3f, %3,3f\n", unit->m_rq, nextrq);
+	      
 	nextw0 = twopi * (double)nextfreq * SAMPLEDUR; 
 	nextalpha = sin(nextw0) * 0.5 * (double)nextrq; 
 	nextb0rz = 1. / (1. + nextalpha); 
@@ -5859,11 +5861,11 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 	nexta1 = -nextb1; 
 	nexta2 = 1.; 
 	nextb2 = -nexta0; 
-	a0slope = CALCSLOPE(nexta0, a0); 
-	a1slope = CALCSLOPE(nexta1, a1); 
-	a2slope = CALCSLOPE(nexta2, a2); 
-	b1slope = CALCSLOPE(nextb1, b1); 
-	b2slope = CALCSLOPE(nextb2, b2); 
+	a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope;
+	a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope;
+	a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope;
+	b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope;
+	b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope;
 	unit->m_freq = nextfreq; 
 	unit->m_rq = nextrq;
 	LOOP(unit->mRate->mFilterLoops,
