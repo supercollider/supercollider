@@ -176,7 +176,12 @@ Monitor {
 	
 	// multi channel interface
 	
-	outs_ { arg indices;
+	outs_ { arg indices; 
+		if (outs.isNil) { 
+			"Monitor - initialising  outs: %\n".postf(indices); 
+			outs = indices; 
+			^this
+		};
 		if (outs.collect(_.size) != indices.collect(_.size)) { 
 			"new outs do not match old outs shape:".warn; 
 			("old:" + outs).postln; 
@@ -194,6 +199,11 @@ Monitor {
 	}
 	
 	amps_ { arg values;
+		if (amps.isNil) { 
+			"Monitor - initialising  outs: %\n".postf(values); 
+			amps = values; 
+			^this
+		};
 		if (values.collect(_.size) != amps.collect(_.size)) { 
 			"new amps do not match old amps shape:".warn; 
 			("old:" + amps).postln; 
