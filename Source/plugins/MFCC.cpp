@@ -98,7 +98,8 @@ void MFCC_Ctor(MFCC* unit) {
 	unit->m_mfcc = (float*)RTAlloc(unit->mWorld, unit->m_numcoefficients * sizeof(float));
 
 	for (j=0; j<unit->m_numcoefficients; ++j) {
-	unit->m_mfcc[j]= 0.0;
+		unit->m_mfcc[j]= 0.f;
+		ZOUT0(j) = 0.f;
 	} 
 
 	unit->mCalcFunc = (UnitCalcFunc)&MFCC_next;
@@ -108,9 +109,10 @@ void MFCC_Ctor(MFCC* unit) {
 
 void MFCC_Dtor(MFCC *unit)
 {
-	
-	RTFree(unit->mWorld, unit->m_mfcc);	
-	RTFree(unit->mWorld, unit->m_bands);	
+	if(unit->m_mfcc)
+		RTFree(unit->mWorld, unit->m_mfcc);	
+	if(unit->m_bands)
+		RTFree(unit->mWorld, unit->m_bands);	
 }
 
 
@@ -151,8 +153,20 @@ void MFCC_dofft(MFCC *unit, uint32 ibufnum) {
 	int j,k;
 
 	World *world = unit->mWorld; 
-	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-	SndBuf *buf = world->mSndBufs + ibufnum; 
+	
+	SndBuf *buf;
+	if (ibufnum >= world->mNumSndBufs) {
+		int localBufNum = ibufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf = world->mSndBufs;
+		}
+	} else {
+		buf = world->mSndBufs + ibufnum;
+	}
+	
 	//int numbins = buf->samples - 2 >> 1;
 			
 	//assumed in this representation
