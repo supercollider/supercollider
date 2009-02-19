@@ -230,7 +230,7 @@ class WindowHelper:
 
         text = doc.get_text(i1, i2)
         self.__lang.evaluate("""
-("firefox " ++ (\"""" + text + "\").findHelpFileOrElse.escapeChar($ )).unixCmd;", silent=True)
+("gnome-open " ++ ((\"""" + text + "\").findHelpFile ? \"Help\").escapeChar($ )).unixCmd;", silent=True)
 
     def on_find_definition(self, action):
         doc = self.__window.get_active_document()
