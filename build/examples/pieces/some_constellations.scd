@@ -7,8 +7,8 @@
 {
 	var activity, nAtoms, tHalf, n;
 	
-	tHalf = 3.92; // Radon-219, discovered 1904 by Giesel and Debierne. The only reasonable isotope
-	nAtoms = 1e+5; // ca. 3.6e-14 mg
+	tHalf = 3.92; // Radon-219, discovered 1904 by Giesel and Debierne.
+	nAtoms = 1e+5; // ca. 3.6e-14 mg 
 
 	n = max(0, nAtoms - PulseCount.ar(LocalIn.ar(2)));
 	activity = Dust.ar( n * 2.log / tHalf);
