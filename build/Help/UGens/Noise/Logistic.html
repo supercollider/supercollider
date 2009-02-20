@@ -34,7 +34,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>freq</b> - Frequency of calculation; if over the sampling rate, this is clamped to the sampling rate<span class="Apple-converted-space"> </span></p>
 <p class="p3"><b>init</b> - Initial value of y in the equation above</p>
 <p class="p2"><br></p>
-<p class="p3">y will stay in the range of 0.0 to 1.0 for normal values of the chaosParam. This leads to a DC offset, and may cause a pop when you stop the Synth. For output you might want to combine this UGen with a ZeroDC or rescale around 0.0 via mul and add: see example below. <span class="Apple-converted-space"> </span></p>
+<p class="p3">y will stay in the range of 0.0 to 1.0 for normal values of the chaosParam. This leads to a DC offset, and may cause a pop when you stop the Synth. For output you might want to combine this UGen with a LeakDC or rescale around 0.0 via mul and add: see example below. <span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p5"><br></p>
 <p class="p6">//defaults</p>
