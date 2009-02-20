@@ -19,11 +19,11 @@ SkipJack {
 	
 	init { |autostart=true|
 		task = Task ({
-			if( verbose )	{ ("SkipJack" + name + "starts.").postln }; 
+			if( verbose )	{ ("SkipJack" + name + "starts.").postcln }; 
 				while { dt.value.wait; stopTest.value.not } { updateFunc.value(this) };
 				this.stop;
 			}, clock ? defaultClock);
-		if ( autostart, { this.start} );
+		if ( autostart, { this.start } );
 	}
 
 	cmdPeriod {
@@ -34,7 +34,9 @@ SkipJack {
 	start { 
 		task.stop.play;
 		all.add(this);
-		CmdPeriod.add(this);
+		if (CmdPeriod.objects.includes(this).not) { 
+			CmdPeriod.add(this) 
+		};
 	}
 	
 	play { this.start }
