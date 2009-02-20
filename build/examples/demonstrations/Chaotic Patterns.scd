@@ -38,7 +38,7 @@ p = Prout({
 		x = 3.687 * x * (1.0 - x); x.yield;}); });
 b = Pbind(\scale, [0,1,3,5,7,8,10],\amp,p/4,\legato, p/2, \pan, p*2-1,\dur, 0.125, \degree, p*14);
 
-Paddp(\mtranspose, Pseq([0,-2, 2],1),Ppar([Pbindf(\stretch, 2.0, \octave, 3,b),b++b])).play;
+Paddp(\mtranspose, Pseq([0,-2, 2],1),Ppar([Pbindf(b, \stretch, 2.0, \octave, 3),b++b])).play;
 
 )
 
@@ -126,7 +126,7 @@ p = Prout({
 		[x, y*14].yield;}); });
 b = Pbind(\scale, [0,2,3,5,7,9,10], \dur,0.125,[\pan, \degree], p );
 
-Ptpar([0.0,Pbindf(\octave, 4,\stretch, 3.0,b), 4.0,b]).play;
+Ptpar([0.0,Pbindf(b, \octave, 4,\stretch, 3.0), 4.0,b]).play;
 
 )
 
