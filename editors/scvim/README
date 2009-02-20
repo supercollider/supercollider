@@ -12,7 +12,7 @@ REQUIREMENTS:
 - unhtml*
 
 OPTIONAL:
-- unrtf [highly recommended to make help docs from RTF formatted help files]
+- unrtf [recommended to make help docs from RTF formatted help files - most helpfiles are now html but there are occasionally some rtfs in plugin packs]
 - gvim
 - links (for alternative help file formatting, see bin/scvim_make_help.rb)
 
