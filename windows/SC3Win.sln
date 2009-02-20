@@ -50,6 +50,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GrainUGens", "PlugIns\Grain
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MachineListeningUGens", "PlugIns\MachineListeningUGens.vcproj", "{C3EFC61E-C698-4E48-81A2-EAED41F1E9A9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestUGens", "PlugIns\TestUGens.vcproj", "{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -136,6 +138,10 @@ Global
 		{C3EFC61E-C698-4E48-81A2-EAED41F1E9A9}.Debug|Win32.Build.0 = Debug|Win32
 		{C3EFC61E-C698-4E48-81A2-EAED41F1E9A9}.Release|Win32.ActiveCfg = Release|Win32
 		{C3EFC61E-C698-4E48-81A2-EAED41F1E9A9}.Release|Win32.Build.0 = Release|Win32
+		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Debug|Win32.Build.0 = Debug|Win32
+		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Release|Win32.ActiveCfg = Release|Win32
+		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
