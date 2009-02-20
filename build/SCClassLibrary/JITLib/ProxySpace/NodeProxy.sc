@@ -4,7 +4,8 @@ BusPlug : AbstractFunction {
 	var <server, <bus; 		
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
-
+	var busLoaded = false;
+	
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
 	
 	
@@ -41,6 +42,7 @@ BusPlug : AbstractFunction {
 		this.freeBus; 
 		bus = b; 
 		this.makeBusArg;
+		busLoaded = bus.server.serverRunning;
 	}
 	
 	// returns boolean
@@ -62,8 +64,7 @@ BusPlug : AbstractFunction {
 							} {
 								this.class.defaultNumControl							}
 		});
-		this.freeBus;
-		bus = Bus.alloc(rate, server, numChannels);
+		this.bus = Bus.alloc(rate, server, numChannels);
 		
 	}
 	
@@ -72,8 +73,10 @@ BusPlug : AbstractFunction {
 		if(bus.notNil, {
 			if(bus.rate === \control) { bus.setAll(0) }; // clean up
 			bus.free;
+			monitor.stop;
 		});
 		busArg = bus = nil;
+		busLoaded = false;
 	}
 	
 	busArg { ^busArg ?? { this.makeBusArg } }
@@ -784,19 +787,15 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) { objects.do { arg obj; obj.stopToBundle(bundle, dt) } };
 	}
 	
-	reallocBus { // this is called only when the server was not booted on creation.
-		if(bus.notNil) { 
-			if(loaded.not) {
-				bus.realloc; 
-				this.linkNodeMap
-			} {
-			 "should not reallocate bus when already loaded.".warn
-			} 
-		};
+	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.
+		if(busLoaded.not) {
+			bus.realloc; 
+			this.linkNodeMap
+		}
 	}
 	
 	loadToBundle { arg bundle;
-		this.reallocBus; // if server was rebooted 
+		this.reallocBusIfNeeded;
 		objects.do { arg item, i;
 			item.build(this, i);
 			item.loadToBundle(bundle, server);
