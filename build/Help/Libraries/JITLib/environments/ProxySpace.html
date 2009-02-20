@@ -13,22 +13,20 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9b8e68; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 20.0px Futura}
-span.s3 {color: #0024f8}
-span.s4 {color: #003eea}
-span.s5 {color: #000000}
-span.s6 {text-decoration: underline}
-span.s7 {font: 12.0px Helvetica}
-span.s8 {color: #2c7014}
-span.s9 {font: 9.0px Monaco}
-span.s10 {font: 12.0px Futura}
-span.s11 {font: 13.0px Helvetica}
-span.s12 {color: #001bb9}
+span.s3 {color: #001bb9}
+span.s4 {color: #000000}
+span.s5 {text-decoration: underline}
+span.s6 {font: 12.0px Helvetica}
+span.s7 {color: #2c7014}
+span.s8 {font: 9.0px Monaco}
+span.s9 {font: 12.0px Futura}
+span.s10 {font: 13.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -42,15 +40,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">is something playing on a server that writes to a limited number of busses.</p>
 <p class="p1">(this can be for example a synth or an event stream) Overview: <a href="../JITLib.html"><span class="s3">JITLib</span></a></p>
 <p class="p3"><br></p>
-<p class="p1">When accessed, ProxySpace returns a<b> </b><a href="../nodeproxy/NodeProxy.html"><span class="s4">NodeProxy</span></a>. A similar class without environment: <a href="../nodeproxy/Ndef.html"><span class="s3">Ndef</span></a></p>
-<p class="p4"><span class="s5">for more examples see: <a href="../tutorials/proxyspace_examples.html"><span class="s6">proxyspace_examples</span></a><span class="Apple-converted-space">  </span><a href="../tutorials/jitlib_basic_concepts_01.html"><span class="s6">jitlib_basic_concepts_01</span></a></span></p>
+<p class="p1">When accessed, ProxySpace returns a<b> </b><a href="../nodeproxy/NodeProxy.html"><span class="s3">NodeProxy</span></a>. A similar class without environment: <a href="../nodeproxy/Ndef.html"><span class="s3">Ndef</span></a></p>
+<p class="p4"><span class="s4">for more examples see: <a href="../tutorials/proxyspace_examples.html"><span class="s5">proxyspace_examples</span></a><span class="Apple-converted-space">  </span><a href="../tutorials/jitlib_basic_concepts_01.html"><span class="s5">jitlib_basic_concepts_01</span></a></span></p>
 <p class="p3"><br></p>
 <p class="p1">For GUI overview, see <a href="../extras/ProxyMixer.html"><span class="s3">ProxyMixer</span></a>.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p5">// first note that the two expressions are equivalent:<span class="s7"><span class="Apple-converted-space"> </span></span></p>
-<p class="p6">~out = something;<span class="Apple-converted-space"> </span><span class="s7"> <span class="Apple-converted-space"> </span></span></p>
-<p class="p6">currentEnvironment.put(<span class="s8">\out</span>, something);</p>
+<p class="p5">// first note that the two expressions are equivalent:<span class="s6"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6">~out = something;<span class="Apple-converted-space"> </span><span class="s6"> <span class="Apple-converted-space"> </span></span></p>
+<p class="p6">currentEnvironment.put(<span class="s7">\out</span>, something);</p>
 <p class="p3"><br></p>
 <p class="p1">A proxyspace can be created when its server is not running and played later.</p>
 <p class="p7"><br></p>
@@ -59,23 +57,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><i>class methods</i></b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p8"><span class="s9"><span class="Apple-tab-span">	</span></span><b>*new(server, name, clock)</b></p>
+<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span><b>*new(server, name, clock)</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>server</b>: <span class="Apple-tab-span">	</span>a Server object. Note that on remote computers the clock must be in sync.</p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>server</b>: <span class="Apple-tab-span">	</span>a Server object. Note that on remote computers the clock must be in sync.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name</b>: <span class="Apple-tab-span">	</span>a symbol. If a name is given, the proxy space is <b>stored</b> in <b>ProxySpace.all</b> under this name.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clock</b>: <span class="Apple-tab-span">	</span>for event-based or beat-sync playing use a TempoClock.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s9"><span class="Apple-tab-span">	</span></span><b>*push(server, name, clock)</b></p>
+<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span><b>*push(server, name, clock)</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>replace the currentEnvironment with a new ProxySpace and <b>clear</b> the current one, if</p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>replace the currentEnvironment with a new ProxySpace and <b>clear</b> the current one, if</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>it is a ProxySpace (this is to avoid piling up proxy spaces).</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>In order to move to another ProxySpace while keeping the current,</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>use <b>pop </b>and then <b>push</b> a new one. To have multiple levels of proxy spaces,<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>use <b>.new.push;</b></p>
-<p class="p2"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s9"><span class="Apple-tab-span">	</span></span><b>*pop</b></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>restore the previous currentEnvironment</p>
+<p class="p2"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s8"><span class="Apple-tab-span">	</span></span><b>*pop</b></p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>restore the previous currentEnvironment</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
@@ -85,27 +83,27 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><i>instance methods</i></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span></span><b>play(key, out, numChannels)</b></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a group that plays the NodeProxy at that <b>key</b>. default key: \out</p>
+<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span></span><b>play(key, out, numChannels)</b></p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a group that plays the NodeProxy at that <b>key</b>. default key: \out</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>out</b>: output channel offset</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numChannels</b>: play this number of channels.</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span></span><b>record(key, path, headerFormat, sampleFormat)</b></p>
-<p class="p2"><span class="s7"><b><span class="Apple-tab-span">	</span></b></span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a RecNodeProxy that records the NodeProxy at that key</p>
+<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span></span><b>record(key, path, headerFormat, sampleFormat)</b></p>
+<p class="p2"><span class="s6"><b><span class="Apple-tab-span">	</span></b></span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a RecNodeProxy that records the NodeProxy at that key</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s11"><span class="Apple-tab-span">	</span></span><b>ar(key, numChannels, offset)</b></p>
+<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span></span><b>ar(key, numChannels, offset)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>kr(key, numChannels, offset)</b></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a NodeProxy output that plays the NodeProxy at that key,</p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>returns a NodeProxy output that plays the NodeProxy at that key,</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to be used within a function used as input to a node proxy</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span></span><b>wakeUp</b><span class="s10"><span class="Apple-tab-span">	</span></span></p>
-<p class="p1"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>when the proxyspace is created without a running server this method can be used</p>
+<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span></span><b>wakeUp</b><span class="s9"><span class="Apple-tab-span">	</span></span></p>
+<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>when the proxyspace is created without a running server this method can be used</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to run it (internally this is done by <b>play(key) </b>as well.</p>
-<p class="p9"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s10"><span class="Apple-tab-span">	</span></span><b>fadeTime_</b><span class="Apple-tab-span">	</span>set the fadetime of all proxies as well as the default fade time</p>
+<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span></span><b>fadeTime_</b><span class="Apple-tab-span">	</span>set the fadetime of all proxies as well as the default fade time</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>clock_</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the clock of all proxies as well as the default clock.</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
@@ -131,7 +129,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b><i>"garbage collecting":</i></b></p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s9"><span class="Apple-tab-span">	</span></span><b>clean(exclude)</b></p>
+<p class="p1"><span class="s8"><span class="Apple-tab-span">	</span></span><b>clean(exclude)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>free and remove all proxies that are not needed in order to play the<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ones passed in with 'exclude'. if none are passed in, all proxies</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>that are monitoring (with the .play message) are kept as well as their parents etc.<span class="Apple-converted-space"> </span></p>
@@ -146,20 +144,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>document(keys)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>creates a new document with the current proxyspace state. This does not allow</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>open functions as proxy sources. see: <a href="../tutorials/jitlib_asCompileString.html"><span class="s4">jitlib_asCompileString</span></a></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>open functions as proxy sources. see: <a href="../tutorials/jitlib_asCompileString.html"><span class="s3">jitlib_asCompileString</span></a></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>keys</b>: list of keys to document a subset of proxies</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1">The <b>rate</b> and <b>numChannels</b> are determined in a lazy way from the first object put into this environment.<span class="Apple-converted-space"> </span></p>
 <p class="p1">Once it is created it can only be set to a function that returns the same rate and a number<span class="Apple-converted-space"> </span></p>
-<p class="p1">of channels equal to the intial one or smaller. see <a href="../tutorials/the_lazy_proxy.html"><span class="s4">the_lazy_proxy</span></a></p>
+<p class="p1">of channels equal to the intial one or smaller. see <a href="../tutorials/the_lazy_proxy.html"><span class="s3">the_lazy_proxy</span></a></p>
 <p class="p3"><br></p>
 <p class="p1">if the UGen function's number of channels is smaller, the <b>offset</b> in 'put' can be used to offset the ugens</p>
 <p class="p1">if the number of channels is larger, the outputs will wrap around and mix accordingly.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s5">for more examples see: <a href="../tutorials/proxyspace_examples.html"><span class="s6">proxyspace_examples</span></a><span class="Apple-converted-space">  </span><a href="../tutorials/jitlib_basic_concepts_01.html"><span class="s6">jitlib_basic_concepts_01</span></a></span></p>
+<p class="p4"><span class="s4">for more examples see: <a href="../tutorials/proxyspace_examples.html"><span class="s5">proxyspace_examples</span></a><span class="Apple-converted-space">  </span><a href="../tutorials/jitlib_basic_concepts_01.html"><span class="s5">jitlib_basic_concepts_01</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -168,29 +166,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">(</p>
 <p class="p6">s.boot;</p>
-<p class="p6">p = <span class="s12">ProxySpace</span>.push(s);</p>
+<p class="p6">p = <span class="s3">ProxySpace</span>.push(s);</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p6">~out.play;</p>
 <p class="p2"><br></p>
-<p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 407] * 0.9, 0, 0.2) };</p>
+<p class="p6">~out = { <span class="s3">SinOsc</span>.ar([400, 407] * 0.9, 0, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * <span class="s12">LFPulse</span>.kr([1, 1.3]) };</p>
+<p class="p6">~out = { <span class="s3">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * <span class="s3">LFPulse</span>.kr([1, 1.3]) };</p>
 <p class="p2"><br></p>
-<p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * ~x.kr(2) };</p>
+<p class="p6">~out = { <span class="s3">SinOsc</span>.ar([400, 437] * 0.9, 0, 0.2) * ~x.kr(2) };</p>
 <p class="p2"><br></p>
-<p class="p6">~x = { <span class="s12">LFPulse</span>.kr([1, 1.3] * <span class="s12">MouseX</span>.kr(1, 30, 1)) };</p>
+<p class="p6">~x = { <span class="s3">LFPulse</span>.kr([1, 1.3] * <span class="s3">MouseX</span>.kr(1, 30, 1)) };</p>
 <p class="p2"><br></p>
-<p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * <span class="s12">Lag</span>.kr(0.1 + ~x, 0.3), 0, 0.2) * ~x };</p>
+<p class="p6">~out = { <span class="s3">SinOsc</span>.ar([400, 437] * <span class="s3">Lag</span>.kr(0.1 + ~x, 0.3), 0, 0.2) * ~x };</p>
 <p class="p2"><br></p>
 <p class="p6">p.fadeTime = 5;</p>
 <p class="p2"><br></p>
-<p class="p6">~out = { <span class="s12">SinOsc</span>.ar([400, 437] * 1.1, 0, 0.2) * ~x.kr(2) };</p>
+<p class="p6">~out = { <span class="s3">SinOsc</span>.ar([400, 437] * 1.1, 0, 0.2) * ~x.kr(2) };</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s5">p.end(8); </span>// end all in 8 sec.</p>
+<p class="p5"><span class="s4">p.clear(8); </span>// end and clear all in 8 sec.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s5">p.clear.pop; </span>// remove all, move out.</p>
+<p class="p5"><span class="s4">p.pop; </span>// move out.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
