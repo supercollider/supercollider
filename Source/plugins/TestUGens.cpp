@@ -17,8 +17,8 @@
 #ifdef SC_WIN32
 #include <float.h>
 enum { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
-int fpclassify(float x);
-int fpclassify(float x) {
+int sc_fpclassify(float x);
+int sc_fpclassify(float x) {
 	int result;
 	int kind = _fpclass((double)x);
 	switch (kind) 
@@ -48,6 +48,11 @@ int fpclassify(float x) {
 	
 }
 
+#else
+inline int sc_fpclassify(float x);
+inline int sc_fpclassify(float x) {
+	return std::fpclassify(x);
+}
 #endif // SC_WIN32
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +102,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		case 1:		// post a line on every bad value
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
-				 classification = std::fpclassify(samp);
+				 classification = sc_fpclassify(samp);
 				 switch (classification) 
 				 { 
 					 case FP_INFINITE: 
@@ -120,7 +125,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		case 2:
 			LOOP(inNumSamples,
 				samp = ZXP(in);
-				classification = CheckBadValues_fold_fpclasses(std::fpclassify(samp));
+				classification = CheckBadValues_fold_fpclasses(sc_fpclassify(samp));
 				if(classification != unit->prevclass) {
 					if(unit->sameCount == 0) {
 						printf("CheckBadValues: %s found in Synth %d, ID %d\n",
@@ -154,7 +159,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 		default:		// no post
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
-				 classification = std::fpclassify(samp);
+				 classification = sc_fpclassify(samp);
 				 switch (classification) 
 				 { 
 					 case FP_INFINITE: 
