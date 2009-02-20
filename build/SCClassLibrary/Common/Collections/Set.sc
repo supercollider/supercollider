@@ -198,3 +198,37 @@ IdentitySet : Set {
 	*/
 	}
 }
+
+
+OrderedIdentitySet : IdentitySet {
+	var items;
+	
+	do { arg function;
+		items.do(function)
+	}
+	
+	makeEmpty { array.fill; items = nil; }
+	
+	remove { arg item;
+		var index = this.scanFor(item);
+		if ( array.at(index).notNil, {
+			array.put(index, nil);
+			items = items.add(item);
+			size = size - 1;
+			this.fixCollisionsFrom(index);
+		});
+	}
+	sort { arg func;
+		items.sort(func)
+	}
+	
+	// private
+	
+	putCheck { arg index, item;
+		array.put(index, item);
+		items = items.add(item);
+		size = size + 1;
+		this.fullCheck;
+	}
+
+}
