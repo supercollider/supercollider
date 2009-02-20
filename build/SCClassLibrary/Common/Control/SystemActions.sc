@@ -8,9 +8,7 @@ AbstractSystemAction {
 	
 	*add { arg object;
 		if(this.objects.isNil) { this.init }; // lazy init
-	//	if(this.objects.includes(object).not) { // agree on this
-			this.objects.add(object)
-	//	}
+		if(this.objects.includes(object).not) { this.objects.add(object) }
 	}
 	
 	*remove { arg object;
@@ -75,6 +73,7 @@ CmdPeriod : AbstractSystemAction {
 
 }
 
+
 // things to do after startup file executed
 
 StartUp : AbstractSystemAction {
@@ -98,26 +97,37 @@ StartUp : AbstractSystemAction {
 
 }
 
-
-ServerBoot : AbstractSystemAction {
-
-	classvar <>objects;
+AbstractServerAction : AbstractSystemAction {
 	
-	*initClass {
-		this.objects = IdentityDictionary.new;
+	*performFunction { arg server, function;
+		if (server === Server.default) {
+			this.objects.at('default').do(function);
+		} {
+			this.objects.at(server).do(function)
+		};
 	}
-
+	
+	*run { arg server;
+		var selector = this.functionSelector;
+		selector.postln;
+		this.performFunction(server, { arg obj; obj.perform(selector) });
+	}
+	
+	*functionSelector {
+		^this.subclassResponsibility(thisMethod)
+	}
+	
 	*add { arg object, server;
 		
 		server = server ? 'default';
 
 		if (this.objects.includesKey(server).not) {
-			this.objects.put(server, List.new);
+			this.objects.put(server, List.new)
 		};
 		
-	//	if ( this.objects.at(server).includes(object).not ) {
+		if (this.objects.at(server).includes(object).not) {
 			this.objects.at(server).add(object)
-	//	};
+		};
 
 	}
 	
@@ -138,24 +148,30 @@ ServerBoot : AbstractSystemAction {
 		};
 		
 	}
-
 	
-	*run { arg server;
-		
-		if (server == Server.default) {
-			this.objects.at('default').do({ arg item; item.doOnServerBoot(server)  });
-		};
-		
-		this.objects.at(server).do({ arg item; item.doOnServerBoot(server)  });
+}
+
+// things to do after server has booted
 
 
-		//postf("% ServerBoot\n", server);
+ServerBoot : AbstractServerAction {
+
+	classvar <>objects;
+	
+	*initClass {
+		this.objects = IdentityDictionary.new;
 	}
-
+	
+	*functionSelector {
+		^\doOnServerBoot
+	}
 
 }
 
-ServerQuit : ServerBoot {
+// things to do after server has quit
+
+
+ServerQuit : AbstractServerAction {
 
 	classvar <>objects;
 	
@@ -163,20 +179,17 @@ ServerQuit : ServerBoot {
 		this.objects = IdentityDictionary.new;
 	}
 
-	*run { arg server;
-
-		if (server == Server.default) {
-			this.objects.at('default').do({ arg item; item.doOnServerQuit(server)  });
-		};
-		
-		this.objects.at(server).do({ arg item; item.doOnServerQuit(server)  });
-
-		//postf("% ServerQuit\n", server);
+	*functionSelector {
+		^\doOnServerQuit
 	}
 
 }
 
-ServerTree : ServerBoot {
+
+// things to do after server has booted and initialised
+
+
+ServerTree : AbstractServerAction {
 
 
 	classvar <>objects;
@@ -186,18 +199,14 @@ ServerTree : ServerBoot {
 		this.objects = IdentityDictionary.new;
 	}
 
-	*run { arg server;
-
-		if (server == Server.default) {
-			this.objects.at('default').do({ arg item; item.doOnServerTree(server)  });
-		};
-		
-		this.objects.at(server).do({ arg item; item.doOnServerTree(server)  });
-
-		//postf("% ServerTree\n", server);
+	*functionSelector {
+		^\doOnServerTree
 	}
 	
 }
+
+
+// things to do before system shuts down
 
 ShutDown : AbstractSystemAction {
 
@@ -212,6 +221,33 @@ ShutDown : AbstractSystemAction {
 	//	"ShutDown done.".postln;
 	}
 
-
 }
+
+// this is still not solved. But if a solution is found, it can be done here:
+/*
+WasAsleep : AbstractSystemAction {
+	classvar last = 0, <>period = 2.0, task;
+	classvar <>verbose = false;
+	
+	
+	*initClass {
+		task = Task({ loop { period.wait; this.update; } }).play();
+		CmdPeriod.add({ task.play() });
+	}
+	
+	
+	*justWokeUp { arg tolerance = 1.0;
+		^absdif(this.delta, period).postln > tolerance
+	}
+	
+	*delta {
+		^Main.elapsedTime - last
+	}
+		
+	*update {
+		if(verbose) { postf("delta: % wokeUp: %\n", this.delta, this.justWokeUp(0.001)) };
+		last = Main.elapsedTime;
+	}
+}
+*/
 
