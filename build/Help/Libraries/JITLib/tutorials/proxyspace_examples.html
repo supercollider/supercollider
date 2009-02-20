@@ -7,27 +7,27 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; color: #000000}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; color: #000000; min-height: 18.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Futura; color: #000000}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; color: #000000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; color: #000000; min-height: 15.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #000000; min-height: 19.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; color: #000000; min-height: 16.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-span.s1 {color: #0000bf}
-span.s2 {color: #007300}
-span.s3 {color: #bf0000}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Futura}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 8.0px Monaco; color: #001bb9}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; min-height: 19.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+span.s1 {color: #001bb9}
+span.s2 {color: #2c7014}
+span.s3 {color: #ad140d}
 span.s4 {color: #000000}
 span.s5 {font: 9.0px Monaco}
-span.s6 {font: 12.0px Helvetica}
+span.s6 {font: 12.0px Helvetica; color: #001bb9}
 span.s7 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -203,7 +203,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">~lfo = { <span class="s1">LFNoise2</span>.kr(3, 160, 400) };</p>
 <p class="p4"><br></p>
 <p class="p6">p.keysValuesDo { <span class="s1">arg</span> key, proxy; [key, proxy.isPlaying].postln };</p>
-<p class="p7"><span class="s4">p.reduce; </span>// all monitoring proxies (in this case ~out) are kept. equivalent: p.reduce(to: [~out]);</p>
+<p class="p7"><span class="s4">p.reduce; </span>// all monitoring proxies (in this case ~out) are kept running.</p>
+<p class="p7">//<span class="Apple-converted-space">  </span>equivalent: p.reduce(to: [~out]);</p>
 <p class="p6">p.keysValuesDo { <span class="s1">arg</span> key, proxy; [key, proxy.isPlaying].postln };</p>
 <p class="p4"><br></p>
 <p class="p7">// to remove everything else:</p>
