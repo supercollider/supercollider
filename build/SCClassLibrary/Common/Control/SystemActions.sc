@@ -220,29 +220,3 @@ ShutDown : AbstractSystemAction {
 	}
 
 }
-
-// this is still not solved. But if a solution is found, it can be done here:
-
-WasAsleep : AbstractSystemAction {
-	classvar <sleeping = false;
-	
-	*initClass {
-		var platform = thisProcess.platform;
-		Platform.case(\osx, {
-			platform.sleepAction = platform.sleepAction.addFunc { this.goToSleep };
-			platform.wakeAction = platform.wakeAction.addFunc { this.awake };
-		});
-	}
-	
-	
-	*goToSleep {
-		sleeping = true;
-	}
-	
-	*awake {
-		sleeping = false;
-	}
-	
-	
-}
-
