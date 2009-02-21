@@ -5,24 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0032f1}
+span.s2 {color: #001bb9}
 span.s3 {color: #606060}
 span.s4 {color: #000000}
-span.s5 {color: #0000bf}
-span.s6 {color: #007300}
+span.s5 {color: #2c7014}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,13 +32,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">CmdPeriod allows you to register objects to perform an action when the user presses Cmd-. These objects must implement a method called -cmdPeriod which performs the necessary tasks. (You can add such a method in your custom classes.) Note that since <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a><b> </b>implements -cmdPeriod as a synonym for -value, it is possible to register any function (and thus any arbitrary code) for evaluation when Cmd-. is pressed.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>N.B. </b>Cmd-. uses an <a href="../Collections/IdentitySet.html"><span class="s2">IdentitySet</span></a> to store its registered objects. For this reason you cannot rely on the order in which the objects will be cleared. If you need -cmdPeriod to be called on a set of objects in a given order then it is best to wrap those within a <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a> and register that. (See example below.)</p>
 <p class="p4"><br></p>
 <p class="p5"><b>Class Methods</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>*add(object)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Registers an object to be cleared when Cmd-. is pressed. This object will stay registered until it is explicitly removed, and will thus respond to additional presses of Cmd-.</p>
+<p class="p3">Registers an object to be cleared when Cmd-. is pressed. This object will stay registered until it is explicitly removed, and will thus respond to additional presses of Cmd-.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>*remove(object)</b></p>
 <p class="p2"><br></p>
@@ -72,53 +70,49 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p10">// Now press Cmd-.</p>
 <p class="p9"><br></p>
-<p class="p7"><span class="s5">CmdPeriod</span>.remove(g);</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.remove(g);</p>
 <p class="p9"><br></p>
 <p class="p10">// Now press Cmd-. Only f executes</p>
 <p class="p9"><br></p>
-<p class="p10"><span class="s5">CmdPeriod</span><span class="s4">.remove(f); </span>// must explicitly cleanup</p>
+<p class="p10"><span class="s2">CmdPeriod</span><span class="s4">.remove(f); </span>// must explicitly cleanup</p>
 <p class="p9"><br></p>
-<p class="p10">//// Controlling order of execution</p>
-<p class="p7">(</p>
-<p class="p7">f = {<span class="s3">"first"</span>.postln };</p>
-<p class="p7">g = {<span class="s3">"second"</span>.postln };</p>
-<p class="p9"><br></p>
-<p class="p10">// order is arbitrary, so wrap in a function</p>
-<p class="p9"><br></p>
-<p class="p7">h = { f.cmdPeriod; g.cmdPeriod;};</p>
-<p class="p9"><br></p>
-<p class="p8">CmdPeriod<span class="s4">.add(h);</span></p>
-<p class="p7">)</p>
 <p class="p9"><br></p>
 <p class="p10">// Now press Cmd-.</p>
 <p class="p9"><br></p>
-<p class="p7"><span class="s5">CmdPeriod</span>.remove(h);</p>
+<p class="p10"><span class="s2">CmdPeriod</span><span class="s4">.add(g); </span>// one object is added only once.</p>
+<p class="p10"><span class="s2">CmdPeriod</span><span class="s4">.add(g); </span>// one object is added only once.</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p10">// Now press Cmd-.</p>
+<p class="p9"><br></p>
+<p class="p10">// remove it again.</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.remove(g);</p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p10">// note that often you want to automatically remove the function once it is evaluated</p>
 <p class="p10">// instead of</p>
 <p class="p9"><br></p>
-<p class="p7">f = { <span class="s3">"foo"</span>.postln; <span class="s5">CmdPeriod</span>.remove(f) };</p>
+<p class="p7">f = { <span class="s3">"foo"</span>.postln; <span class="s2">CmdPeriod</span>.remove(f) };</p>
 <p class="p8">CmdPeriod<span class="s4">.add(f);</span></p>
 <p class="p9"><br></p>
 <p class="p10">// you can write:</p>
 <p class="p9"><br></p>
-<p class="p7"><span class="s5">CmdPeriod</span>.doOnce { <span class="s3">"foo"</span>.postln }</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.doOnce { <span class="s3">"foo"</span>.postln }</p>
 <p class="p9"><br></p>
 <p class="p10">// a typical example:</p>
 <p class="p7">(</p>
-<p class="p7">w = <span class="s5">GUI</span>.window.new(<span class="s3">"close on cmd-."</span>).front;</p>
-<p class="p7"><span class="s5">CmdPeriod</span>.doOnce { w.close };</p>
+<p class="p7">w = <span class="s2">GUI</span>.window.new(<span class="s3">"close on cmd-."</span>).front;</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.doOnce { w.close };</p>
 <p class="p7">)</p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p10">// in some cases you might need to defer the function by a short amount of time</p>
-<p class="p7">a = { <span class="s5">Synth</span>(<span class="s6">\default</span>)};</p>
+<p class="p7">a = { <span class="s2">Synth</span>(<span class="s5">\default</span>)};</p>
 <p class="p7">a.value;</p>
-<p class="p7"><span class="s5">CmdPeriod</span>.add({{a.value}.defer(0.01)});</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.add({{a.value}.defer(0.01)});</p>
 <p class="p9"><br></p>
 <p class="p10">// remove all<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="s5">CmdPeriod</span>.removeAll</p>
+<p class="p7"><span class="s2">CmdPeriod</span>.removeAll</p>
 <p class="p9"><br></p>
 </body>
 </html>
