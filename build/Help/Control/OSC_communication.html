@@ -5,24 +5,34 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad1d13}
-p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #af2c1e}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #9d2317}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a03022}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-span.s1 {color: #0022f8}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #9d2317; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #000000; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {color: #0032f1}
 span.s2 {color: #000000}
-span.s3 {color: #0019ba}
+span.s3 {color: #0025b5}
 span.s4 {color: #606060}
-span.s5 {color: #af2c1e}
-span.s6 {color: #0425ba}
-span.s7 {color: #ad1d13}
+span.s5 {color: #0000bf}
+span.s6 {color: #002eb5}
+span.s7 {color: #0000ff}
+span.s8 {color: #9d2317}
+span.s9 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -31,31 +41,57 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">OSC communication between programs is often done to send messages from one application to another, possibly with the applications running on different computers. In SuperCollider this communication is done by creating a <a href="SC://NetAddr"><span class="s1">NetAddr</span></a> of the target application and creating an <a href="SC://OSCresponder"><span class="s1">OSCresponder</span></a> to listen to another application. The underlying protocol of OSC is either UDP or TCP.</p>
 <p class="p2"><br></p>
-<p class="p4"><b>Setting up an OSC connection</b></p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>Sending OSC to another application</b></p>
 <p class="p3">To establish communication to another application, you need to know on which port that application is listening. For example if an application is listening on port 7771, we can create a NetAddr and send it a message:</p>
 <p class="p5"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b = </span><span class="s3">NetAddr</span><span class="s2">.new(</span><span class="s4">"127.0.0.1"</span><span class="s2">, 7771); </span>// create the NetAddr</p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>b.sendMsg(</span><span class="s4">"/hello"</span><span class="s2">, </span><span class="s4">"there"</span><span class="s2">);</span>// send the application the message "hello" with the parameter "there"</p>
 <p class="p2"><br></p>
-<p class="p3">To listen to another application, that application needs to send SuperCollider a message to the port SuperCollider is listening on, normally this is 57120, but it can change. The current port can be retrieved with</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Receiving OSC from another application</b></p>
+<p class="p2"><br></p>
+<p class="p3">To listen to another application, that application needs to send a message to the port SuperCollider is listening on, <b>normally this is 57120, but it can change.</b> The current port can be retrieved with</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>NetAddr.langPort; // retrieve the current port SC is listening to</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s5">NetAddr</span><span class="s2">.langPort; </span>// retrieve the current port SC is listening to</p>
+<p class="p2"><br></p>
 <p class="p3">Or you can retrieve both the IP and the port with:</p>
 <p class="p2"><br></p>
 <p class="p8"><span class="s6"><span class="Apple-tab-span">	</span>NetAddr</span><span class="s2">.localAddr; </span>// retrieve the current IP and port</p>
 <p class="p2"><br></p>
-<p class="p3">To listen to incoming message an OSCresponder needs to be created in SuperCollider. If the sending application has a fixed port it sends message from, you can set the OSCresponder to listen only to messages coming from that IP and port:</p>
+<p class="p3">To listen to incoming messages, an <a href="OSCresponder.html"><span class="s7">OSCresponder</span></a> needs to be created in SuperCollider. If the sending application <b>has a fixed port it sends message from</b>, you can set the OSCresponder to listen only to messages coming from that IP and port:</p>
 <p class="p9"><br></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>n = </span><span class="s3">NetAddr</span><span class="s2">.new(</span><span class="s4">"127.0.0.1"</span><span class="s2">, 7771); </span>// create the NetAddr</p>
-<p class="p7"><span class="Apple-tab-span">	</span>o = <span class="s3">OSCresponder</span>.new(n, <span class="s4">"/goodbye"</span>, { <span class="s3">arg</span> time, resp, msg; [time,resp].postln; } ).add; <span class="s7">// create the OSCresponder</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>// create the OSCresponder</p>
+<p class="p10"><span class="Apple-tab-span">	</span>o = <span class="s3">OSCresponder</span>.new(n, <span class="s4">"/goodbye"</span>, { <span class="s3">arg</span> time, resp, msg; [time,resp].postln; } ).add;<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>o.remove; </span>// remove the OSCresponder when you are done.</p>
 <p class="p9"><br></p>
-<p class="p4"><b>Connecting to applications sending from a variable port</b></p>
+<p class="p4"><b>Receiving from an application that is sending from a variable port</b></p>
 <p class="p2"><br></p>
 <p class="p3">Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message. In that case the OSCresponder needs to be set up, so that it listens to messages coming from anywhere:</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="Apple-tab-span">	</span>o = <span class="s3">OSCresponder</span>.new(<span class="s3">nil</span>, <span class="s4">"/goodbye"</span>, { <span class="s3">arg</span> time, resp, msg; [time,resp].postln; } ).add; <span class="s7">// create the OSCresponder</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span>o = <span class="s3">OSCresponder</span>.new(<span class="s3">nil</span>, <span class="s4">"/goodbye"</span>, { <span class="s3">arg</span> time, resp, msg; [time,resp].postln; } ).add; <span class="s8">// create the OSCresponder</span></p>
 <p class="p6"><span class="s2"><span class="Apple-tab-span">	</span>o.remove; </span>// remove the OSCresponder when you are done.</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p4"><b>Testing incoming traffic</b></p>
+<p class="p3">All incoming OSC messages call the message recvOSCmessage, or recvOSCbundle in <a href="../Core/Kernel/Main.html"><span class="s7">Main</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p3">To see the incoming traffic, one may set a function called <b>recvOSCfunc</b> in Main:</p>
+<p class="p12"><br></p>
+<p class="p13">// post all incoming traffic except the server status messages</p>
+<p class="p14">(</p>
+<p class="p15">thisProcess<span class="s2">.recvOSCfunc = { </span>|time, addr, msg|<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s9">'status.reply'</span>) {</p>
+<p class="p16"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"time: % sender: %\nmessage: %\n"<span class="s2">.postf(time, addr, msg);<span class="Apple-converted-space"> </span></span></p>
+<p class="p14"><span class="Apple-tab-span">	</span>} <span class="Apple-converted-space"> </span></p>
+<p class="p14">}</p>
+<p class="p14">);</p>
+<p class="p5"><br></p>
+<p class="p13">// stop posting.</p>
+<p class="p17"><span class="s5">thisProcess</span>.recvOSCfunc = <span class="s5">nil</span>;</p>
+<p class="p9"><b></b><br></p>
 </body>
 </html>
