@@ -14,6 +14,10 @@ AbstractSystemAction {
 	*remove { arg object;
 		this.objects.remove(object)
 	}
+	
+	*removeAll {
+		this.init
+	}
 
 	*objects { ^this.shouldNotImplement(thisMethod) }
 	*objects_ { arg obj; ^this.shouldNotImplement(thisMethod) }
