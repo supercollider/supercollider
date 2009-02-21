@@ -498,7 +498,16 @@ Collection {
 		^freqs;
 	}
 	
-	printAll { this.do { | item | item.postln; }; } // convenience method
+//	printAll { this.do { | item | item.postln; }; } // convenience method
+	printAll { |before, after| 
+		if (before.isNil and: after.isNil) {
+			this.do { | item | item.postln; }; 
+		} { 
+			before = before ? ""; after = after ? ""; 
+			this.do { | item | before.post; item.post; after.postln; }; 
+		};
+	}
+
 	printcsAll { this.do { | item | item.postcs; }; } // convenience method
 	dumpAll { this.do { | item | item.dump; }; } // convenience method
 	
@@ -542,7 +551,7 @@ Collection {
 	}
 	
 	writeInputSpec { | file, synthDef |
-		this.do { | item | item.debug.writeInputSpec(file, synthDef) };
+		this.do { | item | item.writeInputSpec(file, synthDef) };
 	}
 
 	// Flow control
