@@ -59,7 +59,6 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="alpha";
 
 	recvOSCbundle { arg time, replyAddr ... msgs;
 		// this method is called when an OSC bundle is received.
-		recvOSCfunc.value(time, replyAddr, msg);
 		msgs.do({ arg msg; 
 			this.recvOSCmessage(time, replyAddr, msg); 
 		});
