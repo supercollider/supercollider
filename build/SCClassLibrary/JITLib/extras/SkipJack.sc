@@ -34,9 +34,7 @@ SkipJack {
 	start { 
 		task.stop.play;
 		all.add(this);
-		if (CmdPeriod.objects.includes(this).not) { 
-			CmdPeriod.add(this) 
-		};
+		CmdPeriod.add(this);
 	}
 	
 	play { this.start }
