@@ -109,7 +109,7 @@ AbstractServerAction : AbstractSystemAction {
 	
 	*run { arg server;
 		var selector = this.functionSelector;
-		selector.postln;
+		// selector.postln;
 		this.performFunction(server, { arg obj; obj.perform(selector) });
 	}
 	
