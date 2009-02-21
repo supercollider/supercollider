@@ -64,6 +64,9 @@
 - (void) runAsModal:(NSWindow*)window;
 - (void) runAsModalSheet: (NSWindow*)sheet forWindow:(NSWindow*)window;
 - (void) sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+// Sleep
+- (void) receiveSleepNote: (NSNotification*) note;
+- (void) receiveWakeNote: (NSNotification*) note;
 
 -(IBAction)showHelp:(id)sender;
 -(IBAction)showHelpBrowser:(id)sender;

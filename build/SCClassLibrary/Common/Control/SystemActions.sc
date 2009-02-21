@@ -84,8 +84,8 @@ StartUp : AbstractSystemAction {
 
 	*run {
 		done = true;
-		objects.do({ arg item; item.doOnStartUp;  });
-		"StartUp done.".postln;
+		objects.do({ arg item; item.doOnStartUp  });
+		// "StartUp done.".postln;
 	}
 
 
@@ -100,11 +100,7 @@ StartUp : AbstractSystemAction {
 AbstractServerAction : AbstractSystemAction {
 	
 	*performFunction { arg server, function;
-		if (server === Server.default) {
-			this.objects.at('default').do(function);
-		} {
-			this.objects.at(server).do(function)
-		};
+		this.objects.at(server).do(function)
 	}
 	
 	*run { arg server;
@@ -119,7 +115,7 @@ AbstractServerAction : AbstractSystemAction {
 	
 	*add { arg object, server;
 		
-		server = server ? 'default';
+		server = server ? Server.default;
 
 		if (this.objects.includesKey(server).not) {
 			this.objects.put(server, List.new)
@@ -139,12 +135,10 @@ AbstractServerAction : AbstractSystemAction {
 	
 	*remove { arg object, server;
 		
-		server = server ? 'default';
+		server = server ? Server.default;
 
 		if ( this.objects.includesKey(server) ) {
-
 			this.objects.at(server).remove(object)
-
 		};
 		
 	}
@@ -224,30 +218,27 @@ ShutDown : AbstractSystemAction {
 }
 
 // this is still not solved. But if a solution is found, it can be done here:
-/*
+
 WasAsleep : AbstractSystemAction {
-	classvar last = 0, <>period = 2.0, task;
-	classvar <>verbose = false;
-	
+	classvar <sleeping = false;
 	
 	*initClass {
-		task = Task({ loop { period.wait; this.update; } }).play();
-		CmdPeriod.add({ task.play() });
+		var platform = thisProcess.platform;
+		Platform.case(\osx, {
+			platform.sleepAction = platform.sleepAction.addFunc { this.goToSleep };
+			platform.wakeAction = platform.wakeAction.addFunc { this.awake };
+		});
 	}
 	
 	
-	*justWokeUp { arg tolerance = 1.0;
-		^absdif(this.delta, period).postln > tolerance
+	*goToSleep {
+		sleeping = true;
 	}
 	
-	*delta {
-		^Main.elapsedTime - last
+	*awake {
+		sleeping = false;
 	}
-		
-	*update {
-		if(verbose) { postf("delta: % wokeUp: %\n", this.delta, this.justWokeUp(0.001)) };
-		last = Main.elapsedTime;
-	}
+	
+	
 }
-*/
 
