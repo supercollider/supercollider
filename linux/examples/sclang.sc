@@ -22,15 +22,15 @@ Score.program = Server.program;
 
 // hook up jack ports to audio channels
 "SC_JACK_DEFAULT_INPUTS".setenv(
-	"alsa_pcm:capture_1,"
-	"alsa_pcm:capture_2"
+	"system:capture_1,"
+	"system:capture_2"
 );
 "SC_JACK_DEFAULT_OUTPUTS".setenv(
-	"alsa_pcm:playback_1,"
-	"alsa_pcm:playback_2,"
-	"alsa_pcm:playback_3,"
-	"alsa_pcm:playback_4,"
-	"alsa_pcm:playback_5"
+	"system:playback_1,"
+	"system:playback_2,"
+	"system:playback_3,"
+	"system:playback_4,"
+	"system:playback_5"
 );
 
 // EOF
