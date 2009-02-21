@@ -1,6 +1,7 @@
 OSXPlatform : UnixPlatform
 {
 	var <>preferencesAction;
+	var <>sleepAction, <>wakeAction, <>isSleeping=false;
 
 	initPlatform {
 		super.initPlatform;

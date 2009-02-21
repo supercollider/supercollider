@@ -243,13 +243,26 @@ Server : Model {
 		ServerTree.run(this);
 	}
 	newAllocators {
+		this.newNodeAllocators;
+		this.newBusAllocators;
+		this.newBufferAllocators;
+		NotificationCenter.notify(this, \newAllocators);
+	}
+	
+	newNodeAllocators {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
+	}
+	
+	newBusAllocators {
 		controlBusAllocator = ContiguousBlockAllocator.new(options.numControlBusChannels);
 		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels, 
 			options.firstPrivateBus);
-		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
-		NotificationCenter.notify(this,\newAllocators);
 	}
+	
+	newBufferAllocators {
+		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
+	}
+	
 	nextNodeID {
 		^nodeAllocator.alloc
 	}
@@ -364,25 +377,27 @@ Server : Model {
 			{ this.changed(\bundling); }.defer;
 		} {
 			if (val != serverRunning) {
-				serverRunning = val;
-				if (serverRunning.not) { 
-					
-					ServerQuit.run(this);
-					
-					AppClock.sched(5.0, {
-						// still down after 5 seconds, assume server is really dead
-						// if you explicitly shut down the server then newAllocators
-						// and the \newAllocators notification will happen immediately
-						if(serverRunning.not) {
-							NotificationCenter.notify(this,\didQuit);
-						};
-						recordNode = nil;
-					})
-					
-				}{
-					ServerBoot.run(this);
-				};
-				{ this.changed(\serverRunning); }.defer;
+				if(thisProcess.platform.isSleeping.not) {
+					serverRunning = val;
+					if (serverRunning.not) { 
+						
+						ServerQuit.run(this);
+						
+						AppClock.sched(5.0, {
+							// still down after 5 seconds, assume server is really dead
+							// if you explicitly shut down the server then newAllocators
+							// and the \newAllocators notification will happen immediately
+							if(serverRunning.not) {
+								NotificationCenter.notify(this,\didQuit);
+							};
+							recordNode = nil;
+						})
+						
+					}{
+						ServerBoot.run(this);
+					};
+					{ this.changed(\serverRunning); }.defer;
+				}
 			}
 		};
 	}
@@ -531,14 +546,14 @@ Server : Model {
 		});
 	}
 	
-	boot { arg startAliveThread=true;
+	boot { arg startAliveThread=true, recover=false;
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
 		
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
-		this.newAllocators;
+		if(recover) { this.newNodeAllocators } { this.newAllocators };
 		bootNotifyFirst = true;
 		this.doWhenBooted({ 
 			if(notified, { 
@@ -653,15 +668,7 @@ Server : Model {
 		this.sendMsg("/clearSched");
 		this.initTree;
 	}
-/*
-	*freeAll {
-		set.do({ arg server;
-			if(server.remoteControlled, { // debatable?
-				server.freeAll;
-			})
-		})
-	}
-*/
+
 	*freeAll { arg evenRemote = false;
 		if (evenRemote) {
 			set.do { arg server; 

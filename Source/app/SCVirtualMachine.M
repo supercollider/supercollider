@@ -119,6 +119,15 @@ static id sharedSCVM = nil;
 	[[RendezvousClient sharedClient] findOSCServices];
 	
 	[self sendMain: "applicationStart"];
+	
+	// Sleep - Technical Q&A QA1340
+	//These notifications are filed on NSWorkspace's notification center, not the default notification center. 
+	//  You will not receive sleep/wake notifications if you file with the default notification center.
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self 
+			selector: @selector(receiveSleepNote:) name: NSWorkspaceWillSleepNotification object: NULL];
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self 
+			selector: @selector(receiveWakeNote:) name: NSWorkspaceDidWakeNotification object: NULL];
+
 }
 
 - (void)doPeriodicTask: (NSTimer*) timer
@@ -126,6 +135,21 @@ static id sharedSCVM = nil;
     [self performDeferredOperations];
     [self doAnimatedViews];
     flushPostBuf();
+}
+
+// Sleep
+//  Technical Q&A QA1340
+//  Registering and unregistering for sleep and wake notifications
+- (void) receiveSleepNote: (NSNotification*) note
+{
+//	NSLog(@"receiveSleepNote: %@", [note name]);
+	[self sendMain: "sleep"];
+}
+ 
+- (void) receiveWakeNote: (NSNotification*) note
+{
+//    NSLog(@"receiveSleepNote: %@", [note name]);
+	[self sendMain: "wake"];
 }
 
 - (void)doClockTask: (NSTimer*) timer
