@@ -1,6 +1,6 @@
 s = Server.local;
 
-"SC_JACK_DEFAULT_OUTPUTS".setenv("alsa_pcm:playback_1,alsa_pcm:playback_2");
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system:playback_1,system:playback_2");
 
 s.waitForBoot({
 	SynthDef("onetwoonetwo", {

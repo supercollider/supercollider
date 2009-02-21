@@ -17,8 +17,8 @@ LinuxPlatform : UnixPlatform
 		Score.program = Server.program;
 
 		// default jack port hookup
-		"SC_JACK_DEFAULT_INPUTS".setenv("alsa_pcm:capture_1,alsa_pcm:capture_2");
-		"SC_JACK_DEFAULT_OUTPUTS".setenv("alsa_pcm:playback_1,alsa_pcm:playback_2");
+		"SC_JACK_DEFAULT_INPUTS".setenv("system:capture_1,system:capture_2");
+		"SC_JACK_DEFAULT_OUTPUTS".setenv("system:playback_1,system:playback_2");
 
 		// automatically start jack when booting the server
 		// can still be overridden with JACK_NO_START_SERVER

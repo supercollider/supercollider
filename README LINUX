@@ -211,12 +211,12 @@ environment variables:
  * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that
    scsynth's inputs should connect to by default
 
-   $ export SC_JACK_DEFAULT_INPUTS="alsa_pcm:capture_1,alsa_pcm:capture_2"
+   $ export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
 
  * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that
    scsynth's outputs should be connected to by default.
 
-   $ export SC_JACK_DEFAULT_OUTPUTS="alsa_pcm:playback_1,alsa_pcm:playback_2"
+   $ export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
 
 two additional environment variables substitute directories for the default
 search path for plugins and synth definitions, respectively. directory
