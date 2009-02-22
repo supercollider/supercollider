@@ -837,10 +837,11 @@ gui { |sysext=true,userext=true, allowCached=true|
 	}
 	// This iterates the Help.tree to find the file. Can be used instead of platform-specific approaches
 	findHelpFile { |str|
-		var ret = nil;
 		str = str.asString;
-		block{|break| this.do{|key, val| if(key==str){ ret=val; break.value }}};
-		^ret;
+		this.do { |key, path|
+			if(key == str and: { path.size > 0 }) { ^path }
+		};
+		^nil
 	}
 
 	// does the same as findHelpFile, but replaces the string with "Help" if the string is empty. This makes it possible in sced to open the main help if nothing is selected.
