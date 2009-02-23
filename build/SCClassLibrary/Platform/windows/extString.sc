@@ -50,8 +50,9 @@
 
 + PathName {
 	isAbsolutePath {
-		^(this[0].isAlpha and: { this[1] == $: and: { this[2] == sep } })
-				or: { this[0] == sep and: { this[1] == sep } }
-				or: { this[0] == $/ and: { this[1] != $/ } }
+		var	sep = thisProcess.platform.pathSeparator;
+		^(fullPath[0].isAlpha and: { fullPath[1] == $: and: { fullPath[2] == sep } })
+				or: { fullPath[0] == sep and: { fullPath[1] == sep } }
+				or: { fullPath[0] == $/ and: { fullPath[1] != $/ } }
 	}
 }
