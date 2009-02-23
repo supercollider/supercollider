@@ -116,6 +116,24 @@ LFTri : LFSaw
 {
 }
 
+LFGauss : UGen {
+	*ar { 
+		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
+		^this.multiNew('audio', duration, width, iphase, loop, doneAction)
+	}
+	*kr { 
+		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
+		^this.multiNew('control', duration, width, iphase, loop, doneAction)
+	}
+	range { arg min = 0, max = 1;
+		^this.linlin(this.minval, 1, min, max)
+	}
+	minval {
+		var width = inputs[1];
+		^exp(1.0 / (-2.0 * squared(width)))
+	}
+
+}
 
 LFPulse : UGen {
 	*ar {
