@@ -10,16 +10,12 @@ CocoaMenuItem {
 	var <isBranch = false;
 	var <>action;
 	
-	*new { |parent, index, name = "", hasSubmenu = false, action|
-		^super.new.init(parent, index, name, hasSubmenu, action);
-	}
-	
 	*clearCustomItems {
 		topLevelItems.copy.do({|item| item.remove });
 	}
 	
 	*initDefaultMenu {
-		default = CocoaMenuItem(nil, 9, "Library", true);
+		default = SCMenuGroup(nil, "Library", 9);
 	}
 	
 	*add { |names, action|
@@ -34,7 +30,7 @@ CocoaMenuItem {
 		
 		menu = parent.findByName(name);
 		if(menu.isNil) {
-			menu = this.new(parent, index, name, names.size > 0) 
+			menu = if(names.size > 0, {SCMenuGroup}, {SCMenuItem}).new(parent, name, index); 
 		};
 		
 		if(names.size < 1) {
@@ -61,17 +57,6 @@ CocoaMenuItem {
 	
 	findByName { |name|
 		^children.detect { |x| x.name == name };
-	}
-	
-	init { |argparent, argindex, argname, hasSubmenu, argaction|
-		
-		parent = argparent;
-		name = argname;
-		action = argaction;
-		isBranch = hasSubmenu;
-		this.prAddMenuItem(argparent, argindex, argname, hasSubmenu);
-		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) } 
-			{ topLevelItems = topLevelItems.add(this) };
 	}
 	
 	remove {
@@ -125,4 +110,63 @@ CocoaMenuItem {
 	}
 	
 	
+}
+
+
+SCMenuItem : CocoaMenuItem {
+	
+	*new { |parent, name = "", index|
+		^super.new.init(parent, index, name);
+	}
+	
+	init { |argparent, argindex, argname|
+		
+		parent = argparent;
+		name = argname;
+		isBranch = false;
+		this.prAddMenuItem(argparent, argindex, argname, isBranch);
+		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) } 
+			{ topLevelItems = topLevelItems.add(this) };
+	}
+}
+
+SCMenuGroup : CocoaMenuItem {
+	
+	*new { |parent, name = "", index|
+		^super.new.init(parent, index, name);
+	}
+	
+	init { |argparent, argindex, argname|
+		
+		parent = argparent;
+		name = argname;
+		isBranch = true;
+		this.prAddMenuItem(argparent, argindex, argname, isBranch);
+		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) } 
+			{ topLevelItems = topLevelItems.add(this) };
+	}
+}
+
+SCMenuRoot {
+	*new { ^nil }
+}
+
+SCMenuSeparator : CocoaMenuItem {
+
+	*new { arg parent, index;
+		^super.new.init( parent, index );
+	}	
+	
+	init { |argparent, argindex|
+		
+		parent = argparent;
+		isBranch = false;
+		this.prAddMenuSeparator(argparent, argindex.postln);
+		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) } 
+			{ topLevelItems = topLevelItems.add(this) };
+	}
+	
+	prAddMenuSeparator { |parent, index| 
+		_NewMenuSeparator
+	}
 }
