@@ -3861,7 +3861,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"ヘルプ"] submenu];
+			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"„Éò„É´„Éó"] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
@@ -3895,13 +3895,76 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed);
+int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *caller = g->sp - 2;		// the SC Object
+	PyrSlot *parentObj = g->sp - 1;	// the parent menu or nil for app menu
+	PyrSlot *ind = g->sp;			// the index
+	
+	bool nilIndex;
+	int menIndex, err;
+	
+	nilIndex = IsNil(ind);
+	if(!nilIndex){
+		err = slotIntVal(ind, &menIndex);
+		if (err) return err;
+	}
+	
+	// make a menu item
+	NSMenuItem *menuItem = [NSMenuItem separatorItem];
+	SetPtr(caller->uo->slots + 0, menuItem); // set the dataptr
+
+	NSMenu *parentMenu;
+	if (IsNil(parentObj)) {
+		parentMenu = [NSApp mainMenu];
+	} else if (IsSym(parentObj)) {
+		PyrSymbol *parentSymbol;
+		int err = slotSymbolVal(parentObj, &parentSymbol);
+		if (err) return err;
+		if (strcmp(parentSymbol->name, "Help")==0) {
+			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
+			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"„Éò„É´„Éó"] submenu];
+		} 
+	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
+		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
+		if([parentItem hasSubmenu]) {
+			//NSLog(@"Parent has submenu");
+			parentMenu = [parentItem submenu];
+		}
+	} 
+	
+	if(!parentMenu) {
+		return errWrongType;
+	}
+	
+	// protect against bad indices
+	int parentSize = [parentMenu numberOfItems];
+	//NSLog(@"parentSize: %i", parentSize);
+	if(menIndex > parentSize || nilIndex) {
+		//NSLog(@"Index > parentSize");
+		menIndex = parentSize;
+	}
+	if(menIndex < 0) {
+		//NSLog(@"Index < 0");
+		menIndex = 0;
+	}
+	//NSLog(@"Final Index: %i", menIndex);
+	
+	[parentMenu insertItem:menuItem atIndex:menIndex];
+	return errNone;
+}
+
+
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
 	
 	PyrSlot *caller = g->sp;
 	
-	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+	NSMenuItem *menuItem = (NSMenuItem*)(caller->uo->slots->uptr);
 	if(!menuItem) return errFailed;
 	[[menuItem menu] removeItem:menuItem];
 	SetNil(caller->uo->slots); // we're now a lame duck
@@ -4167,6 +4230,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_SetSmoothing", prPen_SetSmoothing, 2, 0);
 	
 	definePrimitive(base, index++, "_NewMenuItem", prNewMenuItem, 5, 0);
+	definePrimitive(base, index++, "_NewMenuSeparator", prNewMenuSeparator, 3, 0);
 	definePrimitive(base, index++, "_RemoveMenuItem", prRemoveMenuItem, 1, 0);
 	definePrimitive(base, index++, "_EnableMenuItem", prEnableMenuItem, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
