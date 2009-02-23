@@ -97,20 +97,46 @@ StartUp : AbstractSystemAction {
 		 if(done) { object.doOnStartUp } { this.add(object) }
 	}
 
-	
 
 }
 
+
+// things to do before system shuts down
+
+ShutDown : AbstractSystemAction {
+
+	classvar <>objects;
+
+	*initClass {
+		UI.registerForShutdown({ this.run });
+	}
+
+	*run {
+		objects.do({ arg item; item.doOnShutDown;  });
+	//	"ShutDown done.".postln;
+	}
+
+}
+
+
 AbstractServerAction : AbstractSystemAction {
 	
+	*init {
+		this.objects = IdentityDictionary.new;
+	}
+	
 	*performFunction { arg server, function;
-		this.objects.at(server).do(function)
+		this.objects.at(server).do(function);
+		if(server === Server.default) {
+			this.objects.at(\default).do(function)
+		};
+		this.objects.at(\all).do(function);
 	}
 	
 	*run { arg server;
 		var selector = this.functionSelector;
 		// selector.postln;
-		this.performFunction(server, { arg obj; obj.perform(selector) });
+		this.performFunction(server, { arg obj; obj.perform(selector, server) });
 	}
 	
 	*functionSelector {
@@ -118,16 +144,11 @@ AbstractServerAction : AbstractSystemAction {
 	}
 	
 	*add { arg object, server;
-		
-		server = server ? Server.default;
-
-		if (this.objects.includesKey(server).not) {
-			this.objects.put(server, List.new)
-		};
-		
-		if (this.objects.at(server).includes(object).not) {
-			this.objects.at(server).add(object)
-		};
+		var list;
+		if(server.isNil) { server = \default };
+		list = this.objects.at(server);
+		if(list.isNil) { list = List.new; this.objects.put(server, list) };
+		if (list.includes(object).not) { list.add(object) };
 
 	}
 	
@@ -139,12 +160,13 @@ AbstractServerAction : AbstractSystemAction {
 	
 	*remove { arg object, server;
 		
-		server = server ? Server.default;
-
-		if ( this.objects.includesKey(server) ) {
-			this.objects.at(server).remove(object)
-		};
+		if(server.isNil) { server = \default };
+		this.objects.at(server).remove(object);
 		
+	}
+	
+	*removeServer { arg server;
+		this.objects.removeAt(server)
 	}
 	
 }
@@ -203,20 +225,3 @@ ServerTree : AbstractServerAction {
 	
 }
 
-
-// things to do before system shuts down
-
-ShutDown : AbstractSystemAction {
-
-	classvar <>objects;
-
-	*initClass {
-		UI.registerForShutdown({ this.run });
-	}
-
-	*run {
-		objects.do({ arg item; item.doOnShutDown;  });
-	//	"ShutDown done.".postln;
-	}
-
-}
