@@ -136,7 +136,7 @@
 + Function {
 
 	loadToFloatArray { arg duration = 0.01, server, action;
-		var buffer, def, synth, name, value, numChannels, val;
+		var buffer, def, synth, name, numChannels, val;
 		server = server ? Server.default;
 		if(server.serverRunning.not) { "Server not running!".warn; ^nil };
 		
@@ -144,10 +144,14 @@
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
 			var	val = this.value;
+			if(val.isValidUGenInput.not) {
+				val.dump;
+				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+			};
 			if(val.rate != \audio) {
 				val = K2A.ar(val);
 			};
-			if(value.size == 0) { numChannels = 1 } { numChannels = value.size };
+			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
 			RecordBuf.ar(val, bufnum, loop:0);
 			Line.ar(dur: duration, doneAction: 2);			
 		});
