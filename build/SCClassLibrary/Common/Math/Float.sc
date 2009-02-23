@@ -56,12 +56,19 @@ Float : SimpleNumber {
 
 	archiveAsCompileString { ^true }
 	
+	// the correct place to implement compileString for Float is in DumpParseNode.cpp
+	// int asCompileString(PyrSlot *slot, char *str)
+	// for now, solve it here.
+	
 	storeOn { |stream|
-		var	str = super.asString;
+		var	str;
+		if(this == inf) { stream << "inf"; ^this };
+		if(this == -inf) { stream << "-inf"; ^this };
+		str = super.asString;
 		stream << str;
 		// if it doesn't already have a . or is 1e-05 then add a .0 to force it to Float
-		if(str != "inf" and: {str!="-inf"} and: { str.find(".").isNil } and: { str.find("e").isNil},{
+		if(str.find(".").isNil and: { str.find("e").isNil }) {
 			stream << ".0";
-		})
+		}
 	}
 }
