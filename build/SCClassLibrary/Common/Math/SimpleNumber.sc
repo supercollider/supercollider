@@ -272,6 +272,9 @@ SimpleNumber : Number {
 	gauss { arg standardDeviation;
 		^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
 	}
+	gaussCurve { arg a = 1.0, b = 0.0, c = 1.0;
+		^a * (exp(squared(this - b) / (-2.0 * squared(c))))
+	}
 
 	asPoint { ^Point.new(this, this) }
 

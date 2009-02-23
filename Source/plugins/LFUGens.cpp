@@ -61,6 +61,12 @@ struct LFTri : public Unit
 	float mFreqMul;
 };
 
+struct LFGauss : public Unit
+{
+	double mPhase;
+	float mDurMul;
+};
+
 struct Impulse : public Unit
 {
 	double mPhase, mPhaseOffset;
@@ -242,6 +248,11 @@ extern "C"
 	void LFCub_next_k(LFCub *unit, int inNumSamples);
 	void LFCub_Ctor(LFCub* unit);
 
+	void LFGauss_next_a(LFGauss *unit, int inNumSamples);
+	void LFGauss_next_k(LFGauss *unit, int inNumSamples);
+	void LFGauss_next_aa(LFGauss *unit, int inNumSamples);
+	void LFGauss_Ctor(LFGauss* unit);
+	
 	void VarSaw_next_a(VarSaw *unit, int inNumSamples);
 	void VarSaw_next_k(VarSaw *unit, int inNumSamples);
 	void VarSaw_Ctor(VarSaw* unit);
@@ -782,6 +793,132 @@ void LFTri_Ctor(LFTri* unit)
 	LFTri_next_k(unit, 1);
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LFGauss_next_k(LFGauss *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	float dur = ZIN0(0);
+	float c = ZIN0(1);
+	float b = ZIN0(2);
+	float loop = ZIN0(3);
+	
+	// offset phase by b
+	double x = unit->mPhase - b;
+	
+	// for a full cycle from -1 to 1 in duration, double the step.
+	float step = 2.f / (dur * unit->mRate->mSampleRate);
+	
+	// calculate exponent only once per loop
+	float factor = -1.f / (2.f * c * c);
+		
+	LOOP(inNumSamples, 
+		 
+		if (x > 1.f) {
+			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
+		}
+		ZXP(out) = exp(x * x * factor);
+		x += step;
+	);
+
+	unit->mPhase = x + b;
+	
+}
+
+void LFGauss_next_a(LFGauss *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	float *dur = ZIN(0);
+	
+	float c = ZIN0(1);
+	float b = ZIN0(2);
+	float loop = ZIN0(3);
+	float sr = unit->mRate->mSampleRate;
+	
+	// offset phase by b
+	double x = unit->mPhase - b;
+	float factor = -1.f / (2.f * c * c);
+	
+	LOOP(inNumSamples, 
+		
+		if (x > 1.f) {
+			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
+		}
+		
+		// for a full cycle from -1 to 1 in duration, double the step.
+		float step = 2.f / (ZXP(dur) * sr);
+		
+		ZXP(out) = exp(x * x * factor);
+		
+		x += step;
+	);
+
+	unit->mPhase = x + b;
+	
+}
+
+
+
+void LFGauss_next_aa(LFGauss *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	
+	float *dur = ZIN(0);
+	float *c = ZIN(1);
+	
+	float b = ZIN0(2);
+	float loop = ZIN0(3);
+	float sr = unit->mRate->mSampleRate;
+	
+	// offset phase by b
+	double x = unit->mPhase - b;
+	
+	LOOP(inNumSamples, 
+		
+		if (x > 1.f) {
+			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
+		}
+		
+		// for a full cycle from -1 to 1 in duration, double the step.
+		float step = 2.f / (ZXP(dur) * sr);
+		
+		float cval = ZXP(c);
+		
+		float factor = -1.f / (2.f * cval * cval);
+		ZXP(out) = exp(x * x * factor);
+		
+		x += step;
+	);
+
+	unit->mPhase = x + b;
+	
+}
+
+
+
+void LFGauss_Ctor(LFGauss* unit)
+{
+	
+	if (INRATE(0) == calc_FullRate) {
+		if (INRATE(1) == calc_FullRate) {
+				SETCALC(LFGauss_next_aa);
+		} else {
+				SETCALC(LFGauss_next_a);
+				printf("LFGauss_next_a\n");
+		}
+	} else {
+		SETCALC(LFGauss_next_k);
+	}
+	unit->mPhase = -1.0;
+	
+	//LFGauss_next_k(unit, 1);
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4056,6 +4193,7 @@ void load(InterfaceTable *inTable)
 	DefineSimpleUnit(LFPar);
 	DefineSimpleUnit(LFCub);
 	DefineSimpleUnit(LFTri);
+	DefineSimpleUnit(LFGauss);
 	DefineSimpleUnit(Impulse);
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
