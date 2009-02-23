@@ -21,6 +21,7 @@ Headlines:
 * 2008-11-11 add Pfxb pattern - jr
 * 2008-11-25 new EZPopUpMenu - jm
 * 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
+* 2008-11-30 Drag and drop paths from Finder to Documents and SCViews - sw
 * 2008-12-03 added PV_Div ugen for complex division - ds
 * 2008-12-07 added PV_Conj ugen for complex conjugate - ds
 * 2008-12-15 new ViewRedirect for easier cross-platform gui syntax. e.g. Window now redirects to SCWindow or JWindow. ds & jm
@@ -33,8 +34,10 @@ Headlines:
 * 2009-01-06 VDiskIn sends file position to client - jr
 * 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
 * 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative. 
+* 2009-01-15 SCLevelIndicator view added - sw
 * 2009-01-16 Scale and Tuning classes added - tw
 * 2009-01-17 SuperColliderAU (scsynth as a Mac OSX "Audio Unit") added to main distribution - gr
+* 2009-02-23 SCMenuItem, SCMenuGroup, and SCMenuSeparator for user customisable menus - sw
 
 Bugfixes:
 ---------
@@ -50,23 +53,39 @@ Bugfixes:
 * 2008-12-07 OSCpathResponder fixed (bug id 2021481) - jh
 * 2009-01-08 b_readChannel fixed (bug id 1938480) - mb
 * 2009-01-08 MIDIIn.connect on Linux fixed (bug id 1986850) - mb
+* 2009-01-09 Tabbing in SCTextView - sw
 * 2008-08-23 fix for sclang crashing sometimes when compiling erroneous code (bug id 2022297) - rb
-* 2009-01-16 SCScrollView relativeOrigin glitch fixed (bug id 2508451) - jr
+* 2009-01-18 SCScrollView relativeOrigin glitch fixed (bug id 2508451) - jr, sw
+* 2009-01-28 Fixed QuartzComposer view bounds bug - sw
 
 Other additions/improvements:
 -----------------------------
+* 2008-03-22 added open Method and link handling to SCTextView - sw
 * 2008-04-04 SoundFile:toCSV - ds
 * 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
+* 2008-07-14 Deprecated rendezvous in favour of zeroConf - sw
 * 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
 * 2008-10-03 improvements to standalone build - jp
+* 2008-10-03 SCEnvelopeView remembers drawing order. - sw
+* 2008-10-05 Maintain initial offset when dragging on an Envelope View node. This avoids nodes jumping to a new position on mouse down. - sw
+* 2008-10-05 Enabled gridOn, gridResolution, gridColor, timeCursorOn, timeCursorPosition, and timeCursorColor for SCSoundFileViews. - sw
 * 2008-10-31 thisProcess.pid - sclang now can know what its process id is - ds
 * 2008-11-21 support for LocalBuf in FFT UGens - jr
 * 2008-11-27 SC3 will ignore ugens/class-files in folders named "ignore". Previously the name has been "test" - ignoring folders named "test" is now deprecated and will be removed - ds
+* 2008-12-06 Added Main:recompile to allow recompiling from code (SC.app only so far) - sw
+* 2008-12-08 Added custom drag label for SCView - sw
 * 2008-12-15 Buffer's done osc reply now includes the bufnum - jt
+* 2008-12-20 Help tree in help menu (OSX) - sw
 * 2008-12-24 EZSLider and EZNumber now have an enclosing containers, as well labelPosition =\left, \right, or \stack modes - jm
+* 2009-01-03 Help browser text is editable/executable (CocoaGUI) - sw
+* 2009-01-04 Escape exits modal and fullscreen states (OSX) - sw
 * 2009-01-08 interface change to ProxySpace.stop (now stops all proxies, just like free/end/clear) - jr
 * 2009-01-08 improved Ndef implementation, stores values in an internal ProxySpace, Ndef takes server names for multiple servers. - jr
 * 2009-01-08 improved ProxyMixer implementation, added NdefMixer. - adc
+* 2009-01-11 Added class browser to help menu (OSX) - sw
+* 2009-01-20 New Cocoa based SCTextField - sw
+* 2009-01-28 More helpful error string for operation cannot be called from this Process - sw
+* 2009-02-23 CocoaDialog takes allowsMultiple arg rather than maxItems - sw
 
 
 SuperCollider v3.2, released 2008-02-21
