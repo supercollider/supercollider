@@ -185,12 +185,15 @@ const char *CheckBadValues_fpclassString(int fpclass)
 		case FP_NORMAL:       return "normal";
 		case FP_NAN:          return "NaN";
 		case FP_INFINITE:     return "infinity";
+#ifndef SC_WIN32
 		case FP_ZERO:         return "zero";
+#endif
 		case FP_SUBNORMAL:    return "denormal";
 		default:              return "unknown";
 	}
 }
 
+#ifndef SC_WIN32
 inline int CheckBadValues_fold_fpclasses(int fpclass)
 {
 	switch(fpclass) {
@@ -198,7 +201,12 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 		default:        return fpclass;
 	}
 }
-
+#else
+inline int CheckBadValues_fold_fpclasses(int fpclass)
+{
+	return fpclass;
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////
 

@@ -531,9 +531,8 @@ void BufAllocReadCmd::CallDestructor()
 bool BufAllocReadCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	
+#ifndef SC_WIN32
 	FILE* fp = fopenLocalOrRemote(mFilename, "r");
-	
 	if (!fp) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
@@ -541,13 +540,19 @@ bool BufAllocReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	
+#endif
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
+#ifndef SC_WIN32
 	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
+#else
+	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+#endif
 	if (!sf) {
 		char str[256];
+#ifndef SC_WIN32
 		fclose(fp);
+#endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
@@ -639,8 +644,8 @@ bool BufReadCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 	
-	FILE* fp = fopenLocalOrRemote(mFilename, "r");
-	
+#ifndef SC_WIN32
+	FILE* fp = fopenLocalOrRemote(mFilename, "r");	
 	if (!fp) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
@@ -648,11 +653,15 @@ bool BufReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-	
 	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
+#else
+	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+#endif
 	if (!sf) {
 		char str[256];
+#ifndef SC_WIN32
 		fclose(fp);
+#endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
