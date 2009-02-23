@@ -5,19 +5,19 @@ CocoaDialog {
 		UI.registerForReset({ this.clear });
 	}
 	
-	*getPaths { arg okFunc, cancelFunc, maxSize=20;
+	*getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
 		if(result.notNil,{
 			"A CocoaDialog is already in progress.  do: [CocoaDialog.clear]".warn;
 			^nil
 		});
 		
-		result = Array.new(maxSize);
+		//result = Array.new(maxSize);
 		ok = okFunc;
 		cancel = cancelFunc;
-		this.prGetPathsDialog(result);
+		this.prGetPathsDialog(allowsMultiple);
 	}
 	
-	*prGetPathsDialog { arg argResult;
+	*prGetPathsDialog { arg allowsMultiple;
 		_Cocoa_GetPathsDialog
 		^this.primitiveFailed
 	}

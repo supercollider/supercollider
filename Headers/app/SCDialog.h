@@ -30,7 +30,7 @@
 -(void)error;
 
 -(void)returnPaths:(NSArray*)urls;
--(void)getPaths;
+-(void)getPaths:(BOOL)allowsMultiple;
 -(void)returnPath:(NSString*)path;
 
 

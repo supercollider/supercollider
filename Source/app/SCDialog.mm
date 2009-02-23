@@ -51,13 +51,13 @@
 }
 
 
--(void)getPaths
+-(void)getPaths:(BOOL)allowsMultiple
 {  
     if (!openPanel) {
 		openPanel = [NSOpenPanel openPanel];
 		[openPanel retain];
 	}
-	[openPanel setAllowsMultipleSelection: YES];
+	[openPanel setAllowsMultipleSelection: allowsMultiple];
     if(NSOKButton == [openPanel runModalForTypes: nil]) {
          [self returnPaths: [openPanel URLs]];
     } else {
@@ -73,19 +73,22 @@
     
     VMGlobals *g = gMainVMGlobals;
     pthread_mutex_lock (&gLangMutex);
+	PyrObject* array = newPyrArray(g->gc, count, 0, true);
     for (i = 0; i < count; i++)
     {
         PyrString* pyrPathString = newPyrString(g->gc,[[[urls objectAtIndex: i ] path] cString],0,true);
         
-        PyrSlot slot;
-        SetObject(&slot, pyrPathString);
-        
-        result->slots[i].ucopy = slot.ucopy;
+        SetObject(array->slots + array->size, pyrPathString);
+		array->size++;
 
-        g->gc->GCWrite(result,pyrPathString);
-        // have to set size field each time in order that gc can find the created objects
-        result->size = i+1;
+        g->gc->GCWrite(array,pyrPathString);
+
     }
+	
+	int classVarIndex = getsym("CocoaDialog")->u.classobj->classVarIndex.ui;
+	SetObject(&g->classvars->slots[classVarIndex+0], array);
+	g->gc->GCWrite(g->classvars, array);
+	
     pthread_mutex_unlock (&gLangMutex);
 
     [self ok];

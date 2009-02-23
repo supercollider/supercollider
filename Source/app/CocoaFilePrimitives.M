@@ -48,11 +48,20 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
-    PyrSlot *array = g->sp; // an array
+    PyrSlot *allowsMultiple = g->sp; // a bool
     
-    SCDialog *dialog = [SCDialog receiver: receiver->uo result: array->uo ];
+    SCDialog *dialog = [SCDialog receiver: receiver->uo result: nil ];
 
-    [dialog scvmDeferWithSelector:@selector(getPaths) ];
+	BOOL allows = IsTrue(allowsMultiple);
+	SEL selector = @selector(getPaths:);
+	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+								[dialog methodSignatureForSelector: selector]];
+    [invocation setTarget:dialog];
+    [invocation setSelector: selector];
+	[invocation setArgument:&allows atIndex:2];
+    [invocation retainArguments];
+    
+    [[SCVirtualMachine sharedInstance] defer: invocation];
 
     return errNone;
 }
