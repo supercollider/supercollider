@@ -17,19 +17,13 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0024f8}
-span.s3 {color: #003eea}
-span.s4 {color: #000000}
-span.s5 {color: #002eaf}
-span.s6 {color: #606060}
-span.s7 {font: 9.0px Monaco}
-span.s8 {font: 12.0px Helvetica}
-span.s9 {color: #663321}
-span.s10 {color: #1c46a2}
-span.s11 {color: #ad140d}
-span.s12 {color: #001bb9}
-span.s13 {color: #002dae}
-span.s14 {font: 12.0px Helvetica; color: #000000}
+span.s2 {color: #001bb9}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.s5 {font: 9.0px Monaco}
+span.s6 {font: 12.0px Helvetica}
+span.s7 {color: #ad140d}
+span.s8 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -256,20 +250,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>wait</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>within a routine, yield the number so that the clock can wait for this many beats.</p>
-<p class="p3"><span class="Apple-tab-span">	</span>(see <a href="../Core/Kernel/Routine.html"><span class="s3">Routine</span></a>)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>(see <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>// create a routine by a function fork</p>
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>fork {</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.wait;</p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"I did wait"<span class="s4">.postln;</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"I did wait"<span class="s3">.postln;</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0.rand.wait;</p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"No you didn't"<span class="s4">.postln;</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"No you didn't"<span class="s3">.postln;</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2.wait;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">(1..)</span>.do { <span class="s5">|i|</span><span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">"yes I did"</span>.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">(1..)</span>.do { <span class="s2">|i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">"yes I did"</span>.postln;<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.asFloat.rand.wait;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"no you didn't"<span class="s4">.postln;<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"no you didn't"<span class="s3">.postln;<span class="Apple-converted-space"> </span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.wait<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p5"><span class="Apple-tab-span">	</span>}</p>
@@ -277,11 +271,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3"><b>waitUntil</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>like wait, only specify a time (measured in beats of the current thread's clock)</p>
-<p class="p3"><span class="Apple-tab-span">	</span>(see <a href="../Core/Kernel/Routine.html"><span class="s3">Routine</span></a>)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>(see <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>sleep</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span>make the current thread sleep, until woken up by re-scheduling. (see <a href="../Core/Kernel/Routine.html"><span class="s3">Routine</span></a>)</p>
-<p class="p2"><span class="Apple-tab-span">	</span><span class="s7"><span class="Apple-tab-span">	</span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>make the current thread sleep, until woken up by re-scheduling. (see <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a>)</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="s5"><span class="Apple-tab-span">	</span></span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Binary Operations</b></p>
 <p class="p2"><br></p>
@@ -469,9 +463,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>Indices wrap around the table and shift octaves as they do</p>
 <p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s9">// pentatonic scale</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(1, 2..15).collect { <span class="s10">|i|</span> i.degreeToKey(l, 12) }</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s7">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(1, 2..15).collect { <span class="s2">|i|</span> i.degreeToKey(l, 12) }</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -480,20 +474,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>inverse of degreeToKey.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s9">// pentatonic scale</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).collect { <span class="s10">|i|</span> i.keyToDegree(l, 12) }</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s7">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).collect { <span class="s2">|i|</span> i.keyToDegree(l, 12) }</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s9">// pentatonic scale</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).postln.collect { <span class="s10">|i|</span> i.keyToDegree(l, 12).degreeToKey(l) }</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s7">// pentatonic scale</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..75).postln.collect { <span class="s2">|i|</span> i.keyToDegree(l, 12).degreeToKey(l) }</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>nearestInList(list)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>returns the value in the collection closest to this</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 0.5, 0.9, 1];</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0, 0.05..1).collect { |i| i.nearestInList(l) }</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
@@ -504,8 +498,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>returns the value in the collection closest to this, assuming an octave repeating table of note values.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>stepsPerOctave is 12 by default</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s9">// pentatonic scale</span></p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l = [0, 1, 5, 9, 11]; <span class="s7">// pentatonic scale</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(60, 61..76).collect { |i| i.nearestInScale(l, 12) }</p>
 <p class="p5"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -513,7 +507,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>randomly partition a number into parts of at least min size.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>75.partition(8, 3);</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>75.partition(8, 3);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>75.partition(75, 1);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -522,7 +516,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>returns a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds</p>
 <p class="p3"><span class="Apple-tab-span">	</span>precision is 0.1 by default</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var start;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>start = Main.elapsedTime;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ loop({(Main.elapsedTime - start).asTimeString.postln; 0.05.wait}) }.fork;</p>
@@ -532,9 +526,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>return true if receiver is closer to <b>that</b> than <b>precision</b>. (default for precision: 0.0001)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>3.1.equalWithPrecision(3.0, 0.05); <span class="s11">// false</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.1); <span class="s11">// false</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.11); <span class="s11">// true</span></p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>3.1.equalWithPrecision(3.0, 0.05); <span class="s7">// false</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.1); <span class="s7">// false</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>3.1.equalWithPrecision(3.0, 0.11); <span class="s7">// true</span></p>
 <p class="p6"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p3"><b>quantize(quantum, tolerance, strength)</b></p>
@@ -549,62 +543,62 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>linlin(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to a linear output range (outMin..outMax). If the input exceeds the assumed input range.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(0..10).collect { <span class="s12">|num|</span> num.linlin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(0..10).linlin(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..10).collect { <span class="s2">|num|</span> num.linlin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..10).linlin(0, 10, -4.3, 100); <span class="s7">// equivalent.</span></p>
 <p class="p6"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>linexp(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to an exponential output range (outMin..outMax).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The output range must not include zero.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(0..10).collect { <span class="s12">|num|</span> num.linexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(0..10).linexp(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(0..10).collect { <span class="s2">|num|</span> num.linexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..10).linexp(0, 10, -4.3, 100); <span class="s7">// equivalent.</span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><b>explin(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed exponential input range (inMin..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed exponential input range (inMin..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to a linear output range (outMin..outMax). If the input exceeds the assumed input range.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The input range must not include zero.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="s7"><span class="Apple-tab-span">	</span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="s5"><span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s12">|num|</span> num.explin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(1..10).explin(0, 10, -4.3, 100); <span class="s11">// equivalent.</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s2">|num|</span> num.explin(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(1..10).explin(0, 10, -4.3, 100); <span class="s7">// equivalent.</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
 <p class="p3"><b>expexp(inMin, inMax, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed exponential input range (inMin..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed exponential input range (inMin..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to an exponential output range (outMin..outMax). If the input exceeds the assumed input range.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>Both input range and output range must not include zero.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s12">|num|</span> num.expexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(1..10).expexp(0, 10, 4.3, 100); <span class="s11">// equivalent.</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s2">|num|</span> num.expexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(1..10).expexp(0, 10, 4.3, 100); <span class="s7">// equivalent.</span></p>
 <p class="p2"><br></p>
 <p class="p3"><b>bilin(inCenter, inMin, inMax, outCenter, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed linear input ranges (inMin..inCenter) and (inCenter..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed linear input ranges (inMin..inCenter) and (inCenter..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to two linear output ranges (outMin..outCenter) and (outCenter..outMax).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s8"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span></span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var center = 0.5, ctlCenter;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s13">Window</span>("bilin", Rect(100, 100, 200, 100)).front;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s13">Slider</span>(w, <span class="s13">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s13">Slider</span>(w, <span class="s13">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>("bilin", Rect(100, 100, 200, 100)).front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value };</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {<span class="Apple-converted-space"> </span></p>
@@ -614,18 +608,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>biexp(inCenter, inMin, inMax, outCenter, outMin, outMax, clip)</b></p>
 <p class="p6"><br></p>
-<p class="p3"><span class="s7"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed exponential input ranges (inMin..inCenter) and (inCenter..inMax)</p>
+<p class="p3"><span class="s5"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed exponential input ranges (inMin..inCenter) and (inCenter..inMax)</p>
 <p class="p3"><span class="Apple-tab-span">	</span>to two linear output ranges (outMin..outCenter) and (outCenter..outMax).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The input range must not include zero.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="s14"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
+<p class="p9"><span class="s8"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
 <p class="p5"><span class="Apple-tab-span">	</span>(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">var</span> center = 0.5, ctlCenter;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s12">Window</span>(<span class="s6">"biexp"</span>, <span class="s12">Rect</span>(100, 100, 200, 100)).front;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s12">Slider</span>(w, <span class="s12">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> center = 0.5, ctlCenter;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>(<span class="s4">"biexp"</span>, <span class="s2">Rect</span>(100, 100, 200, 100)).front;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 20, 150, 20)).value_(0.5);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">Slider</span>(w, <span class="s2">Rect</span>(20, 45, 150, 20)).value_(0.5);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = { center = b.value };</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mouseDownAction = { ctlCenter = a.value + 0.05 };</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.action = {</p>
@@ -638,10 +632,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>map the receiver onto an L-curve, using the formula: a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1).</p>
 <p class="p3"><span class="Apple-tab-span">	</span>This is used for smoothing values and limiting them to a range. Defalt values: <b>a = 1; m = 0; tau = 1</b>.</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>(-10..10).collect { |num| num.lcurve }.plot;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..1000).normalize(-10, 10).collect { <span class="s2">|num|</span> num.lcurve }.plot;</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3"><b>gaussCurve(a, b, c)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>map the receiver onto a gauss function, using the formula: a * (exp(squared(this - b) / (-2.0 * squared(c))))<span class="Apple-tab-span">	</span>Defalt values: <b>a = 1; b = 0; c = 1</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>(0..1000).normalize(-10, 10).collect { <span class="s2">|num|</span> num.gaussCurve }.plot;</p>
 </body>
 </html>

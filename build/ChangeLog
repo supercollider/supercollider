@@ -39,6 +39,7 @@ Headlines:
 * 2009-01-17 SuperColliderAU (scsynth as a Mac OSX "Audio Unit") added to main distribution - gr
 * 2009-02-23 SystemActions refactored - jr
 * 2009-02-23 SCMenuItem, SCMenuGroup, and SCMenuSeparator for user customisable menus - sw
+* 2009-02-23 LFGauss UGen added - jr
 
 Bugfixes:
 ---------
