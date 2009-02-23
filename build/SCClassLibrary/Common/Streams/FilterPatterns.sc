@@ -702,7 +702,7 @@ Pclump : FilterPattern {
 					if (list.size > 0) { event = list.yield };
 					^event 
 				};
-				list = list ++ next;
+				list = list.add(next);
 			};
 			event = list.yield;
 		}
