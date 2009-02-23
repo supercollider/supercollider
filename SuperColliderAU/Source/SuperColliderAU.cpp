@@ -156,8 +156,8 @@ ComponentResult SuperColliderAU::Initialize()
 		this->beatsPerTick = 1.0 / ticksPerBeat; 	
     }
 
-    if (CFDictionaryContainsKey(serverConfig, kBeatDivKey)){
-        CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey),kCFNumberIntType,(void *)&ticksPerBeat);
+    if (CFDictionaryContainsKey(serverConfig, kDoNoteOnKey)){
+        CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey),kCFNumberIntType,(void *)&doNoteOn);
 		this->doNoteOn = CFBooleanGetValue( (CFBooleanRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey)); 	
     }
 	
