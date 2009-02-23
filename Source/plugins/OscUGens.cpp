@@ -3571,14 +3571,14 @@ void add_wchebyshev(int size, float *data, double partial, double amp)
 	double w = 2.0 / (double)size2;
 	double phase = -1.0;
 	double offset = -amp * cos (partial * pi2);
-	double cur = amp * cos (partial * acos (phase));
+	double cur = amp * cos (partial * acos (phase))-offset;
 	phase += w;
 	for (int i=0; i<size; i+=2) {
 		double next = amp * cos (partial * acos (phase)) - offset;
 		data[i] += 2 * cur - next;
 		data[i+1] += next - cur;
 		cur = next;
-		phase += w;
+		phase += w;		
 	}
 }
 
