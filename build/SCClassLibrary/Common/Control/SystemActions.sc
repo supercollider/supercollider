@@ -18,6 +18,7 @@ AbstractSystemAction {
 	*removeAll {
 		this.init
 	}
+	
 
 	*objects { ^this.shouldNotImplement(thisMethod) }
 	*objects_ { arg obj; ^this.shouldNotImplement(thisMethod) }
@@ -88,7 +89,7 @@ StartUp : AbstractSystemAction {
 
 	*run {
 		done = true;
-		objects.do({ arg item; item.doOnStartUp  });
+		objects.copy.do({ arg item; item.doOnStartUp  });
 		// "StartUp done.".postln;
 	}
 
@@ -112,7 +113,7 @@ ShutDown : AbstractSystemAction {
 	}
 
 	*run {
-		objects.do({ arg item; item.doOnShutDown;  });
+		objects.copy.do({ arg item; item.doOnShutDown;  });
 	//	"ShutDown done.".postln;
 	}
 
@@ -126,11 +127,11 @@ AbstractServerAction : AbstractSystemAction {
 	}
 	
 	*performFunction { arg server, function;
-		this.objects.at(server).do(function);
+		this.objects.at(server).copy.do(function);
 		if(server === Server.default) {
-			this.objects.at(\default).do(function)
+			this.objects.at(\default).copy.do(function)
 		};
-		this.objects.at(\all).do(function);
+		this.objects.at(\all).copy.do(function);
 	}
 	
 	*run { arg server;
