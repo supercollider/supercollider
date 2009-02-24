@@ -47,7 +47,7 @@ CmdPeriod : AbstractSystemAction {
 	//		TempoClock.default.clear;
 		});
 	
-		objects.do({ arg item; item.doOnCmdPeriod;  });
+		objects.copy.do({ arg item; item.doOnCmdPeriod;  });
 	
 		if(freeServers, {
 			Server.freeAll(freeRemote); // stop all sounds on local, or remote servers
@@ -64,7 +64,7 @@ CmdPeriod : AbstractSystemAction {
 		AppClock.clear;
 		TempoClock.default.clear;
 
-		objects.do({ arg item; item.doOnCmdPeriod;  });
+		objects.copy.do({ arg item; item.doOnCmdPeriod;  });
 
 		
 
