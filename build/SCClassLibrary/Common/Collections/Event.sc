@@ -312,7 +312,7 @@ Event : Environment {
 						} { 
 							dur = sustain + strumTime 
 						};
-						schedBundle.value(lag, dur + ~timingOffset, server, [\n_set, msg[3], \gate, 0])
+						schedBundle.value(lag, dur + ~timingOffset, server, [\n_set, msg[2], \gate, 0])
 					}
 				}				
 			),
@@ -586,7 +586,7 @@ Event : Environment {
 							
 							bndl.do {|msgArgs, i|
 									var latency;
-									
+
 									latency = i * strum + lag;
 									
 									if(latency == 0.0) {
