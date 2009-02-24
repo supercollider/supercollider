@@ -35,6 +35,7 @@ SkipJack {
 		task.stop.play;
 		all.add(this);
 		CmdPeriod.add(this);
+		if( verbose ) { ("SkipJack" + name + "started.").postcln }; 
 	}
 	
 	play { this.start }
