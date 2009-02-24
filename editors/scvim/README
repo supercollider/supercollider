@@ -103,10 +103,10 @@ ________________________________________________________________________________
 
 OPTIONAL EXTRA INSTALLATION STEPS:
 
-* If you want to be able to read supercollider files, with syntax highlighting, the
-   ability to start the language and the keybindings you've set up without having to
-   launch sclang at the start of your vim session then source your scvimrc file in your
-   ~/.vimrc
+* If you want to be able to read supercollider files with syntax highlighting,
+	have the ability to start the language and have the keybindings you've set
+	up during a normal vim editing session [without launching as 'scvim'] then
+	source your scvimrc file in your ~/.vimrc
    for example, if you have a ~/.scvimrc file you could put this line in your ~/.vimrc
    so ~/.scvimrc
 
@@ -176,6 +176,24 @@ location you can now copy in more help docs by doing
 or you can do it all in one go by specifying multiple sources
 
   ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help -s <other location>
+________________________________________________________________________________
+
+TROUBLE SHOOTING:
+
+If you get errors about _FileWrite (like the error printed below) when you run
+SCVim.updateHelpCache or SCVim.updateCaches it is likely that you don't have
+write permissions for your scvim_cache_dir.
+This directory is normally: ~/.scvim/ 
+You can verify that by executing: SCVIM.scvim_cache_dir
+Most often the solution is to do this: sudo chown -R <yourusername> ~/.scvim/
+
+ERROR: Primitive '_FileWrite' failed. 
+Failed. 
+RECEIVER: 
+Instance of File { (B7837DD0, gc=40, fmt=00, flg=00, set=01) 
+ instance variables [1] 
+ fileptr : nil 
+}  
 ________________________________________________________________________________
 
 THANKS:
