@@ -1,6 +1,6 @@
 ProxyChainGui { 
 	var <guiFuncs; 
-	var w, <butComp, <butLay, <buttons, <slotButs, <chain, <editor; 
+	var <parent, <butComp, <butLay, <buttons, <slotButs, <chain, <editor; 
 		
 	*new { |chain, name=\proxyChain, buttonList, nSliders=16, win| 
 		buttonList = buttonList ?? { chain.slotNames.collect ([_, \slotCtl]) };
@@ -34,7 +34,7 @@ ProxyChainGui {
 		};
 	}
 	
-	init { |name, buttonList, nSliders, parent|
+	init { |name, buttonList, nSliders, inParent|
 			
 		var butComp, butLay, bounds, editcomp;
 
@@ -57,8 +57,10 @@ ProxyChainGui {
 		bounds =  Rect(200, 200, 160 + 355, 
 			(buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skin.buttonHeight)
 		); 
+		
+		parent = inParent;
 		if (parent.isNil) { 
-			parent = Window(name, bounds, false).front; 
+			parent = Window(name, bounds.resizeBy(0, 10)).front; 
 			parent.asView.addFlowLayout;
 		};
 		
