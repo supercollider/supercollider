@@ -106,8 +106,8 @@ public:
     ComponentResult				Reset(AudioUnitScope	inScope, 
 									  AudioUnitElement  inElement);
     
-	virtual void  HandleNoteOn(int inChannel, UInt8 inNoteNumber, UInt8 inVelocity, long inStartFrame) ;											
-	virtual void SuperColliderAU::HandleNoteOff(int inChannel, UInt8 inNoteNumber, UInt8 inVelocity, long inStartFrame) ;
+	virtual OSStatus HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame);
+	virtual OSStatus HandleNoteOff(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) ;
 
 		
 private:
