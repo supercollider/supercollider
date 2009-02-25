@@ -157,7 +157,7 @@ ComponentResult SuperColliderAU::Initialize()
     }
 
     if (CFDictionaryContainsKey(serverConfig, kDoNoteOnKey)){
-        CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey),kCFNumberIntType,(void *)&doNoteOn);
+        //CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey),kCFNumberIntType,(void *)&doNoteOn);
 		this->doNoteOn = CFBooleanGetValue( (CFBooleanRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey)); 	
     }
 	
@@ -440,7 +440,7 @@ int64 SuperColliderAU::getOscTime( const AudioTimeStamp & inTimeStamp){
 // EXPERIMENTAL
 
 
-void SuperColliderAU::HandleNoteOn(int inChannel, UInt8 inNoteNumber, UInt8 inVelocity, long inStartFrame) {
+OSStatus SuperColliderAU::HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
@@ -448,10 +448,11 @@ void SuperColliderAU::HandleNoteOn(int inChannel, UInt8 inNoteNumber, UInt8 inVe
 		event.sampleTime = inStartFrame;	
 		noteEvents.push_back(event);
 	}
+	return noErr;
 }
 												
 
-void SuperColliderAU::HandleNoteOff(int inChannel, UInt8 inNoteNumber, UInt8 inVelocity, long inStartFrame) {
+OSStatus SuperColliderAU::HandleNoteOff(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
@@ -459,4 +460,5 @@ void SuperColliderAU::HandleNoteOff(int inChannel, UInt8 inNoteNumber, UInt8 inV
 		event.sampleTime = inStartFrame;	
 		noteEvents.push_back(event);
 	}
+	return noErr;
 }
