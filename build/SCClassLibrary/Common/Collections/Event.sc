@@ -497,7 +497,7 @@ Event : Environment {
 						
 						~server = server;
 						~id = ids;
-						~callback.value
+						~callback.value(currentEnvironment)
 					},
 					
 					set: #{|server|
