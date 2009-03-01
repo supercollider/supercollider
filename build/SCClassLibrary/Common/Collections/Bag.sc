@@ -33,6 +33,35 @@ Bag : Collection {
 	atFail { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
 
+		// get something from the bag without removing it
+		// the item is the dictionary's key
+	choose {
+		var index, key, array;
+		if( this.isEmpty, { ^nil }); // empty dictionary
+		array = contents.array;
+		while({
+			index = (array.size >> 1).rand << 1; // generate an even index.
+			array.at(index).isNil;			  // key is at even index.
+		});
+		// return the first non-nil key
+		^array.at(index); 
+	}
+	
+	wchoose {
+		var	items = Array(contents.size), counts = Array(contents.size);
+		contents.keysValuesDo({ |item, count|
+			items.add(item);
+			counts.add(count);
+		});
+		^items[counts.normalizeSum.windex]
+	}
+	
+	take {
+		var	result = this.choose;
+		this.remove(result);
+		^result
+	}
+
 	// enumerating
 	do { arg function;
 		var j = 0;
