@@ -15,16 +15,16 @@ p.p5 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helve
 p.p6 {margin: 0.0px 0.0px 0.0px 29.0px; font: 12.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; font: 12.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 86.0px; font: 12.0px Helvetica}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 span.s1 {color: #0000bf}
-span.s2 {color: #0000bf}
-span.s3 {color: #007300}
-span.s4 {color: #000000}
-span.s5 {font: 12.0px Helvetica; text-decoration: underline ; color: #0000bf}
+span.s2 {color: #007300}
+span.s3 {color: #000000}
+span.s4 {font: 12.0px Helvetica; text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -94,12 +94,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p9">(</p>
 <p class="p10">// approximate a major scale with a 19TET chromatic scale</p>
-<p class="p9">p = <span class="s2">Pbind</span>(</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">\scale</span>, #[0, 3, 6, 8, 11, 14, 17],</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>\stepsPerOctave<span class="s4">, 19,</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s2">Pwhite</span>(0, 7, <span class="s2">inf</span>),</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, 0.125,</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s3">\legato</span>, <span class="s2">Pexprand</span>(0.2, 6.0, <span class="s2">inf</span>)</p>
+<p class="p9">p = <span class="s1">Pbind</span>(</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">\scale</span>, #[0, 3, 6, 8, 11, 14, 17],</p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>\stepsPerOctave<span class="s3">, 19,</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">\degree</span>, <span class="s1">Pwhite</span>(0, 7, <span class="s1">inf</span>),</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">\dur</span>, 0.125,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">\legato</span>, <span class="s1">Pexprand</span>(0.2, 6.0, <span class="s1">inf</span>)</p>
 <p class="p9">).play;</p>
 <p class="p9">)</p>
 <p class="p12"><br></p>
@@ -111,7 +111,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Finally, you can specify amplitude as <b>\db</b> or <b>\amp</b>. If it's given as \db, the amplitude will be calculated automatically using .dbamp.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p13"><span class="s4">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_06g_Data_Sharing.html"><span class="s5">PG_06g_Data_Sharing</span></a></span></p>
-<p class="p13"><span class="s4">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s5">PG_Cookbook01_Basic_Sequencing</span></a></span></p>
+<p class="p13"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_06g_Data_Sharing.html"><span class="s4">PG_06g_Data_Sharing</span></a></span></p>
+<p class="p14"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_08_Event_Types_and_Parameters.html"><span class="s4">PG_08_Event_Types_and_Parameters</span></a></span></p>
 </body>
 </html>
