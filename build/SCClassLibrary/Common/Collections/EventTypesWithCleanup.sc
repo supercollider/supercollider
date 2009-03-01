@@ -33,7 +33,7 @@ EventTypesWithCleanup {
 					~numChannels = ~numChannels ? 1;
 					~schedBundle.value(~lag, ~timingOffset, server, 
 						[\b_alloc, bufNum, ~numFrames, ~numChannels,
-						[\b_gen, bufNum, \sine1, ~genflags ? 7] ++ ~amps
+						[\b_gen, bufNum, \cheby, ~genflags ? 7] ++ ~amps
 					]);
 				}
 			},
@@ -55,9 +55,10 @@ EventTypesWithCleanup {
 			},
  
 			sine2: #{ | server |
-			 	var bufNum;
+			 	var bufNum,
+			 		array = [~freqs, ~amps].lace(~freqs.size * 2);
  				if ( (bufNum = ~bufNum).notNil) {
-					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine2, ~genflags ? 7] ++ ~freqs ++ ~amps)
+					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine2, ~genflags ? 7] ++ array)
 				} {
 					~type = \buffer;
 					bufNum = ~bufNum = server.bufferAllocator.alloc;
@@ -65,15 +66,16 @@ EventTypesWithCleanup {
 					~numChannels = ~numChannels ? 1;
 					~schedBundle.value(~lag, ~timingOffset, server, 
 						[\b_alloc, bufNum, ~numFrames, ~numChannels,
-						[\b_gen, bufNum, \sine1, ~genflags ? 7] ++ ~freqs ++ ~amps
+						[\b_gen, bufNum, \sine1, ~genflags ? 7] ++ array
 					]);
 				}
 			},
  
 			sine3: #{ | server |
-			 	var bufNum;
+			 	var bufNum,
+			 		array = [~freqs, ~amps, ~phases].lace(~freqs.size * 3);
  				if ( (bufNum = ~bufNum).notNil) {
-					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine3, ~genflags ? 7] ++ ~freqs ++ ~amps ++ ~phases)
+					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine3, ~genflags ? 7] ++ array)
 				} {
 					~type = \buffer;
 					bufNum = ~bufNum = server.bufferAllocator.alloc;
@@ -81,7 +83,7 @@ EventTypesWithCleanup {
 					~numChannels = ~numChannels ? 1;
 					~schedBundle.value(~lag, ~timingOffset, server, 
 						[\b_alloc, bufNum, ~numFrames, ~numChannels,
-						[\b_gen, bufNum, \sine1, ~genflags ? 7] ++ ~freqs ++ ~amps ++ ~phases
+						[\b_gen, bufNum, \sine1, ~genflags ? 7] ++ array
 					]);
 				}
 			},

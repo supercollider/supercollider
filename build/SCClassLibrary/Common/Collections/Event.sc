@@ -605,15 +605,25 @@ Event : Environment {
 						}
 					},
 					setProperties:  {
-						var receiver = ~receiver;
-						~args.do { |each|	
-								var selector, value = each.envirGet;
-								if(value.notNil) {
-									selector = each.asSetter;
-									// ("%.%_(%)\n").postf(receiver, selector, value);
-								 	receiver.perform(selector.asSetter, value)
-								 };
-						}
+						var receiver = ~receiver,
+							go = {
+								~args.do { |each|	
+										var selector, value = each.envirGet;
+										if(value.notNil) {
+											selector = each.asSetter;
+											// ("%.%_(%)\n").postf(receiver, selector, value);
+										 	receiver.perform(selector.asSetter, value)
+										 };
+								}
+							};
+						if(~defer ? true) {
+								// inEnvir is needed
+								// because we'll no longer be in this Event
+								// when defer wakes up
+							go.inEnvir.defer
+						} {
+							go.value
+						};
 					},
 					monoOff:  #{|server|
 			
