@@ -19,11 +19,11 @@ p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 span.s1 {color: #0000bf}
 span.s2 {color: #007300}
-span.s3 {color: #0000bf}
-span.s4 {color: #000000}
-span.s5 {font: 12.0px Helvetica}
+span.s3 {color: #000000}
+span.s4 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -73,7 +73,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><b>“Multichannel” expansion</b></p>
 <p class="p4"><br></p>
-<p class="p5">In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see <a href="../../Other Topics/MultiChannel.html"><span class="s3">MultiChannel</span></a>). Something similar happens in patterns. Normally a value sent to a Synth node should be a single number, but if it's an array instead, the pattern expands the event to produce <i>multiple synth nodes</i> instead of just one.</p>
+<p class="p5">In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see <a href="../../Other Topics/MultiChannel.html"><span class="s1">MultiChannel</span></a>). Something similar happens in patterns. Normally a value sent to a Synth node should be a single number, but if it's an array instead, the pattern expands the event to produce <i>multiple synth nodes</i> instead of just one.</p>
 <p class="p4"><br></p>
 <p class="p5">The 'degree' pattern applies a set of chord intervals to a melody that's always on top. It's a compound pattern, Pseries(...) + Prand(...), where Pseries returns a single number and Prand returns an array. As with regular math operations, a number plus an array is an array. If the current Pseries value is 7 and Prand returns [0, -3, -5], the result is [7, 4, 2] and you would hear a C major triad in first inversion.</p>
 <p class="p4"><br></p>
@@ -100,25 +100,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p6">(</p>
-<p class="p8"><span class="s4">b = </span><span class="s1">Buffer</span><span class="s4">.read(s, </span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
+<p class="p8"><span class="s3">b = </span><span class="s1">Buffer</span><span class="s3">.read(s, </span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
 <p class="p7"><br></p>
-<p class="p9">SynthDef<span class="s4">(</span><span class="s2">\stretchedFragments</span><span class="s4">, { </span>|out, bufnum, start, time = 1, stretch = 1, amp = 1, attack = 0.01, decay = 0.05|</p>
+<p class="p9">SynthDef<span class="s3">(</span><span class="s2">\stretchedFragments</span><span class="s3">, { </span>|out, bufnum, start, time = 1, stretch = 1, amp = 1, attack = 0.01, decay = 0.05|</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">PlayBuf</span>.ar(1, bufnum, rate: stretch.reciprocal, startPos: start, doneAction:2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>sig = <span class="s1">PitchShift</span>.ar(sig, pitchRatio: stretch)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.linen(attack, time, decay), doneAction: 2);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, sig ! 2)</p>
-<p class="p10"><span class="s4">}).memStore;<span class="Apple-tab-span">	</span></span>// note memStore! Without this, arguments won't work</p>
+<p class="p10"><span class="s3">}).memStore;<span class="Apple-tab-span">	</span></span>// note memStore! Without this, arguments won't work</p>
 <p class="p6">)</p>
 <p class="p7"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s1">TempoClock</span>.default.tempo = 1;</p>
 <p class="p7"><br></p>
 <p class="p6">p = <span class="s1">Pbind</span>(</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>\instrument<span class="s4">, </span>\stretchedFragments<span class="s4">,</span></p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>\bufnum<span class="s4">, b,</span></p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\stretchedFragments<span class="s3">,</span></p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>\bufnum<span class="s3">, b,</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\start</span>, <span class="s1">Pwhite</span>(0, (b.numFrames * 0.7).asInteger, <span class="s1">inf</span>),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\delta</span>, <span class="s1">Pexprand</span>(0.2, 1.5, <span class="s1">inf</span>),</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>\time<span class="s4">, </span><span class="s1">Pkey</span><span class="s4">(</span>\delta<span class="s4">),</span></p>
+<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span></span>\time<span class="s3">, </span><span class="s1">Pkey</span><span class="s3">(</span>\delta<span class="s3">),</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\stretch</span>, <span class="s1">Pexprand</span>(1.0, 4.0, <span class="s1">inf</span>),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\amp</span>, 0.5,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">\attack</span>, 0.1,</p>
@@ -127,10 +127,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p7"><br></p>
 <p class="p6">p.stop;</p>
-<p class="p10"><span class="s4">b.free;<span class="Apple-tab-span">	</span></span>// be tidy! remember to clean up your Buffer</p>
+<p class="p10"><span class="s3">b.free;<span class="Apple-tab-span">	</span></span>// be tidy! remember to clean up your Buffer</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p12"><span class="s4">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_07_Value_Conversions.html"><span class="s5">PG_07_Value_Conversions</span></a></span></p>
-<p class="p12"><span class="s4">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook02_Manipulating_Patterns.html"><span class="s5">PG_Cookbook02_Manipulating_Patterns</span></a></span></p>
+<p class="p12"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_08_Event_Types_and_Parameters.html"><span class="s4">PG_08_Event_Types_and_Parameters</span></a></span></p>
+<p class="p13"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook02_Manipulating_Patterns.html"><span class="s4">PG_Cookbook02_Manipulating_Patterns</span></a></span></p>
 </body>
 </html>

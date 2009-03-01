@@ -17,18 +17,20 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 span.s1 {text-decoration: underline ; color: #0000bf}
 span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #bf0000}
-span.s5 {text-decoration: underline}
+span.s3 {text-decoration: underline}
+span.s4 {color: #000000}
+span.s5 {color: #0000bf}
+span.s6 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>A Practical Guide to Patterns</b></p>
 <p class="p2"><b>H. James Harkins</b></p>
-<p class="p3"><b></b><br></p>
+<p class="p3"><br></p>
 <p class="p1"><b>Introduction</b></p>
 <p class="p4"><br></p>
 <p class="p5">Patterns are one of the most powerful elements of the SuperCollider language, but in some ways they can be difficult to approach using only the class-oriented help files. These documents seek to bridge the gap, explaining the conceptual background behind patterns, describing the usage of specific Pattern classes, and proceeding into examples of practical musical tasks written as patterns.</p>
@@ -51,40 +53,41 @@ span.Apple-tab-span {white-space:pre}
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"> <a href="PG_06f_Server_Control.html"><span class="s1">PG_06f_Server_Control</span></a>: Patterns that manage server-side resources</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"> <a href="PG_06g_Data_Sharing.html"><span class="s1">PG_06g_Data_Sharing</span></a>: Writing patterns to use information from other patterns</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"> <a href="PG_07_Value_Conversions.html"><span class="s1">PG_07_Value_Conversions</span></a>: Describes the default event's conversions for pitch, rhythm and amplitude</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><a href="PG_08_Event_Types_and_Parameters.html"><span class="s2">PG_08_Event_Types_and_Parameters</span></a>: Describes the event types defined in the default event, and the parameters they expect.</li>
 </ul>
 <p class="p4"><br></p>
 <p class="p5">The <b>pattern cookbook</b> is a set of examples with explanations.</p>
 <p class="p4"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s1">PG_Cookbook01_Basic_Sequencing</span></a></span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s3">PG_Cookbook01_Basic_Sequencing</span></a></li>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Playing a predefined note sequence</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">“Multichannel” expansion</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Using custom SynthDefs (including unpitched SynthDefs)</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook02_Manipulating_Patterns.html"><span class="s1">PG_Cookbook02_Manipulating_Patterns</span></a></span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook02_Manipulating_Patterns.html"><span class="s3">PG_Cookbook02_Manipulating_Patterns</span></a></li>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Merging (interleaving) independent streams</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Reading an array forward or backward arbitrarily</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Changing Pbind value patterns on the fly</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook03_External_Control.html"><span class="s1">PG_Cookbook03_External_Control</span></a></span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook03_External_Control.html"><span class="s3">PG_Cookbook03_External_Control</span></a></li>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Control of parameters by MIDI or HID</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Triggering patterns by external control</li>
 </ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"> <a href="PG_Cookbook04_Sending_MIDI.html"><span class="s1">PG_Cookbook04_Sending_MIDI</span></a>: Sending notes under pattern control to MIDI devices.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook05_Using_Samples.html"><span class="s1">PG_Cookbook05_Using_Samples</span></a></span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook05_Using_Samples.html"><span class="s3">PG_Cookbook05_Using_Samples</span></a></li>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Playing a pattern in time with a sampled loop</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Using audio samples to play pitched material</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook06_Phrase_Network.html"><span class="s1">PG_Cookbook06_Phrase_Network</span></a></span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook06_Phrase_Network.html"><span class="s3">PG_Cookbook06_Phrase_Network</span></a></li>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Building a more complicated melody using shorter phrase patterns</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Also illustrates PmonoArtic for portamento with articulation</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"><span class="s2"> <a href="PG_Cookbook07_Rhythmic_Variations.html"><span class="s1">PG_Cookbook07_Rhythmic_Variations</span></a></span><span class="s3">: An ever-changing drumbeat</span></li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf"> <a href="PG_Cookbook07_Rhythmic_Variations.html"><span class="s3">PG_Cookbook07_Rhythmic_Variations</span></a><span class="s4">: An ever-changing drumbeat</span></li>
 </ul>
 <p class="p4"><br></p>
 <p class="p5"><b>Reference material</b></p>
@@ -102,10 +105,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">For a simple example, let's count upward starting from 0. We don't know how high we will need to count; we just know that every time we ask for values, we should get a continually increasing series.</p>
 <p class="p4"><br></p>
-<p class="p5">Writing everything out, it looks like this. <a href="../../Core/Kernel/Routine.html"><span class="s2">Routine</span></a> is used because this is a control structure that can interrupt what it's doing and remember where it was, so that it can pick up again at exactly that point. You can get some numbers out of it, and call it again later and it will keep counting from the last number returned. (This is an example of a <a href="../Stream.html"><span class="s2">Stream</span></a>. You can find more about Streams in <a href="../Streams-Patterns-Events1.html"><span class="s2">Streams-Patterns-Events1</span></a>.)</p>
+<p class="p5">Writing everything out, it looks like this. <a href="../../Core/Kernel/Routine.html"><span class="s5">Routine</span></a> is used because this is a control structure that can interrupt what it's doing and remember where it was, so that it can pick up again at exactly that point. You can get some numbers out of it, and call it again later and it will keep counting from the last number returned. (This is an example of a <a href="../Stream.html"><span class="s5">Stream</span></a>. You can find more about Streams in <a href="../Streams-Patterns-Events1.html"><span class="s5">Streams-Patterns-Events1</span></a>.)</p>
 <p class="p4"><br></p>
-<p class="p7"><span class="s3">a = </span>Routine<span class="s3"> {</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s2">var</span><span class="Apple-tab-span">	</span>i = 0;</p>
+<p class="p7"><span class="s4">a = </span>Routine<span class="s4"> {</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s5">var</span><span class="Apple-tab-span">	</span>i = 0;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>loop {</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.yield;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 1;</p>
@@ -116,17 +119,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">SuperCollider's built-in control structures allow some simplification.</p>
 <p class="p4"><br></p>
-<p class="p7"><span class="s3">a = </span>Routine<span class="s3"> {</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>(0..).do { <span class="s2">|i|</span></p>
+<p class="p7"><span class="s4">a = </span>Routine<span class="s4"> {</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>(0..).do { <span class="s5">|i|</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.yield;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>};</p>
 <p class="p8">};</p>
 <p class="p9"><br></p>
 <p class="p8">a.nextN(10);</p>
 <p class="p4"><br></p>
-<p class="p5">But wouldn't it be nice just to say, "Give me an infinite series of numbers starting with 0, increasing by 1"? With <a href="../Pseries.html"><span class="s2">Pseries</span></a>, you can. (Here, keyword addressing of the arguments is used for clarity, but 'start', 'step' and 'length' can be omitted.)</p>
+<p class="p5">But wouldn't it be nice just to say, "Give me an infinite series of numbers starting with 0, increasing by 1"? With <a href="../Pseries.html"><span class="s5">Pseries</span></a>, you can. (Here, keyword addressing of the arguments is used for clarity, but 'start', 'step' and 'length' can be omitted.)</p>
 <p class="p4"><br></p>
-<p class="p8">a = <span class="s2">Pseries</span>(start: 0, step: 1, length: <span class="s2">inf</span>).asStream;</p>
+<p class="p8">a = <span class="s5">Pseries</span>(start: 0, step: 1, length: <span class="s5">inf</span>).asStream;</p>
 <p class="p9"><br></p>
 <p class="p8">a.nextN(10);</p>
 <p class="p4"><br></p>
@@ -162,25 +165,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">This explains an easy "gotcha" with patterns -- forgetting to turn the pattern into a stream doesn't get the expected result. Since a pattern doesn't have any concept of a current state, calling 'next' on it is meaningless, so 'next' does what it does for most objects: return the receiver object itself. The method 'asStream' creates the stream conforming to the pattern's specification, and calling 'next' on the stream advances to its next state and returns the new value.</p>
 <p class="p4"><br></p>
-<p class="p8">p = <span class="s2">Pseries</span>(0, 1, 10);</p>
-<p class="p10"><span class="s3">p.next;<span class="Apple-tab-span">	</span></span>// always returns the Pseries, not actual numbers</p>
+<p class="p8">p = <span class="s5">Pseries</span>(0, 1, 10);</p>
+<p class="p10"><span class="s4">p.next;<span class="Apple-tab-span">	</span></span>// always returns the Pseries, not actual numbers</p>
 <p class="p9"><br></p>
 <p class="p8">q = p.asStream;</p>
-<p class="p10"><span class="s3">q.next;<span class="Apple-tab-span">	</span></span>// calling this repeatedly gets the desired increasing integers</p>
+<p class="p10"><span class="s4">q.next;<span class="Apple-tab-span">	</span></span>// calling this repeatedly gets the desired increasing integers</p>
 <p class="p4"><br></p>
 <p class="p5">There is a concrete benefit to this strict division of labor. Since the stream does not modify the original pattern, any number of streams can be made from the same blueprint. All of those streams maintain their own independent states, and they can operate concurrently without interfering with each other.</p>
 <p class="p4"><br></p>
 <p class="p8">r = p.asStream;</p>
-<p class="p10"><span class="s3">r.next;<span class="Apple-tab-span">	</span></span>// starts from zero, even though q already gave out some numbers</p>
+<p class="p10"><span class="s4">r.next;<span class="Apple-tab-span">	</span></span>// starts from zero, even though q already gave out some numbers</p>
 <p class="p9"><br></p>
-<p class="p10"><span class="s3">q.next;<span class="Apple-tab-span">	</span></span>// resumes where q left off, with no effect from getting values from r</p>
+<p class="p10"><span class="s4">q.next;<span class="Apple-tab-span">	</span></span>// resumes where q left off, with no effect from getting values from r</p>
 <p class="p9"><br></p>
-<p class="p8">[q.next, r.next]<span class="Apple-tab-span">	</span><span class="s4">// and so on...</span></p>
+<p class="p8">[q.next, r.next]<span class="Apple-tab-span">	</span><span class="s6">// and so on...</span></p>
 <p class="p4"><br></p>
 <p class="p5">Bear these points in mind as we move to the next subject: getting basic types of data (deterministic and random) out of patterns.</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_02_Basic_Vocabulary.html"><span class="s5">PG_02_Basic_Vocabulary</span></a></span></p>
+<p class="p11"><span class="s4">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_02_Basic_Vocabulary.html"><span class="s3">PG_02_Basic_Vocabulary</span></a></span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p2"><b>Documentation licensing</b></p>
