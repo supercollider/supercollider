@@ -80,6 +80,7 @@ Event : Environment {
 	asControlInput {		
 		^this[ EventTypesWithCleanup.ugenInputTypes[this[\type] ] ] ;
 	}
+	asUGenInput { ^this.asControlInput }
 
 	printOn { arg stream, itemsPerLine = 5;
 		var max, itemsPerLinem1, i=0;
@@ -578,6 +579,7 @@ Event : Environment {
 							lag = ~lag;
 							sustain = ~sustain = ~sustain.value;
 							midiout = ~midiout.value;
+							~uid ?? { ~uid = midiout.uid };  // mainly for sysex cmd
 							hasGate = ~hasGate ? true;
 							midicmd = ~midicmd;
 							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
@@ -774,7 +776,7 @@ Event : Environment {
 				play: #{
 					var server, group, addAction, ids, bundle;
 					~finish.value;
-					ids = Event.checkIDs(~id);
+					ids = Event.checkIDs(~id, server);
 					addAction = Node.actionNumberFor(~addAction);
 					group = ~group.asControlInput;
 					~server = server= ~server ?? {Server.default};
@@ -805,7 +807,7 @@ Event : Environment {
 						 ++ msgFunc.valueEnvir).flop;
 					bndl = bndl.collect(_.asOSCArgArray);
 					
-					ids = Event.checkIDs(~id);
+					ids = Event.checkIDs(~id, server);
 					if (ids.isNil ) {
 						bndl.do { | b |
 							id = server.nextNodeID;
