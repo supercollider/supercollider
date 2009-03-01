@@ -5,21 +5,26 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-span.s1 {color: #0019b7}
-span.s2 {color: #000000}
-span.s3 {color: #326f17}
-span.s4 {color: #a71e12}
-span.s5 {text-decoration: underline ; color: #0022f5}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {color: #0000bf}
+span.s2 {color: #0000bf}
+span.s3 {color: #000000}
+span.s4 {color: #007300}
+span.s5 {color: #bf0000}
+span.s6 {color: #0000bf}
+span.s7 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -29,8 +34,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Contents</b></p>
 <p class="p2"><br></p>
 <p class="p4">Introduction</p>
+<p class="p4">Receiving MIDI input: MIDIResponder classes</p>
 <p class="p4">Receiving MIDI input: MIDIIn</p>
-<p class="p4">dewdrop_lib MIDI framework</p>
 <p class="p4">Playing notes on your MIDI keyboard<span class="Apple-converted-space"> </span></p>
 <p class="p4">Sending MIDI out</p>
 <p class="p4">MIDI synchronization</p>
@@ -42,7 +47,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Note:</b> This document is written from an OSX perspective. The essential behavior of the MIDI interface classes should be the same on other platforms, despite my continual reference to CoreMIDI here.</p>
 <p class="p2"><br></p>
-<p class="p4">SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the <b>[MIDI]</b> helpfile):</p>
+<p class="p4">SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the <a href="MIDI.html"><span class="s1">MIDI</span></a> helpfile):</p>
 <p class="p2"><br></p>
 <p class="p4"><b>MIDIClient:</b> represents SuperCollider's communications with CoreMIDI</p>
 <p class="p4"><b>MIDIIn:</b> receives MIDI messages and executes functions in response to those messages</p>
@@ -51,13 +56,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
+<p class="p3"><b>Receiving MIDI input: MIDIResponder classes</b></p>
+<p class="p2"><br></p>
+<p class="p4">For most uses, the preferred way to receive MIDI input is using the <b>MIDIResponder</b> classes. The advantage of this approach is that any number of responders can be registered. (By contrast, using MIDIIn responder functions directly means that only one function can exist per incoming message type. That is not an ideal programming practice.)</p>
+<p class="p2"><br></p>
+<p class="p4">Six types of MIDI responder exist, corresponding to the most common MIDI messages.They all have similar interfaces, described in the <a href="MIDIResponder.html"><span class="s1">MIDIResponder</span></a> help file. They can also filter incoming MIDI messages, to respond to a particular device, channel number, or specific parameter values.</p>
+<p class="p2"><br></p>
+<p class="p4">NoteOnResponder</p>
+<p class="p4">NoteOffResponder</p>
+<p class="p4">CCResponder</p>
+<p class="p4">BendResponder</p>
+<p class="p4">TouchResponder</p>
+<p class="p4">ProgramChangeResponder</p>
+<p class="p2"><br></p>
+<p class="p4">See "Playing notes on your MIDI keyboard" below for a simple example using the note-on and note-off responders.</p>
+<p class="p2"><br></p>
 <p class="p3"><b>Receiving MIDI input: MIDIIn</b></p>
 <p class="p2"><br></p>
-<p class="p4">The MIDIIn class provides two ways to receive MIDI input: MIDI response functions, and routines that wait for MIDI events.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p4"><b>1. MIDI response functions<span class="Apple-converted-space"> </span></b></p>
-<p class="p2"><br></p>
-<p class="p4">MIDIIn has a number of class variables that are evaluated when a MIDI event comes in. Technical details on each function can be found in the MIDIIn help file.</p>
+<p class="p4">MIDIIn has a number of class variables holding functions to be evaluated when a MIDI event comes in. Technical details on each function can be found in the MIDIIn help file.</p>
 <p class="p2"><br></p>
 <p class="p4">noteOn</p>
 <p class="p4">noteOff</p>
@@ -72,9 +88,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">To assign a response to a particular kind of MIDI message, assign a function to the class variable:<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s1">MIDIIn</span>.connect;</p>
-<p class="p5"><span class="s1">MIDIIn</span>.noteOn = { <span class="s1">|port, chan, note, vel|</span> [port, chan, note, vel].postln };<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s1">MIDIIn</span><span class="s2">.noteOn = </span><span class="s1">nil</span><span class="s2">;<span class="Apple-converted-space">  </span></span>// stop responding</p>
+<p class="p5"><span class="s2">MIDIIn</span>.connect;</p>
+<p class="p5"><span class="s2">MIDIIn</span>.noteOn = { <span class="s2">|port, chan, note, vel|</span> [port, chan, note, vel].postln };<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s2">MIDIIn</span><span class="s3">.noteOn = </span><span class="s2">nil</span><span class="s3">;<span class="Apple-converted-space">  </span></span>// stop responding</p>
 <p class="p2"><br></p>
 <p class="p4">MIDIIn provides the responding functions with all the information coming in from CoreMIDI:</p>
 <p class="p2"><br></p>
@@ -85,49 +101,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Because these are class variables, you can have only one function assigned at one time. A common usage is to assign a function that looks up responses in a collection. For example, you could have a separate set of response functions for each channel.</p>
 <p class="p2"><br></p>
-<p class="p5">~noteOn = <span class="s1">Array</span>.fill(16, <span class="s1">IdentityDictionary</span>.new);</p>
-<p class="p5"><span class="s1">MIDIIn</span>.noteOn = { <span class="s1">|port, chan, num, vel|</span> ~noteOn[chan].do(<span class="s1">_</span>.value(port, chan, num, vel)) };</p>
+<p class="p5">~noteOn = <span class="s2">Array</span>.fill(16, <span class="s2">IdentityDictionary</span>.new);</p>
+<p class="p5"><span class="s2">MIDIIn</span>.noteOn = { <span class="s2">|port, chan, num, vel|</span> ~noteOn[chan].do(<span class="s2">_</span>.value(port, chan, num, vel)) };</p>
 <p class="p7"><br></p>
-<p class="p6"><span class="s2"><span class="Apple-converted-space">   </span></span>// this function will respond only on channel 0</p>
-<p class="p5">~noteOn[0].put(<span class="s3">\postNoteOn</span>, { <span class="s1">|port, chan, num, vel|</span> [port, chan, note, vel].postln });</p>
-<p class="p5">~noteOn[0].removeAt(<span class="s3">\postNoteOn</span>);<span class="Apple-converted-space">  </span><span class="s4">// stop responding</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">   </span></span>// this function will respond only on channel 0</p>
+<p class="p5">~noteOn[0].put(<span class="s4">\postNoteOn</span>, { <span class="s2">|port, chan, num, vel|</span> [port, chan, note, vel].postln });</p>
+<p class="p5">~noteOn[0].removeAt(<span class="s4">\postNoteOn</span>);<span class="Apple-converted-space">  </span><span class="s5">// stop responding</span></p>
 <p class="p2"><br></p>
 <p class="p4">The advantage of this approach over using "if" or "case" statements in the response function is that you can add and remove responses without having to change the MIDIIn function. The MIDIIn function can serve as a "hook" into another structure that distributes the MIDI events to the real responders.</p>
-<p class="p2"><br></p>
-<p class="p4">Third-party frameworks exist to handle this bookkeeping automatically. See the "Third party libraries" section at the bottom of this file.</p>
-<p class="p2"><br></p>
-<p class="p4"><b>2. Routines that wait for MIDI events<span class="Apple-converted-space"> </span></b></p>
-<p class="p2"><br></p>
-<p class="p4">As of December 2004, there is an alternate technique to supply multiple responses for the same MIDI event type. This routine waits for a MIDI event, then posts information about the event. After your routine receives the MIDI event, it can take any other action you desire.</p>
-<p class="p2"><br></p>
-<p class="p8"><span class="s2">r = </span>Routine<span class="s2">({</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>event;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>event = <span class="s1">MIDIIn</span>.waitNoteOn;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[event.status, event.b, event.c].postln;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>}</p>
-<p class="p5">}).play;</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s2">r.stop;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// stop responding<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p4">Supported MIDI event waiting methods are:</p>
-<p class="p2"><br></p>
-<p class="p4">waitNoteOn</p>
-<p class="p4">waitNoteOff</p>
-<p class="p4">waitControl</p>
-<p class="p4">waitBend</p>
-<p class="p4">waitTouch</p>
-<p class="p4">waitPoly</p>
-<p class="p2"><br></p>
-<p class="p4">You can have multiple routines assigned to the same MIDI event type. The MIDI wait method lets you specify conditions for the routine to fire based on the arguments of the corresponding MIDI responder function:</p>
-<p class="p2"><br></p>
-<p class="p5">event = <span class="s1">MIDIIn</span>.waitNoteOn(<span class="s1">nil</span>, [2, 7], (0, 2..126), { <span class="s1">|vel|</span> vel &gt; 50 });</p>
-<p class="p2"><br></p>
-<p class="p4">This would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p4">Use caution when creating a large number of MIDI response routines with very specific conditions. For each incoming MIDI event, SuperCollider will iterate over the entire list for that event type, which incurs a CPU cost. If you have 500 MIDI controller routines, and an incoming event should trigger only 2, all 500 sets of conditions have to be evaluated.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p4">In that case it may be more efficient to create a smaller number of routines and evaluate some of the conditions inside routines, either using branching statements or by looking up functions inside collections.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Playing notes on your MIDI keyboard<span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
@@ -136,33 +117,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">s.boot;</p>
 <p class="p7"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s1">var</span> notes, on, off;</p>
-<p class="p7"><br></p>
-<p class="p5"><span class="s1">MIDIIn</span>.connect;</p>
-<p class="p7"><br></p>
-<p class="p6"><span class="s2">notes = </span><span class="s1">Array</span><span class="s2">.newClear(128);<span class="Apple-converted-space">  </span></span>// array has one slot per possible MIDI note</p>
-<p class="p7"><br></p>
-<p class="p5">on = <span class="s1">Routine</span>({</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> event, newNode;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>event = <span class="s1">MIDIIn</span>.waitNoteOn;<span class="Apple-tab-span">	</span><span class="s4">// all note-on events</span></p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// play the note</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>newNode = <span class="s1">Synth</span>(<span class="s3">\default</span>, [<span class="s3">\freq</span>, event.b.midicps,</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">\amp</span><span class="s2">, event.c * 0.00315]);<span class="Apple-converted-space">  </span></span>// 0.00315 approx. == 1 / 127 * 0.4</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>notes.put(event.b, newNode);<span class="Apple-tab-span">	</span><span class="s4">// save it to free later</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>}</p>
-<p class="p5">}).play;</p>
-<p class="p7"><br></p>
-<p class="p5">off = <span class="s1">Routine</span>({</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span> event;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>event = <span class="s1">MIDIIn</span>.waitNoteOff;</p>
-<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// look up the node currently playing on this slot, and release it</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>notes[event.b].set(<span class="s3">\gate</span>, 0);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>}</p>
-<p class="p5">}).play;</p>
-<p class="p7"><br></p>
-<p class="p5">q = { on.stop; off.stop; };</p>
+<p class="p8"><span class="s6">var</span> notes, on, off;</p>
+<p class="p9"><br></p>
+<p class="p8"><span class="s6">//MIDIIn</span>.connect;</p>
+<p class="p9"><br></p>
+<p class="p10"><span class="s3">notes = </span><span class="s6">Array</span><span class="s3">.newClear(128);<span class="Apple-converted-space">  </span></span>// array has one slot per possible MIDI note</p>
+<p class="p9"><br></p>
+<p class="p11"><span class="s3">on = </span>NoteOnResponder<span class="s3">({ </span>|src, chan, num, veloc|</p>
+<p class="p8"><span class="Apple-tab-span">	</span>notes[num] = <span class="s6">Synth</span>(<span class="s7">\default</span>, [<span class="s7">\freq</span>, num.midicps,</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\amp</span>, veloc * 0.00315]);</p>
+<p class="p8">});</p>
+<p class="p9"><br></p>
+<p class="p11"><span class="s3">off = </span>NoteOffResponder<span class="s3">({ </span>|src, chan, num, veloc|</p>
+<p class="p8"><span class="Apple-tab-span">	</span>notes[num].release;</p>
+<p class="p8">});</p>
+<p class="p9"><br></p>
+<p class="p8">q = { on.remove; off.remove; };</p>
 <p class="p5">)</p>
 <p class="p7"><br></p>
 <p class="p6">// when done:</p>
@@ -170,11 +140,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">The MIDIIn help file contains a more elaborate example.</p>
 <p class="p2"><br></p>
-<p class="p4">SuperCollider does not have a built-in class to handle this automatically. However, dewdrop_lib, one of the third party libraries mentioned below, includes a small suite of classes designed for exactly this purpose. Users interested in this functionality may wish to examine that library.</p>
+<p class="p4">SuperCollider does not have a built-in class to handle this automatically. However, <i>dewdrop_lib</i>, a third party libraries mentioned below, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI). Users interested in this functionality may wish to examine that library.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Sending MIDI out</b></p>
 <p class="p2"><br></p>
-<p class="p4">See the <b>[MIDIOut]</b> helpfile. Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid. You can have multiple MIDIOut objects to send MIDI to different physical devices.</p>
+<p class="p4">See the <a href="MIDIOut.html"><span class="s1">MIDIOut</span></a> helpfile. Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid. You can have multiple MIDIOut objects to send MIDI to different physical devices.</p>
 <p class="p2"><br></p>
 <p class="p4">Many users have reported timing issues with MIDIOut. When the CPU is busy, especially during graphics updates, outgoing MIDI messages may be delayed. Use with caution in a performance situation.</p>
 <p class="p2"><br></p>
@@ -190,13 +160,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">dewdrop_lib (third party library) includes a class, MIDISyncClock, that receives MIDI clock messages and allows events to be scheduled to keep time with an external MIDI device. See the <b>[MIDISyncClock]</b> helpfile for details.</p>
 <p class="p2"><br></p>
-<p class="p4">There are significant limitations, discussed in the helpfile. This is not really a fully supported class, but it's there for users who are desperate for the functionality.</p>
+<p class="p4">There are significant limitations, discussed in the helpfile. This is not really a fully supported class, but it's there for users who need rudimentary MIDI sync functionality.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Third party libraries</b></p>
 <p class="p2"><br></p>
-<p class="p4">The crucial library (included in the main distribution) includes a couple of classes (NoteOnResponder, NoteOffResponder, CCResponder) that simplify the use of multiple responders when all ports and channels should respond identically. Multichannel MIDI applications are not possible using these classes.</p>
-<p class="p2"><br></p>
-<p class="p4"><i>dewdrop_lib</i> is a third party library providing a number of useful performance features, available from &lt;<span class="s5">http://www.dewdrop-world.net</span>&gt;. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><i>dewdrop_lib</i> is a third party library providing a number of useful performance features, available through the <a href="../Extending and Customizing SC/Quarks/Quarks.html"><span class="s1">Quarks</span></a> interface. The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p4">Among its features:</p>
 <p class="p2"><br></p>
@@ -205,7 +173,5 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">- easy to use classes for playing MIDI notes and assigning MIDI controllers to synthesis parameters</p>
 <p class="p2"><br></p>
 <p class="p4">- a user-configurable array of MIDI controller numbers, to simplify assignment of events to hardware controllers</p>
-<p class="p2"><br></p>
-<p class="p4">The framework is not part of the main distribution. Interested users need to download the tarball from the website above and follow the installation instructions.</p>
 </body>
 </html>
