@@ -773,15 +773,17 @@ Event : Environment {
 				partialEvents.midiEvent
 			),
 			groupEvent:	(
+				lag: 0,
 				play: #{
 					var server, group, addAction, ids, bundle;
 					~finish.value;
-					ids = Event.checkIDs(~id, server);
-					addAction = Node.actionNumberFor(~addAction);
 					group = ~group.asControlInput;
+					addAction = Node.actionNumberFor(~addAction);
 					~server = server= ~server ?? {Server.default};
+					ids = Event.checkIDs(~id);
+					if (ids.isNil) { ids = ~id = server.nextNodeID };
 					if ((addAction == 0) || (addAction == 3) ) {
-						ids = ids.reverse;
+						ids = ids.asArray.reverse;
 					};
 					bundle = ids.collect {|id, i|
 						[\g_new, id, addAction, group]; 
@@ -792,43 +794,55 @@ Event : Environment {
 					NodeWatcher.register(currentEnvironment);
 				}).putAll(partialEvents.nodeEvent),
 			synthEvent:	(
-				play: #{ 
-					var server, latency, group, addAction;
-					var instrumentName, synthLib, desc, msgFunc;
-					var bndl, ids, id;
-					~finish.value;
-					~server = server = ~server ?? { Server.default };
-					addAction = Node.actionNumberFor(~addAction);
-					group = ~group.asControlInput;
-					msgFunc = ~getMsgFunc.valueEnvir;
-					instrumentName = ~synthDefName.valueEnvir;
-				
-					bndl = ( [\s_new, instrumentName, ids, addAction, group]
-						 ++ msgFunc.valueEnvir).flop;
-					bndl = bndl.collect(_.asOSCArgArray);
-					
-					ids = Event.checkIDs(~id, server);
-					if (ids.isNil ) {
-						bndl.do { | b |
-							id = server.nextNodeID;
-							ids = ids.add(id);
-							b[2] = id;
-						};
-					};					
+				lag: 0,
+				play: #{
+				 
+				var server, latency, group, addAction;
+				var instrumentName, synthLib, desc, msgFunc;
+				var msgs, cvs;
+				var bndl, ids;
+				~finish.value;
+				~server = server = ~server ?? { Server.default };
+				group = ~group.asControlInput;
+				addAction = Node.actionNumberFor(~addAction);
+				synthLib = ~synthLib ?? { SynthDescLib.global };
+				instrumentName = ~instrument.asSymbol;
+				desc = synthLib.synthDescs[instrumentName];
+				if (desc.notNil) { 
+					msgFunc = desc.msgFunc;
+					~hasGate = desc.hasGate;
+				}{
+					msgFunc = ~defaultMsgFunc;
+				};
 			
-					if ((addAction == 0) || (addAction == 3)) {
-						bndl = bndl.reverse;
-					};
+				msgs = msgFunc.valueEnvir.flop;
+				ids = Event.checkIDs(~id);
+				if (ids.isNil ) { ids = msgs.collect { server.nextNodeID } };
+				bndl = ids.collect { |id, i|
+					[\s_new, instrumentName, id, addAction, group]
+					 ++ msgs[i]
+				};
+			
+				if ((addAction == 0) || (addAction == 3)) {
+					bndl = bndl.reverse;
+				};
+				bndl = bndl.asOSCArgBundle;
+				if (~lag !=0) {
+					server.sendBundle(server.latency ? 0 + ~lag, *bndl);
+				} {
 					server.sendBundle(server.latency, *bndl);
-					~id = ids;
-					~isPlaying = true;	 
-					~isRunning = true;	 
-					NodeWatcher.register(currentEnvironment);
+				
+				};
+				~id = ids;
+				~isPlaying = true;	 
+				~isRunning = true;	 
+				NodeWatcher.register(currentEnvironment);
 				},
 				defaultMsgFunc: #{|freq = 440, amp = 0.1, pan = 0, out = 0| 
 					[\freq, freq, \amp, amp, \pan, pan, \out, out] }
 			).putAll(partialEvents.nodeEvent)
 		);
+		
 		
 		defaultParentEvent = parentEvents.default;
 	}
