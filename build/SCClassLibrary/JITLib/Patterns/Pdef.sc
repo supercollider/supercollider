@@ -22,12 +22,18 @@ PatternProxy : Pattern {
 	quant { ^quant ??  { this.class.defaultQuant } }
 	quant_ { arg val; quant = val }
 	
-	constrainStream { ^pattern.asStream }
+	constrainStream { arg stream;
+		var schedTime;
+		if(quant.isNil or: { stream.isNil }) { ^pattern.asStream };
+		schedTime = quant.nextTimeOnGrid(this.clock);
+		if(this.clock.beats >= schedTime) { ^pattern.asStream };
+		^Pif(Pfunc { this.clock.beats >= schedTime }, pattern, EmbedOnce(stream)).asStream
+	}
 	
 	source_ { arg obj;
 		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pat = this.class.default }; 
-		if(quant.isNil) { pattern = pat } { this.sched { pattern = pat } };
+		pattern = pat;
 		source = obj; // keep original here.
 	}
 		
