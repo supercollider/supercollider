@@ -15,22 +15,23 @@ CocoaMenuItem {
 	}
 	
 	*initDefaultMenu {
-		default = SCMenuGroup(nil, "Library", 9);
+		default = SCMenuGroup(nil, "Library", 7);
 	}
 	
 	*add { |names, action|
 		if(default.isNil) {this.initDefaultMenu };
-		^this.deepNew(default, default.lastIndex, names, action)
+		^this.deepNew(default, nil, names, action)
 	}
 	
 	*deepNew { |parent, index, names = #[""], action|
-		var menu, name;
+		var menu, name, insertionIndex;
 		name = names.removeAt(0);
-		index = index ?? { parent.lastIndex };
+		insertionIndex = if(names.size <= 1) { index } ? parent.lastIndex;
 		
 		menu = parent.findByName(name);
 		if(menu.isNil) {
-			menu = if(names.size > 0, {SCMenuGroup}, {SCMenuItem}).new(parent, name, index); 
+			menu = if(names.size > 0, {SCMenuGroup}, {SCMenuItem})
+				.new(parent, name, insertionIndex); 
 		};
 		
 		if(names.size < 1) {
