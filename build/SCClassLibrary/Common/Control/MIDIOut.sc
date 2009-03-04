@@ -321,7 +321,11 @@ MIDIOut {
 	var <>port, <>uid, <>latency=0.1;
 	
 	*new { arg port, uid;
-		^super.newCopyArgs(port, uid ?? { MIDIClient.destinations[port].uid });
+		if(thisProcess.platform.name != \linux) {
+			^super.newCopyArgs(port, uid ?? { MIDIClient.destinations[port].uid });
+		} {
+			^super.newCopyArgs(port, uid);
+		}
 	}
 	*newByName { arg deviceName,portName,dieIfNotFound=true;
 		var endPoint,index;
