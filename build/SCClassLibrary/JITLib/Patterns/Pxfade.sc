@@ -59,3 +59,25 @@ PfadeOut : PfadeIn {
 	}
 }
 
+PfinQuant : FilterPattern {
+	var <>quant, <>clock;
+	
+	*new { arg pattern, quant, clock;
+		^super.new(pattern).quant_(quant).clock_(clock)
+	}
+	
+	embedInStream { arg inval;
+		var value, stream = pattern.asStream;
+		var referenceClock = clock ? thisThread.clock;
+		var endAt = quant.nextTimeOnGrid(referenceClock);
+		while {
+			referenceClock.beats < endAt 
+		} {
+			value = stream.next(inval);
+			inval = value.yield;
+		};
+		^inval
+	}
+
+
+}

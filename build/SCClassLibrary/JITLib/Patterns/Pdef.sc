@@ -23,11 +23,8 @@ PatternProxy : Pattern {
 	quant_ { arg val; quant = val }
 	
 	constrainStream { arg stream;
-		var schedTime;
 		if(quant.isNil or: { stream.isNil }) { ^pattern.asStream };
-		schedTime = quant.nextTimeOnGrid(this.clock);
-		if(this.clock.beats >= schedTime) { ^pattern.asStream };
-		^Pif(Pfunc { this.clock.beats >= schedTime }, pattern, EmbedOnce(stream)).asStream
+		^Pseq([PfinQuant(EmbedOnce(stream), quant, clock), pattern]).asStream
 	}
 	
 	source_ { arg obj;
