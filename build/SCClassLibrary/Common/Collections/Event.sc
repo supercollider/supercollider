@@ -509,7 +509,9 @@ Event : Environment {
 							~server = server;
 							freqs = ~freq;
 							~amp = ~amp.value;
-							if ( (msgFunc = ~getMsgFunc.valueEnvir).notNil) {
+							
+							if(~args.isNil) {
+								msgFunc = ~getMsgFunc.valueEnvir;
 								bndl = msgFunc.valueEnvir;
 							} {	
 								bndl = ~args.envirPairs;
