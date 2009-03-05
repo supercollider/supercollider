@@ -71,9 +71,9 @@ PfinQuant : FilterPattern {
 		var referenceClock = clock ? thisThread.clock;
 		var endAt = quant.nextTimeOnGrid(referenceClock);
 		while {
-			referenceClock.beats < endAt 
-		} {
 			value = stream.next(inval);
+			value.notNil and: { referenceClock.beats < endAt }
+		} {
 			inval = value.yield;
 		};
 		^inval
