@@ -5,30 +5,34 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.0px Lucida Grande}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande; min-height: 17.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #163bec}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; min-height: 18.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #112cb0}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier; min-height: 17.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #872d16}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a32011}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {color: #000000}
-span.s2 {color: #112cb0}
-span.s3 {font: 14.0px Lucida Grande}
-span.s4 {font: 14.0px Courier; color: #000000}
-span.s5 {font: 9.0px Monaco; color: #112cb0}
-span.s6 {font: 9.0px Monaco}
-span.s7 {font: 14.0px Lucida Grande; color: #000000}
-span.s8 {color: #0012b9}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; min-height: 18.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier; min-height: 17.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+span.s1 {color: #0000bf}
+span.s2 {color: #000000}
+span.s3 {color: #0000bf}
+span.s4 {font: 14.0px Lucida Grande}
+span.s5 {font: 14.0px Courier; color: #000000}
+span.s6 {font: 9.0px Monaco; color: #0000bf}
+span.s7 {font: 9.0px Monaco}
+span.s8 {font: 14.0px Lucida Grande; color: #000000}
+span.s9 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -38,230 +42,237 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">For a basic tutorial on how standard object-orientated classes are composed, look elsewhere<span class="Apple-converted-space"> </span></p>
 <p class="p4">http://www.google.com/search?q=oop+class+tutorial</p>
 <p class="p2"><br></p>
+<p class="p5">Note: Class definitions are statically compiled when you launch supercollider or "recompile the library." This means that class definitions must be saved into a file with the extension .sc, in a disk location where supercollider looks for classes. Saving into the main class library (SCClassLibrary) is generally not recommended. It's preferable to use either the user or system extension directories.</p>
+<p class="p6"><br></p>
+<p class="p7"><span class="s1">Platform</span><span class="s2">.userExtensionDir; <span class="Apple-converted-space">  </span></span>// Extensions available only to your user account</p>
+<p class="p7"><span class="s1">Platform</span><span class="s2">.systemExtensionDir; <span class="Apple-converted-space">  </span></span>// Extensions available to all users on the machine</p>
+<p class="p6"><br></p>
+<p class="p5">It is not possible to enter a class definition into an interpreter window and execute it.</p>
 <p class="p2"><br></p>
-<p class="p5"><b>Inheriting<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><br></p>
-<p class="p7"><span class="Apple-tab-span">	</span>NewClass<span class="s1"> : </span>SomeSuperclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p2"><br></p>
+<p class="p8"><b>Inheriting<span class="Apple-converted-space"> </span></b></p>
+<p class="p9"><br></p>
+<p class="p10"><span class="Apple-tab-span">	</span>NewClass<span class="s2"> : </span>SomeSuperclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p3">Without specifying a superclass, Object is assumed as the default superclass.<span class="Apple-converted-space"> </span></p>
-<p class="p6"><br></p>
-<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span>NewClass</span><span class="s1"> { </span>// : Object is implied</p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p5"><b>Methods<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><br></p>
+<p class="p9"><br></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span>NewClass</span><span class="s2"> { </span>// : Object is implied</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p8"><b>Methods<span class="Apple-converted-space"> </span></b></p>
+<p class="p9"><br></p>
 <p class="p3"><b>class methods</b> are specified with the asterix</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span></span>*classMethod { <span class="s2">arg</span> argument;<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>*classMethod { <span class="s3">arg</span> argument;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>within the class method, the keyword<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>this<span class="s1"><span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><br></p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>this<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p15"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>refers to the class.<span class="Apple-converted-space">   </span></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>A class in smalltalk is itself an object.<span class="Apple-converted-space">  </span>It is an instance of Class.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>instance methods</b> are specified :</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span></span>instanceMethod { <span class="s2">arg</span> argument;<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>instanceMethod { <span class="s3">arg</span> argument;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>within the instance method, the keyword<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>this<span class="s1"><span class="Apple-converted-space"> </span></span></p>
-<p class="p10"><br></p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>this<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p13"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>refers to the instance.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">to <b>return</b> from the method use ^ (caret)</p>
 <p class="p2"><br></p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someMethod {<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^returnObject<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someMethod {<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^returnObject<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p3">multiple exit points also possible :<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someMethod { <span class="s2">arg</span> aBoolean;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(aBoolean,{<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^someObject<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},{<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^someOtherObject<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p12"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someMethod { <span class="s3">arg</span> aBoolean;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(aBoolean,{<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^someObject<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>},{<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^someOtherObject<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p15"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>if no ^ is specified, the method will return the <b>instance</b>.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>(and in the case of Class methods, will return the class)<span class="Apple-converted-space"> </span></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>There is no such thing as returning void in Smalltalk.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>New Instance creation<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><br></p>
+<p class="p8"><b>New Instance creation<span class="Apple-converted-space"> </span></b></p>
+<p class="p9"><br></p>
 <p class="p3">Object.new will return to you a new object.<span class="Apple-converted-space"> </span></p>
 <p class="p3">when overiding the class method .new you must call the superclass, which in turn calls its superclass, up until Object.new is called and an object is actually created and its memory allocated.</p>
 <p class="p2"><br></p>
-<p class="p11"><span class="Apple-tab-span">	</span>// this example adds no new functionality<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>*new {<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s2">super</span>.new<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p8"><br></p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>// this is a normal constructor method</p>
-<p class="p9"><span class="Apple-tab-span">	</span>*new { <span class="s2">arg</span> arga,argb,argc;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s2">super</span>.new.init(arga,argb,argc)<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span>init { <span class="s2">arg</span> arga,argb,argc;</p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space">    </span></span>// do initiation here</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
+<p class="p14"><span class="Apple-tab-span">	</span>// this example adds no new functionality<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>*new {<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s3">super</span>.new<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><br></p>
+<p class="p14"><span class="s2"><span class="Apple-tab-span">	</span></span>// this is a normal constructor method</p>
+<p class="p12"><span class="Apple-tab-span">	</span>*new { <span class="s3">arg</span> arga,argb,argc;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s3">super</span>.new.init(arga,argb,argc)<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>init { <span class="s3">arg</span> arga,argb,argc;</p>
+<p class="p14"><span class="s2"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space">    </span></span>// do initiation here</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
 <p class="p3">In this case note that super.new called the method new on the superclass and returned a new object. subsequently we are calling the .init method on that object, which is an instance method.<span class="Apple-converted-space"> </span></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3"><b>Warning: </b>if the superclass also happened to call super.new.init it will have expected to call the .init method defined in that class (the superclass), but instead the message .init will find the implementation of the class that the object actually is, which is our new subclass. <span class="Apple-converted-space">  </span>So you should use a unique methodname like myclassinit if this is likely to be a problem.</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
 <p class="p3">Over reliance on inheritance is usually a design flaw.<span class="Apple-converted-space">  </span>Explore "object composition" rather than trying to obtain all your powers through inheritance. Is your "subclass" really some kind of "superclass" or are you just trying to swipe all of daddy's methods ? Do a websearch for<span class="Apple-converted-space">  </span>Design Patterns.</p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3">Class variables are accessible within class methods and in any instance methods.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">classvar</span> myClassvar;</p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">var</span> myInstanceVar;<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">classvar</span> myClassvar;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> myInstanceVar;<span class="Apple-converted-space"> </span></p>
+<p class="p13"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Overriding Methods (Overloading)</b></p>
+<p class="p8"><b>Overriding Methods (Overloading)</b></p>
 <p class="p2"><br></p>
 <p class="p3">in order to change the behaviour of the superclass, often methods are overridden.</p>
 <p class="p3">note that an object looks always for the method it has defined first and then looks in the superclass.</p>
-<p class="p3">here <span class="s5">NewClass</span><span class="s6">.value(2)</span> will return<span class="s5"> 6</span>, not<span class="s5"> 4</span>:<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>Superclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>calculate { <span class="s2">arg</span> in; in * 2 }</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>value { <span class="s2">arg</span> in; ^<span class="s2">this</span>.calculate(in) }</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>NewClass<span class="s1"> : </span>Superclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>calculate { <span class="s2">arg</span> in; in * 3 }</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p12"><br></p>
-<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p3">here <span class="s6">NewClass</span><span class="s7">.value(2)</span> will return<span class="s6"> 6</span>, not<span class="s6"> 4</span>:<span class="Apple-converted-space"> </span></p>
+<p class="p13"><br></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>calculate { <span class="s3">arg</span> in; in * 2 }</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>value { <span class="s3">arg</span> in; ^<span class="s3">this</span>.calculate(in) }</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>NewClass<span class="s2"> : </span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>calculate { <span class="s3">arg</span> in; in * 3 }</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><span class="Apple-converted-space"> </span></p>
 <p class="p3">if the method of the superclass is needed, it can be called by <b>super</b>.</p>
-<p class="p10"><br></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>Superclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> x;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>init {</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> x = 5;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>NewClass<span class="s1"> : </span>Superclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> y;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>init {<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">super</span>.init;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = 6;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p5"><b>Getter Setter<span class="Apple-converted-space"> </span></b></p>
-<p class="p6"><br></p>
+<p class="p13"><br></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> x;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>init {</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> x = 5;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>NewClass<span class="s2"> : </span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> y;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>init {<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">super</span>.init;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = 6;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p8"><b>Getter Setter<span class="Apple-converted-space"> </span></b></p>
+<p class="p9"><br></p>
 <p class="p3">Classic Smalltalk demands that variables are not accessible outside of the class or instance.<span class="Apple-converted-space">  </span>A method must be added to explicitly give access:<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>NewClass<span class="s1"> : </span>Superclass<span class="s1"> {<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> myVariable;</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable {<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^myVariable<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable_ { <span class="s2">arg</span> newValue;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myVariable = newValue;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><br></p>
+<p class="p10"><span class="s8"><span class="Apple-tab-span">	</span></span>NewClass<span class="s2"> : </span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> myVariable;</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable {<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^myVariable<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable_ { <span class="s3">arg</span> newValue;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myVariable = newValue;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
+<p class="p13"><br></p>
 <p class="p3">These are referred to as getter and setter methods.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">SC allows these methods to be easily added by adding &lt; or &gt;<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s2">var</span> &lt;getMe, &gt;setMe, &lt;&gt;getMeOrSetMe;<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s3">var</span> &lt;getMe, &gt;setMe, &lt;&gt;getMeOrSetMe;<span class="Apple-converted-space"> </span></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p3">you now have the methods:<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someObject.getMe;</p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someObject.setMe_(value);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someObject.getMe;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someObject.setMe_(value);</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
 <p class="p3">this also allows us to say:</p>
-<p class="p10"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someObject.setMe = value;</p>
-<p class="p8"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>someObject.getMeOrSetMe_(5);</p>
-<p class="p9"><span class="Apple-tab-span">	</span>someObject.getMeOrSetMe.postln;<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
-<p class="p8"><br></p>
-<p class="p10"><br></p>
+<p class="p13"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someObject.setMe = value;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span>someObject.getMeOrSetMe_(5);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>someObject.getMeOrSetMe.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p13"><br></p>
+<p class="p11"><br></p>
+<p class="p13"><br></p>
 <p class="p3">a getter or setter method created in this fashion may<span class="Apple-converted-space">  </span>be overriden in a subclass by manually writing the method<span class="Apple-converted-space"> </span></p>
 <p class="p3">setter methods should <b>take only one argument </b>to support both ways of expression consistantly.</p>
-<p class="p3">eg.<span class="Apple-converted-space"> </span><span class="s3"><span class="Apple-tab-span">	</span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>variable_ { arg newValue; <span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable = newValue.clip(minval,maxval);<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
-<p class="p8"><br></p>
+<p class="p3">eg.<span class="Apple-converted-space"> </span><span class="s4"><span class="Apple-tab-span">	</span></span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>variable_ { arg newValue; <span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable = newValue.clip(minval,maxval);<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
+<p class="p11"><br></p>
 <p class="p3">A setter method should always return the receiver. This is standard OOP practice (outside of SC as well). Do not return the new value from your setter.</p>
-<p class="p12"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable_ { <span class="s8">arg</span> newValue;<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myVariable = newValue;</p>
-<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^newValue<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// DO NOT DO THIS</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p15"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>variable_ { <span class="s9">arg</span> newValue;<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>myVariable = newValue;</p>
+<p class="p16"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^newValue<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// DO NOT DO THIS</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p14"><b>External Method Files</b></p>
-<p class="p12"><br></p>
+<p class="p17"><b>External Method Files</b></p>
+<p class="p15"><br></p>
 <p class="p3">Methods may be added to Classes in separate files.<span class="Apple-converted-space">  </span>This is equivalent to Protocols in Objective-C.<span class="Apple-converted-space">  </span>By convention, the file name starts with a lower case letter: the name of the method or feature that the methods are supporting.</p>
 <p class="p2"><br></p>
 <p class="p3">Syntax:</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="Apple-tab-span">	</span>+ <span class="s2">Class</span> {</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>newMethod {</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*newClassMethod {</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>+ <span class="s3">Class</span> {</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>newMethod {</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*newClassMethod {</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Tricks and Traps<span class="Apple-converted-space"> </span></b></p>
-<p class="p12"><br></p>
+<p class="p8"><b>Tricks and Traps<span class="Apple-converted-space"> </span></b></p>
+<p class="p15"><br></p>
 <p class="p3"><b>"Superclass not found..."</b></p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3">In one given code file, you can only put classes that inherit from each Object, each other, and one external class. <span class="Apple-converted-space">  </span>In other words, you can't inherit from two separate classes that are defined in separate files.</p>
-<p class="p12"><br></p>
+<p class="p15"><br></p>
 <p class="p3">If you should happen to declare a variable in a subclass and use the same name as a variable declared in a superclass, you will find that both variables exist, but only the one in the object's actual class is accessible.<span class="Apple-converted-space">  </span>You should not do that. This will at some point become an error worthy of compilation failure.</p>
 </body>
 </html>
