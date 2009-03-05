@@ -211,27 +211,7 @@ Stream : AbstractFunction {
 	}
 	
 	trace { arg key, printStream, prefix="";
-		var func;
-		printStream = printStream ? Post;
-		^if(key.isNil) {
-			this.collect {|item| printStream << prefix << item << Char.nl; item }
-		} {
-			func = { |val, item, prefix|
-				if(val.isKindOf(Function) and: { item.isKindOf(Environment) }) 
-					{ 
-						val = item.use { val.value };
-						printStream << prefix << val << "\t(printed function value)\n"; 
-					} {
-						printStream << prefix << val << Char.nl;
-					};
-			}.flop;
-			this.collect {|item|
-				var val = item.atAll(key.asArray).unbubble;
-				func.value(val, item, prefix);
-				item 
-			}
-		}
-			 
+		^Ptrace(this, key, printStream, prefix).asStream
 	}
 	
 	constrain { arg sum, tolerance=0.001;

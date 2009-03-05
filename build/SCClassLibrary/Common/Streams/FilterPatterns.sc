@@ -673,12 +673,35 @@ Pwrap : FilterPattern {
 
 Ptrace : FilterPattern {
 	var <>key, printStream, prefix;
-	*new { arg pattern, key, printStream, prefix; 
+	
+	*new { arg pattern, key, printStream, prefix = ""; 
 		^super.newCopyArgs(pattern, key, printStream, prefix) 
 	}
 	storeArgs { ^[ pattern, key, printStream, prefix ] }
-	asStream {
-		^pattern.asStream.trace(key, printStream, prefix)
+	
+	embedInStream { arg inval;
+		var func, collected;
+		printStream = printStream ? Post;
+		if(key.isNil) {
+			collected = pattern.collect {|item| printStream << prefix << item << Char.nl; item }
+		} {
+			func = { |val, item, prefix|
+				if(val.isKindOf(Function) and: { item.isKindOf(Environment) }) 
+					{ 
+						val = item.use { val.value };
+						printStream << prefix << val << "\t(printed function value)\n"; 
+					} {
+						printStream << prefix << val << Char.nl;
+					};
+			}.flop;
+			collected = pattern.collect {|item|
+				var val = item.atAll(key.asArray).unbubble;
+				func.value(val, item, prefix);
+				item 
+			}
+		};
+		^collected.embedInStream(inval)
+	
 	}
 
 }
