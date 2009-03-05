@@ -39,14 +39,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : AbstractSystemAction<span class="Apple-converted-space"> </span></b></p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
-<p class="p1">This is an abstract superclass for singletons like ServerQuit, which provides a place for registering functions and objects for events that should happen when something happens in the server.</p>
+<p class="p1">This is an <b>abstract superclass</b> for singletons like ServerQuit, which provides a place for registering functions and objects for events that should happen when something happens in the server.<span class="Apple-converted-space"> </span></p>
+<p class="p1">No direct call to AbstractServerAction is required.</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s3"><b>See also:</b> <a href="../ServerArchitecture/Server.html"><span class="s2">Server</span></a>, <a href="ServerBoot.html"><span class="s4">ServerBoot</span></a>, <a href="ServerTree.html"><span class="s4">ServerTree</span></a>, <a href="ServerQuit.html"><span class="s4">ServerQuit</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p5"><b>Note: not fully working on linux windows.</b></p>
+<p class="p5"><b>Note: not fully working on linux and windows.</b></p>
 <p class="p2"><br></p>
 <p class="p1">Setting the computer to sleep on these systems causes the actions to be called.</p>
+<p class="p1">As to date in linux, JACK does not survive a sleep, it nevertheless behaves correctly for the time being.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Class Methods</b></p>
