@@ -35,7 +35,6 @@ PatternProxy : Pattern {
 	}
 		
 	defaultEvent {
-	 	// default value: safe time value (better throw error?)
 		if(envir.isNil) { envir = this.class.event };
 		^if(envir[\independent] === true) { (parent:envir) } { envir }
 	}
@@ -160,7 +159,6 @@ PatternProxy : Pattern {
 	storeArgs { ^[pattern] }
 	
 	
-	/////////////////////////
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn.
 	
@@ -255,9 +253,9 @@ Pdefn : PatternProxy {
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = super.new(item).prAdd(key);
+			res = super.new(item).prAdd(key);
 		} {
-				if(item.notNil) { res.source = item }
+			if(item.notNil) { res.source = item }
 		}
 		^res
 	
@@ -337,7 +335,7 @@ TaskProxy : PatternProxy {
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
-			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
+			if (player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 			
 			if(player.isPlaying.not) { 
 				player.play(argClock, doReset, playQuant);
@@ -387,9 +385,9 @@ Tdef : TaskProxy {
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = super.new(item).prAdd(key);
+			res = super.new(item).prAdd(key);
 		} {
-				if(item.notNil) { res.source = item }
+			if(item.notNil) { res.source = item }
 		}
 		^res
 	
@@ -425,6 +423,7 @@ EventPatternProxy : TaskProxy {
 		this.wakeUp;
 		source = obj;
 	}
+	
 	envir_ { arg dict;
 		envir = dict;
 		this.source = source;
@@ -577,12 +576,12 @@ EventPatternProxy : TaskProxy {
 			player.play(argClock, doReset, playQuant);
 		} {
 				// resets  when stream has ended or after pause/cmd-period:
-			if (player.streamHasEnded or: {player.wasStopped}) { doReset = true };
+			if(player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 			protoEvent !? { player.event = protoEvent };
 			if(player.isPlaying.not) {
 				player.play(argClock, doReset, playQuant);
 			} { 
-				if (doReset) { player.reset };
+				if(doReset) { player.reset };
 			}
 		}
 	}
@@ -600,9 +599,9 @@ Pdef : EventPatternProxy {
 	*new { arg key, item;
 		var res = this.at(key);
 		if(res.isNil) {
-				res = super.new(item).prAdd(key);
+			res = super.new(item).prAdd(key);
 		} {
-				if(item.notNil) { res.source = item }
+			if(item.notNil) { res.source = item }
 		}
 		^res
 	
@@ -707,7 +706,7 @@ PbindProxy : Pattern {
 	embedInStream { arg inval;
 		^source.embedInStream(inval)
 	}
-	find { arg key; // optimize later maybe.
+	find { arg key;
 		pairs.pairsDo { |u,x,i| if(u === key) { ^i } }; ^nil
 	}
 	quant_ { arg val;
@@ -746,7 +745,6 @@ PbindProxy : Pattern {
 		
 	}
 	
-	//source_ { arg pat; source.source = pat }
 	storeArgs { ^pairs.collect(_.source) }
 }
 
@@ -780,6 +778,7 @@ Pbindef : Pdef {
 		^pat
 		
 	}
+	
 	storeArgs { ^[key]++pattern.storeArgs }
 	repositoryArgs { ^this.storeArgs }
 	quant_ { arg val; super.quant = val; source.quant = val }
