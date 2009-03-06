@@ -5,18 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0019b7}
-span.s3 {color: #326f17}
+span.s2 {color: #0000bf}
+span.s3 {color: #007300}
 span.s4 {color: #000000}
-span.s5 {color: #606060}
+span.s5 {color: #0000bf}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -55,7 +57,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">)</p>
 <p class="p4"><br></p>
 <p class="p3">(</p>
-<p class="p3">a = <span class="s2">Pbind</span>(<span class="s3">\freq</span>, Pseq([500, 600, 700]), <span class="s3">\instrument</span>, <span class="s3">\</span><span class="s5">sinegrain</span>);</p>
+<p class="p6">a = <span class="s5">Pbind</span>(<span class="s6">\freq</span>, <span class="s5">Pseq</span>([500, 600, 700]), <span class="s6">\instrument</span>, <span class="s6">\sinegrain</span>);</p>
 <p class="p3">a = <span class="s2">Paddp</span>(<span class="s3">\freq</span>, <span class="s2">Pseq</span>([30, 90, -100], <span class="s2">inf</span>), a);</p>
 <p class="p3">a.play;</p>
 <p class="p3">)</p>
