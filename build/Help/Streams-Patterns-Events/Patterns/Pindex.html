@@ -5,51 +5,57 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-span.s1 {color: #0000ff}
-span.s2 {color: #000000}
-span.s3 {color: #007300}
-span.s4 {color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000bf}
+span.s3 {color: #000000}
+span.s4 {color: #007300}
+span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Pindex<span class="Apple-tab-span">	</span>Access elements of an array, in patterns</b></p>
+<p class="p1"><span class="s1"><b>Pindex</b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pattern that indexes into an array</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Pindex(list, index, repeats)</b></p>
+<p class="p1"><b>Pindex(list, index, repeats)</b></p>
 <p class="p2"><br></p>
-<p class="p3">This allows an <a href="../../Collections/ArrayedCollection.html"><span class="s1">ArrayedCollection</span></a> to be queried within patterns. <b>list</b> is the ArrayedCollection and <b>index</b> the value to retrieve - both of these arguments can themselves be <a href="Pattern.html"><span class="s1">Pattern</span></a>s. <b>repeats</b> specifies the number of repeats.</p>
+<p class="p1">This allows an <a href="../../Collections/ArrayedCollection.html"><span class="s2">ArrayedCollection</span></a> to be accessed within patterns.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Examples</b></p>
+<p class="p1"><b>list</b> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>is the array and <b>index</b> the value to retrieve - both of these arguments can themselves be <a href="Pattern.html"><span class="s2">Pattern</span></a>s.</p>
+<p class="p1"><b>repeats</b> <span class="Apple-tab-span">	</span>specifies the number of repeats.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3">// example</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">s.waitForBoot{</p>
-<p class="p6">SynthDef<span class="s2">(</span><span class="s3">\help_pindex</span><span class="s2">, { </span>| out, amp=0.1, freq=440, gate=1 |</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> son = <span class="s4">Saw</span>.ar(freq * [0.99, 1, 1.01]).mean;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>son = son * <span class="s4">EnvGen</span>.ar(<span class="s4">Env</span>.adsr, gate: gate, doneAction:2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, son.dup * amp);</p>
+<p class="p6">SynthDef<span class="s3">(</span><span class="s4">\help_pindex</span><span class="s3">, { </span>| out, amp=0.1, freq=440, gate=1 |</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">var</span> son = <span class="s5">Saw</span>.ar(freq * [0.99, 1, 1.01]).mean;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>son = son * <span class="s5">EnvGen</span>.ar(<span class="s5">Env</span>.adsr, gate: gate, doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, son.dup * amp);</p>
 <p class="p5">}).memStore;</p>
-<p class="p5">}</p>
 <p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">~data = [7, 13, 12, 2, 2, 2, 5];</p>
-<p class="p7"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p5">(</p>
-<p class="p5">p = <span class="s4">Pbind</span>(</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\help_pindex<span class="s2">,</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\choice</span>, <span class="s4">Prand</span>(<span class="s4">Array</span>.series(~data.size, 0, 1), <span class="s4">inf</span>),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s4">Pindex</span>(~data, <span class="s4">Pkey</span>(<span class="s3">\choice</span>), <span class="s4">inf</span>)</p>
+<p class="p5"><span class="s5">var</span> data = [7, 13, 12, 2, 2, 2, 5];</p>
+<p class="p5"><span class="s5">var</span> indices = [0, 0, 2, 0, 4, 6, 7];</p>
+<p class="p6">Pbind<span class="s3">(</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\help_pindex<span class="s3">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\choice</span>, <span class="s5">Prand</span>(indices, <span class="s5">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s5">Pindex</span>(data, <span class="s5">Pkey</span>(<span class="s4">\choice</span>), <span class="s5">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.7</p>
 <p class="p5">).play</p>
 <p class="p5">)</p>
-<p class="p7"><br></p>
+<p class="p4"><br></p>
 </body>
 </html>
