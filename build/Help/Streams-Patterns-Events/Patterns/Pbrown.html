@@ -9,17 +9,18 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
-span.s4 {color: #0000bf}
-span.s5 {color: #007300}
+span.s4 {color: #0026b4}
+span.s5 {color: #606060}
+span.s6 {color: #3d6d1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,6 +45,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s4">var</span> a;</p>
+<p class="p6">a = <span class="s4">Pbrown</span>(0.0, 1.0, 0.1, <span class="s4">inf</span>);</p>
+<p class="p6">c = a.asStream.nextN(500);</p>
+<p class="p6">w = <span class="s4">GUI</span>.window.new(<span class="s5">"Pbrown"</span>, <span class="s4">Rect</span>(10, 10, 540, 800));</p>
+<p class="p5">// plot the values</p>
+<p class="p6">c.plot(bounds: <span class="s4">Rect</span>(10, 10, 520, 380), discrete: <span class="s4">true</span>, parent: w);</p>
+<p class="p5">// a histogram of the values</p>
+<p class="p6">c.histo(500).plot(bounds: <span class="s4">Rect</span>(10, 410, 520, 380), parent: w);</p>
+<p class="p6">)</p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6"><span class="s4">var</span> a;</p>
 <p class="p6">a = <span class="s4">Pbrown</span>(0.0, 1.0, 0.2, <span class="s4">inf</span>);</p>
 <p class="p6">a.asStream.nextN(1000).plot;</p>
 <p class="p6">)</p>
@@ -65,7 +77,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">a = <span class="s4">Pbrown</span>(0.0, 1.0, 0.1, <span class="s4">inf</span>).asStream;</p>
 <p class="p6">{</p>
 <p class="p6"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, a.next * 600 + 300]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>(<span class="s6">\help_sinegrain</span>, [<span class="s6">\freq</span>, a.next * 600 + 300]);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.02.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
 <p class="p6">}.fork;</p>
@@ -82,7 +94,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>{</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> x = pattern.asStream;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>.grain(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, x.next.linexp(0, 1, min, max), <span class="s5">\sustain</span>, dt]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>.grain(<span class="s6">\help_sinegrain</span>, [<span class="s6">\freq</span>, x.next.linexp(0, 1, min, max), <span class="s6">\sustain</span>, dt]);</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dt.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p6"><span class="Apple-tab-span">	</span>}.fork;</p>
