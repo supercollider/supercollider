@@ -236,7 +236,7 @@ SCView {  // abstract class
 		var parents, view;
 		view = this;
 		parents = List.new;
-		while({(view = view.parent).notNil},{ parents.add(view)});
+		while({(view = view.asView.parent).notNil},{ parents.add(view)});
 		^parents
 	}
 	
