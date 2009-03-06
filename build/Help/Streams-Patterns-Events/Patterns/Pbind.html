@@ -51,9 +51,9 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>Pbind<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>combine several value patterns to one event stream by binding keys to values</b></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="../Core/Kernel/AbstractFunction.html"><b>AbstractFunction</b></a><b> : </b><a href="Pattern.html"><b>Pattern</b></a></span></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a><b> : </b><a href="../../Core/Kernel/AbstractFunction.html"><b>AbstractFunction</b></a><b> : </b><a href="Pattern.html"><b>Pattern</b></a></span></p>
 <p class="p4"><br></p>
-<p class="p1"><b>Pbind</b> works with the classes <a href="../ServerArchitecture/SynthDef.html"><span class="s3"><b>SynthDef</b></span></a><b> </b>and <a href="../Collections/Event.html"><span class="s3"><b>Event</b></span></a><b> </b>and the rest of the <a href="Pattern.html"><span class="s3"><b>Pattern</b></span></a><b> </b>Library to form one of Supercollider's basic score language facilities. ( See <b>SynthDef and Event</b> below for a brief discussion of both in relation to Pbind.)</p>
+<p class="p1"><b>Pbind</b> works with the classes <a href="../../ServerArchitecture/SynthDef.html"><span class="s3"><b>SynthDef</b></span></a><b> </b>and <a href="../../Collections/Event.html"><span class="s3"><b>Event</b></span></a><b> </b>and the rest of the <a href="Pattern.html"><span class="s3"><b>Pattern</b></span></a><b> </b>Library to form one of Supercollider's basic score language facilities. ( See <b>SynthDef and Event</b> below for a brief discussion of both in relation to Pbind.)</p>
 <p class="p4"><br></p>
 <p class="p1"><b>Pbind </b>specifies a stream of <b>Events</b> in terms of different<span class="Apple-converted-space">  </span>patterns<i> </i>that are <b>bound </b>to different keys in the Event.</p>
 <p class="p1">The patterns bound to keys are referred to as <i>value patterns</i> and the Pbind itself is termed an <i>event pattern.</i></p>
@@ -92,7 +92,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><br></p>
 <p class="p9">)</p>
 <p class="p4"><br></p>
-<p class="p1">It is possible to specify a Pbind with an <a href="../Collections/Array.html"><span class="s3">Array</span></a> preceded by <b>*</b>. Arrays treat identifiers ending with a colon as <a href="../Core/Symbol.html"><span class="s3">Symbol</span></a>s, making the syntax of the Pbind specification a bit more concise:</p>
+<p class="p1">It is possible to specify a Pbind with an <a href="../../Collections/Array.html"><span class="s3">Array</span></a> preceded by <b>*</b>. Arrays treat identifiers ending with a colon as <a href="../../Core/Symbol.html"><span class="s3">Symbol</span></a>s, making the syntax of the Pbind specification a bit more concise:</p>
 <p class="p4"><br></p>
 <p class="p9">(</p>
 <p class="p10">//<span class="Apple-tab-span">	</span>Alternative syntax, using a key/pattern array:</p>
@@ -110,7 +110,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p15"><b>SynthDef and Event</b></p>
 <p class="p4"><br></p>
-<p class="p1">The keys used in a Pbind are determined by the <a href="../ServerArchitecture/SynthDef.html"><span class="s3"><b>SynthDef</b></span></a><b> </b>used and the structure of the extensive default mechanism provided by <a href="../Collections/Event.html"><span class="s3"><b>Event</b></span></a><b>. </b>This section provides a brief review of both.</p>
+<p class="p1">The keys used in a Pbind are determined by the <a href="../../ServerArchitecture/SynthDef.html"><span class="s3"><b>SynthDef</b></span></a><b> </b>used and the structure of the extensive default mechanism provided by <a href="../../Collections/Event.html"><span class="s3"><b>Event</b></span></a><b>. </b>This section provides a brief review of both.</p>
 <p class="p4"><br></p>
 <p class="p1">A <b>SynthDef</b> assigns a name to an interconnection of unit generators to be run as a synth on a server. It also assigns <b>control</b> <b>names</b> to the synth's control inputs. In the following example the SynthDef\test<b> </b>has control inputs <b>out, freq, amp, nharms, pan, </b>and <b>gate</b>. <span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
@@ -120,14 +120,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">OffsetOut</span>.ar(out, <span class="s8">Pan2</span>.ar(audio, pan, env) );</p>
 <p class="p17"><span class="Apple-tab-span">	</span>}).memStore;</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p1">The SynthDef needs to be downloaded to the server upon which it is to be run. Use <b>.memStore</b> instead of .send to ensure that any patterns using this SynthDef have information about the available control inputs (see <a href="../ServerArchitecture/SynthDesc.html"><span class="s9">SynthDesc</span></a>). Alternately, <b>.store</b> may be used to save the SynthDef to disk and add the SynthDesc to the library.</p>
+<p class="p1">The SynthDef needs to be downloaded to the server upon which it is to be run. Use <b>.memStore</b> instead of .send to ensure that any patterns using this SynthDef have information about the available control inputs (see <a href="../../ServerArchitecture/SynthDesc.html"><span class="s9">SynthDesc</span></a>). Alternately, <b>.store</b> may be used to save the SynthDef to disk and add the SynthDesc to the library.</p>
 <p class="p4"><br></p>
 <p class="p1">An <b>Event</b> is a Dictionary that specifies an action to be taken in response to <b>play </b>and a time increment to be returned in response to <b>delta</b>. Events can be written as a series of key value pairs enclosed in parentheses.<span class="Apple-converted-space">  </span>Empty parentheses<span class="Apple-converted-space">  </span>create an empty event.<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p1">By default, Events play synths on a server. Such <i>note events</i> use the following keys:</p>
 <p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>instrument <span class="Apple-tab-span">	</span>(\default)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The synthdef to be played</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>variant<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(nil, optional)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The set of variant control defaults to use (see <a href="../ServerArchitecture/SynthDef.html"><span class="s10">SynthDef</span></a> help)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>variant<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(nil, optional)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The set of variant control defaults to use (see <a href="../../ServerArchitecture/SynthDef.html"><span class="s10">SynthDef</span></a> help)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>server<span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>(<b>Server.default</b>)<span class="Apple-tab-span">	</span>The server that plays the synth<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>group<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>( 1</b>)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The new synth's or the synth the new synth is placed before or after</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>addAction<span class="Apple-tab-span">	</span>(0)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>How the synth is placed relative to the target specified by <b>group</b></p>
@@ -140,7 +140,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">When the Event is played, it creates an OSC command to play a synth.<span class="Apple-converted-space">  </span>It uses the name assigned to <b>instrument<span class="Apple-converted-space"> </span></b> to the select the SynthDef to be played. The SynthDef's control names (found in its SynthDesc) are looked up in the event and the corresponding values included in the command.</p>
 <p class="p4"><br></p>
-<p class="p1">Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the <a href="../Collections/Event.html"><span class="s10">Event</span></a> help file for a list of event types.</p>
+<p class="p1">Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the <a href="../../Collections/Event.html"><span class="s10">Event</span></a> help file for a list of event types.</p>
 <p class="p4"><br></p>
 <p class="p1">There are a number of coventional names typically used to identify controls in a synth.</p>
 <p class="p4"><span class="Apple-converted-space"> </span></p>
@@ -204,7 +204,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p15"><b>Realtime Control with EventStreamPlayer</b></p>
 <p class="p8"><br></p>
-<p class="p1">The <a href="EventStreamPlayer.html"><span class="s3">EventStreamPlayer</span></a> provides realtime control through <b>mute</b>, <b>unmute</b>, <b>stop, play </b>and <b>reset</b>. <span class="Apple-converted-space"> </span></p>
+<p class="p1">The <a href="../EventStreamPlayer.html"><span class="s3">EventStreamPlayer</span></a> provides realtime control through <b>mute</b>, <b>unmute</b>, <b>stop, play </b>and <b>reset</b>. <span class="Apple-converted-space"> </span></p>
 <p class="p12"><br></p>
 <p class="p9">(</p>
 <p class="p9"><span class="s4">SynthDef</span>(<span class="s5">\cfstring1</span>, { <span class="s4">arg</span> i_out, freq = 360, gate = 1, pan, amp=0.1;</p>
@@ -382,7 +382,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">)</p>
 <p class="p12"><br></p>
 <p class="p12"><br></p>
-<p class="p1">Using <a href="../Libraries/JITLib/Patterns/Pdef.html"><span class="s13">Pdef</span></a> (provided by <a href="../Libraries/JITLib/JITLib.html"><span class="s3">JITLib</span></a>) makes it easy to replace patterns on the fly:</p>
+<p class="p1">Using <a href="../../Libraries/JITLib/Patterns/Pdef.html"><span class="s13">Pdef</span></a> (provided by <a href="../../Libraries/JITLib/JITLib.html"><span class="s3">JITLib</span></a>) makes it easy to replace patterns on the fly:</p>
 <p class="p12"><br></p>
 <p class="p12"><br></p>
 <p class="p9">(</p>

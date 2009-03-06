@@ -30,7 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>Language control methods</b></p>
 <p class="p2"><br></p>
-<p class="p3">Some patterns mimic language-style control methods: conditionals (<a href="../Pif.html"><span class="s1">Pif</span></a>), loops (<a href="../Pwhile.html"><span class="s1">Pwhile</span></a>) and error cleanup (<a href="../Pprotect.html"><span class="s1">Pprotect</span></a>).</p>
+<p class="p3">Some patterns mimic language-style control methods: conditionals (<a href="../Patterns/Pif.html"><span class="s1">Pif</span></a>), loops (<a href="../Patterns/Pwhile.html"><span class="s1">Pwhile</span></a>) and error cleanup (<a href="../Patterns/Pprotect.html"><span class="s1">Pprotect</span></a>).</p>
 <p class="p2"><br></p>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pif(condition, iftrue, iffalse, default):</b> Evaluates a pattern 'condition' that returns true or false. Then, one value is taken from the true or false branch before going back to evaluate the condition again. The 'default' value or pattern comes into play when the true or false branch stops producing values (returns nil). If the default is not given, Pif returns control to the parent upon nil from either branch.</li>
@@ -46,7 +46,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pseed(randSeed, pattern):</b> Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers. <a href="../Pseed.html"><span class="s1">Pseed</span></a> sets the random seed before embedding 'pattern', effectively restarting the random number generator at the start of the pattern.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pseed(randSeed, pattern):</b> Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers. <a href="../Patterns/Pseed.html"><span class="s1">Pseed</span></a> sets the random seed before embedding 'pattern', effectively restarting the random number generator at the start of the pattern.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p4">p = <span class="s2">Pbind</span>(</p>

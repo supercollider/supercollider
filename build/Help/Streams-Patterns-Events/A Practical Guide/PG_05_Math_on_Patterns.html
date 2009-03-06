@@ -32,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Some of these operations look like things you would do to an array, but there is a critical difference. Doing math on an array performs the operation on every array item all at once. By contrast, patterns are "lazy" -- they evaluate one value at the time, only when asked, and they only do as much as they need to do to deliver the next value. An operation on a pattern produces another pattern that remembers the work that is to be done. Making a stream out of the composite pattern creates the structure to perform the operation upon request.</p>
 <p class="p2"><br></p>
-<p class="p3">For example, multiplying a pattern by a number produces a "binary operator pattern": <a href="../Pbinop.html"><span class="s1">Pbinop</span></a>. Looking at the Pbinop's variables reveals everything that is needed to reconstruct the operation on demand.</p>
+<p class="p3">For example, multiplying a pattern by a number produces a "binary operator pattern": <a href="../Patterns/Pbinop.html"><span class="s1">Pbinop</span></a>. Looking at the Pbinop's variables reveals everything that is needed to reconstruct the operation on demand.</p>
 <p class="p2"><br></p>
 <p class="p4">p = <span class="s2">Pwhite</span>(1, 5, <span class="s2">inf</span>) * 2;<span class="Apple-tab-span">	</span><span class="s3">// a Pbinop</span></p>
 <p class="p5"><br></p>
@@ -147,7 +147,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><b>Calculations based on other event values</b></p>
 <p class="p2"><br></p>
-<p class="p3">In a Pbind, normally the patterns for the various keys calculate independently. But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind. This is done with <a href="../Pkey.html"><span class="s1">Pkey</span></a>, described in <a href="PG_06g_Data_Sharing.html"><span class="s6">PG_06g_Data_Sharing</span></a>.</p>
+<p class="p3">In a Pbind, normally the patterns for the various keys calculate independently. But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind. This is done with <a href="../Patterns/Pkey.html"><span class="s1">Pkey</span></a>, described in <a href="PG_06g_Data_Sharing.html"><span class="s6">PG_06g_Data_Sharing</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p8"><span class="s4">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_04_Words_to_Phrases.html"><span class="s7">PG_04_Words_to_Phrases</span></a></span></p>
 <p class="p8"><span class="s4">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_060_Filter_Patterns.html"><span class="s7">PG_060_Filter_Patterns</span></a></span></p>

@@ -38,9 +38,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">It might be tempting to loop a <a href="../../UGens/Playback and Recording/PlayBuf.html"><span class="s1">PlayBuf</span></a> so that the loop runs automatically on the server, but it can easily drift out of sync with the client (because of slight deviations in the actual sample rate). Instead, the example defines a SynthDef that plays exactly one repetition of the loop, and repeatedly triggers it once per bar.</p>
 <p class="p2"><br></p>
-<p class="p4">The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the <a href="../Pwrand.html"><span class="s1">Pwrand</span></a> \dur pattern will add up to exactly 4 beats. The <a href="../Pfindur.html"><span class="s1">Pfindur</span></a> ("finite duration") pattern cuts off the inner Pbind after 4 beats. This would stop the pattern, except <a href="../Pn.html"><span class="s1">Pn</span></a> repeats the Pfindur infinitely, placing the accent in the right place every time.</p>
+<p class="p4">The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the <a href="../Patterns/Pwrand.html"><span class="s1">Pwrand</span></a> \dur pattern will add up to exactly 4 beats. The <a href="../Patterns/Pfindur.html"><span class="s1">Pfindur</span></a> ("finite duration") pattern cuts off the inner Pbind after 4 beats. This would stop the pattern, except <a href="../Patterns/Pn.html"><span class="s1">Pn</span></a> repeats the Pfindur infinitely, placing the accent in the right place every time.</p>
 <p class="p2"><br></p>
-<p class="p4">The loop actually starts with a half-beat anacrusis, so <a href="../Ptpar.html"><span class="s1">Ptpar</span></a> delays the bell patterns by 0.5 beats.</p>
+<p class="p4">The loop actually starts with a half-beat anacrusis, so <a href="../Patterns/Ptpar.html"><span class="s1">Ptpar</span></a> delays the bell patterns by 0.5 beats.</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
 <p class="p6"><span class="s2">b = </span><span class="s3">Buffer</span><span class="s2">.read(s, </span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>

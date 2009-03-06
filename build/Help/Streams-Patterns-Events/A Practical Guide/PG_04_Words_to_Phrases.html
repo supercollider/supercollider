@@ -39,7 +39,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Patterns within list patterns</b></p>
 <p class="p2"><br></p>
-<p class="p3">We saw list patterns (<a href="../Pseq.html"><span class="s1">Pseq</span></a>, <a href="../Prand.html"><span class="s1">Prand</span></a>, etc.) that returned numbers from a preset list, either in the order given or rearranged randomly. The list may also include other patterns. When a list pattern encounters another pattern in its list, the inner pattern is <i>embedded</i> into the stream. That is, the inner pattern takes over until it runs out of values to return. Then, control returns to the outer list pattern. This is like calling a function in the middle of another function.</p>
+<p class="p3">We saw list patterns (<a href="../Patterns/Pseq.html"><span class="s1">Pseq</span></a>, <a href="../Patterns/Prand.html"><span class="s1">Prand</span></a>, etc.) that returned numbers from a preset list, either in the order given or rearranged randomly. The list may also include other patterns. When a list pattern encounters another pattern in its list, the inner pattern is <i>embedded</i> into the stream. That is, the inner pattern takes over until it runs out of values to return. Then, control returns to the outer list pattern. This is like calling a function in the middle of another function.</p>
 <p class="p2"><br></p>
 <p class="p3">There is no preset limit to the number of levels of embedding.</p>
 <p class="p2"><br></p>
@@ -111,10 +111,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some ways to string together patterns</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Sequentially:</b> Each sub-pattern follows the next in the same order every time. Use <a href="../Pseq.html"><span class="s1">Pseq</span></a> or <a href="../Pser.html"><span class="s1">Pser</span></a>.</p>
-<p class="p3"><b>Randomized order:</b> Sub-patterns in completely random order (<a href="../Prand.html"><span class="s1">Prand</span></a>), random order with no repeats (<a href="../Pxrand.html"><span class="s1">Pxrand</span></a>), or random order according to a set of probabilities (<a href="../Pwrand.html"><span class="s1">Pwrand</span></a>). <a href="../Pshuf.html"><span class="s1">Pshuf</span></a> creates one random ordering and uses it repeatedly.</p>
+<p class="p3"><b>Sequentially:</b> Each sub-pattern follows the next in the same order every time. Use <a href="../Patterns/Pseq.html"><span class="s1">Pseq</span></a> or <a href="../Patterns/Pser.html"><span class="s1">Pser</span></a>.</p>
+<p class="p3"><b>Randomized order:</b> Sub-patterns in completely random order (<a href="../Patterns/Prand.html"><span class="s1">Prand</span></a>), random order with no repeats (<a href="../Patterns/Pxrand.html"><span class="s1">Pxrand</span></a>), or random order according to a set of probabilities (<a href="../Patterns/Pwrand.html"><span class="s1">Pwrand</span></a>). <a href="../Patterns/Pshuf.html"><span class="s1">Pshuf</span></a> creates one random ordering and uses it repeatedly.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Direct array indexing:</b> Patterns can be chosen in arbitrary order by index. This gives you more control than Pwrand. Both <a href="../Pindex.html"><span class="s1">Pindex</span></a> and <a href="../Pswitch.html"><span class="s1">Pswitch</span></a> can be used for this.</p>
+<p class="p3"><b>Direct array indexing:</b> Patterns can be chosen in arbitrary order by index. This gives you more control than Pwrand. Both <a href="../Patterns/Pindex.html"><span class="s1">Pindex</span></a> and <a href="../Patterns/Pswitch.html"><span class="s1">Pswitch</span></a> can be used for this.</p>
 <p class="p2"><br></p>
 <p class="p5">// scale degree segments, every fifth choice is odd-numbered only (descending)</p>
 <p class="p6">(</p>
@@ -136,13 +136,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p6">p.stop;</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Finite state machine (Pfsm, Pdfsm):</b> A finite state machine is a way of associating an item with its possible successors. It is closer to a "grammar" than purely random selection. <a href="../Pfsm.html"><span class="s1">Pfsm</span></a> defines a finite state machine as a set of possible "entry points," followed by a list of the possible "states" of the machine and, for each state, a list of the possible states that may follow the current state. States may be single values or patterns, meaning that phrases can be linked to other phrases that "make sense" in succession (and unwanted transitions can be prevented).</p>
+<p class="p3"><b>Finite state machine (Pfsm, Pdfsm):</b> A finite state machine is a way of associating an item with its possible successors. It is closer to a "grammar" than purely random selection. <a href="../Patterns/Pfsm.html"><span class="s1">Pfsm</span></a> defines a finite state machine as a set of possible "entry points," followed by a list of the possible "states" of the machine and, for each state, a list of the possible states that may follow the current state. States may be single values or patterns, meaning that phrases can be linked to other phrases that "make sense" in succession (and unwanted transitions can be prevented).</p>
 <p class="p2"><br></p>
 <p class="p3">If this sounds a bit like a Markov chain, that's because the Pfsm implementation is a special case of a Markov chain where there is an equal probability of choosing the next state from the valid successors. In a Markov chain, the probabilities are weighted according to analysis of a real-world data stream.</p>
 <p class="p2"><br></p>
 <p class="p3">The Pfsm help file includes very good examples of organizing single values and pattern phrases. Also see <a href="PG_Cookbook06_Phrase_Network.html"><span class="s1">PG_Cookbook06_Phrase_Network</span></a> for an application of Pfsm to generate a corny jazz solo.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s8"><a href="../Pdfsm.html">Pdfsm</a></span> stands for "deterministic finite state machine," where there is no random selection.</p>
+<p class="p3"><span class="s8"><a href="../Patterns/Pdfsm.html">Pdfsm</a></span> stands for "deterministic finite state machine," where there is no random selection.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Third-party extension alert:</b> A good Markov chain implementation for SuperCollider exists in the MathLib quark.</p>
 <p class="p2"><br></p>
@@ -202,7 +202,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Switching between patterns for individual values</b></p>
 <p class="p2"><br></p>
-<p class="p3">In the examples above, if a list pattern encounters another pattern in its input values, the subpattern is embedded in its entirety before the list pattern is allowed to continue. Sometimes you might want to get just one value out of the subpattern, and then choose a different subpattern on the next event. Pswitch, Psym and Pnsym have cousins that do exactly this: <a href="../Pswitch1.html"><span class="s1">Pswitch1</span></a>, Psym1 and Pnsym1.</p>
+<p class="p3">In the examples above, if a list pattern encounters another pattern in its input values, the subpattern is embedded in its entirety before the list pattern is allowed to continue. Sometimes you might want to get just one value out of the subpattern, and then choose a different subpattern on the next event. Pswitch, Psym and Pnsym have cousins that do exactly this: <a href="../Patterns/Pswitch1.html"><span class="s1">Pswitch1</span></a>, Psym1 and Pnsym1.</p>
 <p class="p2"><br></p>
 <p class="p5">// random pitches in two distinct ranges; use a coin toss to decide which for this event</p>
 <p class="p5">// 70% low, 30% high</p>
@@ -233,7 +233,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Related: Conditional patterns</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s8"><a href="../Pif.html">Pif</a></span> supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B. Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss. This might be clearer to read. However, this works only when there are two alternatives. Pswitch1 and Psym1 allow any number of choices.</p>
+<p class="p3"><span class="s8"><a href="../Patterns/Pif.html">Pif</a></span> supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B. Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss. This might be clearer to read. However, this works only when there are two alternatives. Pswitch1 and Psym1 allow any number of choices.</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="s2">TempoClock</span>.default.tempo = 1;</p>

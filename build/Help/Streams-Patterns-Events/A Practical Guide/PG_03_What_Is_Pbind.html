@@ -35,7 +35,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Some of the examples in the last tutorial played notes using Pbind, and you might be wondering how it works in general and what else you can do with it.</p>
 <p class="p2"><br></p>
-<p class="p3">In the most general sense, <a href="../Pbind.html"><span class="s1">Pbind</span></a> is just a way to give names to values coming out of the types of patterns we just saw. When you ask a Pbind stream for its next value, the result is an object called an <a href="../../Collections/Event.html"><span class="s1">Event</span></a>. Like a <a href="../../Collections/Dictionary.html"><span class="s1">Dictionary</span></a> (which is a superclass of Event), an event is a set of "key-value pairs": each value is named by a key.</p>
+<p class="p3">In the most general sense, <a href="../Patterns/Pbind.html"><span class="s1">Pbind</span></a> is just a way to give names to values coming out of the types of patterns we just saw. When you ask a Pbind stream for its next value, the result is an object called an <a href="../../Collections/Event.html"><span class="s1">Event</span></a>. Like a <a href="../../Collections/Dictionary.html"><span class="s1">Dictionary</span></a> (which is a superclass of Event), an event is a set of "key-value pairs": each value is named by a key.</p>
 <p class="p2"><br></p>
 <p class="p4">e = (freq: 440, dur: 0.5);<span class="Apple-tab-span">	</span><span class="s2">// an Event</span></p>
 <p class="p5"><br></p>
@@ -107,7 +107,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Useful Pbind variant: Pmono</b></p>
 <p class="p2"><br></p>
-<p class="p3">Pbind plays separate notes by default. Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event. If Pbind normally corresponds to Synth.new or /s_new, <a href="../Pmono.html"><span class="s1">Pmono</span></a> corresponds to aSynth.set or /n_set.</p>
+<p class="p3">Pbind plays separate notes by default. Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event. If Pbind normally corresponds to Synth.new or /s_new, <a href="../Patterns/Pmono.html"><span class="s1">Pmono</span></a> corresponds to aSynth.set or /n_set.</p>
 <p class="p2"><br></p>
 <p class="p3">Compare the sound of these patterns. Pbind produces an attack on every note, while Pmono glides from pitch to pitch.</p>
 <p class="p2"><br></p>
@@ -117,7 +117,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">p = <span class="s5">Pmono</span>(<span class="s4">\default</span>, <span class="s4">\degree</span>, <span class="s5">Pwhite</span>(0, 7, <span class="s5">inf</span>), <span class="s4">\dur</span>, 0.25).play;</p>
 <p class="p4">p.stop;</p>
 <p class="p2"><br></p>
-<p class="p3">Articulating phrases is possible with Pmono by chaining several Pmono patterns together in a row, or by using <a href="../PmonoArtic.html"><span class="s1">PmonoArtic</span></a>.</p>
+<p class="p3">Articulating phrases is possible with Pmono by chaining several Pmono patterns together in a row, or by using <a href="../Patterns/PmonoArtic.html"><span class="s1">PmonoArtic</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p8"><b>Connecting Event values to SynthDef inputs</b></p>
@@ -183,7 +183,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p8"><b>“Rest” events</b></p>
 <p class="p2"><br></p>
-<p class="p3">The convention to include a rest in the middle of an event pattern is to set the \freq key to a Symbol. Commonly this is \rest, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquées" technique could be written this way (see <a href="PG_06e_Language_Control.html"><span class="s1">PG_06e_Language_Control</span></a> for an explanation of the conditional <a href="../Pif.html"><span class="s7">Pif</span></a>):</p>
+<p class="p3">The convention to include a rest in the middle of an event pattern is to set the \freq key to a Symbol. Commonly this is \rest, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquées" technique could be written this way (see <a href="PG_06e_Language_Control.html"><span class="s1">PG_06e_Language_Control</span></a> for an explanation of the conditional <a href="../Patterns/Pif.html"><span class="s7">Pif</span></a>):</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p6">// first, pitches ascending by 1-3 semitones, until 2 octaves are reached</p>

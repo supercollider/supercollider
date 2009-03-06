@@ -66,7 +66,7 @@ span.Apple-tab-span {white-space:pre}
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pchain(patterns):</b> Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event. For example, if one part of your code creates a Pbind instance a = Pbind(\a, patternA) and another part creates b = Pbind(\b, patternB, \c, patternC), you could append \b and \c into the \a result using Pchain(b, a). The subpatterns evaluate in reverse order, in keeping with function composition notation.</li>
 </ul>
 <p class="p3"><br></p>
-<p class="p4">For musical purposes, you could have one part of your code create a pattern defining rhythm and another part defining pitch material, then combine them with <a href="../Pchain.html"><span class="s4">Pchain</span></a>.</p>
+<p class="p4">For musical purposes, you could have one part of your code create a pattern defining rhythm and another part defining pitch material, then combine them with <a href="../Patterns/Pchain.html"><span class="s4">Pchain</span></a>.</p>
 <p class="p3"><br></p>
 <p class="p5">~rhythm = <span class="s2">Pbind</span>(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pwrand</span>(#[0.125, 0.25, 0.5], #[0.3, 0.5, 0.2], <span class="s2">inf</span>),</p>
@@ -121,7 +121,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><b>Paddpre</b>(name, value, pattern) == <b>Pchain</b>(pattern, <b>Pbind(name, Pkey(name) + value)</b>);</p>
 <p class="p4">Similar for Pmulpre</p>
 <p class="p3"><br></p>
-<p class="p4">A third group -- <a href="../Psetp.html"><span class="s6">Psetp</span></a>, <a href="../Paddp.html"><span class="s6">Paddp</span></a>, <a href="../Pmulp.html"><span class="s6">Pmulp</span></a> -- behave slightly differently, nesting pattern evaluation.</p>
+<p class="p4">A third group -- <a href="../Patterns/Psetp.html"><span class="s6">Psetp</span></a>, <a href="../Patterns/Paddp.html"><span class="s6">Paddp</span></a>, <a href="../Patterns/Pmulp.html"><span class="s6">Pmulp</span></a> -- behave slightly differently, nesting pattern evaluation.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p9"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_06b_Time_Based_Patterns.html"><span class="s7">PG_06b_Time_Based_Patterns</span></a></span></p>

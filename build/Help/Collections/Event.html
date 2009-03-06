@@ -50,7 +50,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Event</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="s1"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="Collection.html"><b>Collection</b></a><b> : </b><a href="Set.html"><b>Set</b></a><b> : </b><a href="Dictionary.html"><b>Dictionary</b></a><b> : </b><a href="IdentityDictionary.html"><b>IdentityDictionary</b></a><b> : </b><a href="Environment.html"><b>Environment</b></a></span></p>
-<p class="p4"><b>Related classes: </b><a href="../Streams-Patterns-Events/Pattern.html"><span class="s2"><b>Pattern</b></span></a></p>
+<p class="p4"><b>Related classes: </b><a href="../Streams-Patterns-Events/Patterns/Pattern.html"><span class="s2"><b>Pattern</b></span></a></p>
 <p class="p5"><br></p>
 <p class="p4">An Event is an Environment that specifies an action to be taken in response to a <b>play </b>message. The key/value pairs within the Event specify the parameters of that action.<span class="Apple-converted-space">  </span>Events may be also used for object prototyping. See <a href="Environment.html"><span class="s3">Environment</span></a> for more details.</p>
 <p class="p2"><br></p>
@@ -161,7 +161,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p10"><b>Events and Patterns</b></p>
 <p class="p11"><br></p>
-<p class="p16">Events are closely integrated with the Patterns library.<span class="Apple-converted-space">  </span>Different patterns can be bound to different keys (or collections of keys) to specify the resultant music.<span class="Apple-converted-space">  </span><span class="s1">See the help<span class="Apple-converted-space">  </span>files <a href="../Streams-Patterns-Events/Pattern.html"><span class="s3"><b>Pattern</b></span></a><b> </b>and <a href="../Streams-Patterns-Events/Pbind.html"><span class="s3"><b>Pbind</b></span></a><b> </b>and the tutorials<span class="Apple-converted-space">  </span><a href="../Streams-Patterns-Events/Streams-Patterns-Events4.html"><span class="s3"><b>Streams-Patterns-Events4</b></span></a> and <a href="../Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s3"><b>Streams-Patterns-Events5</b></span></a><b> </b>for more details on Patterns.</span></p>
+<p class="p16">Events are closely integrated with the Patterns library.<span class="Apple-converted-space">  </span>Different patterns can be bound to different keys (or collections of keys) to specify the resultant music.<span class="Apple-converted-space">  </span><span class="s1">See the help<span class="Apple-converted-space">  </span>files <a href="../Streams-Patterns-Events/Patterns/Pattern.html"><span class="s3"><b>Pattern</b></span></a><b> </b>and <a href="../Streams-Patterns-Events/Patterns/Pbind.html"><span class="s3"><b>Pbind</b></span></a><b> </b>and the tutorials<span class="Apple-converted-space">  </span><a href="../Streams-Patterns-Events/Streams-Patterns-Events4.html"><span class="s3"><b>Streams-Patterns-Events4</b></span></a> and <a href="../Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s3"><b>Streams-Patterns-Events5</b></span></a><b> </b>for more details on Patterns.</span></p>
 <p class="p2"><br></p>
 <p class="p16">Here is an example that illustrates some of the keys defined by the defaultParentEvent.</p>
 <p class="p16">Note that it is equivalent to write <b>Pbind(\key, val, ...)</b> and <b>Pbind(*[key: val, ...])</b>.</p>
@@ -207,7 +207,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p10"><b>Timing control with Event's delta method</b></p>
 <p class="p2"><br></p>
-<p class="p4">Events also specify timing within a <a href="../Streams-Patterns-Events/Pattern.html"><span class="s6">Pattern</span></a>.<span class="Apple-converted-space">  </span>Event's <span class="s4">delta </span>method returns the<span class="Apple-converted-space">  </span>value of <span class="s4">~delta </span>or, if that is nil,<span class="Apple-converted-space">  </span><span class="s4">~dur * ~stretch.<span class="Apple-converted-space"> </span></span></p>
+<p class="p4">Events also specify timing within a <a href="../Streams-Patterns-Events/Patterns/Pattern.html"><span class="s6">Pattern</span></a>.<span class="Apple-converted-space">  </span>Event's <span class="s4">delta </span>method returns the<span class="Apple-converted-space">  </span>value of <span class="s4">~delta </span>or, if that is nil,<span class="Apple-converted-space">  </span><span class="s4">~dur * ~stretch.<span class="Apple-converted-space"> </span></span></p>
 <p class="p6"><br></p>
 <p class="p4">Patterns are played by<b> </b><a href="../Scheduling/TempoClock.html"><span class="s6">TempoClock</span></a>s, which have their own tempo controls.<span class="Apple-converted-space">  </span>This tempo which can be controlled through <span class="s4">~tempo </span>in the event. Changes to the tempo affect everything else scheduled by the TempoClock, so <span class="s4">tempo </span>provides a global tempo control while <span class="s4">stretch </span>provides a control limited to the one pattern.</p>
 <p class="p5"><br></p>
