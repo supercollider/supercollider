@@ -4,7 +4,7 @@
 // 		Help.makeAutoHelp(MyClass)
 // is allowed
 // andrea valle (started: 04/11/2007)
-
+/*
 + Help {
 
 	*makeHelp { arg undocumentedObject, path ;
@@ -19,3 +19,4 @@
 	
 
 }
+*/
