@@ -325,11 +325,10 @@ Return value is nil or (beg end) of defun."
   (save-excursion
     (let ((orig (point))
 	  beg end)
-      (and (progn (beginning-of-defun-raw 1) t)
+      (and (progn (end-of-line) (beginning-of-defun-raw 1) t)
 	   (setq beg (point))
 	   (condition-case nil (forward-list 1) (error nil))
 	   (setq end (point))
-	   (> (point) orig)
 	   (list beg end)))))
 
 (defun sclang-end-of-defun (&optional arg)
