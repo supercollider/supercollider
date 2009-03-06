@@ -53,11 +53,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">There are a lot of permutations when it comes to signal routing and effect management, too many to discuss in depth here. Some of the main scenarios are:</p>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Separate effects that should apply individually: the patterns and effects should be isolated on separate buses. <a href="../Pfxb.html"><span class="s1">Pfxb</span></a> handles this isolation automatically: two patterns like <span class="s2">Pfxb</span>(<span class="s2">Pbind</span>(...), <span class="s3">\fxname</span>, <span class="s3">\effectargName</span>, value, <span class="s3">\name</span>, value...) will play on separate buses and their signals will not interfere with each other.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Separate effects that should apply individually: the patterns and effects should be isolated on separate buses. <a href="../Patterns/Pfxb.html"><span class="s1">Pfxb</span></a> handles this isolation automatically: two patterns like <span class="s2">Pfxb</span>(<span class="s2">Pbind</span>(...), <span class="s3">\fxname</span>, <span class="s3">\effectargName</span>, value, <span class="s3">\name</span>, value...) will play on separate buses and their signals will not interfere with each other.</li>
 </ul>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use <a href="../Pfx.html"><span class="s1">Pfx</span></a> to piggyback on the existing bus.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use <a href="../Patterns/Pfx.html"><span class="s1">Pfx</span></a> to piggyback on the existing bus.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p4">Pfxb<span class="s4">(</span></p>
@@ -70,7 +70,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s4"><span class="Apple-tab-span">	</span></span>(argument list for the second effect)</p>
 <p class="p3">).play;</p>
 <p class="p2"><br></p>
-<p class="p3">More complex arrangements are possible through nesting, and parallelizing Pfx or Pfxb patterns using <a href="../Ppar.html"><span class="s1">Ppar</span></a> and its cousins.<span class="Apple-converted-space"> </span></p>
+<p class="p3">More complex arrangements are possible through nesting, and parallelizing Pfx or Pfxb patterns using <a href="../Patterns/Ppar.html"><span class="s1">Ppar</span></a> and its cousins.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p3">This example uses Pfxb to isolate a pair of separately-sounding patterns on different buses, and to pass the two signals' streams through separate volume controls. The effect synth, for volume, is kept deliberately simple for the example, but of course it can do any kind of signal processing you like.</p>
 <p class="p2"><br></p>

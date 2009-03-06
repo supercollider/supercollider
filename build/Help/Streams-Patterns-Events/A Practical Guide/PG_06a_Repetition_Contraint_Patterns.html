@@ -36,13 +36,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">These patterns allow you to repeat single values, or (in the case of Pn) entire patterns.</p>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pclutch(pattern, connected):</b> If the 'connected' pattern is true, <a href="../Pclutch.html"><span class="s1">Pclutch</span></a> returns the next value from 'pattern'. If 'connected' is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pclutch(pattern, connected):</b> If the 'connected' pattern is true, <a href="../Patterns/Pclutch.html"><span class="s1">Pclutch</span></a> returns the next value from 'pattern'. If 'connected' is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pn(pattern, repeats):</b> Embeds the source pattern 'repeats' times: simple repetition. This also works on single values: Pn(1, 5) outputs the number 1 5 times.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pstutter(n, pattern):</b> 'n' and 'pattern' are both patterns. Each value from 'pattern' is repeated 'n' times. If 'n' is a pattern, each value can be repeated a different number of times.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>PdurStutter(n, pattern):</b> Like Pstutter, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p3">See also <a href="../Pstep.html"><span class="s1">Pstep</span></a>, described in <a href="PG_06b_Time_Based_Patterns.html"><span class="s1">PG_06b_Time_Based_Patterns</span></a>. Pstep can be used like <a href="../Pstutter.html"><span class="s1">Pstutter</span></a>, but repetition is controlled by time rather than number of repeats per item.</p>
+<p class="p3">See also <a href="../Patterns/Pstep.html"><span class="s1">Pstep</span></a>, described in <a href="PG_06b_Time_Based_Patterns.html"><span class="s1">PG_06b_Time_Based_Patterns</span></a>. Pstep can be used like <a href="../Patterns/Pstutter.html"><span class="s1">Pstutter</span></a>, but repetition is controlled by time rather than number of repeats per item.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p5">// play repeated notes with a different rhythmic value per new pitch</p>
@@ -90,7 +90,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Instead of prolonging a stream by repetition, these patterns use different methods to stop a stream dynamically. They are especially useful for modularizing pattern construction. One section of your code might be responsible for generating numeric or event patterns. By using constraint patterns, that part of the code doesn't have to know how many events or how long to play. It can just return an infinite pattern, and another part of the code can wrap it in one of these to stop it based on the appropriate condition.</p>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pfin(count, pattern): </b>Returns exactly 'count' values from the source pattern, then stops. (<a href="../Pfin.html"><span class="s1">Pfin</span></a> has a cousin, Pfinval, that is deprecated.)</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pfin(count, pattern): </b>Returns exactly 'count' values from the source pattern, then stops. (<a href="../Patterns/Pfin.html"><span class="s1">Pfin</span></a> has a cousin, Pfinval, that is deprecated.)</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pconst(sum, pattern, tolerance):</b> Output numbers until the sum goes over a predefined limit. The last output value is adjusted so that the sum matches the limit exactly.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pfindur(dur, pattern, tolerance):</b> Like Pconst, but applying the "constrain" behavior to the event's rhythmic values. The source pattern runs up to the specified duration, then stops. This is very useful if you know how long a musical behavior should go on, but the number of events to fill up that time is not known.</li>
 </ul>

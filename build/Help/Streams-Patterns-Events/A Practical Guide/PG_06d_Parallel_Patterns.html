@@ -36,24 +36,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The other is to combine them into a parallel stream. The result is a single pattern object that can be played or stopped only as one unit. Some degree of interactive control is lost, but there are times when merging several patterns is necessary -- for instance, converting a pattern into a Score object for NRT rendering.</p>
 <p class="p2"><br></p>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Ppar(list, repeats):</b> Start each of the event patterns in the 'list' at the same time. When the last one finishes, the <a href="../Ppar.html"><span class="s1">Ppar</span></a> also stops. If repeats &gt; 1, all the subpatterns start over again from the beginning.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Ppar(list, repeats):</b> Start each of the event patterns in the 'list' at the same time. When the last one finishes, the <a href="../Patterns/Ppar.html"><span class="s1">Ppar</span></a> also stops. If repeats &gt; 1, all the subpatterns start over again from the beginning.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Ptpar(list, repeats):</b> Here, the list consists of [timeOffset0, pattern0, timeOffset1, pattern1...]. Each pattern starts after the number of beats given as its time offset. The patterns can start at different times relative to each other.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pgpar(list, repeats):</b> Like Ppar, but it creates a separate group for each subpattern.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pgtpar(list, repeats):</b> This is like Ptpar with separate groups for the subpatterns.</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p3">An excellent example of <a href="../Ppar.html"><span class="s2">Ppar</span></a> and <a href="../Pseq.html"><span class="s2">Pseq</span></a> used together to structure an entire piece (Kraftwerk's "Spacelab") can be found in <a href="../../../examples/pieces/spacelab.scd"><span class="s3">examples/pieces/spacelab.scd</span></a>.</p>
+<p class="p3">An excellent example of <a href="../Patterns/Ppar.html"><span class="s2">Ppar</span></a> and <a href="../Patterns/Pseq.html"><span class="s2">Pseq</span></a> used together to structure an entire piece (Kraftwerk's "Spacelab") can be found in <a href="../../../examples/pieces/spacelab.scd"><span class="s3">examples/pieces/spacelab.scd</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Dynamic parallelizing</b></p>
 <p class="p2"><br></p>
-<p class="p3">Ppar and its cousins are good for a fixed set of parallel patterns -- that is, you need to know in advance how many patterns will be parallelized. Once the parallel pattern starts, there is no way to add more streams to it. To keep adding streams, use <a href="../Pspawner.html"><span class="s4">Pspawner</span></a> and <a href="../Pspawn.html"><span class="s4">Pspawn</span></a>. For the purpose of this overview, some basic features will be illustrated in a couple of simple examples. These classes have more capabilities; refer to their help files for specifics.</p>
+<p class="p3">Ppar and its cousins are good for a fixed set of parallel patterns -- that is, you need to know in advance how many patterns will be parallelized. Once the parallel pattern starts, there is no way to add more streams to it. To keep adding streams, use <a href="../Patterns/Pspawner.html"><span class="s4">Pspawner</span></a> and <a href="../Patterns/Pspawn.html"><span class="s4">Pspawn</span></a>. For the purpose of this overview, some basic features will be illustrated in a couple of simple examples. These classes have more capabilities; refer to their help files for specifics.</p>
 <p class="p2"><br></p>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pspawner(routineFunc):</b> The function is run in a Routine. A Spawner object gets passed into this Routine, and this object is used to add or remove streams to/from the parallel stream. New patterns can be added in sequence or in parallel.</li>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pspawn(pattern, spawnProtoEvent):</b> Supports most of the features of Pspawner, but uses a pattern to control the Spawner object instead of a Routine function.</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p3">This example uses <a href="../Pspawner.html"><span class="s1">Pspawner</span></a> to trigger overlapping scale segments at different speeds. Unlike Ppar, which could handle a fixed number before stopping, Pspawner can keep going indefinitely.</p>
+<p class="p3">This example uses <a href="../Patterns/Pspawner.html"><span class="s1">Pspawner</span></a> to trigger overlapping scale segments at different speeds. Unlike Ppar, which could handle a fixed number before stopping, Pspawner can keep going indefinitely.</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
 <p class="p6"><span class="s5">p = </span><span class="s6">Pspawner</span><span class="s5">({ </span><span class="s6">|sp|</span><span class="s5"><span class="Apple-tab-span">	</span></span>// sp = the Spawner object</p>
@@ -76,7 +76,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5">p.stop;</p>
 <p class="p2"><br></p>
-<p class="p3">The same, written using <a href="../Pspawn.html"><span class="s1">Pspawn</span></a>:</p>
+<p class="p3">The same, written using <a href="../Patterns/Pspawn.html"><span class="s1">Pspawn</span></a>:</p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
 <p class="p8"><span class="s5">p = </span>Pspawn<span class="s5">(</span>Pbind<span class="s5">(</span></p>

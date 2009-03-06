@@ -143,9 +143,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>play(clock, protoEvent, quant)</b></p>
 <p class="p3"><b>clock</b> - The tempo clock that will run the pattern. If omitted, TempoClock.default is used.</p>
 <p class="p3"><b>protoEvent</b> - The event prototype that will be fed into the pattern stream on each iteration. If omitted, event.default is used.</p>
-<p class="p3"><b>quant</b> - see the <a href="../Scheduling/Quant.html"><span class="s3">Quant</span></a> helpfile</p>
+<p class="p3"><b>quant</b> - see the <a href="../../Scheduling/Quant.html"><span class="s3">Quant</span></a> helpfile</p>
 <p class="p2"><br></p>
-<p class="p3">The play method does not return the pattern itself. Instead, it returns the <a href="EventStreamPlayer.html"><span class="s3">EventStreamPlayer</span></a> object that actually runs the pattern. Control instructions -- stop, pause, resume, play, reset -- should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)</p>
+<p class="p3">The play method does not return the pattern itself. Instead, it returns the <a href="../EventStreamPlayer.html"><span class="s3">EventStreamPlayer</span></a> object that actually runs the pattern. Control instructions -- stop, pause, resume, play, reset -- should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)</p>
 <p class="p2"><br></p>
 <p class="p7">p = <span class="s3">Pbind</span>(...);</p>
 <p class="p7">p.play;</p>

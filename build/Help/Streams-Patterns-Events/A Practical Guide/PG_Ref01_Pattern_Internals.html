@@ -41,7 +41,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">For most patterns, the stream is an instance of <a href="../../Core/Kernel/Routine.html"><span class="s1">Routine</span></a>. Routines (formally known in computer science as "coroutines") are important because they can yield control back to the caller but still remember exactly where they were, so they can resume in the middle on the next call without having to start over. A few exceptional patterns use FuncStream, which is simply a wrapper around a function that allows a function to act like a stream by responding to 'next' and other Stream methods.</p>
 <p class="p2"><br></p>
-<p class="p4">Every pattern class must respond to 'asStream'; however, most patterns do not directly implement asStream. Instead, they use the generic asStream implementation from <a href="../Pattern.html"><span class="s1">Pattern</span></a>.</p>
+<p class="p4">Every pattern class must respond to 'asStream'; however, most patterns do not directly implement asStream. Instead, they use the generic asStream implementation from <a href="../Patterns/Pattern.html"><span class="s1">Pattern</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>asStream { ^<span class="s2">Routine</span>({ <span class="s2">arg</span> inval; <span class="s2">this</span>.embedInStream(inval) }) }</p>
 <p class="p2"><br></p>
@@ -186,7 +186,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Writing patterns: other factors</b></p>
 <p class="p2"><br></p>
-<p class="p4">Pattern objects are supposed to be <i>stateless</i>, meaning that the pattern object itself should undergo no changes based on any stream running the pattern. (There are some exceptions, such as <a href="../Ppatmod.html"><span class="s7">Ppatmod</span></a>, which exists specifically to perform some modification on a pattern object. But, even this special case makes a separate copy of the pattern to be modified for each stream; the original pattern is insulated from the streams' behavior.) <i>Be very careful if you're thinking about breaking this rule</i>, and before doing so, think about whether there might be another way to accomplish the goal without breaking it.</p>
+<p class="p4">Pattern objects are supposed to be <i>stateless</i>, meaning that the pattern object itself should undergo no changes based on any stream running the pattern. (There are some exceptions, such as <a href="../Patterns/Ppatmod.html"><span class="s7">Ppatmod</span></a>, which exists specifically to perform some modification on a pattern object. But, even this special case makes a separate copy of the pattern to be modified for each stream; the original pattern is insulated from the streams' behavior.) <i>Be very careful if you're thinking about breaking this rule</i>, and before doing so, think about whether there might be another way to accomplish the goal without breaking it.</p>
 <p class="p2"><br></p>
 <p class="p4">Because of this rule, <i>all variables reflecting the state of a particular stream should be local to the embedInStream method</i>. If you look through existing pattern classes for examples, you will see in virtually every case that embedInStream does not alter the instance variables defined in the class. It uses them as parameters, but does not change them. Anything that changes while a stream is being evaluated is a local method variable.</p>
 <p class="p2"><br></p>
@@ -201,7 +201,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">...</p>
 <p class="p5">}</p>
 <p class="p2"><br></p>
-<p class="p4">Consider carefully whether a parameter can change in each 'next' call. If so, make a stream from that parameter and call .next(inval) on it for each iteration. Parameters that should not change, such as number of repeats, should call .value(inval) so that a function may be given. <a href="../Pwhite.html"><span class="s7">Pwhite</span></a> demonstrates both of these features.</p>
+<p class="p4">Consider carefully whether a parameter can change in each 'next' call. If so, make a stream from that parameter and call .next(inval) on it for each iteration. Parameters that should not change, such as number of repeats, should call .value(inval) so that a function may be given. <a href="../Patterns/Pwhite.html"><span class="s7">Pwhite</span></a> demonstrates both of these features.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Exercise for the reader:</b> Why does Pwhite(0.0, 1.0, inf) work, even with the asStream and next calls?</p>
 <p class="p2"><br></p>

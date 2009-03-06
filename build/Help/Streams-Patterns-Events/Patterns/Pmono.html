@@ -34,7 +34,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Pmono(synthDefName, patternPairs)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Plays one instance of a <a href="../ServerArchitecture/Synth.html"><span class="s1">Synth</span></a>.<span class="Apple-converted-space">  </span>The pattern pairs define changes in that one synth's controls. This node is created when entering a Pmono, and released when the Pmono terminates. There is just one node for the duration of the entire pattern, and it will sustain through each event. If a monophonic phrase requires staccato notes or re-articulation between some notes, see <a href="PmonoArtic.html"><span class="s2">PmonoArtic</span></a>.</p>
+<p class="p3">Plays one instance of a <a href="../../ServerArchitecture/Synth.html"><span class="s1">Synth</span></a>.<span class="Apple-converted-space">  </span>The pattern pairs define changes in that one synth's controls. This node is created when entering a Pmono, and released when the Pmono terminates. There is just one node for the duration of the entire pattern, and it will sustain through each event. If a monophonic phrase requires staccato notes or re-articulation between some notes, see <a href="PmonoArtic.html"><span class="s2">PmonoArtic</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p3">If event[<span class="s3">\id</span>] is not nil, Pmono simply directs its pattern changes to that node and does not create an extra synth.</p>
 <p class="p2"><br></p>
@@ -66,7 +66,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p8"><br></p>
 <p class="p3"><b>Note:</b></p>
-<p class="p3">A related approach is to instantiate a Synth yourself and then set its values by using an <a href="../Collections/Event.html"><span class="s1">Event</span></a> whose "type" is \set, as illustrated here. The user is responsible for ensuring proper synchronization between between Synth creation and pattern execution.</p>
+<p class="p3">A related approach is to instantiate a Synth yourself and then set its values by using an <a href="../../Collections/Event.html"><span class="s1">Event</span></a> whose "type" is \set, as illustrated here. The user is responsible for ensuring proper synchronization between between Synth creation and pattern execution.</p>
 <p class="p8"><br></p>
 <p class="p7">// First we create something to control</p>
 <p class="p4">x = {<span class="s4">|freq=440, amp=0.6|</span> <span class="s4">MoogFF</span>.ar(<span class="s4">PinkNoise</span>.ar(amp), freq).dup}.play;</p>
@@ -88,7 +88,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p3"><b>SynthDef variant support</b></p>
 <p class="p2"><br></p>
-<p class="p3">SynthDefs allow alternate sets of default values to be defined (see "Variants" in <a href="../ServerArchitecture/SynthDef.html"><span class="s8">SynthDef</span></a> help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:</p>
+<p class="p3">SynthDefs allow alternate sets of default values to be defined (see "Variants" in <a href="../../ServerArchitecture/SynthDef.html"><span class="s8">SynthDef</span></a> help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:</p>
 <p class="p2"><br></p>
 <p class="p9"><span class="s4">Pmono</span><span class="s7">(</span>'<b>synthDefName.variant</b>'<span class="s7">, pairs...)</span></p>
 </body>
