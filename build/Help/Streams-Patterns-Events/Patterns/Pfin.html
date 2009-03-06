@@ -7,65 +7,64 @@
 <meta name="Generator" content="Cocoa HTML Writer">
 <meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-span.s1 {font: 12.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {color: #001bb9}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000bf}
+span.s3 {color: #0000bf}
 span.s4 {color: #000000}
-span.s5 {color: #2c7014}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Pfin</b><span class="s1"><span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><b>Pfin</b></span> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>limit number of events embedded in a stream</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: FilterPattern</b></p>
+<p class="p1"><b>superclass: FilterPattern</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Pfin(count, pattern)</b></p>
+<p class="p1"><b>Pfin(count, pattern)</b></p>
 <p class="p2"><br></p>
-<p class="p3">embeds count elements of the pattern into the stream</p>
+<p class="p1">embeds <b>count</b> elements of the pattern into the stream</p>
 <p class="p2"><br></p>
-<p class="p3"><b>Note:</b> Pfin is intended for event patterns. After the count elements are embedded, the stream is called with a nil input value so that Pmono, Pfx and others can release resources. Ordinary value patterns should not be called in this case, so for value patterns, you should use <a href="Pfinval.html"><span class="s2">Pfinval</span></a> instead.</p>
+<p class="p1"><b>Note:</b> Pfin is intended for event patterns. After the count elements are embedded, the stream is called with a nil input value so that Pmono, Pfx and others can release resources. Ordinary value patterns should not be called in this case, so for value patterns, you should use <a href="Pfinval.html"><span class="s2">Pfinval</span></a> instead.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p4">(</p>
-<p class="p4"><span class="s3">var</span> a, b;</p>
-<p class="p4">a = <span class="s3">Pfin</span>(5, <span class="s3">Pseq</span>(#[1, 2, 3],<span class="s3">inf</span>));</p>
-<p class="p4">b = a.asStream;</p>
-<p class="p4">9.do({ b.next.postln; });</p>
-<p class="p4">)</p>
+<p class="p3">(</p>
+<p class="p3"><span class="s3">var</span> a, b;</p>
+<p class="p3">a = <span class="s3">Pfin</span>(5, <span class="s3">Pseq</span>(#[1, 2, 3],<span class="s3">inf</span>));</p>
+<p class="p3">b = a.asStream;</p>
+<p class="p3">9.do({ b.next.postln; });</p>
+<p class="p3">)</p>
 <p class="p2"><br></p>
-<p class="p5"><br></p>
-<p class="p3">Pfin used as a sequence of pitches</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p4">(</p>
-<p class="p6"><span class="s3">SynthDef</span><span class="s4">(</span>\help_sinegrain<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p4"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p4">)</p>
-<p class="p7"><br></p>
-<p class="p4">(</p>
-<p class="p4"><span class="s3">var</span> c, b;</p>
-<p class="p4">c = <span class="s3">Pn</span>(<span class="s3">Pfin</span>({ rrand(3, 5)}, <span class="s3">Pseq</span>([1, 2, 3, 4, 5, 6],<span class="s3">inf</span>)*4+65),<span class="s3">inf</span>);</p>
-<p class="p4">b = c.asStream;</p>
-<p class="p8">Routine<span class="s4">({</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, b.next.midicps]);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.12.wait;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>})</p>
-<p class="p4">}).play;</p>
-<p class="p4">)</p>
-<p class="p7"><br></p>
+<p class="p4"><br></p>
+<p class="p1">Pfin used as a sequence of pitches</p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p3">(</p>
+<p class="p5"><span class="s3">SynthDef</span><span class="s4">(</span>\help_sinegrain<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p3">)</p>
+<p class="p6"><br></p>
+<p class="p3">(</p>
+<p class="p3"><span class="s3">var</span> c, b;</p>
+<p class="p3">c = <span class="s3">Pn</span>(<span class="s3">Pfin</span>({ rrand(3, 5)}, <span class="s3">Pseq</span>([1, 2, 3, 4, 5, 6],<span class="s3">inf</span>)*4+65),<span class="s3">inf</span>);</p>
+<p class="p3">b = c.asStream;</p>
+<p class="p7">Routine<span class="s4">({</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, b.next.midicps]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.12.wait;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>})</p>
+<p class="p3">}).play;</p>
+<p class="p3">)</p>
+<p class="p6"><br></p>
 </body>
 </html>
