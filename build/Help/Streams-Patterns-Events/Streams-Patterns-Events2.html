@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.33">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica; min-height: 19.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
@@ -19,9 +19,8 @@ p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 span.s1 {color: #001bb9}
 span.s2 {color: #000000}
-span.s3 {color: #606060}
-span.s4 {color: #2c7014}
-span.s5 {text-decoration: underline}
+span.s3 {color: #2c7014}
+span.s4 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -160,7 +159,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p6">(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>s = <span class="s1">Server</span>.local;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">SynthDef</span>( <span class="s3">"Help-SPE2"</span>, { <span class="s1">arg</span> i_out=0, sustain=1, freq;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">SynthDef</span>(<span class="s3">\help_SPE2</span>, { <span class="s1">arg</span> i_out=0, sustain=1, freq;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> out;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out = <span class="s1">RLPF</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFSaw</span>.ar( freq ),</p>
@@ -200,9 +199,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span>];</p>
 <p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>( <span class="s3">"Help-SPE2"</span>, [ <span class="s4">\freq</span>, streams.at(0).next, <span class="s4">\sustain</span>, dur * durDiff<span class="Apple-converted-space">  </span>] );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>( <span class="s3">\help_SPE2</span>, [ <span class="s3">\freq</span>, streams.at(0).next, <span class="s3">\sustain</span>, dur * durDiff<span class="Apple-converted-space">  </span>] );</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>durDiff.do({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>( <span class="s3">"Help-SPE2"</span>, [ <span class="s4">\freq</span>, streams.at(1).next, <span class="s4">\sustain</span>, dur<span class="Apple-converted-space">  </span>] );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Synth</span>( <span class="s3">\help_SPE2</span>, [ <span class="s3">\freq</span>, streams.at(1).next, <span class="s3">\sustain</span>, dur<span class="Apple-converted-space">  </span>] );</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dur.wait;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>})</p>
@@ -210,7 +209,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">)</p>
 <p class="p3"><br></p>
 <p class="p4">To go to the next file:</p>
-<p class="p10"><span class="s5"><a href="Streams-Patterns-Events3.html">Streams-Patterns-Events3</a></span></p>
+<p class="p10"><span class="s4"><a href="Streams-Patterns-Events3.html">Streams-Patterns-Events3</a></span></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 </body>
