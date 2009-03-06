@@ -5,73 +5,76 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #326f17}
-span.s1 {color: #0019b7}
-span.s2 {font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #326f17}
+span.s4 {text-decoration: underline}
+span.s5 {color: #0000bf}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Plazy</b></p>
+<p class="p1"><span class="s1"><b>Plazy<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>instantiate new patterns from a function</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: Pattern</b></p>
+<p class="p1"><b>superclass: </b><a href="Pattern.html"><span class="s2">Pattern</span></a></p>
+<p class="p2"><br></p>
+<p class="p1">Plazy evaluates a function that returns a pattern and embeds it in a stream.</p>
+<p class="p2"><br></p>
+<p class="p1"><b>Plazy(func)</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>func:</b> A function that returns a pattern or any other valid pattern input</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">evaluates a function that returns a pattern and embeds it in a stream.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>Plazy(func)</b></p>
-<p class="p2"><br></p>
+<p class="p3"><span class="s3">see also: <a href="PlazyEnvir.html"><span class="s4">PlazyEnvir</span></a>, <a href="PlazyEnvirN.html"><span class="s4">PlazyEnvirN</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p4">(</p>
-<p class="p4">a = <span class="s1">Plazy</span>({<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>var x, y;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>x = Array.series(rrand(2, 4), [1, 100].choose, 1);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>Pshuf(x,1);</p>
+<p class="p4">a = <span class="s5">Plazy</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> x, y;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s5">Array</span>.series(rrand(2, 4), [1, 100].choose, 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Pshuf</span>(x,1);</p>
 <p class="p4">});</p>
-<p class="p4">x = Pn(a, inf).asStream;</p>
+<p class="p4">x = <span class="s5">Pn</span>(a, <span class="s5">inf</span>).asStream;</p>
 <p class="p4">30.do({ x.next.postln });</p>
 <p class="p4">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3">Plazy used to produce a sequence of pitches:</p>
+<p class="p1">Plazy used to produce a sequence of pitches:</p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="s2"><span class="Apple-converted-space"> </span></span>(</p>
-<p class="p5"><span class="s1">SynthDef</span><span class="s3">(</span>"help-sinegrain"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s1">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> env;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, <span class="s1">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p4"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p4">(</p>
+<p class="p5"><span class="s5">SynthDef</span><span class="s3">(</span>\help_sinegrain<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}).memStore;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
-<p class="p4">a = <span class="s1">Plazy</span>({<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span>var x, y;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>x = Array.series(rrand(2, 4), [1, 5].choose, 1);</p>
+<p class="p4">a = <span class="s5">Plazy</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> x, y;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s5">Array</span>.series(rrand(2, 4), [1, 5].choose, 1);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>x.put(x.size.rand, 8+0.1.rand2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span>Pseq(x,1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>(x,1);</p>
 <p class="p4">});</p>
-<p class="p4">x = Pn(a, inf).asStream;</p>
+<p class="p4">x = <span class="s5">Pn</span>(a, <span class="s5">inf</span>).asStream;</p>
 <p class="p6"><br></p>
 <p class="p7">Routine<span class="s3">({</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Synth</span>(<span class="s4">"help-sinegrain"</span>, [<span class="s5">\freq</span>, (x.next*5+70).midicps]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Synth</span>(<span class="s6">\help_sinegrain</span>, [<span class="s6">\freq</span>, (x.next*5+70).midicps]);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>0.13.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>})</p>
 <p class="p4">}).play;</p>
@@ -80,18 +83,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">// using event streams</p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
-<p class="p4">a = <span class="s1">Plazy</span>({<span class="Apple-converted-space"> </span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> x, y;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s1">Array</span>.series(rrand(2, 4), [1, 5].choose, 1);</p>
+<p class="p4">a = <span class="s5">Plazy</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> x, y;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s5">Array</span>.series(rrand(2, 4), [1, 5].choose, 1);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>x.put(x.size.rand, 8+0.1.rand2);</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(</span></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>'help-sinegrain'<span class="s3">,</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.12,</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s1">Pseq</span>(x, 2)</p>
+<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\help_sinegrain<span class="s3">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, 0.12,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">\degree</span>, <span class="s5">Pseq</span>(x, 2)</p>
 <p class="p4"><span class="Apple-tab-span">	</span>)</p>
 <p class="p4">});</p>
 <p class="p6"><br></p>
-<p class="p4"><span class="s1">Pn</span>(a, <span class="s1">inf</span>).play;</p>
+<p class="p4"><span class="s5">Pn</span>(a, <span class="s5">inf</span>).play;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
