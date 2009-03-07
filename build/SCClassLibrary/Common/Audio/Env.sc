@@ -222,20 +222,21 @@ Env {
 //	}
 
 	test { arg releaseTime = 3.0;
-		var id, name, s;
+		var id, def, s;
 		s = Server.default;
+		if(s.serverRunning.not) { "Server not running.".warn; ^this };
 		id = s.nextNodeID;
-		name = "env_test_" ++ id;
-		SynthDef(name, { arg gate=1;
-			Out.ar(0,
-				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
-			)
-		}).send(s);
-		SystemClock.sched(0.2, {
-			s.sendBundle(s.latency, [9, name, id]);
+		s.bind {
+			def = { arg gate=1;
+				Out.ar(0,
+					SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
+				)
+			}.asSynthDef;
+			def.send(s);
+			s.sync;
+			s.sendBundle(s.latency, [9, def.name, id]);
 			if(this.isSustained) { s.sendBundle(s.latency + releaseTime, [15, id, 0, 0]) };
-			nil
-		});
+		};
 	}
 
 
