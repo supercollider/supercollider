@@ -52,9 +52,9 @@ Here is a simple example of its use:
 */
 
 +Event {
-	*checkIDs { | id |
+	*checkIDs { | id, server |
 		if (id.isNil) {^nil};
-		if (id.asArray.first < 1000) { ^id};
+		if (id.asArray.first < (if(server.notNil) { server.options.initialNodeID } { 1000 })) { ^id};
 		^nil
 	}
 	
