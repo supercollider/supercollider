@@ -318,7 +318,7 @@ MIDIIn {
 }
 	
 MIDIOut {
-	var <>port, <>uid, <>latency=0.1;
+	var <>port, <>uid, <>latency=0.2;
 	
 	*new { arg port, uid;
 		if(thisProcess.platform.name != \linux) {
