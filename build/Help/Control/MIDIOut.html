@@ -36,11 +36,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>*new(port, uid)</b></p>
 <p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>port is the index of the MIDIEndPoint in the MIDIClient.destinations array.</p>
-<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>uid is optional, retained for backward compatibility</p>
-<p class="p3"><span class="Apple-tab-span">	</span>if uid is specified:</p>
-<p class="p3"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>on OS X the uid should be the uid of that port</p>
+<p class="p4"><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>Mac OSX / Windows: uid is optional; if specified, it should be the uid of that port</p>
 <p class="p3"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>ie. MIDIClient.destinations[port].uid</p>
-<p class="p3"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>On Linux using the uid is optional as described below</p>
+<p class="p3"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>If you don't provide a uid, the correct uid will be filled in for you (easier)</p>
+<p class="p4"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span> Linux: using the uid is optional as described below</p>
 <p class="p4"><br></p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>*newByName(deviceName,portName)</b></p>
@@ -59,7 +60,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>OS X does not need to connect. On Linux it is an optional feature (see below).</p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>latency_( time )</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span>This sets the latency with which a midi event is sent out. Per default this is set to 0.1, in order to be equal to the Server.latency.<br>
+<p class="p3"><span class="Apple-tab-span">	</span>This sets the latency with which a midi event is sent out. Per default this is set to 0.2, in order to be equal to the Server.latency.<br>
 NOTE: on Linux there seems to be an ALSA bug if the latency is larger than 0. If MIDIOut does not seem to work, set the latency to 0.</p>
 <p class="p4"><br></p>
 <p class="p3"><span class="Apple-converted-space"> </span><b>noteOn</b> ( chan, note, veloc )</p>
