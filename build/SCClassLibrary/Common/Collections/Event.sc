@@ -782,7 +782,7 @@ Event : Environment {
 					group = ~group.asControlInput;
 					addAction = Node.actionNumberFor(~addAction);
 					~server = server= ~server ?? {Server.default};
-					ids = Event.checkIDs(~id);
+					ids = Event.checkIDs(~id, server);
 					if (ids.isNil) { ids = ~id = server.nextNodeID };
 					if ((addAction == 0) || (addAction == 3) ) {
 						ids = ids.asArray.reverse;
@@ -818,7 +818,7 @@ Event : Environment {
 				};
 			
 				msgs = msgFunc.valueEnvir.flop;
-				ids = Event.checkIDs(~id);
+				ids = Event.checkIDs(~id, server);
 				if (ids.isNil ) { ids = msgs.collect { server.nextNodeID } };
 				bndl = ids.collect { |id, i|
 					[\s_new, instrumentName, id, addAction, group]
