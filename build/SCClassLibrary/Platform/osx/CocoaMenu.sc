@@ -1,6 +1,6 @@
 CocoaMenuItem {
 	classvar <topLevelItems;
-	classvar <default;
+	classvar default;
 
 	var dataptr;
 	var <name;
@@ -12,10 +12,16 @@ CocoaMenuItem {
 	
 	*clearCustomItems {
 		topLevelItems.copy.do({|item| item.remove });
+		default = nil;
 	}
 	
 	*initDefaultMenu {
 		default = SCMenuGroup(nil, "Library", 7);
+	}
+	
+	*default {
+		if(default.isNil, {this.initDefaultMenu});
+		^default;
 	}
 	
 	*add { |names, action|
