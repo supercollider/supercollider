@@ -10,9 +10,13 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {text-decoration: underline}
+span.s2 {color: #001bb9}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -23,15 +27,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">A class representing complex numbers.</p>
 <p class="p2"><br></p>
+<p class="p1">Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s3">Creation</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Creation</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>new(real, imag)</b></p>
 <p class="p2"><br></p>
 <p class="p1">Create a new complex number with the given real and imaginary parts.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s3">Accessing</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Accessing</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>&lt;&gt;real</b></p>
 <p class="p2"><br></p>
@@ -42,7 +49,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">The imaginary part of the number.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s3">Math</span></b></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Math</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>+ aNumber</b></p>
 <p class="p2"><br></p>
@@ -73,7 +81,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Answer the complex conjugate.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b><span class="s3">Conversion</span></b></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>Conversion</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>magnitude</b></p>
 <p class="p2"><br></p>
@@ -110,6 +120,43 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>asFloat</b></p>
 <p class="p2"><br></p>
 <p class="p1">Answer real part as Float.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">// example</p>
+<p class="p5"><br></p>
+<p class="p6">a = <span class="s2">Complex</span>(0, 1);</p>
+<p class="p4"><span class="s3">a * a; </span>// returns Complex(-1, 0);</p>
+<p class="p5"><br></p>
+<p class="p4">// julia set approximation</p>
+<p class="p6">f = { <span class="s2">|z|</span> z * z + <span class="s2">Complex</span>(0.70176, 0.3842) };</p>
+<p class="p5"><br></p>
+<p class="p6">(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> n = 80, xs = 400, ys = 400, dx = xs / n, dy = ys / n, zoom = 5, offset = -0.5;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> field = { <span class="s2">|x|</span> { <span class="s2">|y|</span> <span class="s2">Complex</span>(x / n + offset * zoom, y / n + offset * zoom) } ! n } ! n;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>(<span class="s4">"Julia set"</span>, bounds:<span class="s2">Rect</span>(200, 200, xs, ys)).front;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w.view.background_(<span class="s2">Color</span>.black);</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.drawHook = {</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.do { <span class="s2">|x|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n.do { <span class="s2">|y|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> z = field[x][y];</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = f.(z);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>field[x][y] = z;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.color = <span class="s2">Color</span>.gray(z.rho.linlin(-100, 100, 1, 0));</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.addRect(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Rect</span>(x * dx, y * dy, dx, dy)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.fill</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fork({ 6.do { w.refresh; 2.wait } }, <span class="s2">AppClock</span>)</p>
+<p class="p6">)</p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
+<p class="p5"><br></p>
 <p class="p2"><br></p>
 </body>
 </html>
