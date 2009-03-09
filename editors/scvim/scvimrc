@@ -41,21 +41,21 @@ au Filetype supercollider,supercollider_help let b:match_words = '(:),[:],{:}'
 "supercollider vim keybindings
 "^R" gives contents of register "
 
-au Filetype supercollider,supercollider_help nmap <buffer> K yiw :call SChelp(""")
-au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SChelp(""")
-au Filetype supercollider,supercollider_help nmap <buffer>  yiw :call SCdef(""")
-au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SCdef(""")
-au Filetype supercollider,supercollider_help nmap <buffer> <F5> :call SClang_block()
-au Filetype supercollider,supercollider_help imap <buffer> <F5> :call SClang_block()a
-au Filetype supercollider,supercollider_help vmap <buffer> <F5> :call SClang_send()
-au Filetype supercollider,supercollider_help vmap <buffer> <F6> :call SClang_send()
-au Filetype supercollider,supercollider_help nmap <buffer> <F6> :call SClang_send()
-au Filetype supercollider,supercollider_help imap <buffer> <F6> :call SClang_send()a
-au Filetype supercollider,supercollider_help nmap <buffer> <F7> :call SClang_TempoClock_clear()
-au Filetype supercollider,supercollider_help imap <buffer> <F7> :call SClang_TempoClock_clear()a
-au Filetype supercollider,supercollider_help nmap <buffer> <F8> :call SClang_free("s")
-au Filetype supercollider,supercollider_help imap <buffer> <F8> :call SClang_free("s")a
-au Filetype supercollider,supercollider_help nmap <buffer> <F12> :call SClang_thisProcess_stop()
-au Filetype supercollider,supercollider_help imap <buffer> <F12> :call SClang_thisProcess_stop()a
+au Filetype supercollider,supercollider_help nmap <buffer> K yiw :call SChelp(""")<CR>
+au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SChelp(""")<CR>
+au Filetype supercollider,supercollider_help nmap <buffer>  yiw :call SCdef(""")<CR>
+au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SCdef(""")<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> <F5> :call SClang_block()<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F5> :call SClang_block()<CR>a
+au Filetype supercollider,supercollider_help vmap <buffer> <F5> :call SClang_send()<CR>
+au Filetype supercollider,supercollider_help vmap <buffer> <F6> :call SClang_send()<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> <F6> :call SClang_send()<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F6> :call SClang_send()<CR>a
+au Filetype supercollider,supercollider_help nmap <buffer> <F7> :call SClang_TempoClock_clear()<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F7> :call SClang_TempoClock_clear()<CR>a
+au Filetype supercollider,supercollider_help nmap <buffer> <F8> :call SClang_free("s")<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F8> :call SClang_free("s")<CR>a
+au Filetype supercollider,supercollider_help nmap <buffer> <F12> :call SClang_thisProcess_stop()<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F12> :call SClang_thisProcess_stop()<CR>a
 
 "end of scvim (supercollider vim)
