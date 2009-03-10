@@ -1128,6 +1128,11 @@ if is_installing():
         env, 'build/Help',
         pkg_data_dir(INSTALL_PREFIX),
         HELP_FILE_RE, 1))
+    # example files
+    env.Alias('install-library', install_dir(
+        env, 'build/examples',
+        pkg_data_dir(INSTALL_PREFIX),
+        HELP_FILE_RE, 1))
     # scel
     if env['SCEL']:
         env.Alias('install-library', install_dir(
