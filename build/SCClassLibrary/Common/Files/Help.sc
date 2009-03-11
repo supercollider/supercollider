@@ -404,6 +404,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 		error.reportError;
 		"\n\nA discrepancy was found in the help tree.".postln;
 		if(allowCached) {
+			"rm \"%\"".format(cachePath).unixCmd;
 			"The help tree cache may be out of sync with the file system. Rebuilding cache. Please reopen the Help GUI when this is finished.".postln;
 			this.rebuildTree;
 			win.close;
