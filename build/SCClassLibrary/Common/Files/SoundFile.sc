@@ -320,7 +320,7 @@ SoundFile {
 				server = ~server ?? { Server.default};
 				if(~instrument.isNil) {
 					SynthDef(defname, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-						Out.ar(out, DiskIn.ar(numChannels, bufnum) 
+						Out.ar(out, VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum) ) 
 						* Linen.kr(gate, ar, 1, dr, 2)
 						* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
 					}).memStore;
