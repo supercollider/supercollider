@@ -18,11 +18,10 @@ p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 span.s1 {color: #0000bf}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #007300}
-span.s5 {color: #606060}
-span.s6 {font: 12.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #007300}
+span.s4 {color: #606060}
+span.s5 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -47,12 +46,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">// play repeated notes with a different rhythmic value per new pitch</p>
 <p class="p5">// using Pstutter</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// making 'n' a separate stream so that degree and dur can share it</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\n</span>, <span class="s2">Pwhite</span>(3, 10, <span class="s2">inf</span>),</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\degree</span><span class="s3">, </span>Pstutter<span class="s3">(</span>Pkey<span class="s3">(</span><span class="s4">\n</span><span class="s3">), </span>Pwhite<span class="s3">(-4, 11, </span>inf<span class="s3">)),</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s2">Pstutter</span>(<span class="s2">Pkey</span>(<span class="s4">\n</span>), <span class="s2">Pwhite</span>(0.1, 0.4, <span class="s2">inf</span>)),</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>\legato<span class="s3">, 0.3</span></p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// making 'n' a separate stream so that degree and dur can share it</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\n</span>, <span class="s1">Pwhite</span>(3, 10, <span class="s1">inf</span>),</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">\degree</span><span class="s2">, </span>Pstutter<span class="s2">(</span>Pkey<span class="s2">(</span><span class="s3">\n</span><span class="s2">), </span>Pwhite<span class="s2">(-4, 11, </span>inf<span class="s2">)),</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pstutter</span>(<span class="s1">Pkey</span>(<span class="s3">\n</span>), <span class="s1">Pwhite</span>(0.1, 0.4, <span class="s1">inf</span>)),</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>\legato<span class="s2">, 0.3</span></p>
 <p class="p6">).play;</p>
 <p class="p9"><br></p>
 <p class="p6">p.stop;</p>
@@ -63,26 +62,31 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Plazy builds a new Pbind for each iteration</p>
 <p class="p5">// Pfin cuts off the Pbind when it's time for a new value</p>
 <p class="p9"><br></p>
-<p class="p6">p = <span class="s2">Pn</span>(</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>Plazy<span class="s3"> {</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s3">(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pfin</span>(rrand(3, 10), rrand(-4, 11)),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, rrand(0.1, 0.4)<span class="Apple-converted-space"> </span></p>
+<p class="p6">p = <span class="s1">Pn</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>Plazy<span class="s2"> {</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pbind<span class="s2">(</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s1">Pfin</span>(rrand(3, 10), rrand(-4, 11)),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, rrand(0.1, 0.4)<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><span class="Apple-tab-span">	</span>},</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>inf</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>inf</p>
 <p class="p6">).play;</p>
+<p class="p9"><br></p>
+<p class="p6">p.stop;</p>
+<p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p5">// using Pclutch</p>
 <p class="p5">// the rule is, when degree changes, dur should change also</p>
 <p class="p5">// if Pdiff returns 0, degree has not changed</p>
 <p class="p5">// so here, nonzero Pdiff values "connect" the clutch and allow a new dur to be generated</p>
 <p class="p5">// otherwise the old one is held</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pstutter</span>(<span class="s2">Pwhite</span>(3, 10, <span class="s2">inf</span>), <span class="s2">Pwhite</span>(-4, 11, <span class="s2">inf</span>)),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s2">Pclutch</span>(<span class="s2">Pwhite</span>(0.1, 0.4, <span class="s2">inf</span>), <span class="s2">Pdiff</span>(<span class="s2">Pkey</span>(<span class="s4">\degree</span>)).abs &gt; 0),</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>\legato<span class="s3">, 0.3</span></p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s1">Pstutter</span>(<span class="s1">Pwhite</span>(3, 10, <span class="s1">inf</span>), <span class="s1">Pwhite</span>(-4, 11, <span class="s1">inf</span>)),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pclutch</span>(<span class="s1">Pwhite</span>(0.1, 0.4, <span class="s1">inf</span>), <span class="s1">Pdiff</span>(<span class="s1">Pkey</span>(<span class="s3">\degree</span>)).abs &gt; 0),</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>\legato<span class="s2">, 0.3</span></p>
 <p class="p6">).play;</p>
+<p class="p9"><br></p>
+<p class="p6">p.stop;</p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p4"><b>Constraint (or interruption) patterns</b></p>
@@ -99,18 +103,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Use Pconst or Pfindur to create 4-beat segments with randomized rhythm</p>
 <p class="p5">// Pconst and Pfindur both can ensure the total rhythm doesn't go above 4.0</p>
 <p class="p9"><br></p>
-<p class="p7"><span class="s3">p = </span>Pn<span class="s3">(</span>Pbind<span class="s3">(</span></p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// always a low C on the downbeat</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pseq</span>([-7, <span class="s2">Pwhite</span>(0, 11, <span class="s2">inf</span>)], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s2">Pconst</span>(4, <span class="s2">Pwhite</span>(1, 4, <span class="s2">inf</span>) * 0.25)</p>
-<p class="p6">), <span class="s2">inf</span>).play;</p>
+<p class="p7"><span class="s2">p = </span>Pn<span class="s2">(</span>Pbind<span class="s2">(</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// always a low C on the downbeat</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s1">Pseq</span>([-7, <span class="s1">Pwhite</span>(0, 11, <span class="s1">inf</span>)], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pconst</span>(4, <span class="s1">Pwhite</span>(1, 4, <span class="s1">inf</span>) * 0.25)</p>
+<p class="p6">), <span class="s1">inf</span>).play;</p>
 <p class="p9"><br></p>
 <p class="p6">p.stop;</p>
 <p class="p9"><br></p>
-<p class="p7"><span class="s3">p = </span>Pn<span class="s3">(</span>Pfindur<span class="s3">(4, </span>Pbind<span class="s3">(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s2">Pseq</span>([-7, <span class="s2">Pwhite</span>(0, 11, <span class="s2">inf</span>)], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s2">Pwhite</span>(1, 4, <span class="s2">inf</span>) * 0.25</p>
-<p class="p6">)), <span class="s2">inf</span>).play;</p>
+<p class="p7"><span class="s2">p = </span>Pn<span class="s2">(</span>Pfindur<span class="s2">(4, </span>Pbind<span class="s2">(</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\degree</span>, <span class="s1">Pseq</span>([-7, <span class="s1">Pwhite</span>(0, 11, <span class="s1">inf</span>)], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pwhite</span>(1, 4, <span class="s1">inf</span>) * 0.25</p>
+<p class="p6">)), <span class="s1">inf</span>).play;</p>
 <p class="p9"><br></p>
 <p class="p6">p.stop;</p>
 <p class="p2"><br></p>
@@ -122,33 +126,33 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p5">// in this case, the pattern stops by reaching maxdur</p>
 <p class="p5">// elapsed time = 4</p>
-<p class="p6"><span class="s2">var</span><span class="Apple-tab-span">	</span>startTime;</p>
-<p class="p7"><span class="s3">p = (</span>Psync<span class="s3">(</span>Pbind<span class="s3">(</span></p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\dur</span><span class="s3">, 0.25,<span class="Apple-tab-span">	</span></span>// total duration = infinite</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\time</span>, <span class="s2">Pfunc</span> { startTime = startTime ? (<span class="s2">thisThread</span>.clock.beats.debug(<span class="s5">"time"</span>)) }</p>
-<p class="p6">), 1, 4) ++ <span class="s2">Pfuncn</span>({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">thisThread</span>.clock.beats.debug(<span class="s5">"finish time"</span>);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>(<span class="s2">thisThread</span>.clock.beats - startTime).debug(<span class="s5">"elapsed"</span>);</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>nil</p>
+<p class="p6"><span class="s1">var</span><span class="Apple-tab-span">	</span>startTime;</p>
+<p class="p7"><span class="s2">p = (</span>Psync<span class="s2">(</span>Pbind<span class="s2">(</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">\dur</span><span class="s2">, 0.25,<span class="Apple-tab-span">	</span></span>// total duration = infinite</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\time</span>, <span class="s1">Pfunc</span> { startTime = startTime ? (<span class="s1">thisThread</span>.clock.beats.debug(<span class="s4">"time"</span>)) }</p>
+<p class="p6">), 1, 4) ++ <span class="s1">Pfuncn</span>({</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">thisThread</span>.clock.beats.debug(<span class="s4">"finish time"</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>(<span class="s1">thisThread</span>.clock.beats - startTime).debug(<span class="s4">"elapsed"</span>);</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>nil</p>
 <p class="p6">}, 1)).play;</p>
 <p class="p6">)</p>
 <p class="p9"><br></p>
 <p class="p6">(</p>
 <p class="p5">// in this case, the pattern stops itself before maxdur (4)</p>
 <p class="p5">// the Pbind's duration (1.25) gets rounded up to 2 (next multiple of 1)</p>
-<p class="p6"><span class="s2">var</span><span class="Apple-tab-span">	</span>startTime;</p>
-<p class="p7"><span class="s3">p = (</span>Psync<span class="s3">(</span>Pbind<span class="s3">(</span></p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\dur</span><span class="s3">, </span><span class="s2">Pn</span><span class="s3">(0.25, 5),<span class="Apple-tab-span">	</span></span>// total duration = 0.25 * 5 = 1.25</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\time</span>, <span class="s2">Pfunc</span> { startTime = startTime ? (<span class="s2">thisThread</span>.clock.beats.debug(<span class="s5">"time"</span>)) }</p>
-<p class="p6">), 1, 4) ++ <span class="s2">Pfuncn</span>({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">thisThread</span>.clock.beats.debug(<span class="s5">"finish time"</span>);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>(<span class="s2">thisThread</span>.clock.beats - startTime).debug(<span class="s5">"elapsed"</span>);</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>nil</p>
+<p class="p6"><span class="s1">var</span><span class="Apple-tab-span">	</span>startTime;</p>
+<p class="p7"><span class="s2">p = (</span>Psync<span class="s2">(</span>Pbind<span class="s2">(</span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s3">\dur</span><span class="s2">, </span><span class="s1">Pn</span><span class="s2">(0.25, 5),<span class="Apple-tab-span">	</span></span>// total duration = 0.25 * 5 = 1.25</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s3">\time</span>, <span class="s1">Pfunc</span> { startTime = startTime ? (<span class="s1">thisThread</span>.clock.beats.debug(<span class="s4">"time"</span>)) }</p>
+<p class="p6">), 1, 4) ++ <span class="s1">Pfuncn</span>({</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">thisThread</span>.clock.beats.debug(<span class="s4">"finish time"</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>(<span class="s1">thisThread</span>.clock.beats - startTime).debug(<span class="s4">"elapsed"</span>);</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>nil</p>
 <p class="p6">}, 1)).play;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_060_Filter_Patterns.html"><span class="s6">PG_060_Filter_Patterns</span></a></span></p>
-<p class="p10"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_06b_Time_Based_Patterns.html"><span class="s6">PG_06b_Time_Based_Patterns</span></a></span></p>
+<p class="p10"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_060_Filter_Patterns.html"><span class="s5">PG_060_Filter_Patterns</span></a></span></p>
+<p class="p10"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_06b_Time_Based_Patterns.html"><span class="s5">PG_06b_Time_Based_Patterns</span></a></span></p>
 </body>
 </html>
