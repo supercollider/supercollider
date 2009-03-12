@@ -60,7 +60,7 @@ Function : AbstractFunction {
 			var val = envir[name];
 			val !? { prototypeFrame[i] = val };
 		};
-		postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
+	//	postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
 
 		// evaluate a function, using arguments from the supplied environment
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
