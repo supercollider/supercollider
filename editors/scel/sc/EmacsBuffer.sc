@@ -171,9 +171,10 @@ EmacsEditableField : EmacsWidget {
 
 EmacsNumber : EmacsWidget {
 	var <>action, <>spec, <value;
-	*new {|buffer, tag, spec, action, value=0|
+	*new {|buffer, tag, spec, action, value=0,size=10|
 		^super.new(buffer, \number, ':tag', tag,
 			':format', "%{%t%}: %v",
+			':size', size?\nil,
 			':min', spec.minval,
 			':max', spec.maxval,
 			':action',
