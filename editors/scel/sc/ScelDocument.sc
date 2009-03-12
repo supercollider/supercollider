@@ -327,7 +327,12 @@ ScelDocument : Document{
 	}
 	
 	*current {
-		^EmacsDocument.current.sceld;
+		var cur = EmacsDocument.current;
+		if ( cur.isNil ){
+			^cur;
+		}{
+			^cur.sceld;
+		}
 	}	
 
 	*prGetIndexOfListener{
