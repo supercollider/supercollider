@@ -5,22 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019b7}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
-span.s3 {color: #0019b7}
-span.s4 {color: #326f17}
-span.s5 {font: 12.0px Helvetica}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
+span.s5 {color: #007300}
+span.s6 {color: #0000bf}
+span.s7 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -55,17 +60,27 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p6">// when passing arguments:</p>
-<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n, 0, 0, <span class="s4">\freq</span>, 850);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_set"</span>, n, <span class="s4">\freq</span>, 500);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
+<p class="p9">// when passing arguments:</p>
+<p class="p10"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n, 0, 0, <span class="s1">"freq"</span>, 850);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_set"</span>, n, <span class="s1">"freq"</span>, 500);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p6">// it is</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s1">"default"</span>, [<span class="s4">\freq</span>, 850]);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.set(<span class="s4">\freq</span>, 500)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p9">// note that Symbols may be used instead of Strings:</p>
+<p class="p10"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\s_new</span>, <span class="s5">\default</span>, n, 0, 0, <span class="s5">\freq</span>, 850);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\n_set</span>, n, <span class="s5">\freq</span>, 500);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\n_free</span>, n);</p>
+<p class="p11"><br></p>
+<p class="p9">// and:</p>
+<p class="p10"><span class="Apple-tab-span">	</span>n = <span class="s6">Synth</span>(<span class="s5">\default</span>, [<span class="s5">\freq</span>, 850]);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>n.set(<span class="s5">\freq</span>, 500)</p>
+<p class="p10"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><br></p>
 <p class="p3">The answer to the question of whether one should work with <b>node objects </b>or <b>directly with messages</b> depends to some extent on context, and to some extent is a matter of personal taste.</p>
 <p class="p4"><br></p>
@@ -73,14 +88,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3">In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s1">"grain"</span><span class="s2">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s1">"grain"</span><span class="s2">, {<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">Line</span>.kr(0.1, 0, 0.01, doneAction:2) * <span class="s3">FSinOsc</span>.ar(12000))</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>(</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>20.do({</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"grain"</span>, -1);<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.01.wait;</p>

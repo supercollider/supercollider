@@ -10,29 +10,33 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
-p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica}
-p.p18 {margin: 0.0px 0.0px 0.0px 29.0px; text-indent: -29.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-span.s1 {color: #001bb9}
-span.s2 {color: #ad140d}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {color: #0000bf}
+span.s2 {color: #bf0000}
 span.s3 {color: #000000}
-span.s4 {color: #606060}
-span.s5 {color: #2c7014}
-span.s6 {font: 9.0px Monaco; color: #2c7014}
-span.s7 {text-decoration: underline}
+span.s4 {color: #0000bf}
+span.s5 {color: #606060}
+span.s6 {color: #007300}
+span.s7 {color: #0000bf}
+span.s8 {color: #bf0000}
+span.s9 {color: #007300}
+span.s10 {font: 9.0px Monaco; color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -66,10 +70,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Get the definition ( <a href="FunctionDef.html"><span class="s1">FunctionDef</span></a> ) of the Function.</p>
 <p class="p2"><br></p>
+<p class="p3"><b>isClosed</b></p>
+<p class="p2"><br></p>
+<p class="p3">returns true if the function is closed, i.e. has no external references and can thus be converted to a compile string safely.</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Evaluation</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>value(...args)</b></p>
+<p class="p3"><b>value(... args)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.</p>
 <p class="p2"><br></p>
@@ -78,7 +86,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>valueArray(..args..)</b></p>
+<p class="p3"><b>valueArray(... args)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method.</p>
 <p class="p2"><br></p>
@@ -90,7 +98,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">{ <span class="s1">|a, b, c, d|</span> [a, b, c, d].postln }.valueArray(9, 10, [1, 2, 3]);</p>
 <p class="p9"><br></p>
-<p class="p3"><b>valueEnvir(...args)</b></p>
+<p class="p3"><b>valueEnvir(... args)</b></p>
 <p class="p2"><br></p>
 <p class="p3">As value above. Unsupplied argument names are looked up in the current <b>Environment</b>.</p>
 <p class="p2"><br></p>
@@ -103,16 +111,33 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">)</p>
 <p class="p9"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>valueArrayEnvir(..args..)</b></p>
+<p class="p3"><b>valueArrayEnvir(... args)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current <b>Environment</b>.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>valueWithEnvir(envir)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Evaluate the function, using arguments from the supplied environment</p>
+<p class="p3">This is slightly faster than <b>valueEnvir</b> and does not require replacing the <b>currentEnvironment</b></p>
+<p class="p2"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s1">e = Environment</span>.make({<span class="s1"> </span>~a = 3; ~b = 10 });</p>
+<p class="p5">{ <span class="s1">|a, b|</span> (a * b) }.valueWithEnvir(e);</p>
+<p class="p5">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>functionPerformList(selector, arglist)</b></p>
+<p class="p2"><br></p>
+<p class="p3">For Function, this behaves the same as valueArray(arglist). It is used<span class="Apple-converted-space">  </span>where Functions and other objects should behave differently to value, such as in the objecr prototyping implementation of <a href="../../Collections/Environment.html"><span class="s4">Environment</span></a>.</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>loop</b></p>
 <p class="p2"><br></p>
 <p class="p3">Repeat this function. Useful with <b>Task</b> and Clocks.</p>
 <p class="p2"><br></p>
-<p class="p5">t = <span class="s1">Task</span>({ { <span class="s4">"I'm loopy"</span>.postln; 1.wait;}.loop });</p>
+<p class="p5">t = <span class="s1">Task</span>({ { <span class="s5">"I'm loopy"</span>.postln; 1.wait;}.loop });</p>
 <p class="p5">t.start;</p>
 <p class="p5">t.stop;</p>
 <p class="p2"><br></p>
@@ -145,6 +170,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">return the sum of n values produced.</p>
 <p class="p2"><br></p>
 <p class="p5">{ 4.rand }.sum(8);</p>
+<p class="p6"><br></p>
+<p class="p3"><b>choose</b><span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3">evaluates the function. This makes it polymorphic to <a href="../../Collections/SequenceableCollection.html">SequenceableCollection</a>, <a href="../../Collections/Bag.html"><span class="s4">Bag</span></a> and <a href="../../Collections/Set.html">Set</a>.</p>
+<p class="p6"><br></p>
+<p class="p5">[{ 100.rand }, [20, 30, 40]].collect(_.choose);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>bench(print)</b></p>
@@ -156,9 +187,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3"><b>fork(clock, quant, stackSize)</b></p>
 <p class="p2"><br></p>
-<p class="p3">Returns a Routine using the receiver as it's function, and plays it in a <b>TempoClock</b>.</p>
+<p class="p3">Returns a Routine using the receiver as it's function, and plays it in a <a href="../../Scheduling/TempoClock.html"><span class="s4">TempoClock</span></a>.</p>
 <p class="p2"><br></p>
-<p class="p5">{ 4.do({ <span class="s4">"Threadin..."</span>.postln; 1.wait;}) }.fork;</p>
+<p class="p5">{ 4.do({ <span class="s5">"Threadin..."</span>.postln; 1.wait;}) }.fork;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p3"><b>forkIfNeeded(clock, quant, stackSize)</b></p>
+<p class="p2"><br></p>
+<p class="p3">If needed, creates a new Routine to evaluate the function in, if the message is called within a routine already, it simply evaluates it.</p>
+<p class="p2"><br></p>
+<p class="p12">f = { 4.do({ <span class="s5">"Threadin..."</span>.postln; 1.wait;}) };</p>
+<p class="p12">f.forkIfNeeded;</p>
+<p class="p12">{ <span class="s5">"we are now in a routine"</span>.postln; 1.wait; f.forkIfNeeded }.fork;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>block</b></p>
@@ -174,7 +214,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3"><b>thunk</b></p>
 <p class="p6"><br></p>
-<p class="p3">Return a Thunk, which is an unevaluated value that can be used in calculations<span class="Apple-converted-space"> </span></p>
+<p class="p3">Return a <a href="Thunk.html"><span class="s4">Thunk</span></a>, which is an unevaluated value that can be used in calculations<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p5">x = thunk { 4.rand };</p>
 <p class="p5">x.value;</p>
@@ -191,7 +231,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p3"><b>flopEnvir</b></p>
+<p class="p3"><b>envirFlop</b></p>
 <p class="p2"><br></p>
 <p class="p3">like flop, but implements an environment argument passing (valueEnvir).<span class="Apple-converted-space"> </span></p>
 <p class="p3">Less efficient in generation than flop, but not a big difference in evaluation.</p>
@@ -199,25 +239,63 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">f = { <span class="s1">|a|</span> if(a &gt; 0) { a + 1 } { -<span class="s1">inf</span> } }.envirFlop;</p>
 <p class="p5">e = (a: [20, 40]);</p>
 <p class="p5">e.use { f.value }</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><b>inEnvir(envir)</b></p>
+<p class="p2"><br></p>
+<p class="p3">returns an "environment-safe" function. See <a href="../../Collections/Environment.html"><span class="s4">Environment</span></a> for more details.</p>
+<p class="p2"><br></p>
+<p class="p4">// prints nil because ~a is read from topEnvironment, not e</p>
+<p class="p5">e = (a: <span class="s5">"got it"</span>, f: { { ~a.postln }.defer(0.5) });</p>
+<p class="p5">e.use { e.f };</p>
+<p class="p6"><br></p>
+<p class="p4">// prints "got it" because { ~a.postln } is now bound to the e environment</p>
+<p class="p5">e = (a: <span class="s5">"got it"</span>, f: { { ~a.postln }.inEnvir.defer(0.5) });</p>
+<p class="p5">e.use { e.f };</p>
+<p class="p6"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>case(cases)</b></p>
 <p class="p2"><br></p>
 <p class="p3">Function implements a <b>case </b>method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Unlike Object-switch, this is inlined and is therefore just as efficient as nested if statements.</p>
-<p class="p12"><br></p>
+<p class="p13"><br></p>
 <p class="p5">(</p>
 <p class="p5"><span class="s1">var</span> i, x, z;</p>
 <p class="p5">z = [0, 1, 1.1, 1.3, 1.5, 2];</p>
 <p class="p5">i = z.choose;</p>
 <p class="p5">x = case</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1 } <span class="Apple-converted-space">  </span>{ <span class="s5">\no</span> }</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.1 } { <span class="s5">\wrong</span> }</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.3 } { <span class="s5">\wrong</span> }</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.5 } { <span class="s5">\wrong</span> }</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 2 } <span class="Apple-converted-space">  </span>{ <span class="s5">\wrong</span> }</p>
-<p class="p5"><span class="Apple-tab-span">	</span>{ i == 0 } <span class="Apple-converted-space">  </span>{ <span class="s5">\true</span> };</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1 } <span class="Apple-converted-space">  </span>{ <span class="s6">\no</span> }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.1 } { <span class="s6">\wrong</span> }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.3 } { <span class="s6">\wrong</span> }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 1.5 } { <span class="s6">\wrong</span> }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 2 } <span class="Apple-converted-space">  </span>{ <span class="s6">\wrong</span> }</p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ i == 0 } <span class="Apple-converted-space">  </span>{ <span class="s6">\true</span> };</p>
 <p class="p5">x.postln;</p>
 <p class="p5">)</p>
+<p class="p6"><br></p>
+<p class="p3"><b>matchItem(item)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Interface shared with other classes that implements pattern matching. See also: matchItem.</p>
+<p class="p3">Function.matchItem evaluates the function with the item as argument, expecting a <a href="../Boolean.html"><span class="s4">Boolean</span></a> as reply.</p>
+<p class="p2"><br></p>
+<p class="p5">{ <span class="s7">|x|</span> x &gt; 5 }.matchItem(6); <span class="s8">// true</span></p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
+<p class="p3"><b>performDegreeToKey(scaleDegree, stepsPerOctave = 12, accidental = 0)</b></p>
+<p class="p2"><br></p>
+<p class="p3">use a function as a conversion from scale degree to note number. See also <a href="../../Collections/SequenceableCollection.html">SequenceableCollection</a> and <a href="../../Collections/Scale.html"><span class="s4">Scale</span></a></p>
+<p class="p2"><br></p>
+<p class="p15">// a strange mapping</p>
+<p class="p12">(</p>
+<p class="p16">var<span class="s3"> f = {</span>|degree, stepsPerOctave, acc|</p>
+<p class="p12"><span class="Apple-tab-span">	</span>(1.8 ** (degree % stepsPerOctave) + acc).postln</p>
+<p class="p12">};</p>
+<p class="p16">Pbind<span class="s3">(</span></p>
+<p class="p17"><span class="s3"><span class="Apple-tab-span">	</span></span>\scale<span class="s3">, f,</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">\degree</span>, <span class="s7">Pseq</span>([0, 1, 2b, 3s, 4s, 6, 14, [0, 2, 4], [1, 3, 6]], <span class="s7">inf</span>)</p>
+<p class="p12">).play</p>
+<p class="p12">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Exception Handling</b></p>
@@ -237,104 +315,104 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Examples:</p>
 <p class="p6"><br></p>
 <p class="p4">// no exception handler</p>
-<p class="p5">value { 8.zorg; <span class="s5">\didnt_continue</span>.postln; }</p>
+<p class="p5">value { 8.zorg; <span class="s6">\didnt_continue</span>.postln; }</p>
 <p class="p6"><br></p>
-<p class="p5">try { 8.zorg } {<span class="s1">|error|</span> error.postln; <span class="s5">\cleanup</span>.postln; }; <span class="s5">\continued</span>.postln;</p>
+<p class="p5">try { 8.zorg } {<span class="s1">|error|</span> error.postln; <span class="s6">\cleanup</span>.postln; }; <span class="s6">\continued</span>.postln;</p>
 <p class="p6"><br></p>
-<p class="p5">protect { 8.zorg } {<span class="s1">|error|</span> error.postln; }; <span class="s5">\didnt_continue</span>.postln;</p>
+<p class="p5">protect { 8.zorg } {<span class="s1">|error|</span> error.postln; }; <span class="s6">\didnt_continue</span>.postln;</p>
 <p class="p6"><br></p>
-<p class="p5">try { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\catch</span>, error].postln };</p>
+<p class="p5">try { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\catch</span>, error].postln };</p>
 <p class="p6"><br></p>
-<p class="p5">try { 123.postln; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\catch</span>, error].postln };</p>
+<p class="p5">try { 123.postln; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\catch</span>, error].postln };</p>
 <p class="p6"><br></p>
-<p class="p5">try { 123.postln; <span class="s1">nil</span>.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\catch</span>, error].postln };</p>
+<p class="p5">try { 123.postln; <span class="s1">nil</span>.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\catch</span>, error].postln };</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p5">protect { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\onExit</span>, error].postln };</p>
+<p class="p5">protect { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\onExit</span>, error].postln };</p>
 <p class="p6"><br></p>
-<p class="p5">protect { 123.postln; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\onExit</span>, error].postln };</p>
+<p class="p5">protect { 123.postln; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\onExit</span>, error].postln };</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
 <p class="p5">try {</p>
-<p class="p5"><span class="Apple-tab-span">	</span>protect { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s5">\onExit</span>, error].postln };</p>
-<p class="p5">} {<span class="s1">|error|</span> [<span class="s5">\catch</span>, error].postln };</p>
+<p class="p5"><span class="Apple-tab-span">	</span>protect { 123.postln; 456.throw; 789.postln } {<span class="s1">|error|</span> [<span class="s6">\onExit</span>, error].postln };</p>
+<p class="p5">} {<span class="s1">|error|</span> [<span class="s6">\catch</span>, error].postln };</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">value { 123.postln; 456.throw; 789.postln }</p>
 <p class="p6"><br></p>
-<p class="p5">value { 123.postln; <span class="s1">Error</span>(<span class="s4">"what happened?"</span>).throw; 789.postln }</p>
+<p class="p5">value { 123.postln; <span class="s1">Error</span>(<span class="s5">"what happened?"</span>).throw; 789.postln }</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p13"><span class="s3">a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
+<p class="p18"><span class="s3">a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
 <p class="p5">a[1].postln;</p>
-<p class="p5">a[<span class="s5">\x</span>].postln;</p>
+<p class="p5">a[<span class="s6">\x</span>].postln;</p>
 <p class="p5">a[2].postln;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
 <p class="p5">try {</p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[1].postln;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s5">\x</span>].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s6">\x</span>].postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[2].postln;</p>
-<p class="p5">} {<span class="s1">|error|</span> <span class="s5">\caught</span>.postln; error.dump }</p>
+<p class="p5">} {<span class="s1">|error|</span> <span class="s6">\caught</span>.postln; error.dump }</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
 <p class="p5">try {</p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[1].postln;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s5">\x</span>].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s6">\x</span>].postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[2].postln;</p>
-<p class="p5">} {<span class="s1">|error|</span> <span class="s5">\caught</span>.postln; error.dump; error.throw }</p>
+<p class="p5">} {<span class="s1">|error|</span> <span class="s6">\caught</span>.postln; error.dump; error.throw }</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
 <p class="p5">protect {</p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
+<p class="p18"><span class="s3"><span class="Apple-tab-span">	</span>a = [</span>\aaa<span class="s3">, </span>\bbb<span class="s3">, </span>\ccc<span class="s3">, </span>\ddd<span class="s3">];</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[1].postln;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s5">\x</span>].postln;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a[<span class="s6">\x</span>].postln;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>a[2].postln;</p>
-<p class="p5">} {<span class="s1">|error|</span> <span class="s5">\caught</span>.postln; error.dump }</p>
+<p class="p5">} {<span class="s1">|error|</span> <span class="s6">\caught</span>.postln; error.dump }</p>
 <p class="p5">)</p>
-<p class="p14"><br></p>
-<p class="p14"><br></p>
+<p class="p19"><br></p>
+<p class="p19"><br></p>
 <p class="p7"><b>Audio</b></p>
 <p class="p9"><br></p>
-<p class="p15"><b>play(target, outbus, fadetime, addAction, args)</b></p>
-<p class="p16"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>This is probably the simplest way to get audio in SC3. It wraps the Function in a <b>SynthDef</b> (adding an <b>Out</b> ugen if needed), creates and starts a new <b>Synth</b> with it, and returns the Synth object. A <b>Linen</b> is also added to avoid clicks, which is configured to allow the resulting Synth to have its <span class="s6">\gate </span>argument set, or to respond to a release message. Args in the function become args in the resulting def.</p>
-<p class="p16"><br></p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>target </b>- a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.</p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>outbus </b>- the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.</p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>fadeTime</b> - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.</p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>addAction</b> - see <b>Synth</b> for a list of valid addActions. The default is <span class="s6">\addToHead</span><b>.</b></p>
+<p class="p3"><b>play(target, outbus, fadetime, addAction, args)</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>This is probably the simplest way to get audio in SC3. It wraps the Function in a <b>SynthDef</b> (adding an <b>Out</b> ugen if needed), creates and starts a new <b>Synth</b> with it, and returns the Synth object. A <b>Linen</b> is also added to avoid clicks, which is configured to allow the resulting Synth to have its <span class="s10">\gate </span>argument set, or to respond to a release message. Args in the function become args in the resulting def.</p>
+<p class="p2"><br></p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>target </b>- a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>outbus </b>- the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>fadeTime</b> - a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>addAction</b> - see <b>Synth</b> for a list of valid addActions. The default is <span class="s10">\addToHead</span><b>.</b></p>
 <p class="p9"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>x = { <span class="s1">|freq = 440|</span> <span class="s1">SinOsc</span>.ar(freq, 0, 0.3) }.play; <span class="s2">// this returns a Synth object;</span></p>
-<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>x.set(</span><span class="s5">\freq</span><span class="s3">, 880); </span>// note you can set the freq argument</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>x.set(</span><span class="s6">\freq</span><span class="s3">, 880); </span>// note you can set the freq argument</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>x.defName; </span>// the name of the resulting SynthDef (generated automatically in a cycle of 512)</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>x.release(4); </span>// fadeout over 4 seconds</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>Many of the examples make use of the Function.play syntax.<span class="Apple-converted-space"> </span></p>
-<p class="p17"><span class="Apple-tab-span">	</span>Note that reusing such code in a <a href="../../ServerArchitecture/SynthDef.html"><span class="s1">SynthDef</span></a> requires the addition of an <a href="../../UGens/InOut/Out.html"><span class="s1">Out</span></a> ugen.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Many of the examples make use of the Function.play syntax.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Note that reusing such code in a <a href="../../ServerArchitecture/SynthDef.html"><span class="s1">SynthDef</span></a> requires the addition of an <a href="../../UGens/InOut/Out.html"><span class="s1">Out</span></a> ugen.</p>
 <p class="p9"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>// the following two lines produce equivalent results</p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s1">SinOsc</span>.ar(440, 0, 0.3) }.play(fadeTime: 0.0);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">SynthDef</span>(<span class="s5">\help_FuncPlay</span>, { <span class="s1">Out</span>.ar(0, <span class="s1">SinOsc</span>.ar(440, 0, 0.3))}).play;</p>
-<p class="p12"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.<span class="Apple-converted-space"> </span></p>
-<p class="p18"><span class="Apple-tab-span">	</span></p>
-<p class="p18"><br></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">SynthDef</span>(<span class="s6">\help_FuncPlay</span>, { <span class="s1">Out</span>.ar(0, <span class="s1">SinOsc</span>.ar(440, 0, 0.3))}).play;</p>
+<p class="p13"><br></p>
+<p class="p3"><span class="Apple-tab-span">	</span>Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><br></p>
 <p class="p3"><b>scope(numChannels, outbus, fadeTime, bufsize, zoom)</b></p>
 <p class="p2"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>As <b>play </b>above, but plays it on the internal <b>Server</b>, and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>As <b>play </b>above, but plays it on the internal <b>Server</b>, and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>numChannels</b> - The number of channels to display in the scope window, starting from <b>outbus</b>. The default is 2.</p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>outbus </b>- The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>fadeTime</b> - A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>bufsize </b>- The size of the buffer for the ScopeView. The default is 4096.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>zoom</b> - A zoom value for the scope's X axis. Larger values show more. The default is 1.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>numChannels</b> - The number of channels to display in the scope window, starting from <b>outbus</b>. The default is 2.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>outbus </b>- The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>fadeTime</b> - A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>bufsize </b>- The size of the buffer for the ScopeView. The default is 4096.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>zoom</b> - A zoom value for the scope's X axis. Larger values show more. The default is 1.</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s1">FSinOsc</span>.ar(440, 0, 0.3) }.scope(1)</p>
 <p class="p2"><br></p>
@@ -342,14 +420,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>plot(duration, server, bounds, minval, maxval, parent)</b></p>
 <p class="p2"><br></p>
-<p class="p17"><span class="Apple-tab-span">	</span>Calculates <b>duration</b> in seconds worth of the output of this function, and plots it in a GUI window. Unlike <b>play</b> and <b>scope</b> it will not work with explicit Out Ugens, so your function should return a UGen or an <b>Array</b> of them. The plot will be calculated in realtime.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Calculates <b>duration</b> in seconds worth of the output of this function, and plots it in a GUI window. Unlike <b>play</b> and <b>scope</b> it will not work with explicit Out Ugens, so your function should return a UGen or an <b>Array</b> of them. The plot will be calculated in realtime.</p>
 <p class="p2"><br></p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>duration</b> - The duration of the function to plot in seconds. The default is 0.01.</p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>server </b>- The <b>Server</b> on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>bounds</b> - An instance of <b>Rect</b> or <b>Point</b> indicating the bounds of the plot window.</p>
-<p class="p19"><span class="Apple-tab-span">	</span><b>minval</b> - the minimum value in the plot. Defaults to -1.0.</p>
-<p class="p19"><span class="Apple-tab-span">	</span><b>maxval</b> - the maximum value in the plot. Defaults to 1.0.</p>
-<p class="p19"><span class="Apple-tab-span">	</span><b>parent</b> - a window to place the plot in. If nil, one will be created for you.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>duration</b> - The duration of the function to plot in seconds. The default is 0.01.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>server </b>- The <b>Server</b> on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>bounds</b> - An instance of <b>Rect</b> or <b>Point</b> indicating the bounds of the plot window.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>minval</b> - the minimum value in the plot. Defaults to -1.0.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>maxval</b> - the maximum value in the plot. Defaults to 1.0.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>parent</b> - a window to place the plot in. If nil, one will be created for you.</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s1">SinOsc</span>.ar(440) }.plot(0.01, bounds: <span class="s1">GUI</span>.window.screenBounds);</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
@@ -365,35 +443,42 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>Returns a SynthDef based on this Function, adding a <b>Linen </b>and an <b>Out</b> ugen if needed.</p>
 <p class="p2"><br></p>
-<p class="p15"><b><span class="Apple-tab-span">	</span>rates </b>- An Array of rates and lagtimes for the function's arguments (see <b>SynthDef</b> for more details).</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>outClass</b> - The class of the output ugen as a symbol. The default is <span class="s5">\Out</span>.</p>
-<p class="p15"><span class="Apple-tab-span">	</span><b>fadeTime</b> - a fadein time. The default is 0.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>rates </b>- An Array of rates and lagtimes for the function's arguments (see <b>SynthDef</b> for more details).</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>outClass</b> - The class of the output ugen as a symbol. The default is <span class="s6">\Out</span>.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>fadeTime</b> - a fadein time. The default is 0.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>asDefName</b></p>
 <p class="p2"><br></p>
 <p class="p3">Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.</p>
-<p class="p12"><br></p>
+<p class="p13"><br></p>
 <p class="p5">x = { <span class="s1">SinOsc</span>.ar(440, 0, 0.3) }.asDefName; <span class="s2">// this must complete first</span></p>
-<p class="p5">y = <span class="s1">Synth</span>.new(x);</p>
-<p class="p12"><br></p>
-<p class="p12"><br></p>
+<p class="p5">y = <span class="s7">Synth</span>(x);</p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p3"><b>asRoutine</b></p>
 <p class="p2"><br></p>
-<p class="p3">Returns a <b>Routine</b> using this as its func argument.</p>
+<p class="p3">Returns a <a href="Routine.html"><span class="s4">Routine</span></a> using <b>this</b> as its func argument.</p>
 <p class="p2"><br></p>
+<p class="p3"><b>r</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>inEnvir(envir)</b></p>
-<p class="p2"><br></p>
-<p class="p3">Converts a function into an "environment-safe" function. See <b>[</b><b><span class="s7">Environment</span></b><b>]</b> for more details.</p>
-<p class="p2"><br></p>
-<p class="p4">// prints nil because ~a is read from topEnvironment, not e</p>
-<p class="p5">e = (a: <span class="s4">"got it"</span>, f: { { ~a.postln }.defer(0.5) });</p>
-<p class="p5">e.use { e.f };</p>
+<p class="p3">Returns a <a href="Routine.html"><span class="s4">Routine</span></a> using <b>this</b> as its func argument.</p>
 <p class="p6"><br></p>
-<p class="p4">// prints "got it" because { ~a.postln } is now bound to the e environment</p>
-<p class="p5">e = (a: <span class="s4">"got it"</span>, f: { { ~a.postln }.inEnvir.defer(0.5) });</p>
-<p class="p5">e.use { e.f };</p>
+<p class="p12">a = r { 5.do { <span class="s7">|i|</span> i.rand.yield } };</p>
+<p class="p12">a.nextN(8);</p>
+<p class="p20"><br></p>
+<p class="p3"><b>p</b></p>
+<p class="p2"><br></p>
+<p class="p3">Returns a <a href="../../Streams-Patterns-Events/Patterns/Prout.html"><span class="s4">Prout</span></a> using <b>this</b> as its func argument.</p>
+<p class="p6"><br></p>
+<p class="p5">a = p { 5.do { <span class="s7">|i|</span> i.rand.yield } };</p>
+<p class="p5">x = a.asStream;</p>
+<p class="p5">x.nextN(8);</p>
+<p class="p6"><br></p>
+<p class="p3">This is useful for using <a href="../../Language/ListComprehensions.html">ListComprehensions</a> in Patterns:</p>
+<p class="p6"><br></p>
+<p class="p12"><span class="s7">Pbind</span>(<span class="s9">\degree</span>, p {:[x, y].postln, x&lt;-(0..10), y&lt;-(0..10), (x + y).isPrime }, <span class="s9">\dur</span>, 0.3).play;<span class="Apple-converted-space"> </span></p>
+<p class="p20"><br></p>
 </body>
 </html>
