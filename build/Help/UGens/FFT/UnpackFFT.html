@@ -5,19 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a2912}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {font: 15.0px Helvetica}
-span.s2 {color: #0018f7}
-span.s3 {color: #081fb6}
-span.s4 {color: #000000}
-span.s5 {color: #606060}
+span.s2 {color: #001bb9}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,29 +34,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">The helpfile for <a href="pvcollect.html"><span class="s2">pvcollect</span></a> includes notes on efficiency considerations.</p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3">s.boot.doWhenBooted{</p>
-<p class="p3"><span class="s3">~</span>fftsize = 1024;</p>
-<p class="p3">b = <span class="s3">Buffer</span>.alloc(s, ~fftsize, 1);</p>
-<p class="p4"><span class="s4">c = </span><span class="s3">Buffer</span><span class="s4">.read(s,</span>"sounds/a11wlk01.wav"<span class="s4">);</span></p>
+<p class="p3">s.boot.doWhenBooted {</p>
+<p class="p3"><span class="s2"><span class="Apple-tab-span">	</span>var </span>fftsize = 1024;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>b = <span class="s2">Buffer</span>.alloc(s, fftsize, 1);</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>c = </span><span class="s2">Buffer</span><span class="s3">.read(s,</span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
 <p class="p3">}</p>
 <p class="p3">)</p>
 <p class="p5"><br></p>
 <p class="p6">// This one just drags out various the values and posts them - a little bit pointless!</p>
 <p class="p3">(</p>
 <p class="p3">x = {</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s3">var</span> sig, chain, unp;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>sig = <span class="s3">SinOsc</span>.ar;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>sig = <span class="s3">PlayBuf</span>.ar(1, c, <span class="s3">BufRateScale</span>.kr(c), loop: 1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b, sig);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s2">var</span> sig, chain, unp;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>sig = <span class="s2">SinOsc</span>.ar;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>sig = <span class="s2">PlayBuf</span>.ar(1, c, <span class="s2">BufRateScale</span>.kr(c), loop: 1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(b, sig);</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// Using the frombin &amp; tobin args makes it much more efficient, limiting analysis to the bins of interest</p>
-<p class="p3"><span class="Apple-tab-span">	</span>unp = <span class="s3">UnpackFFT</span>(chain, b.numFrames, frombin: 0, tobin: 4);</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// Using the frombin &amp; tobin args makes it much more efficient, limiting analysis to the bins of interest</p>
+<p class="p3"><span class="Apple-tab-span">	</span>unp = <span class="s2">UnpackFFT</span>(chain, b.numFrames, frombin: 0, tobin: 4);</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// Demand some data from the unpacker.</p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// NOTE: At present, Demand.kr is unable to handle more than 32 inputs,<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>// so using frombin &amp; tobin to limit the number of bins is compulsory.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s3">Demand</span>.kr(chain&gt;=0, 0, unp).collect{<span class="s3">|anunp, index|</span><span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>anunp.poll(chain&gt;=0, if(index % 2 == 0,<span class="Apple-converted-space">  </span><span class="s5">"Magnitude"</span>, <span class="s5">"Phase"</span>)+(index/2).floor);</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// Demand some data from the unpacker.</p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// NOTE: At present, Demand.kr is unable to handle more than 32 inputs,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// so using frombin &amp; tobin to limit the number of bins is compulsory.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s2">Demand</span>.kr(chain&gt;=0, 0, unp).collect{<span class="s2">|anunp, index|</span><span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>anunp.poll(chain&gt;=0, if(index % 2 == 0,<span class="Apple-converted-space">  </span><span class="s4">"Magnitude"</span>, <span class="s4">"Phase"</span>)+(index/2).floor);</p>
 <p class="p3"><span class="Apple-tab-span">	</span>};</p>
 <p class="p5"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>(sig*0.1).dup;</p>
@@ -68,13 +67,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">// Now a simple frequency-domain manipulation, square-rooting the magnitudes AND phases.</p>
 <p class="p3">(</p>
 <p class="p3">x = {</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s3">var</span> in, chain, magsphases;</p>
-<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s3">PlayBuf</span>.ar(1, c, <span class="s3">BufRateScale</span>.kr(c), loop: 1);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s3">FFT</span>(b, in);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>magsphases = <span class="s3">UnpackFFT</span>(chain, b.numFrames);</p>
-<p class="p3"><span class="Apple-tab-span">	</span>magsphases = magsphases.collect(<span class="s3">_</span>.sqrt);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s3">PackFFT</span>(chain, b.numFrames, magsphases);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, 0.25 * <span class="s3">IFFT</span>(chain).dup);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s2">var</span> in, chain, magsphases;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>in = <span class="s2">PlayBuf</span>.ar(1, c, <span class="s2">BufRateScale</span>.kr(c), loop: 1);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>chain = <span class="s2">FFT</span>(b, in);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>magsphases = <span class="s2">UnpackFFT</span>(chain, b.numFrames);</p>
+<p class="p3"><span class="Apple-tab-span">	</span>magsphases = magsphases.collect(<span class="s2">_</span>.sqrt);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s2">PackFFT</span>(chain, b.numFrames, magsphases);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, 0.25 * <span class="s2">IFFT</span>(chain).dup);</p>
 <p class="p3">}.play(s);</p>
 <p class="p3">)</p>
 <p class="p3">x.free;</p>
