@@ -113,7 +113,7 @@ OPTIONAL EXTRA INSTALLATION STEPS:
 * I put this in my ~/.sclang.sc so that each time I start sclang I have updated
     Object completion and highlighting, as well as Object Definition Lookup:
     //set up the scvim stuff 
-    SCVim.updateCaches
+    SCVim.updateCaches;
   You'll probably want to execute this at least once after an install of
   supercollider to get the most up-to-date Object info
 
@@ -159,7 +159,7 @@ scvim uses preprocessed versions of the help files (converted to plain-text),
 and to update these help files from the main files you can run the following
 line in sclang:
 
-  SCVim.updateHelpCache
+  SCVim.updateHelpCache;
 
 This actually calls a Ruby script called scvim_make_help.rb, so can be used 
 outside SC if desired. You can do something like:
