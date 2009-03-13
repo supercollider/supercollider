@@ -78,6 +78,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">o.remove;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
+<p class="p4"><b>Listening to data from _any_ client, but from a specific host</b></p>
+<p class="p3"><br></p>
+<p class="p5">// same as above, but we use a NetAddr with a port of nil, so we can receive from a specific host, but from any port</p>
+<p class="p3"><br></p>
+<p class="p5"><span class="s5">n = </span><span class="s6">NetAddr</span><span class="s5">(</span><span class="s7">"127.0.0.1"</span><span class="s5">, nil); </span>// the url should be the one of computer of app 2</p>
+<p class="p7">o = <span class="s6">OSCresponderNode</span>(n, <span class="s8">'/test'</span>, { <span class="s6">|t, r, msg|</span> msg.postln }).add;</p>
+<p class="p7">o.remove;</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
 <p class="p4"><b>Listening to data from the server</b></p>
 <p class="p3"><br></p>
 <p class="p5">// example from SendTrig</p>
