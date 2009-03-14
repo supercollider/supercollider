@@ -5,6 +5,7 @@ Recent changes (will be SuperCollider v3.3)
 
 Headlines:
 ----------
+* 2008-04-08 scvim is now part of the distro - ds
 * 2008-04-20 improvements to MIDI sysex handling - added sysex parsing directly in source - thanks to charles picasso
 * 2008-07-12 scsynth on Mac can now use separate devices for audio input vs audio output. Thanks to Axel Balley for much of the work on this, also a bit by ds.
 * 2008-07-12 PlayBuf, RecordBuf, BufWr, BufRd, ScopeOut - used to be limited to 16-channel audio maximum. Now can handle massively multichannel audio - ds
@@ -30,6 +31,7 @@ Headlines:
 * 2008-12-15 added methods to SCFreqScope for "special" SynthDef, and for visualising frequency responses - ds
 * 2008-12-18 the main windows version of sc is now called "SuperCollider" rather than "PsyCollider" (although psycollider is the name of the code editor). SuperCollider on windows now has a different (better? who knows) installer, uses the main sc3 icon, and has some other tweaks that make it different from version 3.2 - ds
 * 2008-12-19 new EZListView - jm
+* 2009-01-02 sced (the gedit sc plugin) is now part of the distro - mb/artem
 * 2009-01-06 SendReply UGen - jr
 * 2009-01-06 VDiskIn sends file position to client - jr
 * 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
@@ -40,6 +42,7 @@ Headlines:
 * 2009-02-23 SystemActions refactored - jr
 * 2009-02-23 SCMenuItem, SCMenuGroup, and SCMenuSeparator for user customisable menus - sw
 * 2009-02-23 LFGauss UGen added - jr
+* 2009-03-14 Added GeneralHID based patterns PhidKey and PhidSlot - mb
 
 Bugfixes:
 ---------
