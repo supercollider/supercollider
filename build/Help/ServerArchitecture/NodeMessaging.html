@@ -5,27 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c40000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0010c4}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
-span.s3 {color: #0000bf}
-span.s4 {color: #007300}
-span.s5 {color: #007300}
-span.s6 {color: #0000bf}
-span.s7 {font: 12.0px Helvetica}
+span.s3 {color: #0010c4}
+span.s4 {color: #007200}
+span.s5 {font: 12.0px Helvetica}
+span.s6 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -60,27 +58,27 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p9">// when passing arguments:</p>
-<p class="p10"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n, 0, 0, <span class="s1">"freq"</span>, 850);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_set"</span>, n, <span class="s1">"freq"</span>, 500);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
+<p class="p6">// when passing arguments:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"default"</span>, n, 0, 0, <span class="s1">"freq"</span>, 850);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_set"</span>, n, <span class="s1">"freq"</span>, 500);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/n_free"</span>, n);</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p6">// it is</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s1">"default"</span>, [<span class="s4">\freq</span>, 850]);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.set(<span class="s4">\freq</span>, 500)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p9">// note that Symbols may be used instead of Strings:</p>
-<p class="p10"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\s_new</span>, <span class="s5">\default</span>, n, 0, 0, <span class="s5">\freq</span>, 850);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\n_set</span>, n, <span class="s5">\freq</span>, 500);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s5">\n_free</span>, n);</p>
-<p class="p11"><br></p>
-<p class="p9">// and:</p>
-<p class="p10"><span class="Apple-tab-span">	</span>n = <span class="s6">Synth</span>(<span class="s5">\default</span>, [<span class="s5">\freq</span>, 850]);</p>
-<p class="p10"><span class="Apple-tab-span">	</span>n.set(<span class="s5">\freq</span>, 500)</p>
-<p class="p10"><span class="Apple-tab-span">	</span>n.free;</p>
+<p class="p6">// note that Symbols may be used instead of Strings:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\s_new</span>, <span class="s4">\default</span>, n, 0, 0, <span class="s4">\freq</span>, 850);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\n_set</span>, n, <span class="s4">\freq</span>, 500);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\n_free</span>, n);</p>
+<p class="p5"><br></p>
+<p class="p6">// and:</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s4">\default</span>, [<span class="s4">\freq</span>, 850]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.set(<span class="s4">\freq</span>, 500)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.free;</p>
 <p class="p5"><br></p>
 <p class="p3">The answer to the question of whether one should work with <b>node objects </b>or <b>directly with messages</b> depends to some extent on context, and to some extent is a matter of personal taste.</p>
 <p class="p4"><br></p>
@@ -88,14 +86,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p3">In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.</p>
 <p class="p4"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s1">"grain"</span><span class="s2">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>(</p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>SynthDef<span class="s2">(</span><span class="s1">"grain"</span><span class="s2">, {<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, <span class="s3">Line</span>.kr(0.1, 0, 0.01, doneAction:2) * <span class="s3">FSinOsc</span>.ar(12000))</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).send(s);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span>(</p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({<span class="Apple-converted-space"> </span></span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span></span>Routine<span class="s2">({<span class="Apple-converted-space"> </span></span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>20.do({</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s1">"/s_new"</span>, <span class="s1">"grain"</span>, -1);<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.01.wait;</p>
@@ -116,9 +114,60 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">x.set(<span class="s4">\freq</span>, 1500);</p>
 <p class="p7">x.free;</p>
 <p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p10"><b>Argument lists in node messages</b></p>
+<p class="p4"><br></p>
+<p class="p3">Several node messages accept lists of values to map onto the controls of Synth nodes, as in some of the examples already given:</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\s_new</span>, <span class="s4">\default</span>, n, 0, 0, <span class="s4">\freq</span>, 850);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s4">\default</span>, [<span class="s4">\freq</span>, 850]);</p>
+<p class="p4"><br></p>
+<p class="p3">Argument lists generally appear as alternating pairs, with the control identifier preceding the value. Usually the control identifier is a name, as above, but it could also be an integer index. (Using integers is slightly faster for the server, but it makes the code harder to read and can introduce bugs if the SynthDef structure changes.) One way to find out control indices is to .memStore or .store the SynthDef into a SynthDescLib, then get the list of all controls out of the SynthDesc.</p>
+<p class="p4"><br></p>
+<p class="p7">(</p>
+<p class="p9">SynthDef<span class="s2">(</span><span class="s4">\controlList</span><span class="s2">, { </span>|freq = 440, amp = 0.1, detune = #[0.999, 1.001], gate = 1, out = 0|</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span><span class="Apple-tab-span">	</span>sig = <span class="s3">Mix</span>(<span class="s3">Saw</span>.ar(freq * (detune ++ [1]), amp)),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.adsr, gate, doneAction: 2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, (sig * env) ! 2);</p>
+<p class="p7">}).memStore;</p>
 <p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p9">SynthDescLib<span class="s2">.global[</span><span class="s4">\controlList</span><span class="s2">]</span></p>
+<p class="p7">)</p>
+<p class="p4"><br></p>
+<p class="p3">Prints:</p>
+<p class="p4"><br></p>
+<p class="p7">SynthDesc 'controlList'<span class="Apple-converted-space"> </span></p>
+<p class="p7">Controls:</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 0 freq control 440</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 1 amp control 0.10000000149012</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 2 detune control 0.9990000128746</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 3 ? control 1.00100004673</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 4 gate control 1</p>
+<p class="p7">ControlName<span class="Apple-converted-space">  </span>P 5 out control 0</p>
+<p class="p7"><span class="Apple-converted-space">   </span>O audio 0 2</p>
+<p class="p4"><br></p>
+<p class="p3">The list shows that the 'freq' control has index 0, 'amp' is 1 and so on. Detune is defined as an "array argument," occupying indices 2-3.</p>
+<p class="p4"><br></p>
+<p class="p3">SynthDefs with a large number of controls may need a little extra code to print the entire list.</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="s3">SynthDescLib</span>.global[<span class="s4">\controlList</span>].controls.do(<span class="s3">_</span>.postln); <span class="s1">""</span></p>
+<p class="p4"><br></p>
+<p class="p3">Prior to supercollider 3.3, the only way to set array arguments by name was using n_setn (or Node's setn method). Beginning in version 3.3, array arguments can be included in s_new or n_set messages transparently.</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Messaging style</b> (note the characters $[ and $] delimiting the array in the list):</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = s.nextNodeID;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\s_new</span>, <span class="s4">\controlList</span>, n, 0, 0, <span class="s4">\detune</span>, $[, 0.95, 1.005, $], <span class="s4">\freq</span>, 220);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\n_set</span>, n, <span class="s4">\gate</span>, 0);</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Object style</b> (the Node object automatically inserts $[ and $] for you):</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s4">\controlList</span>, [<span class="s4">\detune</span>, [0.95, 1.005], <span class="s4">\freq</span>, 220]);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>n.set(<span class="s6">\detune</span>, [0.99, 1.01]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.release;</p>
+<p class="p4"><br></p>
+<p class="p3"><b>Event style:</b></p>
+<p class="p4"><br></p>
+<p class="p3">Supplying an array for an argument in an event already has another meaning: multichannel expansion, in which a separate node is created for each array item. If all items of the array should be sent to the same node, then the array argument should be enclosed in another array level:</p>
+<p class="p4"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>(instrument: <span class="s4">\controlList</span>, freq: 220, detune: [[0.95, 1.005]], sustain: 2).play;</p>
 </body>
 </html>
