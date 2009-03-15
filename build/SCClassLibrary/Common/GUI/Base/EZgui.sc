@@ -1,7 +1,7 @@
 EZGui{ // an abstract class
 	var <>labelView, <widget, <view, gap, popUp=false, innerBounds, 
 	<>action,   <layout, <value, labelSize, <alwaysOnTop=false, margin;
-	
+	var scaler=1;  //for swing compatibility
 	// general stuff for all EZ classes. override as needed		
 	visible { ^view.getProperty(\visible) }
 	visible_ { |bool|  view.setProperty(\visible,bool)  }

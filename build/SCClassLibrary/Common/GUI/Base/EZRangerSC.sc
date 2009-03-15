@@ -4,7 +4,8 @@ EZRanger : EZGui {
 	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec, 
 		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth;
 	var <>round = 0.001;
-	
+	var scaler=1;  //for swing compatibility
+
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
 			unitWidth=0, labelHeight=20,  layout=\horz, gap,margin;
@@ -73,9 +74,11 @@ EZRanger : EZGui {
 			rangeSlider.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 		
-		hiBox.step=controlSpec.step*10;
-		loBox.step=controlSpec.step*10;
-
+		if (GUI.current==CocoaGUI) {scaler = 10};
+		hiBox.step=controlSpec.step*scaler;
+		hiBox.scroll_step=controlSpec.step*scaler;
+		loBox.step=controlSpec.step*scaler;
+		loBox.scroll_step=controlSpec.step*scaler;
 
 		rangeSlider.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
