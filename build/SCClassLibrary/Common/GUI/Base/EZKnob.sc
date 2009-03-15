@@ -59,7 +59,7 @@ EZKnob : EZGui {
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
-		numberView.step=controlSpec.step*10;
+		numberView.step=controlSpec.step;
 
 
 		if((controlSpec.minval + controlSpec.maxval)==0){knobView.centered=true};

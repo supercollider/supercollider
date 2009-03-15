@@ -4,7 +4,8 @@ EZSlider : EZGui {
 	var <sliderView, <numberView, <unitView, <>controlSpec, 
 		  popUp=false, numSize,numberWidth,unitWidth, gap;
 	var <>round = 0.001;
-	
+	var scaler=1;  //for swing compatibility
+
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
 			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;
@@ -77,7 +78,10 @@ EZSlider : EZGui {
 		};
 
 		numberView.action = { this.valueAction_(numberView.value) };
-		numberView.step=controlSpec.step*10;
+		
+		if (GUI.current==CocoaGUI) {scaler = 10};
+		numberView.step=controlSpec.step*scaler;
+		numberView.scroll_step=controlSpec.step*scaler;
 		
 		if (initAction) {
 			this.valueAction_(initVal);

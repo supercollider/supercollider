@@ -1041,7 +1041,7 @@ SCStaticText : SCStaticTextBase {
 
 
 SCNumberBox : SCStaticTextBase {
-	var <> keyString, <>step=1;
+	var <> keyString, <>step=1, <>scroll_step=1;
 	var <>typingColor, <>normalColor;
 	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true, <>shift_step=0.1, <>ctrl_step=10;
 	
@@ -1061,15 +1061,21 @@ SCNumberBox : SCStaticTextBase {
 		argParent.add(this);//maybe window or viewadapter
 	}
 
-	increment { this.valueAction = this.value + step; }
-	decrement { this.valueAction = this.value - step; }
+	increment {arg mul=1; this.valueAction = this.value + (step*mul); }
+	decrement {arg mul=1; this.valueAction = this.value - (step*mul); }
 	
 	defaultKeyDownAction { arg char, modifiers, unicode;
+		case
+			{ modifiers & 131072 == 131072 } // shift defaults to scroll_step x 0.1
+				{ inc = shift_step }
+			{ modifiers & 262144 == 262144 } // control defaults to scroll_step x 10
+				{ inc = ctrl_step };
+	
 		// standard chardown
-		if (unicode == 16rF700, { this.increment; ^this });
-		if (unicode == 16rF703, { this.increment; ^this });
-		if (unicode == 16rF701, { this.decrement; ^this });
-		if (unicode == 16rF702, { this.decrement; ^this });
+		if (unicode == 16rF700, { this.increment(inc); inc=1; ^this });
+		if (unicode == 16rF703, { this.increment(inc); inc=1; ^this });
+		if (unicode == 16rF701, { this.decrement(inc); inc=1; ^this });
+		if (unicode == 16rF702, { this.decrement(inc); inc=1; ^this });
 		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.valueAction_(keyString.asFloat);
@@ -1091,6 +1097,9 @@ SCNumberBox : SCStaticTextBase {
 			this.string = keyString;
 			^this
 		});
+		
+		
+
 		^nil		// bubble if it's an invalid key
 	}
 
@@ -1135,9 +1144,9 @@ SCNumberBox : SCStaticTextBase {
 		if (scroll == true, {
 			inc = 1.0;
 			case
-				{ modifiers & 131072 == 131072 } // shift defaults to step x 0.1
+				{ modifiers & 131072 == 131072 } // shift defaults to scroll_step x 0.1
 					{ inc = shift_step }
-				{ modifiers & 262144 == 262144 } // control defaults to step x 10
+				{ modifiers & 262144 == 262144 } // control defaults to scroll_step x 10
 					{ inc = ctrl_step };
 		});			
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
@@ -1150,10 +1159,14 @@ SCNumberBox : SCStaticTextBase {
 				// horizontal or vertical scrolling:
 			if ( (x - hit.x) < 0 or: { (y - hit.y) > 0 }) { direction = -1.0; };
 
-			this.valueAction = (this.value + (inc * this.step * direction));
+			this.valueAction = (this.value + (inc * this.scroll_step * direction));
 			hit = Point(x, y);
 		});
 		mouseMoveAction.value(this, x, y, modifiers);	
+	}
+	mouseUp{
+		inc=1
+	
 	}
 }
 
