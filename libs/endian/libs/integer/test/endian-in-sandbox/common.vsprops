@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="common"
+	OutputDirectory="$(TEMP)\$(SolutionName)\$(ConfigurationName)"
+	IntermediateDirectory="$(TEMP)\$(SolutionName)\$(ProjectName)\$(ConfigurationName)"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(BOOST_SANDBOX)\endian&quot;;&quot;$(BOOST_TRUNK)&quot;"
+	/>
+</VisualStudioPropertySheet>

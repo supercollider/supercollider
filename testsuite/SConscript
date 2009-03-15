@@ -53,7 +53,7 @@ unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
-                                     "#libs/tlsf/src"],
+                                     "#libs/tlsf/src", "#libs/endian"],
                             CCFLAGS=unit_test_cflags)
 
 unit_test_common = ["boost_test.cpp",
@@ -93,7 +93,8 @@ unit_test_sources = ["mutex_test.cpp",
                      "median_noise_tests.cpp",
                      "perf_counter_test.cpp",
                      "buffer_manager_test.cpp",
-                     "sized_array_test.cpp"
+                     "sized_array_test.cpp",
+                     "sc_synthdef_test.cpp",
                      ]
 
 
