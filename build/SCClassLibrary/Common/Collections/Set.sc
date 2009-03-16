@@ -210,13 +210,8 @@ OrderedIdentitySet : IdentitySet {
 	makeEmpty { array.fill; items = nil; }
 	
 	remove { arg item;
-		var index = this.scanFor(item);
-		if ( array.at(index).notNil, {
-			array.put(index, nil);
-			items = items.add(item);
-			size = size - 1;
-			this.fixCollisionsFrom(index);
-		});
+		super.remove(item);
+		items.remove(item);
 	}
 	sort { arg func;
 		items.sort(func)
