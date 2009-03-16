@@ -5,24 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0014f4}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0000bf}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #007300}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0016ff}
-span.s3 {color: #000000}
-span.s4 {text-decoration: underline}
+span.s2 {color: #0000ff}
+span.s3 {color: #002bf8}
+span.s4 {color: #000000}
 span.s5 {color: #007300}
 span.s6 {color: #606060}
 span.s7 {color: #0000bf}
@@ -30,91 +30,97 @@ span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><span class="s1"><b>Dictionary</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>associative collection mapping keys to values.</p>
+<p class="p1"><span class="s1"><b>Dictionary</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>associative collection mapping keys to values</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>Superclass: Set</b></p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="Collection.html"><span class="s2"><b>Collection</b></span></a><b> : </b><a href="Set.html"><span class="s2"><b>Set</b></span></a></p>
 <p class="p2"><br></p>
 <p class="p1">A Dictionary is an associative collection mapping keys to values.</p>
-<p class="p1">Two keys match if they are equal. i.e. == returns true.</p>
+<p class="p1">Two keys match if they are <b>equal</b>. (i.e. == returns true.)</p>
 <p class="p2"><br></p>
-<p class="p1">The contents of a Dictionary are unordered.<span class="Apple-converted-space"> </span></p>
-<p class="p1">You must not depend on the order of items in a Dictionary.</p>
+<p class="p1">The contents of a Dictionary are <b>unordered</b>. You must not depend on the order of items in a Dictionary.</p>
 <p class="p1">You must only rely on equality for the keys (e.g. symbols are ok, strings not).<span class="Apple-converted-space"> </span></p>
-<p class="p1">For identity matching see: <a href="IdentityDictionary.html"><span class="s2">IdentityDictionary</span></a>.</p>
+<p class="p1">For identity matching see: <a href="IdentityDictionary.html"><span class="s3">IdentityDictionary</span></a>.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s3">Related: <a href="Environment.html"><span class="s4">Environment</span></a></span></p>
+<p class="p3"><span class="s4">See also: <a href="Environment.html">Environment</a>, <a href="Event.html">Event</a></span></p>
+<p class="p2"><br></p>
+<p class="p1">Often, the subclass Event is used as an IdentityDictionary, because there is a syntactical shortcut:</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s4">a = (); </span>// return a new Event.</p>
+<p class="p5">a.put(<span class="s5">\foo</span>, 2.718);</p>
+<p class="p5">a.at(<span class="s5">\foo</span>);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p4"><b>Creation:</b></p>
+<p class="p6"><b>Creation:</b></p>
 <p class="p2"><br></p>
 <p class="p1"><b>*new(n)</b></p>
 <p class="p2"><br></p>
 <p class="p1">Creates a Dictionary with an initial capacity for n key value mappings.</p>
 <p class="p2"><br></p>
-<p class="p4"><b>Adding and Removing:</b></p>
-<p class="p5"><br></p>
+<p class="p6"><b>Adding and Removing:</b></p>
+<p class="p7"><br></p>
 <p class="p1"><b>add(anAssociation)</b></p>
-<p class="p5"><br></p>
+<p class="p7"><br></p>
 <p class="p1">Add anAssociation to the Dictionary. <span class="Apple-converted-space"> </span></p>
 <p class="p1">If the key value pair already exists in the Dictionary, the key's value will be replaced.</p>
-<p class="p6"><br></p>
-<p class="p7">(</p>
-<p class="p8"><span class="s3">d = Dictionary.new;</span></p>
-<p class="p7">d.add(<span class="s5">'monkey'</span> -&gt; 0).postln;</p>
-<p class="p9">// Add robot as a key with a value of 1</p>
-<p class="p7">d.add(<span class="s5">'robot'</span> -&gt; 1).postln;</p>
-<p class="p9">// Replaces the value for the key monkey with 2</p>
-<p class="p7">d.add(<span class="s5">'monkey'</span> -&gt; 2).postln;</p>
-<p class="p7">)</p>
-<p class="p6"><br></p>
+<p class="p8"><br></p>
+<p class="p9">(</p>
+<p class="p10"><span class="s4">d = </span>Dictionary<span class="s4">.new;</span></p>
+<p class="p9">d.add(<span class="s5">'monkey'</span> -&gt; 0).postln;</p>
+<p class="p4">// Add robot as a key with a value of 1</p>
+<p class="p9">d.add(<span class="s5">'robot'</span> -&gt; 1).postln;</p>
+<p class="p4">// Replaces the value for the key monkey with 2</p>
+<p class="p9">d.add(<span class="s5">'monkey'</span> -&gt; 2).postln;</p>
+<p class="p9">)</p>
+<p class="p8"><br></p>
 <p class="p1"><b>put(key, obj)</b></p>
 <p class="p2"><br></p>
 <p class="p1">Associate two objects and add them to the Dictionary.</p>
 <p class="p1"><b>key </b>- key to associate with object</p>
 <p class="p1"><b>obj<span class="Apple-converted-space"> </span></b> - an object</p>
 <p class="p2"><br></p>
-<p class="p7">d.put(<span class="s6">"abc"</span>, 10).postln;</p>
-<p class="p6"><br></p>
+<p class="p9">d.put(<span class="s6">"abc"</span>, 10).postln;</p>
+<p class="p8"><br></p>
 <p class="p1"><b>removeAt(key)</b></p>
-<p class="p6"><br></p>
+<p class="p8"><br></p>
 <p class="p1">Remove the key and the value associated with it from the Dictionary.</p>
-<p class="p10"><br></p>
-<p class="p7">d.removeAt(<span class="s5">'monkey'</span>).postln;</p>
-<p class="p6"><br></p>
-<p class="p4"><b>Accessing:</b></p>
-<p class="p6"><br></p>
+<p class="p8"><br></p>
+<p class="p9">d.removeAt(<span class="s5">'monkey'</span>).postln;</p>
+<p class="p8"><br></p>
+<p class="p6"><b>Accessing:</b></p>
+<p class="p8"><br></p>
 <p class="p1"><b>at(key)</b></p>
-<p class="p6"><br></p>
+<p class="p8"><br></p>
 <p class="p1">Access the value associated with the key.</p>
-<p class="p6"><br></p>
-<p class="p9">// Get the value associated with key</p>
-<p class="p7">d.at(<span class="s5">'robot'</span>);</p>
-<p class="p9">// Key doesn't exist</p>
-<p class="p11"><span class="s3">d.at('monkey');</span></p>
-<p class="p6"><br></p>
+<p class="p8"><br></p>
+<p class="p4">// Get the value associated with key</p>
+<p class="p9">d.at(<span class="s5">'robot'</span>);</p>
+<p class="p4">// Key doesn't exist</p>
+<p class="p11"><span class="s4">d.at(</span>'monkey'<span class="s4">);</span></p>
+<p class="p8"><br></p>
 <p class="p1"><b>matchAt(item)</b></p>
 <p class="p2"><br></p>
-<p class="p1">The dictionary's keys are used as conditions against which the arbitrary item is matched.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The dictionary's keys are used as conditions against which the arbitrary item is matched.</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s4"><b>see: </b><a href="../interfaces/matchItem.html"><b>matchItem</b></a><b><span class="Apple-converted-space"> </span></b></span></p>
 <p class="p2"><br></p>
 <p class="p1">Note: if an item matches multiple criteria, the value returned is arbitrary. This is because a dictionary is an unordered collection. It's the user's responsibility to make sure that criteria are mutually exclusive.</p>
 <p class="p2"><br></p>
 <p class="p1">If the key is an object, the item will be matched by identity (if key === item, the value will be returned).<span class="Apple-converted-space"> </span></p>
 <p class="p1">If the key is a collection, the item is matched if it's contained in the collection.<span class="Apple-converted-space"> </span></p>
 <p class="p1">If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function returns true.</p>
+<p class="p2"><br></p>
+<p class="p10"><span class="s4">d = </span>Dictionary<span class="s4">[</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>0 -&gt; <span class="s5">'zero'</span>,</p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span></span>'abc'<span class="s4"> -&gt; </span>'alpha'<span class="s4">,</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>[1, 2, 3, 5, 8, 13, 21] -&gt; <span class="s5">'fibonacci'</span>,</p>
+<p class="p4"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// == true is needed because it might not be a number passed in</p>
+<p class="p9"><span class="Apple-tab-span">	</span>{ <span class="s7">|x|</span> x.tryPerform(<span class="s5">\even</span>) == <span class="s7">true</span> } -&gt; <span class="s5">'even'</span></p>
+<p class="p9">];</p>
 <p class="p12"><br></p>
-<p class="p8"><span class="s3">d = Dictionary[</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>0 -&gt; <span class="s5">'zero'</span>,</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span>'abc' -&gt; 'alpha',</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>[1, 2, 3, 5, 8, 13, 21] -&gt; <span class="s5">'fibonacci'</span>,</p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// == true is needed because it might not be a number passed in</p>
-<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s7">|x|</span> x.tryPerform(<span class="s5">\even</span>) == <span class="s7">true</span> } -&gt; <span class="s5">'even'</span></p>
-<p class="p7">];</p>
-<p class="p10"><br></p>
-<p class="p7">d.matchAt(0)</p>
-<p class="p7">d.matchAt(1)</p>
-<p class="p9"><span class="s3">d.matchAt(2)<span class="Apple-converted-space">  </span>// matches both 'fibonacci' and 'even', either may be returned</p>
-<p class="p7">d.matchAt(4)</p>
-<p class="p7">d.matchAt(<span class="s5">'abc'</span>)</p>
+<p class="p9">d.matchAt(0)</p>
+<p class="p9">d.matchAt(1)</p>
+<p class="p4"><span class="s4">d.matchAt(2)<span class="Apple-converted-space">  </span></span>// matches both 'fibonacci' and 'even', either may be returned</p>
+<p class="p9">d.matchAt(4)</p>
+<p class="p9">d.matchAt(<span class="s5">'abc'</span>)</p>
 </body>
 </html>
