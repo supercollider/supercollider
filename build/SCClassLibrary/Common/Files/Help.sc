@@ -61,7 +61,7 @@ Help {
 	
 	tree { |sysext=true, userext=true, allowCached=true, root, writeCache=true|
 		var classes, node, subc, helpRootLen;
-		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
+		var helpExtensions = ['html', 'htm', 'scd', 'rtf', 'rtfd'];
 		var helpDirs = Array.new;
 		var thisHelpExt;
 		if(allowCached and: {tree.isNil and: {File.exists(this.cachePath)}}){
@@ -141,7 +141,7 @@ Help {
 	}
 
 	addDirTree{ |helppath,tree|
-		var helpExtensions = #['html', 'scd', 'rtf', 'rtfd'];
+		var helpExtensions = #['html', 'htm', 'scd', 'rtf', 'rtfd'];
 		var subfileslist;
 		var node, subc, helpRootLen, thisHelpExt;
 
@@ -757,7 +757,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 	all {
 		//		^this.new("Help/").dumpToDoc("all-helpfiles");
 		var doc;
-		var helpExtensions = ['html', 'scd', 'rtf', 'rtfd'];
+		var helpExtensions = ['html', 'htm', 'scd', 'rtf', 'rtfd'];
 		var str = CollStream.new;
 		doc = Document.new("all-helpfiles");
 		[       Platform.helpDir,
