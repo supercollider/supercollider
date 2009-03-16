@@ -31,14 +31,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">superclass: Object</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(hostname, port)</b><span class="Apple-tab-span">	</span>create new net address.<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Hostname is a string, either an ip number (e.g. <i>"192.168.34.56"</i>)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Port is a port number, like <i>57110</i>.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Note: to send messages internally, loopback ip is used: <i>"127.0.0.1"</i></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="Apple-tab-span">	</span><b>*fromIP(ip, port)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create new net address using an integer ip number.</p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*fromIP(ip, port)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">create new net address using an integer ip number.</span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*langPort</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Get the port sclang is currently listening on (may change after a recompile).</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*localAddr</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Get a NetAddr which corresponds to localhost and the port sclang is listening on.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>sendMsg(args...)</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>send a message without timestamp to the addr.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -58,7 +60,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*disconnectAll<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>close all TCP connections</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*broadcastFlag<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>check broadcast flag</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*broadcastFlag_( flag )<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the broadcast flag (whether or not broadcast messages can be sent)</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>*useDoubles_( flag )<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
