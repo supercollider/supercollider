@@ -5,57 +5,47 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-span.s1 {color: #0000bf}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
+span.s3 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><br></p>
-<p class="p2"><b>LFNoise2<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>quadratic noise</b></p>
-<p class="p3"><br></p>
-<p class="p4"><b>LFNoise2.ar(freq, mul, add)</b></p>
-<p class="p3"><br></p>
-<p class="p4">Generates quadratically interpolated random values at a rate given by the<span class="Apple-converted-space"> </span></p>
-<p class="p4">nearest<span class="Apple-converted-space">  </span>integer division of the sample rate by the freq argument.<span class="Apple-converted-space"> </span></p>
-<p class="p4"><b>freq</b> - approximate rate at which to generate random values.</p>
-<p class="p3"><br></p>
-<p class="p5">(</p>
-<p class="p6"><span class="s1">SynthDef</span><span class="s2">(</span>"help-LFNoise2"<span class="s2">, { </span><span class="s1">arg</span><span class="s2"> out=0;</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFNoise2</span>.ar(1000, 0.25)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play;</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">//modulate frequency</p>
-<p class="p5">(</p>
-<p class="p6"><span class="s1">SynthDef</span><span class="s2">(</span>"help-LFNoise2"<span class="s2">, { </span><span class="s1">arg</span><span class="s2"> out=0;</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFNoise2</span>.ar(XLine.kr(1000, 10000, 10), 0.25)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play;</p>
-<p class="p5">)</p>
-<p class="p7"><br></p>
-<p class="p5">//use as frequency control</p>
-<p class="p5">(</p>
-<p class="p6"><span class="s1">SynthDef</span><span class="s2">(</span>"help-LFNoise2"<span class="s2">, { </span><span class="s1">arg</span><span class="s2"> out=0;</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>SinOsc.ar(</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">LFNoise2</span>.ar(4, 400, 450),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0, 0.2</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>)</p>
-<p class="p5">}).play;</p>
-<p class="p5">)</p>
+<p class="p1"><span class="s1"><b>LFNoise2<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>quadratic noise</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>LFNoise2.ar(freq, mul, add)</b></p>
+<p class="p1"><b>LFNoise2.kr(freq, mul, add)</b></p>
+<p class="p2"><br></p>
+<p class="p1">Generates quadratically interpolated random values at a rate.</p>
+<p class="p1"><b>freq</b> - approximate rate at which to generate random values.</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2">see also: <a href="LFDNoise3.html">LFDNoise3</a>, <a href="LFNoise0.html">LFNoise0</a>, <a href="LFNoise1.html">LFNoise1</a></span></p>
+<p class="p2"><br></p>
+<p class="p4">{ <span class="s3">LFNoise2</span>.ar(1000, 0.25) }.play;</p>
+<p class="p5"><br></p>
+<p class="p6">// modulate frequency</p>
+<p class="p5"><br></p>
+<p class="p4">{ <span class="s3">LFNoise2</span>.ar(<span class="s3">XLine</span>.kr(1000, 10000, 10), 0.25) }.play;</p>
+<p class="p5"><br></p>
+<p class="p6">// as frequency modulator</p>
+<p class="p4">(</p>
+<p class="p4">{ <span class="s3">SinOsc</span>.ar(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFNoise2</span>.ar(4, 400, 450),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0, 0.2</p>
+<p class="p4"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"> </span></p>
+<p class="p4">}.play;</p>
+<p class="p4">)</p>
+<p class="p5"><br></p>
+<p class="p6">// freq is the rate of interpolation points</p>
+<p class="p4">{ <span class="s3">var</span> freq = 1000; [<span class="s3">LFNoise2</span>.ar(freq), <span class="s3">Impulse</span>.ar(freq)] }.plot</p>
 </body>
 </html>
