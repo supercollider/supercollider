@@ -280,7 +280,7 @@ PathName {
 	// Iterates over all files within this path which match criteria for being help files.
 	// Doesn't iterate over the help files listed in the Help tree - see Help:do for that.
 	helpFilesDo { arg func;
-		var extensions    = #['html', 'scd', 'rtf', 'rtfd']; // included
+		var extensions    = #['html', 'htm', 'scd', 'rtf', 'rtfd']; // included
 		var ignoreFolders = #['ignore', '.svn', '_darcs', 'CVS', '.git']; // excluded
 		this.files.select{|afile| extensions.includes(afile.extension.asSymbol) }
 			.do(func);
