@@ -39,11 +39,24 @@ Control : MultiOutUGen {
 		^this.multiNewList(['scalar'] ++ values.asArray)
 	}
 	init { arg ... argValues;
+		var ctlNames, lastControl;
 		values = argValues;
 		if (synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
+			ctlNames = synthDef.controlNames; 
+			
+			if (ctlNames.size > 0) { 		
+					// the current control is always the last added, so:
+				lastControl = synthDef.controlNames.last;
+				if(lastControl.defaultValue.isNil) { 
+						// only write if not there yet:
+					lastControl.defaultValue_(values.unbubble);
+				}
+			};
+
 			synthDef.controlIndex = synthDef.controlIndex + values.size;
+
 		};
 		^this.initOutputs(values.size, rate)
 	}
