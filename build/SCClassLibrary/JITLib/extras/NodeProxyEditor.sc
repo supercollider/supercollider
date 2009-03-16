@@ -24,7 +24,7 @@
 		} { 			if (px.isKindOf(NodeProxy)) { 				proxy = px;				nameView.object_(px).string_(px.key ? 'anon proxy');				typeStr = if(proxy.rate === 'audio') { "ar" } { 
 						if(proxy.rate === 'control', { "kr" }, { "ir" })
 						} +  proxy.numChannels;
-				typeChanView.string_('-');
+				typeChanView.string_(typeStr);
 				if (monitor.notNil) { monitor.proxy_(proxy) };				this.fullUpdate;			} 
 		}	}
 	
@@ -83,7 +83,13 @@
 		buttonFuncs = (
 			CLR: { Button(zone, 30@20).font_(font)
 					.states_([[\CLR, skin.fontColor, Color.clear]])
-					.action_({ proxy.clear }) 
+					.action_({ arg btn, mod; 
+						if ([524576, 24].includes(mod) ) { 
+							proxy.clear 
+						} { 
+							"use alt-click to clear proxy.".postln;
+						} 
+					}) 
 			},
 				
 			reset: { Button(zone, 30@20).font_(font)
@@ -208,8 +214,13 @@
 		// [\oldKeys, oldKeys, \editKeys, editKeys].printAll;
 		
 		if (monitor.notNil) { monitor.updateAll }; 
-		if (pauseBut.notNil) { pauseBut.value_(proxy.paused.binaryValue) };
-		if (sendBut.notNil) { sendBut.value_(proxy.objects.notEmpty.binaryValue) };
+
+			if (pauseBut.notNil) { 
+				pauseBut.value_((proxy.notNil and: { proxy.paused }).binaryValue) 
+			};
+			if (sendBut.notNil) { 
+				sendBut.value_((proxy.notNil and: { proxy.objects.notEmpty }).binaryValue) 
+			};
 				if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });	}		fullUpdate { 		this.getCurrentKeysValues; 
 		this.checkTooMany;		this.updateAllEdits;	}		updateVals {		var sl, val, mapKey;
 		
@@ -221,8 +232,10 @@
 		
 	//	"values have changed - updating edits.".postln; 
 		
-		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1];
-			if (val != try { prevSettings[i][1] }) {	 				// when in doubt, use this:				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];				if(sl.numberView.hasFocus.not) {					if (val.isKindOf(SimpleNumber), { 												sl.value_(val.value);						sl.labelView.string_(this.replaceName(key));						sinks[i].string_("-");					}, { 						if (val.isKindOf(BusPlug), { 							mapKey = currentEnvironment.findKeyForValue(val) ? "";							sinks[i].object_(mapKey).string_(mapKey);							sl.labelView.string = "->" + key;						});					});				};
+		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1].unbubble; 
+			if (val != try { prevSettings[i][1] }) { 
+					// disable for arrayed controls
+				sl.enabled_(val.size <= 1);		 				// when in doubt, use this:				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];				if(sl.numberView.hasFocus.not) {					if (val.isKindOf(SimpleNumber), { 												sl.value_(val.value);						sl.labelView.string_(this.replaceName(key));						sinks[i].string_("-");					}, { 						if (val.isKindOf(BusPlug), { 							mapKey = currentEnvironment.findKeyForValue(val) ? "";							sinks[i].object_(mapKey).string_(mapKey);							sl.labelView.string = "->" + key;						});					});				};
 			};		};
 		prevSettings = currentSettings; 	}	replaceName { |key| 
 		var replaced;
