@@ -3861,7 +3861,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"„Éò„É´„Éó"] submenu];
+			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"‚Äû√â√≤‚Äû√â¬¥‚Äû√â√≥"] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
@@ -3890,6 +3890,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	//NSLog(@"Final Index: %i", menIndex);
 	
 	[parentMenu insertItem:menuItem atIndex:menIndex];
+	[menuItem retain];
 	if([menuItem hasSubmenu]) { [[menuItem submenu] release]; } // this has been retained
 	[label release];
 	return errNone;
@@ -3926,7 +3927,7 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"„Éò„É´„Éó"] submenu];
+			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"‚Äû√â√≤‚Äû√â¬¥‚Äû√â√≥"] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
@@ -3954,6 +3955,7 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 	//NSLog(@"Final Index: %i", menIndex);
 	
 	[parentMenu insertItem:menuItem atIndex:menIndex];
+	[menuItem retain];
 	return errNone;
 }
 
