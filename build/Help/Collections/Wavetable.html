@@ -5,78 +5,91 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-span.s1 {text-decoration: underline}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #0026b4}
+span.s4 {color: #002fe0}
+span.s5 {color: #0033f1}
+span.s6 {color: #0000ff}
+span.s7 {color: #0000bf}
+span.s8 {color: #606060}
+span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Wavetable</b></p>
+<p class="p1"><span class="s1"><b>Wavetable<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>sampled audio buffer in wavetable format</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Superclass: FloatArray</b></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="Collection.html"><b>Collection</b></a></span><span class="s3"><b> :</b></span><span class="s2"><b> </b><a href="SequenceableCollection.html"><b>SequenceableCollection</b></a></span><b> : </b><a href="ArrayedCollection.html"><b>ArrayedCollection</b></a><span class="s4"> : <a href="RawArray.html"><span class="s5"><b>RawArray</b></span></a></span><span class="s2"> : <a href="FloatArray.html"><span class="s6"><b>FloatArray</b></span></a></span></p>
 <p class="p4"><br></p>
-<p class="p3">A Wavetable is a FloatArray in a special format used by SuperCollider's interpolating</p>
-<p class="p3">oscillators. Wavetables cannot be created by <b>new</b>.</p>
+<p class="p1">A Wavetable is a FloatArray in a special format used by SuperCollider's interpolating</p>
+<p class="p1">oscillators. Wavetables cannot be created by <b>new</b>.</p>
 <p class="p4"><br></p>
-<p class="p5"><b><span class="s1">Creation</span></b></p>
+<p class="p1">see also: <a href="Signal.html"><span class="s6">Signal</span></a></p>
 <p class="p4"><br></p>
-<p class="p3"><b>*sineFill(size, amplitudes, phases)</b></p>
+<p class="p5"><b>Creation</b></p>
 <p class="p4"><br></p>
-<p class="p3">Fill a Wavetable of the given size with a sum of sines at the given amplitudes and phases.</p>
-<p class="p3">The Wavetable will be normalized.</p>
-<p class="p3"><b>size</b> - must be a power of 2.</p>
-<p class="p3"><b>amplitudes</b> - an Array of amplitudes for each harmonic beginning with the fundamental.</p>
-<p class="p3"><b>phases</b> - an Array of phases in radians for each harmonic beginning with the fundamental.</p>
+<p class="p1"><b>*sineFill(size, amplitudes, phases)</b></p>
 <p class="p4"><br></p>
-<p class="p6">Wavetable.sineFill(512, 1.0/[1,2,3,4,5,6]).plot;</p>
+<p class="p1">Fill a Wavetable of the given size with a sum of sines at the given amplitudes and phases.</p>
+<p class="p1">The Wavetable will be normalized.</p>
+<p class="p1"><b>size</b> - must be a power of 2.</p>
+<p class="p1"><b>amplitudes</b> - an Array of amplitudes for each harmonic beginning with the fundamental.</p>
+<p class="p1"><b>phases</b> - an Array of phases in radians for each harmonic beginning with the fundamental.</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.sineFill(512, 1.0/[1, 2, 3, 4, 5, 6]).plot;</p>
 <p class="p7"><br></p>
 <p class="p4"><br></p>
-<p class="p3"><b>*chebyFill(size, amplitudes, phases)</b></p>
+<p class="p1"><b>*chebyFill(size, amplitudes, phases)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes</p>
-<p class="p3">for use in waveshaping by the Shaper ugen.</p>
-<p class="p3">The Wavetable will be normalized.</p>
-<p class="p3"><b>size</b> - must be a power of 2.</p>
-<p class="p3"><b>amplitudes</b> - an Array of amplitudes for each Chebyshev polynomial beginning with order 1.</p>
+<p class="p1">Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes</p>
+<p class="p1">for use in waveshaping by the Shaper ugen.</p>
+<p class="p1">The Wavetable will be normalized.</p>
+<p class="p1"><b>size</b> - must be a power of 2.</p>
+<p class="p1"><b>amplitudes</b> - an Array of amplitudes for each Chebyshev polynomial beginning with order 1.</p>
 <p class="p4"><br></p>
-<p class="p6">Wavetable.chebyFill(512, [1]).plot;</p>
-<p class="p7"><br></p>
-<p class="p6">Wavetable.chebyFill(512, [0, 1]).plot;</p>
-<p class="p7"><br></p>
-<p class="p6">Wavetable.chebyFill(512, [0, 0, 1]).plot;</p>
-<p class="p7"><br></p>
-<p class="p6">Wavetable.chebyFill(512, [0.3, -0.8, 1.1]).plot;</p>
-<p class="p7"><br></p>
-<p class="p5"><b><span class="s1">Instance Methods</span></b></p>
-<p class="p4"><br></p>
-<p class="p3"><b>plot(name, bounds, minval, maxval, parent)</b></p>
-<p class="p4"><br></p>
-<p class="p3">Plot the Wavetable in a window. The arguments are not required and if not given defaults will be used.</p>
-<p class="p3"><b>name</b> - a String, the name of the window.</p>
-<p class="p3"><b>bounds</b> - a Rect giving the bounds of the window.</p>
-<p class="p8"><b>minval</b> - the minimum value in the plot. Defaults to the highest value in the data.</p>
-<p class="p8"><b>maxval</b> - the maximum value in the plot. Defaults to the lowest value in the data.</p>
-<p class="p8"><b>parent</b> - a window to place the plot in. If nil, one will be created for you</p>
-<p class="p4"><br></p>
-<p class="p6">Wavetable.sineFill(512, [0.5]).plot;</p>
-<p class="p7"><br></p>
-<p class="p6">Wavetable.sineFill(512, [1]).plot("Table 1", Rect(50, 50, 150, 450));</p>
+<p class="p6"><span class="s7">Wavetable</span>.chebyFill(512, [1]).plot;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.chebyFill(512, [0, 1]).plot;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.chebyFill(512, [0, 0, 1]).plot;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.chebyFill(512, [0.3, -0.8, 1.1]).plot;</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
+<p class="p7"><br></p>
+<p class="p5"><b>Instance Methods</b></p>
 <p class="p4"><br></p>
-<p class="p3"><b>asSignal</b></p>
+<p class="p1"><b>plot(name, bounds, minval, maxval, parent)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Convert the Wavetable into a Signal.</p>
+<p class="p1">Plot the Wavetable in a window. The arguments are not required and if not given defaults will be used.</p>
+<p class="p1"><b>name</b> - a String, the name of the window.</p>
+<p class="p1"><b>bounds</b> - a Rect giving the bounds of the window.</p>
+<p class="p9"><b>minval</b> - the minimum value in the plot. Defaults to the highest value in the data.</p>
+<p class="p9"><b>maxval</b> - the maximum value in the plot. Defaults to the lowest value in the data.</p>
+<p class="p9"><b>parent</b> - a window to place the plot in. If nil, one will be created for you</p>
 <p class="p4"><br></p>
-<p class="p6">Wavetable.sineFill(512, [1]).asSignal.plot;</p>
+<p class="p6"><span class="s7">Wavetable</span>.sineFill(512, [0.5]).plot;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.sineFill(512, [1]).plot(<span class="s8">"Table 1"</span>, <span class="s7">Rect</span>(50, 50, 150, 450));</p>
+<p class="p8"><br></p>
+<p class="p7"><br></p>
+<p class="p4"><br></p>
+<p class="p1"><b>asSignal</b></p>
+<p class="p4"><br></p>
+<p class="p1">Convert the Wavetable into a Signal.</p>
+<p class="p4"><br></p>
+<p class="p6"><span class="s7">Wavetable</span>.sineFill(512, [1]).asSignal.plot;</p>
 <p class="p7"><br></p>
 </body>
 </html>

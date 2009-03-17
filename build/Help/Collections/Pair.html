@@ -10,25 +10,26 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {text-decoration: underline ; color: #0021e7}
-span.s3 {text-decoration: underline ; color: #002fe0}
-span.s4 {color: #0000bf}
-span.s5 {color: #bf0000}
+span.s2 {color: #002fe0}
+span.s3 {color: #0000ff}
+span.s4 {text-decoration: underline ; color: #002fe0}
+span.s5 {text-decoration: underline ; color: #0039da}
+span.s6 {color: #001bb9}
+span.s7 {color: #ad140d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>Pair</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>LISP-like two element cells</b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>superclass: Collection</b></p>
+<p class="p1"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s2"><b>Object</b></span></a><span class="s2"><b> : </b><a href="Collection.html"><span class="s3"><b>Collection</b></span></a></span></p>
 <p class="p2"><br></p>
-<p class="p1">(implementation incomplete. See<b> </b><a href="../Language/J_concepts_in_SC.html"><span class="s2">J Concepts In SC</span></a><span class="s3"> </span>for similar functionality)</p>
+<p class="p1">(implementation incomplete. See<b> </b><a href="../Language/J_concepts_in_SC.html"><span class="s4">J Concepts In SC</span></a><span class="s5"> </span>for similar functionality)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Class Methods</b></p>
 <p class="p2"><br></p>
@@ -60,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">same like: depthFirstPreOrderTraversal</p>
 <p class="p2"><br></p>
 <p class="p1"><b>depthFirstPreOrderTraversal(function)</b></p>
-<p class="p2"><b></b><br></p>
+<p class="p2"><br></p>
 <p class="p1">traverse the data structure first link down, then across (see example).</p>
 <p class="p2"><br></p>
 <p class="p1"><b>depthFirstPostOrderTraversal(function)</b></p>
@@ -70,22 +71,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// example</p>
 <p class="p6"><br></p>
-<p class="p7">a = <span class="s4">Pair</span>(<span class="s4">Pair</span>(<span class="s4">Pair</span>(1, 2), 4), <span class="s4">Pair</span>(5, 6));</p>
+<p class="p7">a = <span class="s6">Pair</span>(<span class="s6">Pair</span>(<span class="s6">Pair</span>(1, 2), 4), <span class="s6">Pair</span>(5, 6));</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7">a.size;</p>
 <p class="p7">a.depth;</p>
-<p class="p7">a.do { <span class="s4">|x|</span> x.postln };</p>
-<p class="p7">a.traverse { <span class="s4">|x|</span> x.postln };</p>
-<p class="p8">a.depthFirstPreOrderTraversal { <span class="s4">|x|</span> x.postln };</p>
-<p class="p8">a.depthFirstPostOrderTraversal { <span class="s4">|x|</span> x.postln };</p>
+<p class="p7">a.do { <span class="s6">|x|</span> x.postln };</p>
+<p class="p7">a.traverse { <span class="s6">|x|</span> x.postln };</p>
+<p class="p7">a.depthFirstPreOrderTraversal { <span class="s6">|x|</span> x.postln };</p>
+<p class="p7">a.depthFirstPostOrderTraversal { <span class="s6">|x|</span> x.postln };</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5">// alternative instantiations:</p>
 <p class="p6"><br></p>
-<p class="p7"><span class="s4">Pair</span>.newFrom([1, [2, [[4, 5], 6]]]);</p>
+<p class="p7"><span class="s6">Pair</span>.newFrom([1, [2, [[4, 5], 6]]]);</p>
 <p class="p6"><br></p>
-<p class="p7">[1, [2, [[4, 5], 6]]].as(<span class="s4">Pair</span>); <span class="s5">// equivalent.</span></p>
+<p class="p7">[1, [2, [[4, 5], 6]]].as(<span class="s6">Pair</span>); <span class="s7">// equivalent.</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>

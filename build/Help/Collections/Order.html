@@ -5,36 +5,38 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a91a07}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {text-decoration: underline}
-span.s4 {color: #001fbf}
-span.s5 {color: #ba1100}
-span.s6 {color: #002ab9}
-span.s7 {color: #356d16}
+span.s3 {color: #0026b4}
+span.s4 {text-decoration: underline}
+span.s5 {color: #9d1c12}
+span.s6 {color: #3d6d1d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>Order</b></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>an order of elements with a numerical index</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2">superclass: <a href="SequenceableCollection.html"><span class="s3">SequenceableCollection</span></a></span></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><span class="s3"><b>Object</b></span></a><b> : </b><a href="Collection.html"><b>Collection</b></a><b> : </b><a href="SequenceableCollection.html"><b>SequenceableCollection</b></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1">Keeps elements in an order and allows to put them at arbitrary slots<span class="Apple-converted-space"> </span></p>
 <p class="p1">without having to allocate a large array.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2">see also: <a href="SparseArray.html"><span class="s4">SparseArray</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p1">Note: <b>put</b> and <b>at</b> are slower than in IdentityDictionary / PriorityQueue, <b>do</b> is faster.</p>
 <p class="p2"><br></p>
@@ -42,11 +44,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><b>*new(size)</b></p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>create a new order.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>//<span class="Apple-converted-space">  </span>example</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s4">Order</span>.new;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.put(7, 100); // put a value (100) at index 7</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.clear; <span class="s5">// empty</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//<span class="Apple-converted-space">  </span>example</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s3">Order</span>.new;</p>
+<p class="p6"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.put(7, 100); </span>// put a value (100) at index 7</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.clear; <span class="s5">// empty</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b>*newFromIndices(array, indices)</b></p>
 <p class="p4"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>create a new order from given items and indices</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -56,24 +58,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><br></p>
 <p class="p2"><br></p>
-<p class="p8">//example</p>
-<p class="p9"><br></p>
-<p class="p10">a = <span class="s6">Order</span>.new;</p>
-<p class="p9"><br></p>
-<p class="p10">a[0] = <span class="s7">\z</span>;</p>
-<p class="p10">a[0] = <span class="s7">\y</span>;</p>
-<p class="p10">a[5] = <span class="s7">\five</span>;</p>
-<p class="p10">a[4] = <span class="s7">\four</span>;</p>
-<p class="p9"><br></p>
-<p class="p10">a[0] = <span class="s7">\z</span>;</p>
-<p class="p10">a[5] = <span class="s7">\five</span>;</p>
-<p class="p10">a[4] = <span class="s7">\four</span>;</p>
-<p class="p9"><br></p>
-<p class="p10">a.indices;</p>
-<p class="p9"><br></p>
-<p class="p10">a[9] = 100;</p>
-<p class="p10">a.indices;</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
+<p class="p9">// example</p>
+<p class="p10"><br></p>
+<p class="p11">a = <span class="s3">Order</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">a[0] = <span class="s6">\z</span>;</p>
+<p class="p11">a[0] = <span class="s6">\y</span>;</p>
+<p class="p11">a[5] = <span class="s6">\five</span>;</p>
+<p class="p11">a[4] = <span class="s6">\four</span>;</p>
+<p class="p10"><br></p>
+<p class="p11">a[0] = <span class="s6">\z</span>;</p>
+<p class="p11">a[5] = <span class="s6">\five</span>;</p>
+<p class="p11">a[4] = <span class="s6">\four</span>;</p>
+<p class="p10"><br></p>
+<p class="p11">a.indices;</p>
+<p class="p10"><br></p>
+<p class="p11">a[9] = 100;</p>
+<p class="p11">a.indices;</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 </body>
 </html>
