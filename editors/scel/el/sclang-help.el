@@ -91,34 +91,6 @@
                 '(".*" sclang-help-substitute-for-filters)))
 
 
-;; dynamically change certain html-tags when displaying in w3m-browser:
-
-(defcustom sclang-help-filters
-  '(("p\\.p\\([0-9]+\\)" . "#p\\1")
-    ("<p class=\"\\(.*\\)\">\\(.*\\)</p>" . "<div id=\"\\1\">\\2</div>"))
-  "list of pairs of (regexp . filter) defining html-tags to be replaced by the function sclang-help-substitute-for-filters"
-  :group 'sclang-interface
-  :type '(repeat (cons (string :tag "match") (string :tag "replacement"))))
-
-(defun sclang-help-substitute-for-filters (&rest args)
-  "substitute various tags in SCs html-docs"
-  (mapcar #'(lambda (filter)
-	      (let ((regexp (car filter))
-		    (to-string (cdr filter)))
-		(goto-char (point-min))
-		(while (re-search-forward regexp nil t)
-		  (replace-match to-string nil nil))))
-	  sclang-help-filters))
-
-;; w3m's content-filtering system
-(setq w3m-use-filter t)
-
-(eval-after-load "w3m-filter"
-  '(add-to-list 'w3m-filter-rules
-		;; run on all files read by w3m...
-                '(".*" sclang-help-substitute-for-filters)))
-
-
 (defvar sclang-help-topic-alist nil
   "Alist mapping help topics to file names.")
 
@@ -155,12 +127,12 @@
 (defun sclang-help-buffer-name (topic)
   (sclang-make-buffer-name (concat "Help:" topic)))
 
-(defun sclang-rtf-file-p (file-name)
+(defun sclang-rtf-file-p (file)
   (let ((case-fold-search t))
     (string-match ".*\\.rtf$" file)))
 
 ;; ========= ADDITION for HTML help files
-(defun sclang-html-file-p (file-name)
+(defun sclang-html-file-p (file)
    (let ((case-fold-search t))
      (string-match ".*\\.html$" file)))
 
@@ -169,21 +141,21 @@
 ;   (let ((case-fold-search t))
 ;     (string-match ".*\\.htm$" file)))
 
-(defun sclang-sc-file-p (file-name)
+(defun sclang-sc-file-p (file)
   (let ((case-fold-search t))
     (string-match ".*\\.sc$" file)))
 
-(defun sclang-scd-file-p (file-name)
+(defun sclang-scd-file-p (file)
   (let ((case-fold-search t))
     (string-match ".*\\.scd$" file)))
 
-(defun sclang-help-file-p (file-name)
-  (string-match sclang-help-file-regexp file-name))
+(defun sclang-help-file-p (file)
+  (string-match sclang-help-file-regexp file))
 
-(defun sclang-help-topic-name (file-name)
-  (if (string-match sclang-help-file-regexp file-name)
-      (cons (file-name-nondirectory (replace-match "" nil nil file-name 1))
-	    file-name)))
+(defun sclang-help-topic-name (file)
+  (if (string-match sclang-help-file-regexp file)
+      (cons (file-name-nondirectory (replace-match "" nil nil file 1))
+	    file)))
 
 ;; =====================================================================
 ;; rtf parsing
