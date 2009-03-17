@@ -52,7 +52,7 @@
   ;; punctuation
   (modify-syntax-entry ?:  "." table)
   (modify-syntax-entry ?\; "." table)
-  (modify-syntax-entry ?\^ "." table)
+  (modify-syntax-entry ?^ "." table)
   ;; parenthesis
   (modify-syntax-entry ?\( "()" table)
   (modify-syntax-entry ?\) ")(" table)
