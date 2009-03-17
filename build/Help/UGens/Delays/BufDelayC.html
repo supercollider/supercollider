@@ -11,15 +11,13 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0038e9}
-span.s3 {color: #001bb9}
-span.s4 {color: #0000bf}
+span.s2 {color: #0042e3}
+span.s3 {color: #0026b4}
+span.s4 {color: #001bb9}
 span.s5 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -45,12 +43,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(</p>
 <p class="p7">// Dust randomly triggers Decay to create an exponential<span class="Apple-converted-space"> </span></p>
 <p class="p7">// decay envelope for the WhiteNoise input source</p>
-<p class="p8">{</p>
-<p class="p8"><span class="s4">var</span> z = <span class="s4">Decay</span>.ar(<span class="s4">Dust</span>.ar(1,0.5), 0.3, <span class="s4">WhiteNoise</span>.ar);</p>
+<p class="p6">{</p>
+<p class="p6"><span class="s4">var</span> z = <span class="s4">Decay</span>.ar(<span class="s4">Dust</span>.ar(1,0.5), 0.3, <span class="s4">WhiteNoise</span>.ar);</p>
 <p class="p7"><span class="s4">BufDelayC</span><span class="s5">.ar(b, z, 0.2, 1, z); </span>// input is mixed with delay via the add input</p>
-<p class="p8">}.play</p>
+<p class="p6">}.play</p>
 <p class="p6">)</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 </body>
 </html>
