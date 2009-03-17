@@ -13,15 +13,16 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #001bb9}
-span.s3 {color: #000000}
-span.s4 {color: #2c7014}
-span.s5 {color: #606060}
+span.s2 {color: #0026b4}
+span.s3 {color: #0000ff}
+span.s4 {color: #000000}
+span.s5 {color: #3d6d1d}
+span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,6 +34,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Note that using the <b>Bus</b> class to allocate a multichannel bus does not 'create' a multichannel bus, but rather simply reserves a series of adjacent bus indices with the bus' <a href="Server.html"><span class="s2">Server</span></a> object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an <a href="../UGens/InOut/In.html"><span class="s2">In</span></a> or <a href="../UGens/InOut/Out.html"><span class="s2">Out</span></a> ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.</p>
 <p class="p3"><br></p>
 <p class="p1">You can control which allocator determines the bus index numbers by setting the server options <b>blockAllocClass</b> variable prior to booting the server. Two allocators are available to support different kinds of applications. See the <a href="ServerOptions.html"><span class="s2">ServerOptions</span></a> help file for details.</p>
+<p class="p3"><br></p>
+<p class="p1">Buffer objects should not be created or modified within a <a href="SynthDef.html"><span class="s3">SynthDef</span></a>.</p>
+<p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p4"><b>Class Methods</b></p>
 <p class="p3"><br></p>
@@ -58,7 +62,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span>offset is the index into the given bus. numChannels is the desired number of channels.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>If the combination of offset and numChannels is outside the input bus' range, an error will be thrown.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-
 <p class="p5"><br></p>
 <p class="p4"><b>Instance Methods</b></p>
 <p class="p3"><br></p>
@@ -83,9 +86,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">b = <span class="s2">Bus</span>.control(s, 1).set(0.01);</p>
 <p class="p6">)</p>
 <p class="p6">(</p>
-<p class="p7">SynthDef<span class="s3">(</span><span class="s4">\rlpf</span><span class="s3">, { </span>|ffreq, rq|</p>
+<p class="p7">SynthDef<span class="s4">(</span><span class="s5">\rlpf</span><span class="s4">, { </span>|ffreq, rq|</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, <span class="s2">RLPF</span>.ar(<span class="s2">WhiteNoise</span>.ar(0.2), ffreq, rq))</p>
-<p class="p6">}).play(s, [<span class="s4">\ffreq</span>, a.asMap, <span class="s4">\rq</span>, b.asMap]);</p>
+<p class="p6">}).play(s, [<span class="s5">\ffreq</span>, a.asMap, <span class="s5">\rq</span>, b.asMap]);</p>
 <p class="p6">)</p>
 <p class="p3"><br></p>
 <p class="p4"><b>Asynchronous Control Bus Methods</b></p>
@@ -120,7 +123,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
 <p class="p8">// something to play with</p>
-<p class="p6"><span class="s2">SynthDef</span>(<span class="s4">\help_Bus</span>, { <span class="s2">arg</span> out=0,ffreq=100;</p>
+<p class="p6"><span class="s2">SynthDef</span>(<span class="s5">\help_Bus</span>, { <span class="s2">arg</span> out=0,ffreq=100;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> x;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s2">RLPF</span>.ar(<span class="s2">LFPulse</span>.ar(<span class="s2">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1)</p>
@@ -130,7 +133,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s3">x = </span><span class="s2">Synth</span><span class="s3">(</span>\help_Bus<span class="s3">);</span></p>
+<p class="p9"><span class="s4">x = </span><span class="s2">Synth</span><span class="s4">(</span>\help_Bus<span class="s4">);</span></p>
 <p class="p2"><br></p>
 <p class="p8">// get a bus</p>
 <p class="p6">b = <span class="s2">Bus</span>.control(s);</p>
@@ -152,14 +155,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">// multi-channel:<span class="Apple-converted-space">  </span>b.set(300,350);</p>
 <p class="p8">// Get the current value. This is asynchronous so you can't rely on it happening immediately.</p>
 <p class="p6">(</p>
-<p class="p10"><span class="s3">a = </span>"waiting"<span class="s3">;</span></p>
-<p class="p6">b.get({<span class="s2">arg</span> value; a = value; (<span class="s5">"after the server responds a is set to:"</span> + a).postln;});</p>
-<p class="p6">(<span class="s5">"a is now:"</span> + a).postln;</p>
+<p class="p10"><span class="s4">a = </span>"waiting"<span class="s4">;</span></p>
+<p class="p6">b.get({<span class="s2">arg</span> value; a = value; (<span class="s6">"after the server responds a is set to:"</span> + a).postln;});</p>
+<p class="p6">(<span class="s6">"a is now:"</span> + a).postln;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p6">x.free;</p>
 <p class="p2"><br></p>
-<p class="p8"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
+<p class="p8"><span class="s4">b.free; </span>// release it so it may be reallocated!</p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 </body>
