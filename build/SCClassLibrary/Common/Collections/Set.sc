@@ -4,7 +4,6 @@ Set : Collection {
 	*new { arg n=2; ^super.new.initSet(max(n,2)*2) }
 	species { ^this.class }
 	copy { ^this.shallowCopy.array_( array.copy ) }
-	makeEmpty { array.fill; }
 	do { arg function;
 		var i=0;
 		if ( size > 0, {
@@ -16,7 +15,12 @@ Set : Collection {
 			})
 		})
 	}
-	clear { this.makeEmpty; size=0 }
+	
+	clear { array.fill; size=0 }
+	makeEmpty {
+		this.clear;
+		this.deprecated(thisMethod, this.class.findMethod(\clear));
+	}
 	
 	includes { arg item; 
 		^array.at(this.scanFor(item)).notNil;
@@ -207,7 +211,10 @@ OrderedIdentitySet : IdentitySet {
 		items.do(function)
 	}
 	
-	makeEmpty { array.fill; items = nil; }
+	clear {
+		super.clear;
+		items = nil;
+	}
 	
 	remove { arg item;
 		super.remove(item);
@@ -220,10 +227,7 @@ OrderedIdentitySet : IdentitySet {
 	// private
 	
 	putCheck { arg index, item;
-		array.put(index, item);
+		super.putCheck(index, item);
 		items = items.add(item);
-		size = size + 1;
-		this.fullCheck;
 	}
-
 }
