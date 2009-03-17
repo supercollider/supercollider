@@ -17,10 +17,7 @@ Set : Collection {
 	}
 	
 	clear { array.fill; size=0 }
-	makeEmpty {
-		this.clear;
-		this.deprecated(thisMethod, this.class.findMethod(\clear));
-	}
+	makeEmpty { this.clear; }
 	
 	includes { arg item; 
 		^array.at(this.scanFor(item)).notNil;
