@@ -5,63 +5,67 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bb9}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0029ac}
-span.s1 {color: #000000}
-span.s2 {text-decoration: underline}
-span.s3 {color: #0029ac}
-span.s4 {color: #606060}
-span.s5 {color: #4e6a26}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0030a7}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {text-decoration: underline}
+span.s4 {color: #0030a7}
+span.s5 {color: #606060}
+span.s6 {color: #54682b}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>PV_MagMul<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>multiply magnitudes</b></p>
+<p class="p1"><span class="s1"><b>PV_MagMul<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>multiply magnitudes</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>PV_MagMul(bufferA,<span class="Apple-converted-space">  </span>bufferB)</b></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../../Core/Object.html"><b>Object</b></a></span><b> : </b><a href="../../Core/Kernel/AbstractFunction.html"><b>AbstractFunction</b></a><b> : </b><a href="../UGen.html"><b>UGen</b></a><b> : </b><a href="../PV_ChainUGen.html"><b>PV_ChainUGen</b></a></p>
 <p class="p2"><br></p>
-<p class="p3">Multiplies magnitudes of two inputs and keeps the phases of the first input.</p>
-<p class="p3"><b>bufferA</b> - fft buffer A.</p>
-<p class="p3"><b>bufferB</b> - fft buffer B.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s1">See also <a href="FFT Overview.html"><span class="s2">FFT Overview</span></a>.</span></p>
+<p class="p1"><b>PV_MagMul(bufferA,<span class="Apple-converted-space">  </span>bufferB)</b></p>
+<p class="p2"><br></p>
+<p class="p1">Multiplies magnitudes of two inputs and keeps the phases of the first input.</p>
+<p class="p1"><b>bufferA</b> - fft buffer A.</p>
+<p class="p1"><b>bufferB</b> - fft buffer B.</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s2">See also <a href="FFT Overview.html"><span class="s3">FFT Overview</span></a>.</span></p>
 <p class="p2"><br></p>
 <p class="p5">s.boot;</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p7"><span class="s3">SynthDef</span><span class="s1">(</span>"help-magMul"<span class="s1">, { </span><span class="s3">arg</span><span class="s1"> out=0;</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">WhiteNoise</span>.ar(0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s3">LFSaw</span>.ar(100, 0, 0.2);</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainA = </span>FFT(LocalBuf(2048)<span class="s1">, inA);</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span>FFT(LocalBuf(2048)<span class="s1">, inB);</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_MagMul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, 0.5 * <span class="s3">IFFT</span>(chain).dup);</p>
+<p class="p7"><span class="s4">SynthDef</span><span class="s2">(</span>"help-magMul"<span class="s2">, { </span><span class="s4">arg</span><span class="s2"> out=0;</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> inA, chainA, inB, chainB, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s4">WhiteNoise</span>.ar(0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s4">LFSaw</span>.ar(100, 0, 0.2);</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>chainA = </span>FFT(LocalBuf(2048)<span class="s2">, inA);</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>chainB = </span>FFT(LocalBuf(2048)<span class="s2">, inB);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_MagMul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, 0.5 * <span class="s4">IFFT</span>(chain).dup);</p>
 <p class="p5">}).play;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7"><span class="s1">c = </span><span class="s3">Buffer</span><span class="s1">.read(s,</span>"sounds/a11wlk01.wav"<span class="s1">);</span></p>
+<p class="p7"><span class="s2">c = </span><span class="s4">Buffer</span><span class="s2">.read(s,</span>"sounds/a11wlk01.wav"<span class="s2">);</span></p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
-<p class="p5"><span class="s3">SynthDef</span>(<span class="s4">"help-magMul2"</span>, { <span class="s3">arg</span> out=0, soundBufnum=0;</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">var</span> inA, chainA, inB, chainB, chain;</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s3">LFSaw</span>.ar([100, 150], 0, 0.2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s3">PlayBuf</span>.ar(1, soundBufnum, <span class="s3">BufRateScale</span>.kr(soundBufnum), loop: 1);</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainA = </span>FFT(LocalBuf(2048)<span class="s1">, inA);</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span>chainB = </span>FFT(LocalBuf(2048)<span class="s1">, inB);</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s3">PV_MagMul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.1 * <span class="s3">IFFT</span>(chain));</p>
-<p class="p5">}).play(s,[<span class="s5">\out</span>, 0, <span class="s5">\soundBufnum</span>, c]);</p>
+<p class="p5"><span class="s4">SynthDef</span>(<span class="s5">"help-magMul2"</span>, { <span class="s4">arg</span> out=0, soundBufnum=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">var</span> inA, chainA, inB, chainB, chain;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inA = <span class="s4">LFSaw</span>.ar([100, 150], 0, 0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>inB = <span class="s4">PlayBuf</span>.ar(1, soundBufnum, <span class="s4">BufRateScale</span>.kr(soundBufnum), loop: 1);</p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>chainA = </span>FFT(LocalBuf(2048)<span class="s2">, inA);</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span>chainB = </span>FFT(LocalBuf(2048)<span class="s2">, inB);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>chain = <span class="s4">PV_MagMul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.1 * <span class="s4">IFFT</span>(chain));</p>
+<p class="p5">}).play(s,[<span class="s6">\out</span>, 0, <span class="s6">\soundBufnum</span>, c]);</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">c.free;</p>
