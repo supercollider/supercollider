@@ -11,22 +11,23 @@ p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0024f8}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #8f2116}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #486b24}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #0026b4}
-span.s4 {color: #0000ff}
-span.s5 {color: #0024f8}
-span.s6 {color: #9d1c12}
-span.s7 {color: #3d6d1d}
+span.s3 {color: #002eaf}
+span.s4 {color: #0024f8}
+span.s5 {color: #0033f1}
+span.s6 {color: #0000ff}
+span.s7 {color: #8f2116}
+span.s8 {color: #486b24}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -37,7 +38,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Archives can write any object to disk and read from file again. Compex structures of objects can thus be restored. Writing an object to file as a<b> compile string</b> is usually more readable, but does not account for the internal structure of the object.</p>
 <p class="p2"><br></p>
-<p class="p5"><span class="s2"><b>See also:</b> <a href="Library.html"><span class="s3">Library</span></a></span><span class="s3">, <a href="../Core/Object.html"><span class="s5">Object</span></a></span><span class="s5">, <a href="LibraryBase.html"><span class="s4">LibraryBase</span></a></span></p>
+<p class="p5"><span class="s2"><b>See also:</b> <a href="Library.html"><span class="s3">Library</span></a></span><span class="s3">, <a href="../Core/Object.html"><span class="s5">Object</span></a></span><span class="s5">, <a href="LibraryBase.html"><span class="s4">LibraryBase</span></a></span>, <a href="../OSX/writeAsPlist.html"><span class="s6">writeAsPlist</span></a></p>
 <p class="p2"><br></p>
 <p class="p1">There is only one global instance: Archive.global, which is initialized automatically.</p>
 <p class="p2"><br></p>
@@ -64,22 +65,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b>Examples</b></p>
 <p class="p4"><br></p>
 <p class="p11">// make a storage place for various objects:</p>
-<p class="p12">q = (); <span class="s6">// Event</span></p>
+<p class="p12">q = (); <span class="s7">// Event</span></p>
 <p class="p4"><br></p>
-<p class="p12">q[<span class="s7">\a_long_array</span>] = <span class="s3">Array</span>.rand(128, 0.0, 1.0);</p>
-<p class="p12">q[<span class="s7">\pi_squared</span>] = pi * pi;</p>
-<p class="p12">q[<span class="s7">\favourite_sound</span>] = { { <span class="s3">SinOsc</span>.ar([300, 330]).sum * <span class="s3">LFPulse</span>.kr(2 + [0, 0.01]) * 0.1 }.play };</p>
-<p class="p11"><span class="s2">q[</span><span class="s7">\same_long_array</span><span class="s2">] = q[</span><span class="s7">\a_long_array</span><span class="s2">]; </span>// same objects may appear several times</p>
+<p class="p12">q[<span class="s8">\a_long_array</span>] = <span class="s3">Array</span>.rand(128, 0.0, 1.0);</p>
+<p class="p12">q[<span class="s8">\pi_squared</span>] = pi * pi;</p>
+<p class="p12">q[<span class="s8">\favourite_sound</span>] = { { <span class="s3">SinOsc</span>.ar([300, 330]).sum * <span class="s3">LFPulse</span>.kr(2 + [0, 0.01]) * 0.1 }.play };</p>
+<p class="p11"><span class="s2">q[</span><span class="s8">\same_long_array</span><span class="s2">] = q[</span><span class="s8">\a_long_array</span><span class="s2">]; </span>// same objects may appear several times</p>
 <p class="p4"><br></p>
-<p class="p12"><span class="s3">Archive</span>.global.put(<span class="s7">\myData</span>, q);</p>
+<p class="p12"><span class="s3">Archive</span>.global.put(<span class="s8">\myData</span>, q);</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p12"><span class="s3">Archive</span>.global.at(<span class="s7">\myData</span>).postcs;</p>
+<p class="p12"><span class="s3">Archive</span>.global.at(<span class="s8">\myData</span>).postcs;</p>
 <p class="p4"><br></p>
 <p class="p11">// after a recompile:</p>
 <p class="p12">s.boot;</p>
 <p class="p4"><br></p>
-<p class="p12">q = <span class="s3">Archive</span>.global.at(<span class="s7">\myData</span>);</p>
+<p class="p12">q = <span class="s3">Archive</span>.global.at(<span class="s8">\myData</span>);</p>
 <p class="p12">q.postcs;</p>
 <p class="p13"><span class="s2">q[</span>\favourite_sound<span class="s2">].value;</span></p>
 <p class="p4"><br></p>
