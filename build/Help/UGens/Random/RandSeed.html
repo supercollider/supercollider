@@ -5,22 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000ff}
-span.s3 {color: #0019b7}
-span.s4 {color: #326f17}
-span.s5 {color: #606060}
-span.s6 {color: #000000}
+span.s2 {color: #001bb9}
+span.s3 {color: #2c7014}
+span.s4 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -40,25 +38,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="s3">var</span> noise, filterfreq;</p>
-<p class="p7">noise = <span class="s3">WhiteNoise</span>.ar(0.05 ! 2) + <span class="s3">Dust2</span>.ar(70 ! 2);</p>
-<p class="p7">filterfreq = <span class="s3">LFNoise1</span>.kr(3, 5500, 6000);</p>
-<p class="p7"><span class="s3">Resonz</span>.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5) <span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s2">var</span> noise, filterfreq;</p>
+<p class="p7">noise = <span class="s2">WhiteNoise</span>.ar(0.05 ! 2) + <span class="s2">Dust2</span>.ar(70 ! 2);</p>
+<p class="p7">filterfreq = <span class="s2">LFNoise1</span>.kr(3, 5500, 6000);</p>
+<p class="p7"><span class="s2">Resonz</span>.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5) <span class="Apple-converted-space"> </span></p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p4"><br></p>
 <p class="p5">// reset the seed at a variable rate</p>
 <p class="p7">(</p>
-<p class="p7">x = { <span class="s3">arg</span> seed=1956;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">RandSeed</span>.kr(<span class="s3">Impulse</span>.kr(<span class="s3">MouseX.kr(</span>0.1, 100)), seed);</p>
+<p class="p7">x = { <span class="s2">arg</span> seed=1956;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">RandSeed</span>.kr(<span class="s2">Impulse</span>.kr(<span class="s2">MouseX.kr(</span>0.1, 100)), seed);</p>
 <p class="p7">}.play;</p>
 <p class="p7">)<span class="Apple-tab-span">	</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p7">x.set(<span class="s4">\seed</span>, 2001);</p>
-<p class="p7">x.set(<span class="s4">\seed</span>, 1798);</p>
-<p class="p7">x.set(<span class="s4">\seed</span>, 1902);</p>
+<p class="p7">x.set(<span class="s3">\seed</span>, 2001);</p>
+<p class="p7">x.set(<span class="s3">\seed</span>, 1798);</p>
+<p class="p7">x.set(<span class="s3">\seed</span>, 1902);</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p5">// above you can see that the sound of the LFNoise1 is not exactly reproduced (filter frequency)</p>
@@ -68,19 +66,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// a solution is to start a new synth:</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
-<p class="p7"><span class="s3">SynthDef</span>(<span class="s5">"pseudorandom"</span>, { <span class="s3">arg</span> out, sustain=1, seed=1967, id=0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> noise, filterfreq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">RandID</span>.ir(id);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">RandSeed</span>.ir(1, seed);</p>
+<p class="p7"><span class="s2">SynthDef</span>(<span class="s3">\pseudorandom</span>, { <span class="s2">arg</span> out, sustain=1, seed=1967, id=0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> noise, filterfreq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">RandID</span>.ir(id);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">RandSeed</span>.ir(1, seed);</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>noise = <span class="s3">WhiteNoise</span>.ar(0.05 ! 2) + <span class="s3">Dust2</span>.ar(70 ! 2);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>filterfreq = <span class="s3">LFNoise1</span>.kr(3, 5500, 6000);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>noise = <span class="s2">WhiteNoise</span>.ar(0.05 ! 2) + <span class="s2">Dust2</span>.ar(70 ! 2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>filterfreq = <span class="s2">LFNoise1</span>.kr(3, 5500, 6000);</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out,</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Resonz</span>.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Resonz</span>.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Line</span>.kr(1, 0, sustain, doneAction:2)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Line</span>.kr(1, 0, sustain, doneAction:2)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6"><br></p>
 <p class="p7">}).send(s);</p>
@@ -90,8 +88,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">(</p>
 <p class="p7">fork {</p>
 <p class="p7"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">Synth</span><span class="s6">(</span>"pseudorandom"<span class="s6">);</span></p>
-<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.1.wait; </span>// wait a bit longer than sustain, so sounds don't overlap</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Synth</span><span class="s4">(</span>\pseudorandom<span class="s4">);</span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.1.wait; </span>// wait a bit longer than sustain, so sounds don't overlap</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
 <p class="p7">}</p>
 <p class="p7">)</p>
@@ -100,10 +98,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">fork {</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s3">|seed|</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s2">|seed|</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>seed.postln;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3.do {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">"pseudorandom"</span>, [<span class="s4">\seed</span>, seed]);</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Synth</span><span class="s4">(</span>\pseudorandom<span class="s4">, [</span>\seed<span class="s4">, seed]);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.1.wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
@@ -113,10 +111,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// cd skipper</p>
 <p class="p7">(</p>
 <p class="p7">fork {</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s3">|seed|</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s2">|seed|</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>seed.postln;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(4,10).do {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">"pseudorandom"</span>, [<span class="s4">\seed</span>, seed, <span class="s4">\sustain</span>, 0.05]);</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Synth</span><span class="s4">(</span>\pseudorandom<span class="s4">, [</span>\seed<span class="s4">, seed, </span>\sustain<span class="s4">, 0.05]);</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.06.wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
@@ -129,8 +127,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">(</p>
 <p class="p7">fork {</p>
 <p class="p7"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">Synth</span><span class="s6">(</span>"pseudorandom"<span class="s6">);</span></p>
-<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.8.wait; </span>// instead of 1.1</p>
+<p class="p8"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">Synth</span><span class="s4">(</span>\pseudorandom<span class="s4">);</span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.8.wait; </span>// instead of 1.1</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
 <p class="p7">}</p>
 <p class="p7">)</p>
@@ -139,12 +137,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">fork {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span> id=0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s3">|seed|</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> id=0;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>(1902..2005).do { <span class="s2">|seed|</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>seed.postln;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>3.do {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">"pseudorandom"</span>, [<span class="s4">\seed</span>, seed, <span class="s4">\id</span>, id]);</p>
-<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>id = id + 1 % 16; </span>// there is 16 different random generators</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s3">\pseudorandom</span>, [<span class="s3">\seed</span>, seed, <span class="s3">\id</span>, id]);</p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>id = id + 1 % 16; </span>// there is 16 different random generators</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.8.wait;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}</p>
