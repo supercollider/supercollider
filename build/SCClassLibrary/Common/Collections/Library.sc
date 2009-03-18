@@ -345,6 +345,14 @@ MultiLevelIdentityDictionary : Collection
 			});
 		});
 	}
+	
+	storeOn { arg stream;
+		stream << this.class.name << "[" <<<* dictionary << "]"
+	}
+	
+	printOn { arg stream;
+		stream << this.class.name << "[" <<* dictionary << "]"
+	}
 }
 
 
