@@ -111,6 +111,7 @@ public:
 	int rxErrors();
 
 	void stop();
+	void cleanup();
 
 protected:
 	static void* threadFunc(void*);
@@ -122,6 +123,8 @@ protected:
 private:
 	// language interface
 	PyrObject*			m_obj;
+
+	volatile bool		m_dodone;
 
 	// serial interface
 	Options				m_options;
@@ -334,6 +337,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	}
 
 	m_open = true;
+	m_dodone = true;
 }
 
 SerialPort::~SerialPort()
@@ -345,6 +349,18 @@ SerialPort::~SerialPort()
 
 void SerialPort::stop(){
   m_running = false;
+}
+
+void SerialPort::cleanup(){
+	m_running = false;
+	m_dodone = false;
+/*	if ( m_open ){
+		tcflush(m_fd, TCIOFLUSH);
+		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
+		close(m_fd);
+		m_open = false;
+	};
+*/
 }
 
 bool SerialPort::put(uint8_t byte)
@@ -481,7 +497,8 @@ done:
 	};
 	m_open = false;
 	m_running = false;
-	doneAction();
+	if ( m_dodone )
+		{ doneAction(); }
 #ifndef NDEBUG
 	printf("SerialPort closed\n");
 #endif
@@ -561,7 +578,15 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
+
+// 	printf("SerialPort Cleanup %i\n", port);
+
 	if (port == 0) return errFailed;
+
+	port->cleanup();
+
+	post("SerialPort Cleanup\n");
+
 	delete port;
 	SetNil(self->uo->slots+0);
 	return errNone;

@@ -8,7 +8,8 @@ SerialPort
 	*initClass {
 		allPorts = Array[];
 		UI.registerForShutdown({
-			this.closeAll;
+			//			this.closeAll;
+			this.cleanupAll;
 		});
 	}
 
@@ -76,6 +77,12 @@ SerialPort
 		var ports = allPorts;
 		allPorts = Array[];
 		ports.do(_.close);
+	}
+
+	*cleanupAll {
+		var ports = allPorts;
+		allPorts = Array[];
+		ports.do(_.prCleanup);
 	}
 
 	// non-blocking read
