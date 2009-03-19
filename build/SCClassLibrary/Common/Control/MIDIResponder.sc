@@ -145,6 +145,20 @@ CCResponder : MIDIResponder {
 					oneShot.remove;
 				},nil,nil,nil,nil,true,true)
 	}
+	
+	matchEvent_ { |midiEvent|
+			// if ctlnum changes from non-number to number, or vice versa,
+			// this responder is going to move between ccr and ccnumr
+		if(matchEvent.notNil and: 
+				{ matchEvent.ctlnum.isNumber !== midiEvent.ctlnum.isNumber })
+		{
+			this.remove;
+			matchEvent = midiEvent;
+			this.class.add(this);
+		} {
+			matchEvent = midiEvent;
+		}
+	}
 }
 
 TouchResponder : MIDIResponder {
