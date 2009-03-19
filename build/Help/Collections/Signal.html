@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
@@ -15,21 +15,22 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #001bb9}
-span.s4 {color: #0021e7}
-span.s5 {color: #606060}
-span.s6 {color: #ad140d}
+span.s3 {color: #0026b4}
+span.s4 {color: #002fe0}
+span.s5 {color: #0021e7}
+span.s6 {color: #606060}
+span.s7 {color: #9d1c12}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>Signal<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>sampled audio buffer</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="Collection.html"><b>Collection</b></a></span><span class="s3"><b> :</b></span><span class="s2"><b> </b><a href="SequenceableCollection.html"><b>SequenceableCollection</b></a></span><span class="s3"><b> : </b><a href="ArrayedCollection.html"><span class="s4"><b>ArrayedCollection</b></span></a> : <a href="RawArray.html"><b>RawArray</b></a></span><span class="s2"> : <a href="FloatArray.html"><span class="s3"><b>FloatArray</b></span></a></span></p>
+<p class="p3"><span class="s2"><b>Inherits from: </b><a href="../Core/Object.html"><b>Object</b></a><b> : </b><a href="Collection.html"><b>Collection</b></a></span><span class="s3"><b> :</b></span><span class="s2"><b> </b><a href="SequenceableCollection.html"><b>SequenceableCollection</b></a></span><span class="s3"><b> : </b><a href="ArrayedCollection.html"><span class="s4"><b>ArrayedCollection</b></span></a> : <a href="RawArray.html"><span class="s5"><b>RawArray</b></span></a></span><span class="s2"> : <a href="FloatArray.html"><span class="s3"><b>FloatArray</b></span></a></span></p>
 <p class="p4"><br></p>
 <p class="p1">A Signal is a FloatArray that represents a sampled function of time buffer.<span class="Apple-converted-space"> </span></p>
 <p class="p1">Signals support math operations.</p>
@@ -52,9 +53,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1"><b>*chebyFill(size, amplitudes, phases)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes</p>
-<p class="p1">for use in waveshaping by the Shaper ugen.</p>
-<p class="p1">The Signal will be normalized.</p>
+<p class="p1">Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes.</p>
+<p class="p1">For eventual use in waveshaping by the Shaper ugen; see Shaper helpfile and Buffer:cheby too.</p>
 <p class="p1"><b>size</b> - the number of samples in the Signal.</p>
 <p class="p1"><b>amplitudes</b> - an Array of amplitudes for each Chebyshev polynomial beginning with order 1.</p>
 <p class="p6"><br></p>
@@ -125,7 +125,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7"><span class="s3">Signal</span>.sineFill(512, [1]).plot;</p>
 <p class="p6"><br></p>
-<p class="p7"><span class="s3">Signal</span>.sineFill(512, [1]).plot(<span class="s5">"Signal 1"</span>, <span class="s3">Rect</span>(50, 50, 150, 450));</p>
+<p class="p7"><span class="s3">Signal</span>.sineFill(512, [1]).plot(<span class="s6">"Signal 1"</span>, <span class="s3">Rect</span>(50, 50, 150, 450));</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p1"><b>play(loop, mul, numChannels, server)</b></p>
@@ -199,7 +199,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Normalize the Signal <b>in place</b> such that the maximum absolute peak value is 1.</p>
 <p class="p6"><br></p>
 <p class="p7"><span class="s3">Signal</span>[1, 2, -4, 2.5].normalize;</p>
-<p class="p7"><span class="s3">Signal</span>[1, 2, -4, 2.5].normalize(0, 1);<span class="Apple-tab-span">	</span><span class="s6">// normalize only a range</span></p>
+<p class="p7"><span class="s3">Signal</span>[1, 2, -4, 2.5].normalize(0, 1);<span class="Apple-tab-span">	</span><span class="s7">// normalize only a range</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p1"><b>normalizeTransfer</b></p>
@@ -231,8 +231,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Fade a subrange of the Signal <b>in place</b>.</p>
 <p class="p6"><br></p>
 <p class="p7">a = <span class="s3">Signal</span>.fill(10, 1);</p>
-<p class="p7">a.fade(0, 3);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">// fade in</span></p>
-<p class="p7">a.fade(6, 9, 1, 0);<span class="Apple-tab-span">	</span><span class="s6">// fade out</span></p>
+<p class="p7">a.fade(0, 3);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">// fade in</span></p>
+<p class="p7">a.fade(6, 9, 1, 0);<span class="Apple-tab-span">	</span><span class="s7">// fade out</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p1"><b>integral</b></p>
@@ -333,7 +333,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">complex = fft(real, imag, cosTable);<span class="Apple-converted-space"> </span></p>
 <p class="p7">[real, imag, (complex.magnitude) / 100 ].flop.flat</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.plot(<span class="s5">"fft"</span>, <span class="s3">Rect</span>(0, 0, 512 + 8, 500), numChannels: 3);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>.plot(<span class="s6">"fft"</span>, <span class="s3">Rect</span>(0, 0, 512 + 8, 500), numChannels: 3);</p>
 <p class="p7">)</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
@@ -356,7 +356,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">complex = fft(real, imag, cosTable).postln;</p>
 <p class="p7">ifft = complex.real.ifft(complex.imag, cosTable);</p>
 <p class="p6"><br></p>
-<p class="p7">[real, ifft.real].flop.flat.plot(<span class="s5">"fft and back"</span>, <span class="s3">Rect</span>(0, 0, 512 + 8, 500), numChannels: 2);</p>
+<p class="p7">[real, ifft.real].flop.flat.plot(<span class="s6">"fft and back"</span>, <span class="s3">Rect</span>(0, 0, 512 + 8, 500), numChannels: 2);</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>

@@ -3,8 +3,8 @@ Signal[float] : FloatArray {
 	*sineFill { arg size, amplitudes, phases;
 		^Signal.newClear(size).sineFill(amplitudes, phases).normalize
 	}
-	*chebyFill { arg size, amplitudes;
-		^Signal.newClear(size).chebyFill(amplitudes).normalizeTransfer
+	*chebyFill { arg size, amplitudes, normalize=true;
+		^Signal.newClear(size).chebyFill(amplitudes, normalize); //.normalizeTransfer //shouldn't normalize by default!
 	}
 	*hammingWindow { arg size, pad=0;
 		if (pad == 0, {
@@ -48,6 +48,30 @@ Signal[float] : FloatArray {
 		// This method returns a wavetable in that format.
 		_SignalAsWavetable; 
 		^this.primitiveFailed 
+	}
+	
+	asWavetableNoWrap { 
+		// Shaper requires wavetables without wrap.
+		// This method returns a wavetable in that format.
+		//To generate size N wavetable need N/2+1 signal values rather than N/2
+		//because Buffer's add_wchebyshev calculates N/2+1 values whilst 
+		//Signal's _SignalAddChebyshev calculates N/2! 
+		
+		var newsig = Signal.newClear((this.size-1)*2); 
+		var next, cur; 
+		
+		cur= this[0];
+		(this.size-1).do{|i|
+		var index= 2*i;
+		next= this[i+1];
+				
+		newsig[index]= 2*cur -next; 
+		newsig[index+1]= next-cur; 
+		cur=next;
+		
+		};
+		
+		^newsig 
 	}
 	
 	peak { _SignalPeak; ^this.primitiveFailed }
@@ -144,10 +168,18 @@ Signal[float] : FloatArray {
 		_SignalAddChebyshev
 		^this.primitiveFailed 
 	}
-	chebyFill { arg amplitudes;
+	chebyFill { arg amplitudes, normalize=true;
 		this.fill(0.0);
-		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp) });
-		this.normalizeTransfer
+		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp); if(i%4==1,{this.offset(1)}); if(i%4==3,{this.offset(-1)}); }); //corrections for JMC DC offsets, as per Buffer:cheby
+		
+		if(normalize,{this.normalizeTransfer}); //no automatic cheby
+	}
+	
+	//old version
+	chebyFill_old { arg amplitudes;
+		this.fill(0.0);
+		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp) }); 
+		this.normalizeTransfer 
 	}
 
 	
@@ -273,10 +305,19 @@ Wavetable[float] : FloatArray {
 	*sineFill { arg size, amplitudes, phases;
 		^Signal.sineFill(size, amplitudes, phases).asWavetable
 	}
-	*chebyFill { arg size, amplitudes;
-		^Signal.chebyFill(size, amplitudes).asWavetable
+	
+	//size must be N/2+1 for N power of two; N is eventual size of wavetable
+	*chebyFill { arg size, amplitudes, normalize=true;
+		
+		^Signal.chebyFill(size, amplitudes, normalize).asWavetableNoWrap; //asWavetable causes wrap here, problem
 	}
 
+	*chebyFill_old { arg size, amplitudes;
+		
+		//this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cheby));
+		
+		^Signal.chebyFill(size, amplitudes).asWavetable; //asWavetable causes wrap here, problem
+	}
 	
 	asSignal {
 		_WavetableAsSignal
