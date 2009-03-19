@@ -91,7 +91,7 @@ BusPlug : AbstractFunction {
 				prefix ++ index
 			} { 
 				{ |i| prefix ++ (index + i) }.dup(numChannels)
-			}  
+			}
 	}
 	wakeUpToBundle {}
 	wakeUp {}
@@ -788,7 +788,7 @@ NodeProxy : BusPlug {
 	}
 	
 	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.
-		if(busLoaded.not) {
+		if(busLoaded.not and: { bus.notNil }) {
 			bus.realloc; 
 			this.linkNodeMap
 		}
@@ -1064,6 +1064,14 @@ Ndef : NodeProxy {
 		
 		object !? { res.source = object };
 		^res;
+	}
+	
+	*ar { arg key, numChannels, offset=0;
+		^this.new(key).ar(numChannels, offset)
+	}
+	
+	*kr { arg key, numChannels, offset=0;
+		^this.new(key).kr(numChannels, offset)
 	}
 	
 	*dictFor { arg server;
