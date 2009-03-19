@@ -25,7 +25,6 @@
 void initArrayPrimitives();
 
 int prArrayMultiChanExpand(VMGlobals *g, int numArgsPushed);
-int prArrayMultiChanExpandForOSC(VMGlobals *g, int numArgsPushed);
 
 int arrayAtIdentityHash(PyrObject *array, PyrSlot *key);
 int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
