@@ -16,7 +16,6 @@ VIM_FILE_RE = re.compile('.*\.vim$')
 ANY_FILE_RE = re.compile('.*')
 HOME_DIR_RE = re.compile(os.environ.get('HOME') + '.*')
 
-
 DEFAULT_PREFIX = '/usr/local/'
 
 if os.path.isdir(os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')):
@@ -112,10 +111,10 @@ CACHE_DIR = env.get('CACHE_DIR')
 SUPERCOLLIDER_HELP_DIR = env.get('SUPERCOLLIDER_HELP_DIR')
 DOC_DIR = os.path.join(CACHE_DIR, 'doc/')
 
-install_from_base = env.Alias('install-from-base',[
-	Import( 'vimenv' ),
-	print vimenv],
-	)
+#install_from_base = env.Alias('install-from-base',[
+	#Import( 'vimenv' ),
+	#print vimenv],
+	#)
 
 install_vimfiles = env.Alias('install-vimfiles', [
 	install_dir( env, 'ftplugin', VIMFILE_DIR, VIM_FILE_RE, 0),
@@ -154,9 +153,9 @@ env.Alias('install-user', [install_vimfiles, install_doc])
 env.Alias('install-system', [install_bin, install_rc, install_classes])
 
 #called from main script
-env.Alias('install', [install_from_base])
+#env.Alias('install', [install_from_base])
 
-print env['install']
+#print env['install']
 
 #for x in env.Glob('*', ondisk = False, strings = False, source = False):
 #	print x.get_abspath()
