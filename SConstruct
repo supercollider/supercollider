@@ -418,6 +418,8 @@ if isDefaultBuild():
     else:
         success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
         if not success: Exit(1)
+        if conf.CheckPKG('sndfile >= 1.0.18'):
+             libraries['sndfile'].Append(CPPDEFINES = ['LIBSNDFILE_1018'])
 
     # libcurl
     success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
