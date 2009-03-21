@@ -1235,7 +1235,7 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 				*string = "FLAC";
 				break ;
 // TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#if SC_DARWIN || SC_WIN32
+#if SC_DARWIN || SC_WIN32 || LIBSNDFILE_1018
 		case SF_FORMAT_VORBIS :
 				*string = "vorbis";
 				break ;
