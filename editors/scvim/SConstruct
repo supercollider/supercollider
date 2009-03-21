@@ -16,6 +16,7 @@ VIM_FILE_RE = re.compile('.*\.vim$')
 ANY_FILE_RE = re.compile('.*')
 HOME_DIR_RE = re.compile(os.environ.get('HOME') + '.*')
 
+
 DEFAULT_PREFIX = '/usr/local/'
 
 if os.path.isdir(os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')):
@@ -93,6 +94,7 @@ opts.Add(PathOption('SUPERCOLLIDER_HELP_DIR',
 #create our enviroment, with our options and custom builders
 env = Environment(options = opts, BUILDERS = {'BuildHelp' : build_help})
 
+
 #generate the help options
 Help(opts.GenerateHelpText(env))
 
@@ -109,6 +111,11 @@ VIMFILE_DIR = env.get('VIMFILE_DIR')
 CACHE_DIR = env.get('CACHE_DIR')
 SUPERCOLLIDER_HELP_DIR = env.get('SUPERCOLLIDER_HELP_DIR')
 DOC_DIR = os.path.join(CACHE_DIR, 'doc/')
+
+install_from_base = env.Alias('install-from-base',[
+	Import( 'vimenv' ),
+	print vimenv],
+	)
 
 install_vimfiles = env.Alias('install-vimfiles', [
 	install_dir( env, 'ftplugin', VIMFILE_DIR, VIM_FILE_RE, 0),
@@ -146,5 +153,30 @@ env.Alias('install-user', [install_vimfiles, install_doc])
 #this should normally be run with sudo privileges
 env.Alias('install-system', [install_bin, install_rc, install_classes])
 
+#called from main script
+env.Alias('install', [install_from_base])
+
+print env['install']
+
 #for x in env.Glob('*', ondisk = False, strings = False, source = False):
 #	print x.get_abspath()
+
+
+# ======================================================================
+# configuration summary
+# ======================================================================
+
+def yesorno(p):
+    if p: return 'yes'
+    else: return 'no'
+
+print '------------------------------------------------------------------------'
+print 'PREFIX                 :' PREFIX
+print 'CACHE_DIR              :' CACHE_DIR
+print 'VIMFILE_DIR            :' VIMFILE_DIR
+print 'DOC_DIR                :' DOC_DIR
+print 'SUPERCOLLIDER_HELP_DIR :' SUPERCOLLIDER_HELP_DIR
+print '------------------------------------------------------------------------'
+
+# ======================================================================
+# EOF
