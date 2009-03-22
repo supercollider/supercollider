@@ -355,11 +355,13 @@ env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
 
 if os.path.exists('/usr/lib/distcc/bin'):
     os.environ['PATH']         = '/usr/lib/distcc/bin:' + os.environ['PATH']
-    env['ENV']['DISTCC_HOSTS'] = os.environ['DISTCC_HOSTS']
+    #env['ENV']['DISTCC_HOSTS'] = os.environ['DISTCC_HOSTS']
+    env['ENV']['DISTCC_HOSTS'] = os.environ.get('DISTCC_HOSTS')
     
 if os.path.exists('/usr/lib/ccache/bin'):
     os.environ['PATH']         = '/usr/lib/ccache/bin:' + os.environ['PATH']
-    env['ENV']['CCACHE_DIR']   = os.environ['CCACHE_DIR']
+    #env['ENV']['CCACHE_DIR']   = os.environ['CCACHE_DIR']
+    env['ENV']['CCACHE_DIR']   = os.environ.get('CCACHE_DIR')
     
 env['ENV']['PATH'] = os.environ['PATH']
 if PLATFORM == 'windows':
@@ -418,16 +420,15 @@ if isDefaultBuild():
     else:
         success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
         if not success: Exit(1)
-        succes2 = conf.CheckPKG('sndfile >= 1.0.18')
+        succes2, libraries['sndfile18'] = conf.CheckPKG('sndfile >= 1.0.18')
         if succes2:
             libraries['sndfile'].Append(CPPDEFINES = ['LIBSNDFILE_1018'])
-            print 'found libsndfile 1.0.18 appending define'
 
     # libcurl
     success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
     if env['CURL'] and not success:
-    	print 'CURL option was set, but libcurl not found.'
-    	Exit(1)
+        print 'CURL option was set, but libcurl not found.'
+        Exit(1)
 
     # FFTW
     success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
@@ -1161,11 +1162,21 @@ if is_installing():
         #os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
     #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
 
+#if env['SCVIM']:
+	#vimenv = env.Clone()
+	#SConscript('editors/test/SConstruct', exports=['vimenv'])
+
+#if env['SCVIM']:
+   #print 'installing scvim'
+   #vimenv = env.Clone()
+   ##env.Append(FROMTOP=True)
+   #SConscript('editors/scvim/SConstruct', exports=['vimenv'])
+
 if env['SCVIM']:
-   SConscript("editors/scvim/SConstruct", 'env')
+   SConscript('editors/scvim/SConstruct', exports=['env'])
 
 if env['SCED']:
-   SConscript("editors/sced/SConstruct", 'env')
+   SConscript('editors/sced/SConstruct', 'env')
 
 # scel
 if env['SCEL']:
