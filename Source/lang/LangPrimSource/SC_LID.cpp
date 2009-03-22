@@ -1,6 +1,7 @@
 /*
 	Linux Input Device support.
 	Copyright (c) 2004 stefan kersten.
+	modifications by Marije Baalman 2006-9
 
 	====================================================================
 
@@ -186,19 +187,19 @@ int SC_LID::open(const char* path)
 	m_fd = ::open(path, O_RDWR);
 
 	if (m_fd == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (1): %s\n", strerror(errno));
 		return errFailed;
 	}
 		
 	memset(m_eventTypeCaps, 0, sizeof(m_eventTypeCaps));
 	if (ioctl(m_fd, EVIOCGBIT(0, EV_MAX), m_eventTypeCaps) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (2): %s\n", strerror(errno));
 		return errFailed;
 	}
 
 	memset(m_keyState, 0, sizeof(m_keyState));
 	if (ioctl(m_fd, EVIOCGKEY(sizeof(m_keyState)), m_keyState) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (3): %s\n", strerror(errno));
 		return errFailed;
 	}
 
@@ -222,7 +223,7 @@ bool SC_LID::isEventCodeSupported(int evtType, int evtCode)
 		m_lastEventType = evtType;
 		memset(m_eventCodeCaps, 0, sizeof(m_eventCodeCaps));
 		if (ioctl(m_fd, EVIOCGBIT(evtType, KEY_MAX), m_eventCodeCaps) == -1) {
-			error("LID: %s\n", strerror(errno));
+			post("LID failed to check event code (error %s)\n", strerror(errno));
 			return false;
 		}
 	}
@@ -232,7 +233,7 @@ bool SC_LID::isEventCodeSupported(int evtType, int evtCode)
 int SC_LID::getName(char* buf, size_t size)
 {
 	if (ioctl(m_fd, EVIOCGNAME(size), buf) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (5): %s\n", strerror(errno));
 		return errFailed;
 	}
 	return errNone;
@@ -241,17 +242,19 @@ int SC_LID::getName(char* buf, size_t size)
 int SC_LID::getInfo(struct input_id *info, char *bufPhys, size_t sizePhys, char *bufUniq, size_t sizeUniq)
 {
 	if (ioctl(m_fd, EVIOCGID, info) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (6): %s\n", strerror(errno));
 		return errFailed;
 	}
 	if (ioctl(m_fd, EVIOCGPHYS(sizePhys), bufPhys) == -1) {
 // 		strcpy( sizePhys, strerror(errno));
- 		error("LID: %s\n", strerror(errno));
+ 		post("LID could not retrieve physical location (error: %s)\n", strerror(errno));
+		sprintf(bufPhys, "");
 // 		return errFailed;
 	}
 	if (ioctl(m_fd, EVIOCGUNIQ(sizeUniq), bufUniq) == -1) {
 // 		strcpy( strerror(errno), sizeof( strerror(errno)), sizeUniq );
- 		error("LID: %s\n", strerror(errno));
+ 		post("LID could not get unique identifier (error: %s)\n", strerror(errno));
+		sprintf(bufUniq, "");
 // 		return errFailed;
 	}
 
@@ -266,7 +269,7 @@ int SC_LID::getKeyState(int evtCode)
 int SC_LID::getAbsInfo(int evtCode, struct input_absinfo* info)
 {
 	if (ioctl(m_fd, EVIOCGABS(evtCode), info) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (9): %s\n", strerror(errno));
 		return errFailed;
 	}
 	return errNone;
@@ -292,7 +295,7 @@ int SC_LID::setLedState( int evtCode, int evtValue )
 int SC_LID::grab(int flag)
 {
 	if (ioctl(m_fd, EVIOCGRAB, flag) == -1) {
-		error("LID: %s\n", strerror(errno));
+		error("LID (10): %s\n", strerror(errno));
 		return errFailed;
 	}
 	return errNone;
