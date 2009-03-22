@@ -165,17 +165,17 @@ env.Alias('install-system', [install_bin, install_rc, install_classes])
 # configuration summary
 # ======================================================================
 
-def yesorno(p):
-    if p: return 'yes'
-    else: return 'no'
+#def yesorno(p):
+    #if p: return 'yes'
+    #else: return 'no'
 
-print '------------------------------------------------------------------------'
-print 'PREFIX                 :' PREFIX
-print 'CACHE_DIR              :' CACHE_DIR
-print 'VIMFILE_DIR            :' VIMFILE_DIR
-print 'DOC_DIR                :' DOC_DIR
-print 'SUPERCOLLIDER_HELP_DIR :' SUPERCOLLIDER_HELP_DIR
-print '------------------------------------------------------------------------'
+#print '------------------------------------------------------------------------'
+#print 'PREFIX                 :' PREFIX
+#print 'CACHE_DIR              :' CACHE_DIR
+#print 'VIMFILE_DIR            :' VIMFILE_DIR
+#print 'DOC_DIR                :' DOC_DIR
+#print 'SUPERCOLLIDER_HELP_DIR :' SUPERCOLLIDER_HELP_DIR
+#print '------------------------------------------------------------------------'
 
 # ======================================================================
 # EOF
