@@ -42,12 +42,13 @@ LID {
 		eventTypes = [
 			// maps event type (index) to max code value		
 			0x0001,		// EV_SYN
-			0x01ff,		// EV_KEY
+			0x02ff,		// EV_KEY
 			0x000f,		// EV_REL
 			0x003f,		// EV_ABS
 			0x0007,		// EV_MSC
+			0x000f,     // EV_SW (switch) added by nescivi
 
-			nil, nil, nil, nil,
+			nil, nil, nil,
 			nil, nil, nil, nil,
 			nil, nil, nil, nil,
 
@@ -391,7 +392,8 @@ LID {
 		caps = IdentityDictionary.new;
 		slots = IdentityDictionary.new;
 		eventTypes.do { | evtTypeMax, evtType |
-			if (evtType.notNil and: { this.prEventTypeSupported(evtType) }) {
+			// nescivi: below was evtType.notNil, but since that is the index, that makes no sense... however evtTypeMax can be nil, and should be skipped if it is... so I'm changing it.
+			if (evtTypeMax.notNil and: { this.prEventTypeSupported(evtType) }) {
 				caps[evtType] = List.new;
 				slots[evtType] = IdentityDictionary.new;
 				for (0, evtTypeMax, { | evtCode |
