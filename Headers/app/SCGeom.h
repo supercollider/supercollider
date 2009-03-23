@@ -67,10 +67,10 @@ inline SCRect SCRectUnion(SCRect a, SCRect b)
 
 inline bool SCRectsDoIntersect(SCRect a, SCRect b)
 {
-	if (a.x + a.width < b.x) return false;
-	if (a.y + a.height < b.y) return false;
-	if (a.x > b.x + b.width) return false;
-	if (a.y > b.y + b.height) return false;
+	if ((a.x + a.width) <= b.x) return false;
+	if ((a.y + a.height) <= b.y) return false;
+	if (a.x >= (b.x + b.width)) return false;
+	if (a.y >= (b.y + b.height)) return false;
 	return true;
 }
 
