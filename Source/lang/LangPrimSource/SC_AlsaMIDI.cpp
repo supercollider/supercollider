@@ -1048,7 +1048,10 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 
     err = slotIntVal(args+1, &uid);
     if (err) return err;
-    
+
+	if( !isKindOfSlot(args+2, s_int8array->u.classobj) )
+		return errWrongType;
+
     packet = args[2].uob;
 
 	return sendMIDISysex(outputIndex, uid, packet->size, packet->b);
