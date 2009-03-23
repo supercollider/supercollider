@@ -76,6 +76,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p9"><span class="s9">GUI</span><span class="s3">.current;<span class="Apple-tab-span">	</span></span>// returns the current GUI kit implementation</p>
 <p class="p2"><br></p>
+<p class="p1">If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-OSX systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:</p>
+<p class="p2"><br></p>
+<p class="p9"><span class="s9">GUI</span><span class="s3">.id;<span class="Apple-tab-span">	</span></span>// returns the current GUI kit implementation id; this is currently either \cocoa or \swing</p>
+<p class="p2"><br></p>
 <p class="p1">For persistency, you can store the identifier of the kit implementation and recall the kit through the class method <span class="s10">fromID</span>:</p>
 <p class="p2"><br></p>
 <p class="p10">x = <span class="s9">GUI</span>.cocoa;</p>

@@ -43,6 +43,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">(As a general object-oriented programming rule, subclassing is regarded with some suspicion because the objects' information is not as cleanly encapsulated when a system is built too heavily on subclasses. This is not limited just to GUI cross-platform concerns.)</p>
 <p class="p2"><br></p>
+<p class="p1">If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-OSX systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:</p>
+<p class="p2"><br></p>
+<p class="p9"><span class="s9">GUI</span><span class="s3">.id;<span class="Apple-tab-span">	</span></span>// returns the current GUI kit implementation id; this is currently either \cocoa or \swing</p>
+<p class="p2"><br></p>
 <p class="p3"><b>Extension methods added to GUI objects</b></p>
 <p class="p2"><br></p>
 <p class="p3">At present, extension methods added to, for instance, SCButton do not automatically transfer over to JSCButton. It's necessary to provide the extension for both classes. If the compiler finds an extension for a class that doesn't exist, a warning is printed while compiling the class library, but the interpreter will still function after that. In extensions that are published (e.g. as quarks), it's considered rude to litter the startup output with non-fatal warnings unless there is no other alternative.</p>

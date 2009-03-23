@@ -79,10 +79,11 @@ EZSlider : EZGui {
 
 		numberView.action = { this.valueAction_(numberView.value) };
 		
-		if (GUI.current==CocoaGUI) {scaler = 10};
+		if (GUI.id==\cocoa) {scaler = 10;
+			numberView.scroll_step=controlSpec.step*scaler;
+		};
 		numberView.step=controlSpec.step*scaler;
-		numberView.scroll_step=controlSpec.step*scaler;
-		
+
 		if (initAction) {
 			this.valueAction_(initVal);
 		}{
