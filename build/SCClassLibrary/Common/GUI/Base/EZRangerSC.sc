@@ -74,12 +74,11 @@ EZRanger : EZGui {
 			rangeSlider.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
 		};
 		
-		if (GUI.id==\cocoa) {scaler = 10;
-			hiBox.scroll_step=controlSpec.step*scaler;
-			loBox.scroll_step=controlSpec.step*scaler;
-		};
+		if (GUI.id==\cocoa) {scaler = 10;};
 		hiBox.step=controlSpec.step*scaler;
 		loBox.step=controlSpec.step*scaler;
+		hiBox.scroll_step=controlSpec.step*scaler;
+		loBox.scroll_step=controlSpec.step*scaler;
 
 		rangeSlider.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
