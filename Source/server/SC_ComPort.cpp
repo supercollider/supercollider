@@ -102,11 +102,19 @@ void dumpOSCmsg(int inSize, char* inData)
 				scprintf(" DATA[%d]", msg.getbsize());
 				msg.skipb();
 				break;
-			default :
+			case '[' :
+				scprintf("[");	
+				msg.count++;
+				break;
+			case ']' :
+				scprintf("]");
+				msg.count++;
+				break;
+		    default :
 				scprintf(" !unknown tag '%c' 0x%02x !", isprint(c)?c:'?', (unsigned char)c & 255);
 				goto leave;
 		}
-		if (msg.remain()) scprintf(",");
+		if (msg.remain() && (c!= '[')) scprintf(",");
 	}
 leave:
 	scprintf(" ]");
