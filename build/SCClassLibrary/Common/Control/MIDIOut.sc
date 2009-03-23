@@ -408,7 +408,7 @@ MIDIOut {
 	}
 
 	sysex { arg packet;
-		this.prSysex( uid, packet );
+		^this.prSysex( uid, packet );
 	}
 	
 	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
@@ -417,5 +417,6 @@ MIDIOut {
 	
 	prSysex { arg uid, packet;
 		_SendSysex
+		^this.primitiveFailed;
 	}
 }

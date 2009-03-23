@@ -634,7 +634,11 @@ int prSendSysex(VMGlobals *g, int numArgsPushed);
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {	
     int err, uid, size;
-    PyrInt8Array* packet = g->sp->uob;				
+	
+    if( !isKindOfSlot(g->sp, s_int8array->u.classobj) )
+        return errWrongType;
+	
+    PyrInt8Array* packet = g->sp->uob;			
     size = packet->size;
 
     PyrSlot *u = g->sp - 1;
@@ -657,9 +661,8 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
     pk -> bytesToSend = size;
     pk->completionProc = freeSysex;
     pk->completionRefCon = 0;
-   	MIDISendSysex(pk);
 	
-    return errNone;
+    return ((MIDISendSysex(pk) == (OSStatus)0) ? errNone : errFailed);
 }
 
 void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late);
