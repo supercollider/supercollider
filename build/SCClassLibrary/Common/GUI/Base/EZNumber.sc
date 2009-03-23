@@ -61,9 +61,11 @@ EZNumber : EZGui{
 		action = argAction;
 		
 		numberView = GUI.numberBox.new(view, numBounds).resize_(2);
-		if (GUI.current==CocoaGUI) {scaler = 10};
+		if (GUI.id==\cocoa) { 
+			scaler = 10;
+			numberView.scroll_step=controlSpec.step*scaler;
+		};
 		numberView.step=controlSpec.step*scaler;
-		numberView.scroll_step=controlSpec.step*scaler;
 		//numberView.scroll=true;
 		numberView.action = {
 			this.valueAction_(numberView.value);
