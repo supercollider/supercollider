@@ -112,10 +112,10 @@ Rect {
 		^(this.containsPoint(aRect.leftTop) and: {this.containsPoint(aRect.rightBottom) })
 	}
 	intersects { arg aRect;
-		if (aRect.right < this.left, { ^false });
-		if (aRect.bottom < this.top, { ^false });
-		if (aRect.left > this.right, { ^false });
-		if (aRect.top > this.bottom, { ^false });
+		if (aRect.right <= this.left, { ^false });
+		if (aRect.bottom <= this.top, { ^false });
+		if (aRect.left >= this.right, { ^false });
+		if (aRect.top >= this.bottom, { ^false });
 		^true
 	}
 	
