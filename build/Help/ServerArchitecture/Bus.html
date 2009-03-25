@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -13,15 +13,15 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0026b4}
-span.s3 {color: #0000ff}
+span.s2 {color: #0000bf}
+span.s3 {color: #0000bf}
 span.s4 {color: #000000}
-span.s5 {color: #3d6d1d}
+span.s5 {color: #007300}
 span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -33,9 +33,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">Note that using the <b>Bus</b> class to allocate a multichannel bus does not 'create' a multichannel bus, but rather simply reserves a series of adjacent bus indices with the bus' <a href="Server.html"><span class="s2">Server</span></a> object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an <a href="../UGens/InOut/In.html"><span class="s2">In</span></a> or <a href="../UGens/InOut/Out.html"><span class="s2">Out</span></a> ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.</p>
 <p class="p3"><br></p>
-<p class="p1">You can control which allocator determines the bus index numbers by setting the server options <b>blockAllocClass</b> variable prior to booting the server. Two allocators are available to support different kinds of applications. See the <a href="ServerOptions.html"><span class="s2">ServerOptions</span></a> help file for details.</p>
+<p class="p1">Bus objects should not be created or modified within a <a href="SynthDef.html"><span class="s3">SynthDef</span></a>.</p>
 <p class="p3"><br></p>
-<p class="p1">Buffer objects should not be created or modified within a <a href="SynthDef.html"><span class="s3">SynthDef</span></a>.</p>
+<p class="p1"><b>Note:</b> The lowest <i>n</i> bus indices are reserved for hardware output and input, where <i>n</i> = server.options.numOutputBusChannels + server.options.numInputBusChannels.</p>
+<p class="p3"><br></p>
+<p class="p1">Hardware output buses: 0 .. (numOutputBusChannels - 1)</p>
+<p class="p1">Hardware input buses: numOutputBusChannels .. (numOutputBusChannels + numInputBusChannels - 1)</p>
+<p class="p1">First private bus index: numOutputBusChannels + numInputBusChannels</p>
+<p class="p3"><br></p>
+<p class="p1">Do not try to use hardware I/O buses as private buses.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p4"><b>Class Methods</b></p>
