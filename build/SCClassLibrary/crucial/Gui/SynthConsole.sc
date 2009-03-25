@@ -205,9 +205,9 @@ SaveConsole : AbstractConsole {
 		 	})
 	 	},minWidth).background_(
 	 		if(path.value.isNil,{ // virgin
-	 			Color(202,255,161) 
+	 			Color.new255(202,255,161) 
 	 		},{
-	 			Color(255,242,89)
+	 			Color.new255(255,242,89)
 	 		})
 	 	);
 	}
