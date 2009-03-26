@@ -2039,6 +2039,11 @@ void LinLin_SetCalc(LinLin* unit)
 		}
 	};
 	SETCALC(LinLin_next);
+
+}
+
+void LinLin_Ctor(LinLin* unit)
+{
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
 	float dstlo = ZIN0(3);
@@ -2046,11 +2051,6 @@ void LinLin_SetCalc(LinLin* unit)
 	
 	unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
 	unit->m_offset = dstlo - unit->m_scale * srclo;
-
-}
-
-void LinLin_Ctor(LinLin* unit)
-{
 	LinLin_SetCalc(unit);
 	LinLin_next(unit, 1);
 }

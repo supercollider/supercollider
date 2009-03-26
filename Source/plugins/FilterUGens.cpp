@@ -3583,6 +3583,7 @@ void SOS_Ctor(SOS* unit)
 		//	printf("SOS_next_1\n");
 		}
 	unit->m_y1 = 0.f;
+	unit->m_y2 = 0.f;
 	unit->m_a0 = 0.f;
 	unit->m_a1 = 0.f;
 	unit->m_a2 = 0.f;
