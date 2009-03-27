@@ -27,6 +27,19 @@ String[char] : RawArray {
 		};
 		^pid;
 	}
+
+	// Like unixCmd but gets the result into a string
+	unixCmdGetStdOut {
+		var pipe, lines, line;
+	
+		pipe = Pipe.new(this, "r");
+		lines = "";
+		line = pipe.getLine;
+		while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
+		pipe.close;
+		
+		^lines;
+	}
 	
 	asSymbol { 
 		_StringAsSymbol 
