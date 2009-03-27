@@ -30,6 +30,25 @@ QuarkSVNRepository
 
 	// easiest to just check out all
 	checkoutAll { |localRoot|
+		var res,files;
+		files = (Quarks.local.path ++ "/*").pathMatch;
+		if ( files.size != 0 ) {
+			// there are files in the quarks dir
+			if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
+				// but quarks dir itself is not under version control
+				files.do{ |it|
+					res = ("svn st -q " ++ it ).unixCmdGetStdOut;
+					if ( res == "" ){
+						// no local modifications, so delete the folder
+						("rm -r " ++ it ).unixCmd; 
+					}{
+						// local modifications, so copy the folder for backup
+						("mv" + it + it.drop(-1) ++ "_modified" ).unixCmd;
+						("You had local modifications in quark folder" + it + "a copy of the folder has been made, so please review your modifications there").inform;
+					};
+				}
+			}
+		};
 		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
 	}
 	// checkout a specific quark

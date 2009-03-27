@@ -354,6 +354,25 @@ Quarks
 		caption.string = this.name;
 		window.view.decorator.nextLine;
 
+		if ( quarks.size == 0 ){
+			GUI.button.new(window, Rect(0, 0, 229, 20))
+			.states_([["checkout Quarks DIRECTORY", Color.black, Color.gray(0.5)]])
+			.action_({ this.checkoutDirectory; });
+		}{
+			GUI.button.new(window, Rect(0, 0, 229, 20))
+			.states_([["update Quarks DIRECTORY", Color.black, Color.gray(0.5)]])
+			.action_({ this.updateDirectory;});
+		};
+
+		GUI.button.new(window, Rect(0, 0, 200, 20))
+		.states_([["refresh Quarks listing", Color.black, Color.gray(0.5)]])
+		.action_({ 
+			window.close;
+			this.gui;
+		});
+
+		window.view.decorator.nextLine;
+
 		GUI.button.new(window, Rect(0, 0, 150, 20))
 			.states_([["browse all help", Color.black, Color.gray(0.5)]])
 			.action_({ Help(this.local.path).gui });
@@ -403,7 +422,7 @@ Quarks
 		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );		window.view.decorator.nextLine;
 
 		flowLayout.margin_( 0 @0 ).gap_( 0@0 );
-		scrollview = GUI.scrollView.new(window, 500 @ (height - 132))
+		scrollview = GUI.scrollView.new(window, 500 @ (height - 165))
 			.resize_( 5 )
 			.autohidesScrollers_(true);
 		scrollview.decorator = FlowLayout( Rect( 0, 0, 500, quarks.size * 25 + 20 ));
