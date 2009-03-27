@@ -47,7 +47,7 @@ SendReply : SendTrig {
 	
 	*new1 { arg rate, trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		var ascii = cmdName.ascii;
-		^super.new1(*[rate, trig, replyID, ascii.size].addAll(ascii).addAll(values).postcs);
+		^super.new1(*[rate, trig, replyID, ascii.size].addAll(ascii).addAll(values));
 	}
 }
 
