@@ -5,37 +5,40 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0011ed}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a1f12; min-height: 12.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9a1f12}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060; min-height: 12.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff; min-height: 14.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0013fe; min-height: 14.0px}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #002eaf}
-span.s4 {color: #002fe0}
-span.s5 {color: #0024f8}
+span.s3 {color: #0030ae}
+span.s4 {color: #0032df}
+span.s5 {color: #0029f7}
 span.s6 {color: #606060}
-span.s7 {color: #9d1c12}
-span.s8 {color: #0026b4}
-span.s9 {color: #0000ff}
-span.s10 {text-decoration: underline}
-span.s11 {font: 12.0px Helvetica}
-span.s12 {font: 9.0px Helvetica}
+span.s7 {color: #9a1f12}
+span.s8 {color: #0029b3}
+span.s9 {color: #bf0000}
+span.s10 {color: #0000bf}
+span.s11 {color: #0013fe}
+span.s12 {text-decoration: underline}
+span.s13 {font: 12.0px Helvetica}
+span.s14 {font: 9.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -88,14 +91,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">As post and postln above, but formatted as a comment.</p>
 <p class="p4"><br></p>
-<p class="p8">"This is a comment."<span class="s2">.postcln;</span></p>
+<p class="p8">"This is a comment.".postcln;</span></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p1"><b>postf</b></p>
 <p class="p4"><br></p>
 <p class="p1">Prints a formatted string with arguments to the current post window. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .</p>
 <p class="p9"><br></p>
-<p class="p8"><span class="s2">postf(</span>"this % a %. pi = %, list = %\n", "is"<span class="s2">, </span>"test"<span class="s2">, pi.round(1e-4), (1..4))</span></p>
+<p class="p8"><span class="s2">postf("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))</span></p>
 <p class="p9"><br></p>
 <p class="p5">this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]</p>
 <p class="p9"><br></p>
@@ -103,7 +106,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Returns a formatted string with arguments. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .</p>
 <p class="p9"><br></p>
-<p class="p8"><span class="s2">format(</span>"this % a %. pi = %, list = %\n", "is"<span class="s2">, </span>"test"<span class="s2">, pi.round(1e-4), (1..4))</span></p>
+<p class="p8"><span class="s2">format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))</span></p>
 <p class="p4"><br></p>
 <p class="p5">this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]</p>
 <p class="p9"><br></p>
@@ -116,11 +119,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="s6">"c"</span>.matchRegexp(<span class="s6">"abcdefg"</span>, 2, 5); <span class="s7">// true</span></p>
 <p class="p5"><span class="s6">"c"</span>.matchRegexp(<span class="s6">"abcdefg"</span>, 4, 5); <span class="s7">// false</span></p>
 <p class="p9"><br></p>
-<p class="p8">"behaviou?r"<span class="s2">.matchRegexp(</span>"behavior"<span class="s2">); </span><span class="s7">// true</span></p>
-<p class="p8">"behaviou?r"<span class="s2">.matchRegexp(</span>"behaviour"<span class="s2">); </span><span class="s7">// true</span></p>
-<p class="p8">"behaviou?r"<span class="s2">.matchRegexp(</span>"behavir"<span class="s2">); </span><span class="s7">// false</span></p>
-<p class="p8">"b.h.v.r"<span class="s2">.matchRegexp(</span>"behavor"<span class="s2">); </span><span class="s7">// true</span></p>
-<p class="p8">"b.h.vi*r"<span class="s2">.matchRegexp(</span>"behaviiiiir"<span class="s2">); </span><span class="s7">// true</span></p>
+<p class="p8">"behaviou?r".matchRegexp("behavior"); <span class="s7">// true</span></p>
+<p class="p8">"behaviou?r".matchRegexp("behaviour"); <span class="s7">// true</span></p>
+<p class="p8">"behaviou?r".matchRegexp("behavir"); <span class="s7">// false</span></p>
+<p class="p8">"b.h.v.r".matchRegexp("behavor"); <span class="s7">// true</span></p>
+<p class="p8">"b.h.vi*r".matchRegexp("behaviiiiir"); <span class="s7">// true</span></p>
 <p class="p5"><span class="s6">"(a|u)nd"</span>.matchRegexp(<span class="s6">"und"</span>); <span class="s7">// true</span></p>
 <p class="p5"><span class="s6">"(a|u)nd"</span>.matchRegexp(<span class="s6">"and"</span>); <span class="s7">// true</span></p>
 <p class="p5"><span class="s6">"[a-c]nd"</span>.matchRegexp(<span class="s6">"ind"</span>); <span class="s7">// false</span></p>
@@ -175,7 +178,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5"><span class="s8">var</span> f;</p>
-<p class="p8"><span class="s2">f = </span>"myString"<span class="s2">;</span></p>
+<p class="p8"><span class="s2">f = "myString";</span></p>
 <p class="p5">f.postln;</p>
 <p class="p5">f.asCompileString.postln;</p>
 <p class="p5">)</p>
@@ -264,50 +267,50 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Returns an Array of Strings split at the separator. The separator is a <b>Char</b>, and is not included in the output array. The default separator is $/, handy for Unix paths.</p>
 <p class="p6"><br></p>
-<p class="p8">"This/could/be/a/Unix/path"<span class="s2">.split.postln;</span></p>
-<p class="p8">"These are several words"<span class="s2">.split($ ).postln;</span></p>
+<p class="p8">"This/could/be/a/Unix/path".split.postln;</span></p>
+<p class="p8">"These are several words".split($ ).postln;</span></p>
 <p class="p9"><br></p>
 <p class="p1"><b>ascii</b></p>
 <p class="p4"><br></p>
 <p class="p1">Returns an Array of asci numbers of the Strings's characters.</p>
 <p class="p6"><br></p>
-<p class="p8">"wertvoll"<span class="s2">.ascii;</span></p>
+<p class="p8">"wertvoll".ascii;</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p1"><b>find(string, ignoreCase, offset)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Returns the index of the string in the receiver, or nil if not found. If <b>ignoreCase</b> is true, find makes no difference between uppercase and lowercase letters. The <b>offset</b> is the point in the string where the search begins.</p>
 <p class="p6"><br></p>
-<p class="p8">"These are several words"<span class="s2">.find(</span>"are"<span class="s2">).postln;</span></p>
-<p class="p8">"These are several words"<span class="s2">.find(</span>"fish"<span class="s2">).postln;</span></p>
+<p class="p8">"These are several words".find("are").postln;</span></p>
+<p class="p8">"These are several words".find("fish").postln;</span></p>
 <p class="p9"><br></p>
 <p class="p1"><b>findBackwards(string, ignoreCase, offset)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Same like find, but starts at the end of the string.</p>
 <p class="p6"><br></p>
 <p class="p11">// compare:</p>
-<p class="p8">"These words are several words"<span class="s2">.find(</span>"words"<span class="s2">); </span><span class="s7">// 6</span></p>
-<p class="p8">"These words are several words"<span class="s2">.findBackwards(</span>"words"<span class="s2">); </span><span class="s7">// 24</span></p>
+<p class="p8">"These words are several words".find("words"); <span class="s7">// 6</span></p>
+<p class="p8">"These words are several words".findBackwards("words"); <span class="s7">// 24</span></p>
 <p class="p9"><br></p>
 <p class="p1"><b>findAll(string,<span class="Apple-converted-space">  </span>ignoreCase, offset)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Returns the indices of the string in the receiver, or nil if not found.</p>
 <p class="p6"><br></p>
-<p class="p8">"These are several words which are fish"<span class="s2">.findAll(</span>"are"<span class="s2">).postln;</span></p>
-<p class="p8">"These are several words which are fish"<span class="s2">.findAll(</span>"fish"<span class="s2">).postln;</span></p>
+<p class="p8">"These are several words which are fish".findAll("are").postln;</span></p>
+<p class="p8">"These are several words which are fish".findAll("fish").postln;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>contains(string)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Returns a <b>Boolean</b> indicating if the String contains string.</p>
 <p class="p6"><br></p>
-<p class="p8">"These are several words"<span class="s2">.contains(</span>"are"<span class="s2">).postln;</span></p>
-<p class="p8">"These are several words"<span class="s2">.contains(</span>"fish"<span class="s2">).postln;</span></p>
+<p class="p8">"These are several words".contains("are").postln;</span></p>
+<p class="p8">"These are several words".contains("fish").postln;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>containsi(string)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Same as contains, but case insensitive.</p>
 <p class="p6"><br></p>
-<p class="p8">"These are several words"<span class="s2">.containsi(</span>"ArE"<span class="s2">).postln;</span></p>
+<p class="p8">"These are several words".containsi("ArE").postln;</span></p>
 <p class="p4"><br></p>
 <p class="p1"><b>containsStringAt(index, string)</b></p>
 <p class="p4"><br></p>
@@ -323,37 +326,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Add the escape character (\) at the location of your choice.</p>
 <p class="p4"><br></p>
-<p class="p8">"This will become a Unix friendly string"<span class="s2">.escapeChar($ ).postln;</span></p>
+<p class="p8">"This will become a Unix friendly string".escapeChar($ ).postln;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>tr(from, to)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Transliteration. Replace all instances of from with to.</p>
 <p class="p4"><br></p>
-<p class="p11"><span class="s6">":-(:-(:-("</span><span class="s2">.tr($(, $)); </span>//turn the frowns upside down</p>
+<p class="p11"><span class="s6">":-(:-(:-("</span>.tr($(, $)); //turn the frowns upside down</p>
 <p class="p10"><br></p>
 <p class="p1"><b>replace(find, replace)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Like <b>tr</b>, but with strings as arguments.</p>
 <p class="p12"><br></p>
-<p class="p8">"Here are several words which are fish"<span class="s2">.replace(</span>"are"<span class="s2">, </span>"were"<span class="s2">);</span></p>
+<p class="p8">"Here are several words which are fish".replace("are", "were");</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>printOn(stream)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Print the String on stream.</p>
 <p class="p4"><br></p>
-<p class="p8">"Print this on Post"<span class="s2">.printOn(</span><span class="s8">Post</span><span class="s2">);</span></p>
+<p class="p8">"Print this on Post".printOn(<span class="s8">Post</span>);</span></p>
 <p class="p9"><br></p>
 <p class="p11">// equivalent to:</p>
-<p class="p8"><span class="s8">Post</span><span class="s2"> &lt;&lt; </span>"Print this on Post"<span class="s2">;</span></p>
+<p class="p8"><span class="s8">Post</span> &lt;&lt; "Print this on Post";</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>storeOn(stream)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Same as printOn, but formatted asCompileString.</p>
 <p class="p4"><br></p>
-<p class="p8">"Store this on Post"<span class="s2">.storeOn(</span><span class="s8">Post</span><span class="s2">);</span></p>
+<p class="p8">"Store this on Post".storeOn(<span class="s8">Post</span>);</span></p>
 <p class="p9"><br></p>
 <p class="p11">// equivalent to:</p>
-<p class="p8"><span class="s8">Post</span><span class="s2"> &lt;&lt;&lt; </span>"Store this on Post"<span class="s2">;</span></p>
+<p class="p8"><span class="s8">Post</span> &lt;&lt;&lt; "Store this on Post";</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>inspectorClass</b></p>
 <p class="p4"><br></p>
@@ -365,7 +368,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p11">// same as File-readAllStringRTF</p>
-<p class="p8"><span class="s2">g = </span><span class="s8">File</span><span class="s2">(</span>"/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf"<span class="s2">,</span>"r"<span class="s2">);</span></p>
+<p class="p8"><span class="s2">g = <span class="s8">File</span>("/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf","r");</span></p>
 <p class="p5">g.readAllString.stripRTF.postln;</p>
 <p class="p5">g.close;</p>
 <p class="p5">)</p>
@@ -374,18 +377,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:</p>
 <p class="p4"><br></p>
-<p class="p11"><span class="s6">"echo $0"</span><span class="s2">.unixCmd; </span>// print the shell (sh)</p>
+<p class="p11"><span class="s6">"echo $0"</span>.unixCmd; // print the shell (sh)</p>
 <p class="p5"><span class="s6">"pwd"</span>.unixCmd;</p>
-<p class="p8">"cd Help/"<span class="s2">.unixCmd;</span></p>
+<p class="p8">"cd Help/".unixCmd;</span></p>
 <p class="p5"><span class="s6">"pwd"</span>.unixCmd;</p>
 <p class="p14"><br></p>
-<p class="p8">"export FISH=mackerel"<span class="s2">.unixCmd;</span></p>
-<p class="p8">"echo $FISH"<span class="s2">.unixCmd;</span></p>
+<p class="p8">"export FISH=mackerel".unixCmd;</span></p>
+<p class="p8">"echo $FISH".unixCmd;</span></p>
 <p class="p4"><br></p>
 <p class="p1">It is however possible to execute complex commands:</p>
 <p class="p4"><br></p>
-<p class="p8">"pwd; cd Help/; pwd"<span class="s2">.unixCmd;</span></p>
-<p class="p8">"export FISH=mackerel; echo $FISH"<span class="s2">.unixCmd;</span></p>
+<p class="p8">"pwd; cd Help/; pwd".unixCmd;</span></p>
+<p class="p8">"export FISH=mackerel; echo $FISH".unixCmd;</span></p>
 <p class="p6"><br></p>
 <p class="p1">Should you need an environment variable to persist you can use <b>setenv</b> (see below).</p>
 <p class="p4"><br></p>
@@ -397,19 +400,26 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5"><span class="s6">"echo one; sleep 1; echo two; sleep 1"</span>.unixCmd { <span class="s8">|res, pid|</span> [\done, res, pid].postln };</p>
 <p class="p4"><br></p>
+<p class="p1"><b>unixCmdGetStdOut</b></p>
+<p class="p4"><br></p>
+<p class="p1">Similar to unixCmd except that the stdout of the process is returned (synchronously) rather than sent to the post window.</p>
+<p class="p4"><br></p>
+<p class="p15">~listing = <span class="s6">"ls Help"</span>.unixCmdGetStdOut; <span class="s9">// Grab</span></p>
+<p class="p15">~listing.reverse.as(<span class="s10">Array</span>).stutter.join.postln; <span class="s9">// Mangle</span></p>
+<p class="p4"><br></p>
 <p class="p1"><b>runInTerminal</b></p>
 <p class="p4"><br></p>
 <p class="p1">Execute the String in a new terminal window. (The string is incorporated into a temporary script file and executed using a shell. "/usr/bash" is the default shell used but you can optionally specify which shell to use as an argument.)</p>
 <p class="p4"><br></p>
-<p class="p8">"echo ---------Hello delightful SuperCollider user----------"<span class="s2">.runInTerminal;</span></p>
+<p class="p8">"echo ---------Hello delightful SuperCollider user----------".runInTerminal;</span></p>
 <p class="p4"><br></p>
 <p class="p1"><b>setenv(value)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Set the environment variable indicated in the string to equal the String <b>value</b>. This value will persist until it is changed or SC is quit. Note that if <b>value</b> is a path you may need to call standardizePath on it (see below).</p>
 <p class="p4"><br></p>
 <p class="p11">// all defs in this directory will be loaded when a local server boots</p>
-<p class="p8">"SC_SYNTHDEF_PATH"<span class="s2">.setenv(</span>"~/scwork/"<span class="s2">.standardizePath);<span class="Apple-converted-space"> </span></span></p>
-<p class="p8">"echo $SC_SYNTHDEF_PATH"<span class="s2">.unixCmd;</span></p>
+<p class="p8">"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);<span class="Apple-converted-space"> </span></span></p>
+<p class="p8">"echo $SC_SYNTHDEF_PATH".unixCmd;</span></p>
 <p class="p4"><br></p>
 <p class="p1"><b>getenv</b></p>
 <p class="p4"><br></p>
@@ -427,7 +437,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Perform pathMatch (see above) on this String, then load and execute all paths in the resultant <b>Array</b>.</p>
 <p class="p4"><br></p>
-<p class="p8">"Help/Collections/loadPaths example.rtf"<span class="s2">.loadPaths; </span><span class="s7">//This file posts some text</span></p>
+<p class="p8">"Help/Collections/loadPaths example.rtf".loadPaths; <span class="s7">//This file posts some text</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>load</b></p>
 <p class="p4"><br></p>
@@ -445,34 +455,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">Expand ~ to your home directory, and resolve symbolic links. See <b>PathName </b>for more complex needs.</p>
 <p class="p4"><br></p>
-<p class="p11"><span class="s6">"~/"</span><span class="s2">.standardizePath; </span>//This will print your home directory</p>
+<p class="p11"><span class="s6">"~/"</span>.standardizePath; //This will print your home directory</p>
 <p class="p6"><br></p>
 <p class="p1"><b>basename</b></p>
 <p class="p4"><br></p>
 <p class="p1">Return the filename from a Unix path.</p>
 <p class="p4"><br></p>
-<p class="p8">"Imaginary/Directory/fish.rtf"<span class="s2">.basename;</span></p>
+<p class="p8">"Imaginary/Directory/fish.rtf".basename;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>dirname</b></p>
 <p class="p4"><br></p>
 <p class="p1">Return the directory name from a Unix path.</p>
 <p class="p4"><br></p>
-<p class="p8">"Imaginary/Directory/fish.rtf"<span class="s2">.dirname;</span></p>
+<p class="p8">"Imaginary/Directory/fish.rtf".dirname;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>splitext</b></p>
 <p class="p4"><br></p>
 <p class="p1">Split off the extension from a filename or path and return both in an <b>Array </b>as [path or filename, extension].</p>
 <p class="p4"><br></p>
 <p class="p5"><span class="s6">"fish.rtf"</span>.splitext;</p>
-<p class="p8">"Imaginary/Directory/fish.rtf"<span class="s2">.splitext;</span></p>
+<p class="p8">"Imaginary/Directory/fish.rtf".splitext;</span></p>
 <p class="p6"><br></p>
 <p class="p13"><b>Document Support</b></p>
-<p class="p15"><br></p>
+<p class="p16"><br></p>
 <p class="p1"><b>newTextWindow(title, makeListener)</b></p>
 <p class="p4"><br></p>
 <p class="p1">Create a new <b>Document</b> with this.</p>
 <p class="p4"><br></p>
-<p class="p8">"Here is a new Document"<span class="s2">.newTextWindow;</span></p>
+<p class="p8">"Here is a new Document".newTextWindow;</span></p>
 <p class="p6"><br></p>
 <p class="p1"><b>openDocument</b></p>
 <p class="p4"><br></p>
@@ -508,20 +518,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>speak(channel, force)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Sends string to the speech synthesisier of the OS. (OS X only.) see: <a href="../OSX/Speech.html"><span class="s9">Speech</span></a></p>
-<p class="p16"><br></p>
+<p class="p1">Sends string to the speech synthesisier of the OS. (OS X only.) see: <a href="../OSX/Speech.html"><span class="s11">Speech</span></a></p>
+<p class="p17"><br></p>
 <p class="p8">"hi i'm talking with the default voice now, i guess"<span class="s2">.speak;</span></p>
-<p class="p16"><br></p>
+<p class="p17"><br></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p13"><b>Drawing Support</b></p>
 <p class="p4"><br></p>
 <p class="p1">The following methods must be called within an Window-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to Window-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.</p>
 <p class="p4"><br></p>
-<p class="p3"><span class="s2">See also: <a href="../GUI/SCWindow.html"><span class="s10">Window</span></a>, <a href="../GUI/SCUserView.html"><span class="s10">SCUserView</span></a>, <a href="../GUI/Color.html"><span class="s10">Color</span></a>, and <a href="../GUI/stubs/Pen.html"><span class="s10">Pen</span></a>.</span></p>
+<p class="p3"><span class="s2">See also: <a href="../GUI/SCWindow.html"><span class="s12">Window</span></a>, <a href="../GUI/SCUserView.html"><span class="s12">SCUserView</span></a>, <a href="../GUI/Color.html"><span class="s12">Color</span></a>, and <a href="../GUI/stubs/Pen.html"><span class="s12">Pen</span></a>.</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p17"><span class="s11"><b>Note:</b> for cross-platform GUIs, use </span><span class="s8">Pen</span>.stringAtPoint,<span class="s11"> </span><span class="s8">Pen</span>.stringInRect<span class="s11">, </span><span class="s8">Pen</span>.stringCenteredIn<span class="s11">, </span><span class="s8">Pen</span>.stringLeftJustIn<span class="s11">, </span><span class="s8">Pen</span>.stringRightJustIn<span class="s11"> instead.</span></p>
+<p class="p18"><span class="s13"><b>Note:</b> for cross-platform GUIs, use </span><span class="s8">Pen</span>.stringAtPoint,<span class="s13"> </span><span class="s8">Pen</span>.stringInRect<span class="s13">, </span><span class="s8">Pen</span>.stringCenteredIn<span class="s13">, </span><span class="s8">Pen</span>.stringLeftJustIn<span class="s13">, </span><span class="s8">Pen</span>.stringRightJustIn<span class="s13"> instead.</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p1"><b>draw</b></p>
@@ -617,7 +627,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">w.drawHook = {</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s6">"abababababa\n\n\n"</span>.scramble.drawRightJustIn(</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r,<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Font</span>(<span class="s6">"Courier"</span>,<span class="s12"> </span>12),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Font</span>(<span class="s6">"Courier"</span>,<span class="s14"> </span>12),<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Color</span>.blue(0.3, 0.5)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s8">Pen</span>.strokeRect(r);</p>
