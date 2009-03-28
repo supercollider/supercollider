@@ -18,6 +18,7 @@ Event.dumpMethodList  // list instance methods alphabetically
 SinOsc.dumpMethodList  // list class methods alphabetically
 
 
+
 (
 // find all methods who have an argument name that starts with the letter g.
 Class.allClasses.do({ arg aClass; 
@@ -36,3 +37,6 @@ Class.allClasses.do({ arg aClass;
 	})
 })
 )
+
+Class.allClasses.printAll; "" // print all the classes in SCClassLib
+
