@@ -408,7 +408,7 @@ SCLevelIndicator : SCView {
 			StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font("Helvetica-Bold", 9))
 				.stringColor_(Color.white)
-				.string_((i + 1).asString);
+				.string_(i.asString);
 			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
@@ -433,7 +433,7 @@ SCLevelIndicator : SCView {
 			StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font("Helvetica-Bold", 9))
 				.stringColor_(Color.white)
-				.string_((i + 1).asString);
+				.string_(i.asString);
 			SCLevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
