@@ -5852,7 +5852,6 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
     b2 = unit->m_b2;
     
     if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)){
-	Print("%3,3f, %3,3f\n", unit->m_rq, nextrq);
 	      
 	nextw0 = twopi * (double)nextfreq * SAMPLEDUR; 
 	nextalpha = sin(nextw0) * 0.5 * (double)nextrq; 
