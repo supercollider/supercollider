@@ -484,11 +484,13 @@ Interpreter {
 	}
 	
 	interpretPrintCmdLine {
-		var res, func, code = cmdLine;
+		var res, func, code = cmdLine, doc = Document.current;
 		"\n".post;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
-		thisProcess.nowExecutingPath = Document.current.tryPerform(\path);
+		if(doc.tryPerform(\dataptr).notNil) {
+			thisProcess.nowExecutingPath = doc.tryPerform(\path);
+		};
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
