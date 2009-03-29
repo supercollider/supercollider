@@ -7,7 +7,6 @@ SuperCollider was written by James McCartney (audiosynth.com) over a period of m
 http://supercollider.sourceforge.net/
 
 
-
 This README is a first help for anyone new to SuperCollider. There are many good resources available for learning SuperCollider, with up to date links from the site listed above, including links to forums and mailing lists. Within the SuperCollider application directory you will find a Help directory containing HTML files which you can browse in a web browser or within SuperCollider itself. 
 
 The exact details of using the SuperCollider environment will depend on your platform. Some immediate comments: 
@@ -32,6 +31,8 @@ And be careful you're not using TextEdit or a web browser instead of the SuperCo
 
 
 We hope you enjoy SuperCollider; please get involved in the active community!  
+
+SuperCollider is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. See "COPYING" for the license text.
 
  
 
