@@ -68,6 +68,7 @@ else
     svn export -q --force ../build SuperCollider
     cp -R ../build/SuperCollider.app ../build/scsynth ../build/sclang SuperCollider
     cp ../build/plugins/* SuperCollider/plugins/
+    cp ../COPYING SuperCollider/COPYING
     find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"
