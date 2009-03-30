@@ -926,7 +926,11 @@ void FreeVerb2_next(FreeVerb2 *unit, int inNumSamples)
 
 typedef union {
         float f;
+#ifdef SC_WIN32
+	long int i;
+#else
         int32_t i;
+#endif
 } ls_pcast32;
 
 static inline float flush_to_zero(float f)
@@ -990,7 +994,7 @@ g_diffuser *make_diffuser(GVerb *unit, int size, float coef){
     p->coef = coef;
     p->idx = 0;
     p->buf = (float*)RTAlloc(unit->mWorld, size * sizeof(float));
-    bzero(p->buf, size * sizeof(float));
+    Clear(size, p->buf);
     return(p);
     }
 
@@ -1005,8 +1009,8 @@ g_fixeddelay *make_fixeddelay(GVerb *unit, int size, int maxsize){
     p->size = size;
     p->idx = 0;
     p->buf = (float*)RTAlloc(unit->mWorld, maxsize * sizeof(float));
-    bzero(p->buf, maxsize * sizeof(float));
-    return(p);
+	Clear(maxsize, p->buf);
+	return(p);
     }
     
 void free_fixeddelay(GVerb *unit, g_fixeddelay *p){
@@ -1104,7 +1108,7 @@ static inline void gverb_set_revtime(GVerb *unit, float a)
 
   ga = 0.001;
   n = SAMPLERATE * a;
-  unit->alpha = (double)powf(ga,1.f/n);
+  unit->alpha = (double)powf(ga,(float)(1.f/n));
 
   for(i = 0; i < FDNORDER; i++) {
     float oldfdngain = unit->fdngains[i];
