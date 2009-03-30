@@ -39,6 +39,7 @@
 - (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex; 
 - (void)setDefaultTabsTo:(float)value;
 - (IBAction)openCode:(id)sender;
+- (IBAction) showHelp: (id) sender;
 
 - (IBAction)methodTemplates: (id)sender;
 - (IBAction)methodReferences: (id)sender;
