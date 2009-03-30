@@ -539,6 +539,14 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     [[self delegate] sendSelection: "openCodeFile"];
 }
 
+NSString* pathOfHelpFileFor(NSString* selection);
+void showHelpFor(NSString* selection);
+
+- (IBAction) showHelp: (id) sender;
+{
+	showHelpFor([self currentlySelectedText: NULL]);
+}
+
 - (IBAction)methodTemplates: (id)sender
 {
     [[self delegate] sendSelection: "methodTemplates"];
@@ -550,4 +558,3 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
 }
 
 @end
-
