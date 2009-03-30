@@ -52,6 +52,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MachineListeningUGens", "Pl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestUGens", "PlugIns\TestUGens.vcproj", "{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReverbUGens", "PlugIns\ReverbUGens.vcproj", "{EC335F5E-75E4-4109-89CA-3708DF8AEF6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -142,6 +144,10 @@ Global
 		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Debug|Win32.Build.0 = Debug|Win32
 		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Release|Win32.ActiveCfg = Release|Win32
 		{D7A5102A-9005-4FF6-A3EE-E5F0C77FB65A}.Release|Win32.Build.0 = Release|Win32
+		{EC335F5E-75E4-4109-89CA-3708DF8AEF6C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC335F5E-75E4-4109-89CA-3708DF8AEF6C}.Debug|Win32.Build.0 = Debug|Win32
+		{EC335F5E-75E4-4109-89CA-3708DF8AEF6C}.Release|Win32.ActiveCfg = Release|Win32
+		{EC335F5E-75E4-4109-89CA-3708DF8AEF6C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
