@@ -428,7 +428,8 @@ SCIBViewPallatte
 			or: (it.name === 'SCContainerView') 
 			or: (it.name ==='SCStaticTextBase') 
 			or: (it.name === 'SCSliderBase') 
-			or: (it.name === 'SCControlView'))
+			or: (it.name === 'SCControlView')
+			or: (it.name === 'SCDragView'))
 		};
 		scroll = SCScrollView(window, Rect(0,0,bW-2, bH-34))
 					.resize_(5);
