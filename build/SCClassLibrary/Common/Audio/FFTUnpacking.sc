@@ -39,7 +39,12 @@ PV_ChainUGen : UGen {
 		origmagsphases = UnpackFFT(this, numframes, frombin, tobin).clump(2).flop;
 		magsphases = func.value(origmagsphases[0], origmagsphases[1]);
 		// Add phases back if they've been ignored
-		if(magsphases.size == 1, {magsphases = magsphases ++ origmagsphases[1]});
+		magsphases = magsphases.size.switch(
+			1, {magsphases ++ origmagsphases[1]},
+			2, {magsphases},
+			// any larger than 2 and we assume it's a list of magnitudes
+			   {[magsphases, origmagsphases[1]]}
+			);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
@@ -50,7 +55,12 @@ PV_ChainUGen : UGen {
 		origmagsphases2 = UnpackFFT(chain2, numframes, frombin, tobin).clump(2).flop;
 		magsphases = func.value(origmagsphases[0], origmagsphases[1], origmagsphases2[0], origmagsphases2[1]);
 		// Add phases back if they've been ignored
-		if(magsphases.size == 1, {magsphases = magsphases ++ origmagsphases[1]});
+		magsphases = magsphases.size.switch(
+			1, {magsphases ++ origmagsphases[1]},
+			2, {magsphases},
+			// any larger than 2 and we assume it's a list of magnitudes
+			   {[magsphases, origmagsphases[1]]}
+			);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
