@@ -85,7 +85,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1"><b>Note:</b> It is impossible to map a synth control to an audio rate bus. Calling this method on an audio bus will throw an error.</p>
 <p class="p3"><br></p>
-<p class="p1"><b>subBus(offset,numChannels) </b>-<b> </b>Get a new Bus that is a subset of this bus (see *newFrom).</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
 <p class="p6">a = <span class="s2">Bus</span>.control(s, 1).set(440);</p>
@@ -96,6 +95,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, <span class="s2">RLPF</span>.ar(<span class="s2">WhiteNoise</span>.ar(0.2), ffreq, rq))</p>
 <p class="p6">}).play(s, [<span class="s5">\ffreq</span>, a.asMap, <span class="s5">\rq</span>, b.asMap]);</p>
 <p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p1"><b>subBus(offset,numChannels) </b>-<b> </b>Get a new Bus that is a subset of this bus (see *newFrom).</p>
 <p class="p3"><br></p>
 <p class="p4"><b>Asynchronous Control Bus Methods</b></p>
 <p class="p3"><br></p>
