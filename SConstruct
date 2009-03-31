@@ -1298,13 +1298,6 @@ if 'dist' in COMMAND_LINE_TARGETS:
     env.Alias('dist', env['TARBALL'])
     env.Command(env['TARBALL'], 'SConstruct', build_tar)
 
-#======================================================================
-# debian distribution
-#======================================================================
-if 'debian' in COMMAND_LINE_TARGETS:
-    Export('env')
-    SConscript("debian/SConstruct")
-
 # ======================================================================
 # cleanup
 # ======================================================================
