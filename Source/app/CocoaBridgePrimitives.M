@@ -1200,7 +1200,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		} 
 		else if (isKindOfSlot(slot, class_signal))
 		{
-			float *slotvalues = (float*)(slot->uo->slots) - 1;
+			float *slotvalues = (float*)(slot->uo->slots) ;
 			[anInvocation setArgument: &slotvalues atIndex: i+2];  
 		
 		}
