@@ -8,6 +8,26 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 	
+	*timeStamp { 
+			// hope it works on linux? 
+		if (thisProcess.platform.isKindOf(UnixPlatform)) { 
+			^Date.getDate.stamp
+		} { 
+			// "// temporary kludge to fix Date's brokenness on windows".postln;
+			^Main.elapsedTime.round(0.01)
+		};
+	}
+	
+	*dateString { 
+			// hope it works on linux? 
+		if (thisProcess.platform.isKindOf(UnixPlatform)) { 
+			^Date.getDate.asString
+		} { 
+			// temporary kludge to fix Date's brokenness on windows
+			^"__date_time_please__"
+		};
+	}
+	
 	*initClass { 
 		Class.initClassTree(TaskProxy); 
 		this.makeLogFolder;
@@ -62,9 +82,8 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (lineStr.isEmpty) { ^this };	// nothing worth remembering
 		
 		if (current.lines.isEmpty) { 	// get startTime if first entry
-			dateNow = Date.getDate;
-			startTimeStamp = dateNow.stamp;
-			date = dateNow.asString;
+			startTimeStamp = this.timeStamp;
+			date = this.dateString;
 			time0 = Main.elapsedTime;
 			
 		}; 
@@ -184,7 +203,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		var file, lines2write; 
 	
 		lines2write = if (forward) { lines.reverse } { lines };
-		path = path ?? { saveFolder ++ "history_" ++ Date.getDate.stamp ++ ".scd" };
+		path = path ?? { saveFolder ++ "history_" ++ this.class.timeStamp ++ ".scd" };
 		file = File(path.standardizePath, "w");
 		file.write(lines2write.asCompileString);
 		inform("History written to:" + path);
@@ -216,10 +235,10 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			// string formatting utils
 	storyString { 
 		var alone = lines.collectAs({ |line| line[1] }, IdentitySet).size == 1;
-		var str, d, date = Date.getDate;
+		var str;
 		
 		str = "///////////////////////////////////////////////////\n";
-		str = str ++ format("// History, as it was on %.\n", date);
+		str = str ++ format("// History, as it was on %.\n", this.class.dateString);
 		str = str ++ "///////////////////////////////////////////////////\n\n";
 		
 		lines.reverseDo { |x|
@@ -242,7 +261,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	
 	saveStory { |path| 
 		var file;
-		path = path ?? { saveFolder ++ "History_" ++ Date.getDate.stamp ++ ".scd" };
+		path = path ?? { saveFolder ++ "History_" ++ this.class.timeStamp ++ ".scd" };
 		
 		file = File(path.standardizePath, "w");
 		file.write(this.storyString);
@@ -371,13 +390,14 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	
 	*startLog { 
-		var logdate = Date.getDate;
+		var timeStamp = this.timeStamp;
+		var timeString = this.dateString;
 		// open file with current date
-		logPath = logFolder ++ "/log_History_" ++ logdate.stamp ++ ".scd";
+		logPath = logFolder ++ "/log_History_" ++ timeStamp ++ ".scd";
 		logFile = File(logPath, "w"); 
 		if (logFile.isOpen) { 
 			logFile.write(format("// History, as it was on %.\n\n", 
-				logdate.asString) ++ "[\n" /*]*/ );
+				timeString) ++ "[\n" /*]*/ );
 			"// History.logFile opened.".inform;
 		} { 
 			"// History: could not open logFile!".warn;
