@@ -28,8 +28,7 @@ QuarkSVNRepository
 		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}
 
-	// easiest to just check out all
-	checkoutAll { |localRoot|
+	checkSVNandBackupIfNeeded{
 		var res,files;
 		files = (Quarks.local.path ++ "/*").pathMatch;
 		if ( files.size != 0 ) {
@@ -49,6 +48,12 @@ QuarkSVNRepository
 				}
 			}
 		};
+
+	}
+
+	// easiest to just check out all
+	checkoutAll { |localRoot|
+		this.checkSVNandBackupIfNeeded;
 		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
 	}
 	// checkout a specific quark
@@ -98,6 +103,7 @@ QuarkSVNRepository
 		this.svn("update",(local.path ++ "/DIRECTORY/").escapeChar($ ));
 	}
 	update {
+		this.checkSVNandBackupIfNeeded;
 		this.svn("update",local.path.escapeChar($ ));
 	}
 	// load all specification quark objects from DIRECTORY
