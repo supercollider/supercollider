@@ -1,6 +1,6 @@
 ProxyChainGui { 
 	var <guiFuncs; 
-	var <parent, <butComp, <butLay, <buttons, <slotButs, <chain, <editor; 
+	var <parent, <bounds, <butComp, <butLay, <editComp, <buttons, <slotButs, <chain, <editor; 
 		
 	*new { |chain, name=\proxyChain, buttonList, nSliders=16, win| 
 		buttonList = buttonList ?? { chain.slotNames.collect ([_, \slotCtl]) };
@@ -35,9 +35,7 @@ ProxyChainGui {
 	}
 	
 	init { |name, buttonList, nSliders, inParent|
-			
-		var butComp, butLay, bounds, editcomp;
-
+	
 		guiFuncs =  (			
 			btlabel: { |but, name| but.states_([[name, Color.black, Color(1, 0.5, 0)]]) },
 			label: { |but, name| but.states_([[name, Color.white, Color(1, 0.5, 0)]]) },
@@ -72,9 +70,9 @@ ProxyChainGui {
 		
 		this.buttonList_(buttonList);
 		
-		editcomp = CompositeView(parent.asView, Rect(155, 0, 350, bounds.height));
+		editComp = CompositeView(parent.asView, Rect(155, 0, 350, bounds.height));
 
-		editor = NodeProxyEditor(nil, nSliders, parent, editcomp); 
+		editor = NodeProxyEditor(nil, nSliders, parent, editComp); 
 	}
 	
 }
