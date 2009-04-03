@@ -237,10 +237,11 @@ WiiMote {
 		eventLoopIsRunning = true;
 	}
 
-	*discover{ 
+	*discover{ // |connAction|
 		var newid, newwii;
 		if ( eventLoopIsRunning.not, { this.start; } );
 		newid = all.size;
+		//	connAction = connAction ? {};
 		newwii = WiiMote.new;
 		"To discover the Wii, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
 		//		"discovering WIIs: this may take some time".postln;
@@ -432,7 +433,7 @@ WiiMote {
 		classic_stick2 = [clasJoy2X, clasJoy2Y];
 		classic_analog = [clasL, clasR];
 
-		[ \cbX, \cbY, \cbA, \cbB, \cbL, \cbR, \cbZL, \cbZR, \cbUp, \cbDown, \cbLeft, \cbRight, \cbMinus, \cbPlus, \csx1, \csy1, \csx2, \csy2, \caleft, \caright  ].do{ |key|
+		[ \cbX, \cbY, \cbA, \cbB, \cbL, \cbR, \cbZL, \cbZR, \cbUp, \cbDown, \cbLeft, \cbRight, \cbMinus, \cbHome, \cbPlus, \csx1, \csy1, \csx2, \csy2, \caleft, \caright  ].do{ |key|
 			actionSpec.at( key ).value( spec.at(key).value );
 			if ( dumpEvents, { (key + spec.at(key).value.round(0.00001)).postln; });
 		}

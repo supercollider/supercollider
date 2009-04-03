@@ -44,10 +44,10 @@ WiiMoteGUI {
 		//.background_(labelColor); 
 
 		rmview = GUI.compositeView.new( w, Rect( 5, 30, 205, 130 ));
-		rm = WiiRemoteGUI.new( rmview, wiimote, 30 );
+		rm = WiiRemoteGUI.new( rmview, wiimote, 0 ); //30 );
 
 		ncview = GUI.compositeView.new( w, Rect( 5, 160, 205, 105 ));
-		nc = WiiNunchukGUI.new( ncview, wiimote, 160 );
+		nc = WiiNunchukGUI.new( ncview, wiimote, 0 ); // 160 );
 
 		watcher = SkipJack.new( { this.updateVals }, 0.1, { w.isClosed }, (\wiimote_gui_ ++ counter));
 		watcher.start;
