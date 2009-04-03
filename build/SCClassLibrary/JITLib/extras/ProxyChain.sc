@@ -73,7 +73,20 @@ ProxyChain {
 		proxy[index] = func; 
 	}
 
-
+	setSlots { |keys, levels=#[], update=false|
+		var keysToRemove, keysToAdd;
+		if (update) { 
+			keysToRemove = slotsInUse.copy;
+			keysToAdd = keys;
+		} { 
+			keysToRemove = slotsInUse.difference(keys); 
+			keysToAdd = keys.difference(slotsInUse); 
+		};
+				
+		keysToRemove.do(this.remove(_));
+		keysToAdd.do { |key, i| this.add(key, levels[i]) };
+	}
+	
 		// forward basic messages to the proxy 
 	play { arg out, numChannels, group, multi=false, vol, fadeTime, addAction;  
 		proxy.play(out, numChannels, group, multi=false, vol, fadeTime, addAction)
