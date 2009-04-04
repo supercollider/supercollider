@@ -20,6 +20,7 @@ EZSlider : EZGui {
 			labelHeight, argLayout, argGap, argMargin;
 			
 		var labelBounds, numBounds, unitBounds,sliderBounds;
+		var numberStep; 
 				
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -66,7 +67,7 @@ EZSlider : EZGui {
 		};
 		
 		if (controlSpec.step != 0) {
-			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
+			sliderView.step = controlSpec.step;
 		};
 
 		sliderView.receiveDragHandler = { arg slider;
@@ -79,9 +80,17 @@ EZSlider : EZGui {
 
 		numberView.action = { this.valueAction_(numberView.value) };
 		
-		if (GUI.id==\cocoa) {scaler = 10;};
-		numberView.step=controlSpec.step*scaler;
-		numberView.scroll_step=controlSpec.step*scaler;
+		numberStep = controlSpec.step;
+		if (numberStep == 0) { 
+			numberStep = controlSpec.guessNumberStep 
+		} { 
+			// controlSpec wants a step, so zooming in with alt is disabled.
+			numberView.alt_scale = 1.0;
+			sliderView.alt_scale = 1.0;
+		};
+		numberView.step = numberStep;
+		numberView.scroll_step = numberStep;
+		//numberView.scroll=true;
 
 		if (initAction) {
 			this.valueAction_(initVal);

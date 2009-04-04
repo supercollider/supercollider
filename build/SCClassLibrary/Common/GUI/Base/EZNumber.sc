@@ -3,6 +3,7 @@ EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec, 
 		 numSize,numberWidth,unitWidth, gap, gap2;
 	var <>round = 0.001;
+	
 	var scaler=1;  //for swing compatibility
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
@@ -18,7 +19,8 @@ EZNumber : EZGui{
 			labelHeight, argLayout, argGap, argMargin;
 			
 		var labelBounds, numBounds, unitBounds;
-						
+		var numberStep;
+		
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
 		
@@ -54,17 +56,26 @@ EZNumber : EZGui{
 		};
 
 		// set view parameters and actions
-		argControlSpec = argControlSpec ? ControlSpec(0.0, 1.0, 'linear', 0.01, 0.0, "");
-		controlSpec = argControlSpec.asSpec ;
+		controlSpec = argControlSpec.asSpec;	// let default to nil.asSpec! 
 		(unitWidth>0).if{ unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 		
 		numberView = GUI.numberBox.new(view, numBounds).resize_(2);
-		if (GUI.id==\cocoa) { scaler = 10;};
-		numberView.step=controlSpec.step*scaler;
-		numberView.scroll_step=controlSpec.step*scaler;
-		//numberView.scroll=true;
+
+		numberStep = controlSpec.step;
+		if (numberStep == 0) { 
+			"guessing.".postln;
+			numberStep = controlSpec.guessNumberStep;
+		} { 
+			"// controlSpec wants a step, so zooming in with alt is disabled.".postln;
+			controlSpec.dump;
+			numberView.alt_scale = 1.0;
+		};
+		numberView.step = numberStep;
+		numberView.scroll_step = numberStep;
+		numberView.scroll=true;
+
 		numberView.action = {
 			this.valueAction_(numberView.value);
 		};

@@ -611,8 +611,18 @@ SCSliderBase : SCControlView {
 
 }
 
-SCSlider : SCSliderBase
-{
+SCSlider : SCSliderBase {
+
+	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
+	
+	getScale { |modifiers| 
+		^case
+			{ modifiers & 131072 == 131072 } { shift_scale }
+			{ modifiers & 262144 == 262144 } { ctrl_scale }
+			{ modifiers & 524288 == 524288 } { alt_scale }
+			{ 1 };
+	}
+
 	value {
 		^this.getProperty(\value)
 	}
@@ -631,18 +641,23 @@ SCSlider : SCSliderBase
 		^(bounds.width.max(bounds.height) - this.thumbSize).reciprocal
 	}
 	
-	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
+	defaultKeyDownAction { arg char, modifiers, unicode, keycode;
+		var zoom = this.getScale(modifiers); 
+
 		// standard keydown
-		if (char == $r, { this.valueAction = 1.0.rand; ^this });
+			// rand could also use zoom factors
+		if (char == $r, { this.valueAction = 1.0.rand; ^this }); 
 		if (char == $n, { this.valueAction = 0.0; ^this });
 		if (char == $x, { this.valueAction = 1.0; ^this });
 		if (char == $c, { this.valueAction = 0.5; ^this });
-		if (char == $], { this.increment; ^this });
-		if (char == $[, { this.decrement; ^this });
-		if (unicode == 16rF700, { this.increment; ^this });
-		if (unicode == 16rF703, { this.increment; ^this });
-		if (unicode == 16rF701, { this.decrement; ^this });
-		if (unicode == 16rF702, { this.decrement; ^this });
+		
+		if (char == $], { this.increment(zoom); ^this });
+		if (char == $[, { this.increment(zoom); ^this });
+		if (unicode == 16rF700, { this.increment(zoom); ^this });
+		if (unicode == 16rF703, { this.increment(zoom); ^this });
+		if (unicode == 16rF701, { this.decrement(zoom); ^this });
+		if (unicode == 16rF702, { this.decrement(zoom); ^this });
+
 		^nil		// bubble if it's an invalid key
 	}
 	
@@ -1043,7 +1058,16 @@ SCStaticText : SCStaticTextBase {
 SCNumberBox : SCStaticTextBase {
 	var <> keyString, <>step=1, <>scroll_step=1;
 	var <>typingColor, <>normalColor;
-	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true, <>shift_step=0.1, <>ctrl_step=10;
+	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true; 
+	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
+	
+	getScale { |modifiers| 
+		^case
+			{ modifiers & 131072 == 131072 } { shift_scale }
+			{ modifiers & 262144 == 262144 } { ctrl_scale }
+			{ modifiers & 524288 == 524288 } { alt_scale }
+			{ 1 };
+	}
 	
 	*paletteExample { arg parent, bounds;
 		var v;
@@ -1065,17 +1089,15 @@ SCNumberBox : SCStaticTextBase {
 	decrement {arg mul=1; this.valueAction = this.value - (step*mul); }
 	
 	defaultKeyDownAction { arg char, modifiers, unicode;
-		case
-			{ modifiers & 131072 == 131072 } // shift defaults to scroll_step x 0.1
-				{ inc = shift_step }
-			{ modifiers & 262144 == 262144 } // control defaults to scroll_step x 10
-				{ inc = ctrl_step };
-	
+		var zoom = this.getScale(modifiers);
+		[\zoom, zoom].postln; 
+		
 		// standard chardown
-		if (unicode == 16rF700, { this.increment(inc); inc=1; ^this });
-		if (unicode == 16rF703, { this.increment(inc); inc=1; ^this });
-		if (unicode == 16rF701, { this.decrement(inc); inc=1; ^this });
-		if (unicode == 16rF702, { this.decrement(inc); inc=1; ^this });
+		if (unicode == 16rF700, { this.increment(zoom); ^this });
+		if (unicode == 16rF703, { this.increment(zoom); ^this });
+		if (unicode == 16rF701, { this.decrement(zoom); ^this });
+		if (unicode == 16rF702, { this.decrement(zoom); ^this });
+		
 		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.valueAction_(keyString.asFloat);
@@ -1141,14 +1163,7 @@ SCNumberBox : SCStaticTextBase {
 
 	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
 		hit = Point(x,y);
-		if (scroll == true, {
-			inc = 1.0;
-			case
-				{ modifiers & 131072 == 131072 } // shift defaults to scroll_step x 0.1
-					{ inc = shift_step }
-				{ modifiers & 262144 == 262144 } // control defaults to scroll_step x 10
-					{ inc = ctrl_step };
-		});			
+		if (scroll == true, { inc = this.getScale(modifiers) });			
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
@@ -1166,7 +1181,6 @@ SCNumberBox : SCStaticTextBase {
 	}
 	mouseUp{
 		inc=1
-	
 	}
 }
 
