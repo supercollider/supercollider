@@ -590,7 +590,17 @@ SCControlView : SCView { // abstract class
 }
 
 SCSliderBase : SCControlView {
+
+	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
 	
+	getScale { |modifiers| 
+		^case
+			{ modifiers & 131072 == 131072 } { shift_scale }
+			{ modifiers & 262144 == 262144 } { ctrl_scale }
+			{ modifiers & 524288 == 524288 } { alt_scale }
+			{ 1 };
+	}
+
 	knobColor {
 		^this.getProperty(\knobColor, Color.new)
 	}
@@ -612,16 +622,6 @@ SCSliderBase : SCControlView {
 }
 
 SCSlider : SCSliderBase {
-
-	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
-	
-	getScale { |modifiers| 
-		^case
-			{ modifiers & 131072 == 131072 } { shift_scale }
-			{ modifiers & 262144 == 262144 } { ctrl_scale }
-			{ modifiers & 524288 == 524288 } { alt_scale }
-			{ 1 };
-	}
 
 	value {
 		^this.getProperty(\value)
@@ -797,7 +797,7 @@ SCRangeSlider : SCSliderBase {
 	}
 }
 
-SC2DSlider : SCSliderBase {
+SC2DSlider : SCSliderBase { 
 	x {
 		^this.getProperty(\x)
 	}
@@ -830,22 +830,26 @@ SC2DSlider : SCSliderBase {
 	properties {
 		^super.properties ++ #[\x, \y]
 	}
+	
+	pixelStepX { ^(this.bounds.width).reciprocal }
+	pixelStepY { ^(this.bounds.height).reciprocal }
 
-	incrementY { ^this.y = this.y + this.bounds.height.reciprocal }
-	decrementY { ^this.y = this.y - this.bounds.height.reciprocal }
-	incrementX { ^this.x = this.x + this.bounds.width.reciprocal }
-	decrementX { ^this.x = this.x - this.bounds.width.reciprocal }
+	incrementY { |zoom=1| ^this.y = this.y + (this.pixelStepY * zoom) }
+	decrementY { |zoom=1| ^this.y = this.y - (this.pixelStepY * zoom) }
+	incrementX { |zoom=1| ^this.x = this.x + (this.pixelStepX * zoom) }
+	decrementX { |zoom=1| ^this.x = this.x - (this.pixelStepX * zoom) }
 
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
+		var zoom = this.getScale(modifiers); 
 		// standard keydown
 		if (char == $r, { this.x = 1.0.rand; this.y = 1.0.rand; ^this });
 		if (char == $n, { this.x = 0.0; this.y = 0.0; ^this });
 		if (char == $x, { this.x = 1.0; this.y = 1.0; ^this });
 		if (char == $c, { this.x = 0.5; this.y = 0.5; ^this });
-		if (unicode == 16rF700, { this.incrementY; ^this });
-		if (unicode == 16rF703, { this.incrementX; ^this });
-		if (unicode == 16rF701, { this.decrementY; ^this });
-		if (unicode == 16rF702, { this.decrementX; ^this });
+		if (unicode == 16rF700, { this.incrementY(zoom); ^this });
+		if (unicode == 16rF703, { this.incrementX(zoom); ^this });
+		if (unicode == 16rF701, { this.decrementY(zoom); ^this });
+		if (unicode == 16rF702, { this.decrementX(zoom); ^this });
 		^nil		// bubble if it's an invalid key
 	}
 	defaultGetDrag { 
@@ -1090,7 +1094,6 @@ SCNumberBox : SCStaticTextBase {
 	
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var zoom = this.getScale(modifiers);
-		[\zoom, zoom].postln; 
 		
 		// standard chardown
 		if (unicode == 16rF700, { this.increment(zoom); ^this });
