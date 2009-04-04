@@ -67,8 +67,7 @@ EZNumber : EZGui{
 		if (numberStep == 0) { 
 			numberStep = controlSpec.guessNumberStep;
 		} { 
-			// controlSpec wants a step, so zooming in with alt is disabled."
-			controlSpec.dump;
+			// controlSpec wants a step, so zooming in with alt is disabled.
 			numberView.alt_scale = 1.0;
 		};
 		numberView.step = numberStep;

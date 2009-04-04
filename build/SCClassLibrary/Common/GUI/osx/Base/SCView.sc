@@ -767,6 +767,7 @@ SCRangeSlider : SCSliderBase {
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var a, b;
+		var zoom = this.getScale(modifiers);
 		// standard keydown
 		if (char == $r, { 
 			a = 1.0.rand; 
@@ -779,10 +780,10 @@ SCRangeSlider : SCSliderBase {
 		if (char == $x, { this.activeLo_(1.0); this.activeHi_(1.0); ^this });
 		if (char == $c, { this.activeLo_(0.5); this.activeHi_(0.5); ^this });
 		if (char == $a, { this.activeLo_(0.0); this.activeHi_(1.0); ^this });
-		if (unicode == 16rF700, { this.increment; ^this });
-		if (unicode == 16rF703, { this.increment; ^this });
-		if (unicode == 16rF701, { this.decrement; ^this });
-		if (unicode == 16rF702, { this.decrement; ^this });
+		if (unicode == 16rF700, { this.increment(zoom); ^this });
+		if (unicode == 16rF703, { this.increment(zoom); ^this });
+		if (unicode == 16rF701, { this.decrement(zoom); ^this });
+		if (unicode == 16rF702, { this.decrement(zoom); ^this });
 		^nil		// bubble if it's an invalid key
 	}
 	defaultGetDrag { ^Point(this.lo, this.hi) }	
