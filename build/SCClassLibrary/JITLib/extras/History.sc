@@ -468,10 +468,16 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*document { current.document } 
 	
 	document { arg title="";	// platform dependent ...
-		var docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
-		Document.new(docTitle, this.storyString)
+		var docTitle; 
+		if (thisProcess.platform.isKindOf(UGen)) { 
+			docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
+			Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
+		} { 
+			this.storyString.newTextWindow("History_documented");
+		}	
 	} 
+	
 	*readFromDoc { |path| 
 		var file, line, count = 0, lineStrings = [], comLineIndices = [], splitPoints; 
 		file = File(path.standardizePath, "r"); 
