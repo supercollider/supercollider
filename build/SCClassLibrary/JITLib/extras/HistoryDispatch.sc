@@ -137,10 +137,10 @@ HistoryDispatch : EnvirDispatch {
 	// printing and saving.
 	// using History format.
 	storyString {
-		var str, d, date = Date.getDate, keys;
+		var str, keys;
 		
 		str = "///////////////////////////////////////////////////\n";
-		str = str ++ format("// History, as it was on %.\n", date);
+		str = str ++ format("// History, as it was on %.\n", History.dateString);
 		str = str ++ "///////////////////////////////////////////////////\n\n";
 		
 		keys = histories.keys.asArray.sort;
@@ -189,13 +189,16 @@ HistoryDispatch : EnvirDispatch {
 	}
 	*/
 	
-	document { arg title="";
-		var docTitle = title ++ Date.getDate.format("%Y-%d-%e-%Hh%m-History");
-		Document.new(docTitle, this.storyString)
+	document { arg title="";	// platform dependent ...
+		var docTitle; 
+		if (thisProcess.platform.isKindOf(UGen)) { 
+			docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
+			Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
+		} { 
+			this.storyString.newTextWindow("History_documented");
+		}	
 	}
-	
-	
 		
 	// returns whether a change happened
 	
