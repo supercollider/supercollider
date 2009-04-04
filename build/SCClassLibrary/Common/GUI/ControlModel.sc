@@ -79,6 +79,21 @@ ControlSpec : Spec {
 		// maps a value from spec range to [0..1]
 		^warp.unmap(value.round(step).clip(clipLo, clipHi));
 	}
+	
+	guessNumberStep { 
+		var numStep; 
+			// make an educated guess
+		if (step == 0) { 
+			if (warp.asSpecifier == \exp) {  
+				numStep = min(minval, maxval) * 0.1;
+			} { 
+					// linear is simple
+				numStep = this.range * 0.01;
+			};
+		};
+		^numStep
+	}
+	
 	*initClass {
 		Class.initClassTree(Warp);
 		specs = specs.addAll([
