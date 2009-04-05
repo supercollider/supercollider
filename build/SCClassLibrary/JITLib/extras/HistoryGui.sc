@@ -14,18 +14,18 @@ HistoryGui {
 	}
 	
 	init { |inHist, where, numTextLines=12| 
-		var sys = GUI.scheme, bounds;
+		var bounds;
 		var closebut, listV, font, flow;
 		bounds = where @ (where + (300@400));
 		
-		font = sys.font.new("Osaka", 9);				////
-		w = sys.window.new("History", bounds).front;	////
-		flow = w.view.decorator = FlowLayout(w.bounds.moveTo(0,0), 2@2, 2@2);
+		font = Font("Osaka", 9);				////
+		w = Window("History", bounds).front;	////
+		flow = w.addFlowLayout(2@2, 1@1);
 		history = inHist; 
 		
 		filters = [\all, ""]; 
 		
-		textV = sys.textView.new(w, Rect(0,0,300, numTextLines * 12)).string_("")
+		textV = TextView(w, Rect(0,0, 300 - 4, numTextLines * 12)).string_("")
 			.enterInterpretsSelection_(false)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode| 
 				char.postcs;
@@ -36,7 +36,7 @@ HistoryGui {
 			.resize_(2);
 
 			// to do: disable if history is not current!
-		startBut = sys.button.new(w, Rect(0, 0, 50, 20)) ////
+		startBut = Button(w, Rect(0, 0, 50, 20)) ////
 			.states_([ ["start"], ["end"]])
 			.canFocus_(false)
 			.action_({ |btn|
@@ -46,7 +46,7 @@ HistoryGui {
 				);
 			});
 		
-		filtBut = sys.button.new(w, Rect(42, 22, 32, 20)) ////
+		filtBut = Button(w, Rect(0, 0, 32, 20)) ////
 			.canFocus_(false)
 			.states_([["all"], ["filt"]]).action_({ |btn| 
 				this.filtering_(btn.value > 0);
@@ -54,29 +54,29 @@ HistoryGui {
 				 history.hasMovedOn = true;
 			});
 		
-		keyPop = sys.popUpMenu.new(w, Rect(64, 22, 40, 20))
+		keyPop = PopUpMenu(w, Rect(0, 0, 40, 20))
 			.items_([\all] ++ history.keys).value_(0)
 			.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 		
-		filTextV = sys.textView.new(w, Rect(106,22,100,20)).string_("")
+		filTextV = TextView(w, Rect(0,0, 100 ,20)).string_("")
 			.enterInterpretsSelection_(false)
 			.resize_(2)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode| 
 				this.setStrFilter(txvw.string);
 				if (this.filtering) { this.filterLines; }
 			});
-		topBut = sys.button.new(w, Rect(190, 22, 32, 20))
+		topBut = Button(w, Rect(0, 0, 32, 20))
 			.states_([["top"], ["keep"]]).value_(0)
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |but| this.stickMode_(but.value) });
 		
-		sys.button.new(w, Rect(42, 22, 32, 20)) ////
+		Button(w, Rect(0, 0, 32, 20)) ////
 			.states_([["rip"]])
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |btn| this.findDoc; doc.string_(textV.string); });		
-		listV = sys.listView.new(w,bounds.moveTo(2, 44).resizeBy(-4, -48))
+		listV = ListView(w, bounds.copy.insetBy(2).height_(230))
 			.font_(font)
 			.items_([])
 			.resize_(5)

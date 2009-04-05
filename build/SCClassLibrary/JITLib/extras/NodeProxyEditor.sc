@@ -67,10 +67,12 @@
 				sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
 			ez.visible_(false);			ez.labelView.font_(font).align_(\center);
 			
-			ez.sliderView.keyDownAction = { |view, char, mod, unicode| 
+			ez.sliderView.keyDownAction = { |view, char,modifiers,unicode,keycode| 
 				if (unicode == 127) { // delete key
 					try { proxy.unset(ez.labelView.string.asSymbol) }
-				}
+				} { 
+					view.defaultKeyDownAction(char,modifiers,unicode,keycode);
+				};
 			};
 			[ez, sink]		}).flop;
 
