@@ -77,12 +77,12 @@ EZRanger : EZGui {
 		numberStep = controlSpec.step;
 		if (numberStep == 0) { 
 			numberStep = controlSpec.guessNumberStep; 
+		}{
+			// controlSpec wants a step, so zooming in with alt is disabled.
+			hiBox.alt_scale = 1.0;
+			loBox.alt_scale = 1.0;
+			rangeSlider.alt_scale = 1.0;
 		};
-		 
-		// controlSpec wants a step, so zooming in with alt is disabled.
-		hiBox.alt_scale = 1.0;
-		loBox.alt_scale = 1.0;
-		rangeSlider.alt_scale = 1.0;
 		
 		hiBox.step=numberStep;
 		loBox.step=numberStep;
