@@ -51,8 +51,8 @@ EZSlider : EZGui {
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
 
-		numberView = GUI.numberBox.new(view, numBounds);
 		sliderView = GUI.slider.new(view, sliderBounds);
+		numberView = GUI.numberBox.new(view, numBounds);
 		
 		// set view parameters and actions
 		
