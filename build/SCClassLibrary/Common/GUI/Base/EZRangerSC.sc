@@ -50,9 +50,9 @@ EZRanger : EZGui {
 		};
 
 
-		hiBox = GUI.numberBox.new(view, hiBounds);
 		loBox = GUI.numberBox.new(view, loBounds);
 		rangeSlider = GUI.rangeSlider.new(view, rangerBounds);
+		hiBox = GUI.numberBox.new(view, hiBounds);
 		
 		controlSpec = argControlSpec.asSpec;
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
