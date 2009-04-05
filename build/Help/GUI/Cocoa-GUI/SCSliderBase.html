@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -19,15 +19,16 @@ p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #356f14}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #4c5db6}
-span.s3 {color: #1638e6}
+span.s2 {color: #505fb1}
+span.s3 {color: #2040df}
 span.s4 {color: #000000}
 span.s5 {text-decoration: underline}
-span.s6 {color: #686e90}
-span.s7 {font: 14.0px Helvetica}
-span.s8 {color: #696f8e}
+span.s6 {color: #0922b2}
+span.s7 {color: #696f8e}
+span.s8 {font: 14.0px Helvetica}
+span.s9 {color: #6a708c}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -36,7 +37,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: </b><a href="../../Core/Object.html"><span class="s2"><b>Object</b></span></a><b> : </b><a href="SCView.html"><span class="s2"><b>SCView</b></span></a><b> : </b><a href="SCControlView.html"><span class="s3"><b>SCControlView</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">Users will not normally directly create instances of SCSliderBase, but only use it through its subclasses. It provides a few </span>methods common to various slider views.</p>
+<p class="p1">Users will not normally directly create instances of SCSliderBase, but only use it through its subclasses. It provides a few methods common to various slider views. To set the increment or decrement value of a slider, set the <b>step</b> .<span class="Apple-converted-space">  </span>By default, the shift, ctrl, and alt keys will modify the stepping by 100x, 10x, or 0.1x repectively, though you can customize this by setting <b>shift_scale, ctrl_scale, </b>or<b> alt_scale.</b></p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s4"><b>See also:</b> <a href="SCSlider.html"><span class="s5">SCSlider</span></a>, <a href="SCRangeSlider.html"><span class="s5">SCRangeSlider</span></a>, <a href="SC2DSlider.html"><span class="s5">SC2DSlider</span></a></span></p>
 <p class="p2"><br></p>
@@ -49,22 +51,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The step size for changing a slider value. The subclasses tend to use this in their <b>increment</b> an <b>decrement</b> methods, among other things.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>stepSize </b>- A Number;</p>
-<p class="p12"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>shift_scale_(aFloat)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>shift_scale</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling<span class="Apple-converted-space">  </span>or arrow keys, and while the <b>shift</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>shift_scale</b> defaults to 100.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s6">Float</span></a>.</p>
+<p class="p6"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>ctrl_scale_(aFloat)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>ctrl_scale</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling or arrow keys, and while the <b>ctrl</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>ctrl_scale</b> defaults to 10.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s6">Float</span></a>.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>alt_scale_(aFloat)</b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>alt_scale</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling or arrow keys, and while the <b>alt</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>ctrl_scale</b> defaults to 0.1.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s6">Float</span></a>.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b>Customizing Appearance</b></p>
 <p class="p8"><br></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>knobColor</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>knobColor_ (color)</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set </span>the  </span>knob <a href="../GUI-Tools/Color.html"><span class="s6">Color</span></a> for a slider-</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of </span><a href="../GUI-Tools/Color.html"><span class="s6">Color</span></a>.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Set the knob <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a> for a slider-</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>color </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s7">Color</span></a>.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><br></p>
-<p class="p7"><b>Subclassing and Internal Methods</span></b></p>
-<p class="p9"><span class="s7"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</span></p>
+<p class="p7"><b>Subclassing and Internal Methods</b></p>
+<p class="p9"><span class="s8"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span>properties</b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s8">SCView</span></a>.</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s9">SCView</span></a>.</p>
 <p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns:</p>
 <p class="p13"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s4">, </span>\visible<span class="s4">, </span>\enabled<span class="s4">, </span>\canFocus<span class="s4">, </span>\resize<span class="s4">, </span>\background<span class="s4">, </span>\minWidth<span class="s4">, </span>\maxWidth<span class="s4">, </span>\minHeight<span class="s4">, </span>\maxHeight<span class="s4">, </span>\knobColor<span class="s4">, </span>\step<span class="s4">, </span>\thumbSize<span class="s4"> ]<span class="Apple-tab-span">	</span></span></p>
 <p class="p6"><br></p>

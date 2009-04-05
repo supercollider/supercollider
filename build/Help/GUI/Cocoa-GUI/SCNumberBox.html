@@ -21,11 +21,11 @@ p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monac
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
@@ -50,7 +50,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding SCNumberBox</b></p>
 <p class="p2"><br></p>
-<p class="p1">Whatever is entered into the number box is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../../Math/Number.html"><span class="s4">Number</span></a>. By default, <b>scroll</b> is set to to true, and you can use mouse scrolling in the SCNumberBox by step. Hlding down ctrl or shift while scrolling will multiply or divide the scrolling step by 10.<span class="Apple-converted-space">  </span>SCNumberBox inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s4">SCStaticTextBase</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p1">Whatever is entered into the number box is converted to a <a href="../../Math/Float.html"><span class="s4">Float</span></a> upon hitting return or enter. You can also use exponential notation for entering a number, e.g. "2.1e-2" will be converted to 0.02. Drag and drop accepts a <a href="../../Math/Number.html"><span class="s4">Number</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">By default, <b>scroll</b> is set to to true, and you can use mouse scrolling in the SCNumberBox by step. By default, the shift, ctrl, and alt keys will modify the arrow stepping and scrolling by 100x, 10x, or 0.1x repectively, though you can customize this by setting <b>shift_scale, ctrl_scale, </b>or<b> alt_scale.</b>. <span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">SCNumberBox inherits formatting methods from <a href="SCStaticTextBase.html"><span class="s4">SCStaticTextBase</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
@@ -107,21 +111,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>scroll_step_(val)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>scroll_step</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The size of the step for mouse scrolling.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The default size of the step for mouse scrolling. This is modified by <b>shift_scale, ctrl_scale, </b>and <b>alt_scale.</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>val </b>- An instance of <a href="../../Math/Float.html"><span class="s4">Float</span></a>.</p>
 <p class="p11"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>shift_step_(aFloat)</b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>shift_step</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>shift_scale_(aFloat)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>shift_scale</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value to <b>multiply</b> the receiver's <b>step</b> value while mouse scrolling<span class="Apple-converted-space">  </span>or arrow keys, and while the <b>shift</b> key is pressed.<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>shift_step</b> defaults to 0.1.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling<span class="Apple-converted-space">  </span>or arrow keys, and while the <b>shift</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>shift_scale</b> defaults to 100.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s4">Float</span></a>.</p>
 <p class="p11"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>ctrl_step_(aFloat)</b></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>ctrl_step</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>ctrl_scale_(aFloat)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>ctrl_scale</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value to <b>multiply</b> the receiver's <b>step</b> value while mouse scrolling or arrow keys, and while the <b>ctrl</b> key is pressed.<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>ctrl_step</b> defaults to 10.</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling or arrow keys, and while the <b>ctrl</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>ctrl_scale</b> defaults to 10.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s4">Float</span></a>.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>alt_scale_(aFloat)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>alt_scale</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>A value for <b>increment</b>'s or <b>decrement</b>'s zoom argument while mouse scrolling or arrow keys, and while the <b>alt</b> key is pressed.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>ctrl_scale</b> defaults to 0.1.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>aFloat </b>- An instance of <a href="../../Math/Float.html"><span class="s4">Float</span></a>.</p>
 <p class="p11"><br></p>
 <p class="p12"><b>Customizing Appearance</b></p>
@@ -139,15 +150,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>arg1 </b>- An instance of <a href="../GUI-Tools/Color.html"><span class="s4">Color</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s6">Window</span>(<span class="s7">"NumberBox Example"</span>, <span class="s6">Rect</span>(100, 500, 400, 120));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s6">NumberBox</span>(w, <span class="s6">Rect</span>(150, 10, 100, 20));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 5;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.stringColor=<span class="s6">Color</span>.black;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.normalColor=<span class="s6">Color</span>.green(0.8);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {<span class="s6">arg</span> numb; numb.value.postln; };</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">)</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s4">Window</span>(<span class="s7">"NumberBox Example"</span>, <span class="s4">Rect</span>(100, 500, 400, 120));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s4">NumberBox</span>(w, <span class="s4">Rect</span>(150, 10, 100, 20));</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 5;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.stringColor=<span class="s4">Color</span>.black;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.normalColor=<span class="s4">Color</span>.green(0.8);</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {<span class="s4">arg</span> numb; numb.value.postln; };</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 12;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>typingColor_(arg1)</b></p>
@@ -159,11 +170,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><b>Subclassing and Internal Methods</b></p>
 <p class="p6"><span class="s8"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>increment</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>increment(mul)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Increments the value of the box by <b>step</b>. Called by <b>defaultKeyDownAction</b>, but you can call it directly too.</p>
 <p class="p11"><br></p>
-<p class="p6"><b><span class="Apple-tab-span">	</span>decrement</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>decrement(mul)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Decrements the value of the box by <b>step</b>. Called by <b>defaultKeyDownAction</b>, but you can call it directly too.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -191,8 +202,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>A list of properties to which this view responds. See <a href="SCView.html"><span class="s4">SCView</span></a>.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
-<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s2">, </span>\visible<span class="s2">, </span>\enabled<span class="s2">, </span>\canFocus<span class="s2">, </span>\resize<span class="s2">, </span>\background<span class="s2">, </span>\minWidth<span class="s2">, </span>\maxWidth<span class="s2">, </span>\minHeight<span class="s2">, </span>\maxHeight<span class="s2">, </span>\string<span class="s2">, </span>\font<span class="s2">, </span>\stringColor<span class="s2">, </span>\boxColor<span class="s2">, </span>\focusColor<span class="s2"> ]</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns:</p>
+<p class="p17"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[ </span>\bounds<span class="s2">, </span>\visible<span class="s2">, </span>\enabled<span class="s2">, </span>\canFocus<span class="s2">, </span>\resize<span class="s2">, </span>\background<span class="s2">, </span>\minWidth<span class="s2">, </span>\maxWidth<span class="s2">, </span>\minHeight<span class="s2">, </span>\maxHeight<span class="s2">, </span>\string<span class="s2">, </span>\font<span class="s2">, </span>\stringColor<span class="s2">, </span>\boxColor<span class="s2">, </span>\focusColor<span class="s2"> ]</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>defaultGetDrag</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -206,59 +217,59 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>The default method called when a drag has been received. Performs <b>valueAction_()</b> using <b>currentDrag</b> as an argument<span class="Apple-tab-span">	</span></p>
 <p class="p12"><b>Examples</b></p>
-<p class="p19"><br></p>
-<p class="p15">(</p>
-<p class="p15"><span class="Apple-tab-span">	</span>w = <span class="s6">Window</span>(<span class="s7">"NumberBox Example"</span>, <span class="s6">Rect</span>(100, 500, 400, 120));</p>
-<p class="p15"><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s6">NumberBox</span>(w, <span class="s6">Rect</span>(150, 10, 100, 20));</p>
-<p class="p15"><span class="Apple-tab-span">	</span>b.value = rrand(1,15);</p>
-<p class="p15"><span class="Apple-tab-span">	</span>b.action = {<span class="s6">arg</span> numb; numb.value.postln; };</p>
-<p class="p15"><span class="Apple-tab-span">	</span>w.front</p>
-<p class="p15">)</p>
+<p class="p18"><br></p>
+<p class="p19">(</p>
+<p class="p19"><span class="Apple-tab-span">	</span>w = <span class="s6">Window</span>(<span class="s7">"NumberBox Example"</span>, <span class="s6">Rect</span>(100, 500, 400, 120));</p>
+<p class="p19"><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s6">NumberBox</span>(w, <span class="s6">Rect</span>(150, 10, 100, 20));</p>
+<p class="p19"><span class="Apple-tab-span">	</span>b.value = rrand(1,15);</p>
+<p class="p19"><span class="Apple-tab-span">	</span>b.action = {<span class="s6">arg</span> numb; numb.value.postln; };</p>
+<p class="p19"><span class="Apple-tab-span">	</span>w.front</p>
+<p class="p19">)</p>
 <p class="p20">// try these one at time</p>
 <p class="p20"><span class="s2">b.value = rrand(1,15) ; <span class="Apple-tab-span">	</span></span>// sets the value but does not perform the action</p>
 <p class="p20"><span class="s2">b.valueAction_(5); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// sets the value and performs the action</p>
 <p class="p20"><span class="s2">b.step_(0.1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change the increment/decrement size for the arrow keys</p>
 <p class="p20"><span class="s2">b.scrollStep=10;<span class="Apple-converted-space">    </span></span>// change the increment/decrement size for the mosueScrolling</p>
-<p class="p19"><br></p>
+<p class="p18"><br></p>
 <p class="p20"><span class="s2">b.boxColor_(</span><span class="s6">Color</span><span class="s2">.grey); <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change the background color of the box</p>
 <p class="p20"><span class="s2">b.typingColor_(</span><span class="s6">Color</span><span class="s2">(0.3,1,0.3)); <span class="Apple-tab-span">	</span></span>// change the typing color for the box</p>
 <p class="p20"><span class="s2">b.normalColor_(</span><span class="s6">Color</span><span class="s2">.white);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// change the normal color for the box. won't change until next value change</p>
-<p class="p19"><br></p>
-<p class="p15">b.setProperty(<span class="s9">\stringColor</span>,<span class="s6">Color</span>.white);</p>
-<p class="p15">b.setProperty(<span class="s9">\align</span>,<span class="s9">\center</span>);</p>
-<p class="p19"><br></p>
+<p class="p18"><br></p>
+<p class="p19">b.setProperty(<span class="s9">\stringColor</span>,<span class="s6">Color</span>.white);</p>
+<p class="p19">b.setProperty(<span class="s9">\align</span>,<span class="s9">\center</span>);</p>
+<p class="p18"><br></p>
 <p class="p20"><span class="s2">b.increment; </span>// increment or decrement by step</p>
-<p class="p15">b.decrement;</p>
-<p class="p19"><br></p>
-<p class="p19"><br></p>
-<p class="p19"><br></p>
+<p class="p19">b.decrement;</p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
+<p class="p18"><br></p>
 <p class="p20">// change freqency of a playing synth by step using arrow keys</p>
 <p class="p21"><br></p>
-<p class="p15">(<span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
-<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n={<span class="s6">arg</span> freq=220;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">var</span> out;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s6">SinOsc</span>.ar(freq,0,0.2);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>8.do{out = <span class="s6">AllpassN</span>.ar(out, 0.2,0.02+0.20.rand,8)};</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
-<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19">(<span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>n={<span class="s6">arg</span> freq=220;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">var</span> out;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out=<span class="s6">SinOsc</span>.ar(freq,0,0.2);</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>8.do{out = <span class="s6">AllpassN</span>.ar(out, 0.2,0.02+0.20.rand,8)};</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>out;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}.play;</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p22"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = </span><span class="s6">Window</span><span class="s2">(</span>"Use arrow keys to change the frequency by steps"<span class="s2">, </span><span class="s6">Rect</span><span class="s2">(100, 500, 500, 120));</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s6">NumberBox</span>(w, <span class="s6">Rect</span>(200, 10, 100, 20));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 220;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {<span class="s6">arg</span> numb; n.set(<span class="s9">\freq</span>,numb.value); };</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s6">NumberBox</span>(w, <span class="s6">Rect</span>(200, 10, 100, 20));</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 220;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {<span class="s6">arg</span> numb; n.set(<span class="s9">\freq</span>,numb.value); };</p>
 <p class="p20"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.step=55; </span>//make the step a fraction of the freq</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.focus;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">CmdPeriod</span>.doOnce({w.close});</p>
-<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>});</p>
-<p class="p15">)</p>
-<p class="p19"><br></p>
-<p class="p19"><br></p>
-<p class="p16"><br></p>
-<p class="p16"><br></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.focus;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">CmdPeriod</span>.doOnce({w.close});</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span>});</p>
+<p class="p19">)</p>
+<p class="p18"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
 </body>
 </html>

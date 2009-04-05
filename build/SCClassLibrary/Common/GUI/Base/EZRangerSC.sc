@@ -4,7 +4,6 @@ EZRanger : EZGui {
 	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec, 
 		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth;
 	var <>round = 0.001;
-	var scaler=1;  //for swing compatibility
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
@@ -20,7 +19,8 @@ EZRanger : EZGui {
 			labelHeight, argLayout, argGap,argMargin;
 			
 		var labelBounds, hiBounds,loBounds, unitBounds,rangerBounds;
-				
+		var numberStep;
+		
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
 
@@ -70,15 +70,24 @@ EZRanger : EZGui {
 		if (initAction) { this.doAction };
 		
 		
-		if (controlSpec.step != 0) {
-			rangeSlider.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
-		};
+//		if (controlSpec.step != 0) {
+//			rangeSlider.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
+//		};
 		
-		if (GUI.id==\cocoa) {scaler = 10;};
-		hiBox.step=controlSpec.step*scaler;
-		loBox.step=controlSpec.step*scaler;
-		hiBox.scroll_step=controlSpec.step*scaler;
-		loBox.scroll_step=controlSpec.step*scaler;
+		numberStep = controlSpec.step;
+		if (numberStep == 0) { 
+			numberStep = controlSpec.guessNumberStep; 
+		};
+		 
+		// controlSpec wants a step, so zooming in with alt is disabled.
+		hiBox.alt_scale = 1.0;
+		loBox.alt_scale = 1.0;
+		rangeSlider.alt_scale = 1.0;
+		
+		hiBox.step=numberStep;
+		loBox.step=numberStep;
+		hiBox.scroll_step=numberStep;
+		loBox.scroll_step=numberStep;
 
 		rangeSlider.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
