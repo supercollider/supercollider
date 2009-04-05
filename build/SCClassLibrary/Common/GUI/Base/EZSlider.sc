@@ -4,7 +4,6 @@ EZSlider : EZGui {
 	var <sliderView, <numberView, <unitView, <>controlSpec, 
 		  popUp=false, numSize,numberWidth,unitWidth, gap;
 	var <>round = 0.001;
-	var scaler=1;  //for swing compatibility
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
 			initAction=false, labelWidth=60, numberWidth=45, 
@@ -66,9 +65,9 @@ EZSlider : EZGui {
 			this.valueAction_(controlSpec.map(sliderView.value));
 		};
 		
-		if (controlSpec.step != 0) {
-			sliderView.step = controlSpec.step;
-		};
+//		if (controlSpec.step != 0) {
+//			sliderView.step = (controlSpec.step / (controlSpec.maxval - controlSpec.minval));
+//		};
 
 		sliderView.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
@@ -83,11 +82,11 @@ EZSlider : EZGui {
 		numberStep = controlSpec.step;
 		if (numberStep == 0) { 
 			numberStep = controlSpec.guessNumberStep 
-		} { 
-			// controlSpec wants a step, so zooming in with alt is disabled.
-			numberView.alt_scale = 1.0;
-			sliderView.alt_scale = 1.0;
-		};
+		}; 
+		// controlSpec wants a step, so zooming in with alt is disabled.
+		numberView.alt_scale = 1.0;
+		sliderView.alt_scale = 1.0;
+		
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
 		//numberView.scroll=true;
