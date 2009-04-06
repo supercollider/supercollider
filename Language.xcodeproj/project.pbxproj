@@ -354,6 +354,8 @@
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
 		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
+		FE0DB9890F8A0A5A005B2DE4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */; };
+		FE0DB98A0F8A0A5A005B2DE4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -688,7 +690,7 @@
 		9493180C0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		9493180E0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		9493180F0C192C120018AB50 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GoToLinePanel.nib; sourceTree = "<group>"; };
-		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		949318110C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		949318120C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
 		949318130C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -703,12 +705,12 @@
 		94DFDB510DD95B8700EB46BA /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
-		F31B262E0DE604180003691B /* Info copy 12.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 12.plist"; sourceTree = "<group>"; };
-		F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 4.plist"; sourceTree = "<group>"; };
-		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 5.plist"; sourceTree = "<group>"; };
-		F345DCE30E7ED5C500CFAB80 /* Info copy 13.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 13.plist"; sourceTree = "<group>"; };
-		F3A435FA0E89AD2900551B22 /* Info copy 14.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 14.plist"; sourceTree = "<group>"; };
-		F3C4BD1A0E93CD5000AC6675 /* Info copy 15.plist */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Info copy 15.plist"; sourceTree = "<group>"; };
+		F31B262E0DE604180003691B /* Info copy 12.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 12.plist"; sourceTree = "<group>"; };
+		F338A41A0D0F06C000ACFF58 /* Info copy 4.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 4.plist"; sourceTree = "<group>"; };
+		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 5.plist"; sourceTree = "<group>"; };
+		F345DCE30E7ED5C500CFAB80 /* Info copy 13.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 13.plist"; sourceTree = "<group>"; };
+		F3A435FA0E89AD2900551B22 /* Info copy 14.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 14.plist"; sourceTree = "<group>"; };
+		F3C4BD1A0E93CD5000AC6675 /* Info copy 15.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 15.plist"; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		F50D069702E6A1C601CA2799 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -717,6 +719,8 @@
 		F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
 		F50D069B02E6A1C601CA2799 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F50D069C02E6A1C601CA2799 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		FE0DB9880F8A0A5A005B2DE4 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = Resources/English.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FE0DB98B0F8A0A77005B2DE4 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = Japanese; path = Resources/Japanese.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1241,6 +1245,7 @@
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
 			children = (
+				FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */,
 				945D14AF0CD9A73A00464EBF /* ChangeLog */,
 				9456F5BC0C19E25900634E4D /* Synth.xcodeproj */,
 				9493126D0C19222B0018AB50 /* Headers */,
@@ -1417,6 +1422,7 @@
 				6A0CC1B50D3D44560080C454 /* LICENSE.txt in Resources */,
 				6A0CC1BD0D3D44730080C454 /* LICENSE.txt in Resources */,
 				6A0CC26A0D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */,
+				FE0DB9890F8A0A5A005B2DE4 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1442,6 +1448,7 @@
 				6A0CC1B10D3D44560080C454 /* LICENSE.txt in Resources */,
 				6A0CC1BC0D3D44730080C454 /* LICENSE.txt in Resources */,
 				6A0CC2690D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */,
+				FE0DB98A0F8A0A5A005B2DE4 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1833,6 +1840,15 @@
 				949318160C192C120018AB50 /* Japanese */,
 			);
 			name = SCGraphView.nib;
+			sourceTree = "<group>";
+		};
+		FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FE0DB9880F8A0A5A005B2DE4 /* English */,
+				FE0DB98B0F8A0A77005B2DE4 /* Japanese */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

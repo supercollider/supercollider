@@ -3860,8 +3860,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		int err = slotSymbolVal(parentObj, &parentSymbol);
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
-			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"‚Äû√â√≤‚Äû√â¬¥‚Äû√â√≥"] submenu];
+			parentMenu = [[[NSApp mainMenu] itemWithTitle:NSLocalizedString(@"Help", @"Help Menu Name")] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
@@ -3926,8 +3925,7 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 		int err = slotSymbolVal(parentObj, &parentSymbol);
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
-			parentMenu = [[[NSApp mainMenu] itemWithTitle:@"Help"] submenu];
-			if(!parentMenu) parentMenu = [[[NSApp mainMenu] itemWithTitle:@"‚Äû√â√≤‚Äû√â¬¥‚Äû√â√≥"] submenu];
+			parentMenu = [[[NSApp mainMenu] itemWithTitle:NSLocalizedString(@"Help", @"Help Menu Name")] submenu];
 		} 
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
 		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
