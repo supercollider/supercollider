@@ -6670,7 +6670,10 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-
+	
+	if(::IsNil( g->sp->uo->slots+0 ))
+		return errFailed;
+	
 	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
 	if(!view) 	return errNone;
     view->refresh();
@@ -6681,6 +6684,10 @@ int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed);
 int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
+	
+	if(::IsNil( (g->sp - 1)->uo->slots+0 ))
+		return errFailed;
+	
 	SCRect r;
 	SCView *view = (SCView*)(g->sp - 1)[0].uo->slots[0].ui;
 	
