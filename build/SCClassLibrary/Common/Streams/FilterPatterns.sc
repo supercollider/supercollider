@@ -743,7 +743,7 @@ Pflatten : Pclump {
 			nval = nstream.next(event);
 			next.notNil and: { nval.notNil };
 		}{
-			if (next.isKindOf(Collection)) {
+			if (next.isKindOf(SequenceableCollection)) {
 				next = next.flatten(nval);
 				next.do {|item| event = item.yield };
 			}{
