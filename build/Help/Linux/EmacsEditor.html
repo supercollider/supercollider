@@ -14,10 +14,11 @@ Here is a more extensive and elaborate overview of useful shortcuts in the Emacs
 For a general reference to Emacs shortcut, check out this <A href="http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html">Emacs reference</A>.
 
 <TABLE>
+<tbody valign="top">
 <tr><td>C-g</td><td>Abort current action</td></tr>
 <tr><td>C-h</td><td>General help on emacs</td></tr>
 <tr><td colspan="2" align="center"><strong>Interpreting code</strong></td></tr>
-<tr><td>C-c C-x<br>(C-c C-c)</td><td>Interpret Selection <br>(only if transient-mark-mode is on)</td></tr>
+<tr><td>C-c C-d<br>(C-c C-c)</td><td>Interpret Selection <br>(only if transient-mark-mode is on)</td></tr>
 <tr><td>C-c C-c</td><td>Interpret current line</td></tr>
 <tr><td>C-c C-e</td><td>Evaluate expression (in minibuffer)</td></tr>
 <tr><td>C-M-x</td><td>Interpret defun</td></tr>
@@ -38,10 +39,12 @@ For a general reference to Emacs shortcut, check out this <A href="http://lpn.rn
 <tr><td>C-M-h</td><td>Show help browser</td></tr>
 <tr><td>C-c C-h</td><td>Open help file. You do not need to select a word before using the shortcut. It will suggest the word at the current cursor position, or lets you type a word in the minibuffer. There is autocompletion by typing &lt;TAB&gt;.</td></tr>
 <tr><td>E</td><td>(in the help browser) open the help file as plain text (in sclang-mode), so it can be edited.</td></tr>
+<tr><td>C-c C-v</td><td>(in the help browser) edit the help file as html code.</td></tr>
 
 <tr><td colspan="2" align="center"><strong>Finding things in class source files</strong></td></tr>
 <tr><td>C-c :</td><td>Find definitions (method or class). Again, you can type the word you want to look for in the minibuffer and it suggests the word at the current cursor position.</td></tr>
 <tr><td>C-c ;</td><td>Find references to (method or class). (ditto)</td></tr>
+<tr><td>C-c C-k</td><td>Open current file at the svn development path location. You need to have set the devpath variable in Platform for this to work properly.</td></tr>
 
 <tr><td colspan="2" align="center"><strong>Current code completion and interface</strong></td></tr>
 <tr><td>C-c {</td><td>Dump interface</td></tr>
@@ -95,6 +98,39 @@ For a general reference to Emacs shortcut, check out this <A href="http://lpn.rn
 closing brackets this is handier if you've just finished some code.
    </TD></TR>
 
+<tr><td>
+    C-f</td><td>	Move forward a character
+</td></tr>
+<tr><td>
+    C-b</td><td>Move backward a character
+</td></tr>
+<tr><td>
+    M-f</td><td>Move forward a word
+</td></tr>
+<tr><td>
+    M-b</td><td>Move backward a word
+</td></tr>
+<tr><td>
+    C-n</td><td>Move to next line
+</td></tr>
+<tr><td>
+    C-p</td><td>Move to previous line
+</td></tr>
+<tr><td>
+    C-a</td><td>Move to beginning of line
+</td></tr>
+<tr><td>
+    C-e</td><td>Move to end of line
+</td></tr>
+<tr><td>
+    M-a</td><td>Move back to beginning of sentence
+</td></tr>
+<tr><td>
+    M-e</td><td>Move forward to end of sentence
+</td></tr>
+<tr><td>
+
+
 <tr><td colspan="2" align="center"><strong>Formatting</strong></td></tr>
 <tr><td> M-x show-paren-mode</td><td>Paren match highlighting. Can also be set from the options menu.</td></tr>
 <tr><td>M-;</td><td>Add comment. If you have a text selected, then that text will become a comment. It will remove the commenting // when you have selected a commented text.</td></tr>
@@ -103,7 +139,7 @@ closing brackets this is handier if you've just finished some code.
 <tr><td>M-x comment-region</td><td>Comments the selected region</td></tr>
 <tr><td>M-x uncomment-region</td><td>Uncomments the selected region</td></tr>
 <tr><td>TAB</td><td>Auto-aligns tabs according to code.</td></tr>
-
+</tbody>
 </TABLE>
 
 <h2>Marks</h2>

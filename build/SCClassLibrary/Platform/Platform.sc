@@ -2,6 +2,8 @@ Platform
 {
 	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 
+	var <>devpath;
+
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
 		helpDir = thisMethod.filenameSymbol.asString.dirname.dirname.dirname ++ "/Help";
@@ -85,6 +87,16 @@ Platform
 	defaultHIDScheme { ^\none }
 	
 	isSleeping { ^false } // unless defined otherwise
+
+	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
+	devLoc{ |inpath|
+		var outpath;
+		if ( devpath.isNil ){ ^inpath };
+		outpath = inpath.copyToEnd( inpath.find( "SuperCollider") );
+		outpath = outpath.replace( "SuperCollider", devpath +/+ "build");
+		^outpath;
+	}
+
 }
 
 UnixPlatform : Platform

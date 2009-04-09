@@ -183,6 +183,7 @@
     "if"
     "ir"
     "kr"
+    "tr"
     "loop"
     "while"
     )
