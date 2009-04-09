@@ -132,6 +132,7 @@
   (define-key map "\C-c\C-r"			'sclang-main-run)
   (define-key map "\C-c\C-s"			'sclang-main-stop)
   (define-key map "\C-c\C-p"			'sclang-show-server-panel)
+  (define-key map "\C-c\C-k"                    'sclang-edit-dev-source)
   ;; electric characters
   (define-key map "}"				'sclang-electric-brace)
   (define-key map ")"				'sclang-electric-brace)

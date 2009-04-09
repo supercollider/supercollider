@@ -22,6 +22,7 @@ sclang code with the normal command C-c C-c and C-c C-x."
    ("\C-c\C-h" . sclang-find-help)
    ("\C-\M-h"  . sclang-goto-help-browser)
    ("\C-c\C-s" . sclang-main-stop)
+   ("\C-c\C-k" . sclang-edit-dev-source)
 ))
 
 (provide 'sclang-minor-mode)
@@ -46,6 +47,7 @@ sclang code with the normal command C-c C-c and C-c C-x."
    ("\C-c\C-s" . sclang-main-stop)
    ("\C-c\C-v" . sclang-edit-html-help-file)
    ("E" . sclang-edit-help-code)
+   ("\C-c\C-k" . sclang-edit-dev-source)
 ))
 
 (provide 'sclang-help-minor-mode)
