@@ -192,6 +192,12 @@ EmacsInterface {
 				[time, \error, e.errorString]
 			}
 		})
+		.put( \openDevSource, { | name |
+			var devpath = thisProcess.platform.devLoc( name );
+			//	devpath.postln;
+			Document.open( devpath ).front;
+			name -> devpath
+		});
 	}
 }
 
