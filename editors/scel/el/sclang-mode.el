@@ -22,6 +22,7 @@
 
 (require 'sclang-interp)
 (require 'sclang-language)
+(require 'sclang-dev)
 
 (defun sclang-fill-syntax-table (table)
   ;; string

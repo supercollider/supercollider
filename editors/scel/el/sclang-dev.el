@@ -11,6 +11,8 @@
   (sclang-perform-command 'openDevSource (buffer-file-name))
   )
 
+(provide 'sclang-dev)
+
 ;(defun sclang-open-dev-source (file)
 ;  "Open the help file at the development location."
 ;  (if (sclang-html-file-p file)
