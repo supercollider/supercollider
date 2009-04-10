@@ -1351,6 +1351,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 			if(retslot.utag == tagNil) { // the returned object is Nil - might lead to EXC_BAD_ACCESS after
 				SetNil(receiver->uo->slots+0); // set the dataptr slot to nil
 				SetNil(receiver); // return nil
+				if(retval) free(retval);
 				return errNone; // should returning nil be considered as an error ?
 			}
 			
