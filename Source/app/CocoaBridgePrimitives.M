@@ -96,7 +96,8 @@ PyrSymbol *s_nsObject;
 //NSAutoreleasePool *nsAutoReleasePool;
 
 #if COCOABRIDGE_STORE_OBJECTS_IN_ARRAY
-NSMutableSet *nsobjects = nil;
+//NSMutableSet *nsobjects = nil;
+NSMutableArray *nsobjects = nil;
 #endif
 
 
@@ -1344,9 +1345,17 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 			return errFailed;
 		}
 		
+		// If no suitable Cocoa<->SCLang conversion can be done for the object value
 		if(*cType == _C_ID && !convertedObject) {
+			
+			if(retslot.utag == tagNil) { // the returned object is Nil - might lead to EXC_BAD_ACCESS after
+				SetNil(receiver->uo->slots+0); // set the dataptr slot to nil
+				SetNil(receiver); // return nil
+				return errNone; // should returning nil be considered as an error ?
+			}
+			
 			receiver->uo->slots[0].ucopy = retslot.ucopy;
-			newThing = (id) (receiver->uo->slots[0].ui);
+			newThing = (id) (receiver->uo->slots[0].uptr);
 			
 			if([newThing isKindOfClass:[NSWindow class]])
 				[newThing setReleasedWhenClosed:NO]; // prevent user crash for this specific UI
@@ -2061,7 +2070,8 @@ void initCocoaBridgePrimitives()
 		[nsobjects release]; // will release all references
 		nsobjects = nil;
 	}
-	nsobjects = [[NSMutableSet setWithCapacity: 8]retain];
+	// nsobjects = [[NSMutableSet setWithCapacity: 8]retain];
+	nsobjects = [[NSMutableArray arrayWithCapacity: 8]retain];
 	
     definePrimitive(base, index++, "_ObjC_AllocInit", prObjcAllocInit, 5, 0);	
     definePrimitive(base, index++, "_ObjC_Dealloc", prObjcDealloc, 1, 0);	
