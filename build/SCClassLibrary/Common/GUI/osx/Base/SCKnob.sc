@@ -18,6 +18,7 @@ SCKnob : SCUserView {
 	var size, widthDiv2, center, aw8, aw12, aw14, hit;
 	var <>color, <value, prevValue, <>step, <>keystep, <>mode, <centered = false;
 	var <skin;
+	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
 
 	*viewClass { ^SCUserView }
 	
@@ -201,24 +202,36 @@ SCKnob : SCUserView {
 		mouseMoveAction.value(this, x, y, modifiers);	
 	}	
 
+	getScale { |modifiers| 
+		^case
+			{ modifiers & 131072 == 131072 } { shift_scale }
+			{ modifiers & 262144 == 262144 } { ctrl_scale }
+			{ modifiers & 524288 == 524288 } { alt_scale }
+			{ 1 };
+	}
+
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
+		var zoom = this.getScale(modifiers);
+		[\scknob_zoom, zoom].postln; 
+		
 		// standard keydown
 		if (char == $r, { this.valueAction = 1.0.rand; ^this });
 		if (char == $n, { this.valueAction = 0.0; ^this });
 		if (char == $x, { this.valueAction = 1.0; ^this });
 		if (char == $c, { this.valueAction = 0.5; ^this });
-		if (char == $[, { this.decrement; ^this });
-		if (char == $], { this.increment; ^this });
-		if (unicode == 16rF700, { this.increment; ^this });
-		if (unicode == 16rF703, { this.increment; ^this });
-		if (unicode == 16rF701, { this.decrement; ^this });
-		if (unicode == 16rF702, { this.decrement; ^this });
+
+		if (char == $[, { this.decrement(zoom); ^this });
+		if (char == $], { this.increment(zoom); ^this });
+		if (unicode == 16rF700, { this.increment(zoom); ^this });
+		if (unicode == 16rF703, { this.increment(zoom); ^this });
+		if (unicode == 16rF701, { this.decrement(zoom); ^this });
+		if (unicode == 16rF702, { this.decrement(zoom); ^this });
 		^nil		// bubble if it's an invalid key
 	}
 
-	increment { ^this.valueAction = (this.value + keystep).min(1) }
+	increment { |zoom| ^this.valueAction = (this.value + (keystep * zoom)).min(1) }
 
-	decrement { ^this.valueAction = (this.value - keystep).max(0) }
+	decrement { |zoom| ^this.valueAction = (this.value - (keystep * zoom)).max(0) }
 
 	value_ { arg val;
 		value = val.clip(0.0, 1.0);

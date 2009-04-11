@@ -81,15 +81,12 @@ ControlSpec : Spec {
 	}
 	
 	guessNumberStep { 
-		var numStep; 
-			// make an educated guess
-		if (step == 0) { 
-			if (warp.asSpecifier == \exp) {  
-				numStep = min(minval, maxval) * 0.1;
-			} { 
-					// linear is simple
-				numStep = this.range * 0.01;
-			};
+			// first pass, good for linear warp
+		var numStep = this.range * 0.01;  
+		
+			// for non-linear warps, guess  again (hopefully educated)
+		if (warp.asSpecifier != \lin) {  
+			numStep = min(min(minval, maxval) * 0.1, numStep);
 		};
 		^numStep
 	}
