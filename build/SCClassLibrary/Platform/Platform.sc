@@ -51,7 +51,7 @@ Platform
 	shutdown { }
 
 	startupFiles { ^#[] }
-	loadStartupFiles { this.startupFiles.do{|afile| afile.loadPaths(false)} }
+	loadStartupFiles { this.startupFiles.do{|afile| afile.loadPath(false)} }
 
 	// features
 	declareFeature { | aFeature |
