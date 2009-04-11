@@ -30,7 +30,10 @@ EZScroller {
 		var maxLength = slBounds.width max: slBounds.height + 2; 
 		var numTooMany = (numItems - maxItems).max(0);
 		var fractionToShow = (maxItems / numItems).min(1);
-		slider.thumbSize = fractionToShow * maxLength;
+		if (GUI.scheme.id == \cocoa) { 
+			// swingOSC posts a 'not implemented yet' warning.
+			slider.thumbSize = fractionToShow * maxLength;
+		};
 		slider.step_(1 / numTooMany.max(1));
 		spec.minval_(numTooMany);	// minval to invert spec
 	}
