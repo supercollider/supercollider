@@ -215,18 +215,18 @@ Symbol {
 	archiveAsCompileString { ^true }
 		
 	kr { | val, lag |
-		^NamedControl.kr(this, val, lag).first
+		^NamedControl.kr(this, val, lag)
 	}
 	
 	ir { | val |
-		^NamedControl.ir(this, val).first
+		^NamedControl.ir(this, val)
 	}
 	
 	tr { | val |
-		^NamedControl.tr(this, val).first
+		^NamedControl.tr(this, val)
 	}
 
 	ar { | val |
-		^NamedControl.ar(this, val).first
+		^NamedControl.ar(this, val)
 	}
 }
