@@ -200,7 +200,7 @@ Monitor {
 	
 	amps_ { arg values;
 		if (amps.isNil) { 
-			"Monitor - initialising  outs: %\n".postf(values); 
+			"Monitor - initialising  amps: %\n".postf(values); 
 			amps = values; 
 			^this
 		};

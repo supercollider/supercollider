@@ -9,7 +9,10 @@
 	var 	<tooManyKeys = false, <keysRotation = 0; 	
 
 	*initClass { 
-		StartUp.add({ Spec.add(\amp4, [0, 4, \amp]) }); 
+		StartUp.add({ 
+			Spec.add(\amp4, [0, 4, \amp]);
+			Spec.add(\fade, [0, 100, \amp]); 
+		}); 
 	}
 		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
 		monitor=true, sinks=true, morph=false; 
@@ -137,13 +140,16 @@
 			
 			doc: 	{ Button(zone, 30@20).font_(font)
 						.states_([[\doc, skin.fontColor, Color.clear]])
-						.action_({ 
+						.action_({ |but, mod|
+							if ([524576, 24].includes(mod) ) { 
+								NodeProxyEditor(proxy) 
+							} {  
 							if(proxy.notNil and: currentEnvironment.isKindOf(ProxySpace)) { 
 								currentEnvironment.document(proxy.key)
 									.title_("<" + proxy.key.asString + ">") 
 							} {
 								"can't currently document a proxy outside a proxy space.".inform;
-							}
+							} }
 						}) 
 			}, 
 
@@ -152,7 +158,7 @@
 					.action_({ proxy !? {  proxy.end } }) 
 			},
 			
-			fade: 	{ var nb = EZNumber(zone, 60@20, \fade, [0.001, 100, \exp], 
+			fade: 	{ var nb = EZNumber(zone, 60@20, \fade, \fade, 
 								{ |num| proxy.fadeTime_(num.value) }, 
 								try { proxy.fadeTime } ? 0.02, 
 								labelWidth: 24, 
