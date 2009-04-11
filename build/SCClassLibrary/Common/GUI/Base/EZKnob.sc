@@ -21,6 +21,7 @@ EZKnob : EZGui {
 			labelHeight, argLayout, argGap, argMargin;
 			
 		var labelBounds, numBounds, unitBounds,knobBounds;
+		var numberStep; 
 				
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -51,15 +52,26 @@ EZKnob : EZGui {
 			unitView = GUI.staticText.new(view, unitBounds);
 		};
 
-		numberView = GUI.numberBox.new(view, numBounds);
 		knobView = GUI.knob.new(view, knobBounds);
+		numberView = GUI.numberBox.new(view, numBounds);
 		
 		// set view parameters and actions
 		controlSpec = argControlSpec.asSpec;
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
-		numberView.step=controlSpec.step;
+
+		numberStep = controlSpec.step;
+		if (numberStep == 0) { 
+			numberStep = controlSpec.guessNumberStep 
+		}{ 
+			// controlSpec wants a step, so zooming in with alt is disabled.
+			numberView.alt_scale = 1.0;
+			knobView.alt_scale = 1.0;
+		};
+		[\numberStep, numberStep].postln; 
+		numberView.step = numberStep;
+		numberView.scroll_step = numberStep;
 
 
 		if((controlSpec.minval + controlSpec.maxval)==0){knobView.centered=true};

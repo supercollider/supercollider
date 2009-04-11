@@ -212,7 +212,6 @@ SCKnob : SCUserView {
 
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		var zoom = this.getScale(modifiers);
-		[\scknob_zoom, zoom].postln; 
 		
 		// standard keydown
 		if (char == $r, { this.valueAction = 1.0.rand; ^this });
@@ -229,9 +228,9 @@ SCKnob : SCUserView {
 		^nil		// bubble if it's an invalid key
 	}
 
-	increment { |zoom| ^this.valueAction = (this.value + (keystep * zoom)).min(1) }
+	increment { |zoom=1| ^this.valueAction = (this.value + (keystep * zoom)).min(1) }
 
-	decrement { |zoom| ^this.valueAction = (this.value - (keystep * zoom)).max(0) }
+	decrement { |zoom=1| ^this.valueAction = (this.value - (keystep * zoom)).max(0) }
 
 	value_ { arg val;
 		value = val.clip(0.0, 1.0);
