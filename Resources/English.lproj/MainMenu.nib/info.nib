@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>IBDocumentLocation</key>
-	<string>69 44 356 240 0 0 1024 746 </string>
+	<string>106 344 356 240 0 0 1280 832 </string>
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>29</key>
-		<string>69 289 465 44 0 0 1024 746 </string>
+		<string>50 739 465 44 0 0 1280 832 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
@@ -15,8 +15,12 @@
 	<string>../../Language.xcodeproj</string>
 	<key>IBOldestOS</key>
 	<integer>5</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>29</integer>
+	</array>
 	<key>IBSystem Version</key>
-	<string>8R218</string>
+	<string>8S165</string>
 	<key>targetFramework</key>
 	<string>IBCocoaFramework</string>
 </dict>
