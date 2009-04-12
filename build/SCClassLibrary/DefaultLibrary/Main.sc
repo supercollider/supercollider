@@ -39,8 +39,8 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="RC";
 		super.shutdown;
 	}
 	
-	run { // called by command-R
-		interpreter.interpretPrintCmdLine;
+	run { // used to be called by command-R, customisation now via CocoaMenuItem
+		//interpreter.interpretPrintCmdLine;
 	}
 	
 	stop { // called by command-.
