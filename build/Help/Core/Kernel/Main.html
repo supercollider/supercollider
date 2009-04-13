@@ -5,28 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ad140d; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 span.s1 {color: #000000}
-span.s2 {color: #0000bf}
+span.s2 {color: #001bb9}
 span.s3 {color: #4d4d4d}
-span.s4 {font: 12.0px Helvetica; color: #000000}
-span.s5 {color: #0000bf}
-span.s6 {color: #606060}
-span.s7 {font: 12.0px Helvetica}
-span.s8 {color: #007300}
-span.s9 {font: 10.0px Monaco; color: #bf0000}
+span.s4 {font: 12.0px Helvetica}
+span.s5 {color: #606060}
+span.s6 {color: #2c7014}
+span.s7 {font: 10.0px Monaco; color: #ad140d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -61,16 +58,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>sleepAction</b> and <b>wakeAction</b> are called when the computer was set in sleep mode / awoke from sleep mode.</p>
 <p class="p3">(currently OS X only)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s5">thisProcess</span>.sleepAction =<span class="Apple-converted-space">  </span>{ <span class="s6">"good night,"</span>.postln };</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2">thisProcess</span>.sleepAction =<span class="Apple-converted-space">  </span>{ <span class="s5">"good night,"</span>.postln };</p>
 <p class="p2"><br></p>
 <p class="p3"><b>isSleeping</b></p>
 <p class="p3">returns true if computer was just set to sleep. (currently OS X only)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="s5">thisProcess</span>.isSleeping;</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s2">thisProcess</span>.isSleeping;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>run</b></p>
 <p class="p2"><br></p>
-<p class="p3">called when the user chooses the Run menu command. Override this to do whatever you want, e. g. add a class extension file like this to the class library:</p>
+<p class="p3">Override this to do whatever you want, e. g. add a class extension file like this to the class library:</p>
 <p class="p2"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span>+ <span class="s2">Main</span> {</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>run { <span class="s3">"myPatch.rtf"</span>.load }</p>
@@ -83,22 +80,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>// post all incoming traffic except the server status messages</p>
 <p class="p6"><span class="Apple-tab-span">	</span>(</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>thisProcess<span class="s1">.recvOSCfunc = { </span>|time, replyAddr, msg|<span class="s1"><span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s8">'status.reply'</span>) {</p>
-<p class="p9"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"At time %s received message % from %\n"<span class="s1">.postf( time, msg, replyAddr )</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>thisProcess<span class="s1">.recvOSCfunc = { </span>|time, replyAddr, msg|<span class="s1"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s6">'status.reply'</span>) {</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"At time %s received message % from %\n"<span class="s1">.postf( time, msg, replyAddr )</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>} <span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
 <p class="p6"><span class="Apple-tab-span">	</span>);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>// stop posting.</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">thisProcess</span>.recvOSCfunc = <span class="s2">nil</span>;</p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p3"><b>pid</b></p>
 <p class="p2"><br></p>
 <p class="p3">Returns the operating system's <i>pid</i> (process ID) for the process.</p>
 <p class="p2"><br></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span>thisProcess<span class="s1">.pid</span></p>
+<p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>thisProcess<span class="s1">.pid</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>&lt;&gt;preferencesAction</b> - OSX SC.app only.</p>
@@ -107,8 +104,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">thisProcess</span>.preferencesAction = { <span class="s2">arg</span> process; <span class="s2">SCWindow</span>.new.front; }</p>
 <p class="p2"><br></p>
-<p class="p11"><br></p>
-<p class="p11"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p3"><b>*version, *versionAtLeast, *versionAtMost</b></p>
 <p class="p2"><br></p>
 <p class="p3">These class methods tell you which version of SuperCollider you are running and whether that version complies to your required minimum / maximum settings:</p>
@@ -118,7 +115,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>// check if we are running at least version 3.1 (returns true or false)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Main</span>.versionAtLeast( 3, 1 );</p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>// check if we are running version 3.1 or older (returns true or false)<span class="s1"><span class="Apple-tab-span">	</span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Main</span>.versionAtMost( 3, 1 );<span class="s9"><span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Main</span>.versionAtMost( 3, 1 );<span class="s7"><span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p3"><b>recompile</b></p>
