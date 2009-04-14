@@ -805,6 +805,18 @@ const int circDiam = 20;
     }
 	mSCViewObject->keyUp(character, modifiers,[event keyCode]);
 }
+
+void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
+- (void)drawRect:(NSRect)aRect
+{
+	[super drawRect:aRect];
+
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	CGContextSaveGState(cgc);
+	QDDrawBevelRect(cgc, (*(CGRect *)&([self bounds])), 1, true);
+	CGContextRestoreGState(cgc);
+
+}
 @end
 
 @implementation SCNSMenuItem
@@ -2137,7 +2149,7 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	[mTextField setDelegate: mTextField];
 	[mTextField setTextReallyChanged:false];
 
-	[mTextField setBordered:YES]; // for some reason, if we don't set this we can't have transparency
+	[mTextField setBordered:NO]; // for some reason, if we don't set this we can't have transparency
 	[mTextField setDrawsBackground:NO]; // SCView will draw for us. This also allows 0 < alpha < 1
 	
 	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
