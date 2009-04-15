@@ -226,7 +226,7 @@ Symbol {
 		^NamedControl.tr(this, val)
 	}
 
-	ar { | val |
-		^NamedControl.ar(this, val)
+	ar { | val, lag |
+		^NamedControl.ar(this, val, lag)
 	}
 }
