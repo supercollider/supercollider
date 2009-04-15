@@ -81,7 +81,10 @@ typedef struct scfft{
 void scfft_global_init();
 
 // You need to provide an intermediate "transform buffer". Size will depend on which underlying lib is being used.
-// Returns a value in bytes
+// "fullsize" is the number of samples in the input buffer (inc any padding), aka the number of "points" in the FFT.
+//   Often in an SC plugin you can get this number from buf->samples if you're grabbing an external buffer.
+// The input value is given in samples.
+// The return value is given in bytes.
 size_t scfft_trbufsize(unsigned int fullsize);
 
 // To initialise a specific FFT, ensure your input and output buffers exist, then 
