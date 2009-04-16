@@ -64,6 +64,7 @@ Bugfixes:
 * 2009-01-18 SCScrollView relativeOrigin glitch fixed (bug id 2508451) - jr, sw
 * 2009-01-28 Fixed QuartzComposer view bounds bug - sw
 * 2009-02-21 NodeProxy handles groups more consistently - jr
+* 2009-04-16 asFraction fix by JMcC - jr
 
 Other additions/improvements:
 -----------------------------

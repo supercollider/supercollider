@@ -1198,13 +1198,6 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *slots = obj->slots;
 	SetObject(a, obj);
 	
-	// catch special behaviour - fixes SF.net bug 1856972
-	if(x == 0.2) {
-		SetInt(slots+0, 1);
-		SetInt(slots+1, 5);
-		return errNone;
-	}
-	
 	if (x < 0.0) {
 		x = -x;
 		neg = true;
@@ -1229,7 +1222,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 
 		if (x * mediant_den > mediant_num) {
 			d = upper_num - (x * upper_den);
-			if (maxDenominator < mediant_den || d == 0.0) {
+			if (maxDenominator < mediant_den || fabs(d) < 1e-5) {
 				if (neg) upper_num = -upper_num;
 				SetInt(slots+0, (int)upper_num);
 				SetInt(slots+1, (int)upper_den);
@@ -1268,7 +1261,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 			}
 		} else {	
 			d = lower_num - (x * lower_den);
-			if (maxDenominator < mediant_den || d == 0.0) {
+			if (maxDenominator < mediant_den || fabs(d) < 1e-5) {
 				if (neg) lower_num = -lower_num;
 				SetInt(slots+0, (int)lower_num);
 				SetInt(slots+1, (int)lower_den);
