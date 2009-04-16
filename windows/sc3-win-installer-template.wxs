@@ -104,14 +104,6 @@
 	</Component>
 </DirectoryRef>
 
-<!-- NO, don't create this. The SC synthdefs folder should be user-specific - allow the lang to create it
-<DirectoryRef Id="SCsynthdefsFolder">
-	<Component Id="SCsynthdefs" Guid="3A2D01E8-C839-11DD-BDF4-3D6556D89593">
-		<CreateFolder/>
-	</Component>
-</DirectoryRef>
--->
-
 <DirectoryRef Id="ApplicationProgramsFolder">
 	<Component Id="ApplicationShortcut" Guid="7511071E-C90B-11DD-BB90-C59D55D89593">
 		<Shortcut Id="ApplicationStartMenuShortcut" Name="SuperCollider 3" 
@@ -127,7 +119,6 @@
 <Feature Id="ProductFeature" Title="SuperCollider" Description="SuperCollider 3 for Windows (with Psycollider IDE)" Level="1">
 	<ComponentRef Id="ProductComponent" />
 	<ComponentRef Id="SCextensions" />
-	<!-- RM <ComponentRef Id="SCsynthdefs" /> -->
 	<ComponentRef Id="ApplicationShortcut" />
 </Feature>
 
