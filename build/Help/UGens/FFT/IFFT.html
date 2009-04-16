@@ -52,10 +52,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// example</p>
 <p class="p6">(</p>
 <p class="p6">{ <span class="s5">var</span> in, chain;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>in = <span class="s5">WhiteNoise</span>.ar(0.01);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>in = <span class="s5">WhiteNoise</span>.ar(0.05);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>chain = <span class="s5">FFT</span>(<span class="s5">LocalBuf</span>(2048), in);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>chain.inspect; <span class="s6">// its an FFT</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0,<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">IFFT</span><span class="s2">(chain) </span>// inverse FFT</p>
 <p class="p6"><span class="Apple-tab-span">	</span>);</p>
 <p class="p6">}.play</p>
