@@ -57,7 +57,7 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 		sliderWidth = viewBounds.x - widthSum; 
 
 		height = viewBounds.y; 
-				ampSl = EZSlider(zone, (sliderWidth @ height), \vol, \db, 
+				ampSl = EZSlider(zone, (sliderWidth @ height), \vol, \amp, 
 			{ arg slid; 
 				if(proxy.notNil) { 
 					proxy.vol_(slid.value.dbamp); 
@@ -77,7 +77,7 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 			// swingosc: 16 is normal  24 is alt, ctl is off, and fn is 16 as well
 			var isAlt = [524576, 24].includes(modif); 			if(proxy.notNil) {				[ 	{ 	if (isAlt) { proxy.end } { proxy.stop }; }, 					{ 	if (isAlt) { proxy.vol_(0) };
 						if (usesPlayN) { proxy.playN } { proxy.play } 
-					}				].at(btn.value).value			}		});				setOutBox = EZNumber(zone, outWid@height, nil, [0, lastOutBus], 
+					}				].at(btn.value).value			}		});				setOutBox = EZNumber(zone, outWid@height, nil, [0, lastOutBus, \lin, 1], 
 			{ |box, mod| 
 				if (proxy.notNil) { 
 					if (proxy.monitor.isNil) {  

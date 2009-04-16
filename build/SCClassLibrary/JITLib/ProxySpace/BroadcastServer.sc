@@ -18,6 +18,24 @@ BroadcastServer {
 			.addresses_(addresses)
 	}
 	
+	addrIndex { |ip| 
+		ip = ip.asSymbol; 
+		^addresses.detectIndex { |a| a.hostname.asSymbol == ip };
+	}
+	addAddr { |ip, port| 
+		var foundIndex = this.addrIndex(ip); 
+		if (foundIndex.isNil) { 
+			addresses = addresses.add(NetAddr(ip.asString, port)) 
+		};
+	}
+	
+	removeByIP { |ip| 
+		var foundIndex = this.addrIndex(ip); 
+		if (foundIndex.notNil) { 
+			addresses.removeAt(foundIndex).disconnect;
+		}
+	}
+	
 	// iterating
 	
 	at { arg index;
