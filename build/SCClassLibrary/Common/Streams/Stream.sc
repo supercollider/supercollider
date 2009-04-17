@@ -168,26 +168,26 @@ Stream : AbstractFunction {
 	}
 	composeBinaryOp { arg argSelector, argStream, adverb;
 		if(adverb.isNil) {
-			^BinaryOpStream.new(argSelector, this, argStream)
+			^BinaryOpStream.new(argSelector, this, argStream.asStream)
 		} {
 			if (adverb == 'x') {
-				^BinaryOpXStream.new(argSelector, this, argStream);
+				^BinaryOpXStream.new(argSelector, this, argStream.asStream);
 			};
 		};
 		^nil
 	}
 	reverseComposeBinaryOp { arg argSelector, argStream, adverb;
 		if(adverb.isNil) {
-			^BinaryOpStream.new(argSelector, argStream, this)
+			^BinaryOpStream.new(argSelector, argStream.asStream, this)
 		} {
 			if (adverb == 'x') {
-				^BinaryOpXStream.new(argSelector, argStream, this);
+				^BinaryOpXStream.new(argSelector, argStream.asStream, this);
 			};
 		};
 		^nil
 	}
 	composeNAryOp { arg argSelector, anArgList;
-		^NAryOpStream.new(argSelector, this, anArgList);
+		^NAryOpStream.new(argSelector, this, anArgList.collect(_.asStream));
 	}
 
 	embedInStream { arg inval;
@@ -483,7 +483,8 @@ EventStreamPlayer : PauseStream {
 
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
-				clock.sched(0, this);
+					// this bit of indirection allows server sync within patterns
+				clock.sched(0, (Routine { |time| loop { time = this.next(time).yield } }));
 				isWaiting = false;
 				this.changed(\playing)
 			};
