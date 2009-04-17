@@ -203,7 +203,7 @@ Buffer {
 	}
 	
 	// send a Collection to a buffer one UDP sized packet at a time
-	*sendCollection { arg server, collection, numChannels, wait = 0.0, action;
+	*sendCollection { arg server, collection, numChannels = 1, wait = 0.0, action;
 		var collstream, buffer, collsize, bufnum, bundsize, pos;
 		
 		collstream = CollStream.new;
