@@ -38,7 +38,7 @@ ClassBrowser {
 	
 			~window.view.decorator = FlowLayout(~window.view.bounds);
 			
-			~currentClassNameView = gui.textField.new(~window, Rect(0,0, 256, 32));
+			~currentClassNameView = gui.textField.new(~window, Rect(0,0, 308, 32));
 			~currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
 			~currentClassNameView.background = clear;
 			~currentClassNameView.align = \center;
