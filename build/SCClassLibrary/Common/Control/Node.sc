@@ -45,10 +45,38 @@ Node {
 	}
 	
 	map { arg ... args;
-		server.sendMsg(14, nodeID, *(args.asControlInput)); //"/n_map"
+		var krVals, arVals;
+		krVals = List.new;
+		arVals = List.new;
+		args.pairsDo({ arg control, bus; 
+			if(bus.rate == \control, {
+				krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+			}, {
+				arVals.addAll([control.asControlInput, bus.index, bus.numChannels]);
+			});
+		});
+		server.makeBundle(nil, {
+			if(krVals.size > 0, { server.sendMsg("/n_mapn", nodeID, *krVals) });
+			if(arVals.size > 0, { server.sendMsg("/n_mapan",nodeID, *arVals) });
+		})
 	}
+	
 	mapMsg { arg ... args;
-		^[14, nodeID] ++ args.asControlInput; //"/n_map"
+		var krVals, arVals, result;
+		krVals = List.new;
+		arVals = List.new;
+		result = Array.new(2);
+		args.pairsDo({ arg control, bus; 
+		if(bus.rate == \control, {
+				krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+			}, {
+				arVals.addAll([control.asControlInput, bus.index, bus.numChannels]);
+			});
+		});
+		if(krVals.size > 0, { result = result.add(["/n_mapn", nodeID] ++ krVals) });
+		if(arVals.size > 0, { result = result.add(["/n_mapan",nodeID] ++ arVals) });
+		if(result.size < 2, { result = result.flat; });
+		^result;
 	}	
 	mapn { arg ... args;
 		server.sendMsg(48, nodeID, *(args.asControlInput)); //"/n_mapn"
@@ -59,8 +87,7 @@ Node {
 	// map to Bus objects
 	busMap { arg firstControl, aBus ... args;
 		var values;
-		// busMap is not deprecated for multichannel buses
-		//"busMap is deprecated, use map".warn;
+		this.deprecated(thisMethod, Node.findMethod(\map));
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		server.sendMsg(48, nodeID, firstControl, aBus.index, aBus.numChannels, *values);
@@ -68,8 +95,7 @@ Node {
 	}
 	busMapMsg { arg firstControl, aBus ... args;
 		var values;
-		// busMap is not deprecated for multichannel buses
-		//"busMapMsg is deprecated, use map".warn;
+		this.deprecated(thisMethod, Node.findMethod(\mapMsg));
 		values = List.new;
 		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
 		^[48, nodeID, firstControl, aBus.index, aBus.numChannels] ++ values;
