@@ -157,10 +157,16 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 					}
 					// the ptr in nMapControls should be the same as the control itself, if not, it's mapped.
 					if((childGraph->mMapControls[i]) != ptr){
-						// it's mapped
-						int bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
-						//scprintf("bus: %d\n", bus);
+					    int bus;
+					    if(childGraph->mControlRates[i] == 2){
+						bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
+						bus = (int)((float)bus / child->mWorld->mBufLength);
+						scprintf("a%d", bus);
+					    } else {
+						bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
 						scprintf("c%d", bus);
+					    }
+						//scprintf("bus: %d\n", bus);
 					} else {
 						scprintf("%.14g", *ptr);
 					}
