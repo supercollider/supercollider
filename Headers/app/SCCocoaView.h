@@ -62,7 +62,6 @@
 @interface SCTextFieldResponder : NSTextField
 {
 	struct SCTextField *mSCViewObject;
-	bool textReallyChanged;
 	BOOL mDragStarted;
 	BOOL mAcceptsFirstResponder;
 }
@@ -72,7 +71,6 @@
 //- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
 - (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
 - (void)setSCView: (struct SCTextField*)inObject;
-- (void)setTextReallyChanged:(bool)changed;
 - (void) setAcceptsFirstResponder: (BOOL) flag;
 @end
 

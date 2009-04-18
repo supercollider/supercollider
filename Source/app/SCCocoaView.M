@@ -318,10 +318,7 @@ extern PyrSymbol *s_scview;
 {
 	return mSCViewObject->GetSCObj();
 }
-- (void)controlTextDidChange:(NSNotification *)aNotification
-{
-	textReallyChanged = true;
-}
+
 //- (void)controlTextDidEndEditing:(NSNotification *)aNotification
 //{
 //	if(textReallyChanged){
@@ -339,10 +336,7 @@ extern PyrSymbol *s_scview;
 //		textReallyChanged = false;
 //	}
 //}
-- (void)controlTextDidBeginEditing:(NSNotification *)aNotification
-{
-	textReallyChanged = false;
-}
+
 
 //- (BOOL)textShouldBeginEditing:(NSText *)fieldEditor
 //{
@@ -704,29 +698,23 @@ const int circDiam = 20;
 		return YES;
 	} else if (aSelector == @selector(insertNewline:)){
 		[[self window] endEditingFor:self];
-		if(textReallyChanged){
-			pthread_mutex_lock (&gLangMutex);
-			PyrSymbol *method = getsym("doAction");
-			PyrObject *mObj;
-			if (mObj = mSCViewObject->GetSCObj()) {
-				VMGlobals *g = gMainVMGlobals;
-				g->canCallOS = true;
-				++g->sp;  SetObject(g->sp, mObj); 
-				runInterpreter(g, method, 1);		
-				g->canCallOS = false;
-			}
-			pthread_mutex_unlock (&gLangMutex);
-			textReallyChanged = false;
-			return NO; // this will let the field editor end editing
+		// fire the action
+		pthread_mutex_lock (&gLangMutex);
+		PyrSymbol *method = getsym("doAction");
+		PyrObject *mObj;
+		if (mObj = mSCViewObject->GetSCObj()) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp;  SetObject(g->sp, mObj); 
+			runInterpreter(g, method, 1);		
+			g->canCallOS = false;
 		}
+		pthread_mutex_unlock (&gLangMutex);
+		return NO; // this will let the field editor end editing
 	}
 	return NO;
 }
 
-- (void)setTextReallyChanged:(bool)changed 
-{ 
-	textReallyChanged = changed; 
-}
 
 - (NSDragOperation)draggingEntered:(id < NSDraggingInfo >)dragInfo {
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
@@ -2147,7 +2135,6 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	//mCocoaToLangAction = [SCTextFieldResponder alloc];
 	[mTextField setSCView: this];
 	[mTextField setDelegate: mTextField];
-	[mTextField setTextReallyChanged:false];
 
 	[mTextField setBordered:NO]; // for some reason, if we don't set this we can't have transparency
 	[mTextField setDrawsBackground:NO]; // SCView will draw for us. This also allows 0 < alpha < 1
@@ -2205,7 +2192,6 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		[mTextField setStringValue: string];
 		[string release];
-		[mTextField setTextReallyChanged:true];
 		return errNone;
 	}
 	
