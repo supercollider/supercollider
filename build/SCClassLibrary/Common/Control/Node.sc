@@ -75,7 +75,7 @@ Node {
 		});
 		if(krVals.size > 0, { result = result.add(["/n_mapn", nodeID] ++ krVals) });
 		if(arVals.size > 0, { result = result.add(["/n_mapan",nodeID] ++ arVals) });
-		if(result.size < 2, { result = result.flat; });
+		if(result.size < 2, { result = result.flatten; });
 		^result;
 	}	
 	mapn { arg ... args;

@@ -10,31 +10,31 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9f2423}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #595959}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9f2423; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2b7000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0020bb}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0020bb; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3c6d00}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0016bd}
+span.s2 {color: #0020bb}
 span.s3 {color: #000000}
 span.s4 {font: 12.0px Helvetica}
 span.s5 {color: #606060}
 span.s6 {color: #595959}
 span.s7 {font: 9.0px Monaco}
-span.s8 {color: #2b7000}
-span.s9 {color: #ae1a19}
-span.s10 {color: #0000ff}
-span.s11 {color: #0000bf}
+span.s8 {color: #3c6d00}
+span.s9 {color: #9f2423}
+span.s10 {color: #001dfd}
+span.s11 {color: #0016bd}
+span.s12 {text-decoration: underline ; color: #001bec}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -197,7 +197,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>s.makeBundle(2.0, {</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">Synth</span>.new(<span class="s6">"tpulse"</span>);</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s2">Bus</span>.control.set(440);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.busMap(<span class="s8">\freq</span>, a);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.map(<span class="s8">\freq</span>, a);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>});</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span>x.free;</p>
@@ -256,14 +256,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>initTree</b> - This method initializes the <a href="default_group.html"><span class="s2">default_group</span></a> and runs ServerTree. This method is called automatically when you boot a Server from the language. <b>N.B.</b> If you started a server app from the command line you will have to call initTree manually if you need this functionality.</p>
 <p class="p2"><br></p>
-<p class="p13"><span class="s4"><span class="Apple-tab-span">	</span></span>s.quit;</p>
-<p class="p13"><span class="Apple-tab-span">	</span>f = {<span class="s11">Group</span>.new(s.defaultGroup); <span class="s5">"Other code can be evaluated too"</span>.postln;};</p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>ServerTree<span class="s3">.add(f);</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>s.boot;</p>
-<p class="p15"><span class="s3"><span class="Apple-tab-span">	</span>s.queryAllNodes; </span>// note the group within the default group</p>
-<p class="p13"><span class="Apple-tab-span">	</span><span class="s11">ServerTree</span>.remove(f);</p>
+<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>s.quit;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>f = {<span class="s11">Group</span>.new(s.defaultGroup); <span class="s5">"Other code can be evaluated too"</span>.postln;};</p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>ServerTree<span class="s3">.add(f);</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>s.boot;</p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span>s.queryAllNodes; </span>// note the group within the default group</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">ServerTree</span>.remove(f);</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s10"><a href="../Control/ServerBoot.html">ServerBoot</a></span> and <a href="../Control/ServerQuit.html"><span class="s10">ServerQuit</span></a> provide similar functionality at boot and quit times.</p>
+<p class="p1"><span class="s12"><a href="../Control/ServerBoot.html">ServerBoot</a></span> and <a href="../Control/ServerQuit.html"><span class="s10">ServerQuit</span></a> provide similar functionality at boot and quit times.</p>
 <p class="p2"><br></p>
 <p class="p8"><b>Keyboard Shortcuts</b></p>
 <p class="p2"><br></p>
@@ -295,7 +295,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">This functionality is also available through the recording button on the server windows. Pressing it once calls <b>prepareForRecord</b>, pressing it again calls <b>record</b>, and pressing it a third time calls <b>stopRecording</b> (see below). When doing so the file created will be in your recordings folder and be named for the current date and time. The default location of the recordings folder varies from platform to platform but is always stored in <b>thisProcess.platform.recordingsDir</b>. Setting this variable allows you to change the default.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>NOTE:</b> <b>record</b> creates the recording synth after the Server's default group and uses <b>In.ar</b>. Thus if you add nodes after the recording synth their output will not be captured. To avoid this, either use <b>Node</b> objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1 .</p>
-<p class="p16"><br></p>
+<p class="p15"><br></p>
 <p class="p9">s.sendMsg(<span class="s6">"/s_new"</span>, <span class="s6">"default"</span>, s.nextNodeID, 1,1);</p>
 <p class="p2"><br></p>
 <p class="p1">For more detail on this subject see <a href="Order-of-execution.html"><span class="s2">Order-of-execution</span></a><b>,</b> <a href="default_group.html"><span class="s2">default_group</span></a>, and <a href="NodeMessaging.html"><span class="s2">NodeMessaging</span></a>.</p>
@@ -377,7 +377,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 0, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 1, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 2, 44100, 2);</p>
-<p class="p17"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
+<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
 <p class="p9">};</p>
 <p class="p9">)</p>
 <p class="p11"><br></p>
@@ -395,7 +395,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s6">"/b_alloc"</span>, 1, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s6">"/b_alloc"</span>, 2, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sync(c);</p>
-<p class="p17"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
+<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
 <p class="p9">};</p>
 <p class="p9">)</p>
 <p class="p2"><br></p>
