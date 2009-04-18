@@ -730,8 +730,6 @@ const int circDiam = 20;
 		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
 		SetObject(&g->classvars->slots[classVarIndex+0], pstrobj);
 		g->gc->GCWrite(g->classvars, pstrobj);
-		post("aha!\n");
-		NSLog(@"ahadragSource %@", [dragInfo draggingSource]);
 		//PyrSymbol *method = getsym("importDrag");
 		//g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, s_scview->u.classobj); 

@@ -67,9 +67,6 @@
 }
 
 - (struct PyrObject*)getSCObject;
-- (void)controlTextDidChange:(NSNotification *)aNotification;
-//- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
-- (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
 - (void)setSCView: (struct SCTextField*)inObject;
 - (void) setAcceptsFirstResponder: (BOOL) flag;
 @end
