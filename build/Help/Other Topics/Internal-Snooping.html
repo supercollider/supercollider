@@ -5,27 +5,26 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019ba}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0022b8}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9f261f}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
-span.s2 {color: #0019ba}
+span.s2 {color: #0022b8}
 span.s3 {color: #606060}
-span.s4 {color: #2b6f11}
-span.s5 {color: #ad1d13}
-span.s6 {color: #0000bf}
+span.s4 {color: #3b6c0f}
+span.s5 {color: #9f261f}
+span.s6 {color: #0016bd}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -146,35 +145,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p9">(</p>
 <p class="p11">// create some windows to snoop in</p>
-<p class="p12">5.do({ <span class="s6">arg</span> i;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s6">var</span> w, b;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>w = <span class="s6">GUI</span>.window.new(<span class="s3">"snoop "</span> ++ i.asString,<span class="Apple-converted-space"> </span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Rect</span>.new( 200 + 400.rand, 69 + 300.rand, 172, 90 ));</p>
-<p class="p12"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>b = <span class="s6">GUI</span>.button.new( w, <span class="s6">Rect</span>.new( 23, 28, 127, 25 ));</p>
-<p class="p12"><span class="Apple-tab-span">	</span>b.states = [[<span class="s3">"BLAM-O"</span>, <span class="s6">Color</span>.red]];</p>
-<p class="p12">})<span class="s1">)</span></p>
+<p class="p9">5.do({ <span class="s6">arg</span> i;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s6">var</span> w, b;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>w = <span class="s6">Window</span>.new(<span class="s3">"snoop "</span> ++ i.asString,<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Rect</span>.new( 200 + 400.rand, 69 + 300.rand, 172, 90 ));</p>
+<p class="p9"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>b = <span class="s6">Button</span>.new( w, <span class="s6">Rect</span>.new( 23, 28, 127, 25 ));</p>
+<p class="p9"><span class="Apple-tab-span">	</span>b.states = [[<span class="s3">"BLAM-O"</span>, <span class="s6">Color</span>.red]];</p>
+<p class="p9">}))</p>
 <p class="p8"><br></p>
-<p class="p7"><span class="s6">GUI</span><span class="s1">.window.allWindows.dump;<span class="Apple-tab-span">	</span></span>// dump a list of all open SCWindows</p>
+<p class="p7"><span class="s6">Window</span><span class="s1">.allWindows.dump;<span class="Apple-tab-span">	</span></span>// dump a list of all open SCWindows</p>
 <p class="p8"><br></p>
 <p class="p7">// a little more helpful, dump their names</p>
-<p class="p9"><span class="s6">GUI</span><span class="s1">.window</span>.allWindows.collect({ <span class="s2">arg</span> w; w.name }).postln;<span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6">Window</span>.allWindows.collect({ <span class="s2">arg</span> w; w.name }).postln;<span class="Apple-tab-span">	</span></p>
 <p class="p8"><br></p>
 <p class="p9">(</p>
 <p class="p7">// change background colors of all open windows</p>
-<p class="p9"><span class="s6">GUI</span><span class="s1">.window</span>.allWindows.do({ <span class="s2">arg</span> window;</p>
+<p class="p9"><span class="s6">Window</span>.allWindows.do({ <span class="s2">arg</span> window;</p>
 <p class="p9"><span class="Apple-tab-span">	</span>window.view.background = <span class="s2">Color</span>.new(0.5 + 0.5.rand, 0.5 + 0.5.rand, 0.5 + 0.5.rand);</p>
 <p class="p9">}))</p>
 <p class="p8"><br></p>
-<p class="p7"><span class="s6">GUI</span><span class="s1">.window.closeAll; </span>// close all the windows (This will close the server windows)</p>
+<p class="p7"><span class="s6">Window</span><span class="s1">.closeAll; </span>// close all the windows (This will close the server windows)</p>
 <p class="p8"><br></p>
 <p class="p4"><b>Snooping in SynthDefs</b></p>
 <p class="p6"><br></p>
 <p class="p7">// First execute this:</p>
 <p class="p9">(</p>
-<p class="p13"><span class="s1">f = </span><span class="s2">SynthDef</span><span class="s1">(</span>"Help-SnoopSynthDef"<span class="s1">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="s1">f = </span><span class="s2">SynthDef</span><span class="s1">(</span>"Help-SnoopSynthDef"<span class="s1">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>{ <span class="s2">arg</span> out=0;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span> <span class="s2">Out</span>.ar(out, <span class="s2">PinkNoise</span>.ar(0.1))</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">PinkNoise</span>.ar(0.1))</p>
 <p class="p9"><span class="Apple-tab-span">	</span>});</p>
 <p class="p9">)</p>
 <p class="p8"><br></p>

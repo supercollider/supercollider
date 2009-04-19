@@ -9,7 +9,7 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bec}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -18,17 +18,17 @@ p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #96251f}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #3e54c5}
+span.s3 {color: #3d57c3}
 span.s4 {text-decoration: underline}
-span.s5 {color: #505fb1}
+span.s5 {color: #5061b0}
 span.s6 {color: #6f7178}
-span.s7 {color: #0018b8}
+span.s7 {color: #0021b6}
 span.s8 {color: #606060}
-span.s9 {color: #356f14}
+span.s9 {color: #426d13}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -111,7 +111,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">n=<span class="s7">CompositeView</span>.new(w, 200@300);</p>
 <p class="p11">n.decorator= <span class="s7">FlowLayout</span>(n.bounds);</p>
 <p class="p10"><br></p>
-<p class="p11">v = { <span class="s7">|i|</span> <span class="s7">GUI</span>.dragBoth.new(n, <span class="s7">Rect</span>(0, i * 20, 200, 20)).align_(<span class="s9">\center</span>).background_(<span class="s7">Color</span>.rand) }.dup(5);</p>
+<p class="p11">v = { <span class="s7">|i|</span> <span class="s7">DragBoth</span>(n, <span class="s7">Rect</span>(0, i * 20, 200, 20)).align_(<span class="s9">\center</span>).background_(<span class="s7">Color</span>.rand) }.dup(5);</p>
 <p class="p13"><span class="s7">StaticText</span><span class="s2">.new(n,200@150).string_(</span>"hold down cmd and drag points from the slider to the drag slots, or reverse"<span class="s2">).stringColor_(</span><span class="s7">Color</span><span class="s2">.white);<span class="Apple-tab-span">	</span></span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11">w.front;</p>
