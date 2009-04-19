@@ -10,23 +10,22 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
-span.s1 {color: #1849da}
-span.s2 {color: #0000bf}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+span.s1 {color: #184dd8}
+span.s2 {color: #0016bd}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #2450d5}
-span.s6 {color: #003ce9}
-span.s7 {color: #007300}
-span.s8 {color: #bf0000}
+span.s5 {color: #2553d3}
+span.s6 {color: #0042e7}
+span.s7 {color: #2b7000}
+span.s8 {color: #ae1a19}
+span.s9 {text-decoration: underline ; color: #001bec}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -158,8 +157,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>idle(time)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>within a routine, return values until this time is over. Time is measured relative to the thread's clock.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>(see <a href="Routine.html"><span class="s6">Routine</span></a>)</p>
-<p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// for 6 seconds, return 200, then continue</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// for 6 seconds, return 200, then continue</p>
 <p class="p4"><span class="Apple-tab-span">	</span>(</p>
 <p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s2">Routine</span> {</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>199.yield;</p>
@@ -177,7 +176,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
 <p class="p4"><span class="Apple-tab-span">	</span>);</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// the value can also be a stream or a function</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// the value can also be a stream or a function</p>
 <p class="p4"><span class="Apple-tab-span">	</span>(</p>
 <p class="p4"><span class="Apple-tab-span">	</span>r = <span class="s2">Routine</span> {</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>199.yield;</p>
@@ -197,7 +196,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p9"><b>Accessible instance variables</b></p>
+<p class="p8"><b>Accessible instance variables</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -220,7 +219,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">(</p>
 <p class="p4">r = <span class="s2">Routine</span> { <span class="s2">arg</span> inval;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// thisThread refers to the routine.</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// thisThread refers to the routine.</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"beats: % seconds: % time: % \n"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">thisThread</span>.beats, <span class="s2">thisThread</span>.seconds, <span class="s2">Main</span>.elapsedTime</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
@@ -266,47 +265,47 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">(<span class="s4">"&lt;-outval was "</span> ++ outval).postln;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p8">// wait</p>
+<p class="p7">// wait</p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
 <p class="p4"><span class="s2">var</span> r;</p>
-<p class="p10"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
+<p class="p9"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>10.do({ <span class="s2">arg</span> a;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Often you might see Wait being used to pause a routine</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// This waits for one second between each number</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Often you might see Wait being used to pause a routine</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// This waits for one second between each number</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>});</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
 <p class="p4"><span class="Apple-tab-span">	</span>0.5.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
 <p class="p4">}.play;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p8">// waitUntil</p>
-<p class="p7"><br></p>
-<p class="p11">(</p>
-<p class="p11"><span class="s2">var</span> r;</p>
-<p class="p10"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span>var times = { rrand(1.0, 10.0) }.dup(10) + thisThread.beats;</p>
-<p class="p11"><span class="Apple-tab-span">	</span>times = times.sort;</p>
-<p class="p11"><span class="Apple-tab-span">	</span>times.do({ <span class="s2">arg</span> a;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>waitUntil(a);</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
-<p class="p11"><span class="Apple-tab-span">	</span>});</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
-<p class="p11"><span class="Apple-tab-span">	</span>0.5.wait;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
-<p class="p11">}.play;</p>
-<p class="p11">)</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p8">// Using Routine to set button states on the fly.</p>
+<p class="p7">// waitUntil</p>
+<p class="p6"><br></p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> r;</p>
+<p class="p9"><span class="s3">r = </span>Routine<span class="s3"> {</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>var times = { rrand(1.0, 10.0) }.dup(10) + thisThread.beats;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>times = times.sort;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>times.do({ <span class="s2">arg</span> a;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>waitUntil(a);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.postln;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// Wait half second before saying we're done</p>
+<p class="p4"><span class="Apple-tab-span">	</span>0.5.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">"done"</span>.postln;</p>
+<p class="p4">}.play;</p>
+<p class="p4">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">// Using Routine to set button states on the fly.</p>
 <p class="p4">(</p>
 <p class="p4"><span class="s2">var</span> update, w, b;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>.new(<span class="s4">"State Window"</span>, <span class="s2">Rect</span>(150,<span class="s2">SCWindow</span>.screenBounds.height-140,380,60));</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// a convenient way to set the button label</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update = {<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">|but, string|</span> but.states = [[string.asString, <span class="s2">Color</span>.black, <span class="s2">Color</span>.red]];<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>but.refresh;</p>
@@ -317,9 +316,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>update.value(b, </span>"there is only one state"<span class="s3">);</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if an action should do something different each time it is called, a routine is the<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// right thing to use. This is better than creating variables outside and setting them</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from the action function to keep state from one action to the next</p>
 <p class="p6"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action_(<span class="s2">Routine</span> { <span class="s2">|butt|</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rrand(15, 45).do { <span class="s2">|i|</span></p>
@@ -332,11 +331,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
-<p class="p8">// drawing in a window dynamcially with <a href="../../GUI/stubs/Pen.html">Pen</a></p>
+<p class="p7">// drawing in a window dynamcially with <a href="../../GUI/stubs/Pen.html"><span class="s9">Pen</span></a></p>
 <p class="p4">(</p>
 <p class="p4"><span class="s2">var</span> w, much = 0.02, string, synth;</p>
 <p class="p6"><br></p>
-<p class="p4">w = <span class="s2">GUI</span>.window.new(<span class="s4">"swing"</span>, <span class="s2">Rect</span>(100, 100, 300, 500)).front;</p>
+<p class="p4">w = <span class="s2">Window</span>.new(<span class="s4">"swing"</span>, <span class="s2">Rect</span>(100, 100, 300, 500)).front;</p>
 <p class="p4">w.view.background_(<span class="s2">Color</span>.new255(153, 255, 102).vary);</p>
 <p class="p6"><br></p>
 <p class="p4">string = <span class="s4">"swing "</span>.dup(24).join;</p>
@@ -359,7 +358,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>((size * (j % 9)) - 10) @ (size * (j div: 9))</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.yield </span>// stop here, return something unimportant</p>
 <p class="p4"><span class="Apple-tab-span">	</span>}</p>
 <p class="p4">};</p>
 <p class="p6"><br></p>
@@ -368,6 +367,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">w.front;</p>
 <p class="p6"><br></p>
 <p class="p4">)</p>
-<p class="p12"><span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-converted-space"> </span></p>
 </body>
 </html>
