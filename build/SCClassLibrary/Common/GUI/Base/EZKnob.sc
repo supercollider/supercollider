@@ -69,7 +69,6 @@ EZKnob : EZGui {
 			numberView.alt_scale = 1.0;
 			knobView.alt_scale = 1.0;
 		};
-		[\numberStep, numberStep].postln; 
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
 
@@ -99,9 +98,8 @@ EZKnob : EZGui {
 		}{
 			this.value_(initVal);
 		};
-					"test".postln;
-		this.prSetViewParams;
-	
+		
+		this.prSetViewParams;	
 	}
 	
 	value_ { arg val; 
