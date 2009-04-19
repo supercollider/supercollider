@@ -85,7 +85,6 @@ EZSlider : EZGui {
 		};
 		
 		numberView.step = numberStep;
-		sliderView.step = numberStep;
 		numberView.scroll_step = numberStep;
 		//numberView.scroll=true;
 
