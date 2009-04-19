@@ -10,20 +10,17 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #7f2a1c; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0034a8; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
-span.s3 {color: #0000ff}
-span.s4 {text-decoration: underline ; color: #0021e7}
-span.s5 {color: #0024f8}
-span.s6 {color: #0000bf}
-span.s7 {color: #007300}
-span.s8 {color: #000000}
+span.s3 {color: #001bb9}
+span.s4 {text-decoration: underline ; color: #001bb9}
+span.s5 {color: #2c7014}
+span.s6 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -40,7 +37,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">a general overview: <a href="../JITLib.html"><span class="s3">JITLib</span></a></p>
 <p class="p3"><br></p>
 <p class="p1"><b>Ndef(key)</b> returns the instance</p>
-<p class="p1"><b>Ndef(key, obj)</b> stores the object and returns the instance, like <a href="../Patterns/Tdef.html"><span class="s5">Tdef</span></a> and <a href="../Patterns/Pdef.html"><span class="s5">Pdef</span></a>.</p>
+<p class="p1"><b>Ndef(key, obj)</b> stores the object and returns the instance, like <a href="../Patterns/Tdef.html"><span class="s3">Tdef</span></a> and <a href="../Patterns/Pdef.html"><span class="s3">Pdef</span></a>.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(key, object)</b></p>
@@ -48,8 +45,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if there is already an Ndef there, replace its object with the new one.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The object can be any supported class, see <a href="NodeProxy.html"><span class="s3">NodeProxy</span></a> help.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if key is an association, it is interpreted as <b>key -&gt; server name.<span class="Apple-converted-space"> </span></b> (order changed in SC3.3)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*ar(key, numChannels, offset)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>equivalent to *new(key).ar(numChannels, offset) (see <a href="NodeProxy.html"><span class="s3">NodeProxy</span></a> help for ar method)</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*clear<span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>*kr(key, numChannels, offset)</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>equivalent to *new(key).kr(numChannels, offset) (see <a href="NodeProxy.html"><span class="s3">NodeProxy</span></a> help for kr method)</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*clear</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>clear all proxies</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="s2"><span class="Apple-tab-span">	</span></span><b>*at(server, key)</b></p>
@@ -60,37 +63,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4">// examples</p>
-<p class="p5"><br></p>
-<p class="p6"><span class="s6">Server</span>.default.boot;</p>
-<p class="p5"><br></p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>).play;</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>).fadeTime = 1;</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, { <span class="s6">SinOsc</span>.ar([600, 635], 0, <span class="s6">SinOsc</span>.kr(2).max(0) * 0.2) });</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, { <span class="s6">SinOsc</span>.ar([600, 635] * 3, 0, <span class="s6">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, { <span class="s6">SinOsc</span>.ar([600, 635] * 2, 0, <span class="s6">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, <span class="s6">Pbind</span>(<span class="s7">\dur</span>, 0.17, <span class="s7">\freq</span>, <span class="s6">Pfunc</span>({ rrand(300, 700) })) );</p>
-<p class="p5"><br></p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\lfo</span>, { <span class="s6">LFNoise1</span>.kr(3, 400, 800) });</p>
-<p class="p7"><span class="s6">Ndef</span><span class="s8">(</span>\sound<span class="s8">).map(</span>\freq<span class="s8">, </span><span class="s6">Ndef</span><span class="s8">(</span>\lfo<span class="s8">));</span></p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, { <span class="s6">arg</span> freq; <span class="s6">SinOsc</span>.ar([600, 635] + freq, 0, <span class="s6">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\lfo</span>, { <span class="s6">LFNoise1</span>.kr(300, 400, 800) });</p>
-<p class="p5"><br></p>
-<p class="p4"><span class="s6">Ndef</span><span class="s8">.clear; </span>//clear all</p>
-<p class="p8"><br></p>
-<p class="p8"><br></p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s3">Server</span>.default.boot;</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>).play;</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>).fadeTime = 1;</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635], 0, <span class="s3">SinOsc</span>.kr(2).max(0) * 0.2) });</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635] * 3, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635] * 2, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, <span class="s3">Pbind</span>(<span class="s5">\dur</span>, 0.17, <span class="s5">\freq</span>, <span class="s3">Pfunc</span>({ rrand(300, 700) })) );</p>
+<p class="p2"><br></p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\lfo</span>, { <span class="s3">LFNoise1</span>.kr(3, 400, 800) });</p>
+<p class="p6"><span class="s3">Ndef</span><span class="s6">(</span>\sound<span class="s6">).map(</span>\freq<span class="s6">, </span><span class="s3">Ndef</span><span class="s6">(</span>\lfo<span class="s6">));</span></p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, { <span class="s3">arg</span> freq; <span class="s3">SinOsc</span>.ar([600, 635] + freq, 0, <span class="s3">SinOsc</span>.kr(2 * 3).max(0) * 0.2) });</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\lfo</span>, { <span class="s3">LFNoise1</span>.kr(300, 400, 800) });</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="s3">Ndef</span><span class="s6">.clear; </span>//clear all</p>
+<p class="p7"><br></p>
+<p class="p7"><br></p>
 <p class="p1"><b>recursion:</b></p>
 <p class="p3"><br></p>
 <p class="p1">Ndefs can be used recursively.</p>
 <p class="p1">a structure like the following works:</p>
 <p class="p3"><br></p>
-<p class="p9"><br></p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>, { <span class="s6">SinOsc</span>.ar([600, 635], <span class="s6">Ndef</span>(<span class="s7">\sound</span>).ar * 10, <span class="s6">LFNoise1</span>.kr(2).max(0) * 0.2) });</p>
-<p class="p6"><span class="s6">Ndef</span>(<span class="s7">\sound</span>).play;</p>
+<p class="p8"><br></p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>, { <span class="s3">SinOsc</span>.ar([600, 635], <span class="s3">Ndef</span>.ar(<span class="s5">\sound</span>) * 10, <span class="s3">LFNoise1</span>.kr(2).max(0) * 0.2) });</p>
+<p class="p5"><span class="s3">Ndef</span>(<span class="s5">\sound</span>).play;</p>
 <p class="p3"><br></p>
 <p class="p1">this is because there is a feedback delay (the server's <b>block size</b>), usually 64 samples,</p>
 <p class="p1">so that calculation can reiterate over its own outputs. For single sample feedback,<span class="Apple-converted-space"> </span></p>
 <p class="p1">see:</p>
 <p class="p1">Document.open("Examples/demonstrations/single_sample_feedback.scd")</p>
-<p class="p8"><br></p>
+<p class="p7"><br></p>
 </body>
 </html>
