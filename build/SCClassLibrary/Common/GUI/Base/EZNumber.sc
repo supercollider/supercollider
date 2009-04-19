@@ -6,7 +6,7 @@ EZNumber : EZGui{
 	
 	var scaler=1;  //for swing compatibility
 	*new { arg parent, bounds, label, controlSpec, action, initVal, 
-			initAction=false, labelWidth=60, numberWidth=45, 
+			initAction=false, labelWidth=60, numberWidth, 
 			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;
 			
 		^super.new.init(parent, bounds, label, controlSpec, action, 
@@ -33,7 +33,11 @@ EZNumber : EZGui{
 		
 		// if no parent, then pop up window 
 		# view,bounds = this.prMakeView( parentView,bounds);	
-			
+		
+		numberWidth.isNil.if{numberWidth=45}{
+			labelWidth=bounds.width-unitWidth-numberWidth; //override the labelWidth
+			if (layout==\line2){unitWidth=bounds.width-numberWidth}; //override the unitWidth
+		};
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
 		
