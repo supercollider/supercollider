@@ -222,7 +222,7 @@ Process {
 				});
 			});
 		},{
-			class = string.asSymbol.asClass;
+			class = string.asSymbol.asClass.classRedirect;
 			if (class.notNil, {
 				class.filenameSymbol.asString.openTextFile(class.charPos, -1);
 			});
@@ -242,7 +242,7 @@ Process {
 				});
 			});
 		},{
-			class = string.asSymbol.asClass;
+			class = string.asSymbol.asClass.classRedirect;
 			if (class.notNil, {
 				class.filenameSymbol.asString.openWinTextFile(class.charPos, -1);
 			});
