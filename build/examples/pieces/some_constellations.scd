@@ -109,7 +109,7 @@ axiom = "0";
 		var str = axiom.rewriteString(rules, i + 6);
 		var dt = 2 ** i.neg * 10;
 		var trig = TDuty.ar(dt, 0, 
-			Dseq(str.collectAs(_.digit, Array))
+			Dseq(str.collectAs(_.digit, Array).postln)
 		);
 		var freq = ExpRand(200, i + 1 / 7 * 10100);
 		Ringz.ar(trig, freq * [1, 1.2, 1.5], ExpRand(2 ** i.neg * 0.1, 1.101) ).sum.distort
@@ -144,6 +144,30 @@ axiom = "0";
 		trig = BPF.ar(trig, LFNoise2.kr(0.1, 0.02, 1) * freq, 0.2);
 		Ringz.ar(trig, freq * [1, 1.1, 1.2], ExpRand(2 ** i.neg * 0.1, 0.5)).sum.distort;
 		
+	}.dup(n), 0.5) * 0.3
+}.play;
+)
+
+// sturmian sequencer III
+(
+var rules, axiom;
+"MathLib".include; // needs MathLib
+
+rules = [
+	"0" -> "01",
+	"1" -> "0"
+];
+
+axiom = "0";
+
+{
+	var n = 9;
+	Splay.ar({ |i|
+		var str = axiom.rewriteString(rules, i + 6);
+		var dt = SampleDur.ir / (n - i + 2) * MouseX.kr(1, SampleRate.ir, 2);
+		TDuty.ar(dt, 0, 
+			Dseq(str.collectAs(_.digit, Array) - 0.5, inf)
+		);
 	}.dup(n), 0.5) * 0.3
 }.play;
 )
