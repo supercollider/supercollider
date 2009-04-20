@@ -1,6 +1,7 @@
 /*
 
-"Unpack FFT" UGens for SuperCollider 3, (c) 2007 Dan Stowell. All rights reserved.
+"Unpack FFT" UGens for SuperCollider 3.
+Copyright (c) 2007 Dan Stowell. All rights reserved.
 
 (Written during the SC Symposium 2007! Thanks to all whose conversation fed into this.)
 

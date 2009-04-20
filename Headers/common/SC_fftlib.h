@@ -1,7 +1,7 @@
 /*
 SC_fftlib.h
 An interface to abstract over different FFT libraries, for SuperCollider 3.
-(c) 2008 Dan Stowell
+Copyright (c) 2008 Dan Stowell. All rights reserved.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
