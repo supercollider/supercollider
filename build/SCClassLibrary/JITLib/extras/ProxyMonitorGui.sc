@@ -57,7 +57,7 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 		sliderWidth = viewBounds.x - widthSum; 
 
 		height = viewBounds.y; 
-				ampSl = EZSlider(zone, (sliderWidth @ height), \vol, \amp, 
+				ampSl = EZSlider(zone, (sliderWidth @ height), \vol, \db, 
 			{ arg slid; 
 				if(proxy.notNil) { 
 					proxy.vol_(slid.value.dbamp); 
