@@ -140,10 +140,10 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 	if(forward){
 		#if SC_FFT_VDSP
 			f->scalefac = 0.5f;
-		#else
+		#else // forward FFTW factor
 			f->scalefac = 1.f;
 		#endif
-	}else{
+	}else{ // backward FFTW and VDSP factor
 		f->scalefac = 1.f / fullsize;
 	}
 	
