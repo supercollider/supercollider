@@ -816,4 +816,7 @@ Object  {
 	// support for Gen
 	genNext { ^nil }
 	genCurrent { ^this }
+	
+	// support for ViewRedirect
+	*classRedirect { ^this }
 }

@@ -1,4 +1,7 @@
 ViewRedirect { // Abstract class
+
+	classvar <>redirectQueries = false;
+	
 	*implClass {
 		^GUI.scheme.perform(this.key)
 	}
@@ -20,6 +23,7 @@ ViewRedirect { // Abstract class
 			DoesNotUnderstandError(this, selector, args).throw;
 		}
 	}
+	*classRedirect { ^redirectQueries.if({this.implClass ? this}, this)}
 }
 
 Window : ViewRedirect { 
