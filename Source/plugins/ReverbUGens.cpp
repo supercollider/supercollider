@@ -1,4 +1,5 @@
 // FreeVerb UGens
+//  Copyright (c) 2005 blackrain. All rights reserved.
 // faust code generation experiments. blackrain 07/2005
 
 #include "SC_PlugIn.h"

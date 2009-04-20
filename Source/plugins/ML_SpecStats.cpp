@@ -1,7 +1,7 @@
 /*
 
 Spectral statistics UGens for SuperCollider, by Dan Stowell.
-(c) Dan Stowell 2006-2007.
+Copyright (c) Dan Stowell 2006-2007.
 Now part of SuperCollider 3, (c) James McCartney.
 
     This program is free software; you can redistribute it and/or modify
