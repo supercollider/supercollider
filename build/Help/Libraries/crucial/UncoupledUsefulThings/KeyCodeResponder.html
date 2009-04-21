@@ -5,33 +5,31 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px Helvetica; min-height: 13.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0c3bef; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #153fea; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0023b2}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0727ae}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a; min-height: 12.0px}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0013bb}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a8220e}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87311d}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87311d; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 span.s1 {color: #000000}
-span.s2 {color: #0000bf}
-span.s3 {color: #007300}
+span.s2 {color: #0013bb}
+span.s3 {color: #316f11}
 span.s4 {color: #606060}
-span.s5 {color: #0023b2}
+span.s5 {color: #0727ae}
 span.s6 {font: 13.0px Helvetica}
-span.s7 {color: #98281a}
+span.s7 {color: #87311d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -47,6 +45,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p4">see also [<b>UnicodeResponder</b>] which matches based on the unicode, though the physical location</p>
 <p class="p4">of the key may still vary according zee nationality ov der keyboard.</p>
+<p class="p4">Command modifiers cannot be registered using the register method; use registerKeycode instead (see example below).</p>
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p4">see [<b>SCView]</b></p>
@@ -67,42 +66,46 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p8">(</p>
-<p class="p9"><br></p>
-<p class="p10"><span class="s1">k = </span>KeyCodeResponder<span class="s1">.new;</span></p>
-<p class="p9"><br></p>
-<p class="p11"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 36, 10 ); </span>// keycode : return (36 on CocoaGUI, 10 on SwingOSC)</p>
-<p class="p11">// match single modifiers exclusively</p>
-<p class="p12">k.normal( c -&gt; {<span class="Apple-converted-space">  </span><span class="s4">"return"</span>.postln });</p>
-<p class="p12">k.option( c -&gt; { <span class="s4">"option return"</span>.postln });</p>
-<p class="p12">k.shift( c -&gt; { <span class="s4">"shift return"</span>.postln });</p>
-<p class="p11">// overwrites previous registration</p>
-<p class="p12">k.shift( c -&gt; { <span class="s4">"SHIFT RETURN only"</span>.postln; });</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p11">// match multiple modifier combinations</p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>//<span class="Apple-converted-space">        </span>shift caps opt <span class="Apple-converted-space">  </span>control</p>
-<p class="p12">k.register( c, <span class="s2">true</span>,<span class="Apple-converted-space">  </span><span class="s2">nil</span>,<span class="Apple-converted-space">  </span><span class="s2">true</span>, <span class="s2">false</span>, {</p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>// <span class="Apple-converted-space">        </span>yes <span class="Apple-converted-space">  </span>either<span class="Apple-converted-space">  </span>yes <span class="Apple-converted-space">  </span>no</p>
-<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span></span>"return: shift-option regardless of CAPS"<span class="s1">.postln;</span></p>
-<p class="p12">});</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p12">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.normalModifier, 52 , { <span class="s4">"enter"</span>.postln; });</p>
-<p class="p9"><br></p>
-<p class="p11">// arrow keys are considered function keys and must be bit ORd with function key modifier</p>
-<p class="p12">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.normalModifier | <span class="s2">KeyCodeResponder</span>.functionKeyModifier , 123 , { <span class="Apple-tab-span">	</span><span class="s4">"&lt;-"</span>.postln;<span class="Apple-converted-space"> </span></p>
-<p class="p12">});</p>
-<p class="p9"><br></p>
-<p class="p12">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.controlModifier | <span class="s2">KeyCodeResponder</span>.functionKeyModifier , 123 , {</p>
-<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span></span>"control &lt;-"<span class="s1">.postln;<span class="Apple-converted-space"> </span></span></p>
-<p class="p12">});</p>
-<p class="p9"><br></p>
-<p class="p12">w = <span class="s2">GUI</span>.window.new.front;</p>
-<p class="p12">v = <span class="s2">GUI</span>.slider.new(w,<span class="s2">Rect</span>(10,10,100,100));</p>
-<p class="p12">v.keyDownAction = k;</p>
-<p class="p12">v.focus;</p>
-<p class="p9"><br></p>
+<p class="p6"><br></p>
+<p class="p9"><span class="s1">k = </span>KeyCodeResponder<span class="s1">.new;</span></p>
+<p class="p6"><br></p>
+<p class="p10"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 36, 10 ); </span>// keycode : return (36 on CocoaGUI, 10 on SwingOSC)</p>
+<p class="p10">// match single modifiers exclusively</p>
+<p class="p8">k.normal( c -&gt; {<span class="Apple-converted-space">  </span><span class="s4">"return"</span>.postln });</p>
+<p class="p8">k.option( c -&gt; { <span class="s4">"option return"</span>.postln });</p>
+<p class="p8">k.shift( c -&gt; { <span class="s4">"shift return"</span>.postln });</p>
+<p class="p10">// overwrites previous registration</p>
+<p class="p8">k.shift( c -&gt; { <span class="s4">"SHIFT RETURN only"</span>.postln; });</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p10">// match multiple modifier combinations</p>
+<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span></span>//<span class="Apple-converted-space">        </span>shift caps opt <span class="Apple-converted-space">  </span>control</p>
+<p class="p8">k.register( c, <span class="s2">true</span>,<span class="Apple-converted-space">  </span><span class="s2">nil</span>,<span class="Apple-converted-space">  </span><span class="s2">true</span>, <span class="s2">false</span>, {</p>
+<p class="p10"><span class="s1"><span class="Apple-tab-span">	</span></span>// <span class="Apple-converted-space">        </span>yes <span class="Apple-converted-space">  </span>either<span class="Apple-converted-space">  </span>yes <span class="Apple-converted-space">  </span>no</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>"return: shift-option regardless of CAPS"<span class="s1">.postln;</span></p>
+<p class="p8">});</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p8">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.normalModifier, 52 , { <span class="s4">"enter"</span>.postln; });</p>
+<p class="p6"><br></p>
+<p class="p10">// arrow keys are considered function keys and must be bit ORd with function key modifier</p>
+<p class="p8">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.normalModifier | <span class="s2">KeyCodeResponder</span>.functionKeyModifier , 123 , { <span class="Apple-tab-span">	</span><span class="s4">"&lt;-"</span>.postln;<span class="Apple-converted-space"> </span></p>
+<p class="p8">});</p>
+<p class="p6"><br></p>
+<p class="p8">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.controlModifier | <span class="s2">KeyCodeResponder</span>.functionKeyModifier , 123 , {</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>"control &lt;-"<span class="s1">.postln;<span class="Apple-converted-space"> </span></span></p>
+<p class="p8">});</p>
+<p class="p6"><br></p>
+<p class="p8">k.registerKeycode(<span class="s2">KeyCodeResponder</span>.commandModifier , 123 , {</p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>"command &lt;-"<span class="s1">.postln;<span class="Apple-converted-space"> </span></span></p>
+<p class="p8">});</p>
+<p class="p6"><br></p>
+<p class="p8">w = <span class="s2">GUI</span>.window.new.front;</p>
+<p class="p8">v = <span class="s2">GUI</span>.slider.new(w,<span class="s2">Rect</span>(10,10,100,100));</p>
+<p class="p8">v.keyDownAction = k;</p>
+<p class="p8">v.focus;</p>
+<p class="p6"><br></p>
 <p class="p8">)</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
@@ -143,7 +146,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">p = <span class="s5">Patch</span>({ <span class="s5">arg</span> freq=440; <span class="s5">SinOsc</span>.ar(freq,mul: 0.1) });</p>
 <p class="p8">g = p.gui;</p>
 <p class="p8">g.keyDownAction =<span class="Apple-converted-space">  </span>{</p>
-<p class="p13"><span class="s1"><span class="Apple-tab-span">	</span></span>"you touched me"<span class="s1">.postln;</span></p>
+<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span></span>"you touched me"<span class="s1">.postln;</span></p>
 <p class="p8">};</p>
 <p class="p6"><br></p>
 <p class="p8">)</p>
@@ -171,21 +174,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">global keydowns not yet tested....</p>
 <p class="p8">(</p>
 <p class="p7">KeyCodeResponder<span class="s1">.clear;</span></p>
-<p class="p14">/*</p>
-<p class="p14">this will fire on shift-'r'</p>
-<p class="p14"><span class="Apple-tab-span">	</span>shift must be held down</p>
-<p class="p14"><span class="Apple-tab-span">	</span>caps must NOT be down</p>
-<p class="p14"><span class="Apple-tab-span">	</span>cntl or opt status is irrelevant</p>
-<p class="p14">*/</p>
-<p class="p11"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 15, 82 ); </span>// keycode : 'r' key (15 on CocoaGUI, 82 on SwingOSC)</p>
+<p class="p12">/*</p>
+<p class="p12">this will fire on shift-'r'</p>
+<p class="p12"><span class="Apple-tab-span">	</span>shift must be held down</p>
+<p class="p12"><span class="Apple-tab-span">	</span>caps must NOT be down</p>
+<p class="p12"><span class="Apple-tab-span">	</span>cntl or opt status is irrelevant</p>
+<p class="p12">*/</p>
+<p class="p10"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 15, 82 ); </span>// keycode : 'r' key (15 on CocoaGUI, 82 on SwingOSC)</p>
 <p class="p7">KeyCodeResponder<span class="s1">.register(c,</span>true<span class="s1">,</span>false<span class="s1">,</span>nil<span class="s1">,</span>nil<span class="s1">,{ </span><span class="s4">"shift, no caps"</span><span class="s1">.postcln });</span></p>
 <p class="p6"><br></p>
-<p class="p14">/*</p>
-<p class="p14">this will fire on shift-'r'</p>
-<p class="p14"><span class="Apple-tab-span">	</span>shift must be held down</p>
-<p class="p14"><span class="Apple-tab-span">	</span>caps may or may not be down</p>
-<p class="p14"><span class="Apple-tab-span">	</span>cntl or opt status is irrelevant</p>
-<p class="p14">*/</p>
+<p class="p12">/*</p>
+<p class="p12">this will fire on shift-'r'</p>
+<p class="p12"><span class="Apple-tab-span">	</span>shift must be held down</p>
+<p class="p12"><span class="Apple-tab-span">	</span>caps may or may not be down</p>
+<p class="p12"><span class="Apple-tab-span">	</span>cntl or opt status is irrelevant</p>
+<p class="p12">*/</p>
 <p class="p8"><span class="s5">KeyCodeResponder</span>.register(c,<span class="s5">true</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,{ <span class="s4">"shift, yes/no caps"</span>.postcln });</p>
 <p class="p8"><span class="s5">Sheet</span>({ <span class="s5">arg</span> f; <span class="s5">ActionButton</span>(f).focus });</p>
 <p class="p6"><br></p>
@@ -200,7 +203,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">Only one function per deny/require mask combination is possible per keycode:</p>
 <p class="p4">(</p>
 <p class="p4">// hit shift - r</p>
-<p class="p11"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 15, 82 ); </span>// keycode : 'r' key (15 on CocoaGUI, 82 on SwingOSC)</p>
+<p class="p10"><span class="s1">c = if( </span><span class="s2">GUI</span><span class="s1">.id === </span><span class="s3">\cocoa</span><span class="s1">, 15, 82 ); </span>// keycode : 'r' key (15 on CocoaGUI, 82 on SwingOSC)</p>
 <p class="p8"><span class="s5">KeyCodeResponder</span>.register(c,<span class="s5">true</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,{ <span class="s4">"shift r"</span>.postcln });</p>
 <p class="p8"><span class="s5">KeyCodeResponder</span>.register(c,<span class="s5">true</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,<span class="s5">nil</span>,{ <span class="s4">"overwrote the previous one"</span>.postcln });</p>
 <p class="p8"><span class="s5">Sheet</span>({ <span class="s5">arg</span> f; <span class="s5">ActionButton</span>(f).focus });</p>
@@ -209,10 +212,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p15"><b>The simpler, older method is :</b></p>
-<p class="p16"><br></p>
+<p class="p13"><b>The simpler, older method is :</b></p>
+<p class="p14"><br></p>
 <p class="p8"><span class="s6"><b><span class="Apple-tab-span">	</span></b></span><span class="s5">KeyCodeResponder</span>.registerKeycode(2,28,{<span class="Apple-converted-space">      </span>});<span class="s7">// *</span></p>
-<p class="p17"><br></p>
+<p class="p15"><br></p>
 <p class="p4">whereby that modifier and only that modifier will fire the funtion.</p>
 <p class="p4">see SCView for modifier values or use this :</p>
 <p class="p6"><br></p>
@@ -224,7 +227,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
-<p class="p14">// using characters <span class="Apple-converted-space"> </span></p>
+<p class="p12">// using characters <span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="s5">KeyCodeResponder</span>.registerChar(0,$q,{<span class="Apple-converted-space">  </span>}); <span class="s7">// q no modifier</span></p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
@@ -236,7 +239,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">solution:</p>
 <p class="p4"><span class="Apple-tab-span">	</span>// place this at the top of your performance code to start with a clean slate</p>
 <p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>KeyCodeResponder<span class="s1">.clear;</span></p>
-<p class="p18"><br></p>
+<p class="p16"><br></p>
 <p class="p2"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
