@@ -10,6 +10,7 @@ KeyCodeResponder {
        const <controlModifier      = 0x00040000;
        const <optionModifier       = 0x00080000;
        const <functionKeyModifier  = 0x00800000;
+       const <commandModifier = 0x00100000;
 
 /* 	classvar <>normalModifier=0,<>shiftModifier=0x00020000,<>controlModifier=0x00040000,
                <>optionModifier=0x00080000,<>functionKeyModifier=0x00800000,<>capsModifier=0x00010000;
@@ -72,6 +73,7 @@ KeyCodeResponder {
 				deny = deny.add(controlModifier);
 			})
 		});
+		deny = deny.add(commandModifier);
 		this.pushForKeycode(keycode,require,deny,function,description);
 	}	
 
@@ -210,7 +212,7 @@ KeyCodeResponder {
 		var words;
 		words = "";
 		[\shift->KeyCodeResponder.shiftModifier, \caps->KeyCodeResponder.capsModifier,
-		\option->KeyCodeResponder.optionModifier, \control->KeyCodeResponder.controlModifier]
+		\option->KeyCodeResponder.optionModifier, \control->KeyCodeResponder.controlModifier, \command->KeyCodeResponder.commandModifier]
 		.do({ |modass|
 			if((m & modass.value) == modass.value,{
 				words = words + modass.key;
@@ -319,8 +321,8 @@ KDRMaskTester : SimpleKDRUnit {
 		^super.new(r,function,description).denyMask_(d)
 	}
 	value { arg view, char,modifier,unicode,keycode;
-		//[modifier & requireMask, requireMask].debug("require");
-		//[denyMask & modifier].debug("deny");
+//		[modifier & requireMask, requireMask].debug("require");
+//		[denyMask & modifier].debug("deny");
 		if((modifier & requireMask) == requireMask // all required bits set
 			and: 
 		{  (denyMask & modifier) == 0 } // no denied bits present

@@ -66,6 +66,8 @@ UnicodeResponder {
 				deny = deny.add(KeyCodeResponder.controlModifier);
 			})
 		});
+		deny = deny.add(KeyCodeResponder.commandModifier);
+	
 		this.pushForUnicode(unicode.asUnicode,require,deny,function,description);
 	}
 	
