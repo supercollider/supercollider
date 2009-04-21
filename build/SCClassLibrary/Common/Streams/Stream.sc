@@ -421,25 +421,105 @@ Task : PauseStream {
 ////////////////////////////////////////////////////////////////////////
 
 
-EventStreamPlayer : PauseStream {
-	var <>event, <>muteCount = 0, <>cleanup;
+//EventStreamPlayer : PauseStream {
+//	var <>event, <>muteCount = 0, <>cleanup;
+//	
+//	*new { arg stream, event;
+//		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
+//	}
+//	
+//	// freeNodes is passed as false from
+//	//TempoClock:cmdPeriod
+//	removedFromScheduler { | freeNodes = true |
+//		nextBeat = nil;
+//		cleanup.terminate(freeNodes);	
+//		this.prStop;
+//		this.changed(\stopped);
+//	}
+//	prStop {	
+//		stream = nextBeat = nil;
+//		isWaiting = false;
+//	 }
+//	
+//	stop {
+//		cleanup.terminate;
+//		this.prStop;
+//		this.changed(\userStopped);
+//	}
+//	
+//	mute { muteCount = muteCount + 1; }
+//	unmute { muteCount = muteCount - 1; }
+//	canPause { ^this.streamHasEnded.not and: { cleanup.functions.isEmpty } }
+//	
+//	next { arg inTime;
+//		var nextTime;
+//		var outEvent = stream.next(event.copy);		
+//		if (outEvent.isNil) {
+//			streamHasEnded = stream.notNil;
+//			cleanup.clear;
+//			this.removedFromScheduler;
+//			^nil
+//		}{
+//			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
+//			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
+//			nextBeat = inTime + nextTime;	// inval is current logical beat
+//			^nextTime
+//		};
+//	}
+//	
+//	asEventStreamPlayer { ^this }
+//	
+//	play { arg argClock, doReset = (false), quant;
+//		if (stream.notNil, { "already playing".postln; ^this });
+//		if (doReset, { this.reset });
+//		clock = argClock ? clock ? TempoClock.default;
+//		streamHasEnded = false;
+//		stream = originalStream;			
+//		isWaiting = true;	// make sure that accidental play/stop/play sequences
+//						// don't cause memory leaks
+//		era = CmdPeriod.era;
+//		quant = quant.asQuant;
+//		event = event.synchWithQuant(quant);
+//
+//		clock.play({
+//			if(isWaiting and: { nextBeat.isNil }) {
+//				clock.sched(0, this);
+//				isWaiting = false;
+//				this.changed(\playing)
+//			};
+//			nil
+//		}, quant);
+//		this.changed(\userPlayed);
+//		^this
+//	}
+//
+//}
+
+EventStreamPlayer : PauseStream {
+	var <>event, <>muteCount = 0, <>cleanup, <>routine;
 	
-	*new { arg stream, event;
-		^super.new(stream).event_(event ? Event.default).cleanup_(EventStreamCleanup.new);
+	*new { arg stream, event;
+		^super.new(stream).event_(event ? Event.default).init;
+	}
+
+	init {
+		var me = this;
+		cleanup = EventStreamCleanup.new;
+		routine = Routine{ | inTime | loop { inTime = me.prNext(inTime).yield } };
 	}
 	
 	// freeNodes is passed as false from
 	//TempoClock:cmdPeriod
-	removedFromScheduler { | freeNodes = true |
-		nextBeat = nil;
+	removedFromScheduler { | freeNodes = true |
+		nextBeat = nil;
 		cleanup.terminate(freeNodes);	
 		this.prStop;
 		this.changed(\stopped);
 	}
 	prStop {	
-		stream = nextBeat = nil;
-		isWaiting = false;
-	 }
+		stream = nextBeat = nil;
+		isWaiting = false;
+	 }
 	
 	stop {
 		cleanup.terminate;
@@ -451,9 +531,11 @@ EventStreamPlayer : PauseStream {
 	unmute { muteCount = muteCount - 1; }
 	canPause { ^this.streamHasEnded.not and: { cleanup.functions.isEmpty } }
 	
-	next { arg inTime;
-		var nextTime;
-		var outEvent = stream.next(event.copy);		
+	next { | inTime | ^routine.next(inTime) }
+	
+	prNext { arg inTime;
+		var nextTime;
+		var outEvent = stream.next(event.copy);		
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
@@ -461,30 +543,30 @@ EventStreamPlayer : PauseStream {
 			^nil
 		}{
 			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
-			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
+			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime
 		};
 	}
 	
-	asEventStreamPlayer { ^this }
+	asEventStreamPlayer { ^this }
 	
-	play { arg argClock, doReset = (false), quant;
-		if (stream.notNil, { "already playing".postln; ^this });
-		if (doReset, { this.reset });
-		clock = argClock ? clock ? TempoClock.default;
-		streamHasEnded = false;
+	play { arg argClock, doReset = (false), quant;
+		if (stream.notNil, { "already playing".postln; ^this });
+		if (doReset, { this.reset });
+		clock = argClock ? clock ? TempoClock.default;
+		streamHasEnded = false;
 		stream = originalStream;			
-		isWaiting = true;	// make sure that accidental play/stop/play sequences
+		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
-		era = CmdPeriod.era;
+		era = CmdPeriod.era;
 		quant = quant.asQuant;
 		event = event.synchWithQuant(quant);
 
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
-				clock.sched(0, this);
-				isWaiting = false;
+				clock.sched(0, this );
+				isWaiting = false;
 				this.changed(\playing)
 			};
 			nil
@@ -494,4 +576,3 @@ EventStreamPlayer : PauseStream {
 	}
 
 }
-
