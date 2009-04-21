@@ -1342,6 +1342,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		
 		if(ObjcTypeFillPyrSlot(&retslot, cType, retval, &convertedObject) != noErr) {
 			post("ERROR: CocoaBridge returned object type: %c is not-of-type _C_ID !\n", *cType);
+			if(retval) free(retval);
 			return errFailed;
 		}
 		
@@ -1693,6 +1694,7 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 			
 			if(ObjcTypeFillPyrSlot(receiver, cType, retval, &convertedObject) != noErr) {
 				post("ERROR: CocoaBridge returned object type: %c is not-of-type _C_ID !\n", *cType);
+				if(retval) free(retval);
 				return errFailed;
 			}
 		}
