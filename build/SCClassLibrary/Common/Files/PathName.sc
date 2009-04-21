@@ -104,7 +104,7 @@ PathName {
 		
 		i=0;
 		while{a[i]==b[i] and:{i<a.size}}{
-		 Ê Ê Ê Êi = i + 1;
+		        i = i + 1;
 		};
 		^(".."++r).dup(b.size-i).join ++ a[i..].join(r)
 	}
