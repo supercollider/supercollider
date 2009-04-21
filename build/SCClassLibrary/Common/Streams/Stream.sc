@@ -483,8 +483,7 @@ EventStreamPlayer : PauseStream {
 
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
-					// this bit of indirection allows server sync within patterns
-				clock.sched(0, (Routine { |time| loop { time = this.next(time).yield } }));
+				clock.sched(0, this);
 				isWaiting = false;
 				this.changed(\playing)
 			};
