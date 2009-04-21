@@ -503,9 +503,8 @@ EventStreamPlayer : PauseStream {
 	}
 
 	init {
-		var me = this;
 		cleanup = EventStreamCleanup.new;
-		routine = Routine{ | inTime | loop { inTime = me.prNext(inTime).yield } };
+		routine = Routine{ | inTime | loop { inTime = this.prNext(inTime).yield } };
 	}
 	
 	// freeNodes is passed as false from
