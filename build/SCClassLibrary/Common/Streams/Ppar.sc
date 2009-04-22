@@ -22,7 +22,7 @@ Ppar : ListPattern {
 //				outval.put(\freq, \rest);					
 //				outval.put(\delta, nexttime);
 
-				outval = Event.silent(nexttime);
+				outval = Event.silent(nexttime, inval);
 				inval = outval.yield; 
 				now = nexttime;	
 			});

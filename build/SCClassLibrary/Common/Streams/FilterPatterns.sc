@@ -430,7 +430,7 @@ Psync : FilterPattern {
 			inevent = stream.next(event);
 			if(inevent.isNil) {
 				if(quant.notNil) { 
-					event = Event.silent(elapsed.roundUp(quant) - elapsed);
+					event = Event.silent(elapsed.roundUp(quant) - elapsed, event);
 					^cleanup.exit(event).yield;
 				};
 			};
