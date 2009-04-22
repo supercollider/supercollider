@@ -90,5 +90,6 @@ Font : ViewRedirect  {	*key { ^\font }}
 
 Knob : ViewRedirect  {	*key { ^\knob }}
 
+LevelIndicator : ViewRedirect  {	*key { ^\levelIndicator }}
 
 
