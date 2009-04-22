@@ -68,6 +68,7 @@ CocoaGUI {
 	*ezNumber { ^EZNumber}
 	*ezRanger { ^EZRanger }		
 	*menuItem { ^CocoaMenuItem }
+	*levelIndicator { ^SCLevelIndicator }
 	
 	*knob { ^SCKnob }
 
