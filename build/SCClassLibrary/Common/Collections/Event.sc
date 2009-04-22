@@ -12,8 +12,12 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
-	*silent { arg dur = 1.0;
-		^Event.new(8, nil, defaultParentEvent, true).put(\type, \rest).put(\dur, dur)
+	*silent { arg dur = 1.0, inEvent;
+		if(inEvent.isNil) { inEvent = Event.new }
+			{ inEvent = inEvent.copy };
+		inEvent.put(\type, \rest).put(\dur, dur).put(\parent, defaultParentEvent)
+			.put(\delta, inEvent.delta);
+		^inEvent
 	}
 	*addEventType { arg type, func;
 		var types = partialEvents.playerEvent.eventTypes;

@@ -40,7 +40,7 @@ Spawner : Pattern {
 	}
 	
 	wait { | dur |
-		Event.silent(dur).yield
+		Event.silent(dur, event).yield
 	}
 		
 	embedInStream { | inevent, cleanup|
@@ -63,7 +63,7 @@ Spawner : Pattern {
 //					outevent = event.copy;
 //					outevent.put(\freq, \rest);					
 //					outevent.put(\delta, nexttime - now);
-					outevent = Event.silent(nexttime - now);
+					outevent = Event.silent(nexttime - now, event);
 					event = outevent.yield;
 					now = nexttime;	
 				},{
