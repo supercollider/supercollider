@@ -60,9 +60,10 @@ Spawner : Pattern {
 //				if (nexttime.notNil && (genStream != stream), {
 				if (nexttime.notNil, {
 					// that child stream ended, so rest until next one
-					outevent = event.copy;
-					outevent.put(\freq, \rest);					
-					outevent.put(\delta, nexttime - now);
+//					outevent = event.copy;
+//					outevent.put(\freq, \rest);					
+//					outevent.put(\delta, nexttime - now);
+					outevent = Event.silent(nexttime - now);
 					event = outevent.yield;
 					now = nexttime;	
 				},{
