@@ -94,7 +94,7 @@ Pfset : FuncFilterPattern {
 		var stream = pattern.asStream;
 		
 		cleanup.addFunction(event, { |flag|
-			if(flag) { envir.use(cleanupFunc) }
+			envir.use({ cleanupFunc.value(flag) });
 		});
 		
 		loop { 
