@@ -145,7 +145,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">a = { q.chooseNoise * q.makeEnv(<span class="s3">Env</span><span class="s5">.asr, 2</span>) }.play;</p>
 <p class="p9"><span class="s5">a.set(</span><span class="s4">\gate</span><span class="s5">, -3); </span>// release in 3 seconds</p>
 <p class="p7"><br></p>
-<p class="p13">a = { q.filterInput(q.chooseNoise) }.play;</p>
+<p class="p13">a = { q.filterInput(q.chooseNoise) * q.makeEnv(Env.asr, 2) }.play;</p>
 <p class="p9"><span class="s5">a.set(</span><span class="s4">\freq</span><span class="s5">, 1000); </span>// set filter frequency</p>
 <p class="p9"><span class="s5">a.set(</span><span class="s4">\gate</span><span class="s5">, -3); </span>// release in 3 seconds</p>
 <p class="p7"><br></p>
