@@ -140,7 +140,6 @@
 		server = server ? Server.default;
 		if(server.serverRunning.not) { "Server not running!".warn; ^nil };
 		
-				// no need to check for rate as RecordBuf is ar only
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
 			var	val = this.value;
