@@ -622,7 +622,7 @@ extern bool compiledOK;
 	//post("trying %s ", sel_getName(sel));
 	NSEnumerator *e = [mSelectorArray keyEnumerator];
 	NSNumber* obj=nil;
-	while(obj = (NSNumber*)[e nextObject]) {
+	while( (obj = (NSNumber*)[e nextObject]) ) {
 		SEL thesel = (SEL)[obj longValue];
 		if(sel == thesel) {
 			return YES;
@@ -660,15 +660,16 @@ extern bool compiledOK;
 			PyrObject*		array;
 			PyrObjectHdr*	pyrObject;
 			
-			array = newPyrArray(g->gc, 2, 0, true);
+			//array = newPyrArray(g->gc, 2, 0, true);
+			array = ::instantiateObject(g->gc, s_array->u.classobj, maxArgs-2, true, true);
 			SetObject(g->sp, array);
 			
-			for(unsigned int i=2; i < maxArgs; ++i) {
+			PyrSlot* slots = array->slots;
+			for(int i=2; i < maxArgs; ++i) {
 				[inv getArgument:(void*)&value atIndex:i];
-				ObjcTypeFillPyrSlot(array->slots + array->size, [nsSignature getArgumentTypeAtIndex:i], (void*)&value, &pyrObject);
+				ObjcTypeFillPyrSlot(slots++, [nsSignature getArgumentTypeAtIndex:i], (void*)&value, &pyrObject);
 				if(pyrObject)
 					g->gc->GCWrite(array, pyrObject);
-				array->size++;
 			}
 		}
 		else
@@ -1723,7 +1724,7 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
 		COCOABRIDGE_OBJ_RELEASE(nsobj);
 		receiver->uo->slots[0].ui = nil;
 	}else
-		post("SCNSObject object pointer is nil");
+		post("SCNSObject object pointer is nil\n");
 		
     return errNone;
 }
