@@ -136,7 +136,7 @@
 + Function {
 
 	loadToFloatArray { arg duration = 0.01, server, action;
-		var buffer, def, synth, name, numChannels, val;
+		var buffer, def, synth, name, numChannels, val, rate;
 		server = server ? Server.default;
 		if(server.serverRunning.not) { "Server not running!".warn; ^nil };
 		
@@ -148,18 +148,18 @@
 				val.dump;
 				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
 			};
-			if(val.rate != \audio) {
-				val = K2A.ar(val);
-			};
+			rate = val.rate;
 			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
-			RecordBuf.ar(val, bufnum, loop:0);
-			Line.ar(dur: duration, doneAction: 2);			
+			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop:0);
+			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);		
 		});
 		
 		Routine.run({
 			var c;
 			c = Condition.new;
-			buffer = Buffer.new(server, duration * server.sampleRate, numChannels);
+			buffer = Buffer.new(server, duration 
+				* server.sampleRate * if(rate==\control, 1/server.options.blockSize, 1), 
+				numChannels);
 			server.sendMsgSync(c, *buffer.allocMsg);
 			server.sendMsgSync(c, "/d_recv", def.asBytes);
 			synth = Synth(name, [\bufnum, buffer], server);
