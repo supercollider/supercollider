@@ -222,8 +222,9 @@ Process {
 				});
 			});
 		},{
-			class = string.asSymbol.asClass.classRedirect;
+			class = string.asSymbol.asClass;
 			if (class.notNil, {
+				class = class.classRedirect;
 				class.filenameSymbol.asString.openTextFile(class.charPos, -1);
 			});
 		});
@@ -242,8 +243,9 @@ Process {
 				});
 			});
 		},{
-			class = string.asSymbol.asClass.classRedirect;
+			class = string.asSymbol.asClass;
 			if (class.notNil, {
+				class = class.classRedirect;
 				class.filenameSymbol.asString.openWinTextFile(class.charPos, -1);
 			});
 		});
