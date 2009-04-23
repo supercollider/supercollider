@@ -1900,22 +1900,17 @@ SCEnvelopeView : SCView {
 	
 	addValue { arg xval, yval;
 		var arr, arrx, arry, aindx;
-		aindx = this.lastIndex;
-		aindx.postln;
-		if(xval.isNil && yval.isNil, {
-			arr = this.value;
-			arrx = arr@0;
-			arry = arr@1;
-			xval = arrx.at(aindx) + 0.05;
-			yval = arry.at(aindx);
-		});
-		if(aindx < (arrx.size - 1), {
-			arrx = arrx.insert(aindx + 1 , xval);
-			arry = arry.insert(aindx + 1, yval);
-		},{
-			arrx = arrx.add( xval );
-			arry = arry.add( yval);
-		});		
+		arr = this.value;
+		arrx = arr@0;
+		arry = arr@1;	
+		arrx.do{|val, i|
+			if(val>xval and: aindx.isNil){
+				aindx = i;
+			}
+		};
+//		this.debug(aindx);
+		arrx = arrx.insert(aindx , xval);
+		arry = arry.insert(aindx , yval);
 		this.value_([arrx,arry]);
 	}	
 	
