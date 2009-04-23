@@ -12,11 +12,11 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
-	*silent { arg dur = 1.0, inEvent;
+	*silent { |dur(1.0), inEvent|
 		if(inEvent.isNil) { inEvent = Event.new }
 			{ inEvent = inEvent.copy };
 		inEvent.put(\type, \rest).put(\dur, dur).put(\parent, defaultParentEvent)
-			.put(\delta, inEvent.delta);
+			.put(\delta, dur * (inEvent[\stretch] ? 1));
 		^inEvent
 	}
 	*addEventType { arg type, func;
