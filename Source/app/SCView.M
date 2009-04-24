@@ -5062,7 +5062,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 		xgridpos = bounds.x+1.f + xgrid;
 		ygrid = ygrid*bounds.height;		
 		ygridpos = bounds.y+1.f + ygrid;		
-		while(xgridpos < maxwidth)
+		while(xgridpos < maxwidth && (xgrid > 0.0))
 		{
 			drawRect = CGRectMake(xgridpos, 
 								  bounds.y + 1.f, 
@@ -5072,7 +5072,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 			xgridpos += xgrid;
 		}
 		
-		while(ygridpos < maxheight)
+		while(ygridpos < maxheight && (ygrid > 0.0))
 		{
 			drawRect = CGRectMake(bounds.x+1.f, 
 								  ygridpos, 
