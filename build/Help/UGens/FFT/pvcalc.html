@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,14 +13,12 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-span.s1 {color: #002bf0}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a81914}
+span.s1 {color: #1630ea}
 span.s2 {color: #000000}
-span.s3 {color: #0020b4}
-span.s4 {color: #0000bf}
-span.s5 {color: #bf0000}
+span.s3 {color: #1024b0}
+span.s4 {color: #0910ba}
+span.s5 {color: #a81914}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -45,21 +43,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
-<p class="p7">x = {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain, v;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s4">PlayBuf</span>.ar(1, c, <span class="s4">BufRateScale</span>.kr(c), loop: 1);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(1024), in);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = chain.pvcalc(b.numFrames, {<span class="s4">|mags, phases|</span></p>
-<p class="p9">//////// Try uncommenting each of these lines in turn and re-running the synth:</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[mags * {1.5.rand}.dup(mags.size), phases + {pi.rand}.dup(phases.size)]; <span class="s5">// Arbitrary filter, arbitrary phase shift</span></p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags.reverse, phases.reverse]; // Upside-down!</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags.differentiate, phases.differentiate]; // Differentiate along frequency axis</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags[30..] ++ mags[..30], phases[30..] ++ phases[..30]]; // ".rotate" doesn't work directly, but this is equivalent</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}, frombin: 0, tobin: 250, zeroothers: 0);</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, 0.5 * <span class="s4">IFFT</span>(chain).dup);</p>
-<p class="p7">}.play(s);</p>
+<p class="p4">x = {</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain, v;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s4">PlayBuf</span>.ar(1, c, <span class="s4">BufRateScale</span>.kr(c), loop: 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(1024), in);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = chain.pvcalc(1024, {<span class="s4">|mags, phases|</span></p>
+<p class="p7">//////// Try uncommenting each of these lines in turn and re-running the synth:</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[mags * {1.5.rand}.dup(mags.size), phases + {pi.rand}.dup(phases.size)]; <span class="s5">// Arbitrary filter, arbitrary phase shift</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags.reverse, phases.reverse]; // Upside-down!</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags.differentiate, phases.differentiate]; // Differentiate along frequency axis</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//[mags[30..] ++ mags[..30], phases[30..] ++ phases[..30]]; // ".rotate" doesn't work directly, but this is equivalent</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}, frombin: 0, tobin: 250, zeroothers: 0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, 0.5 * <span class="s4">IFFT</span>(chain).dup);</p>
+<p class="p4">}.play(s);</p>
 <p class="p4">)</p>
 <p class="p4">x.free;</p>
 </body>
