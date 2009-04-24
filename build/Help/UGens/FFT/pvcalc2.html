@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.43">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,12 +13,10 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-span.s1 {color: #002bf0}
+span.s1 {color: #1630ea}
 span.s2 {color: #000000}
-span.s3 {color: #0020b4}
-span.s4 {color: #0000bf}
+span.s3 {color: #1024b0}
+span.s4 {color: #0910ba}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -41,30 +39,30 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
-<p class="p7">x = {</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> fftsize = 1024;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain, in2, chain2, out;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s4">PlayBuf</span>.ar(1, c, <span class="s4">BufRateScale</span>.kr(c), loop: 1);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(fftsize), in);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>// in2 = <span class="s4">PlayBuf</span>.ar(1, e, <span class="s4">BufRateScale</span>.kr(e), loop: 1);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>// JMcC babbling brook</p>
-<p class="p7"><span class="Apple-tab-span">	</span>in2 = <span class="s2">({</span></p>
+<p class="p4">x = {</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> fftsize = 1024;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">var</span> in, chain, in2, chain2, out;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s4">PlayBuf</span>.ar(1, c, <span class="s4">BufRateScale</span>.kr(c), loop: 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(fftsize), in);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>// in2 = <span class="s4">PlayBuf</span>.ar(1, e, <span class="s4">BufRateScale</span>.kr(e), loop: 1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>// JMcC babbling brook</p>
+<p class="p4"><span class="Apple-tab-span">	</span>in2 = ({</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">RHPF</span>.ar(<span class="s4">OnePole</span>.ar(<span class="s4">BrownNoise</span>.ar, 0.99), <span class="s4">LPF</span>.ar(<span class="s4">BrownNoise</span>.ar, 14)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* 400 + 500, 0.03, 0.003)}!2)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ ({<span class="s4">RHPF</span>.ar(<span class="s4">OnePole</span>.ar(<span class="s4">BrownNoise</span>.ar, 0.99), <span class="s4">LPF</span>.ar(<span class="s4">BrownNoise</span>.ar, 20)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* 800 + 1000, 0.03, 0.005)}!2</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* 4;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain2 = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(fftsize), in2);</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>chain = chain.pvcalc2(chain2, b.numFrames, {<span class="s4">|mags, phases, mags2, phases2|</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[mags * mags2 / 10, phases2 + phases]</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}, frombin: 0, tobin: 125, zeroothers: 0);</p>
-<p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>out = <span class="s4">IFFT</span>(chain);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, 0.5 * out.dup);</p>
-<p class="p7">}.play(s);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain2 = <span class="s4">FFT</span>(<span class="s4">LocalBuf</span>(fftsize), in2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>chain = chain.pvcalc2(chain2, fftsize, {<span class="s4">|mags, phases, mags2, phases2|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[mags * mags2 / 10, phases2 + phases]</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}, frombin: 0, tobin: 125, zeroothers: 0);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>out = <span class="s4">IFFT</span>(chain);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(0, 0.5 * out.dup);</p>
+<p class="p4">}.play(s);</p>
 <p class="p4">)</p>
 <p class="p4">x.free;</p>
 </body>
