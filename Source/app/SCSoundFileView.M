@@ -613,7 +613,7 @@ void SCSoundFileView::draw(SCRect inDamage)
 	
 	if(!mDrawsWaveForm) goto restore;
 	// draw grid.
-	if(mGridOn){
+	if(mGridOn && (mGridResolution > 0.0)){
 		float gridsize =  ((mGridResolution * mSndBuf.samplerate) / ( mResampleFactor * mZoom.x));
 		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);	
 		//float xgridpos =  mBounds.x + 1.;

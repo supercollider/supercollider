@@ -1601,7 +1601,7 @@ SCEnvelopeView : SCView {
 	var <>size ;
 	var <editable = true;
 	var <curves = \linear;
-	var gridOn, gridColor, grid;
+	var <gridOn, <gridColor, <grid;
 	
 	init{arg argParent, argBounds;
 		super.init(argParent, argBounds);
