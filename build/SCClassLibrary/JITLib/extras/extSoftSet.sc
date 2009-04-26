@@ -6,7 +6,10 @@
 		var spec, newNormVal, oldNormVal;
 		
 		spec = param.asSpec;
-		oldNormVal = spec.unmap(this.nodeMap.get(param).value ? 0);
+		oldNormVal = spec.unmap(
+			this.nodeMap.get(param).value 
+			?? { this.getDefaultVal(param) ? 0 }
+		);
 		
 		if (mapped) { 
 			newNormVal = spec.unmap(val);
@@ -30,6 +33,15 @@
 		//	"too far off.".postln;
 			^false
 		}
+	}
+	
+	getDefaultVal { |key| 
+		this.objects.do { |obj| 
+			obj.controlNames.do { |ctlname|
+				if (ctlname.name == key) { ^ctlname.defaultValue } 
+			}
+		};
+		^nil
 	}
 		// val and lastVal are assumed to be mapped with amp.asSpec. 
 		
