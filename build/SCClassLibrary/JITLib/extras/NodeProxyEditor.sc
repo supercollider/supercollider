@@ -9,10 +9,8 @@
 	var 	<tooManyKeys = false, <keysRotation = 0; 	
 
 	*initClass { 
-		StartUp.add({ 
-			Spec.add(\amp4, [0, 4, \amp]);
-			Spec.add(\fade, [0, 100, \amp]); 
-		}); 
+		Spec.add(\ampx4, [0, 4, \amp]);
+		Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]); 
 	}
 		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
 		monitor=true, sinks=true, morph=false; 
@@ -158,7 +156,7 @@
 					.action_({ proxy !? {  proxy.end } }) 
 			},
 			
-			fade: 	{ var nb = EZNumber(zone, 60@20, \fade, \fade, 
+			fade: 	{ var nb = EZNumber(zone, 60@20, \fade, \fadePx, 
 								{ |num| proxy.fadeTime_(num.value) }, 
 								try { proxy.fadeTime } ? 0.02, 
 								labelWidth: 24, 
