@@ -46,11 +46,31 @@ if [ $package_type == "source" ]; then
         cp -Rp optional SuperCollider-Source/optional_installs
         cp OPTIONALS_README_SOURCE.txt SuperCollider-Source/optional_installs/README.txt
         filename="SuperCollider-$version-Source-With-Extras.tar.gz"
+        filenamelinux="SuperCollider-$version-Source-With-Extras-linux.tar.gz"
     else
         filename="SuperCollider-$version-Source.tar.gz"
+        filenamelinux="SuperCollider-$version-Source-linux.tar.gz"
     fi
+        
+    # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
+    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" > LinuxExclusions.txt
+	echo 'SuperCollider-Source/SuperColliderAU
+SuperCollider-Source/Psycollider
+SuperCollider-Source/Packager
+SuperCollider-Source/Resources
+SuperCollider-Source/Intermediate Build Files
+SuperCollider-Source/README OS X
+SuperCollider-Source/README WINDOWS
+SuperCollider-Source/libsndfile
+SuperCollider-Source/curl
+SuperCollider-Source/Standalone Resources
+SuperCollider-Source/clean-compile.sh
+SuperCollider-Source/compile.sh
+SuperCollider-Source/Headers/app
+SuperCollider-Source/Source/app' >> LinuxExclusions.txt
     
     tar cfz "$filename" SuperCollider-Source
+    tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
     rm -rf SuperCollider-Source
     exit
 else
