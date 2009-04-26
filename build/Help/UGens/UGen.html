@@ -122,17 +122,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4">Wraps the receiver in a <a href="Filters/Wrap.html"><span class="s4">Wrap</span></a><b> </b>UGen, wrapping its output at <b>lo</b> and <b>hi</b>.</p>
 <p class="p2"><br></p>
-<p class="p4"><b>lag(lagTime)</b></p>
+<p class="p4"><b>lag(lagTime,t2)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Wraps the receiver in a <a href="Filters/Lag.html"><span class="s4">Lag</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p4">Wraps the receiver in a <a href="Filters/Lag.html"><span class="s4">Lag</span></a><b> </b>UGen, smoothing it's output by lagTime. If a second argument is given, it wraps it in a <a href="Filters/LagUD.html"><span class="s4">LagUD UGen</span></p>
 <p class="p2"><br></p>
-<p class="p4"><b>lag2(lagTime)</b></p>
+<p class="p4"><b>lag2(lagTime,t2)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Wraps the receiver in a <a href="Filters/Lag2.html"><span class="s4">Lag2</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p4">Wraps the receiver in a <a href="Filters/Lag2.html"><span class="s4">Lag2</span></a><b> </b>UGen, smoothing it's output by lagTime. If a second argument is given, it wraps it in a <a href="Filters/Lag2UD.html"><span class="s4">Lag2UD UGen</span></p>
 <p class="p2"><br></p>
-<p class="p4"><b>lag3(lagTime)</b></p>
+<p class="p4"><b>lag3(lagTime,t2)</b></p>
 <p class="p2"><br></p>
-<p class="p4">Wraps the receiver in a <a href="Filters/Lag3.html"><span class="s4">Lag3</span></a><b> </b>UGen, smoothing it's output by lagTime.</p>
+<p class="p4">Wraps the receiver in a <a href="Filters/Lag3.html"><span class="s4">Lag3</span></a><b> </b>UGen, smoothing it's output by lagTime. If a second argument is given, it wraps it in a <a href="Filters/Lag3UD.html"><span class="s4">Lag3UD UGen</span></p>
+<p class="p2"><br></p>
+<p class="p4"><b>lagud(lagtimeU,lagtimeD)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Wraps the receiver in a <a href="Filters/LagUD.html"><span class="s4">LagUD</span></a><b> </b>UGen, smoothing it's output by lagtimeU and lagtimeD.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>lag2ud(lagtimeU,lagtimeD)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Wraps the receiver in a <a href="Filters/Lag2UD.html"><span class="s4">Lag2UD</span></a><b> </b>UGen, smoothing it's output by lagtimeU and lagtimeD.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>lag3ud(lagtimeU,lagtimeD)</b></p>
+<p class="p2"><br></p>
+<p class="p4">Wraps the receiver in a <a href="Filters/Lag3UD.html"><span class="s4">Lag3UD</span></a><b> </b>UGen, smoothing it's output by lagtimeU and lagtimeD.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>degreeToKey(scale, stepsPerOctave)</b></p>
 <p class="p2"><br></p>
