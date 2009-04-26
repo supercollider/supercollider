@@ -13,7 +13,11 @@ fi
 
 version=`date "+%Y-%m-%d"`
 include_optionals=false
-package_type="osx"
+if [ `uname` = 'Darwin' ]; then 
+	package_type="osx"
+else
+	package_type="source"
+fi
 
 while getopts ":v:os" Option
 do
@@ -56,7 +60,6 @@ if [ $package_type == "source" ]; then
     find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/Psycollider
-SuperCollider-Source/Packager
 SuperCollider-Source/Resources
 SuperCollider-Source/Intermediate Build Files
 SuperCollider-Source/README OS X
