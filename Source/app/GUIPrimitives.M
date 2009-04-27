@@ -3352,6 +3352,11 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c0= g->sp - 1; //	color 1
 	PyrSlot *c1= g->sp; //	color 2
 	
+	if (!(isKindOfSlot(a, s_point->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(c0, s_color->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(c1, s_color->u.classobj))) return errWrongType;
+	
 	CGFunctionRef gradFunc = CreateGradientFunctionRef(); // we need to create a new function ref since Quartz cache it
 	if(!gradFunc) {	
 		post("Error: Failed creating gradient function !\n");
@@ -3361,7 +3366,6 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) 
 		return errFailed;
-	
 	
 	err = slotColorVal(c0, &(gGradientInfo.color0));
 	if( err != errNone )
@@ -3386,9 +3390,12 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 		gradFunc, true, true
 	);
 	
+	CGContextSaveGState((CGContextRef)[gctx graphicsPort]);
+	CGContextClip((CGContextRef)[gctx graphicsPort]);
 	CGContextDrawShading(
 		(CGContextRef)[gctx graphicsPort], shadingRef
 	);
+	CGContextRestoreGState((CGContextRef)[gctx graphicsPort]);
 	
 	CGColorSpaceRelease(colorSpace);
 	CGShadingRelease(shadingRef);
@@ -3413,6 +3420,12 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c0= g->sp - 1; //	color 1
 	PyrSlot *c1= g->sp; //	color 2
 	
+	
+	if (!(isKindOfSlot(a, s_point->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(c0, s_color->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(c1, s_color->u.classobj))) return errWrongType;
+	
 	CGFunctionRef gradFunc = CreateGradientFunctionRef();
 	if(!gradFunc) {	
 		NSLog(@"Error: prPen_DrawRadialGradient Failed creating gradient function !\n");
@@ -3422,7 +3435,6 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) 
 		return errFailed;
-	
 	
 	err = slotColorVal(c0, &(gGradientInfo.color0));
 	if( err != errNone )
@@ -3456,9 +3468,12 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 		gradFunc, true, true
 	);
 	
+	CGContextSaveGState( (CGContextRef)[gctx graphicsPort] );
+	CGContextClip( (CGContextRef)[gctx graphicsPort] );
 	CGContextDrawShading(
 		(CGContextRef)[gctx graphicsPort], shadingRef
 	);
+	CGContextRestoreGState( (CGContextRef)[gctx graphicsPort] );
 	
 	CGColorSpaceRelease(colorSpace);
 	CGShadingRelease(shadingRef);

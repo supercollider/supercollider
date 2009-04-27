@@ -280,17 +280,11 @@ classvar fnt, fillColor, strokeColor;
 	}
 	
 	*fillAxialGradient {arg startPoint, endPoint, color0, color1;
-		Pen.push;
-		this.clip;
 		this.prFillAxialGradient(startPoint, endPoint, color0, color1);
-		Pen.pop;
 	}
 	
 	*fillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
-		Pen.push;
-		this.clip;
 		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1);
-		Pen.pop;
 	}
 	
 	*prFillAxialGradient {arg startPoint, endPoint, color0, color1;
