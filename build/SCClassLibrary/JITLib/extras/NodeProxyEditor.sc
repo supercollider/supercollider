@@ -9,8 +9,10 @@
 	var 	<tooManyKeys = false, <keysRotation = 0; 	
 
 	*initClass { 
-		Spec.add(\ampx4, [0, 4, \amp]);
-		Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]); 
+		StartUp.add{
+			Spec.add(\ampx4, [0, 4, \amp]);
+			Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]); 
+		};
 	}
 		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
 		monitor=true, sinks=true, morph=false; 
