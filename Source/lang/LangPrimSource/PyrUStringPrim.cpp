@@ -37,6 +37,7 @@ typedef struct URegularExpression URegularExpression;
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "GC.h"
+#include <cstring>
 
 #define MAXREGEXFIND 256;
 
