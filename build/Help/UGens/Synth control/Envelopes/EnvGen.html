@@ -94,7 +94,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><b>Changing an Env while playing</b></p>
 <p class="p4"><br></p>
 <p class="p8"><span class="s12"><span class="Apple-tab-span">	</span></span>(</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s8">SynthDef</span>(<span class="s9">\env_help</span>, { <span class="s8">arg</span> i_outbus=0;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s8">SynthDef</span>(<span class="s9">\env</span>, { <span class="s8">arg</span> i_outbus=0;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">var</span> env, envctl;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// make a dummy 8 segment envelope</p>
@@ -108,7 +108,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>(</p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s8">SynthDef</span><span class="s3">(</span>\env_help<span class="s3">, {</span></p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s8">SynthDef</span><span class="s3">(</span>\sine<span class="s3">, {</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(0, <span class="s8">SinOsc</span>.ar(<span class="s8">In</span>.kr(0), 0, 0.2));</p>
 <p class="p8"><span class="Apple-tab-span">	</span>}).send(s);</p>
 <p class="p8"><span class="Apple-tab-span">	</span>)</p>
