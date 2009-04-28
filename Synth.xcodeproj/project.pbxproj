@@ -7,14 +7,25 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
+		DCB51FA20FA6F59A00C7FD87 /* AllExceptAU */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = DCB51FA90FA6F5D200C7FD87 /* Build configuration list for PBXAggregateTarget "AllExceptAU" */;
+			buildPhases = (
+			);
+			dependencies = (
+				DCB51FA40FA6F5AA00C7FD87 /* PBXTargetDependency */,
+				DCB51FA60FA6F5B300C7FD87 /* PBXTargetDependency */,
+			);
+			name = AllExceptAU;
+			productName = AllExceptAU;
+		};
 		F5B7410802E9534D01CA2799 /* All */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 88331E26090AB77300A4A7E4 /* Build configuration list for PBXAggregateTarget "All" */;
 			buildPhases = (
 			);
 			dependencies = (
-				942F97150B0338B400E00399 /* PBXTargetDependency */,
-				94F5FC2A0C1E6E20005CDF9F /* PBXTargetDependency */,
+				DCB51FA80FA6F5C400C7FD87 /* PBXTargetDependency */,
 				D5E45D880F22317E009BCEEA /* PBXTargetDependency */,
 			);
 			name = All;
@@ -297,26 +308,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		942F97140B0338B400E00399 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 942F96530B0337D600E00399;
-			remoteInfo = scsynth;
-		};
-		94F5FC290C1E6E20005CDF9F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
-			remoteInfo = libscsynth;
-		};
 		D5E45D870F22317E009BCEEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D55DEB5A0EF32A2E00968B95;
 			remoteInfo = SuperColliderAU;
+		};
+		DCB51FA30FA6F5AA00C7FD87 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 942F96530B0337D600E00399 /* scsynth */;
+			remoteInfo = scsynth;
+		};
+		DCB51FA50FA6F5B300C7FD87 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteInfo = libscsynth;
+		};
+		DCB51FA70FA6F5C400C7FD87 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCB51FA20FA6F59A00C7FD87 /* AllExceptAU */;
+			remoteInfo = AllExceptAU;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -462,10 +480,10 @@
 		D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperColliderAUVersion.h; sourceTree = "<group>"; };
 		D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperColliderAU.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55DEBD80EF32CE300968B95 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
-		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = serverConfig.plist; sourceTree = "<group>"; };
-		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
+		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
+		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serverConfig.plist; sourceTree = "<group>"; };
+		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = version.plist; sourceTree = "<group>"; };
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
@@ -1027,6 +1045,7 @@
 				942F96530B0337D600E00399 /* scsynth */,
 				94F5FAD00C1E6B95005CDF9F /* libscsynth */,
 				D55DEB5A0EF32A2E00968B95 /* SuperColliderAU */,
+				DCB51FA20FA6F59A00C7FD87 /* AllExceptAU */,
 			);
 		};
 /* End PBXProject section */
@@ -1067,7 +1086,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "mkdir -p $BUILD_DIR/SuperColliderAU.component/Contents/Resources/plugins\ncp  $BUILD_DIR/plugins/*.scx $BUILD_DIR/SuperColliderAU.component/Contents/Resources/plugins\nmkdir -p $BUILD_DIR/SuperColliderAU.component/Contents/Resources/synthdefs";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1217,20 +1235,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		942F97150B0338B400E00399 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 942F96530B0337D600E00399 /* scsynth */;
-			targetProxy = 942F97140B0338B400E00399 /* PBXContainerItemProxy */;
-		};
-		94F5FC2A0C1E6E20005CDF9F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
-			targetProxy = 94F5FC290C1E6E20005CDF9F /* PBXContainerItemProxy */;
-		};
 		D5E45D880F22317E009BCEEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D55DEB5A0EF32A2E00968B95 /* SuperColliderAU */;
 			targetProxy = D5E45D870F22317E009BCEEA /* PBXContainerItemProxy */;
+		};
+		DCB51FA40FA6F5AA00C7FD87 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 942F96530B0337D600E00399 /* scsynth */;
+			targetProxy = DCB51FA30FA6F5AA00C7FD87 /* PBXContainerItemProxy */;
+		};
+		DCB51FA60FA6F5B300C7FD87 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			targetProxy = DCB51FA50FA6F5B300C7FD87 /* PBXContainerItemProxy */;
+		};
+		DCB51FA80FA6F5C400C7FD87 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCB51FA20FA6F59A00C7FD87 /* AllExceptAU */;
+			targetProxy = DCB51FA70FA6F5C400C7FD87 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1475,6 +1498,28 @@
 			};
 			name = Deployment;
 		};
+		DCB51FAA0FA6F5D200C7FD87 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = AllExceptAU;
+			};
+			name = Development;
+		};
+		DCB51FAB0FA6F5D200C7FD87 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				PRODUCT_NAME = AllExceptAU;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1519,6 +1564,15 @@
 			buildConfigurations = (
 				D55DEB5E0EF32A2E00968B95 /* Development */,
 				D55DEB5F0EF32A2E00968B95 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		DCB51FA90FA6F5D200C7FD87 /* Build configuration list for PBXAggregateTarget "AllExceptAU" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCB51FAA0FA6F5D200C7FD87 /* Development */,
+				DCB51FAB0FA6F5D200C7FD87 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
