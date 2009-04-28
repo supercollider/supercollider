@@ -9,7 +9,7 @@ PfadeIn : FilterPattern {
 			stream = pattern.asStream;
 			
 		
-			if(holdTime > 0.0) { Event.silent(holdTime).yield };
+			if(holdTime > 0.0) { Event.silent(holdTime, inval).yield };
 			loop {
 				outval = stream.next(inval);
 				if(outval.isNil) { ^nil.yield };
