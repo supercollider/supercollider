@@ -14,7 +14,7 @@ fi
 
 # scsynth
 echo "Building scsynth..."
-xcodebuild -project Synth.xcodeproj -target "All" -configuration "Deployment" $* build || exit
+xcodebuild -project Synth.xcodeproj -target "AllExceptAU" -configuration "Deployment" $* build || exit
 
 # plugins
 echo "Building plugins..."
@@ -23,5 +23,9 @@ xcodebuild -project Plugins.xcodeproj -target "All" -configuration "Deployment" 
 #sclang
 echo "Building sclang..."
 xcodebuild -project Language.xcodeproj -target "All" -configuration "Deployment" $* build || exit
+
+# scau
+echo "Building SuperColliderAU..."
+xcodebuild -project Synth.xcodeproj -target "SuperColliderAU" -configuration "Deployment" $* build || exit
 
 echo "Done."
