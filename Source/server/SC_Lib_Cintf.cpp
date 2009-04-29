@@ -273,13 +273,15 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		}
 		return false;
 	}
-
+	
+	int firstCharOffset = strlen(dirname)+1;
+	
 	for (;;) {
 		char diritem[MAXPATHLEN];
 		bool skipItem = true;
 		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
 		if (!validItem) break;
-		if (skipItem) continue;
+		if (skipItem || (*(diritem+firstCharOffset) == '.')) continue;  // skip files+folders whose first char is a dot
 		
         if (sc_DirectoryExists(diritem)) {
 			success = PlugIn_LoadDir(diritem, reportError);
