@@ -45,20 +45,12 @@ Node {
 	}
 	
 	map { arg ... args;
-		var krVals, arVals;
-		krVals = List.new;
-		arVals = List.new;
-		args.pairsDo({ arg control, bus; 
-			if(bus.rate == \control, {
-				krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
-			}, {
-				arVals.addAll([control.asControlInput, bus.index, bus.numChannels]);
-			});
-		});
-		server.makeBundle(nil, {
-			if(krVals.size > 0, { server.sendMsg("/n_mapn", nodeID, *krVals) });
-			if(arVals.size > 0, { server.sendMsg("/n_mapan",nodeID, *arVals) });
-		})
+		var	bundle = this.mapMsg(*args);
+		if(bundle[0].isString) {
+			server.sendBundle(nil, bundle);
+		} {
+			server.sendBundle(nil, *bundle);
+		};
 	}
 	
 	mapMsg { arg ... args;
@@ -66,12 +58,16 @@ Node {
 		krVals = List.new;
 		arVals = List.new;
 		result = Array.new(2);
-		args.pairsDo({ arg control, bus; 
-		if(bus.rate == \control, {
-				krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
-			}, {
-				arVals.addAll([control.asControlInput, bus.index, bus.numChannels]);
-			});
+		args.pairsDo({ arg control, bus;
+			bus = bus.asBus;
+			switch(bus.rate)
+				{ \control } {
+					krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+				}
+				{ \audio } {
+					arVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+				};
+				// no default case, ignore others
 		});
 		if(krVals.size > 0, { result = result.add(["/n_mapn", nodeID] ++ krVals) });
 		if(arVals.size > 0, { result = result.add(["/n_mapan",nodeID] ++ arVals) });
