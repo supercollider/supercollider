@@ -1062,7 +1062,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 	int err, size;
 	
 	if (IsInt(a) && (IsInt(b) || IsNil(b)) && IsInt(c)) {
-		int first, second, last, step, val;
+		int first, second, last, step;
 		first = a->ui;
 		last = c->ui;
 		second = IsInt(b) ? b->ui : (first < last ? first + 1 : first - 1);
@@ -1073,11 +1073,16 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		else
 			size = ((last - first) / step) + 1;
 
+		if(size<1){
+			printf("prSimpleNumberSeries: array size exceeds integer limits\n");
+			return errFailed;
+		}
+	
 		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
 		obj->size = size;
 		PyrSlot *slots = obj->slots;
-		val = first;
 		if(step==1){
+			// Faster iteration for common case
 			if(first==0){
 				for (int i=0; i<size; ++i) {
 					SetInt(slots+i, i);
@@ -1088,6 +1093,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 				}
 			}
 		}else{
+			int val = first;
 			for (int i=0; i<size; ++i) {
 				SetInt(slots+i, val);
 				val += step;
@@ -1095,7 +1101,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		}
 		SetObject(a, obj);
 	} else {
-		double first, second, last, step, val;
+		double first, second, last, step;
 		err = slotDoubleVal(a, &first);
 		if (err) return err;
 		err = slotDoubleVal(c, &last);
@@ -1108,16 +1114,21 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		
 		step = second - first;
 		size = (int)floor((last - first) / step + 0.001) + 1;
+		if(size<1){
+			printf("prSimpleNumberSeries: array size exceeds integer limits\n");
+			return errFailed;
+		}
 		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
 		obj->size = size;
 		PyrSlot *slots = obj->slots;
-		val = first;
 		if(first==0. && step==1.){
-			for (int i=0; i<size; ++i) {
+			// Faster iteration for common case
+			for (long i=0; i<size; ++i) {
 				SetFloat(slots+i, i);
 			}
 		}else{
-			for (int i=0; i<size; ++i) {
+			double val = first;
+			for (long i=0; i<size; ++i) {
 				val = first + step * i;
 				SetFloat(slots+i, val);
 			}
@@ -1125,13 +1136,6 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		SetObject(a, obj);
 	}
 	return errNone;
-/*	series { arg second, last;
-		var step, size;
-		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
-		step = second - this;
-		size = floor((last - this) / step).asInteger + 1;
-		^Array.series(size, this, step)
-	}*/
 
 }
 
