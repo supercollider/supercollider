@@ -1077,9 +1077,21 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		obj->size = size;
 		PyrSlot *slots = obj->slots;
 		val = first;
-		for (int i=0; i<size; ++i) {
-			SetInt(slots+i, val);
-			val += step;
+		if(step==1){
+			if(first==0){
+				for (int i=0; i<size; ++i) {
+					SetInt(slots+i, i);
+				}
+			}else{
+				for (int i=0; i<size; ++i) {
+					SetInt(slots+i, first++);
+				}
+			}
+		}else{
+			for (int i=0; i<size; ++i) {
+				SetInt(slots+i, val);
+				val += step;
+			}
 		}
 		SetObject(a, obj);
 	} else {
@@ -1100,9 +1112,15 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		obj->size = size;
 		PyrSlot *slots = obj->slots;
 		val = first;
-		for (int i=0; i<size; ++i) {
-			val = first + step * i;
-			SetFloat(slots+i, val);
+		if(first==0. && step==1.){
+			for (int i=0; i<size; ++i) {
+				SetFloat(slots+i, i);
+			}
+		}else{
+			for (int i=0; i<size; ++i) {
+				val = first + step * i;
+				SetFloat(slots+i, val);
+			}
 		}
 		SetObject(a, obj);
 	}
