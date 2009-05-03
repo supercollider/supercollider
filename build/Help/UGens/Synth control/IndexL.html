@@ -5,19 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #000000; min-height: 16.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #001bb9}
-span.s4 {color: #2c7014}
+span.s3 {color: #0000bf}
+span.s4 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -32,12 +33,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>bufnum</b> - index of the buffer</p>
 <p class="p1"><b>in</b> - the input signal.</p>
-<p class="p3"><br></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2">See also: <a href="IndexInBetween.html">IndexInBetween</a></span></p>
 <p class="p4"><br></p>
 <p class="p5">// indexing into a fixed table</p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s2">.ar(</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span>SinOsc.ar(</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IndexL</span>.kr(<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LocalBuf</span>.newFrom([ 200, 300, 400, 500, 600, 800 ].scramble),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LFSaw</span>.kr(2.0).range(0, 7)</p>
@@ -51,7 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// with mouse control</p>
 <p class="p6">(</p>
 <p class="p6">{</p>
-<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>SinOsc<span class="s2">.ar(</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span>SinOsc.ar(</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IndexL</span>.kr(<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">LocalBuf</span>.newFrom([ 200, 300, 400, 500, 600, 800 ].scramble),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">MouseX</span>.kr(0, 7)</p>
@@ -61,7 +63,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p6">}.play;</p>
 <p class="p6">)</p>
-<p class="p3"><br></p>
+<p class="p8"><br></p>
 <p class="p6">(</p>
 <p class="p5">// indexing into a changeable table</p>
 <p class="p6">s = <span class="s3">Server</span>.local;</p>
@@ -71,7 +73,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// alloc and set the values</p>
 <p class="p6">s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ).postln );</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">\help</span>_<span class="s3">index</span>, { <span class="s3">arg</span> out = 0, i_bufnum = 0;<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">\help_index</span>, { <span class="s3">arg</span> out = 0, i_bufnum = 0;<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IndexL</span>.kr(<span class="Apple-tab-span">	</span></p>
@@ -89,7 +91,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">\help</span>_<span class="s3">index</span>, { <span class="s3">arg</span> out=0,i_bufnum=0;<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s3">SynthDef</span>(<span class="s4">\help_index</span>, { <span class="s3">arg</span> out=0,i_bufnum=0;<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SinOsc</span>.ar(</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">IndexL</span>.kr(<span class="Apple-tab-span">	</span></p>
