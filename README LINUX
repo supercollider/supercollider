@@ -144,13 +144,24 @@ built files.
 Building a Debian package
 ------------------------------------------------------------------------
 
-Execute these commands to build a Debian package:
+In our SVN we have debian packaging rules. These were designed on Ubuntu 
+but we believe they should work on most common debian systems - please 
+let us know if you have any issues with this way of building:
 
-	$ scons PREFIX=/usr DEVELOPMENT=yes LID=yes
-	$ scons debian
+  cd SuperCollider3    # (or wherever your SC source is)
+  svn co https://supercollider.svn.sourceforge.net/svnroot/supercollider/packages/ubuntu/ debian
+  debuild
 
-The .deb package will be put in the debian folder, and can then be 
-installed just like any other Debian package.
+Eventually, some .deb packages will be put in the parent folder, and can 
+then be installed just like any other Debian package. For example:
+
+  dpkg -i ../supercollider*.deb
+
+(Note: the packages supercollider-scel*.deb, supercollider-scvim*.deb, 
+supercollider-sced*.deb, represent the different editor integrations:
+emacs, vim, gedit. You might not want to install all of those, but
+choose your preferred editor.)
+
 
 ------------------------------------------------------------------------
 running scsynth (standalone)
