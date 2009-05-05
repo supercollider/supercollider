@@ -128,7 +128,7 @@ SCLevelIndicator : SCView {
 					var meter;
 					i = i * 0.5;
 					meter = inmeters[i];
-					meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+					meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
 					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
 				}) }}.defer; 
 			}).add;
@@ -137,34 +137,40 @@ SCLevelIndicator : SCView {
 					var meter;
 					i = i * 0.5;
 					meter = outmeters[i];
-					meter.value = (val * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+					meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
 					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
 				}) }}.defer; 
 			}).add;
 			server.bind({
-			insynth = SynthDef(server.name ++ "InputLevels", {
-				var in, imp;
-				in = In.ar(NumOutputBuses.ir, server.options.numInputBusChannels);
-				imp = Impulse.ar(updateFreq);
-				SendReply.ar(imp, "/" ++ server.name ++ "InLevels", 
-					//[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-//						.flop.flat
-					// do the mean and sqrt clientside to save CPU
-					[RunningSum.ar(in.squared, numRMSSamps), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)].flop.flat
-				);
-			}).play(RootNode(server), nil, \addToHead);
-			
-			outsynth = SynthDef(server.name ++ "OutputLevels", {
-				var in, imp;
-				in = In.ar(0, server.options.numOutputBusChannels);
-				imp = Impulse.ar(updateFreq);
-				SendReply.ar(imp, "/" ++ server.name ++ "OutLevels", 
-//					[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-//						.flop.flat
-					// do the mean and sqrt clientside to save CPU
-					[RunningSum.ar(in.squared, numRMSSamps), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)].flop.flat
-				);
-			}).play(RootNode(server), nil, \addToTail);
+				insynth = SynthDef(server.name ++ "InputLevels", {
+					var in, imp;
+					in = In.ar(NumOutputBuses.ir, server.options.numInputBusChannels);
+					imp = Impulse.ar(updateFreq);
+					SendReply.ar(imp, "/" ++ server.name ++ "InLevels", 
+						//[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
+	//						.flop.flat
+						// do the mean and sqrt clientside to save CPU
+						[
+							RunningSum.ar(in.squared, numRMSSamps), 
+							Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
+						.flop.flat
+					);
+				}).play(RootNode(server), nil, \addToHead);
+				
+				outsynth = SynthDef(server.name ++ "OutputLevels", {
+					var in, imp;
+					in = In.ar(0, server.options.numOutputBusChannels);
+					imp = Impulse.ar(updateFreq);
+					SendReply.ar(imp, "/" ++ server.name ++ "OutLevels", 
+	//					[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
+	//						.flop.flat
+						// do the mean and sqrt clientside to save CPU
+						[
+							RunningSum.ar(in.squared, numRMSSamps), 
+							Peak.ar(in, Delay1.ar(imp)).lag(0, 3)
+						].flop.flat
+					);
+				}).play(RootNode(server), nil, \addToTail);
 			});
 		};
 		
