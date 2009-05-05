@@ -528,7 +528,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p1">The following methods must be called within an Window-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to Window-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.</p>
 <p class="p4"><br></p>
-<p class="p3"><span class="s2">See also: <a href="../GUI/SCWindow.html"><span class="s12">Window</span></a>, <a href="../GUI/SCUserView.html"><span class="s12">SCUserView</span></a>, <a href="../GUI/Color.html"><span class="s12">Color</span></a>, and <a href="../GUI/stubs/Pen.html"><span class="s12">Pen</span></a>.</span></p>
+<p class="p3"><span class="s2">See also: <a href="../GUI/Cocoa-GUI/SCWindow.html"><span class="s12">Window</span></a>, <a href="../GUI/Cocoa-GUI/SCUserView.html"><span class="s12">SCUserView</span></a>, <a href="../GUI/GUI-Tools/Color.html"><span class="s12">Color</span></a>, and <a href="../GUI/stubs/Pen.html"><span class="s12">Pen</span></a>.</span></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p18"><span class="s13"><b>Note:</b> for cross-platform GUIs, use </span><span class="s8">Pen</span>.stringAtPoint,<span class="s13"> </span><span class="s8">Pen</span>.stringInRect<span class="s13">, </span><span class="s8">Pen</span>.stringCenteredIn<span class="s13">, </span><span class="s8">Pen</span>.stringLeftJustIn<span class="s13">, </span><span class="s8">Pen</span>.stringRightJustIn<span class="s13"> instead.</span></p>
@@ -549,7 +549,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>drawAtPoint(point, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Draws the String at the given <a href="../Geometry/Point.html"><span class="s8">Point</span></a><b> </b>using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p1">Draws the String at the given <a href="../Geometry/Point.html"><span class="s8">Point</span></a><b> </b>using the <a href="../GUI/Main-GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/GUI-Tools/Color.html"><span class="s8">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s8">Window</span>.new.front;</p>
@@ -565,7 +565,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>drawInRect(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Main-GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/GUI-Tools/Color.html"><span class="s8">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s8">Window</span>.new.front;</p>
@@ -580,7 +580,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>drawCenteredIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Main-GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/GUI-Tools/Color.html"><span class="s8">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s8">Window</span>.new.front;</p>
@@ -599,7 +599,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>drawLeftJustIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Main-GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/GUI-Tools/Color.html"><span class="s8">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s8">Window</span>.new.front;</p>
@@ -618,7 +618,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p1"><b>drawRightJustIn(rect, font, color)</b></p>
 <p class="p4"><br></p>
-<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/Color.html"><span class="s8">Color</span></a> specified.</p>
+<p class="p1">Draws the String into the given <a href="../Geometry/Rect.html"><span class="s8">Rect</span></a> using the <a href="../GUI/Main-GUI/Font.html"><span class="s8">Font</span></a> and <a href="../GUI/GUI-Tools/Color.html"><span class="s8">Color</span></a> specified.</p>
 <p class="p4"><br></p>
 <p class="p5">(</p>
 <p class="p5">w = <span class="s8">Window</span>.new.front;</p>
