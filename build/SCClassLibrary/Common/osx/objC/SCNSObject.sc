@@ -74,6 +74,7 @@ SCNSObjectAbstract {
 		this.prSetActionForControl(out, actionName);
 		out.prSetClassName;
 		nsAction = out;
+		nsAction.object = this;
 		^out
 	}
 	setDelegate{
@@ -82,6 +83,7 @@ SCNSObjectAbstract {
 		this.prSetDelegate(out);
 		out.prSetClassName;
 		nsDelegate = out;
+		nsDelegate.object = this;
 		^out	
 	}
 
@@ -180,18 +182,19 @@ SCNSObjectAbstract {
 		_LoadUserPanel
 	}
 	
-	asArray {arg arrayType, requestedLength=nil;
+	asArray {arg arrayType;
+		var requestedLength;
+		requestedLength = this.invoke("length").asInteger;
 		if(this.isSubclassOf("NSData"), {
-			requestedLength = requestedLength ? this.invoke("length");
 			if(arrayType.isKindOf(String), {arrayType = arrayType.asSymbol});
 			if(arrayType.isKindOf(Symbol), {
 				arrayType = case 
-					{ arrayType == \string } { String.new(requestedLength) }
-					{ arrayType == \int8   } { Int8Array.new(requestedLength) }
-					{ arrayType == \int16  } { Int16Array.new(requestedLength) }
-					{ arrayType == \int32  } { Int32Array.new(requestedLength) }
-					{ arrayType == \double } { DoubleArray.new(requestedLength) }
-					{ arrayType == \float  } { FloatArray.new(requestedLength) };
+					{ arrayType == \string } { String.newClear(requestedLength) }
+					{ arrayType == \int8   } { Int8Array.newClear(requestedLength) }
+					{ arrayType == \int16  } { Int16Array.newClear(requestedLength >> 1) }
+					{ arrayType == \int32  } { Int32Array.newClear(requestedLength >> 2) }
+					{ arrayType == \double } { DoubleArray.newClear(requestedLength >> 3) }
+					{ arrayType == \float  } { FloatArray.newClear(requestedLength >> 2) };
 				^this.prAsArray(arrayType, requestedLength);
 			});
 			^nil;
@@ -227,7 +230,7 @@ SCNSObjectAbstract {
 
 //this is usually noy created directly. call SCNSObject-initAction instead.
 CocoaAction : SCNSObjectAbstract{
-	var <>action, notificationActions=nil, delegateActions=nil;
+	var <>action, notificationActions=nil, delegateActions=nil, <>object;
 	
 	doAction{|it|
 		action.value(this, it);
@@ -238,7 +241,7 @@ CocoaAction : SCNSObjectAbstract{
 		var func;
 		func = notificationActions.at(notif.asSymbol);
 		if(func.notNil, {
-			func.value(notif, nsNotification, obj);
+			func.value(notif, nsNotification, obj, this);
 		});
 	}
 	
