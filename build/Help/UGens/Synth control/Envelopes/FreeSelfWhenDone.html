@@ -30,7 +30,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>FreeSelfWhenDone.kr(src)</b></p>
 <p class="p4"><br></p>
-<p class="p3">Some UGens, such as PlayBuf, RecordBuf, Line, XLine, EnvGen, Linen, BufRd, BufWr and the Buffer delay UGens set a 'done' flag when they are finished playing. FreeSelfWhenDone will free the enclosing synth when this flag is set to true. Note that many of these UGens have doneActions, which are another way of accomplishing the same thing. See <a href="UGen-doneActions.html"><span class="s2">UGen-doneActions</span></a> for more detail. <b>N.B.</b> One must be careful when using binary operations on UGens with done flags, as these will return a <a href="../../../BinaryOps/BinaryOpUGen.html"><span class="s2">BinaryOpUGen</span></a>, and thus prevent the done flag from being accessible. See example below.</p>
+<p class="p3">Some UGens, such as PlayBuf, RecordBuf, Line, XLine, EnvGen, Linen, BufRd, BufWr and the Buffer delay UGens set a 'done' flag when they are finished playing. FreeSelfWhenDone will free the enclosing synth when this flag is set to true. Note that many of these UGens have doneActions, which are another way of accomplishing the same thing. See <a href="UGen-doneActions.html"><span class="s2">UGen-doneActions</span></a> for more detail. <b>N.B.</b> One must be careful when using binary operations on UGens with done flags, as these will return a <a href="../../../Algebraic/BinaryOpUGen.html"><span class="s2">BinaryOpUGen</span></a>, and thus prevent the done flag from being accessible. See example below.</p>
 <p class="p4"><span class="Apple-converted-space"> </span></p>
 <p class="p3"><b>src</b> - the UGen to check for done.</p>
 <p class="p4"><br></p>
