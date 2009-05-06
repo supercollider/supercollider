@@ -54,6 +54,7 @@ int			FinalizeSCImageObject(struct VMGlobals* g, struct PyrObject* object)
 		post("finalize scimage (%p), dataptr (%p)\n", object, scimage);
 		#endif
 		[scimage release];
+		SetNil(object->slots+0);
 	}
 	return errNone;
 }
@@ -69,6 +70,7 @@ int			FinalizeSCImageKernelObject(struct VMGlobals* g, struct PyrObject* object)
 		post("finalize scimagekernel (%p), dataptr (%p)\n", object, kernel);
 		#endif
 		[kernel release];
+		SetNil(object->slots+4);
 	}
 	return errNone;
 }
@@ -88,8 +90,7 @@ PyrObject*	newPyrSCImage(VMGlobals* g)
 
 inline NSString*		nsStringFromSlot(PyrSlot *slot)
 {
-	int len, err;
-	char	*cstr;
+	int len;
 	NSString *nsString;
 	
 	len = slotStrLen(slot); // check if Symbol or String
@@ -276,7 +277,9 @@ failure:
 		
 		return self;
 	}
+#if SCIMAGE_MAC_OS_10_5
 failure:
+#endif
 	[super dealloc];
 	return nil;
 }
@@ -295,7 +298,7 @@ failure:
 		int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for now
 		NSImageRep *irep;
 		NSEnumerator *e = [[image representations]objectEnumerator];
-		while( irep = [e nextObject] ) {
+		while( (irep = [e nextObject]) ) {
 			/* 
 			 do not check ratio - they should be always preserved - just take the max
 			 they should always be part of the same rep
@@ -397,7 +400,7 @@ failure:
 			int pixelsHigh=0, pixelsWide=0; // should be NSInteger in 10.5 - but stick with an <int> for 10.4
 			NSImageRep *irep;
 			NSEnumerator *e = [[nsimage representations]objectEnumerator];
-			while( irep = [e nextObject] ) {
+			while( (irep = [e nextObject]) ) {
 				/* 
 				do not check ratio - they should be always preserved - just take the max
 				they should always be part of the same rep
@@ -1560,7 +1563,7 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(ySlot, &y);
 	if(err) return err;
 
-	
+	[image setAccelerated:NO];
 	[image getPixel:pixelAsArray atX:x y:y];
 	//SetInt(receiver, ((pixelAsArray[0] << 24) | (pixelAsArray[1] << 16) | (pixelAsArray[2] << 8) | pixelAsArray[3]));
 	if( pixelAsArray[3] == 0 ) { // avoid EXC_ARITHMETIC
@@ -1607,6 +1610,8 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(ySlot, &y);
 	if(err) return err;
 	
+	[image setAccelerated:NO];
+	
 	pixelData[0] = COLOR_SCALE(PIXEL_RED(pixel), PIXEL_ALPHA(pixel));
 	pixelData[1] = COLOR_SCALE(PIXEL_GREEN(pixel), PIXEL_ALPHA(pixel));
 	pixelData[2] = COLOR_SCALE(PIXEL_BLUE(pixel), PIXEL_ALPHA(pixel));
@@ -1630,6 +1635,8 @@ int prSCImage_setColorAt(struct VMGlobals *g, int numArgsPushed)
 	SCImage *image = (SCImage *)receiver->uo->slots[0].ui;
 	if(!image)
 		return errNone;
+	
+	[image setAccelerated:NO];
 	
 	int x, y, err;
 	SCColor	color;
@@ -1675,6 +1682,8 @@ int prSCImage_getColorAt(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(ySlot, &y);
 	if(err) return err;
 	
+	[image setAccelerated:NO];
+	
 	nsColor = [image
 		colorAtX:x
 		y:y
@@ -1701,17 +1710,17 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot  *receiver	= g->sp - 1;
-	PyrSlot  *pixelSlot = g->sp;
-
+	PyrSlot  *receiver	= g->sp - 3;
+	PyrSlot  *pixelSlot = g->sp - 2;
+	PyrSlot	 *regionSlot= g->sp - 1;
 	PyrClass *pyrclass;
-
-	unsigned char		*bitmapData;
+	
 	uint32				*pixelsData;
 	NSBitmapImageRep	*bitmap;
 	SCImage				*image;
-	int					height, width, bytesLeft, bytesPerRow, y=0, x=0;
+	int					height, width, y=0, x=0, startIndex=0;
 	NSSize				size;
+	NSRect				region;
 	
 	image = (SCImage *)receiver->uo->slots[0].ui;
 	if(!image){
@@ -1726,51 +1735,43 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	
-	PyrInt32Array* allocatedPixelArray = (PyrInt32Array*)pixelSlot->uo;
-	if(allocatedPixelArray->size < ( (int)(size.width) * (int)(size.height) /** 4*/ )  ) {
-		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(size.width) * (int)(size.height) /** 4*/);
-		return errNone;
-	}
+	slotIntVal(g->sp, &startIndex);
+	if(startIndex < 0)
+		return errIndexOutOfRange;
 	
+	PyrInt32Array* allocatedPixelArray = (PyrInt32Array*)pixelSlot->uo;
 	
 	bitmap = [image bitmapRepresentation];
-	height = [bitmap pixelsHigh];
-	width = [bitmap pixelsWide]; 
-	pixelsData = (uint32*)allocatedPixelArray->i;
+	
+	if(IsNil(regionSlot)) {
+		region = NSIntegralRect(NSMakeRect(0.f, 0.f, [bitmap pixelsHigh], [bitmap pixelsWide]));
+	}else{
+		if(slotGetNSRect(regionSlot, &region) != errNone)
+			return errWrongType;
+		region = NSIntegralRect(region);
+		if( region.origin.x < 0 || region.origin.y < 0 || ((region.origin.x + region.size.width) > [bitmap pixelsWide]) || ((region.origin.y + region.size.height) > [bitmap pixelsHigh]) )
+			return errIndexOutOfRange;
+	}
+	
+	height = region.size.height;
+	width = region.size.width; 
+	pixelsData = (uint32*)allocatedPixelArray->i + startIndex;
 	unsigned int pixel[4]={0, 0, 0, 0};
 	
-	#if 0
-	bitmapData = [image bitmapData];
-	bytesPerRow = [bitmap bytesPerRow];
-	bytesLeft = sc_max(0,bytesPerRow - (width * 4)); // RGBA
-	#endif
+	if((allocatedPixelArray->size - startIndex) < ( height * width /** 4*/ )  ) {
+		post("Error: pixel array is not of good size ! should be %i bytes long\n", height * width /** 4*/);
+		return errIndexOutOfRange;
+	}
 	
 	[image lock];
 	unsigned char alpha;
-	for(y=0; y < height; y++) {
-		for(x=0; x < width; x++) {
+	for(y=(int)region.origin.y; y < height; y++) {
+		for(x=(int)region.origin.x; x < width; x++) {
 			
 			// most of the unscale routines may be not as precise as we need
 			// especially when dealing with CIImage <-> NSImage conversion...
 			// it should be better to use vImage framework directly !
 			
-			#if 0
-			alpha = bitmapData[3];
-			if(alpha > 0) { // care with divide by zero
-				SET_PIXEL_RED(*pixelsData, COLOR_UNSCALE(bitmapData[0], alpha));
-				SET_PIXEL_GREEN(*pixelsData, COLOR_UNSCALE(bitmapData[1], alpha));
-				SET_PIXEL_BLUE(*pixelsData, COLOR_UNSCALE(bitmapData[2], alpha));
-				SET_PIXEL_ALPHA(*pixelsData, COLOR_UNSCALE(alpha, alpha));
-			}else{
-				SET_PIXEL_RED(*pixelsData, bitmapData[0]);
-				SET_PIXEL_GREEN(*pixelsData, bitmapData[1]);
-				SET_PIXEL_BLUE(*pixelsData, bitmapData[2]);
-				SET_PIXEL_ALPHA(*pixelsData, alpha);
-			}
-			bitmapData += 4;
-			++pixelsData;
-			#else
-
 			[bitmap getPixel:pixel atX:x y:y];
 			if(alpha > 0) {
 				SET_PIXEL_RED  ( *pixelsData, COLOR_UNSCALE(pixel[0], pixel[3]) );
@@ -1784,8 +1785,6 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 				SET_PIXEL_ALPHA( *pixelsData, pixel[3] );
 			}
 			++pixelsData;
-			
-			#endif
 		}
 		//bitmapData += bytesLeft;
 	}
@@ -1799,20 +1798,23 @@ int prSCImage_updatePixels(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 	
-	PyrSlot *receiver	= g->sp - 1;
-	PyrSlot *pixelSlot = g->sp;
+	PyrSlot *receiver	= g->sp - 2;
+	PyrSlot *pixelSlot = g->sp - 1;
 	SCImage *image;
 	
 	NSBitmapImageRep *bitmap;
-	int width, height, bytesPerRow, bytesLeft, y=0, x=0;
+	int width, height, bytesPerRow, bytesLeft, startIndex=0, y=0, x=0;
 	unsigned char *bitmapData;
 	uint32 *pixelsData;
 	PyrInt32Array *pixels;
 	PyrClass *pyrclass;
 	
-	if(IsNil(pixelSlot)) {
+	if(IsNil(pixelSlot))
 		return errNone;
-	}
+	
+	slotIntVal(g->sp, &startIndex);
+	if(startIndex < 0)
+		return errIndexOutOfRange;
 	
 	image = (SCImage *)receiver->uo->slots[0].ui;
 	if(!image){
@@ -1838,12 +1840,12 @@ int prSCImage_updatePixels(struct VMGlobals *g, int numArgsPushed)
 	height		= [bitmap pixelsHigh];
 	bytesPerRow = [bitmap bytesPerRow];
 	bitmapData	= [bitmap bitmapData];
-	pixelsData	= (uint32*)pixels->i;
+	pixelsData	= (uint32*)pixels->i + startIndex;
 	bytesLeft	= bytesPerRow - (width*4);
 	
-	if(pixels->size < (int)(width*height /* *4 */)) {
-		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(width*height/**4*/));
-		return errNone;
+	if( (pixels->size - startIndex) < (int)(width*height /* *4 */)) {
+		post("Error: pixel array is not of good size ! should be %i bytes long from index: %i\n", (int)(width*height/**4*/), startIndex);
+		return errIndexOutOfRange;
 	}
 	
 	[image lock];
@@ -1872,22 +1874,25 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 	
-	PyrSlot *receiver	= g->sp - 2;
-	PyrSlot *pixelSlot = g->sp - 1;
-	PyrSlot *rectSlot = g->sp;
+	PyrSlot *receiver	= g->sp - 3;
+	PyrSlot *pixelSlot  = g->sp - 2;
+	PyrSlot *rectSlot   = g->sp - 1;
 	SCImage *image;
 	
 	NSBitmapImageRep *bitmap;
-	int width, height, bytesPerRow, bytesLeft, y=0, x=0, err;
+	int width, height, bytesPerRow, bytesLeft, y=0, x=0, startIndex=0, err;
 	unsigned char *bitmapData;
 	uint32 *pixelsData;
 	PyrInt32Array *pixels;
 	PyrClass *pyrclass;
 	NSRect rect;
 	
-	if(IsNil(pixelSlot)) {
+	if(IsNil(pixelSlot))
 		return errNone;
-	}
+	
+	slotIntVal(g->sp, &startIndex); // get the Array start index
+	if(startIndex < 0)
+		return errIndexOutOfRange;
 	
 	image = (SCImage *)receiver->uo->slots[0].ui;
 	if(!image){
@@ -1909,14 +1914,14 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 	bitmap = [image bitmapRepresentation];
 	if(!bitmap) {
 		NSLog(@"prSCImage_updatePixels failed retrieving valid NSBitmapImageRep...");
-		return errFailed;
+		return errIndexOutOfRange;
 	}
 	
 	width		= [bitmap pixelsWide]; // RGBA
 	height		= [bitmap pixelsHigh];
 	bytesPerRow = [bitmap bytesPerRow];
 	bitmapData	= [bitmap bitmapData];
-	pixelsData	= (uint32*)pixels->i;
+	pixelsData	= (uint32*)pixels->i + startIndex;
 	
 	// clipping
 	rect.origin.x = sc_max(rect.origin.x, 0); // negative idx not allowed
@@ -1936,8 +1941,8 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 		return errIndexOutOfRange;
 	
 	bytesLeft	= (bytesPerRow - (rect.size.width * 4));
-	if(pixels->size < (int)(rect.size.width * rect.size.height)) {
-		post("Error: pixel array is not of good size ! should be %i bytes long\n", (int)(rect.size.width * rect.size.height));
+	if( (pixels->size - startIndex) < (int)(rect.size.width * rect.size.height)) {
+		post("Error: pixel array is not of good size ! should be %i bytes long from index: %i\n", (int)(rect.size.width * rect.size.height), startIndex);
 		return errNone;
 	}
 	
@@ -2364,14 +2369,14 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 	PyrSymbol	*key; 
 	PyrSlot		*value;
 	id			nsvalue;
-	NSArray		*inputKeys;
+	//NSArray		*inputKeys;
 	NSString	*nskey;
 	Class		valueClass;
 	CIImage*	ciimage;
 	CIFilter*	ciFilter;
 	CGRect		origExtent = [scimage extent];
 	CGRect		destExtent;
-	CGPoint		delta;
+	//CGPoint		delta;
 	
 	numberOfFilters = filtersSlot->uo->size;
 	
@@ -2557,7 +2562,6 @@ int prSCImageFilter_Apply(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	}
 	
-	CIImage*	ciimage;
 	CIFilter*	ciFilter = [CIFilter filterWithName: nsStringFromSlot(filterNameSlot)];
 	if(!ciFilter)
 		return errFailed;
@@ -2907,7 +2911,6 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 		attrType == kCIAttributeTypeScalar || attrType == kCIAttributeTypeTime
 	)
 	{	
-		NSString *attrType;
 		if(minmax[0])
 			SetFloat(pyrArray->slots+0, [minmax[0] doubleValue]);
 		else
@@ -3025,7 +3028,7 @@ int prSCImageFilter_Attributes(struct VMGlobals *g, int numArgsPushed)
 	returnObject->size = maxsize;
 	
 	const char* cStr;
-	while(key = [e nextObject]) 
+	while( (key = [e nextObject]) ) 
 	{
 		if(i >= maxsize) return errNone; // in case
 		if(![key isEqualToString:@"inputImage"]) { // we do not need it
@@ -3068,11 +3071,9 @@ int prSCImageFilter_NamesInCategory(struct VMGlobals *g, int numArgsPushed)
 	
 	int i=0;
 	NSEnumerator *e = [array objectEnumerator];
-	PyrSlot slot;
-	PyrString* pyrPathString;
 	
 	
-	while( type = [e nextObject] )
+	while( (type = [e nextObject]) )
 	{
 		if(i >= maxsize) break; // in case
 		returnObject->symbols[i] = getsym([type UTF8String]);
@@ -3131,9 +3132,9 @@ void initSCImagePrimitives()
 	definePrimitive(base, index++, "_SCImage_getColorAt", prSCImage_getColorAt, 3, 0);
 	definePrimitive(base, index++, "_SCImage_setAccelerated", prSCImage_setAccelerated, 2, 0);
 	definePrimitive(base, index++, "_SCImage_isAccelerated", prSCImage_isAccelerated, 1, 0);  
-	definePrimitive(base, index++, "_SCImage_loadPixels", prSCImage_loadPixels, 2, 0);
-	definePrimitive(base, index++, "_SCImage_updatePixels", prSCImage_updatePixels, 2, 0);
-	definePrimitive(base, index++, "_SCImage_updatePixelsInRect", prSCImage_updatePixelsInRect, 3, 0);
+	definePrimitive(base, index++, "_SCImage_loadPixels", prSCImage_loadPixels, 4, 0);
+	definePrimitive(base, index++, "_SCImage_updatePixels", prSCImage_updatePixels, 3, 0);
+	definePrimitive(base, index++, "_SCImage_updatePixelsInRect", prSCImage_updatePixelsInRect, 4, 0);
 	definePrimitive(base, index++, "_SCImage_interpolation", prSCImage_interpolation, 1, 0);
 	definePrimitive(base, index++, "_SCImage_setInterpolation", prSCImage_setInterpolation, 2, 0);
 	definePrimitive(base, index++, "_SCImage_sync", prSCImage_sync, 1, 0);

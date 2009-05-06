@@ -209,19 +209,15 @@ SCImage {
 
 	// pixel manipulation
 	setPixel {|rgbaInteger, x, y|
-		if(autoMode, {this.accelerated_(false)});
 		^this.prSetPixel(rgbaInteger, x, y);
 	}
 	getPixel {|x,y|
-		if(autoMode, {this.accelerated_(false)});
 		^this.prGetPixel(x,y);
 	}
 	setColor {|color, x, y|
-		if(autoMode, {this.accelerated_(false)});
 		^this.prSetColor(color, x, y);
 	}
 	getColor {|x, y|
-		if(autoMode, {this.accelerated_(false)});
 		^this.prGetColor(x, y);
 	}
 	pixels {
@@ -232,25 +228,24 @@ SCImage {
 		this.prLoadPixels(pixelArray);
 		^pixelArray;
 	}
-	loadPixels {arg array;
+	loadPixels {arg array, region=nil, start=0;
 		if(autoMode, {this.accelerated_(false)});
 		if(array.isKindOf(Int32Array).not, {
 			"SCImage: array should be an Int32Array".warn;
 			^nil;
 		});
-		this.prLoadPixels(array);
+		this.prLoadPixels(array, region, start);
 		^this;
 	}	
 	pixels_ {|array|
 		this.setPixels(array);
 	}
-	setPixels {
-		|array, rect=nil|
+	setPixels {|array, region=nil, start=0|
 		if(autoMode, {this.accelerated_(false)});
-		if(rect.isNil, {
-			this.prUpdatePixels(array);
+		if(region.isNil, {
+			this.prUpdatePixels(array, start);
 		}, {
-			this.prUpdatePixelsInRect(array, rect);
+			this.prUpdatePixelsInRect(array, region, start);
 		});
 	}
 	// this method should not be called directly
@@ -593,15 +588,15 @@ SCImage {
 		_SCImage_FreeAll
 		^this.primitiveFailed
 	}	
-	prLoadPixels {arg array;
+	prLoadPixels {arg array, region, startIndex;
 		_SCImage_loadPixels
 		^this.primitiveFailed
 	}
-	prUpdatePixels {arg array;
+	prUpdatePixels {arg array, startIndex;
 		_SCImage_updatePixels
 		^this.primitiveFailed
 	}
-	prUpdatePixelsInRect {arg array, rect;
+	prUpdatePixelsInRect {arg array, rect, startIndex;
 		_SCImage_updatePixelsInRect
 		^this.primitiveFailed
 	}
@@ -815,7 +810,7 @@ SCImageKernel {
 // integer additions to retrieve 8-bit pixel component from RGBA packed data
 
 +Integer {
-	*fromRGBA {|r, g, b, a|
+	*fromRGBA {|r, g=0, b=0, a=255|
 		^(
 			((r.asInteger & 16r000000FF) << 24) | ((g.asInteger & 16r000000FF) << 16) | ((b.asInteger & 16r000000FF) << 8) | (a.asInteger & 16r000000FF)
 		);
