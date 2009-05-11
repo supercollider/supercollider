@@ -1930,6 +1930,11 @@ void PyrCallNode::compileCall(PyrSlot *result)
 					compileByte(numKeyArgs);
 					compileByte(index);
 					break;
+				case selUnary :
+				case selBinary :
+					index = conjureLiteralSlotIndex((PyrParseNode*)mSelector,
+gCompilingBlock, &mSelector->mSlot);
+					// fall through
 				default:
 					compileTail();
 					compileByte(opSendMsg);
