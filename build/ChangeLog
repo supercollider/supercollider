@@ -9,6 +9,8 @@ Headlines:
 Bugfixes:
 ---------
 
+* 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
+
 Other additions/improvements:
 -----------------------------
 
