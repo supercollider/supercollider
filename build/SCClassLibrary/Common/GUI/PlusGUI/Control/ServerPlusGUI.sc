@@ -288,7 +288,8 @@
 					if (unicode == 16rF700, { slider.increment; });
 					if (unicode == 16rF703, { slider.increment; });
 					if (unicode == 16rF701, { slider.decrement; });
-					if (unicode == 16rF702, { slider.decrement; });					nil;
+					if (unicode == 16rF702, { slider.decrement; });
+					nil;
 					});
 			volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
