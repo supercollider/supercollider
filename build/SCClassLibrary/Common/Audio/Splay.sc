@@ -42,7 +42,7 @@ SplayZ {
 	}
 }
 
- 
+
 SplayAz { 
 	*ar { arg numChans=4, inArray, spread=1, level = 1, width = 2, center = 0.0,
 			orientation = 0.5, levelComp=true;
@@ -56,7 +56,7 @@ SplayAz {
 		^PanAz.ar(
 			numChans, 
 			inArray, 
-			((0 .. n-1) / n * 2).postln * spread + center, 
+			((0 .. n-1) / n * 2) * spread + center, 
 			1,
 			width, 
 			orientation
