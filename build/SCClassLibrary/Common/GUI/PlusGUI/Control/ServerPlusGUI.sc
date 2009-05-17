@@ -15,7 +15,7 @@
 	}
 	
 	makeGui { arg w;
-		var active, booter, killer, makeDefault, running, booting, stopped, bundling;
+		var active, booter, killer, makeDefault, running, booting, stopped, bundling, showDefault;
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var dumping = false, label, gui, font, volumeNum;
@@ -68,12 +68,10 @@
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
 		makeDefault.font = font;
 		makeDefault.canFocus = false;
-		makeDefault.states = [["-> default", Color.black, Color.clear]];
-		makeDefault.action = {
-			thisProcess.interpreter.s = this;
-			Server.default = this;
-		};
-
+		makeDefault.states = [["-> default", Color.black, Color.clear], ["-> default", Color.black, Color.green.alpha_(0.2)]];
+		makeDefault.value_((this == Server.default).binaryValue);
+		makeDefault.action = { Server.default_(this, true) };
+		
 		//w.view.decorator.nextLine;
 		
 		recorder = gui.button.new(w, Rect(0,0, 66, 18));
@@ -169,6 +167,7 @@
 				window = nil;
 				ctlr.remove;
 			};
+			
 		},{	
 			running = {
 				active.stringColor_(Color.new255(74, 120, 74));
@@ -202,6 +201,12 @@
 				ctlr.remove;
 			};
 		});
+
+		showDefault = { 
+			"// Server.default: % - s: % // \n\n".postf(Server.default, thisProcess.interpreter.s); 
+			makeDefault.value = (Server.default == this).binaryValue;
+		};
+
 		if(serverRunning,running,stopped);
 			
 		w.view.decorator.nextLine;
@@ -290,7 +295,8 @@
 					if (unicode == 16rF701, { slider.decrement; });
 					if (unicode == 16rF702, { slider.decrement; });
 					nil;
-					});
+					})
+					;
 			volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
 					{
@@ -326,7 +332,9 @@
 			.put(\cmdPeriod,{
 				recorder.setProperty(\value,0);
 			})
-			.put(\bundling, bundling);	
+			.put(\bundling, bundling)
+			.put(\default, showDefault);
+			
 		this.startAliveThread;
 	}
 }

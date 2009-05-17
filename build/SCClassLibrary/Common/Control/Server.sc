@@ -185,7 +185,7 @@ ServerOptions
 }
 
 Server : Model {
-	classvar <>local, <>internal, <>default, <>named, <>set, <>program;
+	classvar <>local, <>internal, <default, <>named, <>set, <>program;
 	
 	var <name, <>addr, <clientID=0;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -211,6 +211,12 @@ Server : Model {
 	var <volume;
 	
 	var <pid;
+	
+	*default_ { |server, sync_s = false|
+		default = server; // sync with s? 
+		if (sync_s, { thisProcess.interpreter.s = server });
+		this.all.do(_.changed(\default));
+	}
 	
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
