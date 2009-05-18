@@ -361,6 +361,9 @@ LID {
 	setLEDState { |evtCode, evtValue |
 		^this.prSetLedState( evtCode, evtValue )
 	}
+	setMSCState { |evtCode, evtValue |
+		^this.prSetMscState( evtCode, evtValue )
+	}
 	grab { | flag = true |
 		// useful when using mouse or keyboard. be sure to have an
 		// 'exit point', or your desktop will be rendered useless ...
@@ -459,6 +462,11 @@ LID {
 	prSetLedState { |evtCode, evtValue|	// added by Marije Baalman
 		// set LED value
 		_LID_SetLedState
+		^this.primitiveFailed
+	}
+	prSetMscState { |evtCode, evtValue|	
+		// set MSC value
+		_LID_SetMscState
 		^this.primitiveFailed
 	}
 }

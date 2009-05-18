@@ -89,7 +89,7 @@ struct SC_LID
 	int getKeyState(int evtCode);
 	int getAbsInfo(int evtCode, struct input_absinfo *info);
 
-	int setLedState( int evtCode, int evtValue );
+	int setLedState( int evtCode, int evtValue, int evtType );
 
 	int grab(int flag);
 	void handleEvent(struct input_event& evt);
@@ -275,13 +275,13 @@ int SC_LID::getAbsInfo(int evtCode, struct input_absinfo* info)
 	return errNone;
 }
 
-int SC_LID::setLedState( int evtCode, int evtValue )
+int SC_LID::setLedState( int evtCode, int evtValue, int evtType )
 { // added by marije baalman
 	struct input_event ev;
 // 	post( "set led state called, putting event" );
 	ev.code = evtCode;
 	ev.value = evtValue;
-	ev.type = EV_LED;
+	ev.type = evtType;
 // 	post( "m_fd %i", m_fd );
 // 	post( "code %i, value %i ", evtCode, evtValue );
 	if ( write(m_fd, &ev, sizeof(struct input_event)) == -1 )
@@ -741,7 +741,30 @@ int prLID_SetLedState(VMGlobals *g, int numArgsPushed)
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;
 
-	SetInt(args, dev->setLedState(evtCode,evtValue));
+	SetInt(args, dev->setLedState(evtCode,evtValue, EV_LED));
+	return errNone;
+}
+
+int prLID_SetMscState(VMGlobals *g, int numArgsPushed)
+{
+// 	post( "set msc state primitive called\n" );
+	PyrSlot* args = g->sp - 2;
+	int evtCode, evtValue;
+	int err;
+
+	PyrObject* obj = SC_LID::getObject(args+0);
+	if (!obj) return errWrongType;
+
+	err = slotIntVal(args+1, &evtCode);
+	if (err) return err;
+
+	err = slotIntVal(args+2, &evtValue);
+	if (err) return err;
+
+	SC_LID* dev = SC_LID::getDevice(obj);
+	if (!dev) return errFailed;
+
+	SetInt(args, dev->setLedState(evtCode,evtValue, EV_MSC));
 	return errNone;
 }
 
@@ -769,6 +792,7 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 	definePrimitive(base, index++, "_LID_SetLedState", prLID_SetLedState, 3, 0); // added by Marije Baalman
+	definePrimitive(base, index++, "_LID_SetMscState", prLID_SetMscState, 3, 0);
 }
 #else // !HAVE_LID
 int prLID_Start(VMGlobals* g, int numArgsPushed)
