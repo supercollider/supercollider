@@ -203,7 +203,6 @@
 		});
 
 		showDefault = { 
-			"// Server.default: % - s: % // \n\n".postf(Server.default, thisProcess.interpreter.s); 
 			makeDefault.value = (Server.default == this).binaryValue;
 		};
 
