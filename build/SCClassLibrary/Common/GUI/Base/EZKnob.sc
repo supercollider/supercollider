@@ -215,6 +215,8 @@ EZKnob : EZGui {
 		gap1 = gap.copy;	
 		gap2 = gap.copy;
 		gap3 = gap.copy;
+		(rect.height<= (labelSize.y*2)).if{labelSize.y=rect.height/2};
+
 		numHeight=labelSize.y;
 		
 		switch (layout,
@@ -291,7 +293,7 @@ EZKnob : EZGui {
 			 	
 			 }
 		);
-		
+		((knobBounds.height<0)||(knobBounds.width<0)).if{knobBounds=knobBounds.height_(0).width_(0)};
 		
 		^[labelBounds, numBounds, knobBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}

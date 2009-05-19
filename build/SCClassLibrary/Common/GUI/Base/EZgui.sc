@@ -87,8 +87,8 @@ EZGui{ // an abstract class
 				view=GUI.compositeView.new(parentView,bounds)
 					.relativeOrigin_(true).resize_(2);
 				w.bounds=w.bounds; // swing needs this for some reason, or bounds are too high
-		// normal parent view			
-		}{
+				
+		}{// normal parent view	
 			bounds=bounds.asRect;
 			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
 		}; 
