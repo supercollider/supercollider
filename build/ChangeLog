@@ -16,6 +16,7 @@ Bugfixes:
 
 * 2009-05-11 fix keyword addressing for the order: argument - jmc
 * 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
+* 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
 
 Other additions/improvements:
 -----------------------------
@@ -25,6 +26,7 @@ Other additions/improvements:
 * 2009-05-16 optimisation for scrollview drawing, remove VIEWHACK - sw
 * 2009-05-xx various documentation updates - various
 * 2009-05-xx various improvements to ubuntu-debian packaging scripts - ds, am
+
 
 SuperCollider v3.3, released 2009-04-30
 =======================================
