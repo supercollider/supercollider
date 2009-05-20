@@ -60,9 +60,11 @@ SynthDef {
 	}
 	//only write if no file exists
 	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata;
-		this.new(name, func, rates, prependArgs, variants, metadata).writeDefFile(dir, false)
+		this.new(name, func, rates, prependArgs, variants, metadata).writeOnce(dir)
 	}
-	
+	writeOnce { arg dir;
+		this.writeDefFile(dir, false)
+	}
 	
 	initBuild {
 		UGen.buildSynthDef = this;
