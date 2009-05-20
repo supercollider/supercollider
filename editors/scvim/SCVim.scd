@@ -58,10 +58,10 @@ line in sclang (put the cursor on line and hit F6):
 
   SCVim.updateHelpCache
 
-This actually calls a Ruby script called scvim_make_help.rb, so can be used 
+This actually calls a Ruby script called scvim_make_help, so can be used 
 outside SC if desired. You can do something like:
 
-  ./scvim_make_help.rb -c -s /usr/local/share/SuperCollider/Help
+  ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help
 
 This will delete any help docs that are in your ~/.scvim/docs dir, and copy in the
 more up to date [hopefully] docs from /usr/local/share/SuperCollider/Help to

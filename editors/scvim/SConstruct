@@ -74,7 +74,7 @@ def share_dir(prefix):
 
 #build help, the help depends on having the home directory enviroment variable.. that could change
 build_help = Builder(action = 
-		'export HOME=' + os.environ.get('HOME') + ' && ruby ' + os.getcwd() + '/bin/scvim_make_help.rb -f -s $SOURCE -d $TARGET')
+		'export HOME=' + os.environ.get('HOME') + ' && ruby ' + os.getcwd() + '/bin/scvim_make_help -f -s $SOURCE -d $TARGET')
 
 #create our options
 opts = Options()

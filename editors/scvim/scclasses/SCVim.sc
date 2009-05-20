@@ -97,7 +97,7 @@ classvar <scvim_dir, <scvim_cache_dir;
 	var script;
 	if(helpPaths.isNil){ helpPaths = [Platform.helpDir]};
 	// Just run the ruby script
-	("scvim_make_help.rb".quote + "-c -f".scatList(helpPaths.collect{|p| "-s" + p.quote})).systemCmd;
+	("scvim_make_help".quote + "-c -f".scatList(helpPaths.collect{|p| "-s" + p.quote})).systemCmd;
 }
 
 } // end class
