@@ -5,21 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.41">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #982316; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c40000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c40000; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 span.s1 {color: #000000}
-span.s2 {color: #0025b2}
+span.s2 {color: #0010c4}
 span.s3 {font: 12.0px Monaco}
-span.s4 {color: #606060}
-span.s5 {color: #982316}
+span.s4 {color: #0000ff}
+span.s5 {color: #606060}
+span.s6 {color: #c40000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,11 +45,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">In the help files all executable fragments are written in the <span class="s3">Monaco</span> font.</p>
 <p class="p2"><br></p>
-<p class="p3">If an expression has multiple lines you can select all of the lines before typing 'Enter'.</p>
+<p class="p3">If an expression has multiple lines you can select all of the lines before typing 'Enter'. Note that this example uses <a href="../GUI/GUI-Tools/GUI.html"><span class="s4">GUI</span></a> objects that are standard in Mac OSX. Windows and Linux platforms can run this using SwingOSC. SwingOSC is installed as part of the Windows package. Linux users might need to download SwingOSC for themselves. <a href="http://www.sciss.de/swingOSC/">http://www.sciss.de/swingOSC/</a></p>
 <p class="p2"><br></p>
-<p class="p5">// Select all three of the following lines and press 'Enter':</p>
-<p class="p7">w = <span class="s2">SCWindow</span>.new(<span class="s4">"Fading"</span>).front;</p>
-<p class="p7">r = <span class="s2">Routine</span>({ 200.do({<span class="s2">|i|</span> w.alpha = 1 - (i * 0.005); 0.005.wait;}); w.close; });</p>
+<p class="p5">// Select all 9 of the following lines and press 'Enter':</p>
+<p class="p7">w = <span class="s2">Window</span>.new(<span class="s5">"Fading"</span>).front;<span class="Apple-converted-space"> </span></p>
+<p class="p7">r = <span class="s2">Routine</span>({<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>200.do({<span class="s2">|i|</span><span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background = <span class="s2">Color</span>.blue(val: 1, alpha: 1 - (i * 0.005));<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.005.wait;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>});<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>w.close;<span class="Apple-converted-space"> </span></p>
+<p class="p7">});<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="s2">AppClock</span>.play(r);</p>
 <p class="p2"><br></p>
 <p class="p3">Some examples do require lines to be executed one at a time, or certain lines to be executed first. By far the most common case of this is booting the server app, as we did at the top of the page. Until the server has completed booting, no sound producing code will work.</p>
@@ -61,9 +68,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Three patches in one...</p>
 <p class="p5"><span class="s1">n = 5;<span class="Apple-tab-span">	</span></span>// number of strings</p>
 <p class="p5"><span class="s1">b = [<span class="Apple-tab-span">	</span></span>// array of possible impulse excitation behaviours</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Impulse</span>.ar(2 + 0.2.rand, 0.3) }, <span class="s5">// slow phasing</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Dust</span>.ar(0.5, 0.3) },<span class="Apple-tab-span">	</span><span class="s5">// "wind chimes"</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Impulse</span>.ar(<span class="s2">SinOsc</span>.kr(0.05+0.1.rand, 2pi.rand, 5, 5.2), 0.3) } <span class="s5">// races</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Impulse</span>.ar(2 + 0.2.rand, 0.3) }, <span class="s6">// slow phasing</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Dust</span>.ar(0.5, 0.3) },<span class="Apple-tab-span">	</span><span class="s6">// "wind chimes"</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s2">Impulse</span>.ar(<span class="s2">SinOsc</span>.kr(0.05+0.1.rand, 2pi.rand, 5, 5.2), 0.3) } <span class="s6">// races</span></p>
 <p class="p5"><span class="s1"><span class="Apple-tab-span">	</span>].choose;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// choose one at random to use for all voices</p>
 <p class="p7"><span class="s2">Mix</span>.new(</p>
 <p class="p5"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Array</span><span class="s1">.fill(n, {<span class="Apple-tab-span">	</span></span>// n strings tuned randomly to MIDI keys 60-90</p>
