@@ -33,6 +33,7 @@
 #include <math.h>
 #include "SC_Endian.h"
 
+const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 
 inline bool IsSignal(PyrSlot* slot) { return ((slot)->utag == tagObj && (slot)->uo->classptr == class_signal); }
 inline bool NotSignal(PyrSlot* slot) { return ((slot)->utag != tagObj || (slot)->uo->classptr != class_signal); }
@@ -1072,9 +1073,8 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 			size = 1;
 		else
 			size = ((last - first) / step) + 1;
-
-		if(size<1){
-			printf("prSimpleNumberSeries: array size exceeds integer limits\n");
+		if(size<1 || size > INT_MAX_BY_PyrSlot){
+			post("prSimpleNumberSeries: array size %i exceeds limit (%i)\n", size, INT_MAX_BY_PyrSlot);
 			return errFailed;
 		}
 	
@@ -1114,8 +1114,8 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 		
 		step = second - first;
 		size = (int)floor((last - first) / step + 0.001) + 1;
-		if(size<1){
-			printf("prSimpleNumberSeries: array size exceeds integer limits\n");
+		if(size<1 || size > INT_MAX_BY_PyrSlot){
+			post("prSimpleNumberSeries: array size %i exceeds limit (%i)\n", size, INT_MAX_BY_PyrSlot);
 			return errFailed;
 		}
 		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
