@@ -79,7 +79,7 @@ endif
 if exists("g:sclangPipeApp")
 	let s:sclangPipeApp	= g:sclangPipeApp
 else
-	let s:sclangPipeApp	= "sclangpipe_app.rb"
+	let s:sclangPipeApp	= "sclangpipe_app"
 endif
 
 "function SClangRunning()

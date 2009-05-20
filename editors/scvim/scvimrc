@@ -9,7 +9,7 @@
 let g:sclangKillOnExit = 1
 
 "this indicates the terminal emulator command you will use to launch
-"sclangpipe_app.rb
+"sclangpipe_app
 let g:sclangTerm = "xterm -e"
 
 "this indicates the location to create a pipe for vim to communicate with

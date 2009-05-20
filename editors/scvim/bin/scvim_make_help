@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-#scvim_make_help.rb
+#scvim_make_help
 #Written by Alex Norman for scvim with help from John Yates and Andrzej Kopec
 #This script uses the apps (unhtml or links) and urtf, it does some wrapping around unhtml
 #because that doesn't remove the stuff from html <head>..</head>

@@ -1159,7 +1159,7 @@ if is_installing():
 
 #scvim : unhtml help files
 #if env['SCVIM']:
-        #os.execvpe("editors/scvim/bin/scvim_make_help.rb", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
+        #os.execvpe("editors/scvim/bin/scvim_make_help", [ "-c", "-s", "build/Help"],"SCVIM=editors/scvim/")
     #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
 
 #if env['SCVIM']:
