@@ -31,9 +31,10 @@
 		var key = this.key ? '<unnamed nodeproxy>';
 		stream << ("~" ++ key);
 	}
+	
 	playNDialog { |bounds|		var editstring, doc;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
-		editstring = "~" ++ this.key ++ ".playN(\n" 
+		editstring = this.asCompileString ++ ".playN(\n" 
 			++ "\touts:" + try { this.monitor.outs } ?? { (0..this.numChannels - 1) }  ++ ",\n"
 			++ "\tamps:" + try { this.monitor.amps } ?? { 1 ! this.numChannels }  ++ ",\n"
 			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);"; 
