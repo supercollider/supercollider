@@ -36,8 +36,7 @@ Pfpar : ListPattern {
 				outval = stream.next(inval);
 				if (outval.isNil, {
 					priorityQ.clear;
-					cleanup.exit(inval); 
-		
+					^cleanup.exit(inval); 
 				},{			
 					cleanup.update(outval);
 					// requeue stream
@@ -96,7 +95,7 @@ Pproto  : Pattern {
 		cleanupFunc = eventCleanupFunc ?? { { | flag | eventCleanupFunc.value(proto, flag) } };
 		cleanup.addFunction(event, cleanupFunc);
 
-		stream = Pfpar(pattern.asArray).asStream;
+		stream = Pfpar(pattern.asArray).asStream(cleanup);
 		loop {
 			ev = event.copy.putAll(protoEvent);
 			ev = stream.next(ev) ?? { ^cleanup.exit(event) };
