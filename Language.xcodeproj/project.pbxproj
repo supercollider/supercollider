@@ -26,6 +26,12 @@
 		172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9493110E0C1921F90018AB50 /* SC_TerminalClient.cpp */; };
 		172E7CCC0E9C29EE00925A8E /* SCImage.M in Sources */ = {isa = PBXBuildFile; fileRef = 172E7CB90E9C251A00925A8E /* SCImage.M */; };
 		172E7CCD0E9C29F300925A8E /* SCImage.M in Sources */ = {isa = PBXBuildFile; fileRef = 172E7CB90E9C251A00925A8E /* SCImage.M */; };
+		370283DE0FCABD0600A9BDC9 /* scd.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DB0FCABD0600A9BDC9 /* scd.icns */; };
+		370283DF0FCABD0600A9BDC9 /* rtfd.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DC0FCABD0600A9BDC9 /* rtfd.icns */; };
+		370283E00FCABD0600A9BDC9 /* quark.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DD0FCABD0600A9BDC9 /* quark.icns */; };
+		370283E50FCABD2300A9BDC9 /* scd.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DB0FCABD0600A9BDC9 /* scd.icns */; };
+		370283E60FCABD2300A9BDC9 /* rtfd.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DC0FCABD0600A9BDC9 /* rtfd.icns */; };
+		370283E70FCABD2300A9BDC9 /* quark.icns in Resources */ = {isa = PBXBuildFile; fileRef = 370283DD0FCABD0600A9BDC9 /* quark.icns */; };
 		3799DA840E3502D900AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
 		3799DA850E3502F000AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
 		3799DA860E35030F00AE51A3 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */; };
@@ -420,6 +426,9 @@
 /* Begin PBXFileReference section */
 		172E7CB80E9C24EB00925A8E /* SCImage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SCImage.h; sourceTree = "<group>"; };
 		172E7CB90E9C251A00925A8E /* SCImage.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = SCImage.M; sourceTree = "<group>"; };
+		370283DB0FCABD0600A9BDC9 /* scd.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = scd.icns; sourceTree = "<group>"; };
+		370283DC0FCABD0600A9BDC9 /* rtfd.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtfd.icns; sourceTree = "<group>"; };
+		370283DD0FCABD0600A9BDC9 /* quark.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = quark.icns; sourceTree = "<group>"; };
 		3799DA830E3502B800AE51A3 /* SC_CoreAudioPrim.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreAudioPrim.cpp; sourceTree = "<group>"; };
 		6A0CC1740D3D41F40080C454 /* SMLAdvancedFindController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SMLAdvancedFindController.m; sourceTree = "<group>"; };
 		6A0CC1750D3D41F40080C454 /* SMLStatusBarTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SMLStatusBarTextFieldCell.m; sourceTree = "<group>"; };
@@ -1217,6 +1226,9 @@
 		949318000C192C120018AB50 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				370283DB0FCABD0600A9BDC9 /* scd.icns */,
+				370283DC0FCABD0600A9BDC9 /* rtfd.icns */,
+				370283DD0FCABD0600A9BDC9 /* quark.icns */,
 				94070C5B0C19DEF6002304F7 /* html.icns */,
 				94070C5C0C19DEF6002304F7 /* rtf.icns */,
 				94070C5D0C19DEF6002304F7 /* sc.icns */,
@@ -1404,6 +1416,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				370283E50FCABD2300A9BDC9 /* scd.icns in Resources */,
+				370283E60FCABD2300A9BDC9 /* rtfd.icns in Resources */,
+				370283E70FCABD2300A9BDC9 /* quark.icns in Resources */,
 				94442C540C2C8AE40050BF9F /* Credits.rtf in Resources */,
 				94442C550C2C8AE40050BF9F /* FindPanel.nib in Resources */,
 				94442C560C2C8AE40050BF9F /* FindPanel.strings in Resources */,
@@ -1449,6 +1464,9 @@
 				6A0CC1BC0D3D44730080C454 /* LICENSE.txt in Resources */,
 				6A0CC2690D3D5F1D0080C454 /* SMLRegularExpressionHelp.nib in Resources */,
 				FE0DB98A0F8A0A5A005B2DE4 /* Localizable.strings in Resources */,
+				370283DE0FCABD0600A9BDC9 /* scd.icns in Resources */,
+				370283DF0FCABD0600A9BDC9 /* rtfd.icns in Resources */,
+				370283E00FCABD0600A9BDC9 /* quark.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

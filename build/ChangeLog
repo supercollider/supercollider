@@ -17,6 +17,7 @@ Bugfixes:
 * 2009-05-11 fix keyword addressing for the order: argument - jmc
 * 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
 * 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
+* 2009-05-25 mac icons for document types .quark .scd .rtfd were omitted from the app bundle, now fixed - ds
 
 Other additions/improvements:
 -----------------------------
