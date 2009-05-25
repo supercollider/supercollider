@@ -319,8 +319,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
    *beats { ^TempoClock.default.beats }
    *beats2secs { | beats | ^TempoClock.default.beats2secs(beats)  }
    *secs2beats { | secs | ^TempoClock.default.secs2beats(secs)  }
-   *nextTimeOnGrid { | quant, phase | ^TempoClock.default.nextTimeOnGrid(quant, phase)  }
-   *timeToNextBeat { | quant | ^TempoClock.default.timeToNextBeat(quant)  }
+   *nextTimeOnGrid { | quant = 1, phase = 0 | ^TempoClock.default.nextTimeOnGrid(quant, phase)  }
+   *timeToNextBeat { | quant = 1 | ^TempoClock.default.timeToNextBeat(quant)  }
 
    *setTempoAtBeat { | newTempo, beats | TempoClock.default.setTempoAtBeat(newTempo, beats)  }
    *setTempoAtSec { | newTempo, secs | TempoClock.default.setTempoAtSec(newTempo, secs)  }
