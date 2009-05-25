@@ -65,7 +65,7 @@ NotificationCenter {
 	
 	//			who		\didSomething
 	*notify { arg object, message, args;
-		registrations.at(object,message).do({ arg function;
+		registrations.at(object,message).copy.do({ arg function;
 			function.valueArray(args)
 		})
 	}
