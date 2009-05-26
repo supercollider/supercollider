@@ -16,10 +16,8 @@ blddir = 'build/waf' # FIXME
 
 SC3_API_VERSION=VERSION
 
-# FIXME: globas SSE
-# CCFLAGS: -msse', '-mfpmath=sse'
-
 def set_options(opt):
+    opt.tool_options('gnu_dirs')
     opt.tool_options('compiler_cc')
     opt.tool_options('compiler_cxx')
 
@@ -36,6 +34,7 @@ def configure(conf):
         Utils.pprint('RED', 'Sorry, waf builder currently does not work on %s platform!' % platform)
         sys.exit(1)
 
+    conf.check_tool('gnu_dirs')
     conf.check_tool('compiler_cc')
     conf.check_tool('compiler_cxx')
     #conf.check_tool('misc')
@@ -66,8 +65,8 @@ def configure(conf):
     else:
         conf.define('SC_MEMORY_ALIGNMENT', 1)
     
-    conf.env['LIBDIR'] = os.path.join(conf.env['PREFIX'], 'lib')
-    conf.env['DATADIR'] = os.path.join(conf.env['PREFIX'], 'share')
+    #conf.env['LIBDIR'] = os.path.join(conf.env['PREFIX'], 'lib')
+    #conf.env['DATADIR'] = os.path.join(conf.env['PREFIX'], 'share')
     
     # global defines
     conf.define('HAVE_ALSA', 1)
@@ -94,7 +93,6 @@ def configure(conf):
     # FIXME: ugly hack but SC3 does not use config.h now
     conf.env.append_value('CPPFLAGS', ['-include','default/waf_config.h'])
     conf.write_config_header('waf_config.h')
-    print conf.env
 
 def sc_plugin_gen(bld, name, source, uselib='', add_objects=[]):
     obj = bld.new_task_gen('cxx', 'shlib')
