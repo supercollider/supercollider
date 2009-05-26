@@ -30,6 +30,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="s2">see also: <a href="LFDNoise3.html">LFDNoise3</a>, <a href="LFNoise0.html">LFNoise0</a>, <a href="LFNoise1.html">LFNoise1</a></span></p>
 <p class="p2"><br></p>
+<p class="p1">Note: quadratic interpolation means that the noise values can occasionally extend beyond the normal range of +-1, if the <b>freq</b> varies in certain ways. If this is undesirable then you might like to <a href="../../BinaryOps/clip2.html">clip2</a> the values, or use a linearly-interpolating unit instead.</p>
+<p class="p2"><br></p>
 <p class="p4">{ <span class="s3">LFNoise2</span>.ar(1000, 0.25) }.play;</p>
 <p class="p5"><br></p>
 <p class="p6">// modulate frequency</p>
