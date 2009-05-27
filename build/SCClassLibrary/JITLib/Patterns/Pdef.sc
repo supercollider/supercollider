@@ -733,10 +733,11 @@ PbindProxy : Pattern {
 					pairs.removeAt(i);
 					changedPairs = true;
 				}{
-					pairs[i+1].source = val
+					pairs[i+1].source = val.fin(inf)
 				};
 			}{ 
-				pairs = pairs ++ [key, PatternProxy(val).quant_(quant)];
+				pairs = pairs ++ [key, PatternProxy(val.fin(inf)).quant_(quant)];
+				// fin(inf) is a way to stream symbols endlessly
 				changedPairs = true;
 			};
 		
