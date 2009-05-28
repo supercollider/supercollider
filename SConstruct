@@ -1077,7 +1077,9 @@ Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
 Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 ''')
-else:
+if PLATFORM == 'linux':
+    # HAVE_LID does the right thing in SC_LID.cpp source
+    libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
     if features['wii']:
                 langEnv.Append(CPPDEFINES = 'HAVE_WII')
                 langEnv.Append(LINKFLAGS = '-lcwiid')
@@ -1085,7 +1087,6 @@ else:
         #langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
             langEnv.Append(CPPDEFINES = 'HAVE_LID')
-            libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
