@@ -3,7 +3,7 @@ Node {
 	
 	var <>nodeID, <>server, <>group;
 	var <>isPlaying = false, <>isRunning = false;
-	classvar addActions;
+	classvar <addActions;
 
 	*initClass {
 		addActions = (
