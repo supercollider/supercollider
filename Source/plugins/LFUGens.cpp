@@ -2262,7 +2262,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		}
 	}
 
-	*out = level;
+	
 	switch (unit->m_shape) {
 		case shape_Step : {
 		} break;
@@ -2324,6 +2324,7 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 		case shape_Sustain : {
 		} break;
 	}
+	*out = level;
 	//Print("x %d %d %d %g\n", unit->m_stage, counter, unit->m_shape, *out);
 	unit->m_level = level;
 	unit->m_counter = counter - 1;
