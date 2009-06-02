@@ -418,7 +418,7 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
 		server.sendBundle(nil, [9, defName, synth.nodeID, addNum, inTarget.nodeID] ++ 
-			args.asControlInput, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
+			args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
 		/** does not send	(used for bundling) **/
@@ -432,7 +432,7 @@ Synth : Node {
 		// if target is nil set to default group of server specified when basicNew was called
 		inTarget = (target ? server.defaultGroup).asTarget;
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
-		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args.asControlInput; //"/s_new"
+		^[9, defName, nodeID, addNum, inTarget.nodeID] ++ args.asOSCArgArray; //"/s_new"
 	}
 	*after { arg aNode, defName, args;	
 		^this.new(defName, args, aNode, \addAfter);
@@ -453,24 +453,24 @@ Synth : Node {
 	addToHeadMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 0, group.nodeID] ++ args.asControlInput	// "/s_new"
+		^[9, defName, nodeID, 0, group.nodeID] ++ args.asOSCArgArray	// "/s_new"
 	}
 	addToTailMsg { arg aGroup, args;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[9, defName, nodeID, 1, group.nodeID] ++ args.asControlInput // "/s_new"
+		^[9, defName, nodeID, 1, group.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 	addAfterMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asControlInput // "/s_new"
+		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 	addBeforeMsg {  arg aNode, args;
 		group = aNode.group; 
-		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asControlInput // "/s_new"
+		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 	addReplaceMsg { arg nodeToReplace, args;
 		group = nodeToReplace.group; 
-		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asControlInput // "/s_new"
+		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 	
 	// nodeID -1 
@@ -479,7 +479,7 @@ Synth : Node {
 		target = target.asTarget;
 		server = target.server;
 		server.sendMsg(9, defName.asDefName, -1, addActions[addAction], target.nodeID, 
-			*(args.asControlInput)); //"/s_new"
+			*(args.asOSCArgArray)); //"/s_new"
 		^nil;
 	}
 	
