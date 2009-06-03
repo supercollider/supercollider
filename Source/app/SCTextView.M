@@ -186,7 +186,10 @@ extern bool compiledOK;
 			pthread_mutex_unlock (&gLangMutex);
 		}
 	}
-    if ([characters isEqual: @"\03"]) {
+		// shift- or control-return added by hjh
+    if ([characters isEqual: @"\03"] ||
+			(([characters isEqual: @"\n"] || [characters isEqual: @"\r"])
+				&& ([event modifierFlags] & (NSControlKeyMask | NSShiftKeyMask)))) {
         [[self delegate] executeSelection: self];
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
         [self autoIndent: event];
