@@ -138,7 +138,12 @@ DeprecatedError : Error {
 		^super.new(nil, receiver).method_(method).alternateMethod_(alternateMethod).class_(class)
 	}
 	errorString {
-		^"ERROR: Method '" ++ method.name ++ "' of class " ++ class.name ++ " is deprecated and will be removed. Use '" ++ alternateMethod.ownerClass ++ ":" ++ alternateMethod.name ++ "' instead."
+		var string;
+		string = "ERROR: Method '" ++ method.name ++ "' of class " ++ class.name ++ " is deprecated and will be removed.";
+		if(alternateMethod.notNil, {
+			string = string + "Use '" ++ alternateMethod.ownerClass ++ ":" ++ alternateMethod.name ++ "' instead.";
+		});
+		^string;
 	}
 	
 	reportError {
