@@ -301,7 +301,7 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-	var <children, <decorator, < relativeOrigin = true;
+	var <children, <decorator, relativeOrigin = true;
 			
 	add { arg child;
 		children = children.add(child);
@@ -313,14 +313,19 @@ SCContainerView : SCView { // abstract class
 			// if user changed default relativeOrigin to true,
 			// the client would be out of sync with the cocoa widget
 			// without resetting the view property
-		this.relativeOrigin = relativeOrigin;
+		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
 	
 	removeAll {
 		children.copy.do {|child| child.remove };
 	}
 
+	relativeOrigin {
+		this.deprecated(thisMethod);
+		^relativeOrigin;
+	}
 	relativeOrigin_{ |bool|
+		this.deprecated(thisMethod);
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
 	}	
@@ -1326,12 +1331,12 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	var < clearOnRefresh = true, < relativeOrigin = true;
+	var < clearOnRefresh = true, relativeOrigin = true;
 	var < drawingEnabled = true;
 	
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
-		this.relativeOrigin = relativeOrigin;
+		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
 	
 	draw { 
@@ -1349,10 +1354,17 @@ SCUserView : SCView {
 	clearOnRefresh_{|bool|
 		clearOnRefresh = bool;
 		this.setProperty(\clearOnRefresh, bool);			}
+		
+	relativeOrigin {
+		this.deprecated(thisMethod);
+		^relativeOrigin;
+	}
 	
-	relativeOrigin_{|bool|
+	relativeOrigin_{ |bool|
+		this.deprecated(thisMethod);
 		relativeOrigin = bool;
-		this.setProperty(\relativeOrigin, bool);			}	
+		this.setProperty(\relativeOrigin, bool);
+	}	
 	
 	drawingEnabled_{|bool|
 		drawingEnabled = bool;
