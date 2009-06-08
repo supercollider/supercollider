@@ -19,33 +19,33 @@ p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9f2423}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0016bd}
-p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ae1a19}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #426d13}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0020bb}
+p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #9f2423}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #4b6b13}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #6f717f}
 span.s3 {color: #6f7184}
-span.s4 {color: #0c3ee4}
+span.s4 {color: #0043e2}
 span.s5 {color: #6f7178}
-span.s6 {color: #4c5fb5}
+span.s6 {color: #4c61b4}
 span.s7 {font: 14.0px Helvetica}
 span.s8 {color: #6f7183}
 span.s9 {font: 9.0px Monaco}
-span.s10 {color: #636b98}
+span.s10 {color: #636c97}
 span.s11 {color: #6f7181}
-span.s12 {color: #656c95}
-span.s13 {color: #0016bd}
+span.s12 {color: #656d94}
+span.s13 {color: #0020bb}
 span.s14 {color: #606060}
 span.s15 {color: #000000}
-span.s16 {color: #2b7000}
+span.s16 {color: #3c6d00}
 span.s17 {color: #6f7185}
-span.s18 {color: #5463ac}
-span.s19 {color: #3d57c3}
+span.s18 {color: #5464ab}
+span.s19 {color: #3d5ac1}
 span.s20 {font: 12.0px Helvetica; color: #000000}
-span.s21 {color: #0021b6}
+span.s21 {color: #0028b4}
 span.s22 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -284,7 +284,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p1">Each view subclass has a default object that it exports when dragged from. For sliders its the value of the slider, for lists it is the currently selected numeric index etc. By setting the <b>beginDragAction</b> handler you can return a different object based on the context and your application.</p>
 <p class="p2"><br></p>
-<p class="p1">The current dragged object can be found in the classvar SCView.<b>currentDrag</b>. Objects dragged from within SuperCollider are also in SCView.<b>currentDragString</b> as a compile string. Text dragged from other applications is in SCView.<b>currentDragString</b> and the results of attempting to compile that as sc code is in SCView.<b>currentDrag.</b></p>
+<p class="p1">The current dragged object can be found in the classvar SCView.<b>currentDrag</b>. Files dragged from the Finder will result in an Array of Strings representing the files' paths. Objects dragged from within SuperCollider are also in SCView.<b>currentDragString</b> as a compile string. Text dragged from other applications is in SCView.<b>currentDragString</b> and the results of attempting to compile that as sc code is in SCView.<b>currentDrag.</b></p>
 <p class="p2"><br></p>
 <p class="p1">Each view subclass has a <b>defaultCanReceiveDrag</b> method that determines if the current object being dragged is possible for this view to accept, and a <b>defaultReceiveDrag</b> method for actually receiving the drag. Sliders accept numbers, simple text labels do not accept drags etc. After receiving the drag, the SCView.<b>currentDrag</b> is set to nil. Containers typically cannot receive drags by default.</p>
 <p class="p2"><br></p>
