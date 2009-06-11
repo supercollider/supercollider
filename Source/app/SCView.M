@@ -4234,7 +4234,7 @@ void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent
 
 	mRealtiveMousePoint.x = where.x - bounds.x;
 	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseDownAction(where, modifiers, theEvent);
+	SCView::mouseDownAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
@@ -4247,7 +4247,7 @@ void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent
 
 	mRealtiveMousePoint.x = where.x - bounds.x;
 	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseMoveAction(where, modifiers, theEvent);
+	SCView::mouseMoveAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 	
 }
 
@@ -4257,7 +4257,7 @@ void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 
 	mRealtiveMousePoint.x = where.x - bounds.x;
 	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseUpAction(where, modifiers, theEvent);
+	SCView::mouseUpAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 
 }	 
 
