@@ -12,16 +12,24 @@ Buffer {
 	// doesn't send
 	*new { arg server, numFrames, numChannels, bufnum;
 		server = server ? Server.default;
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
 		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) },
+						bufnum,
 						numFrames,
 						numChannels).sampleRate_(server.sampleRate).cache;
 	}
 
 	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
 		server = server ? Server.default;
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
 		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) },
+						bufnum,
 						numFrames,
 						numChannels)
 					.alloc(completionMessage).sampleRate_(server.sampleRate).cache;
@@ -31,6 +39,9 @@ Buffer {
 			bufnum|
 		var	bufBase, newBuf;
 		bufBase = bufnum ?? { server.bufferAllocator.alloc(numBufs) };
+		if(bufBase.isNil) {
+			Error("No block of % consecutive buffer numbers is available.".format(numBufs)).throw
+		};
 		^Array.fill(numBufs, { |i|
 			newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase);
 			server.sendMsg(\b_alloc, i + bufBase, numFrames, numChannels,
@@ -70,8 +81,11 @@ Buffer {
 	// adds a query as a completion message
 	*read { arg server,path,startFrame = 0,numFrames, action, bufnum;
 		server = server ? Server.default;
-		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) })
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
+		^super.newCopyArgs(server, bufnum)
 					.doOnInfo_(action).cache
 					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]});
 	}
@@ -86,8 +100,11 @@ Buffer {
 	}
 	*readChannel { arg server,path,startFrame = 0,numFrames, channels, action, bufnum;
 		server = server ? Server.default;
-		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) })
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
+		^super.newCopyArgs(server, bufnum)
 					.doOnInfo_(action).cache
 					.allocReadChannel(path,startFrame,numFrames,channels,
 						{|buf|["/b_query",buf.bufnum]});
@@ -103,8 +120,11 @@ Buffer {
 	}
 	*readNoUpdate { arg server,path,startFrame = 0,numFrames, bufnum, completionMessage;
 		server = server ? Server.default;
-		^super.newCopyArgs(server,
-						bufnum ?? { server.bufferAllocator.alloc(1) })
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
+		^super.newCopyArgs(server, bufnum)
 					.allocRead(path,startFrame,numFrames, completionMessage);
 	}
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames, 
@@ -151,6 +171,10 @@ Buffer {
 	*loadCollection { arg server, collection, numChannels = 1, action;
 		var data, sndfile, path, bufnum, buffer;
 		server = server ? Server.default;
+		bufnum = server.bufferAllocator.alloc(1);
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
 		server.isLocal.if({
 			if(collection.isKindOf(RawArray).not, 
 				{data = collection.collectAs({|item| item}, FloatArray)}, {data = collection;}
@@ -163,7 +187,7 @@ Buffer {
 				{
 					sndfile.writeData(data);
 					sndfile.close;
-					^super.newCopyArgs(server, server.bufferAllocator.alloc(1))
+					^super.newCopyArgs(server, bufnum)
 						.cache.doOnInfo_({ |buf|
 							if(File.delete(path), { buf.path = nil}, 
 								{("Could not delete data file:" + path).warn;});
@@ -211,6 +235,9 @@ Buffer {
 		collsize = collection.size;
 		server = server ? Server.default;
 		bufnum = server.bufferAllocator.alloc(1);
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
 		buffer = super.newCopyArgs(server, bufnum, (collsize/numChannels).ceil, numChannels)
 			.cache.sampleRate_(server.sampleRate);
 		
@@ -599,8 +626,11 @@ Buffer {
 	*loadDialog { arg server,startFrame = 0,numFrames, action, bufnum;
 		var buffer;
 		server = server ? Server.default;
-		buffer = super.newCopyArgs(server, bufnum ?? { server.bufferAllocator.alloc(1) })
-					.cache;
+		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
+		if(bufnum.isNil) {
+			Error("No more buffer numbers -- free some buffers before allocating more.").throw
+		};
+		buffer = super.newCopyArgs(server, bufnum).cache;
 		File.openDialog("Select a file...",{ arg path;
 			buffer.doOnInfo_(action)
 				.allocRead(path,startFrame,numFrames, {["/b_query",buffer.bufnum]})
