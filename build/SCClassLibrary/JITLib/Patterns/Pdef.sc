@@ -191,6 +191,9 @@ PatternProxy : Pattern {
 	// global storage
 	
 	*at { arg key;
+		if(key.isKindOf(Symbol).not) { 
+			Error("Proxy key not a symbol:" + key.asCompileString).throw 
+		};
 		^this.all.at(key)
 	}
 	
