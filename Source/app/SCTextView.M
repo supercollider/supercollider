@@ -201,6 +201,10 @@ extern bool compiledOK;
     }
 }
 
+- (IBAction) executeSelection: (id) sender {
+	[[self delegate] executeSelection: sender];
+}
+
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
 //-(void)rightMouseDown:(NSEvent*)theEvent { [[self delegate] mouseDown:theEvent]; [super rightMouseDown: theEvent]; }
 //-(void)otherMouseDown:(NSEvent*)theEvent {[[self delegate] mouseDown:theEvent]; [super otherMouseDown: theEvent];  }
