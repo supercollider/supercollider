@@ -840,8 +840,33 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 - (void)drawRect:(NSRect)aRect
 {
-	[super drawRect:aRect];
-	if(drawPeak) {
+	if(drawPeak) { // make warning and critical show for peak not value if peak is drawn
+		if(criticalAboveWarning) {
+			if(peakValue >= critical) {
+				[self setCriticalValue: value];
+				[self setWarningValue: value - 0.1];
+			} else if (peakValue >= warning) {
+				[self setWarningValue: value];
+				[self setCriticalValue: value + 0.1];
+			} else {
+				[self setWarningValue: 1.1];
+				[self setCriticalValue: 1.1];
+			}
+		} else {
+			if(peakValue <= critical) {
+				[self setCriticalValue: value];
+				[self setWarningValue: value + 0.1];
+			} else if (peakValue <= warning) {
+				[self setWarningValue: value];
+				[self setCriticalValue: value - 0.1];
+			} else {
+				[self setWarningValue: -0.1];
+				[self setCriticalValue: -0.1];
+			}
+		}
+		
+		[super drawRect:aRect];
+		
 		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		CGContextSaveGState(cgc);
 		CGContextSetRGBFillColor(cgc, 1.0, 1.0, 0.0, 0.6);
@@ -850,6 +875,8 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		peakRect = CGRectMake(peakLevel, peakY, 3.f, peakHeight);
 		CGContextFillRect(cgc, peakRect); 
 		CGContextRestoreGState(cgc);
+	} else  {
+		[super drawRect:aRect];
 	}
 }
 
@@ -861,6 +888,9 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	isVertical = NO;
 	peakSubtract = 0.f;
 	peakLevel = 0.f;
+	value = peakValue = 0.0;
+	critical = warning = 1.1;
+	criticalAboveWarning = YES;
 	[self prepPeakBounds];
 	return self;
 }
@@ -875,8 +905,24 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)setDrawPeak:(BOOL)flag
 {
 	drawPeak = flag;
+	if(!flag) {
+		[self setWarningValue: warning];
+		[self setCriticalValue: critical];
+	}
 	[self prepPeakBounds];
 	[self setNeedsDisplay:YES];
+}
+
+- (void)setDoubleValue:(double)val
+{
+	[super setDoubleValue:val];
+	value = val;
+}
+
+- (void)setMaxValue:(double)maxVal
+{
+	peakValue = (peakValue / [self maxValue]) * maxVal;
+	[super setMaxValue:maxVal];
 }
 
 - (void)setIsVertical:(BOOL)flag
@@ -895,6 +941,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 - (void)setPeakLevel:(float)val
 {
+	peakValue = val * [self maxValue];
 	peakLevel = val * ([self bounds].size.width - 3);
 	//NSLog(@"peakLevel %f", peakLevel);
 	[self setNeedsDisplay:YES];
@@ -905,6 +952,28 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	NSRect bounds = [self bounds];
 	peakY = bounds.origin.y + peakSubtract;
 	peakHeight = bounds.size.height - peakSubtract;
+}
+
+- (void)setUpWarning:(double)val
+{
+	warning = val;
+	if(critical > warning) {
+		criticalAboveWarning = YES;
+	} else {
+		criticalAboveWarning = NO;
+	}
+	[self setWarningValue:val];
+}
+
+- (void)setUpCritical:(double)val
+{
+	critical = val;
+	if(critical > warning) {
+		criticalAboveWarning = YES;
+	} else {
+		criticalAboveWarning = NO;
+	}
+	[self setCriticalValue:val];
 }
 
 @end
@@ -2586,14 +2655,15 @@ void SCLevelIndicator::setImage()
 void SCLevelIndicator::resetParams()
 {
 	if(mStyle >= 2) {
-		[mLevelIndicator setWarningValue:mWarning * mNumSteps];
-		[mLevelIndicator setCriticalValue:mCritical * mNumSteps];
+		[mLevelIndicator setUpWarning:mWarning * mNumSteps];
+		[mLevelIndicator setUpCritical:mCritical * mNumSteps];
 		[mLevelIndicator setMaxValue: mNumSteps];
 	} else {
-		[mLevelIndicator setWarningValue:mWarning];
-		[mLevelIndicator setCriticalValue:mCritical];
+		[mLevelIndicator setUpWarning:mWarning];
+		[mLevelIndicator setUpCritical:mCritical];
 		[mLevelIndicator setMaxValue: 1.0];
 	}
+	[mLevelIndicator setNeedsDisplay:YES];
 }
 
 int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
