@@ -32,6 +32,7 @@
 - (void) mouseDown: (NSEvent*) event;
 - (void) mouseUpAction: (NSEvent*) theEvent index: (int) index;
 
+- (IBAction) executeSelection: (id) sender;
 - (void) autoIndent: (NSEvent*) event;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
 - (NSString*)currentlySelectedText: (NSRange*) outRange;
