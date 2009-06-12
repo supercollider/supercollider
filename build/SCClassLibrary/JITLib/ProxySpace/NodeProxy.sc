@@ -356,13 +356,12 @@ NodeProxy : BusPlug {
 	
 	source { ^objects.at(0).source }
 	sources {^objects.array.collect(_.source) }
+	
 	prime { arg obj;
 		this.put(nil, obj, 0, nil, false);
 	}
-	
-	at { arg index; 
-		"info: node proxy 'at' was changed to return source. " 
-		"use proxy.objects.at to access control object".postln; 
+		
+	at { arg index;
 		^objects.at(index).source 
 	}
 	
