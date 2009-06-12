@@ -82,8 +82,10 @@
 @end
 
 @interface SCNSLevelIndicator : NSLevelIndicator {
-	BOOL drawPeak, isVertical;
+	BOOL drawPeak, isVertical, criticalAboveWarning;
 	float peakSubtract, peakLevel, peakY, peakHeight;
+	double value, peakValue;
+	float warning, critical;
 }
 
 - (void)setDrawPeak:(BOOL)flag;
@@ -91,6 +93,8 @@
 - (void)setPeakSubtract:(float)val;
 - (void)setPeakLevel:(float)val;
 - (void)prepPeakBounds;
+- (void)setUpWarning:(double)val;
+- (void)setUpCritical:(double)val;
 
 @end
 
