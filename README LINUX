@@ -10,19 +10,18 @@ intro
 
 this is a port of james mccartney's supercollider synthesis engine
 (scsynth) and programming language (sclang) to linux. supercollider's
-main homepage is at
-
-   http://www.audiosynth.com
-
-the source code can be obtained via SVN from
+main homepage is at and the source code can be obtained via SVN from
 
    http://supercollider.sourceforge.net
+
+It all started at this homepage:
+
+   http://www.audiosynth.com
 
 to get further information on supercollider usage or development, you
 might consider subscribing to the mailing lists
 
-   http://www.create.ucsb.edu/mailman/listinfo/sc-users
-   http://www.create.ucsb.edu/mailman/listinfo/sc-dev
+  http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
 ------------------------------------------------------------------------
 build requirements
@@ -93,6 +92,13 @@ build requirements (optional features)
  o for scel: the Emacs interface see the README in the directory 
    `editors/scel'
 
+ o for sced: the gedit interface see the README in the directory 
+   `editors/sced'
+
+ o for scvim: the vim interface see the README in the directory 
+   `editors/scvim'
+
+
 ------------------------------------------------------------------------
 build requirements (debian users)
 ------------------------------------------------------------------------
@@ -139,6 +145,9 @@ scons with the `install' target:
 any target (including `install') can be cleaned with the `-c' option
 to scons; note that cleaning the `install' target also removes locally
 built files.
+
+The option SCEL installs the emacs editor. For the sced and scvim editors,
+please use the scons scripts in their respective directories (in editors/).
 
 ------------------------------------------------------------------------
 Building a Debian package
@@ -210,7 +219,8 @@ for advanced setups, sclang's compilation search path can be
 customized with a library configuration file. an example is provided
 in `linux/examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
 `~/.sclang.cfg'. This config file is only needed when you want to
-_exclude_ directories from the class library. Otherwise it is not needed.
+_exclude_ directories from the class library. Otherwise (so in most cases)
+it is not needed.
 
 ------------------------------------------------------------------------
 environment

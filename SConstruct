@@ -313,7 +313,7 @@ opts.AddOptions(
     BoolOption('SCVIM',
                'Enable the SCVIM user interface; NOTE see the README in /editors/scvim for setting variables', 1),
     BoolOption('SCED',
-               'Enable the SCED (based on gedit) user interface', 0),
+               'Enable the SCED (based on gedit) user interface; NOTE see the README in /editors/sced for setting variables', 0),
     BoolOption('SSE',
                'Build with SSE support', 1),
     BoolOption('STRIP',
@@ -1146,17 +1146,17 @@ if is_installing():
             pkg_extension_dir(INSTALL_PREFIX, 'scel'),
             SC_FILE_RE, 3))
     # scvim
-    if env['SCVIM']:
-        env.Alias('install-library', install_dir(
-            env, 'editors/scvim/scclasses',
-            pkg_extension_dir(INSTALL_PREFIX, 'scvim'),
-            SC_FILE_RE, 3))
-    # scvim helpfiles
-    if env['SCVIM']:
-       env.Alias('install-library', install_dir(
-            env, 'editors/scvim/cache/doc',
-            pkg_data_dir(INSTALL_PREFIX, 'scvim-help'),
-            HELP_FILE_RE, 4))
+#    if env['SCVIM']:
+#        env.Alias('install-library', install_dir(
+#            env, 'editors/scvim/scclasses',
+#            pkg_extension_dir(INSTALL_PREFIX, 'scvim'),
+#            SC_FILE_RE, 3))
+#    # scvim helpfiles
+#    if env['SCVIM']:
+#       env.Alias('install-library', install_dir(
+#            env, 'editors/scvim/cache/doc',
+#            pkg_data_dir(INSTALL_PREFIX, 'scvim-help'),
+#            HELP_FILE_RE, 4))
 
 #scvim : unhtml help files
 #if env['SCVIM']:
@@ -1173,11 +1173,17 @@ if is_installing():
    ##env.Append(FROMTOP=True)
    #SConscript('editors/scvim/SConstruct', exports=['vimenv'])
 
+#### scvim and sced scripts need to be called independently, until someone fixes setting the proper variables from the parent script
+
 if env['SCVIM']:
-   SConscript('editors/scvim/SConstruct', exports=['env'])
+    print '----------------------------------------------------'
+#   SConscript('editors/scvim/SConstruct', exports=['env'])
+    print 'To install SCVIM, please use scons in the directory editors/scvim/'
 
 if env['SCED']:
-   SConscript('editors/sced/SConstruct', 'env')
+#   SConscript('editors/sced/SConstruct', 'env')
+    print '----------------------------------------------------'
+    print 'To install SCED, please use the scons in the directory editors/sced/'
 
 # scel
 if env['SCEL']:
@@ -1245,10 +1251,6 @@ SConstruct
 clean-compile.sh
 compile.sh
 distro
-linux/ChangeLog
-linux/INSTALL
-linux/NEWS
-linux/README
 linux/examples/onetwoonetwo.sc
 linux/examples/sclang.cfg.in
 linux/examples/sclang.sc
