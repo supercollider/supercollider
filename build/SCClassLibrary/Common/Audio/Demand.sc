@@ -85,7 +85,7 @@ DUGen : UGen {
 
 	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^(pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin)
-			.prune(inMin, inMax, clip);
+			.prune(outMin, outMax, clip);
 	}
 
 	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
