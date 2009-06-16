@@ -5,24 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41919}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001ab2}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0024f8}
+span.s2 {color: #001ab2}
 span.s3 {color: #000000}
-span.s4 {color: #0026b4}
-span.s5 {color: #3d6d1d}
-span.s6 {color: #0000bf}
-span.s7 {color: #001bb9}
+span.s4 {color: #36701f}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,6 +29,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">superclass: MultiOutUGen</p>
 <p class="p3"><br></p>
 <p class="p4"><b>Demand.ar(trig, reset, [..ugens..])</b></p>
+<p class="p4"><b>Demand.kr(trig, reset, [..ugens..])</b></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p4">When there is a trigger at the trig input, a value is demanded each ugen in the list and output. The unit generators in the list should be 'demand' rate.</p>
@@ -50,31 +47,31 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p8"><span class="s3">a = { </span>|t_trig, t_reset|</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s4">var</span><span class="Apple-tab-span">	</span>d = <span class="s4">Demand</span>.kr(t_trig + t_reset, t_reset, <span class="s4">Dseries</span>(0, 1, inf));</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span><span class="Apple-tab-span">	</span>d = <span class="s2">Demand</span>.kr(t_trig + t_reset, t_reset, <span class="s2">Dseries</span>(0, 1, inf));</p>
 <p class="p7"><span class="Apple-tab-span">	</span>d.poll(t_trig + t_reset);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>0.0;</p>
 <p class="p7">}.play</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p5">// do this a few times -- the demand value should increase by 1 each time</p>
-<p class="p7">a.set(<span class="s5">\t_trig</span>, 1);</p>
+<p class="p7">a.set(<span class="s4">\t_trig</span>, 1);</p>
 <p class="p6"><br></p>
-<p class="p5"><span class="s3">a.set(</span><span class="s5">\t_reset</span><span class="s3">, 1);<span class="Apple-tab-span">	</span></span>// goes immediately back to 0</p>
+<p class="p5"><span class="s3">a.set(</span><span class="s4">\t_reset</span><span class="s3">, 1);<span class="Apple-tab-span">	</span></span>// goes immediately back to 0</p>
 <p class="p6"><br></p>
 <p class="p3"><br></p>
 <p class="p5">// if d = Demand.kr(t_trig, t_reset, Dseries(0, 1, 10000000)), the reset trigger would output its old value and the new value would appear only on the next t_trig.</p>
 <p class="p1"><br></p>
 <p class="p1"><br></p>
-<p class="p3"><b></b><br></p>
+<p class="p3"><br></p>
 <p class="p4"><b>Another Note:</b> One demand ugen represents a single stream of values, so that embedding the same ugen twice calls this stream twice. To isolate a demand ugen, use a <b>function</b>:</p>
 <p class="p3"><br></p>
 <p class="p7">(</p>
-<p class="p9">{</p>
-<p class="p9"><span class="s6">var</span> a, b, t = <span class="s6">Impulse</span>.kr(2);</p>
-<p class="p9">a = { <span class="s6">Dseq</span>([1, 2, 3, 4, 5], <span class="s6">inf</span>) } * 100;</p>
-<p class="p9">b = a + 1;</p>
-<p class="p9"><span class="s6">Demand</span>.kr(t, 0, [a, b]).poll(t)</p>
-<p class="p9">}.play</p>
+<p class="p7">{</p>
+<p class="p7"><span class="s2">var</span> a, b, t = <span class="s2">Impulse</span>.kr(2);</p>
+<p class="p7">a = { <span class="s2">Dseq</span>([1, 2, 3, 4, 5], <span class="s2">inf</span>) } * 100;</p>
+<p class="p7">b = a + 1;</p>
+<p class="p7"><span class="s2">Demand</span>.kr(t, 0, [a, b]).poll(t)</p>
+<p class="p7">}.play</p>
 <p class="p7">);</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
@@ -83,21 +80,21 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> trig, seq, freq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(24);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Drand</span>([<span class="s7">Dseq</span>((1..5).mirror1, 1), <span class="s7">Drand</span>((4..10), 8)], 2000);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, seq * 100);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed.scaleneg(<span class="s7">MouseX</span>.kr(-1,1)) * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig, seq, freq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(24);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Drand</span>([<span class="s2">Dseq</span>((1..5).mirror1, 1), <span class="s2">Drand</span>((4..10), 8)], 2000);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, seq * 100);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed.scaleneg(<span class="s2">MouseX</span>.kr(-1,1)) * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> trig, seq, freq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(12);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Drand</span>([<span class="s7">Dseq</span>((1..5).mirror1, 1), <span class="s7">Drand</span>((4..10), 8)], 2000) * <span class="s7">Drand</span>([1,2,4,8],2000);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, seq * 100);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed.scaleneg(<span class="s7">MouseX</span>.kr(-1,1)) * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig, seq, freq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(12);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Drand</span>([<span class="s2">Dseq</span>((1..5).mirror1, 1), <span class="s2">Drand</span>((4..10), 8)], 2000) * <span class="s2">Drand</span>([1,2,4,8],2000);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, seq * 100);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed.scaleneg(<span class="s2">MouseX</span>.kr(-1,1)) * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
@@ -106,67 +103,67 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> freq, trig, reset, seq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(10);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Diwhite</span>(60, 72, <span class="s7">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, seq);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> freq, trig, reset, seq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(10);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Diwhite</span>(60, 72, <span class="s2">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, seq);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> freq, trig, reset, seq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(10);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Dseq</span>([72, 75, 79, <span class="s7">Drand</span>([82,84,86])], <span class="s7">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, seq);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> freq, trig, reset, seq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(10);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Dseq</span>([72, 75, 79, <span class="s2">Drand</span>([82,84,86])], <span class="s2">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, seq);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> freq, trig, reset, seq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(10);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Dswitch1</span>(</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> freq, trig, reset, seq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(10);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Dswitch1</span>(</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Diwhite</span>(60, 72, <span class="s7">inf</span>),<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([72, 75, 79, <span class="s7">Drand</span>([82,84,86])], <span class="s7">inf</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Diwhite</span>(60, 72, <span class="s2">inf</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([72, 75, 79, <span class="s2">Drand</span>([82,84,86])], <span class="s2">inf</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>],<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">LFPulse</span>.kr(0.2)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">LFPulse</span>.kr(0.2)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>);<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, seq.midicps);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, seq.midicps);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> freq, trig, reset, seq1, seq2;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(10);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq1 = <span class="s7">Drand</span>([72, 75, 79, 82] - 12, <span class="s7">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq2 = <span class="s7">Dseq</span>([72, 75, 79, <span class="s7">Drand</span>([82,84,86])], <span class="s7">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s7">Demand</span>.kr(trig, 0, [seq1, seq2]);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> freq, trig, reset, seq1, seq2;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(10);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq1 = <span class="s2">Drand</span>([72, 75, 79, 82] - 12, <span class="s2">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq2 = <span class="s2">Dseq</span>([72, 75, 79, <span class="s2">Drand</span>([82,84,86])], <span class="s2">inf</span>).midicps;<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>freq = <span class="s2">Demand</span>.kr(trig, 0, [seq1, seq2]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq + [0,0.7]).cubed.cubed * 0.1;</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
 <p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">var</span> trig, seq;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Impulse</span>.kr(8);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s7">Drand</span>([</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,0,0,1,2,1,0,1]),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,0,2,0,1,0,1,1]),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,0,0,2,0,0,1,1]),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,0,1,2,0,1,2,0]),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,1,1,1,2,2,3,3]),</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Dseq</span>([4,1,0,1,0,1,0,1])</p>
-<p class="p7"><span class="Apple-tab-span">	</span>], <span class="s7">inf</span>);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s7">Demand</span>.kr(trig, 0, seq * 0.4) * trig;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>{<span class="s7">LPF</span>.ar(<span class="s7">PinkNoise</span>.ar, 5000)}.dup * <span class="s7">Decay</span>.kr(trig, 0.5);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> trig, seq;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Impulse</span>.kr(8);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>seq = <span class="s2">Drand</span>([</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,0,0,1,2,1,0,1]),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,0,2,0,1,0,1,1]),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,0,0,2,0,0,1,1]),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,0,1,2,0,1,2,0]),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,1,1,1,2,2,3,3]),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Dseq</span>([4,1,0,1,0,1,0,1])</p>
+<p class="p7"><span class="Apple-tab-span">	</span>], <span class="s2">inf</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>trig = <span class="s2">Demand</span>.kr(trig, 0, seq * 0.4) * trig;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>{<span class="s2">LPF</span>.ar(<span class="s2">PinkNoise</span>.ar, 5000)}.dup * <span class="s2">Decay</span>.kr(trig, 0.5);</p>
 <p class="p7">}.play;</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
