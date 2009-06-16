@@ -301,6 +301,10 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
+		// NOTE: DO NOT CHANGE THE DEFAULT FOR relativeOrigin
+		// Eventually this variable will be removed;
+		// at that time, ALL composite views will measure coordinates
+		// from their own top left (not window top left)
 	var <children, <decorator, relativeOrigin = true;
 			
 	add { arg child;
@@ -310,9 +314,6 @@ SCContainerView : SCView { // abstract class
 	
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
-			// if user changed default relativeOrigin to true,
-			// the client would be out of sync with the cocoa widget
-			// without resetting the view property
 		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
 	
@@ -331,7 +332,7 @@ SCContainerView : SCView { // abstract class
 	}	
 
 	addFlowLayout { |margin, gap| 
-		this.relativeOrigin.if
+		relativeOrigin.if
 			{this.decorator_( FlowLayout( this.bounds.moveTo(0,0), margin, gap ) )}
 			{this.decorator_( FlowLayout( this.bounds, margin, gap ) )};
 		^this.decorator;
@@ -356,6 +357,14 @@ SCContainerView : SCView { // abstract class
 		super.prClose;
 		children.do({ arg item; item.prClose });
 	}
+	
+		// NOTE: This TEMPORARY method exists only because some few view classes
+		// need to ask for the relativeOrigin status.
+		// When relativeOrigin is permanently removed, this method
+		// will be removed also.
+		// DO NOT USE THIS METHOD IN YOUR CODE.
+		// If you do, it will break in a future version.
+	prRelativeOrigin { ^relativeOrigin }
 }
 
 SCCompositeView : SCContainerView {
@@ -458,7 +467,7 @@ SCScrollTopView : SCTopView {
 	bounds {
 		var	bounds = this.absoluteBounds;
 		this.getParents.do({ |parent|
-			(parent.tryPerform(\relativeOrigin) == true).if({
+			(parent.tryPerform(\prRelativeOrigin) == true).if({
 				bounds = bounds.moveBy(parent.bounds.left.neg, parent.bounds.top.neg)
 			}, {
 				^bounds

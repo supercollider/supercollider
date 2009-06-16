@@ -84,13 +84,12 @@ EZGui{ // an abstract class
 				bounds=bounds.asRect;
 				// inset the bounds to make a nice margin
 				bounds=Rect(4,4,bounds.width-8,bounds.height-extraHeight);
-				view=GUI.compositeView.new(parentView,bounds)
-					.relativeOrigin_(true).resize_(2);
+				view=GUI.compositeView.new(parentView,bounds).resize_(2);
 				w.bounds=w.bounds; // swing needs this for some reason, or bounds are too high
 				
 		}{// normal parent view	
 			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds).relativeOrigin_(true);
+			view=GUI.compositeView.new(parentView,bounds);
 		}; 
 		
 		innerBounds=view.bounds.insetBy(margin.x,margin.y);

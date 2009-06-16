@@ -43,7 +43,7 @@
 	horz { arg func,bounds,spacing;
 		var comp;
 		comp = GUI.hLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
-		comp.tryPerform('relativeOrigin_',true);
+//		comp.tryPerform('relativeOrigin_',true);
 		comp.spacing = spacing ? GUI.skin.gap.x;
 		func.value(comp);
 		^comp
@@ -51,7 +51,7 @@
 	vert { arg func,bounds,spacing;
 		var comp;
 		comp = GUI.vLayoutView.new(this,bounds ?? { this.decorator.indentedRemaining });
-		comp.tryPerform('relativeOrigin_',true);
+//		comp.tryPerform('relativeOrigin_',true);
 		comp.spacing = spacing ? GUI.skin.gap.y;
 		func.value(comp);
 		^comp
@@ -59,7 +59,7 @@
 	comp { arg func,bounds;
 		var comp;
 		comp = GUI.compositeView.new(this,bounds ?? { this.indentedRemaining });
-		comp.tryPerform('relativeOrigin_',true);
+//		comp.tryPerform('relativeOrigin_',true);
 		func.value(comp);
 		^comp
 	}
@@ -68,7 +68,7 @@
 				hasHorizontalScroller=true,hasVerticalScroller=true;
 		var comp;
 		comp = GUI.scrollView.new(this,bounds ?? { this.bounds });
-		comp.tryPerform('relativeOrigin_',true);
+//		comp.tryPerform('relativeOrigin_',true);
 		comp.autohidesScrollers = autohidesScrollers;
 		comp.autoScrolls = autoScrolls;
 		comp.hasHorizontalScroller = hasHorizontalScroller;

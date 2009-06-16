@@ -100,8 +100,9 @@ StartRow : SCViewHolder {
   * a composite view with a FlowLayout as its decorator
   */
 FlowView : SCViewHolder {
-	
-	classvar <>relativeOrigin = true;
+		// It is no longer officially supported to use absolute-origin views
+		// with FlowView. It "should" work for this but it is not guaranteed.
+//	classvar <>relativeOrigin = true;
 
 	var	<parent;
 	var	autoRemoves,prevMaxHeight,prevMaxRight;
@@ -129,13 +130,16 @@ FlowView : SCViewHolder {
 			if(iMadeParent) { bounds = bounds.moveTo(0, 0) };
 		},{
 			bounds = parentView.bounds;//.insetAll(2,2,2,2);
-			if(parentView.tryPerform(\relativeOrigin) ? false) {
+			if((parentView.tryPerform(\prRelativeOrigin) ? false)
+					// note, this check (suboptimal, but a necessary compromise
+					// until relativeOrigin is gone for good) assumes a scrollTopView
+					// will have origin 0,0 - should be a safe assumption
+					or: { GUI.schemes.any { |kit| parentView.isKindOf(kit.scrollView) } }) {
 				bounds = bounds.setOriginRelativeTo(parentView);
 			};
 		});
 		// this adds the composite view to the parent composite view
 		view = this.class.viewClass.new(parentView, bounds);
-		view.tryPerform(\relativeOrigin_, FlowView.relativeOrigin);
 		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
 		// so I will replace the last-added child with THIS
 		if(parentView.children[parentView.children.size-1] === view,{
@@ -147,7 +151,7 @@ FlowView : SCViewHolder {
 		// the parent might be a vertical, horizontal or flow
 		// and might now have placed me, so get the bounds
 		bounds = view.bounds;
-		if(view.tryPerform(\relativeOrigin) ? false) {
+		if(view.tryPerform(\prRelativeOrigin) ? false) {
 			bounds = bounds.moveTo(0, 0);
 		};
 		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
@@ -173,7 +177,7 @@ FlowView : SCViewHolder {
 		if(b != view.bounds,{
 			view.bounds = b;
 			if(this.decorator.notNil,{
-				if(view.tryPerform(\relativeOrigin) ? false) {
+				if(view.tryPerform(\prRelativeOrigin) ? false) {
 					this.decorator.bounds = b.moveTo(0, 0)
 				} {
 					this.decorator.bounds = b
@@ -211,7 +215,7 @@ FlowView : SCViewHolder {
 		view.bounds = new;
 
 		// ? but if relativeOrigin is true, then the decorator is already relative
-		if(view.tryPerform(\relativeOrigin) ? false) {
+		if(view.tryPerform(\prRelativeOrigin) ? false) {
 			this.decorator.bounds = new.moveTo(0, 0);
 		} {
 			this.decorator.bounds = new; // if the left/top moved this buggers it
