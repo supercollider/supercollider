@@ -77,7 +77,7 @@ MyWidget : SCUserView {
 		// set the value and do the action
 		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
-			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
+			newVal= x.linlin(0,this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
 			
 			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
@@ -92,7 +92,7 @@ MyWidget : SCUserView {
 		// set the value and do the action
 		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
-			newVal= x.linlin(this.bounds.left,this.bounds.left+this.bounds.width,0,1); 
+			newVal= x.linlin(0,this.bounds.width,0,1); 
 			// translates the mouse position in pixels to a relative value between 0 and 1
 			
 			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
