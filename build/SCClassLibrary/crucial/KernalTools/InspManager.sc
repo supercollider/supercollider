@@ -88,7 +88,7 @@ InspManager {
 				menu.action = { this.showInsp(insps.at(menu.value)) };
 
 				inspView = GUI.compositeView.new(f, Rect(203,0,w - 205,h));
-				inspView.tryPerform(\relativeOrigin_,true);
+//				inspView.tryPerform(\relativeOrigin_,true);
 				inspView.background = Color(0.17,0.1,0.1,0.15);
 				this.showInsp(insp);
 
