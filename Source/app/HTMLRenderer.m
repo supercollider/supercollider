@@ -32,9 +32,7 @@
 	NSMutableAttributedString *result = nil;
 	
 	finishedRendering = 0;
-	[NSThread detachNewThreadSelector:@selector(renderHTMLFragment:) toTarget:self withObject:url];
-	[renderLock lockWhenCondition:1]; // block until the rendering is done
-	[renderLock unlockWithCondition:0]; // set the lock for the next run
+	[self renderHTMLFragment:url];
 	
 	if(finishedRendering == 1)
 		return [(id <WebDocumentText>)[[[renderWebView mainFrame] frameView] documentView] attributedString];

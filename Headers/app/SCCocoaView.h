@@ -56,7 +56,7 @@
 - (BOOL) textView: (NSTextView *) textView
     clickedOnLink: (id) link
 		  atIndex: (unsigned) charIndex;
-
+- (void) loadHTMLToTextView:(NSURL *)url;
 @end
 
 @interface SCTextFieldResponder : NSTextField

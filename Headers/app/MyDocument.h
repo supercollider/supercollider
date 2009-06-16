@@ -121,6 +121,7 @@ extern PyrSymbol *s_closed;
 - (IBAction)convertHelpLinksToHyperlinks:(id)sender;
 - (void)convertFileLinksToRelative:(NSTextStorage *)textStorage;
 
+- (void) loadHTML:(NSURL *)url;
 @end
 
 NSString* pathOfHelpFileFor(NSString* selection);
