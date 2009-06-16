@@ -10,6 +10,7 @@ Headlines:
 * 2009-05-17 server guis (on osx) now indicate which one is currently default - adc
 * 2009-05-18 enabled control rate versions of Ball, TBall and Spring - mb
 * 2009-05-18 LID support for setting "MSC" state as well as "LED" on devices - ds
+* 2009-06-19 patched for compatibility with Safari 4, fixing a lockup issue when opening help docs - ar
 
 Bugfixes:
 ---------
@@ -18,6 +19,7 @@ Bugfixes:
 * 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
 * 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
 * 2009-05-25 mac icons for document types .quark .scd .rtfd were omitted from the app bundle, now fixed - ds
+* 2009-06-12 bug fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
 
 Other additions/improvements:
 -----------------------------
@@ -28,6 +30,8 @@ Other additions/improvements:
 * 2009-05-xx various documentation updates - various
 * 2009-05-xx various improvements to ubuntu-debian packaging scripts - ds, am
 * 2009-05-20 SynthDef:writeOnce now available as an instance method as well as a class method - ds
+* 2009-06-11 sc.app gets a menu command for "Evaluate selection" - sw
+
 
 SuperCollider v3.3, released 2009-04-30
 =======================================
