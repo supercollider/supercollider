@@ -301,8 +301,9 @@ TaskProxyAllGui {
 		SkipJack({ 
 			var overflow, tooMany; 
 
-			names = this.observedClass.all.keys.as(Array).sort; 
-			if (filtering) { 
+			names = this.observedClass.all.keys.as(Array);
+			try { names.sort };
+			if (filtering) {
 				if (prefix == "") { 
 					names = names.reject { |name| name.asString.includes($_) };
 				} { 
@@ -310,7 +311,7 @@ TaskProxyAllGui {
 				};	
 			};
 			overflow = (names.size - size).max(0); 
-			if (overflow > 0) { 
+			if (overflow > 0) {
 				scrolly.visible_(true);
 				scrolly.numItems_(names.size);
 				scrolly.value_(keysRotation ? overflow);
