@@ -985,35 +985,70 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	return attr;
 }
 
-
-- (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
+- (void) loadHTML:(NSURL *)url
 {
-	NSURL *url = [NSURL fileURLWithPath: path];
-	BOOL success = NO;
-
+	if (!url) return;
+	
 	if (!initTextView) initTextView = [self makeTextView];
 	NSTextStorage* text = [initTextView textStorage];
 
 	[text beginEditing];	// Bracket with begin/end editing for efficiency
 	[[text mutableString] setString:@""];	// Empty the document
 
+	NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
+
+	if(htmlAttributedString)
+	{
+		[text setAttributedString:htmlAttributedString];
+		[initTextView setDefaultTabsTo: 28.0f];
+	}
+
+	[text endEditing];
+	
+	[url release];
+}
+
+- (BOOL)readFromFile:(NSString *)path ofType:(NSString *)aType
+{
+	NSURL *url = [NSURL fileURLWithPath: path];
+	BOOL success = NO;
+
 	NSString* extension = [path pathExtension];
 
-	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-		NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
+	if (!initTextView) initTextView = [self makeTextView];
+	NSTextStorage* text = [initTextView textStorage];
 
-		if(!htmlAttributedString) success = NO;
-		else {
-			[text setAttributedString:htmlAttributedString];
-			[initTextView setDefaultTabsTo: 28.0f];
-			success = YES;
+	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"])
+	{
+		[url retain];
+		if (docCreatedFromLang)
+		{
+			SEL sel = @selector(loadHTML:);
+			NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
+			SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+			
+			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+			[anInvocation setTarget: self];
+			[anInvocation setSelector: sel];
+			[anInvocation setArgument:&url atIndex:2];
+			[scvm defer: anInvocation];
 		}
+		else
+		{
+			[self loadHTML:url];
+		}
+		[self setpathToSaveAttachments:[[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"attachments"] stringByAppendingPathComponent: [[path lastPathComponent] stringByDeletingPathExtension]]];
+		
+		return YES;
 	}
-	else {
-		NSError *error;
-		success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
-		if(!success) NSLog(@"Error opening file: %@", error);
-	}
+
+	[text beginEditing];	// Bracket with begin/end editing for efficiency
+	[[text mutableString] setString:@""];	// Empty the document
+
+	
+	NSError *error;
+	success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
+	if(!success) NSLog(@"Error opening file: %@", error);
 
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
 		[initTextView setFont: defaultFont];

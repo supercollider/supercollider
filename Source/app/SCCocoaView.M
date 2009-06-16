@@ -278,6 +278,25 @@ extern PyrSymbol *s_scview;
     return YES;
 }
 
+- (void) loadHTMLToTextView:(NSURL *)url
+{
+	if (!url) return;
+	SCTextView *textView = mSCViewObject->getTextView();
+	NSTextStorage* text = [textView textStorage];
+	[text beginEditing];	// Bracket with begin/end editing for efficiency
+
+	NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
+	
+	if(htmlAttributedString)
+	{
+		[text setAttributedString:htmlAttributedString];
+		[textView setDefaultTabsTo: 28.0f];
+	}
+	
+	[text endEditing];
+	[url release];
+}
+
 @end
 
 
@@ -1395,25 +1414,26 @@ int SCCocoaTextView::open(NSString *path)
 	if(!url) return errFailed;
 
 	NSTextStorage* text = [mTextView textStorage];
-	
-	[text beginEditing];	// Bracket with begin/end editing for efficiency
-	[[text mutableString] setString:@""];	// Empty the document
-	
+		
 	NSString* extension = [path pathExtension];
 	
 	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-		NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
+
+		SEL sel = @selector(loadHTMLToTextView:);
+		NSMethodSignature *sig = [SCCocoaTextViewResponder instanceMethodSignatureForSelector: sel];
+		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 		
-		if(!htmlAttributedString) {
-			[text endEditing];
-			[url release];
-			return errFailed;
-		} else {
-			[text setAttributedString:htmlAttributedString];
-			[mTextView setDefaultTabsTo: 28.0f];
-		}
+		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+		[anInvocation setTarget: mCocoaToLangAction];
+		[anInvocation setSelector: sel];
+		[anInvocation setArgument:&url atIndex:2];
+		[scvm defer: anInvocation];
+		return errNone;
 	}
 	else {
+		[text beginEditing];	// Bracket with begin/end editing for efficiency
+		[[text mutableString] setString:@""];	// Empty the document
+
 		NSError *error;
 		BOOL success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
 		if(!success) {
