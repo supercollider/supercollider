@@ -588,9 +588,12 @@ else:
     features['sse'] = False
 
 if env['X11']:
+#    features['x11'], libraries['x11'] = conf.CheckPKG('xt')
     if type(env['X11']) != types.StringType:
         if os.path.exists('/usr/X11R6'):
             env['X11'] = '/usr/X11R6'
+        elif os.path.exists('/usr/lib/X11'):
+            env['X11'] = '/usr/lib/X11'
         else: env['X11'] = '/usr'
     x11Env = Environment(
         CPPPATH = [os.path.join(env['X11'], 'include')],
@@ -601,7 +604,6 @@ if env['X11']:
     libraries['x11'] = x11Conf.Finish()
 else:
     features['x11'] = False
-
 
 
 opts.Save('scache.conf', env)
