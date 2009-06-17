@@ -145,10 +145,6 @@ SCKnob : SCUserView {
 	mouseMove { arg x, y, modifiers;
 		var mp, pt, angle, inc = 0;
 		
-		if (relativeOrigin) {
-			mp = this.mousePosition;
-			x = mp.x; y = mp.y;
-		};
 		
 		if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
 			case
