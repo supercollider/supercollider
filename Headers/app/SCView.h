@@ -796,6 +796,7 @@ public:
 	virtual void mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent);
 	virtual void mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent);
 	virtual void mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent);
+	virtual void mouseOver(SCPoint where, int modifiers, NSEvent *theEvent);
 	virtual void keyDown(int character, int modifiers);
 	virtual void keyUp(int character, int modifiers);
  	virtual bool canReceiveDrag();
