@@ -4133,6 +4133,8 @@ void SCUserView::draw(SCRect inDamage)
 		if(!mCGLayer) 
 		{
 			mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
+			if(!mCGLayer)
+				return; // creation failed
 			CGLayerRetain(mCGLayer);
 		} else {
 			//check whether size has changed
@@ -4140,7 +4142,7 @@ void SCUserView::draw(SCRect inDamage)
 			if(layerSize.width != size.width || layerSize.height != size.height){
 				CGLayerRelease(mCGLayer);
 				mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-				CGLayerRetain(mCGLayer);
+				// CGLayerRetain(mCGLayer); // not needed
 			}
 		}
 		CGRect cgrect = CGRectMake(0, 0, bounds.width, bounds.height);
@@ -4231,10 +4233,16 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-
-	mRealtiveMousePoint.x = where.x - bounds.x;
-	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseDownAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	
+	if(parent()->isTopContainer()) {
+		mRealtiveMousePoint.x = where.x - bounds.x;
+		mRealtiveMousePoint.y = where.y - bounds.y;
+	}else{		
+		mRealtiveMousePoint.x = where.x - mBounds.x;
+		mRealtiveMousePoint.y = where.y - mBounds.y;
+	}
+	
+	SCView::mouseDownAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
@@ -4244,23 +4252,49 @@ void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent
 void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-
-	mRealtiveMousePoint.x = where.x - bounds.x;
-	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseMoveAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	
+	if(parent()->isTopContainer()) {
+		mRealtiveMousePoint.x = where.x - bounds.x;
+		mRealtiveMousePoint.y = where.y - bounds.y;
+	}else{
+		mRealtiveMousePoint.x = where.x - mBounds.x;
+		mRealtiveMousePoint.y = where.y - mBounds.y;
+	}
+	
+	SCView::mouseMoveAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 	
 }
 
 void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-
-	mRealtiveMousePoint.x = where.x - bounds.x;
-	mRealtiveMousePoint.y = where.y - bounds.y;
-	SCView::mouseUpAction((mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	
+	if(parent()->isTopContainer()) {
+		mRealtiveMousePoint.x = where.x - bounds.x;
+		mRealtiveMousePoint.y = where.y - bounds.y;
+	}else{
+		mRealtiveMousePoint.x = where.x - mBounds.x;
+		mRealtiveMousePoint.y = where.y - mBounds.y;
+	}
+	
+	SCView::mouseUpAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 
 }	 
 
+void SCUserView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
+{
+	SCRect bounds = getDrawBounds();
+	
+	if(parent()->isTopContainer()) {
+		mRealtiveMousePoint.x = where.x - bounds.x;
+		mRealtiveMousePoint.y = where.y - bounds.y;
+	}else{
+		mRealtiveMousePoint.x = where.x - mBounds.x;
+		mRealtiveMousePoint.y = where.y - mBounds.y;
+	}
+	
+	SCView::mouseOver( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+}
 
 void SCUserView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {

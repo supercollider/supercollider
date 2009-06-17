@@ -224,7 +224,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		}else
 		view->setConstructionModeFromPoint(scpoint);
 
-        [self displayIfNeeded];
+        [self setNeedsDisplay:YES];
         
         while (keepOn && !mDragStarted && !mMenuView) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
@@ -767,11 +767,11 @@ const int circDiam = 20;
 		int i=0;
 		for(; i < numDirtyRects; ++i) {
 			curRect = *(dirtyRects+i);
-			// focus extends the current view bounds - account it
-			screct.x = curRect.origin.x - 2;
-			screct.y = curRect.origin.y - 2; 
-			screct.width = curRect.size.width + 4;
-			screct.height = curRect.size.height + 4;
+			
+			screct.x = curRect.origin.x;
+			screct.y = curRect.origin.y; 
+			screct.width = curRect.size.width;
+			screct.height = curRect.size.height;
 			
 			CGContextSaveGState(cgc);
 			CGContextClipToRect(cgc, curRect);		
