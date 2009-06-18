@@ -5,12 +5,12 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #596194; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -19,18 +19,16 @@ p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helve
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; color: #000000; min-height: 17.0px}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #5d67a2}
+span.s3 {color: #0000bf}
 span.s4 {text-decoration: underline}
-span.s5 {color: #6f7178}
-span.s6 {color: #0018b8}
+span.s5 {color: #0000bf}
+span.s6 {color: #0000bf}
 span.s7 {font: 12.0px Helvetica}
 span.s8 {color: #0000bf}
 span.s9 {color: #bf0000}
@@ -50,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding SCVLayoutView</b></p>
 <p class="p2"><br></p>
-<p class="p1">Although <b>relativeOrigin</b> can be set, it is irrelevant. SCHLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key strokes, it does not itself accept mouse clicks or drags.</p>
+<p class="p1">SCHLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key strokes, it does not itself accept mouse clicks or drags.</p>
 <p class="p2"><br></p>
 <p class="p1">SCHLayoutView responds to the minWidth and maxWidth <b>properties</b> in its child views. This is useful when <b>resize</b> is set to 2, 5, or 8. See examples below.</p>
 <p class="p2"><br></p>
@@ -73,163 +71,163 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><b>Examples</b></p>
 <p class="p13"><br></p>
 <p class="p14">// Childview height fills the View automatically</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 10;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75)).value_(i / q)</p>
-<p class="p16">});</p>
-<p class="p16">h.background_(<span class="s8">Color</span>.rand);</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 10;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75)).value_(i / q)</p>
+<p class="p11">});</p>
+<p class="p11">h.background_(<span class="s8">Color</span>.rand);</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p14">// Stretching the layout view. Slider height fills the View automatically.</p>
-<p class="p17"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 8;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
 <p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.background = <span class="s8">Color</span>.rand;</p>
-<p class="p16">h.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75)).background_(<span class="s8">Color</span>.grey.alpha_(0.4));</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s</p>
-<p class="p16">});</p>
-<p class="p16"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 8;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.background = <span class="s8">Color</span>.rand;</p>
+<p class="p11">h.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75)).background_(<span class="s8">Color</span>.grey.alpha_(0.4));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s</p>
+<p class="p11">});</p>
+<p class="p11"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
 <p class="p14">// Stretching the layout view and the contents.</p>
 <p class="p14">// If all the contents are elastic, the widths of the contents are perfectly divided up:</p>
 <p class="p14">// in this example, the StaticText is not elastic in order to preserv its width.</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 10;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p16">h.background = <span class="s8">Color</span>.rand;</p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s</p>
-<p class="p16">});</p>
-<p class="p16"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 10;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p11">h.background = <span class="s8">Color</span>.rand;</p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.value = i / q;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s</p>
+<p class="p11">});</p>
+<p class="p11"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p14">// set minWidth on contents</p>
 <p class="p14">// beware that if the layout view width is smaller than the combined width of all the contents,</p>
 <p class="p14">// things might disappear when you try to handle them with the mouse.</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 5;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.background = <span class="s8">Color</span>.rand;</p>
-<p class="p16">h.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>if(i &lt; 2,{</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s9">// some elastic</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,20);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>},{</p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 5;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.background = <span class="s8">Color</span>.rand;</p>
+<p class="p11">h.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>if(i &lt; 2,{</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 5; <span class="s9">// some elastic</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,20);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>},{</p>
 <p class="p14"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.resize = 1; </span>// some not elastic</p>
-<p class="p16"><span class="Apple-tab-span">	</span>});</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s</p>
-<p class="p16">});</p>
-<p class="p16"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 5;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p16">h.background = <span class="s8">Color</span>.rand;</p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
-<p class="p15"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.resize = 5;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,20);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxWidth</span>,40);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s</p>
-<p class="p16">});</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>});</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s</p>
+<p class="p11">});</p>
+<p class="p11"><span class="s8">StaticText</span>(h, <span class="s8">Rect</span>(0,0,105,20)).background_(<span class="s8">Color</span>.rand).string_(<span class="s10">" Some Example\n Text"</span>);</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 5;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p11">h.background = <span class="s8">Color</span>.rand;</p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s = <span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75));</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.value = i / 5;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.resize = 5;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,20);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxWidth</span>,40);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s</p>
+<p class="p11">});</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p14">// Text flows</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 5;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.resize = 5; <span class="s9">// elastic</span></p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
-<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span>s = <span class="Apple-tab-span">	</span></span><span class="s8">StaticText</span><span class="s2">(h,120@20).string_(</span>"Some short text which wraps around"<span class="s2">);</span></p>
-<p class="p15"><br></p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.resize = 5;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,10);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxWidth</span>,120);</p>
-<p class="p15"><br></p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 5;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.resize = 5; <span class="s9">// elastic</span></p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{ <span class="s8">arg</span> i;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">var</span> s;</p>
+<p class="p16"><span class="s2"><span class="Apple-tab-span">	</span>s = <span class="Apple-tab-span">	</span></span><span class="s8">StaticText</span><span class="s2">(h,120@20).string_(</span>"Some short text which wraps around"<span class="s2">);</span></p>
+<p class="p10"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.resize = 5;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minWidth</span>,10);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxWidth</span>,120);</p>
+<p class="p10"><br></p>
 <p class="p14"><span class="s2"><span class="Apple-tab-span">	</span></span>// not working</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxHeight</span>,10);</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minHeight</span>,10);</p>
-<p class="p15"><br></p>
-<p class="p16"><span class="Apple-tab-span">	</span>s.background = <span class="s8">Color</span>.white;</p>
-<p class="p16"><span class="Apple-tab-span">	</span>s</p>
-<p class="p16">});</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
-<p class="p15"><br></p>
-<p class="p15"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\maxHeight</span>,10);</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.setProperty(<span class="s11">\minHeight</span>,10);</p>
+<p class="p10"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span>s.background = <span class="s8">Color</span>.white;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>s</p>
+<p class="p11">});</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 <p class="p14">// Spacing</p>
-<p class="p15"><br></p>
-<p class="p16">(</p>
-<p class="p16">q = 10;</p>
-<p class="p16">w = <span class="s8">Window</span>.new;</p>
-<p class="p15"><br></p>
-<p class="p16">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
-<p class="p16">h.setProperty(<span class="s11">\spacing</span>,0);</p>
-<p class="p15"><br></p>
-<p class="p16"><span class="s8">Array</span>.fill(q,{</p>
-<p class="p16"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75))</p>
-<p class="p16">});</p>
-<p class="p15"><br></p>
-<p class="p16">w.front</p>
-<p class="p16">)</p>
+<p class="p10"><br></p>
+<p class="p11">(</p>
+<p class="p11">q = 10;</p>
+<p class="p11">w = <span class="s8">Window</span>.new;</p>
+<p class="p10"><br></p>
+<p class="p11">h = <span class="s8">HLayoutView</span>(w,<span class="s8">Rect</span>(0,0,300,300));</p>
+<p class="p11">h.setProperty(<span class="s11">\spacing</span>,0);</p>
+<p class="p10"><br></p>
+<p class="p11"><span class="s8">Array</span>.fill(q,{</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s8">Slider</span>(h,<span class="s8">Rect</span>(0,0,20,75))</p>
+<p class="p11">});</p>
+<p class="p10"><br></p>
+<p class="p11">w.front</p>
+<p class="p11">)</p>
 <p class="p10"><br></p>
 </body>
 </html>
