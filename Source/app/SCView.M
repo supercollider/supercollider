@@ -439,11 +439,14 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-		if(mParent->relativeOrigin()){
-			SCRect tbounds = mParent->getDrawBounds();
-			where.x = where.x - tbounds.x;
-			where.y = where.y - tbounds.y;
-		}		
+//		if(mParent->relativeOrigin()){
+//			SCRect tbounds = mParent->getDrawBounds();
+//			where.x = where.x - tbounds.x;
+//			where.y = where.y - tbounds.y;
+//		}
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x - tbounds.x;
+		where.y = where.y - tbounds.y;
 		++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
@@ -462,11 +465,14 @@ void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-		if(mParent->relativeOrigin()){
-			SCRect tbounds = mParent->getDrawBounds();
-			where.x = where.x - tbounds.x;
-			where.y = where.y - tbounds.y;
-		}			
+//		if(mParent->relativeOrigin()){
+//			SCRect tbounds = mParent->getDrawBounds();
+//			where.x = where.x - tbounds.x;
+//			where.y = where.y - tbounds.y;
+//		}
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x - tbounds.x;
+		where.y = where.y - tbounds.y;
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
@@ -483,11 +489,14 @@ void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-		if(mParent->relativeOrigin()){
-			SCRect tbounds = mParent->getDrawBounds();
-			where.x = where.x - tbounds.x;
-			where.y = where.y - tbounds.y;
-		}			
+//		if(mParent->relativeOrigin()){
+//			SCRect tbounds = mParent->getDrawBounds();
+//			where.x = where.x - tbounds.x;
+//			where.y = where.y - tbounds.y;
+//		}
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x - tbounds.x;
+		where.y = where.y - tbounds.y;
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetFloat(g->sp, where.x); 
         ++g->sp;  SetFloat(g->sp, where.y); 
@@ -553,11 +562,14 @@ void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-		if(mParent->relativeOrigin()){
-			SCRect tbounds = mParent->getDrawBounds();
-			where.x = where.x - tbounds.x;
-			where.y = where.y - tbounds.y;
-		}			
+//		if(mParent->relativeOrigin()){
+//			SCRect tbounds = mParent->getDrawBounds();
+//			where.x = where.x - tbounds.x;
+//			where.y = where.y - tbounds.y;
+//		}	
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x - tbounds.x;
+		where.y = where.y - tbounds.y;
         ++g->sp;  SetObject(g->sp, mObj); 
         ++g->sp;  SetInt(g->sp, (int) where.x); 
         ++g->sp;  SetInt(g->sp, (int) where.y); 
@@ -4241,8 +4253,15 @@ void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent
 		mRealtiveMousePoint.x = where.x - mBounds.x;
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
+//	
+//	SCView::mouseDownAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
 	
-	SCView::mouseDownAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	if(!mRelativeOrigin) {
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x + tbounds.x;
+		where.y = where.y + tbounds.y;
+	}
+	SCView::mouseDownAction(where, modifiers, theEvent);
 
 	if (modifiers & NSCommandKeyMask) {
 		beginDrag(where);
@@ -4261,7 +4280,13 @@ void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
 	
-	SCView::mouseMoveAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	if(!mRelativeOrigin) {
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x + tbounds.x;
+		where.y = where.y + tbounds.y;
+	}
+	
+	SCView::mouseMoveAction( where, modifiers, theEvent);
 	
 }
 
@@ -4277,7 +4302,13 @@ void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
 	
-	SCView::mouseUpAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	if(!mRelativeOrigin) {
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x + tbounds.x;
+		where.y = where.y + tbounds.y;
+	}
+	
+	SCView::mouseUpAction( where, modifiers, theEvent);
 
 }	 
 
@@ -4293,7 +4324,13 @@ void SCUserView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
 	
-	SCView::mouseOver( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
+	if(!mRelativeOrigin) {
+		SCRect tbounds = getDrawBounds();
+		where.x = where.x + tbounds.x;
+		where.y = where.y + tbounds.y;
+	}
+	
+	SCView::mouseOver( where, modifiers, theEvent);
 }
 
 void SCUserView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)

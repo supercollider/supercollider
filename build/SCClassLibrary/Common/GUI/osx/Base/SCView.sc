@@ -1357,6 +1357,7 @@ SCUserView : SCView {
 	}
 
 	mousePosition{
+		this.deprecated(thisMethod);
 		^this.getProperty(\mousePosition, Point.new)
 	}
 		
