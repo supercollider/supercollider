@@ -15,9 +15,6 @@ MyWidget : SCUserView {
 	
 		super.init(argParent, argBounds);  
 				
-		// this must accord with your mouse and drawing functions
-		this.relativeOrigin_( true ); 
-
 		// set defaults of your instance variables
 		rightColor=Color.grey(0.8);
 		leftColor=Color.grey(0.2);
@@ -78,7 +75,7 @@ MyWidget : SCUserView {
 		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
 			newVal= x.linlin(0,this.bounds.width,0,1); 
-			// translates the mouse position in pixels to a relative value between 0 and 1
+			// translates the relative mouse position in pixels to a value between 0 and 1
 			
 			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
 		};
@@ -93,7 +90,7 @@ MyWidget : SCUserView {
 		([256, 0].includes(modifiers)).if{ // restrict to no modifier
 		
 			newVal= x.linlin(0,this.bounds.width,0,1); 
-			// translates the mouse position in pixels to a relative value between 0 and 1
+			// translates the  relative mouse position in pixels to a value between 0 and 1
 			
 			if (newVal != value) {this.valueAction_(newVal)}; // only do something if the value changed
 		};
