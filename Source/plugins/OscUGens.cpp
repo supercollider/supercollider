@@ -2514,6 +2514,7 @@ void Blip_Ctor(Blip *unit)
 	int32 N = unit->m_numharm;
 	int32 maxN = (int32)((SAMPLERATE * 0.5) / unit->m_freqin);
 	if (N > maxN) N = maxN;
+	if (N < 1) N = 1;
 	unit->m_N = N;
 	unit->m_scale = 0.5/N;
 	unit->m_phase = 0;
@@ -2544,6 +2545,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 			maxfreqin = sc_max(unit->m_freqin, freqin);
 			freq = (int32)(unit->m_cpstoinc * maxfreqin);
 		} else {
+			if (N < 1) { N = 1; }
 			freq = (int32)(unit->m_cpstoinc * freqin);
 		}
 		crossfade = N != unit->m_N;
