@@ -1877,7 +1877,7 @@ void traverseFullDepTree2()
 			//elapsed = TickCount() - compileStartTime;
 			//elapsed = 0;
                         elapsed = elapsedTime() - compileStartTime;
-                        post("\tcompiled %d files in %.2f seconds \n", 
+                        post("\tcompiled %d files in %.2f seconds\n",
 				gNumCompiledFiles, elapsed );
 			post("compile done\n");
 		}
