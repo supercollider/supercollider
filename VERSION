@@ -1,2 +1,2 @@
-3.3.0
-classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix="RC";
+3.3.1
+classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
