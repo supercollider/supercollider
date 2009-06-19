@@ -1,7 +1,7 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
-Recent changes (will be SuperCollider v3.3.1)
-=======================================
+SuperCollider v3.3.1, released 2009-06-19
+=========================================
 
 Headlines:
 ----------
@@ -20,6 +20,8 @@ Bugfixes:
 * 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
 * 2009-05-25 mac icons for document types .quark .scd .rtfd were omitted from the app bundle, now fixed - ds
 * 2009-06-12 bug fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
+* 2009-06-12 mouse coordinates fix, deprecate SCUserView:mousePosition - sw
+* 2009-06-17 some issues fixed in SCUserView - cq
 
 Other additions/improvements:
 -----------------------------
@@ -31,6 +33,9 @@ Other additions/improvements:
 * 2009-05-xx various improvements to ubuntu-debian packaging scripts - ds, am
 * 2009-05-20 SynthDef:writeOnce now available as an instance method as well as a class method - ds
 * 2009-06-11 sc.app gets a menu command for "Evaluate selection" - sw
+* 2009-06-17 adjusted SCKnob to use relative mouse coordinates - jm
+* 2009-06-17 small fix to SConstruct to allow for new Debian X11 location when compiling on linux - mb
+* 2009-06-19 Blip ugen: prevent sound blowup by never letting numharm be less than 1 - fo
 
 
 SuperCollider v3.3, released 2009-04-30
