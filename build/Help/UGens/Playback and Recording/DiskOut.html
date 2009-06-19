@@ -35,6 +35,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>bufnum</b> - the number of the buffer to write to (prepared with /b-write or Buffer.write)<span class="Apple-converted-space"> </span></p>
 <p class="p3"><b>channelsArray</b> - the Array of channels to write to the file.</p>
 <p class="p2"><br></p>
+<p class="p3">Note that the number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file).</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s2">s.boot; </span>// start the server</p>
 <p class="p6">(</p>
