@@ -40,9 +40,9 @@ MIDIClient {
 
 		UI.registerForShutdown( { this.disposeClient } );
 
-		Post << "MIDI Sources: " << Char.nl;
+		Post << "MIDI Sources:" << Char.nl;
 		sources.do({ |x| Post << Char.tab << x << Char.nl });
-		Post << "MIDI Destinations: " << Char.nl;
+		Post << "MIDI Destinations:" << Char.nl;
 		destinations.do({ |x| Post << Char.tab << x << Char.nl });
 	}
 	*list {
