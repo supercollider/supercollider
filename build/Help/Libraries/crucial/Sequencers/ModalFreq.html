@@ -5,20 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001fb3}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-span.s1 {text-decoration: underline ; color: #0018e8}
-span.s2 {color: #001fb3}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+span.s1 {text-decoration: underline ; color: #0000bf}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.s4 {color: #007300}
 span.s5 {color: #0000bf}
@@ -31,7 +28,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Control rate player</b></p>
 <p class="p2"><br></p>
 <p class="p3">This uses the same pitch model as Event Patterns.</p>
-<p class="p3">see the Pitch model here: <a href="../../../../../../../SuperCollider3.1/Help/Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s1">Streams-Patterns-Events5</span></a></p>
+<p class="p3">see the Pitch model here: <a href="../../../Streams-Patterns-Events/Streams-Patterns-Events5.html"><span class="s1">Streams-Patterns-Events5</span></a></p>
 <p class="p2"><br></p>
 <p class="p3"><b>ModalFreq.new( degree, scaleArray, root, octave, stepsPerOctave )</b></p>
 <p class="p2"><br></p>
@@ -71,29 +68,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p7"><b>Used as a Stream. <span class="Apple-converted-space"> </span></b></p>
+<p class="p3"><b>Used as a Stream. <span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
 <p class="p3">It can be used directly in a Pbind, but there's not much point since the pattern event system already has the same pitch model.</p>
-<p class="p8">(</p>
-<p class="p9">Pbind<span class="s3">(</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>,<span class="Apple-converted-space">  </span><span class="s5">ModalFreq</span>(<span class="s5">Pseq</span>([1,2,3,4],<span class="s5">inf</span>))</p>
-<p class="p8"><span class="Apple-tab-span">	</span>).play</p>
-<p class="p8">)</p>
+<p class="p5">(</p>
+<p class="p7">Pbind<span class="s3">(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>,<span class="Apple-converted-space">  </span><span class="s5">ModalFreq</span>(<span class="s5">Pseq</span>([1,2,3,4],<span class="s5">inf</span>))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>).play</p>
+<p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">Here its used as a stream, and its StreamKrDur iterating the stream and setting the values of a bus on the server.</p>
 <p class="p5">(</p>
-<p class="p10"><br></p>
-<p class="p8"><span class="s5">Patch</span>({ <span class="s5">arg</span> freq=100,amp=1.0;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
-<p class="p8"><span class="Apple-tab-span">	</span>},[<span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>StreamKrDur<span class="s3">(</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">ModalFreq</span>(<span class="s5">Pseq</span>([1,2,3,4],<span class="s5">inf</span>)),<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>([0.25,0.5,0.75],<span class="s5">inf</span>),</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1),</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1</p>
-<p class="p8"><span class="Apple-tab-span">	</span>]).play;</p>
-<p class="p10"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s5">Patch</span>({ <span class="s5">arg</span> freq=100,amp=1.0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">SinOsc</span>.ar([freq,freq + 30],0,amp)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>},[<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>StreamKrDur<span class="s3">(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">ModalFreq</span>(<span class="s5">Pseq</span>([1,2,3,4],<span class="s5">inf</span>)),<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>([0.25,0.5,0.75],<span class="s5">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.1),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1</p>
+<p class="p5"><span class="Apple-tab-span">	</span>]).play;</p>
+<p class="p4"><br></p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>

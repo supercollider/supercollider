@@ -5,25 +5,25 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ad140d; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #a41c14; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018b8}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 span.s1 {color: #000000}
-span.s2 {color: #001bb9}
+span.s2 {color: #0018b8}
 span.s3 {color: #4d4d4d}
 span.s4 {font: 12.0px Helvetica}
 span.s5 {color: #606060}
-span.s6 {color: #2c7014}
-span.s7 {font: 10.0px Monaco; color: #ad140d}
+span.s6 {color: #356f14}
+span.s7 {font: 10.0px Monaco; color: #a41c14}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,7 +44,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>startup</b></p>
 <p class="p2"><br></p>
-<p class="p3">called after the class library has been compiled. This calls the superclass' <b>startup</b>, which among other things initializes the <a href="../../Scheduling/AppClock.html"><span class="s2">AppClock</span></a> and the top-level <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. Main's <b>startup</b> then stores <b>Server.default</b> in the interpreter variable <b>s</b>, sets the platform default's <a href="../../GUI/GUI.html"><span class="s2">GUI</span></a> kit, initializes the <a href="../../Control/GeneralHID.html"><span class="s2">GeneralHID</span></a> system, calls a <a href="../../Platform/Platform.html"><span class="s2">Platform</span></a> specific <b>startup</b> method (for example <b>OSXPlatform</b>'s startup opens the server windows), and finally invokes <b>StartUp.run.</b> To add your own startup functionalities, you could either edit the special startup-file (discussed in <a href="../../Extending and Customizing SC/Using-the-Startup-File.html"><span class="s2">Using-the-Startup-File</span></a>), or use <b>StartUp.add</b> as discussed in the <a href="../../Control/StartUp.html"><span class="s2">StartUp</span></a> help file.</p>
+<p class="p3">called after the class library has been compiled. This calls the superclass' <b>startup</b>, which among other things initializes the <a href="../../Scheduling/AppClock.html"><span class="s2">AppClock</span></a> and the top-level <a href="../../Collections/Environment.html"><span class="s2">Environment</span></a>. Main's <b>startup</b> then stores <b>Server.default</b> in the interpreter variable <b>s</b>, sets the platform default's <a href="../../GUI/GUI-Tools/GUI.html"><span class="s2">GUI</span></a> kit, initializes the <a href="../../Control/GeneralHID.html"><span class="s2">GeneralHID</span></a> system, calls a <a href="../../Platform/Platform.html"><span class="s2">Platform</span></a> specific <b>startup</b> method (for example <b>OSXPlatform</b>'s startup opens the server windows), and finally invokes <b>StartUp.run.</b> To add your own startup functionalities, you could either edit the special startup-file (discussed in <a href="../../Extending and Customizing SC/Using-the-Startup-File.html"><span class="s2">Using-the-Startup-File</span></a>), or use <b>StartUp.add</b> as discussed in the <a href="../../Control/StartUp.html"><span class="s2">StartUp</span></a> help file.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>shutdown</b></p>
