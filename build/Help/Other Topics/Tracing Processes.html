@@ -5,32 +5,30 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Monaco; min-height: 17.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
 span.s3 {color: #0000bf}
 span.s4 {color: #007300}
 span.s5 {color: #606060}
-span.s6 {color: #003eea}
-span.s7 {color: #0033f1}
-span.s8 {color: #001bb9}
-span.s9 {color: #002eaf}
-span.s10 {color: #0000ff}
+span.s6 {color: #0000bf}
+span.s7 {color: #0000bf}
+span.s8 {color: #0000bf}
+span.s9 {color: #0000bf}
+span.s10 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -55,7 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">// what happens while we are doing this?</p>
 <p class="p8">(</p>
 <p class="p8"><span class="s3">var</span> n = 8, x = 0;</p>
-<p class="p8"><span class="s1">(1..n)</span>.do { <span class="s3">|num|</span> x = x + num.squared.postln; };</p>
+<p class="p8">(1..n).do { <span class="s3">|num|</span> x = x + num.squared.postln; };</p>
 <p class="p8">x</p>
 <p class="p8">)</p>
 <p class="p9"><br></p>
@@ -65,18 +63,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">(1..n).do { <span class="s3">|num|</span> [<span class="s4">\before</span>, x].postln; x = x + num.squared; [<span class="s4">\after</span>, x].postln;};</p>
 <p class="p8">x</p>
 <p class="p8">)</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
 <p class="p7">// when posting several values, some more verbose posts can be useful.</p>
 <p class="p7">// postf formats a string and inserts values for %-characters.</p>
 <p class="p7">// here separate statements are needed.</p>
 <p class="p9"><br></p>
 <p class="p8">(</p>
 <p class="p8"><span class="s3">var</span> n = 8, x = 0;</p>
-<p class="p8">(1..n).do { <span class="s3">|num|</span> x = x + num.squared; <span class="s5">"num: % num-squared: % new x: %\n"</span>.postf(num, <span class="s1">num.squared, x</span>) };</p>
+<p class="p8">(1..n).do { <span class="s3">|num|</span> x = x + num.squared; <span class="s5">"num: % num-squared: % new x: %\n"</span>.postf(num, num.squared, x) };</p>
 <p class="p8">x</p>
 <p class="p8">)<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
 <p class="p7">// in some cases, postln will only post part of the data, or a simplified</p>
 <p class="p7">// representation.</p>
 <p class="p9"><br></p>
@@ -86,7 +84,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="s3">var</span> n = 3;</p>
 <p class="p8">(1..n).do { <span class="s3">|num|</span> { 1000.rand }.dup(200).postln };</p>
 <p class="p8">)</p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
 <p class="p7">// posts the compile string, i.e. the code needed to recreate the receiver (here the array)</p>
 <p class="p8">(</p>
 <p class="p8"><span class="s3">var</span> n = 3;</p>
@@ -99,7 +97,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">fork {<span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s3">var</span> n = 14;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>(1..n).do { <span class="s3">|num|</span><span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>{ num.rand }.dup(200).postcs;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ num.rand }.dup(200).postcs;</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.wait;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>};</p>
 <p class="p8">}</p>
@@ -114,7 +112,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span>};</p>
 <p class="p8">}</p>
 <p class="p8">)</p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p7">// for creating a pattern that once it is used posts its values,</p>
 <p class="p7">// the message trace can be used (in returns a Ptrace)</p>
@@ -128,7 +126,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p7">// in a running stream:</p>
 <p class="p8">(</p>
-<p class="p12">Pbind<span class="s1">(</span></p>
+<p class="p10">Pbind<span class="s1">(</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s3">Pseq</span>([1, 4, 1, <span class="s3">Pwhite</span>(0, 6, 3), 100, 39], <span class="s3">inf</span>).trace(prefix: <span class="s5">"value: "</span>),</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.2</p>
 <p class="p8">).play</p>
@@ -136,7 +134,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p7">// post only a slot of the events</p>
 <p class="p8">(</p>
-<p class="p12">Pbind<span class="s1">(</span></p>
+<p class="p10">Pbind<span class="s1">(</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s3">Pseq</span>([1, 4, 1, <span class="s3">Pwhite</span>(0, 6, 3), 100, 39], <span class="s3">inf</span>),</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.2</p>
 <p class="p8">).trace(<span class="s4">\degree</span>).play</p>
@@ -144,7 +142,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p7">// several slots at once:</p>
 <p class="p8">(</p>
-<p class="p12">Pbind<span class="s1">(</span></p>
+<p class="p10">Pbind<span class="s1">(</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s3">Pseq</span>([1, 4, 1, <span class="s3">Pwhite</span>(0, 6, 3), 100, 39], <span class="s3">inf</span>),</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s3">Pwhite</span>(0.2, 0.4, <span class="s3">inf</span>)</p>
 <p class="p8">).trace([<span class="s4">\degree</span>, <span class="s4">\dur</span>], prefix: [<span class="s5">"degree "</span>, <span class="s5">"dur "</span>]).play</p>
@@ -168,31 +166,31 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p3">For <b>demand ugens</b>, poll does not work - these ugens are called by a Demand or Duty Ugen at certain intervals. The message dpoll creates a Dpoll ugen that posts when they are called (see <a href="../UGens/Synth control/Demand Rate/Dpoll.html"><span class="s6">Dpoll</span></a> helpfile)</p>
 <p class="p6"><br></p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
 <p class="p8">{ <span class="s3">SinOsc</span>.ar(<span class="s3">Duty</span>.kr(0.5, 0, (<span class="s3">Dseries</span>(0, 1, <span class="s3">inf</span>) * 200 + 300).dpoll)) * 0.1 }.play;</p>
 <p class="p9"><br></p>
 <p class="p8">{ <span class="s3">SinOsc</span>.ar(<span class="s3">Duty</span>.kr(0.5, 0, (<span class="s3">Dseries</span>(0, 1, <span class="s3">inf</span>) * 200 + 300).dpoll(label: <span class="s5">"freq"</span>))) * 0.1 }.play;</p>
-<p class="p10"><br></p>
+<p class="p9"><br></p>
 <p class="p6"><br></p>
 <p class="p3">When using the internal server (see <a href="../ServerArchitecture/Server.html"><span class="s7">Server</span></a> help), the <b>scope</b> window can give valuable information about the ongoing sound (see <a href="../GUI/Main-GUI/Stethoscope.html"><span class="s7">Stethoscope</span></a> help):</p>
 <p class="p6"><br></p>
-<p class="p13">// must use internal server</p>
-<p class="p11">s = <span class="s8">Server</span>.internal.boot;</p>
-<p class="p11">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.kr(0.2, 0, 300, 400)) * 0.1 }.scope;</p>
-<p class="p10"><br></p>
-<p class="p3">A <a href="../GUI/FreqScope.html"><span class="s10">FreqScope</span></a> window can be used for observing the spectrum of the output:</p>
-<p class="p10"><br></p>
-<p class="p13">// must use internal server</p>
+<p class="p11">// must use internal server</p>
+<p class="p8">s = <span class="s8">Server</span>.internal.boot;</p>
+<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.kr(0.2, 0, 300, 400)) * 0.1 }.scope;</p>
+<p class="p9"><br></p>
+<p class="p3">A <a href="../GUI/Main-GUI/FreqScope.html"><span class="s10">FreqScope</span></a> window can be used for observing the spectrum of the output:</p>
+<p class="p9"><br></p>
+<p class="p11">// must use internal server</p>
 <p class="p8"><span class="s3">Server</span>.default = s = <span class="s3">Server</span>.internal.boot;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13">// create a new analyzer</p>
-<p class="p14">FreqScope<span class="s1">.new;</span></p>
-<p class="p10"><br></p>
-<p class="p11">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar(0.2, 0, 3000, 4000)) * 0.1 }.play;</p>
-<p class="p11">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar((1..4) * 0.02, 0, 3000, 4000)).sum * 0.1 }.play;</p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
-<p class="p10"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11">// create a new analyzer</p>
+<p class="p12">FreqScope<span class="s1">.new;</span></p>
+<p class="p9"><br></p>
+<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar(0.2, 0, 3000, 4000)) * 0.1 }.play;</p>
+<p class="p8">{ <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.ar((1..4) * 0.02, 0, 3000, 4000)).sum * 0.1 }.play;</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
 </body>
 </html>
