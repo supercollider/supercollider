@@ -149,6 +149,14 @@ built files.
 The option SCEL installs the emacs editor. For the sced and scvim editors,
 please use the scons scripts in their respective directories (in editors/).
 
+Note that the language will only build 32bit. To build only the server in
+64bit, do:
+
+  $ scons LANG=no
+
+For a solution to build sclang in chroot 32bit, see:
+http://swiki.hfbk-hamburg.de/MusicTechnology/879
+
 ------------------------------------------------------------------------
 Building a Debian package
 ------------------------------------------------------------------------
