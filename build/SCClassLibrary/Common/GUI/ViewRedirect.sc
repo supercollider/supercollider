@@ -46,7 +46,13 @@ Slider : ViewRedirect { *key { ^\slider }}
 //Font : ViewRedirect { *key { ^\font }}
 Pen : ViewRedirect { *key { ^\pen }}
 
-Stethoscope : ViewRedirect { *key { ^\stethoscope }}
+Stethoscope : ViewRedirect { 
+	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
+		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		}
+	*key { ^\stethoscope }
+
+}
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
 
