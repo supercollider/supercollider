@@ -22,6 +22,7 @@ Bugfixes:
 * 2009-06-12 bug fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
 * 2009-06-12 mouse coordinates fix, deprecate SCUserView:mousePosition - sw
 * 2009-06-17 some issues fixed in SCUserView - cq
+* 2009-06-20 fix redirect for Stethoscope - adc
 
 Other additions/improvements:
 -----------------------------
@@ -36,6 +37,7 @@ Other additions/improvements:
 * 2009-06-17 adjusted SCKnob to use relative mouse coordinates - jm
 * 2009-06-17 small fix to SConstruct to allow for new Debian X11 location when compiling on linux - mb
 * 2009-06-19 Blip ugen: prevent sound blowup by never letting numharm be less than 1 - fo
+* 2009-06-20 SCPen: fillStroke changed default from draw(4) to draw(3) - fo
 
 
 SuperCollider v3.3, released 2009-04-30
