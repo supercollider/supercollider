@@ -167,7 +167,7 @@ classvar fnt, fillColor, strokeColor;
 	//ADDITIONS:
 	
 	*fillStroke {
-		this.draw(4);
+		this.draw(3);
 	}
 	
 	*clearRect {arg aRect=nil;
