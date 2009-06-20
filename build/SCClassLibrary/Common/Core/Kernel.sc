@@ -270,6 +270,11 @@ Process {
 		// this constructs the method templates when cmd-Y is pressed in the Lang menu.
 		var name, out, found = 0, namestring;
 		out = CollStream.new;
+		
+		if (interpreter.cmdLine.isEmpty){
+			Post << "\nNo implementations of ''.\n";
+			^this
+		};
 		if (interpreter.cmdLine[0].toLower != interpreter.cmdLine[0]) {
 			// user pressed the wrong key. DWIM.
 			^this.openCodeFile;
