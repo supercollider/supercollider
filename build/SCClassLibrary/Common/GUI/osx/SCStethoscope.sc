@@ -32,8 +32,8 @@ SCStethoscope {
 			window.onClose = { this.free };
 			
 		} {
-			"SCStethoscope: makeWindow added a decorator to view".warn;
 			if(view.decorator.isNil, {
+				"SCStethoscope: makeWindow added a decorator to view".warn;
 				view.decorator = FlowLayout(view.bounds);
 			});
 		};
