@@ -31,7 +31,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>SuperCollider 3 Server Tutorial</b></p>
 <p class="p2"><br></p>
-<p class="p3">To follow this tutorial you should read<span class="Apple-converted-space"> </span></p>
+<p class="p3">To follow this tutorial you should read</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span><a href="../ServerArchitecture/Server-Architecture.html"><b>Server-Architecture</b></a></span></p>
 <p class="p3">and</p>
@@ -44,12 +44,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">In order to run sound we need to start a server running. The easiest way to start a server is to click on one of the "Start Server" buttons in the server windows. Sometimes though it is useful to start a server programmatically. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.</p>
 <p class="p2"><br></p>
-<p class="p3">The internal server runs in the same process as the SuperCollider application.<span class="Apple-converted-space">  </span>It is internal to the program itself.</p>
+<p class="p3">The internal server runs in the same process as the SuperCollider application. It is internal to the program itself.</p>
 <p class="p2"><br></p>
 <p class="p6">// set the interpreter variable s to the internal server object.</p>
 <p class="p7">s = <span class="s2">Server</span>.internal;</p>
 <p class="p8"><br></p>
-<p class="p3"><span class="s3"><b>VERY IMPORTANT: </b></span>This line must be executed for the variable 's' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For linux or Windows instructions, consult the documentation specific to that platform.)<span class="Apple-converted-space">  </span>If you don't have an enter key, then you can use ctrl-Return, Ctrl-c,<span class="Apple-converted-space">  </span>fn-Return( on Some Macs), or Shift-Return.</p>
+<p class="p3"><span class="s3"><b>VERY IMPORTANT: </b></span>This line must be executed for the variable 's' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile <a href="../Other Topics/Shortcuts.html">Shortcuts</a> for key commands in other editors.)</p>
+<p>If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return.</p>
 <p class="p2"><br></p>
 <p class="p3">The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'. <b>Note:</b> By default the interpreter variable s is set to the local server at startup. For further information see the <a href="../ServerArchitecture/Server.html"><span class="s2"><b>Server</b></span></a> helpfile.</p>
 <p class="p2"><br></p>

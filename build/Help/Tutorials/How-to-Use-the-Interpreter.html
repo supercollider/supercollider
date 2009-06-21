@@ -27,10 +27,10 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>How to use the Interpreter</b></p>
 <p class="p2"><br></p>
-<p class="p3">This document is OSX specific in key commands, though the principles extend to all platforms. For the linux emacs sclang interface please see<span class="Apple-converted-space">  </span>linux specific documentation.</p>
+<p class="p3">This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile <a href="../Other Topics/Shortcuts.html">Shortcuts</a> for key commands in other editors. For the emacs sclang interface please also see <a href="../Linux/EmacsEditor.html">emacs specific documentation</a>.</p>
 <p class="p2"><br></p>
 <p class="p3">You can execute any single line expression by clicking anywhere in that line and pressing the <b>'Enter'</b> key.</p>
-<p class="p3"><b>Note that the 'Enter' key is not the same key as 'Return'. </b>If you don't have an enter key, then you can use ctrl-Return, Ctrl-c,<span class="Apple-converted-space">  </span>fn-Return( on Some Macs), or Shift-Return.</p>
+<p class="p3"><b>Note that the 'Enter' key is not the same key as 'Return'. </b>If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return.</p>
 <p class="p2"><br></p>
 <p class="p3">You will need to start the default server before you can hear any examples. By convention the default server is assigned to the interpreter variable 's'. (At startup the default will be the localhost server.) You can start the server app by pressing the 'Boot' button on the localhost server window, or you can do it in code:</p>
 <p class="p4"><br></p>
@@ -53,9 +53,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>200.do({<span class="s2">|i|</span><span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.background = <span class="s2">Color</span>.blue(val: 1, alpha: 1 - (i * 0.005));<span class="Apple-converted-space"> </span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.005.wait;<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>});<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>w.close;<span class="Apple-converted-space"> </span></p>
-<p class="p7">});<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>});</p>
+<p class="p7"><span class="Apple-tab-span">	</span>w.close;</p>
+<p class="p7">});</p>
 <p class="p7"><span class="s2">AppClock</span>.play(r);</p>
 <p class="p2"><br></p>
 <p class="p3">Some examples do require lines to be executed one at a time, or certain lines to be executed first. By far the most common case of this is booting the server app, as we did at the top of the page. Until the server has completed booting, no sound producing code will work.</p>
