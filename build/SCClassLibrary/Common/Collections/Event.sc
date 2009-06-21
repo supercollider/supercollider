@@ -351,7 +351,7 @@ Event : Environment {
 					smpte:	#{ arg frames=0, seconds=0, minutes=0, hours=0, frameRate=25;
 											[frames, seconds, minutes, hours, frameRate] },
 					songPtr: #{ arg songPtr; [songPtr] },
-					sysex: #{ arg uid, array; [uid, array] } // Int8Array
+					sysex: #{ arg uid, array; [array] } // Int8Array
 				),
 				midicmd: \noteOn
 			),

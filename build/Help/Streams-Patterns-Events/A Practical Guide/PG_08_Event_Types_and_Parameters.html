@@ -367,8 +367,7 @@ span.Apple-tab-span {white-space:pre}
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>sysex:</b> System exclusive messages.</li>
 <ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>uid:</b> UID of the MIDI device to receive the message.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>array:</b> An Int8Array with the sysex bytes in order.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>array:</b> An Int8Array with the sysex bytes in order. <b>Very important:</b> Arrays normally multi-channel expand in patterns. So, you must wrap the Int8Array inside another array to prevent this. Write <span class="s3">[Int8Array[...]]</span>, not just Int8Array[...].</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
