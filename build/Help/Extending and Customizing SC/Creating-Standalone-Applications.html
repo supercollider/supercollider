@@ -5,16 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; min-height: 18.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Lucida Grande}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; min-height: 15.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-span.s1 {font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #0000ff}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+span.s1 {color: #000000}
+span.s2 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -26,6 +28,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5">On OS X, applications are special directories known as "bundles." This allows you to create stand-alone applications running SuperCollider code that are opaque, in the sense that the user does not need to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved. (Of course, your application must be open-source and comply with the GPL.) This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use.</p>
 <p class="p3"><br></p>
+<p class="p5">There are two ways of making standalone applications:<span class="Apple-converted-space"> </span></p>
+<p class="p5">A. Modifying an existing <b>Standalone Template.app</b> by editing the contents in its folder,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>which can be done without requiring XCode or any other development environments,<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="s1"><span class="Apple-tab-span">	</span>described in <a href="Modifying_Standalones.html"><b>Modifying_Standalones</b></a>, or</span></p>
+<p class="p3"><br></p>
+<p class="p5">B. Creating a standalone application from scratch, as described below.</p>
+<p class="p3"><br></p>
 <p class="p4"><b>Creating a standalone application</b></p>
 <p class="p3"><br></p>
 <p class="p5">1- Obtain a copy of the SuperCollider source code. The easiest way to do so is to download the latest source release from SourceForge:</p>
@@ -33,10 +42,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5">2- Open the Language.xcodeproj project in Xcode.</p>
 <p class="p3"><br></p>
-<p class="p5">3- Rename the "Standalone Template" target by control-cliking it and choosing "Rename". This target name is used for both the .app name and for the name presented in the menu bar.</p>
+<p class="p5">3- Rename the "Standalone Template" target by control-clicking it and choosing "Rename". This target name is used for both the .app name and for the name presented in the menu bar.</p>
 <p class="p3"><br></p>
-<p class="p6"><span class="s1"><img src="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png" alt="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png"></span></p>
-<p class="p7"><br></p>
+<p class="p7"><span class="s2"><img src="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png" alt="attachments/Creating-Standalone-Applications/Pasted Graphic 1.png"></span></p>
+<p class="p8"><br></p>
 <p class="p5">4- Customize the "Standalone Resources" directory, which is located at the root of the SuperCollider source directory. Any files you put in this directory will overide the files placed in the standalone application. For example if you wanted to create your own version of Array.sc you would need to create the following path (creating folders where necessary):<span class="Apple-converted-space"> </span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>Standalone Resources/SCClassLibrary/Common/Collections/Array.sc</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
@@ -44,7 +53,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5">5- Build the standalone application by control-clicking on the target and choosing "Build [target name]". This will place your standalone app in the build directory. It is recommended that you develop your application fully in a normal SuperCollider environment before creating a standalone application.</p>
 <p class="p3"><br></p>
-<p class="p6"><span class="s1"><img src="attachments/Creating-Standalone-Applications/Pasted Graphic 2.png" alt="attachments/Creating-Standalone-Applications/Pasted Graphic 2.png"></span></p>
+<p class="p7"><span class="s2"><img src="attachments/Creating-Standalone-Applications/Pasted Graphic 2.png" alt="attachments/Creating-Standalone-Applications/Pasted Graphic 2.png"></span></p>
 <p class="p3"><br></p>
 <p class="p4"><b>Adding your own behavior</b></p>
 <p class="p3"><br></p>
