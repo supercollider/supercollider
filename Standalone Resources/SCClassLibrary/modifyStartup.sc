@@ -38,6 +38,8 @@
 		interpreter.s = Server.default;
 		this.platform.startup;
 		
+		SynthDef.synthDefDir = Platform.classLibraryDir.dirname +/+ "synthdefs/";
+
 		StartUp.run;
 
 		// I like to boot, then use thisProcess.interpreter.executeFile
