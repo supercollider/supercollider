@@ -4133,7 +4133,7 @@ void SCUserView::draw(SCRect inDamage)
 	SCRect bounds = getDrawBounds();
 	SCView::draw(bounds); // draw background	
 	if(!mDrawingEnabled) return;
-	if(bounds.width == 0 || bounds.height == 0) return;
+	if(bounds.width <= 0 || bounds.height <= 0) return;
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	CGContextRef lCGContext;
 	CGContextRef cgc;
