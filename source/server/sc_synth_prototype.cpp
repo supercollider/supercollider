@@ -26,6 +26,20 @@ namespace nova
 
 using namespace std;
 
+void sc_read_synthdef(synth_factory & factory, path const & file)
+{
+    try {
+        auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(file));
+        factory.register_prototype(sp.get());
+        sp.release();
+    }
+    catch(std::exception & e)
+    {
+        cout << "Exception when parsing synthdef: " << e.what() << endl;
+    }
+}
+
+
 void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
 {
     using namespace boost::filesystem;

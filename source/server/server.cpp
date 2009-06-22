@@ -21,6 +21,8 @@
 #include "server.hpp"
 #include "sync_commands.hpp"
 
+#include "sc_synth_prototype.hpp"
+
 namespace nova
 {
 
@@ -104,12 +106,62 @@ public:
 
 handle_set set_handler;
 
+
+/* load synthdef */
+class handle_d_load:
+    public osc_responder
+{
+public:
+    virtual void run(osc::ReceivedMessageArgumentIterator it,
+                     osc::ReceivedMessageArgumentIterator const & end)
+    {
+        try
+        {
+            sc_read_synthdef(*instance, it->AsString());
+
+            /* todo: send \done reply */
+            /* todo: handle completion message */
+        }
+        catch (std::exception const & e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+};
+
+handle_d_load d_load_handler;
+
+class handle_d_loadDir:
+    public osc_responder
+{
+public:
+    virtual void run(osc::ReceivedMessageArgumentIterator it,
+                     osc::ReceivedMessageArgumentIterator const & end)
+    {
+        try
+        {
+            sc_read_synthdefs_dir(*instance, it->AsString());
+
+            /* todo: send \done reply */
+            /* todo: handle completion message */
+        }
+        catch (std::exception const & e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+};
+
+handle_d_load d_loadDir_handler;
+
 }
 
 void nova_server::init_osc_handles(void)
 {
     add_responder("/quit", &quit_handler);
     add_responder("/set", &set_handler);
+    add_responder("/d_load", &d_load_handler);
+    add_responder("/d_loadDir", &d_loadDir_handler);
 }
 
 synth * nova_server::add_synth(std::string const & name, int id, node_position_constraint const & constraints)
