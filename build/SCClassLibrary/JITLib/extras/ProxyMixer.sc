@@ -2,7 +2,22 @@
 	var <prevKrNames, <prevArNames;	
 	var <scrollyAr, <keysRotationAr=0; 
 	var <scrollyKr, <keysRotationKr=0; 
-		*new { arg proxyspace, nProxies = 16, title, bounds;		^super.new.init(proxyspace, nProxies, 			title ?? { format("proxyspace: %", proxyspace.tryPerform(\name) ? "") }, bounds		);	}		init { arg space, nPxs = 16, argTitle, argBounds; 				var winHeight, globalLayout, height, color;		skin = GUI.skin; 
+	
+	*initClass { 
+		GUI.skins.put(\jit, (
+				fontSpecs: 	["Helvetica", 10],
+				fontColor: 	Color.black,
+				background: 	Color(0.8, 0.85, 0.7, 0.5),
+				foreground:	Color.grey(0.95),
+				onColor:		Color(0.5, 1, 0.5), 
+				offColor:		Color.clear,
+				gap:			0 @ 0,
+				margin: 		2@2,
+				buttonHeight:	16
+			)
+		);
+	}
+		*new { arg proxyspace, nProxies = 16, title, bounds;		^super.new.init(proxyspace, nProxies, 			title ?? { format("proxyspace: %", proxyspace.tryPerform(\name) ? "") }, bounds		);	}		init { arg space, nPxs = 16, argTitle, argBounds; 				var winHeight, globalLayout, height, color;		skin = GUI.skins.jit; 
 		font = GUI.font.new(*skin.fontSpecs);
 				title = argTitle;		argBounds = argBounds ?? { Rect(10, 250, 0, 0) };						proxyspace = space ? currentEnvironment;		if(proxyspace.isKindOf(ProxySpace).not) { Error("no proxy space present!").throw };		nProxies = nPxs;				height = nProxies + 1 * (skin.buttonHeight) + 16;				// global layout: 			//	origBounds = (Rect(10, 250, 472, height + 10));		origBounds = argBounds.resizeTo(612, height + 10);		this.makeWindow;		fullBounds = w.bounds.resizeBy(375, 0);						globalLayout = CompositeView(w, fullBounds.moveTo(0,0));		globalLayout.decorator =  FlowLayout(globalLayout.bounds); //.gap_(6@6);				compArZone = CompositeView.new(globalLayout, Rect(0, 0, 400, height))
 			.background_(skin.foreground);		compKrZone = CompositeView.new(globalLayout, Rect(0, 0, 200, height))

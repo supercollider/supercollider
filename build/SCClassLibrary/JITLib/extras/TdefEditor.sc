@@ -45,7 +45,7 @@ TaskProxyEditor {
 	}
 
 	init { |w, height, width, makeWatcher| 
-		var skin = GUI.skin; 
+		var skin = GUI.skins.jit; 
 		var font = Font(*skin.fontSpecs);
 
 		win = w ?? { Window("task px edit", Rect(0, 0, 190, 30)) };

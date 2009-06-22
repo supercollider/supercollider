@@ -53,7 +53,7 @@ ProxyChainGui {
 		);
 		
 		bounds =  Rect(200, 200, 160 + 355, 
-			(buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skin.buttonHeight)
+			(buttonList.size + 1 * 24).max(nSliders + 3 * GUI.skins.jit.buttonHeight)
 		); 
 		
 		parent = inParent;
