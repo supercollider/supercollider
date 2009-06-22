@@ -38,7 +38,7 @@ Other additions/improvements:
 * 2009-06-17 small fix to SConstruct to allow for new Debian X11 location when compiling on linux - mb
 * 2009-06-19 Blip ugen: prevent sound blowup by never letting numharm be less than 1 - fo
 * 2009-06-20 SCPen: fillStroke changed default from draw(4) to draw(3) - fo
-
+* 2009-06-21 Fold, Clip and Wrap can now modulate the low and high inputs.
 
 SuperCollider v3.3, released 2009-04-30
 =======================================
