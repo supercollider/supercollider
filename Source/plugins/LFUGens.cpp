@@ -122,12 +122,12 @@ struct Clip : public Unit
 
 struct Wrap : public Unit
 {
-	float m_lo, m_hi, m_range;
+	float m_lo, m_hi;
 };
 
 struct Fold : public Unit
 {
-	float m_lo, m_hi, m_range, m_range2;
+	float m_lo, m_hi, m_range;
 };
 
 struct Unwrap : public Unit
@@ -292,13 +292,22 @@ extern "C"
 	void XLine_next(XLine *unit, int inNumSamples);
 	void XLine_Ctor(XLine* unit);
 
-	void Wrap_next(Wrap *unit, int inNumSamples);
+	void Wrap_next_kk(Wrap *unit, int inNumSamples);
+	void Wrap_next_ak(Wrap *unit, int inNumSamples);
+	void Wrap_next_ka(Wrap *unit, int inNumSamples);
+	void Wrap_next_aa(Wrap *unit, int inNumSamples);
 	void Wrap_Ctor(Wrap* unit);
 
-	void Fold_next(Fold *unit, int inNumSamples);
+	void Fold_next_kk(Fold *unit, int inNumSamples);
+	void Fold_next_ak(Fold *unit, int inNumSamples);
+	void Fold_next_ka(Fold *unit, int inNumSamples);
+	void Fold_next_aa(Fold *unit, int inNumSamples);
 	void Fold_Ctor(Fold* unit);
 
-	void Clip_next(Clip *unit, int inNumSamples);
+	void Clip_next_kk(Clip *unit, int inNumSamples);
+	void Clip_next_ka(Clip *unit, int inNumSamples);
+	void Clip_next_ak(Clip *unit, int inNumSamples);
+	void Clip_next_aa(Clip *unit, int inNumSamples);
 	void Clip_Ctor(Clip* unit);
 
 	void Unwrap_next(Unwrap* unit, int inNumSamples);
@@ -1499,7 +1508,7 @@ void XLine_Ctor(XLine* unit)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 void Wrap_next(Wrap* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1529,9 +1538,106 @@ void Wrap_Ctor(Wrap* unit)
 	
 	Wrap_next(unit, 1);
 }
+*/
+
+
+void Wrap_next_kk(Wrap* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float next_hi = IN0(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    float range;
+    for(int i = 0; i < inNumSamples; i++){
+	range = hi - lo;
+	out[i] = sc_wrap(in[i], lo, hi, range);
+	lo += lo_slope;
+	hi += hi_slope;
+    };
+    unit->m_lo = lo;
+    unit->m_hi = hi;
+}
+
+void Wrap_next_ka(Wrap* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float *hi = IN(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    float curhi;
+    for(int i = 0; i < inNumSamples; i++){ 
+	curhi = hi[i];
+	out[i] = sc_wrap(in[i], lo, curhi, curhi - lo);
+	lo += lo_slope;
+    };
+    unit->m_lo = lo;
+}
+
+void Wrap_next_ak(Wrap* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float next_hi = IN0(2);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    float curlo;
+    
+    for(int i = 0; i < inNumSamples; i++){ 
+	curlo = lo[i];
+	out[i] = sc_wrap(in[i], curlo, hi, hi - curlo);
+	hi += hi_slope;
+    };
+    unit->m_hi = hi;
+}
+
+void Wrap_next_aa(Wrap* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float *hi = IN(2);
+    float curlo, curhi;
+    
+    for(int i = 0; i < inNumSamples; i++){ 
+	curhi = hi[i];
+	curlo = lo[i];
+	out[i] = sc_wrap(in[i], curlo, curhi, curhi - curlo);
+    };
+}
+
+void Wrap_Ctor(Wrap* unit)
+{
+    
+    if(INRATE(1) == calc_FullRate){
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Wrap_next_aa);
+	} else {
+	    SETCALC(Wrap_next_ak);
+	} 
+    } else {
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Wrap_next_ka);
+	} else {
+	    SETCALC(Wrap_next_kk);
+	}
+    }
+    
+    unit->m_lo = ZIN0(1);
+    unit->m_hi = ZIN0(2);
+    
+    Wrap_next_kk(unit, 1);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 void Fold_next(Fold* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1563,10 +1669,110 @@ void Fold_Ctor(Fold* unit)
 	
 	Fold_next(unit, 1);
 }
+*/
+void Fold_next_kk(Fold* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float next_hi = IN0(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    float range, range2;
+    
+    for(int i = 0; i < inNumSamples; i++){
+	range = hi - lo;
+	range2 = range * 2.0;
+	out[i] = sc_fold(in[i], lo, hi, range, range2);
+	
+	lo += lo_slope;
+	hi += hi_slope;
+    };
+    unit->m_lo = lo;
+    unit->m_hi = hi;
+}
 
+void Fold_next_ka(Fold* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float *hi = IN(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    float curhi, range, range2;
+    for(int i = 0; i < inNumSamples; i++){ 
+	curhi = hi[i];
+	range = curhi - lo;
+	range2 = range * 2.0;
+	out[i] = sc_fold(in[i], lo, curhi, range, range2);
+	lo += lo_slope;
+    };
+    unit->m_lo = lo;
+}
+
+void Fold_next_ak(Fold* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float next_hi = IN0(2);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    float range, range2, curlo;
+    for(int i = 0; i < inNumSamples; i++){ 
+	curlo = lo[i];
+	range = hi - curlo;
+	range2 = range * 2.0;
+	out[i] = sc_fold(in[i], curlo, hi, range, range2);
+	hi += hi_slope;
+    };
+    unit->m_hi = hi;
+}
+
+void Fold_next_aa(Fold* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float *hi = IN(2);
+    float curhi, curlo, range, range2;
+    for(int i = 0; i < inNumSamples; i++){
+	curhi = hi[i];
+	curlo = lo[i];
+	range = curhi - curlo; 
+	range2 = range * 2.0;
+	out[i] = sc_fold(in[i], curlo, curhi, range, range2);
+    };
+}
+
+void Fold_Ctor(Fold* unit)
+{
+    
+    if(INRATE(1) == calc_FullRate){
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Fold_next_aa);
+	} else {
+	    SETCALC(Fold_next_ak);
+	} 
+    } else {
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Fold_next_ka);
+	} else {
+	    SETCALC(Fold_next_kk);
+	}
+    }
+    
+    unit->m_lo = ZIN0(1);
+    unit->m_hi = ZIN0(2);
+    
+    Fold_next_kk(unit, 1);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 void Clip_next(Clip* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1594,6 +1800,94 @@ void Clip_Ctor(Clip* unit)
 	}
 	
 	Clip_next(unit, 1);
+}
+*/
+
+void Clip_next_kk(Clip* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float next_hi = IN0(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    
+    for(int i = 0; i < inNumSamples; i++){
+	out[i] = sc_clip(in[i], lo, hi);
+	lo += lo_slope;
+	hi += hi_slope;
+    };
+    unit->m_lo = lo;
+    unit->m_hi = hi;
+}
+
+void Clip_next_ka(Clip* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float next_lo = IN0(1);
+    float *hi = IN(2);
+    float lo = unit->m_lo;
+    float lo_slope = CALCSLOPE(next_lo, lo);
+    
+    for(int i = 0; i < inNumSamples; i++){ 
+	out[i] = sc_clip(in[i], lo, hi[i]);
+	lo += lo_slope;
+    };
+    unit->m_lo = lo;
+}
+
+void Clip_next_ak(Clip* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float next_hi = IN0(2);
+    float hi = unit->m_hi;
+    float hi_slope = CALCSLOPE(next_hi, hi);
+    
+    for(int i = 0; i < inNumSamples; i++){ 
+	out[i] = sc_clip(in[i], lo[i], hi);
+	hi += hi_slope;
+    };
+    unit->m_hi = hi;
+}
+
+void Clip_next_aa(Clip* unit, int inNumSamples)
+{
+    float *out = OUT(0);
+    float *in   = IN(0);
+    float *lo = IN(1);
+    float *hi = IN(2);
+    
+    for(int i = 0; i < inNumSamples; i++){ 
+	 out[i] = sc_clip(in[i], lo[i], hi[i]);
+    };
+}
+
+void Clip_Ctor(Clip* unit)
+{
+    
+    if(INRATE(1) == calc_FullRate){
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Clip_next_aa);
+	} else {
+	    SETCALC(Clip_next_ak);
+	} 
+    } else {
+	if(INRATE(2) == calc_FullRate) {
+	    SETCALC(Clip_next_ka);
+	    } else {
+	    SETCALC(Clip_next_kk);
+	}
+    }
+    
+    unit->m_lo = ZIN0(1);
+    unit->m_hi = ZIN0(2);
+    
+    Clip_next_kk(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
