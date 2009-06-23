@@ -35,6 +35,7 @@
 		},{
 			if(warnIfNotFound,{
 				warn("String:loadPath file not found " + this + path);
+				^nil
 			});
 		});
 		if(obj.isNil and: warnIfNotFound, { 

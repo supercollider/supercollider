@@ -10,13 +10,16 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; min-height: 15.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
+span.s1 {color: #0000ff}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>Modifying the Standalone Template for your own App</b></p>
 <p class="p2"><br></p>
-<p class="p3">If you do not use Apple developer tools, the following is the easiest way to<span class="Apple-converted-space"> </span></p>
+<p class="p3">If you do not have or use Apple Developer tools, the easiest way to create an SC-based<span class="Apple-converted-space"> </span></p>
+<p class="p3">standalone application is to modify an existing SC standalone:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
 <p class="p3">1 - Obtain the compiled '<b>Standalone Template.app</b>' for the desired version of SC3,<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>e.g. SC3.3.1, and make a copy of it for modification.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -47,11 +50,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">5 - Modifying the startup file<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>in Resources/SCClassLibrary/, modify the file <b>modifyStartup.sc</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span>to do anything your app needs - choose which server to use by default,<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span>set its options, boot it.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>to do anything your app needs, such as boot the server.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>Then, call the class(es) and/or execute the script(s) that start(s) YourApp.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>See the section <b>Adding your own behavior</b> in <a href="Creating-Standalone-Applications.html"><span class="s1">Creating-Standalone-Applications</span></a><span class="s1">!</span></p>
 <p class="p2"><br></p>
-<p class="p3">6 - Start YourApp and test that it works. Adjusting scripts will usually require<span class="Apple-converted-space"> </span></p>
+<p class="p3">6 - Start <b>YourApp</b> and test that it works. Adjusting scripts will usually require<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>modifications of file paths, and you may have forgotten classes!<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>You can recompile, edit scripts, add classes, as in SC3 itself.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
