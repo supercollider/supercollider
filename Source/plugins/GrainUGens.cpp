@@ -205,6 +205,7 @@ inline double sc_gloop(double in, double hi)
 			buf = world->mSndBufs + bufnum; \
 		} \
 	} else { \
+		if (bufnum < 0) { bufnum = 0; } \
 		buf = world->mSndBufs + bufnum; \
 	} \
 	\

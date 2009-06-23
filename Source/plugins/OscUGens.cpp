@@ -2105,7 +2105,7 @@ if (bufnum+1 >= world->mNumSndBufs) { \
 				bufs = world->mSndBufs + bufnum; \
 			} \
 		} else { \
-			bufs = world->mSndBufs + bufnum; \
+			bufs = world->mSndBufs + sc_max(0, bufnum); \
 		} \
 
 

@@ -101,6 +101,7 @@ enum {
 // macros to grab a Buffer reference from the buffer indicated by the UGen's FIRST input
 #define GET_BUF \
 	float fbufnum  = ZIN0(0); \
+	if (fbufnum < 0.f) { fbufnum = 0.f; } \
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
@@ -129,6 +130,7 @@ enum {
 	
 #define SIMPLE_GET_BUF \
 	float fbufnum  = ZIN0(0); \
+	fbufnum = sc_max(0.f, fbufnum); \
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
