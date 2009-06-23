@@ -2059,6 +2059,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
+		if (bufnum < 0) { bufnum = 0; } \
 		if (bufnum >= world->mNumSndBufs) { \
 			int localBufNum = bufnum - world->mNumSndBufs; \
 			Graph *parent = unit->mParent; \
