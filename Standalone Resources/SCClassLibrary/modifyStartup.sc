@@ -3,55 +3,64 @@
 	startupFiles {
 //		var filename = "startup.rtf";
 //		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
-		^[]
+			// look for startup files inside the app Contents directory
+		var filename = "startup.*";
+		^(String.scDir +/+ filename).pathMatch;
 	}
 	
 	startup {
 		Document.implementationClass.startup;
-		// make server window - just the one used
-		Server.default.makeWindow;
-//		Server.internal.makeWindow;
+		// make a server window for the internal if you like
+		Server.internal.makeWindow;
 //		Server.local.makeWindow;
-//		this.loadStartupFiles;
-		Help.addToMenu;
+		// uncomment if you use a startup file
+//		this.loadStartupFiles;		
+		// uncomment if you have multiple help files
+//		Help.addToMenu;			
 	}
 }
 
 + Main { 
 	startup {
-		// setup the platform first so that class initializers can call platform methods.
-		// create the platform, then intialize it so that initPlatform can call methods
-		// that depend on thisProcess.platform methods.
 		platform = this.platformClass.new;
 		platform.initPlatform;
 	
 		super.startup;
 		
-		// set the 's' interpreter variable to the default server.
 		GUI.fromID( this.platform.defaultGUIScheme );
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
-
-
-		// from here on, you should customize what should happen...
-		// choose just one server to use
+		
+		// Set Server.default and the 's' interpreter variable to the internal server.
+		// You should use the internal server for standalone applications --
+		// otherwise, if your application has a problem, the user will
+		// be stuck with a process, possibly making sound, that he won't know 
+		// how to kill.
 		Server.default = Server.internal; 
 		interpreter.s = Server.default;
+
+			// some folder paths that should point inside the app's Contents folder
+		SynthDef.synthDefDir = String.scDir +/+ "synthdefs/";
+		Archive.archiveDir = String.scDir;
+
 		this.platform.startup;
-		
-		SynthDef.synthDefDir = Platform.classLibraryDir.dirname +/+ "synthdefs/";
+
+		// from here on, you should customize what should happen...
 
 		StartUp.run;
 
-		// I like to boot, then use thisProcess.interpreter.executeFile
+		// One can boot the server, then use loadPath to evaluate a file
 		// OR - put things into a class... like the SCSA_Demo
 
-		"Welcome to Standalone ... made with SuperCollider, type cmd-d for help".postln;
+		"Welcome to Standalone Demo made with SuperCollider, type cmd-d for help.".postln;
 		
 		Server.default.boot;
 		
 		Server.default.waitForBoot({
 			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
-//			thisProcess.interpreter.executeFile(rootdir ++ "MFBSD.rtf");
+//			(String.scDir.dirname ++ "MFBSD.rtf").loadPath;
 		});
+		// close post window if user should not have it
+//		Document.listener.close		
 	}
+	
 }
