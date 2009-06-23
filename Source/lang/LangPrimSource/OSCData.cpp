@@ -641,8 +641,12 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
                     //post("sym '%s'\n", slots[i+1].us->name);
                     break;
                 case 'b' :
-		    SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+					SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
                     break;
+				// else add the type tag as a char (jrhb 2009)
+				default:
+					SetChar(slots+i+1, tag);
+					msg.gets();
             }
         }
         obj->size = numElems + 1;
