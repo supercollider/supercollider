@@ -224,7 +224,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		}else
 		view->setConstructionModeFromPoint(scpoint);
 
-        [self setNeedsDisplay:YES];
+		[self displayIfNeeded];
         
         while (keepOn && !mDragStarted && !mMenuView) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
@@ -734,13 +734,12 @@ const int circDiam = 20;
 		screct.y = bounds.origin.y;
 		screct.width = bounds.size.width;
 		screct.height = bounds.size.height;
-				
+		
 		if(!NSEqualRects(bounds, oldBounds)){
 			mTopView->setInternalBounds(screct);
-
 			oldBounds = bounds;
 		}
-
+		
         
         screct.x = drawBounds.origin.x;
         screct.y = drawBounds.origin.y;
@@ -749,7 +748,9 @@ const int circDiam = 20;
         
 		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		CGContextSaveGState(cgc);
-		CGContextClipToRect(cgc, CGRectMake(screct.x, screct.y, screct.width, screct.height));
+		//CGContextClipToRect(cgc, CGRectMake(screct.x, screct.y, screct.width, screct.height));
+		CGContextClipToRect(cgc, *(CGRect*)&bounds);
+		
 		
         /*
 		 Rect qdrect;
@@ -765,6 +766,7 @@ const int circDiam = 20;
 		[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:&numDirtyRects];
 		
 		int i=0;
+		//post("numrects: %i\n", numDirtyRects);
 		for(; i < numDirtyRects; ++i) {
 			curRect = *(dirtyRects+i);
 			
@@ -772,17 +774,21 @@ const int circDiam = 20;
 			screct.y = curRect.origin.y; 
 			screct.width = curRect.size.width;
 			screct.height = curRect.size.height;
+			//post("(%2.2f, %2.2f, %2.2f, %2.2f)\n", screct.x, screct.y, screct.width, screct.height);
 			
 			CGContextSaveGState(cgc);
 			CGContextClipToRect(cgc, curRect);		
-			if(mTopView->isSubViewScroller()) {
+			if(mTopView->isSubViewScroller()) 
+			{
 				((SCScrollView*)mTopView)->drawSubViewIfNecessary(screct);
-			} else {
+			} 
+			else 
+			{
 				mTopView->drawIfNecessary(screct);
-			}
-
+			}	
 			CGContextRestoreGState(cgc);
 		}
+		
 		CGContextRestoreGState(cgc);
     }
 	

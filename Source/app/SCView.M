@@ -682,7 +682,12 @@ void SCView::drawDragHilite(SCRect inDamage)
 
 void SCView::drawIfNecessary(SCRect inDamage)
 {
-	if (SCRectsDoIntersect(inDamage, getDrawBounds()) && mVisible) {
+	SCRect bounds = getDrawBounds();
+	if(isFocus()) {
+		bounds.x -= 4; bounds.y -= 4;
+		bounds.width += 8; bounds.height += 8;
+	}
+	if (SCRectsDoIntersect(inDamage, bounds) && mVisible) {
 		draw(inDamage);
 		drawDisabled(inDamage);
 		drawDragHilite(inDamage);
