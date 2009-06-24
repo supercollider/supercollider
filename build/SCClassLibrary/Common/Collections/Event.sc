@@ -514,7 +514,7 @@ Event : Environment {
 							freqs = ~freq;
 							~amp = ~amp.value;
 							
-							if(~args.isNil) {
+							if(~args.size == 0) {
 								msgFunc = ~getMsgFunc.valueEnvir;
 								bndl = msgFunc.valueEnvir;
 							} {	
