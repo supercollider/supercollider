@@ -121,9 +121,6 @@ meanings of the indexing macros:
 
 #include "SC_BoundsMacros.h"
 
-#ifndef NDEBUG
-# define NDEBUG
-#endif
 #include <assert.h>
 
 // Efficiency notes: Clear and Copy was benchmarked in October 2008.

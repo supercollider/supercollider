@@ -18,9 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef NDEBUG
-# define NDEBUG
-#endif
 #include "SCBase.h"
 #include "PyrSymbolTable.h"
 #include "clz.h"

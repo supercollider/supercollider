@@ -25,9 +25,6 @@
 #include "GC.h"
 #include "bullet.h"
 #include <stdlib.h>
-#ifndef NDEBUG
-# define NDEBUG
-#endif
 #include <assert.h>
 #include "PredefinedSymbols.h"
 
