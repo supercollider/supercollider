@@ -40,11 +40,14 @@
 
 #ifdef SC_WIN32
 # include "SC_Win32Utils.h"
-# define kBigBigFloat 1e250
 #else
 # include <sys/time.h>
-# define kBigBigFloat 1e500
 #endif
+
+#include <float.h>
+#define kBigBigFloat DBL_MAX
+#define kSmallSmallFloat DBL_MIN
+
 
 #include <new>
 #include "InitAlloc.h"
@@ -1621,7 +1624,7 @@ void Interpret(VMGlobals *g)
 							else if (!IsFloat(vars+1)) goto bailFromNumberSeries;
 							
 							if (IsNil(vars+2)) {
-								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, -kBigBigFloat);
+								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, kSmallSmallFloat);
 								else SetFloat(vars+2, kBigBigFloat);
 							} 
 							else if (IsInt(vars+2)) vars[2].uf = vars[2].ui;
