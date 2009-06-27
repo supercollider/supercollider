@@ -867,7 +867,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	frame->context.ucopy = closure->context.ucopy;
 	
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
@@ -1002,7 +1002,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	frame->context.ucopy = closure->context.ucopy;
 	
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
@@ -1163,7 +1163,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	frame->context.ucopy = closure->context.ucopy;
 	
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
@@ -1312,7 +1312,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	frame->context.ucopy = closure->context.ucopy;
 	
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
@@ -2052,7 +2052,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	SetObject(outSlot, debugFrameObj);
 	
 	SetObject(debugFrameObj->slots + 0, meth);
-	SetInt(debugFrameObj->slots + 5, (int)meth);
+	SetPtr(debugFrameObj->slots + 5, meth);
 	
 	//int numtemps = methraw->numargs;
 	int numargs = methraw->numargs;
@@ -2837,8 +2837,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetObject(&oldthread->method, g->method);
 		SetObject(&oldthread->block, g->block);
 		SetObject(&oldthread->frame, g->frame);
-		oldthread->ip.ui = (int)g->ip;
-		oldthread->sp.ui = (int)g->sp;
+		SetPtr(&oldthread->ip, g->ip);
+		SetPtr(&oldthread->sp, g->sp);
 		oldthread->receiver.ucopy = g->receiver.ucopy;
 		oldthread->numArgsPushed.ui = *numArgsPushed;
 		oldthread->numpop.ui = g->numpop;
