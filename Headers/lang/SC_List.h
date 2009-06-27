@@ -28,9 +28,6 @@ A doubly linked list template.
 #define _SC_List_
 
 #include <stdexcept>
-#ifndef NDEBUG
-# define NDEBUG
-#endif
 #include <assert.h>
 
 
