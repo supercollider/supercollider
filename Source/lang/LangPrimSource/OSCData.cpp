@@ -314,7 +314,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (err) return err;
 		
 		if (addr == 0) {
-#ifdef SC_WIN32
+#ifdef NO_INTERNAL_SERVER
       // no internal server under SC_WIN32 yet
 #else
 			if (gInternalSynthServer.mWorld) {
@@ -816,7 +816,7 @@ extern "C" {
 	int vpost(const char *fmt, va_list vargs);
 }
 
-#ifndef SC_WIN32
+#ifndef NO_INTERNAL_SERVER
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
@@ -1041,8 +1041,8 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
 	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);	
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
-#ifndef SC_WIN32
-  definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
+#ifndef NO_INTERNAL_SERVER
+	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
 #endif
 	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	

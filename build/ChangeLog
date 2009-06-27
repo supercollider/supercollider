@@ -1,5 +1,18 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+Recent changes (will be SuperCollider v3.3.2)
+=======================================
+
+Headlines:
+----------
+
+Bugfixes:
+---------
+
+Other additions/improvements:
+-----------------------------
+* 2009-06-27 build 32bit sclang on x86_64 - tb
+
 SuperCollider v3.3.1, released 2009-06-19
 =========================================
 

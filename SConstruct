@@ -50,8 +50,6 @@ def short_cpu_name(cpu):
 PLATFORM = platform.uname()[0].lower()
 CPU = short_cpu_name(platform.uname()[4])
 
-#print os.uname()
-
 ANY_FILE_RE = re.compile('.*')
 HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd|html)$')
 SC_FILE_RE = re.compile('.*\.sc$')
@@ -370,7 +368,7 @@ else:
 	env['ENV']['HOME'] = os.environ['HOME']
 
 if PLATFORM == 'linux':
-	env['amd64'] = platform.uname()[2].find( 'amd64' ) > 0
+	env['amd64'] = 'x86_64' in platform.uname()
 	if env['amd64']:
 		print "we are on amd64 linux"
 
@@ -969,13 +967,22 @@ langEnv.Append(
     )
 
 if env.has_key('amd64') and env['amd64']:
-	langEnv.Append( CXXFLAGS = ['-m32'] )
+	langEnv.Append( CFLAGS = ['-m32'],
+                    CXXFLAGS = ['-m32'],
+                    LINKFLAGS = ['-m32'],
+                    CPPDEFINES = "NO_INTERNAL_SERVER")
+else:
+    langEnv.Append(LIBS = ['common', 'scsynth'])
+    merge_lib_info(langEnv, libraries['audioapi'])
+
+if PLATFORM == 'windows':
+    langEnv.Append(CPPDEFINES = "NO_INTERNAL_SERVER")
 
 # functionality of libdl is included in libc on freebsd
 if PLATFORM == 'freebsd':
-    langEnv.Append(LIBS = ['common', 'scsynth', 'pthread', 'm'])
+    langEnv.Append(LIBS = ['pthread', 'm'])
 else:
-    langEnv.Append(LIBS = ['common', 'scsynth', 'pthread', 'dl',  'm'])
+    langEnv.Append(LIBS = ['pthread', 'dl',  'm'])
 
 if PLATFORM == 'darwin':
     langEnv.Append(
@@ -993,7 +1000,7 @@ if env['CURL']:
     langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
     merge_lib_info(langEnv, libraries['libcurl'])
 
-merge_lib_info(langEnv, libraries['audioapi'])
+
 
 libsclangEnv = langEnv.Clone(
     PKGCONFIG_NAME = 'libsclang',
@@ -1079,6 +1086,10 @@ Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
 Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 ''')
+
+if env.has_key('amd64') and env['amd64']:
+    libsclangSources += commonSources
+
 if PLATFORM == 'linux':
     # HAVE_LID does the right thing in SC_LID.cpp source
     libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
