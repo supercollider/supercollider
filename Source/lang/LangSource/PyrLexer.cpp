@@ -32,6 +32,8 @@
 #else
 # include <sys/param.h>
 #endif
+
+#include "PyrParseNode.h"
 #ifndef SC_WIN32
 # include "lang11d_tab.h"
 #endif
@@ -40,7 +42,6 @@
 #include "PyrObjectProto.h"
 #include "PyrLexer.h"
 #include "PyrSched.h"
-#include "PyrParseNode.h"
 #include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
 #include "GC.h"
@@ -1006,7 +1007,7 @@ int processbinop(char *token)
 	sym = getsym(token);
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	if (strcmp(token, "<-")==0) return LEFTARROW;
 	if (strcmp(token, "<>")==0) return READWRITEVAR;
 	if (strcmp(token, "|")==0) return '|';
@@ -1033,7 +1034,7 @@ int processkeywordbinop(char *token)
 	sym = getsym(token);
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return KEYBINOP;
 }
 
@@ -1060,13 +1061,13 @@ int processident(char *token)
 	if (token[0] == '_') {
 		if (token[1] == 0) {
 			node = newPyrCurryArgNode();
-			zzval = (int)node;
+			zzval = (long)node;
 			return CURRYARG;
 		} else {
 			sym = getsym(token);
 			SetSymbol(&slot, sym);
 			node = newPyrSlotNode(&slot);
-			zzval = (int)node;
+			zzval = (long)node;
 			return PRIMITIVENAME;
 		}
 	}
@@ -1074,7 +1075,7 @@ int processident(char *token)
 		sym = getsym(token);
 		SetSymbol(&slot, sym);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 #if DEBUGLEX
 	if (gDebugLexer) postfl("CLASSNAME: '%s'\n",token);
 #endif
@@ -1090,31 +1091,31 @@ int processident(char *token)
 		sym = getsym(token);
 		SetSymbol(&slot, sym);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 		return WHILE; 
 	}
 	if (strcmp("pi",token) ==0) {
 		SetFloat(&slot, pi);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 		return PIE; 
 	}
 	if (strcmp("true",token) ==0) {
 		SetTrue(&slot);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 		return TRUEOBJ; 
 	}
 	if (strcmp("false",token) ==0) {
 		SetFalse(&slot);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 		return FALSEOBJ; 
 	}
 	if (strcmp("nil",token) ==0) {
 		SetNil(&slot);
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
 		return NILOBJ; 
 	}
 	if (strcmp("inf",token) ==0) {
@@ -1126,7 +1127,7 @@ int processident(char *token)
     SetFloat(&slot, INFINITY);
 #endif
 		node = newPyrSlotNode(&slot);
-		zzval = (int)node;
+		zzval = (long)node;
     return SC_FLOAT; 
   }
 
@@ -1134,7 +1135,7 @@ int processident(char *token)
 	
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return NAME;
 }
 
@@ -1159,7 +1160,7 @@ int processhex(char *s)
 	
 	SetInt(&slot, val);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return INTEGER;
 }
 
@@ -1174,7 +1175,7 @@ int processintradix(char *s, int n, int radix)
 	
 	SetInt(&slot, sc_strtoi(s, n, radix));
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return INTEGER;
 }
 
@@ -1188,7 +1189,7 @@ int processfloatradix(char *s, int n, int radix)
 
 	SetFloat(&slot, sc_strtof(s, n, radix));
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return INTEGER;
 }
 
@@ -1202,7 +1203,7 @@ int processint(char *s)
 	
 	SetInt(&slot, atoi(s));
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return INTEGER;
 }
 
@@ -1216,7 +1217,7 @@ int processchar(int c)
 	
 	SetChar(&slot, c);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return ASCII;
 }
 
@@ -1232,7 +1233,7 @@ int processfloat(char *s, int sawpi)
 	if (sawpi) { z = atof(s)*pi; SetFloat(&slot, z); }
 	else  { SetFloat(&slot, atof(s)); }
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
     return SC_FLOAT; 
 }
 
@@ -1272,7 +1273,7 @@ int processaccidental1(char *s)
 
 	SetFloat(&slot, degree + cents/centsdiv);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return ACCIDENTAL;
 }
 
@@ -1304,7 +1305,7 @@ int processaccidental2(char *s)
 	
 	SetFloat(&slot, degree + semitones/10.);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return ACCIDENTAL;
 }
 
@@ -1320,7 +1321,7 @@ int processsymbol(char *s)
 	
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return SYMBOL;
 }
 
@@ -1336,7 +1337,7 @@ int processstring(char *s)
 	string = newPyrString(gMainVMGlobals->gc, s+1, flags, false);
 	SetObject(&slot, string);
 	node = newPyrSlotNode(&slot);
-	zzval = (int)node;
+	zzval = (long)node;
 	return STRING;
 }
 

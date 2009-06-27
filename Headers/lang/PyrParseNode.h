@@ -553,4 +553,6 @@ extern PyrBlock *gCompilingBlock;
 	inlining of IF, WHILE, AND, OR
 */
 
+#define YYSTYPE long
+
 #endif
