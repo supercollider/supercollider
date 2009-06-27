@@ -28,8 +28,6 @@
    Requests are `small' if both the corresponding and the next bin are small
 */
 
-#define DEBUG 0
-
 #if DEBUG
 #define check_pool()  DoCheckPool()
 #define check_free_chunk(P)  DoCheckFreeChunk(P)
@@ -203,7 +201,7 @@ AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 	}
 	// AllocAreaPtr area = (AllocAreaPtr)((unsigned long)ptr & ~kAlignMask);
 	AllocAreaPtr area = (AllocAreaPtr)(((unsigned long)ptr + kAlignMask) & ~kAlignMask);
-	assert((area >= ptr) && (((unsigned long)area & kAlignMask) == area));
+	assert((area >= ptr) && ((void*)((unsigned long)area & ~kAlignMask) == area));
 
 	area->mUnalignedPointerToThis = ptr;
 
@@ -552,7 +550,7 @@ void AllocPool::DoCheckArea(AllocAreaPtr area)
 	}
 }
 
-void AllocPool::DoCheckBin(AllocChunkPtr bin, long /*index*/)
+void AllocPool::DoCheckBin(AllocChunkPtr bin, long index)
 {
 	AllocChunkPtr p = bin->Next();
 
