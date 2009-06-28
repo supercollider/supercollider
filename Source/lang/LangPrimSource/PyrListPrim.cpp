@@ -514,7 +514,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) {
 			if (NotNil(&stretch)) return err;
-			SetNil(a);
+			SetFloat(a, fdur);
 			return errNone;
 		}
 				
