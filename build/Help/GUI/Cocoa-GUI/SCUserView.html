@@ -32,9 +32,9 @@ span.s5 {text-decoration: underline ; color: #0000bf}
 span.s6 {font: 14.0px Helvetica}
 span.s7 {text-decoration: underline ; color: #0000bf}
 span.s8 {text-decoration: underline ; color: #000000}
-span.s9 {color: #bf0000}
-span.s10 {color: #007300}
-span.s11 {color: #606060}
+span.s9 {color: #007300}
+span.s10 {color: #606060}
+span.s11 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -136,7 +136,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span>w=<span class="s2">Window</span>.new;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>v=<span class="s2">UserView</span>(w, w.view.bounds.insetBy(50,50));</p>
 <p class="p15"><span class="Apple-tab-span">	</span>v.background_(<span class="s2">Color</span>.rand);</p>
-<p class="p15"><span class="Apple-tab-span">	</span>v.relativeOrigin=<span class="s2">true</span>;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>v.drawFunc={<span class="s2">|uview|</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.moveTo(0@uview.bounds.height.rand);</p>
@@ -150,57 +149,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p14">// A More complicated drawing function.</p>
-<p class="p14">// Resize the window to refresh the drawing</p>
-<p class="p15">(<span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="s2">var</span> func;</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>func = {<span class="s2">|me|</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.use{</p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// clipping into the boundingbox</p>
-<p class="p15"><span class="s9"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.moveTo((me.bounds.left)@(me.bounds.top));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (me.bounds.width@0));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (me.bounds.width@me.bounds.height));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (0@me.bounds.height));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo((me.bounds.left)@(me.bounds.top));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.clip;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// draw background</p>
-<p class="p15"><span class="s9"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.gray(0.5).set;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.moveTo((me.bounds.left)@(me.bounds.top));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (me.bounds.width@0));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (me.bounds.width@me.bounds.height));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo(((me.bounds.left)@(me.bounds.top))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ (0@me.bounds.height));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.lineTo((me.bounds.left)@(me.bounds.top));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.fill;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.translate(100, 100);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do{</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.red(rrand(0.0, 1), rrand(0.0, 0.5)).set;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s10">\stroke</span>, <span class="s10">\fill</span>].choose);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p15"><span class="Apple-tab-span">	</span>};</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span>w = </span><span class="s2">SCWindow</span><span class="s3">.new(</span>"DrawFunc Examples"<span class="s3">).front;</span></p>
-<p class="p15"><span class="s11"><span class="Apple-tab-span">	</span></span>w.view.background_(<span class="s2">Color</span>.white);</p>
-<p class="p15"><span class="Apple-tab-span">	</span>3.do{<span class="s2">|i|</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w, <span class="s2">Rect</span>(20+(i*120), 100, 100, 100));</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.drawFunc = func;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.relativeOrigin=<span class="s2">false</span>;</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>};</p>
-<p class="p15"><span class="Apple-tab-span">	</span>w.refresh;</p>
-<p class="p15">)</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
 <p class="p14">// Coordinates are relative to the SCUserView</p>
 <p class="p14">// Try resizing the Window.</p>
 <p class="p3"><br></p>
@@ -212,19 +160,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do{</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.red(rrand(0.0, 1), rrand(0.0, 0.5)).set;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s10">\stroke</span>, <span class="s10">\fill</span>].choose);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s9">\stroke</span>, <span class="s9">\fill</span>].choose);</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span>w = </span><span class="s2">SCWindow</span><span class="s3">.new(</span>"DrawFunc Examples"<span class="s3">).front;</span></p>
-<p class="p15"><span class="s11"><span class="Apple-tab-span">	</span></span>w.view.background_(<span class="s2">Color</span>.white);</p>
+<p class="p15"><span class="s10"><span class="Apple-tab-span">	</span></span>w.view.background_(<span class="s2">Color</span>.white);</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>3.do{<span class="s2">|i|</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w, <span class="s2">Rect</span>(20+(i*120), 100, 100, 100))</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawFunc_(func).relativeOrigin_(<span class="s2">true</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawFunc_(func);</p>
 <p class="p14"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.resize=3; </span>// the func coordinates ar valid even though the view move on resize</p>
-<p class="p15"><span class="s9"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>v.background_(<span class="s2">Color</span>.rand);</p>
+<p class="p15"><span class="s11"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>v.background_(<span class="s2">Color</span>.rand);</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.refresh;</p>
@@ -243,7 +191,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do{</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.red(rrand(0.0, 1), rrand(0.0, 0.5)).set;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s10">\stroke</span>, <span class="s10">\fill</span>].choose);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s9">\stroke</span>, <span class="s9">\fill</span>].choose);</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
@@ -251,11 +199,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span>mouseDownFunc = {<span class="s2">|me, x, y, mod|</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>startX = x;</p>
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"begin path: x=% realtive mouse coordinates:%\n"<span class="s3">,startX, x@y);</span></p>
-<p class="p15"><span class="s11"><span class="Apple-tab-span">	</span></span>};</p>
+<p class="p15"><span class="s10"><span class="Apple-tab-span">	</span></span>};</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>mouseUpFunc = {<span class="s2">|me, x, y, mod|</span></p>
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>postf(</span>"end path: (startX-x)==% mouse coordinates:%\n"<span class="s3">,(startX-x), x@y);</span></p>
-<p class="p3"><span class="s11"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p3"><span class="s10"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>mouseMoveFunc = {<span class="s2">|me, x, y, mod|</span></p>
@@ -273,7 +221,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseDownAction = mouseDownFunc;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseUpAction = mouseUpFunc;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.mouseMoveAction = mouseMoveFunc;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.relativeOrigin = <span class="s2">true</span>;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.refresh;</p>
 <p class="p15">)</p>
@@ -286,7 +233,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, txt, tmppoints, all;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>tmppoints = [];</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>(<span class="s11">"draw on me"</span>, <span class="s2">Rect</span>(128, 64, 340, 360));</p>
+<p class="p15"><span class="Apple-tab-span">	</span>w = <span class="s2">SCWindow</span>(<span class="s10">"draw on me"</span>, <span class="s2">Rect</span>(128, 64, 340, 360));</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w,w.view.bounds)</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.mouseMoveAction_({<span class="s2">|v,x,y|</span></p>
@@ -328,7 +275,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.stroke;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};<span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>v.relativeOrigin = <span class="s2">true</span>;</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p15">)</p>
@@ -339,12 +285,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14">// Set the behaviour for refreshing the view.</p>
 <p class="p14">// If this flag is true (the default) the view will be cleared before each refresh call,</p>
 <p class="p14">// otherwise It will draw in top of it.</p>
-<p class="p14">// On OSX this functionality is only available for the version &gt;= 10.4 and with the flag relativeOrigin set to true.</p>
+<p class="p14">// On OSX this functionality is only available for the version &gt;= 10.4 .</p>
 <p class="p3"><br></p>
 <p class="p15">(</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="s2">var</span> width = 640, height = 480, w, theta = 0, drawFunc, gui;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>gui = <span class="s2">GUI</span>.get( <span class="s10">\cocoa</span> );</p>
-<p class="p15"><span class="Apple-tab-span">	</span>w = gui.window.new( <span class="s11">"clearOnRefresh = true"</span>, <span class="s2">Rect</span>( 128, 64, width, height ), <span class="s2">false</span> );</p>
+<p class="p15"><span class="Apple-tab-span">	</span>gui = <span class="s2">GUI</span>.get( <span class="s9">\cocoa</span> );</p>
+<p class="p15"><span class="Apple-tab-span">	</span>w = gui.window.new( <span class="s10">"clearOnRefresh = true"</span>, <span class="s2">Rect</span>( 128, 64, width, height ), <span class="s2">false</span> );</p>
 <p class="p15"><span class="Apple-tab-span">	</span>drawFunc = { <span class="s2">arg</span> view;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> x = 20 * sin( theta ), y = 42 * cos( theta );</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>gui.pen.addRect( view.bounds.moveTo( 0, 0 ));</p>
@@ -363,8 +309,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span>x = gui.userView.new( w, <span class="s2">Rect</span>( 10, 10, width - 20, height - 20 ))</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.canFocus_( <span class="s2">false</span> )</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawFunc_( drawFunc )</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.clearOnRefresh_( <span class="s2">false</span> )</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.relativeOrigin_( <span class="s2">true</span> );</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.clearOnRefresh_( <span class="s2">false</span> );</p>
 <p class="p3"><br></p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="s2">Routine</span>({ while({ x.isClosed.not }, { x.refresh; (1/25).wait })}).play( <span class="s2">AppClock</span> );</p>
@@ -372,7 +317,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p15">(</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="s2">var</span> width= 640, height= 480, w, theta= 0, drawFunc;</p>
-<p class="p15"><span class="Apple-tab-span">	</span>w= <span class="s2">GUI</span>.window.new(<span class="s11">"trail test3"</span>, <span class="s2">Rect</span>(128, 64, width, height), <span class="s2">false</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>w= <span class="s2">GUI</span>.window.new(<span class="s10">"trail test3"</span>, <span class="s2">Rect</span>(128, 64, width, height), <span class="s2">false</span>);</p>
 <p class="p15"><span class="Apple-tab-span">	</span>drawFunc= {<span class="s2">|v|</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> x= 20*sin(theta), y= 42*cos(theta);</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>theta= theta+0.01;</p>
@@ -388,7 +333,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.pen.pop;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.userView.new(w, <span class="s2">Rect</span>(10, 10, width-20, height-20)).drawFunc_(drawFunc).relativeOrigin_(<span class="s2">true</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.userView.new(w, <span class="s2">Rect</span>(10, 10, width-20, height-20)).drawFunc_(drawFunc);</p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.front;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="s2">Routine</span>({<span class="s2">inf</span>.do{<span class="s2">|i|</span> w.refresh; (1/25).wait}}).play(<span class="s2">AppClock</span>);</p>
 <p class="p15">)</p>
@@ -404,15 +349,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do{</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.red(rrand(0.0, 1), rrand(0.0, 0.5)).set;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.addArc((400.exprand(2))@(100.rand), rrand(10, 100), 2pi.rand, pi);</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s10">\stroke</span>, <span class="s10">\fill</span>].choose);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.perform([<span class="s9">\stroke</span>, <span class="s9">\fill</span>].choose);</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p15"><span class="Apple-tab-span">	</span>};</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span>w = </span><span class="s2">SCWindow</span><span class="s3">.new(</span>"DrawFunc Examples"<span class="s3">).front;</span></p>
-<p class="p15"><span class="s11"><span class="Apple-tab-span">	</span></span>w.view.background_(<span class="s2">Color</span>.white);</p>
+<p class="p15"><span class="s10"><span class="Apple-tab-span">	</span></span>w.view.background_(<span class="s2">Color</span>.white);</p>
 <p class="p15"><span class="Apple-tab-span">	</span>views = {<span class="s2">|i|</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w, <span class="s2">Rect</span>(20+(i*120), 100, 100, 100)).relativeOrigin_(<span class="s2">true</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v = <span class="s2">SCUserView</span>(w, <span class="s2">Rect</span>(20+(i*120), 100, 100, 100));</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>v.drawFunc = func;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>} ! 3;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>w.refresh;</p>
@@ -429,12 +374,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span>a = </span><span class="s2">SCImage</span><span class="s3">.new(</span>"/Library/Desktop Pictures/Ripples Blue.jpg"<span class="s3">);</span></p>
 <p class="p17"><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span>win = <span class="s2">SCWindow</span>.new(<span class="s11">"refreshInRect Test"</span>, <span class="s2">Rect</span>(400, 400, 600, 200), scroll:<span class="s2">true</span>).front;</p>
+<p class="p15"><span class="Apple-tab-span">	</span>win = <span class="s2">SCWindow</span>.new(<span class="s10">"refreshInRect Test"</span>, <span class="s2">Rect</span>(400, 400, 600, 200), scroll:<span class="s2">true</span>).front;</p>
 <p class="p15"><span class="Apple-tab-span">	</span>win.onClose_({ a.free; });</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span>userView = <span class="s2">SCUserView</span>(win, <span class="s2">Rect</span>(10,10,2000,800))</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.backgroundImage_(a, 5)</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.relativeOrigin_(<span class="s2">false</span>)</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.drawFunc_({<span class="s2">|me|</span></p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Color</span>.blue.setFill;</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pen</span>.fillRect(blob);</p>
