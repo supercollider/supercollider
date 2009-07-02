@@ -12,6 +12,10 @@ let g:sclangKillOnExit = 1
 "sclangpipe_app
 let g:sclangTerm = "xterm -e"
 
+"the following has worked with osx
+"let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
+"let g:sclangPipeApp = "/usr/local/bin/sclangpipe_app"
+
 "this indicates the location to create a pipe for vim to communicate with
 "sclang 
 "defaults /tmp/sclang-pipe
