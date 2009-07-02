@@ -152,7 +152,7 @@ please use the scons scripts in their respective directories (in editors/).
 Note that the language will only build 32bit. To compile the language as
 32bit binary on a 64bit installation, a multilib compiler and 32bit
 libraries are required (on debian systems, the packages are gcc-multilib
-g++-multilib and ia32-libs.
+g++-multilib, ia32-libs, libc6-dev-i386 and lib32asound2-dev).
 
 
 ------------------------------------------------------------------------
