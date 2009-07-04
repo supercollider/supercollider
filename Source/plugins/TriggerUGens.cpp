@@ -1601,7 +1601,7 @@ void Peak_next_ak(Peak *unit, int inNumSamples)
 	float level = unit->mLevel;
 	float inlevel;
 	LOOP(inNumSamples,
-		inlevel = fabs(ZXP(in));
+		inlevel = std::abs(ZXP(in));
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
 	);
@@ -1617,7 +1617,7 @@ void Peak_next_ai(Peak *unit, int inNumSamples)
 	float level = unit->mLevel;
 	float inlevel;
 	LOOP(inNumSamples,
-		inlevel = fabs(ZXP(in));
+		inlevel = std::abs(ZXP(in));
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
 	);
@@ -1634,7 +1634,7 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 
 	LOOP(inNumSamples,
 		float curtrig = ZXP(trig);
-		float inlevel = fabs(ZXP(in));
+		float inlevel = std::abs(ZXP(in));
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
 		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
@@ -1804,7 +1804,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 	
 	if(decay == unit->mDecay) {
 		LOOP(inNumSamples,
-			float inlevel = fabs(ZXP(in));
+			float inlevel = std::abs(ZXP(in));
 			if (inlevel >= level) { 
 				level = inlevel; 
 			} else { 
@@ -1818,7 +1818,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 		float decay_slope = CALCSLOPE(decay, unit->mDecay);
 		if (decay >= 0.f && unit->mDecay >= 0.f) {
 			LOOP(inNumSamples, 
-				float inlevel = fabs(ZXP(in));
+				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
@@ -1829,7 +1829,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 			);
 		} else if (decay <= 0.f && unit->mDecay <= 0.f) {
 			LOOP(inNumSamples, 
-				float inlevel = fabs(ZXP(in));
+				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
@@ -1840,11 +1840,11 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 			);
 		} else {
 			LOOP(inNumSamples, 
-				float inlevel = fabs(ZXP(in));
+				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) { 
 					level = inlevel; 
 				} else {
-					level = (1.f - fabs(decay)) * inlevel + decay * level;
+					level = (1.f - std::abs(decay)) * inlevel + decay * level;
 					decay += decay_slope;
 				};
 				ZXP(out) = level;
@@ -1865,7 +1865,7 @@ void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples)
 	float level = unit->mLevel;
 	
 		LOOP(inNumSamples,
-			float inlevel = fabs(ZXP(in));
+			float inlevel = std::abs(ZXP(in));
 			if (inlevel >= level) { 
 				level = inlevel; 
 			} else { 
@@ -1913,7 +1913,7 @@ void MostChange_next_ak(MostChange *unit, int inNumSamples)
 	int recent = unit->mRecent;
 	LOOP(inNumSamples,
 		float xa = ZXP(a);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff > 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -1942,7 +1942,7 @@ void MostChange_next_aa(MostChange *unit, int inNumSamples)
 	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff > 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -1970,7 +1970,7 @@ void MostChange_next_ka(MostChange *unit, int inNumSamples)
 	int recent = unit->mRecent;
 	LOOP(inNumSamples,
 		float xb = ZXP(b);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff > 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -2022,7 +2022,7 @@ void LeastChange_next_ak(LeastChange *unit, int inNumSamples)
 	int recent = unit->mRecent;
 	LOOP(inNumSamples,
 		float xa = ZXP(a);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff < 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -2051,7 +2051,7 @@ void LeastChange_next_aa(LeastChange *unit, int inNumSamples)
 	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff < 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -2079,7 +2079,7 @@ void LeastChange_next_ka(LeastChange *unit, int inNumSamples)
 	int recent = unit->mRecent;
 	LOOP(inNumSamples,
 		float xb = ZXP(b);
-		float diff = fabs(xa - prevA) - fabs(xb - prevB);
+		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff < 0.f) {
 			recent = 0;
 			ZXP(out) = xa;
@@ -2118,7 +2118,7 @@ void LastValue_next_kk(LastValue *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float inval = ZIN0(0);
 	float delta = ZIN0(1);
-	float diff = fabs(inval - unit->mCurr);
+	float diff = std::abs(inval - unit->mCurr);
 	if(diff >= delta) { 
 		unit->mPrev = unit->mCurr; 
 		unit->mCurr = inval;
@@ -2139,7 +2139,7 @@ void LastValue_next_ak(LastValue *unit, int inNumSamples)
 	
 	LOOP(inNumSamples,
 		float inval = ZXP(in);
-		float diff = fabs(inval - curr);
+		float diff = std::abs(inval - curr);
 		if(diff >= delta) { 
 				prev = curr; 
 				curr = inval;
