@@ -21,6 +21,8 @@
 
 #include "SC_PlugIn.h"
 
+#include <algorithm>            /* for std::min and std::max */
+
 static InterfaceTable *ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1580,14 +1582,24 @@ void Phasor_next_aa(Phasor *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+void Peak_next_ak_unroll(Peak *unit, int inNumSamples);
+void Peak_next_ai_unroll(Peak *unit, int inNumSamples);
+
 void Peak_Ctor(Peak *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
 		SETCALC(Peak_next_aa);
 	} else if (INRATE(1) == calc_ScalarRate) {
-		SETCALC(Peak_next_ai);
+		if (BUFLENGTH & 7)
+			SETCALC(Peak_next_ai);
+		else
+			SETCALC(Peak_next_ai_unroll);
 	} else {
-		SETCALC(Peak_next_ak);
+		if (BUFLENGTH & 7)
+			SETCALC(Peak_next_ak);
+		else
+			SETCALC(Peak_next_ak_unroll);
 	}
 	unit->m_prevtrig = 0.f;
 	ZOUT0(0) = unit->mLevel = ZIN0(0);
@@ -1602,7 +1614,7 @@ void Peak_next_ak(Peak *unit, int inNumSamples)
 	float inlevel;
 	LOOP(inNumSamples,
 		inlevel = std::abs(ZXP(in));
-		if (inlevel > level) level = inlevel;
+		level = std::max(inlevel, level);
 		ZXP(out) = level;
 	);
 	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
@@ -1618,7 +1630,7 @@ void Peak_next_ai(Peak *unit, int inNumSamples)
 	float inlevel;
 	LOOP(inNumSamples,
 		inlevel = std::abs(ZXP(in));
-		if (inlevel > level) level = inlevel;
+		level = std::max(inlevel, level);
 		ZXP(out) = level;
 	);
 	unit->mLevel = level;
@@ -1635,12 +1647,91 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 	LOOP(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = std::abs(ZXP(in));
-		if (inlevel > level) level = inlevel;
+		level = std::max(inlevel, level);
 		ZXP(out) = level;
 		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
 		prevtrig = curtrig;
 	);
 	unit->m_prevtrig = prevtrig;
+	unit->mLevel = level;
+}
+
+void Peak_next_ak_unroll(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float curtrig = ZIN0(1);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples/8,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+	);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Peak_next_ai_unroll(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float level = unit->mLevel;
+	float inlevel;
+	LOOP(inNumSamples/8,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+	);
 	unit->mLevel = level;
 }
 
@@ -1828,10 +1919,10 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 				ZXP(out) = level;
 			);
 		} else if (decay <= 0.f && unit->mDecay <= 0.f) {
-			LOOP(inNumSamples, 
+			LOOP(inNumSamples,
 				float inlevel = std::abs(ZXP(in));
-				if (inlevel >= level) { 
-					level = inlevel; 
+				if (inlevel >= level) {
+					level = inlevel;
 				} else {
 					level = inlevel + decay * (level + inlevel);
 					decay += decay_slope;
