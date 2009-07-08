@@ -40,7 +40,20 @@
 			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);"; 
 			
 		doc = Document("edit outs:", editstring); 
-		try { doc.bounds_(bounds) };	// swingosc safe	}}
+		try { doc.bounds_(bounds) };	// swingosc safe	}
+	
+	findInOpenDocuments {
+		var src, str, startSel, doc;
+		src = this.source; 
+		src ?? { "no source yet.".postln; ^this };
+		
+		str = src.asCompileString; 
+		doc = Document.allDocuments.detect { |doc|
+			startSel = doc.string.find(str);
+			startSel.notNil;
+		};
+		doc !? { doc.front.selectRange(startSel, 0); }
+	}}
 
 
 +BinaryOpPlug {
@@ -115,6 +128,7 @@
 	documentOutput {
 		^this.document(nil, true)
 	}
+	
 	document { arg keys, onlyAudibleOutput=false, includeSettings=true; 
 		var str;
 		if(onlyAudibleOutput) {

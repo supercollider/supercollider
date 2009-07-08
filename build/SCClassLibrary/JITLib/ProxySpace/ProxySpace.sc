@@ -240,6 +240,21 @@ ProxySpace : LazyEnvir {
 	
 	postln { Post << this }
 	
+	includes { |proxy| ^envir.includes(proxy) }
+	
+	*findSpace { |proxy|
+		var space = [ currentEnvironment, thisProcess.interpreter.p ]
+			.detect { |cand|  cand.isKindOf(this) and: { cand.includes(proxy) } };
+		if (space.notNil) { ^space };
+		
+		space = ProxySpace.all.detect(_.includes(proxy));
+		if (space.notNil) { ^space };
+
+		space = Ndef.all.detect(_.includes(proxy));
+		if (space.notNil) { ^space };
+			// none found
+		^nil
+	}
 }	
 
 
