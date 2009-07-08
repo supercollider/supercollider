@@ -1030,6 +1030,17 @@ NodeProxy : BusPlug {
 			server.sendBundle(nil, msg)
 		}
 	}
+	
+			// gui support
+	typeStr { 		
+		if(this.rate === 'audio') { ^"ar" + this.numChannels };
+		if(this.rate === 'control') { ^"kr" + this.numChannels };
+		^"ir";
+	}
+	
+	edit { |nSliders, parent, bounds| 
+		^NodeProxyEditor(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
+	}
 }
 
 

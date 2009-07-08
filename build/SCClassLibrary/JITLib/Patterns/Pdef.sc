@@ -33,6 +33,13 @@ PatternProxy : Pattern {
 		pattern = pat;
 		source = obj; // keep original here.
 	}
+	
+	setSourceLikeInPbind { arg obj;
+		var pat = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
+		if (obj.isNil) { pat = this.class.default }; 
+		pattern = pat.fin(inf);
+		source = obj; // keep original here.
+	}
 		
 	defaultEvent {
 		if(envir.isNil) { envir = this.class.event };
@@ -733,10 +740,10 @@ PbindProxy : Pattern {
 					pairs.removeAt(i);
 					changedPairs = true;
 				}{
-					pairs[i+1].source = val.fin(inf)
+					pairs[i+1].setSourceLikeInPbind(val)
 				};
 			}{ 
-				pairs = pairs ++ [key, PatternProxy(val.fin(inf)).quant_(quant)];
+				pairs = pairs ++ [key, PatternProxy.new.setSourceLikeInPbind(val).quant_(quant)];
 				// fin(inf) is a way to stream symbols endlessly
 				changedPairs = true;
 			};
