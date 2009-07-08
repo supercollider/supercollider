@@ -228,7 +228,7 @@
 		
 		// [\oldKeys, oldKeys, \editKeys, editKeys].printAll;
 		
-		newType = proxy.typeStr;
+		newType = if (proxy.notNil) { proxy.typeStr };
 		if (newType != oldType) { 
 			oldType = newType;
 			typeChanView.string_(newType);
