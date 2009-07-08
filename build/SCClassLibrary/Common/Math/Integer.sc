@@ -215,5 +215,14 @@ Integer : SimpleNumber {
 			^product
 		}
 	}
+	
+		// support for modifiers keys
+	isCaps { ^this & 65536 == 65536}
+	isShift { ^this & 131072 == 131072 }
+	isCtrl { ^this & 262144 == 262144 }
+	isAlt { ^this & 524288 == 524288 }
+	isCmd { ^this & 1048576 == 1048576 } 
+	isNumPad { ^this & 2097152 == 2097152 }
+	isHelp { ^this & 4194304 == 4194304 }
+	isFun { ^this & 8388608 == 8388608 }
 }
-

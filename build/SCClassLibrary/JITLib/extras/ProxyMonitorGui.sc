@@ -72,10 +72,8 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 				[ \stop, skin.fontColor, skin.onColor ]
 			]);
 			
-				// modifier alt should be elsewhere!!!		playBut.action_({ arg btn, modif; 
-			// 524576 is alt, 262401 is ctl, 8388864 is fn
-			// swingosc: 16 is normal  24 is alt, ctl is off, and fn is 16 as well
-			var isAlt = [524576, 24].includes(modif); 			if(proxy.notNil) {				[ 	{ 	if (isAlt) { proxy.end } { proxy.stop }; }, 					{ 	if (isAlt) { proxy.vol_(0) };
+		playBut.action_({ arg btn, modif; 
+			if(proxy.notNil) {				[ 	{ 	if (modif.isAlt) { proxy.end } { proxy.stop }; }, 					{ 	if (modif.isAlt) { proxy.vol_(0) };
 						if (usesPlayN) { proxy.playN } { proxy.play } 
 					}				].at(btn.value).value			}		});				setOutBox = EZNumber(zone, outWid@height, nil, [0, lastOutBus, \lin, 1], 
 			{ |box, mod| 
@@ -105,15 +103,17 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 				.font_(font)				.states_([					["paus", skin.fontColor, skin.onColor], 					["rsum", skin.fontColor, skin.offColor]				])
 				.action_({ arg btn; 				if(proxy.notNil, {						[ 	{ proxy.resume; }, { proxy.pause; }  ].at(btn.value).value;					})				});						sendBut = Button(zone, Rect(0,0,34,height))
 				.font_(font)				.states_([ 					["send", skin.fontColor, skin.offColor], 					["send", skin.fontColor, skin.onColor] 				])				.action_({ arg btn, mod; 
-				//	mod.postln;					if(proxy.notNil and: (btn.value == 0)) { 
-						// alt-click osx, swingosc						if ([524576, 24].includes(mod) ) { proxy.rebuild } { proxy.send }					};
+					if(proxy.notNil and: (btn.value == 0)) { 
+						if (mod.isAlt) { proxy.rebuild } { proxy.send }					};
 					btn.value_(1 - btn.value)				})
 		};			if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
 		 		var currState;
-		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0; 
+		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0;
+		var type = "-"; 
 				if (win.isClosed) {skipjack.stop; ^this };
 				if (proxy.notNil) { 
 					pxname = proxy.key ? 'anon';	
+			type = proxy.typeStr;
 			canSend = proxy.objects.notEmpty.binaryValue;			pauses = proxy.paused.binaryValue;
 			
 			isAudio = proxy.rate == \audio;			monitor = proxy.monitor; 
@@ -121,8 +121,6 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 			
 			if (monitor.notNil, { 				currVol = proxy.monitor.vol;
 				playsSpread = proxy.monitor.hasSeriesOuts.not;				outs = monitor.outs; 			}); 
-		} { 
-			
 		};
 		
 		currState = [currVol, pxname, isAudio, plays, outs, playsSpread, pauses, canSend];

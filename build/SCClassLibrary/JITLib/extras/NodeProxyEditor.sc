@@ -1,3 +1,4 @@
+// document for non-current proxyspaces is not correct yet.
 NodeProxyEditor { 		classvar <>menuHeight=18;	var 	<proxy;
 	var <skin, <font;
 
@@ -7,6 +8,7 @@
 	
 	var 	<currentSettings, 	<prevSettings, <editKeys, <>ignoreKeys=#[];	var <>replaceKeys;		// a dict for slider names to be replaced
 	var 	<tooManyKeys = false, <keysRotation = 0; 	
+	var oldType = "-";
 
 	*initClass { 
 		StartUp.add{
@@ -17,17 +19,15 @@
 		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade], 
 		monitor=true, sinks=true, morph=false; 
 				^super.new.nSliders_(nSliders)
-			.init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}	proxy_ { arg px; 
-		var typeStr;
+			.init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}
+
+	proxy_ { arg px; 
 		if (px.isNil) { 
 			proxy = nil; 
 			nameView.object_(px).string_('-');
 			typeChanView.string_('-'); 
 			this.fullUpdate;
-		} { 			if (px.isKindOf(NodeProxy)) { 				proxy = px;				nameView.object_(px).string_(px.key ? 'anon proxy');				typeStr = if(proxy.rate === 'audio') { "ar" } { 
-						if(proxy.rate === 'control', { "kr" }, { "ir" })
-						} +  proxy.numChannels;
-				typeChanView.string_(typeStr);
+		} { 			if (px.isKindOf(NodeProxy)) { 				proxy = px;				nameView.object_(px).string_(px.key ? 'anon proxy');				typeChanView.string_(proxy.typeStr);
 				if (monitor.notNil) { monitor.proxy_(proxy) };				this.fullUpdate;			} 
 		}	}
 	
@@ -57,9 +57,16 @@
 		inform("NodeProxyEditor: preset/morph not finished yet.");//		zone.decorator.shift(0, 2);//		StaticText(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));//		zone.decorator.shift(0, 2);//		PxPreset(proxy, zone);	}		makeTopLine { |extras|
 		nameView = DragBoth(zone, 90@menuHeight)			.font_(font).align_(\center)			.background_(Color.white);
 		nameView.setBoth_(false)
+			.mouseDownAction_ { |drag, x, y, mod|
+				if (mod.isAlt) { 
+					try { ProxySpace.findSpace(proxy).document(proxy.key) };
+				} { 
+					proxy.findInOpenDocuments
+				}
+			}
 			.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
 			
-		typeChanView = StaticText(zone, 30@menuHeight).string_("ar 88").align_(0).font_(font);
+		typeChanView = StaticText(zone, 30@menuHeight).string_("-").align_(0).font_(font);
 		
 		extras.do { |butkey| 
 			buttonFuncs[butkey].value;	
@@ -95,9 +102,7 @@
 			CLR: { Button(zone, 30@20).font_(font)
 					.states_([[\CLR, skin.fontColor, Color.clear]])
 					.action_({ arg btn, mod; 
-						if ([524576, 24].includes(mod) ) { 
-							proxy.clear 
-						} { 
+						if (mod.isAlt) { proxy.clear } { 
 							"use alt-click to clear proxy.".postln;
 						} 
 					}) 
@@ -124,10 +129,9 @@
 							["send", skin.fontColor, skin.onColor] 
 						])
 						.action_({ arg btn, mod; 
-									//	mod.postln;
 							if(proxy.notNil and: (btn.value == 0)) { 
 								// alt-click osx, swingosc
-								if ([524576, 24].includes(mod) ) { proxy.rebuild } { proxy.send }
+								if (mod.isAlt) { proxy.rebuild } { proxy.send }
 							};
 							btn.value_(1 - btn.value)
 						})
@@ -138,18 +142,15 @@
 						.action_({ proxy !? { proxy.scope } }) 
 			},
 			
+
 			doc: 	{ Button(zone, 30@20).font_(font)
 						.states_([[\doc, skin.fontColor, Color.clear]])
 						.action_({ |but, mod|
-							if ([524576, 24].includes(mod) ) { 
-								NodeProxyEditor(proxy) 
-							} {  
-							if(proxy.notNil and: currentEnvironment.isKindOf(ProxySpace)) { 
-								currentEnvironment.document(proxy.key)
-									.title_("<" + proxy.key.asString + ">") 
-							} {
-								"can't currently document a proxy outside a proxy space.".inform;
-							} }
+							if (mod.isAlt) { 
+								try { ProxySpace.findSpace(proxy).document(proxy.key) };
+							} { 
+								proxy.findInOpenDocuments
+							}
 						}) 
 			}, 
 
@@ -221,11 +222,17 @@
 		};
 		scrolly.value_( keysRotation);
 	}
-		checkUpdate { 		var oldKeys; 		oldKeys = editKeys; 
+		checkUpdate { 		var oldKeys, newType; 		oldKeys = editKeys; 
 				this.getCurrentKeysValues; 		
 		this.checkTooMany;
 		
 		// [\oldKeys, oldKeys, \editKeys, editKeys].printAll;
+		
+		newType = proxy.typeStr;
+		if (newType != oldType) { 
+			oldType = newType;
+			typeChanView.string_(newType);
+		};
 		
 		if (monitor.notNil) { monitor.updateAll }; 
 
