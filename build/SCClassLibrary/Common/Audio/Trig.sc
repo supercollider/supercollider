@@ -80,8 +80,22 @@ PulseCount : UGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Peak : PulseCount {
+Peak : UGen {
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+	checkInputs {
+		if (rate == 'control' && inputs.at(0).rate == 'audio', {
+			^this.checkValidInputs
+		}, {
+			^this.checkSameRateAsFirstInput
+		});
+	}
 }
+
 
 RunningMin : Peak {
 }

@@ -304,6 +304,9 @@ void Peak_Ctor(Peak *unit);
 void Peak_next_ak(Peak *unit, int inNumSamples);
 void Peak_next_ai(Peak *unit, int inNumSamples);
 void Peak_next_aa(Peak *unit, int inNumSamples);
+void Peak_next_ak_k(Peak *unit, int inNumSamples);
+void Peak_next_ai_k(Peak *unit, int inNumSamples);
+void Peak_next_aa_k(Peak *unit, int inNumSamples);
 
 void RunningMin_Ctor(RunningMin *unit);
 void RunningMin_next_ak(RunningMin *unit, int inNumSamples);
@@ -1585,21 +1588,41 @@ void Phasor_next_aa(Phasor *unit, int inNumSamples)
 
 void Peak_next_ak_unroll(Peak *unit, int inNumSamples);
 void Peak_next_ai_unroll(Peak *unit, int inNumSamples);
+void Peak_next_ak_k_unroll(Peak *unit, int inNumSamples);
+void Peak_next_ai_k_unroll(Peak *unit, int inNumSamples);
 
 void Peak_Ctor(Peak *unit)
 {
-	if (INRATE(1) == calc_FullRate) {
-		SETCALC(Peak_next_aa);
-	} else if (INRATE(1) == calc_ScalarRate) {
-		if (BUFLENGTH & 7)
-			SETCALC(Peak_next_ai);
-		else
-			SETCALC(Peak_next_ai_unroll);
+	if (BUFLENGTH == 1 &&
+		INRATE(0) == calc_FullRate) {
+		/* audio-rate input with control-rate output */
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Peak_next_aa_k);
+		} else if (INRATE(1) == calc_ScalarRate) {
+			if (INBUFLENGTH(0) & 7)
+				SETCALC(Peak_next_ai_k);
+			else
+				SETCALC(Peak_next_ai_k_unroll);
+		} else {
+			if (INBUFLENGTH(0) & 7)
+				SETCALC(Peak_next_ak_k);
+			else
+				SETCALC(Peak_next_ak_k_unroll);
+		}
 	} else {
-		if (BUFLENGTH & 7)
-			SETCALC(Peak_next_ak);
-		else
-			SETCALC(Peak_next_ak_unroll);
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Peak_next_aa);
+		} else if (INRATE(1) == calc_ScalarRate) {
+			if (BUFLENGTH & 7)
+				SETCALC(Peak_next_ai);
+			else
+				SETCALC(Peak_next_ai_unroll);
+		} else {
+			if (BUFLENGTH & 7)
+				SETCALC(Peak_next_ak);
+			else
+				SETCALC(Peak_next_ak_unroll);
+		}
 	}
 	unit->m_prevtrig = 0.f;
 	ZOUT0(0) = unit->mLevel = ZIN0(0);
@@ -1700,11 +1723,161 @@ void Peak_next_ak_unroll(Peak *unit, int inNumSamples)
 
 void Peak_next_ai_unroll(Peak *unit, int inNumSamples)
 {
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
 	float level = unit->mLevel;
-	Peak_unroll_body(unit, inNumSamples, level);
+	float inlevel;
+
+	LOOP(inNumSamples/8,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		ZXP(out) = level;
+	);
 	unit->mLevel = level;
 }
 
+void Peak_next_ak_k(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float curtrig = ZIN0(1);
+	float level = unit->mLevel;
+	float inlevel;
+	inNumSamples = INBUFLENGTH(0);
+	LOOP(inNumSamples,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+	);
+	ZXP(out) = level;
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Peak_next_ai_k(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float level = unit->mLevel;
+	float inlevel;
+	inNumSamples = INBUFLENGTH(0);
+	LOOP(inNumSamples,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+	);
+	ZXP(out) = level;
+	unit->mLevel = level;
+}
+
+void Peak_next_aa_k(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float *trig = ZIN(1);
+	float prevtrig = unit->m_prevtrig;
+	float level = unit->mLevel;
+
+	inNumSamples = INBUFLENGTH(0);
+	LOOP(inNumSamples,
+		float curtrig = ZXP(trig);
+		float inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+		prevtrig = curtrig;
+	);
+	ZXP(out) = level;
+	unit->m_prevtrig = prevtrig;
+	unit->mLevel = level;
+}
+
+void Peak_next_ak_k_unroll(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float curtrig = ZIN0(1);
+	float level = unit->mLevel;
+	float inlevel;
+	inNumSamples = INBUFLENGTH(0);
+	LOOP(inNumSamples/8,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+	);
+	ZXP(out) = level;
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Peak_next_ai_k_unroll(Peak *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float level = unit->mLevel;
+	float inlevel;
+	inNumSamples = INBUFLENGTH(0);
+	LOOP(inNumSamples/8,
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+		inlevel = std::abs(ZXP(in));
+		level = std::max(inlevel, level);
+	);
+	ZXP(out) = level;
+	unit->mLevel = level;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 

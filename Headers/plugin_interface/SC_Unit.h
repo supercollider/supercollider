@@ -83,6 +83,9 @@ enum {
 // get the rate of the input.
 #define INRATE(index) (unit->mInput[index]->mCalcRate)
 
+// get the blocksize of the input
+#define INBUFLENGTH(index) (unit->mInput[index]->mFromUnit->mBufLength)
+
 // set the calculation function
 #define SETCALC(func) (unit->mCalcFunc = (UnitCalcFunc)&func)
 
