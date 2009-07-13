@@ -55,6 +55,11 @@ public:
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
 
+    void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
+    {
+        detail::network_thread::send_udp(data, size, receiver);
+    }
+
 private:
     struct received_packet:
         public audio_sync_callback

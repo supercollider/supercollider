@@ -16,10 +16,13 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include "sc_osc_handler.hpp"
-#include "server.hpp"
 
 #include <iostream>
+
+#include "osc/OscOutboundPacketStream.h"
+
+#include "sc_osc_handler.hpp"
+#include "server.hpp"
 
 namespace nova
 {
@@ -212,21 +215,29 @@ enum {
 struct quit_callback:
     public system_callback
 {
-    quit_callback(void)
+    quit_callback(udp::endpoint const & endpoint):
+        endpoint_(endpoint)
     {}
 
     void run(void)
     {
+        char buffer[128];
+        osc::OutboundPacketStream p(buffer, 128);
+        p << osc::BeginMessage("/done")
+          << osc::EndMessage;
+
+        instance->send_udp(p.Data(), p.Size(), endpoint_);
         instance->terminate();
     }
+
+    udp::endpoint endpoint_;
 };
 
-
-
-void handle_quit(void)
+void handle_quit(udp::endpoint const & endpoint)
 {
-    instance->add_system_callback(new quit_callback());
+    instance->add_system_callback(new quit_callback(endpoint));
 }
+
 
 } /* namespace */
 
@@ -237,7 +248,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
     switch (address)
     {
     case cmd_quit:
-        handle_quit();
+        handle_quit(packet->endpoint_);
         break;
 
     default:
@@ -255,7 +266,7 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     assert(address[0] == '/');
     if (strcmp(address+1, "quit") == 0) {
-        handle_quit();
+        handle_quit(packet->endpoint_);
     }
 }
 
