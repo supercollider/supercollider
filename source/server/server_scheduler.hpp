@@ -104,7 +104,6 @@ public:
     void operator()(void)
     {
         cbs.run_callbacks();
-
         threads.run();
     }
 
@@ -118,7 +117,6 @@ private:
     callback_system<audio_sync_callback> cbs;
     dsp_threads threads;
 };
-
 
 } /* namespace nova */
 

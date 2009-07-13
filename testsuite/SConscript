@@ -121,6 +121,7 @@ nova_server_test_sources = ["server_node_graph_test.cpp",
                             "server_synth_factory_test.cpp",
                             "server_test.cpp",
                             "server_ugen_test.cpp",
+                            "server_sc_osc_handler_test.cpp",
                             ]
 
 nova_server_sources = env.SConscript("#/source/server/SConscript", "env")[1] # use combined sources

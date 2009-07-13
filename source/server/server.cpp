@@ -27,89 +27,15 @@ namespace nova
 class nova_server * instance = 0;
 
 nova_server::nova_server(unsigned int port, unsigned int threads):
-    osc_server(port), scheduler(threads)
+    scheduler(threads), sc_osc_handler(port)
 {
     assert(instance == 0);
     instance = this;
-
-    init_osc_handles();
 }
 
 nova_server::~nova_server(void)
 {
     instance = 0;
-}
-
-
-namespace
-{
-
-struct handle_quit:
-    public osc_responder
-{
-    virtual void run(osc::ReceivedMessageArgumentIterator begin,
-                     osc::ReceivedMessageArgumentIterator const & end)
-    {
-        instance->terminate();
-    }
-};
-
-handle_quit quit_handler;
-
-
-class handle_set:
-    public osc_responder
-{
-public:
-    virtual void run(osc::ReceivedMessageArgumentIterator it,
-                     osc::ReceivedMessageArgumentIterator const & end)
-    {
-        try
-        {
-            using namespace osc;
-
-            int nodeid = it->AsInt32();
-            ++it;
-
-            if (it == end)
-                throw std::exception();
-
-            osc::ReceivedMessageArgumentIterator slot_it = it;
-            ++it;
-            osc::ReceivedMessageArgumentIterator value_it = it;
-            if (it == end)
-                throw std::exception();
-
-            if (it->IsInt32())
-                instance->add_sync_callback(
-                    new set_cmd_index<slot_index_t>(nodeid,
-                                                    slot_it->AsInt32Unchecked(),
-                                                    value_it->AsFloat())
-                    );
-            else if (it->IsString())
-                instance->add_sync_callback(
-                    new set_cmd_index<slot_identifier_type>(nodeid,
-                                                            std::string(slot_it->AsString()),
-                                                            value_it->AsFloat())
-                    );
-            else
-                throw std::exception();
-        }
-        catch (std::exception const & e)
-        {
-            std::cerr << e.what() << std::endl;
-        }
-    }
-};
-
-handle_set set_handler;
-
-}
-
-void nova_server::init_osc_handles(void)
-{
-    add_responder("/quit", &quit_handler);
-    add_responder("/set", &set_handler);
 }
 
 abstract_synth * nova_server::add_synth(std::string const & name, int id, node_position_constraint const & constraints)

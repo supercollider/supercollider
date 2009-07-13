@@ -23,6 +23,7 @@
 
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
+#include "sc_osc_handler.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
 #include "audio_backend/audio_frontend.hpp"
@@ -58,11 +59,11 @@ public:
 };
 
 class nova_server:
-    public osc_server,
     public node_graph,
     public scheduler,
     public audio_frontend<&run_scheduler_tick>,
-    public synth_factory
+    public synth_factory,
+    public sc_osc_handler
 {
 public:
     /* main nova_server function */
@@ -112,9 +113,6 @@ public:
 #endif
 
 private:
-    /* initialize osc handles */
-    void init_osc_handles(void);
-
     void update_dsp_queue(void);
 
     callback_interpreter<system_callback> system_interpreter;
