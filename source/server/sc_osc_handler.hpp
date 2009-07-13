@@ -19,6 +19,9 @@
 #ifndef SERVER_SC_OSC_HANDLER_HPP
 #define SERVER_SC_OSC_HANDLER_HPP
 
+#include <vector>
+#include <algorithm>
+
 #include <lockfree/fifo.hpp>
 
 #include "osc/OscReceivedElements.h"
@@ -38,8 +41,52 @@ namespace detail
 using namespace boost::asio;
 using namespace boost::asio::ip;
 
+/**
+ * observer to receive osc notifications
+ *
+ * \todo shall we use a separate thread for observer notifications?
+ * \todo for now we are ipv4 only
+ * */
+class sc_notify_observers
+{
+    typedef std::vector<udp::endpoint> udp_observer_vector;
+
+public:
+    sc_notify_observers(void):
+        udp_socket(io_service)
+    {
+        udp_socket.open(udp::v4());
+    }
+
+    void add_observer(udp::endpoint const & ep)
+    {
+        udp_observers.push_back(ep);
+    }
+
+    void remove_observer(udp::endpoint const & ep)
+    {
+        udp_observer_vector::iterator it = std::find(udp_observers.begin(),
+                                                     udp_observers.end(), ep);
+        assert (it != udp_observers.end());
+
+        udp_observers.erase(it);
+    }
+
+    void send_notification(const char * data, size_t length)
+    {
+        for (size_t i = 0; i != udp_observers.size(); ++i)
+            udp_socket.send_to(boost::asio::buffer(data, length), udp_observers[i]);
+    }
+
+private:
+    udp_observer_vector udp_observers;
+    boost::asio::io_service io_service; /* we have an io_service for our own */
+    udp::socket udp_socket;
+};
+
 class sc_osc_handler:
-    private detail::network_thread
+    private detail::network_thread,
+    public sc_notify_observers
 {
 public:
     sc_osc_handler(unsigned int port):

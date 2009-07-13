@@ -212,14 +212,14 @@ enum {
     NUMBER_OF_COMMANDS = 62
 };
 
-struct quit_callback:
+struct sc_response_callback:
     public system_callback
 {
-    quit_callback(udp::endpoint const & endpoint):
+    sc_response_callback(udp::endpoint const & endpoint):
         endpoint_(endpoint)
     {}
 
-    void run(void)
+    void send_done(void)
     {
         char buffer[128];
         osc::OutboundPacketStream p(buffer, 128);
@@ -227,10 +227,23 @@ struct quit_callback:
           << osc::EndMessage;
 
         instance->send_udp(p.Data(), p.Size(), endpoint_);
-        instance->terminate();
     }
 
     udp::endpoint endpoint_;
+};
+
+struct quit_callback:
+    public sc_response_callback
+{
+    quit_callback(udp::endpoint const & endpoint):
+        sc_response_callback(endpoint)
+    {}
+
+    void run(void)
+    {
+        send_done();
+        instance->terminate();
+    }
 };
 
 void handle_quit(udp::endpoint const & endpoint)
@@ -238,6 +251,34 @@ void handle_quit(udp::endpoint const & endpoint)
     instance->add_system_callback(new quit_callback(endpoint));
 }
 
+struct notify_callback:
+    public sc_response_callback
+{
+    notify_callback(bool enable, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint), enable_(enable)
+    {}
+
+    void run(void)
+    {
+        if (enable_)
+            instance->add_observer(endpoint_);
+        else
+            instance->remove_observer(endpoint_);
+        send_done();
+    }
+
+    bool enable_;
+};
+
+void handle_notify(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
+    osc::int32 enable;
+
+    args >> enable;
+
+    instance->add_system_callback(new notify_callback(enable != 0, endpoint));
+}
 
 } /* namespace */
 
@@ -249,6 +290,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
     {
     case cmd_quit:
         handle_quit(packet->endpoint_);
+        break;
+
+    case cmd_notify:
+        handle_notify(message, packet->endpoint_);
         break;
 
     default:
@@ -267,7 +312,14 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
     assert(address[0] == '/');
     if (strcmp(address+1, "quit") == 0) {
         handle_quit(packet->endpoint_);
+        return;
     }
+
+    if (strcmp(address+1, "notify") == 0) {
+        handle_notify(message, packet->endpoint_);
+        return;
+    }
+
 }
 
 } /* namespace detail */
