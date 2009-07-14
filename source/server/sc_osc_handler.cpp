@@ -298,6 +298,11 @@ void handle_status(udp::endpoint const & endpoint)
     instance->add_system_callback(new status_callback(endpoint));
 }
 
+void handle_unhandled_message(sc_osc_handler::received_message const & msg)
+{
+    cerr << "unhandled message " << msg.AddressPattern() << endl;
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message, received_packet * packet)
@@ -319,7 +324,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     default:
-        cerr << "unhandled message" << endl;
+        handle_unhandled_message(message);
     }
 }
 
@@ -347,6 +352,7 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         return;
     }
 
+    handle_unhandled_message(message);
 }
 
 } /* namespace detail */
