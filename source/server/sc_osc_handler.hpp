@@ -113,20 +113,12 @@ private:
     {
         received_packet(const char * dat, size_t length, udp::endpoint const & endpoint):
             data(dat), length(length), endpoint_(endpoint)
-        {
-#if 1
-            char * cpy = (char*)received_packet::allocate(length);
-            memcpy(cpy, dat, length);
-            data = cpy;
-#endif
-        }
+        {}
 
-#if 1
-        ~received_packet(void)
+        void * operator new(std::size_t size, void* ptr)
         {
-            deallocate(const_cast<char*>(data));
+            return ::operator new(size, ptr);
         }
-#endif
 
         static received_packet * alloc_packet(const char * data, size_t length,
                                               udp::endpoint const & remote_endpoint);

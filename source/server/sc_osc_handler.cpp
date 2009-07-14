@@ -42,19 +42,14 @@ sc_osc_handler::received_packet::received_packet *
 sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
                                               udp::endpoint const & remote_endpoint)
 {
-#if 0
     /* received_packet struct and data array are located in one memory chunk */
     void * chunk = received_packet::allocate(sizeof(received_packet) + length);
     received_packet * p = (received_packet*)chunk;
     char * cpy = (char*)(chunk) + sizeof(received_packet);
     memcpy(cpy, data, length);
 
-    /* this doesn't work :/ */
     new(p) received_packet(cpy, length, remote_endpoint);
     return p;
-#else
-    return new received_packet(data, length, remote_endpoint);
-#endif
 }
 
 void sc_osc_handler::received_packet::run(void)
