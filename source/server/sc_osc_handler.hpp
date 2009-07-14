@@ -184,7 +184,7 @@ private:
     /** packet handling */
     void handle_bundle(received_packet * bundle);
     void handle_message(received_packet * message);
-    bool handle_bundle(received_bundle const & bundle, received_packet * packet);
+    void handle_bundle(received_bundle const & bundle, received_packet * packet);
     void handle_message(received_message const & message, received_packet * packet);
     void handle_message_int_address(received_message const & message, received_packet * packet);
     void handle_message_sym_address(received_message const & message, received_packet * packet);

@@ -65,12 +65,10 @@ void sc_osc_handler::handle_bundle(received_packet * packet)
 {
     osc_received_packet received_packet(packet->data, packet->length);
     received_bundle bundle(received_packet);
-    bool handled = handle_bundle(bundle, packet);
-/*     if (handled) */
-/*         delete packet; */
+    handle_bundle(bundle, packet);
 }
 
-bool sc_osc_handler::handle_bundle(received_bundle const & bundle, received_packet * packet)
+void sc_osc_handler::handle_bundle(received_bundle const & bundle, received_packet * packet)
 {
     time_tag now(~0L);
     time_tag bundle_time = bundle.TimeTag();
@@ -79,26 +77,19 @@ bool sc_osc_handler::handle_bundle(received_bundle const & bundle, received_pack
         typedef osc::ReceivedBundleElementIterator bundle_iterator;
         typedef osc::ReceivedBundleElement bundle_element;
 
-        bool handled = true;
-
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 
             if (element.IsBundle()) {
                 received_bundle inner_bundle(element);
-                bool handled = handle_bundle(inner_bundle, packet);
-                if (!handled)
-                    handled = false;
+                handle_bundle(inner_bundle, packet);
             } else {
                 received_message message(element);
                 handle_message(message, packet);
             }
         }
-
-        return handled;
     } else {
         /** todo defer bundles with timetags */
-        return true;
     }
 }
 
