@@ -199,6 +199,15 @@ private:
     /* @} */
 
     /* @{ */
+    /** bundle scheduling */
+public:
+    void clear_scheduled_bundles(void)
+    {}
+
+    /* @} */
+
+private:
+    /* @{ */
     /** socket handling */
     udp::socket socket_;
     udp::endpoint remote_endpoint_;

@@ -347,6 +347,11 @@ void handle_sync(sc_osc_handler::received_message const & message, udp::endpoint
     instance->add_system_callback(new sync_callback(id, endpoint));
 }
 
+void handle_clearSched(void)
+{
+    instance->clear_scheduled_bundles();
+}
+
 
 void handle_unhandled_message(sc_osc_handler::received_message const & msg)
 {
@@ -379,6 +384,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_sync:
         handle_sync(message, packet->endpoint_);
+        break;
+
+    case cmd_clearSched:
+        handle_clearSched();
         break;
 
     default:
@@ -418,6 +427,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "dumpOSC") == 0) {
         handle_dumpOSC(message);
+        return;
+    }
+
+    if (strcmp(address+1, "clearSched") == 0) {
+        handle_clearSched();
         return;
     }
 
