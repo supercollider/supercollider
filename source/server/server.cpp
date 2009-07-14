@@ -103,5 +103,12 @@ void nova_server::update_dsp_queue(void)
     scheduler::reset_queue(new_queue);
 }
 
+void scheduler::operator()(void)
+{
+    cbs.run_callbacks();
+    instance->execute_scheduled_bundles();
+    threads.run();
+}
+
 
 } /* namespace nova */

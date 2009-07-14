@@ -101,11 +101,7 @@ public:
     }
 
     /* called from the audio driver */
-    void operator()(void)
-    {
-        cbs.run_callbacks();
-        threads.run();
-    }
+    void operator()(void);
 
     /* schedule to set a new queue */
     void reset_queue(dsp_threads::dsp_thread_queue_ptr & qptr)

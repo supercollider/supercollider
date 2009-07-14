@@ -22,12 +22,15 @@
 #include <vector>
 #include <algorithm>
 
+#include <boost/date_time/microsec_time_clock.hpp>
+#include <boost/intrusive/list.hpp>
+
 #include <lockfree/fifo.hpp>
 
 #include "osc/OscReceivedElements.h"
 
+#include "memory_pool.hpp"
 #include "server_scheduler.hpp"
-
 #include "../utilities/osc_server.hpp"
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
@@ -82,6 +85,46 @@ private:
     udp_observer_vector udp_observers;
     boost::asio::io_service io_service; /* we have an io_service for our own */
     udp::socket udp_socket;
+};
+
+class sc_scheduled_bundles
+{
+public:
+    struct bundle_node:
+        public boost::intrusive::list_base_hook<>
+    {
+        bundle_node(time_tag const & timeout, const char * data, udp::endpoint const & endpoint):
+            timeout_(timeout), data_(data), endpoint_(endpoint)
+        {}
+
+        void run(void);
+
+        const time_tag timeout_;
+        const char * data_;
+        const udp::endpoint endpoint_;
+    };
+
+    typedef boost::intrusive::list<bundle_node> bundle_list_t;
+
+    void insert_bundle(time_tag const & timeout, const char * data, size_t length,
+                    udp::endpoint const & endpoint);
+
+    void execute_bundles(time_tag const & now);
+
+    void clear_bundles(void)
+    {
+        while(!bundles.empty())
+        {
+            bundle_node & front = *bundles.begin();
+
+            bundles.pop_front();
+            front.~bundle_node();
+            rt_pool.free(&front);
+        }
+    }
+
+private:
+    bundle_list_t bundles;
 };
 
 class sc_osc_handler:
@@ -206,18 +249,29 @@ private:
     /** packet handling */
     void handle_bundle(received_packet * bundle);
     void handle_message(received_packet * message);
-    void handle_bundle(received_bundle const & bundle, received_packet * packet);
-    void handle_message(received_message const & message, received_packet * packet);
-    void handle_message_int_address(received_message const & message, received_packet * packet);
-    void handle_message_sym_address(received_message const & message, received_packet * packet);
+    void handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint);
+    void handle_message(received_message const & message, udp::endpoint const & endpoint);
+    void handle_message_int_address(received_message const & message, udp::endpoint const & endpoint);
+    void handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint);
+
+    friend class sc_scheduled_bundles::bundle_node;
     /* @} */
 
     /* @{ */
     /** bundle scheduling */
 public:
     void clear_scheduled_bundles(void)
-    {}
+    {
+        scheduled_bundles.clear_bundles();
+    }
 
+    void execute_scheduled_bundles(void)
+    {
+        time_tag now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+        scheduled_bundles.execute_bundles(now);
+    }
+
+    sc_scheduled_bundles scheduled_bundles;
     /* @} */
 
 private:

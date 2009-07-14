@@ -33,6 +33,63 @@ using namespace std;
 namespace detail
 {
 
+void sc_scheduled_bundles::bundle_node::run(void)
+{
+    typedef osc::ReceivedBundleElement bundle_element;
+    typedef osc::ReceivedBundle received_bundle;
+    typedef osc::ReceivedMessage received_message;
+
+    bundle_element element(data_); /* odd, but true :/ */
+
+    if (element.IsBundle()) {
+        received_bundle bundle(element);
+        instance->handle_bundle(bundle, endpoint_);
+    } else {
+        received_message message(element);
+        instance->handle_message(message, endpoint_);
+    }
+}
+
+void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * data, size_t length,
+                                         udp::endpoint const & endpoint)
+{
+    /* allocate chunk from realtime pool */
+    void * chunk = rt_pool.malloc(sizeof(bundle_node) + length+4);
+    bundle_node * node = (bundle_node*)chunk;
+    char * cpy = (char*)chunk + sizeof(bundle_node);
+
+    memcpy(cpy, data - 4, length+4);
+
+    new(node) bundle_node(timeout, cpy, endpoint);
+
+    bundle_list_t::iterator it;
+    for (it = bundles.begin(); it != bundles.end(); ++it)
+    {
+        if (!(timeout < it->timeout_))
+            break;
+    }
+
+    bundles.insert(it, *node);
+}
+
+void sc_scheduled_bundles::execute_bundles(time_tag const & now)
+{
+    while(!bundles.empty())
+    {
+        bundle_node & front = *bundles.begin();
+
+        if (front.timeout_ <= now) {
+            front.run();
+            bundles.pop_front();
+            front.~bundle_node();
+            rt_pool.free(&front);
+        }
+        else
+            return;
+    }
+}
+
+
 void sc_osc_handler::handle_packet(const char * data, size_t length)
 {
     received_packet * p = received_packet::alloc_packet(data, length, remote_endpoint_);
@@ -72,31 +129,34 @@ void sc_osc_handler::handle_bundle(received_packet * packet)
 {
     osc_received_packet received_packet(packet->data, packet->length);
     received_bundle bundle(received_packet);
-    handle_bundle(bundle, packet);
+    handle_bundle(bundle, packet->endpoint_);
 }
 
-void sc_osc_handler::handle_bundle(received_bundle const & bundle, received_packet * packet)
+void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint)
 {
-    time_tag now(~0L);
+    time_tag now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
     time_tag bundle_time = bundle.TimeTag();
 
-    if (bundle_time < now) {
-        typedef osc::ReceivedBundleElementIterator bundle_iterator;
-        typedef osc::ReceivedBundleElement bundle_element;
+    typedef osc::ReceivedBundleElementIterator bundle_iterator;
+    typedef osc::ReceivedBundleElement bundle_element;
 
+    if ( bundle_time <= now) {
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 
             if (element.IsBundle()) {
                 received_bundle inner_bundle(element);
-                handle_bundle(inner_bundle, packet);
+                handle_bundle(inner_bundle, endpoint);
             } else {
                 received_message message(element);
-                handle_message(message, packet);
+                handle_message(message, endpoint);
             }
         }
     } else {
-        /** todo defer bundles with timetags */
+        for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
+            bundle_element const & element = *it;
+            scheduled_bundles.insert_bundle(bundle_time, element.Contents(), element.Size(), endpoint);
+        }
     }
 }
 
@@ -104,18 +164,17 @@ void sc_osc_handler::handle_message(received_packet * packet)
 {
     osc_received_packet received_packet(packet->data, packet->length);
     received_message message(received_packet);
-    handle_message (message, packet);
-/*     delete packet; */
+    handle_message (message, packet->endpoint_);
 }
 
-void sc_osc_handler::handle_message(received_message const & message, received_packet * packet)
+void sc_osc_handler::handle_message(received_message const & message, udp::endpoint const & endpoint)
 {
     try
     {
         if (message.AddressPatternIsUInt32())
-            handle_message_int_address(message, packet);
+            handle_message_int_address(message, endpoint);
         else
-            handle_message_sym_address(message, packet);
+            handle_message_sym_address(message, endpoint);
     }
     catch (std::exception const & e)
     {
@@ -216,7 +275,7 @@ int first_arg_as_int(sc_osc_handler::received_message const & message)
 }
 
 struct sc_response_callback:
-    public system_callback
+        public system_callback
 {
     sc_response_callback(udp::endpoint const & endpoint):
         endpoint_(endpoint)
@@ -236,7 +295,7 @@ struct sc_response_callback:
 };
 
 struct quit_callback:
-    public sc_response_callback
+        public sc_response_callback
 {
     quit_callback(udp::endpoint const & endpoint):
         sc_response_callback(endpoint)
@@ -281,7 +340,7 @@ void handle_notify(sc_osc_handler::received_message const & message, udp::endpoi
 }
 
 struct status_callback:
-    public sc_response_callback
+        public sc_response_callback
 {
     status_callback(udp::endpoint const & endpoint):
         sc_response_callback(endpoint)
@@ -321,7 +380,7 @@ void handle_dumpOSC(sc_osc_handler::received_message const & message)
 }
 
 struct sync_callback:
-    public sc_response_callback
+        public sc_response_callback
 {
     sync_callback(int id, udp::endpoint const & endpoint):
         sc_response_callback(endpoint), id_(id)
@@ -367,22 +426,22 @@ void handle_unhandled_message(sc_osc_handler::received_message const & msg)
 
 } /* namespace */
 
-void sc_osc_handler::handle_message_int_address(received_message const & message, received_packet * packet)
+void sc_osc_handler::handle_message_int_address(received_message const & message, udp::endpoint const & endpoint)
 {
     uint32_t address = message.AddressPatternAsUInt32();
 
     switch (address)
     {
     case cmd_quit:
-        handle_quit(packet->endpoint_);
+        handle_quit(endpoint);
         break;
 
     case cmd_notify:
-        handle_notify(message, packet->endpoint_);
+        handle_notify(message, endpoint);
         break;
 
     case cmd_status:
-        handle_status(packet->endpoint_);
+        handle_status(endpoint);
         break;
 
     case cmd_dumpOSC:
@@ -390,7 +449,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_sync:
-        handle_sync(message, packet->endpoint_);
+        handle_sync(message, endpoint);
         break;
 
     case cmd_clearSched:
@@ -406,7 +465,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
     }
 }
 
-void sc_osc_handler::handle_message_sym_address(received_message const & message, received_packet * packet)
+void sc_osc_handler::handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
 
@@ -417,22 +476,22 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
     assert(address[0] == '/');
 
     if (strcmp(address+1, "status") == 0) {
-        handle_status(packet->endpoint_);
+        handle_status(endpoint);
         return;
     }
 
     if (strcmp(address+1, "sync") == 0) {
-        handle_sync(message, packet->endpoint_);
+        handle_sync(message, endpoint);
         return;
     }
 
     if (strcmp(address+1, "quit") == 0) {
-        handle_quit(packet->endpoint_);
+        handle_quit(endpoint);
         return;
     }
 
     if (strcmp(address+1, "notify") == 0) {
-        handle_notify(message, packet->endpoint_);
+        handle_notify(message, endpoint);
         return;
     }
 
