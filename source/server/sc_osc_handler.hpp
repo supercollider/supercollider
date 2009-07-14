@@ -90,7 +90,7 @@ class sc_osc_handler:
 {
 public:
     sc_osc_handler(unsigned int port):
-        socket_(detail::network_thread::io_service_, udp::endpoint(udp::v4(), port))
+        dump_osc_packets(0), socket_(detail::network_thread::io_service_, udp::endpoint(udp::v4(), port))
     {
         start_receive();
     }
@@ -177,6 +177,14 @@ private:
     }
 
     /* handle message, called from receiver thread */
+public:
+    void dumpOSC(int i)
+    {
+        dump_osc_packets = i;
+    }
+
+private:
+    int dump_osc_packets;
     void handle_packet(const char * data, size_t length);
     /* @} */
 

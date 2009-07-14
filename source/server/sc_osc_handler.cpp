@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "osc/OscOutboundPacketStream.h"
+#include "osc/OscPrintReceivedElements.h"
 
 #include "sc_osc_handler.hpp"
 #include "server.hpp"
@@ -35,6 +36,12 @@ namespace detail
 void sc_osc_handler::handle_packet(const char * data, size_t length)
 {
     received_packet * p = received_packet::alloc_packet(data, length, remote_endpoint_);
+
+    if (dump_osc_packets == 1) {
+        osc_received_packet packet (data, length);
+        cout << "received osc packet " << packet;
+    }
+
     instance->add_sync_callback(p);
 }
 
@@ -298,6 +305,18 @@ void handle_status(udp::endpoint const & endpoint)
     instance->add_system_callback(new status_callback(endpoint));
 }
 
+void handle_dumpOSC(sc_osc_handler::received_message const & message)
+{
+    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
+    osc::int32 val;
+    args >> val;
+
+    val = min (1, int(val));         /* we just support one way of dumping osc messages */
+
+    instance->dumpOSC(val);     /* thread-safe */
+}
+
+
 void handle_unhandled_message(sc_osc_handler::received_message const & msg)
 {
     cerr << "unhandled message " << msg.AddressPattern() << endl;
@@ -323,6 +342,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_status(packet->endpoint_);
         break;
 
+    case cmd_dumpOSC:
+        handle_dumpOSC(message);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -337,6 +360,12 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 #endif
 
     assert(address[0] == '/');
+
+    if (strcmp(address+1, "status") == 0) {
+        handle_status(packet->endpoint_);
+        return;
+    }
+
     if (strcmp(address+1, "quit") == 0) {
         handle_quit(packet->endpoint_);
         return;
@@ -347,8 +376,8 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         return;
     }
 
-    if (strcmp(address+1, "status") == 0) {
-        handle_status(packet->endpoint_);
+    if (strcmp(address+1, "dumpOSC") == 0) {
+        handle_dumpOSC(message);
         return;
     }
 
