@@ -205,6 +205,16 @@ enum {
     NUMBER_OF_COMMANDS = 62
 };
 
+int first_arg_as_int(sc_osc_handler::received_message const & message)
+{
+    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
+    osc::int32 val;
+
+    args >> val;
+
+    return val;
+}
+
 struct sc_response_callback:
     public system_callback
 {
@@ -265,10 +275,7 @@ struct notify_callback:
 
 void handle_notify(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
 {
-    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
-    osc::int32 enable;
-
-    args >> enable;
+    int enable = first_arg_as_int(message);
 
     instance->add_system_callback(new notify_callback(enable != 0, endpoint));
 }
@@ -307,11 +314,8 @@ void handle_status(udp::endpoint const & endpoint)
 
 void handle_dumpOSC(sc_osc_handler::received_message const & message)
 {
-    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
-    osc::int32 val;
-    args >> val;
-
-    val = min (1, int(val));         /* we just support one way of dumping osc messages */
+    int val = first_arg_as_int(message);
+    val = min (1, val);    /* we just support one way of dumping osc messages */
 
     instance->dumpOSC(val);     /* thread-safe */
 }
@@ -339,10 +343,7 @@ struct sync_callback:
 
 void handle_sync(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
 {
-    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
-    osc::int32 id;
-
-    args >> id;
+    int id = first_arg_as_int(message);
 
     instance->add_system_callback(new sync_callback(id, endpoint));
 }
@@ -352,6 +353,12 @@ void handle_clearSched(void)
     instance->clear_scheduled_bundles();
 }
 
+void handle_error(sc_osc_handler::received_message const & message)
+{
+    int val = first_arg_as_int(message);
+
+    instance->set_error_posting(val);     /* thread-safe */
+}
 
 void handle_unhandled_message(sc_osc_handler::received_message const & msg)
 {
@@ -388,6 +395,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_clearSched:
         handle_clearSched();
+        break;
+
+    case cmd_error:
+        handle_error(message);
         break;
 
     default:
@@ -432,6 +443,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "clearSched") == 0) {
         handle_clearSched();
+        return;
+    }
+
+    if (strcmp(address+1, "error") == 0) {
+        handle_error(message);
         return;
     }
 

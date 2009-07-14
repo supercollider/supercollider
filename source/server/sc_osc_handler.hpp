@@ -90,7 +90,8 @@ class sc_osc_handler:
 {
 public:
     sc_osc_handler(unsigned int port):
-        dump_osc_packets(0), socket_(detail::network_thread::io_service_, udp::endpoint(udp::v4(), port))
+        dump_osc_packets(0), error_posting(1),
+        socket_(detail::network_thread::io_service_, udp::endpoint(udp::v4(), port))
     {
         start_receive();
     }
@@ -186,6 +187,19 @@ public:
 private:
     int dump_osc_packets;
     void handle_packet(const char * data, size_t length);
+    /* @} */
+
+    /* @{ */
+public:
+    /** \todo how to handle temporary message error suppression? */
+
+    void set_error_posting(int val)
+    {
+        error_posting = val;
+    }
+
+private:
+    int error_posting;
     /* @} */
 
     /* @{ */
