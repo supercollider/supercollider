@@ -266,6 +266,38 @@ void handle_notify(sc_osc_handler::received_message const & message, udp::endpoi
     instance->add_system_callback(new notify_callback(enable != 0, endpoint));
 }
 
+struct status_callback:
+    public sc_response_callback
+{
+    status_callback(udp::endpoint const & endpoint):
+        sc_response_callback(endpoint)
+    {}
+
+    void run(void)
+    {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("status.reply")
+          << 1                  /* unused */
+          << -1                 /* ugens */
+          << -1                 /* synths */
+          << -1                 /* groups */
+          << -1                 /* synthdefs */
+          << -1.f               /* average cpu % */
+          << -1.f               /* peak cpu % */
+          << -1.0               /* nominal samplerate */
+          << -1.0               /* actual samplerate */
+          << osc::EndMessage;
+
+        instance->send_udp(p.Data(), p.Size(), endpoint_);
+    }
+};
+
+void handle_status(udp::endpoint const & endpoint)
+{
+    instance->add_system_callback(new status_callback(endpoint));
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message, received_packet * packet)
@@ -280,6 +312,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_notify:
         handle_notify(message, packet->endpoint_);
+        break;
+
+    case cmd_status:
+        handle_status(packet->endpoint_);
         break;
 
     default:
@@ -303,6 +339,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "notify") == 0) {
         handle_notify(message, packet->endpoint_);
+        return;
+    }
+
+    if (strcmp(address+1, "status") == 0) {
+        handle_status(packet->endpoint_);
         return;
     }
 
