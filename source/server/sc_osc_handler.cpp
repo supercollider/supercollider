@@ -316,6 +316,37 @@ void handle_dumpOSC(sc_osc_handler::received_message const & message)
     instance->dumpOSC(val);     /* thread-safe */
 }
 
+struct sync_callback:
+    public sc_response_callback
+{
+    sync_callback(int id, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint), id_(id)
+    {}
+
+    void run(void)
+    {
+        char buffer[128];
+        osc::OutboundPacketStream p(buffer, 128);
+        p << osc::BeginMessage("/synced")
+          << id_
+          << osc::EndMessage;
+
+        instance->send_udp(p.Data(), p.Size(), endpoint_);
+    }
+
+    int id_;
+};
+
+void handle_sync(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
+    osc::int32 id;
+
+    args >> id;
+
+    instance->add_system_callback(new sync_callback(id, endpoint));
+}
+
 
 void handle_unhandled_message(sc_osc_handler::received_message const & msg)
 {
@@ -346,6 +377,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_dumpOSC(message);
         break;
 
+    case cmd_sync:
+        handle_sync(message, packet->endpoint_);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -363,6 +398,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "status") == 0) {
         handle_status(packet->endpoint_);
+        return;
+    }
+
+    if (strcmp(address+1, "sync") == 0) {
+        handle_sync(message, packet->endpoint_);
         return;
     }
 
