@@ -113,10 +113,12 @@ Quarks
 		if(q.isNil,{
 			Error("Quark not found in repository.").throw;
 		});
-		repos.checkout(q,local.path, sync);
+		repos.checkout(q, local.path, sync);
 	}
+	// DEPRECATED because it has a different and confusing functionality w.r.t. QuarkSVNRepos.checkDir
 	checkDir {
 		var d;
+		"Quarks.checkDir is deprecated".warn;
 		d = (Platform.userExtensionDir +/+ local.name).escapeChar($ );
 		if(d.pathMatch.isEmpty,{
 			("creating: " + d).inform;
@@ -173,7 +175,7 @@ Quarks
 		});
 				
 		// create /quarks/ directory if needed
-		this.checkDir;
+		if(this.repos.checkDir.not){this.checkoutDirectory};
 		
 		// Now ensure that the dependencies are installed (if available given the current active reposses)
 		if(includeDependencies, {	

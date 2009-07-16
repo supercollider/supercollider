@@ -1,7 +1,7 @@
 /**
   *
-  * Subversion based package repository and package manager
-  * a work in progress.  sk & cx & ds & LFSaw
+  * Subversion based package repository and package manager.
+  * sk & cx & ds & LFSaw
   *
   */
 
@@ -51,56 +51,91 @@ QuarkSVNRepository
 
 	}
 
-	// easiest to just check out all
+	// easiest to just check out all - BUT may waste your space since the global repos is becoming bigger and bigger!
 	checkoutAll { |localRoot|
 		this.checkSVNandBackupIfNeeded;
 		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
 	}
-	// checkout a specific quark
+	// checkout a specific quark.
+	// NOTE: despite the method name, this actually uses "svn up" rather than "svn co", to ensure the base checkout is the base for this subfolder.
 	checkout { | q, localRoot, sync = false |
-		var args = [(this.url ++ "/" ++ q.path).escapeChar($ ), (localRoot ++ "/" ++  q.path).escapeChar($ )];
+		
+		var args, subfolders, fullCheckout, pathSoFar, skeletonCheckout;
+		subfolders = q.path.split($/);
+		
+		fullCheckout = (localRoot ++ "/" ++ q.path).escapeChar($ );
+		subfolders.pop; // The final entry is the folder whose entire contents we want
+		
+		pathSoFar = localRoot;
+		skeletonCheckout = subfolders.collect{ |element, index|
+			pathSoFar = pathSoFar ++ "/" ++ element
+		};
+				
+		if(this.checkDir.not){ this.checkoutDirectory }; // ensures that the main folder exists
+		
+		args = if(skeletonCheckout.isEmpty){
+			[fullCheckout]
+		}{
+			["--depth empty"] ++ skeletonCheckout.collect{|el| el.escapeChar($ )} ++ ["&&", svnpath.escapeChar($ ), "update", fullCheckout]
+		};
+		
+		
+		
+		//var args = [(this.url ++ "/" ++ q.path).escapeChar($ ), (localRoot ++ "/" ++  q.path).escapeChar($ )];
 		if(sync)
-			{this.svnSync("co", *args)}
-			{this.svn(    "co", *args)};
+			{this.svnSync("update", *args)}
+			{this.svn(    "update", *args)};
 	}
 	
-	checkoutDirectory {
+	// check if the quarks directory is checked out yet
+	checkDir {
 		var dir;
+		dir = local.path.select{|c| (c != $\\)};
+		if(File.exists(dir).not, {
+			// This method SHOULD NOT check the dir out on your behalf! That's not what it's for! Use .checkoutDirectory for that.
+			//"Quarks dir is not yet checked out.  Execute:".debug;
+			//this.svn("co","--depth","empty",this.url, local.path.escapeChar($ ));
+			//this.svn("up", local.path.escapeChar($ ) +/+ "DIRECTORY");
+			^false;
+		});
+		^true;
+	}
+
+	// updateDirectory and checkoutDirectory can be handled by the same function, simplifying the user experience, hopefully.
+	// TODO: deprecate checkoutDirectory methods, simply use updateDirectory whether or not it's the first time.
+	//        Then update the help docs to the simpler instructions.
+	checkoutDirectory {
+		^this.updateDirectory;
+	}
+
+	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not.
+	updateDirectory {
+		var dir = (local.path.select{|c| (c != $\\)}).escapeChar($ );
 		if (svnpath.isNil) {
 			"\n\tSince SVN not installed, you cannot checkout Quarks. ".postln.halt;
 		};
-		if ( (Quarks.local.path ++ "/*").pathMatch.size != 0 ) {
-			if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
+		
+		// If there's no svn metadata then either there's nothing there at all or there's a non-svn thing in the way
+		if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
+			if( PathName(Quarks.local.path).isFolder.not ) {
+				// Main folder doesn't exist at all, simply check it out
+				this.svn("checkout", "--depth", "empty", this.url, dir, 
+					// and then do the directory update:
+					"&&", svnpath.escapeChar($ ), "update", dir +/+ "DIRECTORY"
+					);
+			}{
 				Post 
 				<< "\n\tCurrent Quarks are not SVN. Delete the directories \n\t\t " 
 				<< Quarks.local.path << "\n\tand\n\t\t"
 				<< Platform.userExtensionDir << "/quarks\n" 
 				<< "\tand recompile before checking out quarks";
 				nil.halt;
-			}
+			};
+		}{
+			this.svn("update", dir +/+ "DIRECTORY");
 		};
-		dir = (local.path.select{|c| (c != $\\)}) ++ "/DIRECTORY" ;
-		this.svn("co", (this.url++"/DIRECTORY").escapeChar($ ), 
-				(local.path ++ "/DIRECTORY").escapeChar($ )
-		);
-		^false
-	}
-
-	// check if the quarks directory is checked out yet
-	checkDir {
-		var dir;
-		dir = local.path.select{|c| (c != $\\)};
-		if(File.exists(dir).not, {
-			//"Quarks dir is not yet checked out.  Execute:".debug;
-			this.svn("co","-N",this.url, local.path.escapeChar($ ));
-			this.svn("co",this.url++"/DIRECTORY", local.path.escapeChar($ ));
-			^false;
-		});
-		^true;
-	}
-	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not
-	updateDirectory {
-		this.svn("update",(local.path ++ "/DIRECTORY/").escapeChar($ ));
+		
+		^false	// TODO: why false? none of the callers seem to care about the return value, and not clear that it ever indicates anything
 	}
 	update {
 		this.checkSVNandBackupIfNeeded;
