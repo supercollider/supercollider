@@ -11,12 +11,18 @@
 
 LocalQuarks
 {
+	classvar >globalPath; // where the "Quarks.global" checkout is stored
+	
 	var <path;
 	var <parent; // the Quarks
 	var all; // contains nil, or all local quarks
 
 	*new { | path, parent |
-		^super.newCopyArgs((path ?? { Platform.userAppSupportDir ++ "/quarks"}), parent)
+		^super.newCopyArgs((path ?? {this.globalPath}), parent)
+	}
+
+	*globalPath {
+		^ globalPath ?? { globalPath = Platform.userAppSupportDir ++ "/quarks"}
 	}
 
 	name {
