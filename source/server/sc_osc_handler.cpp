@@ -613,9 +613,12 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index, frames, channels;
-    osc::Blob blob;
+    osc::Blob blob(0, 0);
 
-    args >> index >> frames >> channels >> blob;
+    args >> index >> frames >> channels;
+
+    if (!args.Eos())
+        args >> blob;
 
     instance->add_system_callback(new b_alloc_callback(index, frames, channels,
                                                        blob.size, blob.data, endpoint));
@@ -645,9 +648,12 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index;
-    osc::Blob blob;
+    osc::Blob blob(0, 0);
 
-    args >> index >> blob;
+    args >> index;
+
+    if (!args.Eos())
+        args >> blob;
 
     instance->add_system_callback(new b_free_callback(index, blob.size, blob.data, endpoint));
 }
@@ -683,11 +689,23 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 index, start, frames;
+    osc::int32 index;
     const char * filename;
-    osc::Blob blob;
 
-    args >> index >> filename >> start >> frames >> blob;
+    osc::int32 start = 0;
+    osc::int32 frames = 0;
+    osc::Blob blob (0, 0);
+
+    args >> index >> filename;
+
+    if (!args.Eos())
+        args >> start;
+
+    if (!args.Eos())
+        args >> frames;
+
+    if (!args.Eos())
+        args >> blob;
 
     instance->add_system_callback(new b_allocRead_callback(index, filename, start, frames,
                                                            blob.size, blob.data, endpoint));
