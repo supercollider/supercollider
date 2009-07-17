@@ -14,6 +14,13 @@ QuarkSVNRepository
 		svnpath = [svnpath, "/usr/local/bin/svn", "/usr/bin/svn", "/opt/local/bin/svn", "/sw/bin/svn"].detect({ |path|
 			File.exists(path);
 		});
+		if(svnpath.isNil){
+			// Try and detect whether svn is in the path, and could be called just via "svn"
+			var res = "svn --version --quiet".unixCmdGetStdOut;
+			if(res.size != 0 and: {res[0].asString.asInteger > 0}){
+				svnpath = "svn";
+			};
+		};
 	}
 	
 	*new { | url, local |
