@@ -36,6 +36,7 @@ QuarkSVNRepository
 		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}
 
+	// returns true if some change was performed
 	checkSVNandBackupIfNeeded{
 		var res,files;
 		files = (Quarks.local.path ++ "/*").pathMatch;
@@ -53,10 +54,11 @@ QuarkSVNRepository
 						("mv" + it + it.drop(-1) ++ "_modified" ).unixCmd;
 						("You had local modifications in quark folder" + it + "a copy of the folder has been made, so please review your modifications there").inform;
 					};
-				}
+				};
+				^true
 			}
 		};
-
+		^false
 	}
 
 	// easiest to just check out all - BUT may waste your space since the global repos is becoming bigger and bigger!
@@ -64,30 +66,41 @@ QuarkSVNRepository
 		this.checkSVNandBackupIfNeeded;
 		this.svn("co", this.url ++ "/", localRoot.escapeChar($ ) ++  "/")
 	}
-	// checkout a specific quark.
+	// checkout a specific quark (or multiple quarks - first arg can be an array).
 	// NOTE: despite the method name, this actually uses "svn up" rather than "svn co", to ensure the base checkout is the base for this subfolder.
+	// Therefore it can be used to update, equally well as to checkout, a quark.
 	checkout { | q, localRoot, sync = false |
 		
-		var argPairs, subfolders, fullCheckout, pathSoFar, skeletonCheckout;
-		subfolders = q.path.split($/);
+		var subfolders, fullCheckout, pathSoFar, skeletonCheckout, args;
 		
-		fullCheckout = (localRoot ++ "/" ++ q.path).escapeChar($ );
-		subfolders.pop; // The final entry is the folder whose entire contents we want
+		skeletonCheckout = [];
+		fullCheckout     = [];
 		
-		pathSoFar = localRoot;
-		skeletonCheckout = subfolders.collect{ |element, index|
-			pathSoFar = pathSoFar ++ "/" ++ element
+		q.asArray.do{ |oneq|
+			
+			subfolders = oneq.path.split($/);
+			
+			fullCheckout = fullCheckout ++ [(localRoot ++ "/" ++ oneq.path).escapeChar($ )];
+			subfolders.pop; // The final entry is the folder whose entire contents we want
+			
+			pathSoFar = localRoot;
+			skeletonCheckout = skeletonCheckout ++ subfolders.collect{ |element, index|
+				pathSoFar = pathSoFar ++ "/" ++ element
+			}.collect{|el| el.escapeChar($ )};
 		};
-				
-		if(this.checkDir.not){ this.checkoutDirectory }; // ensures that the main folder exists
-
-		argPairs = skeletonCheckout.collect{|el|
-				["update", ["--depth empty", el.escapeChar($ )]]
-			}.flatten
-				++
-			["update", [fullCheckout]];
 		
-		this.svnMulti(sync, *argPairs);
+		"skeletonCheckout".postln;
+		skeletonCheckout.postln;
+		"fullCheckout".postln;
+		fullCheckout.postln;
+		
+		// Now construct a svn command for the skels, and then a svn command for the fulls
+		args = if(skeletonCheckout.isEmpty){
+			[]
+		}{
+			["update", ["--depth empty"] ++ skeletonCheckout]
+		} ++ ["update", fullCheckout];
+		this.svnMulti(sync, *args);
 	}
 	
 	// check if the quarks directory is checked out yet
@@ -107,8 +120,8 @@ QuarkSVNRepository
 	// updateDirectory and checkoutDirectory can be handled by the same function, simplifying the user experience, hopefully.
 	// TODO: deprecate checkoutDirectory methods, simply use updateDirectory whether or not it's the first time.
 	//        Then update the help docs to the simpler instructions.
-	checkoutDirectory {
-		^this.updateDirectory;
+	checkoutDirectory {|forceSync=false|
+		^this.updateDirectory(forceSync);
 	}
 
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not.
@@ -123,9 +136,9 @@ QuarkSVNRepository
 			if( PathName(Quarks.local.path).isFolder.not ) {
 				// Main folder doesn't exist at all, simply check it out
 				this.svnMulti(forceSync, 
-					["checkout", ["--depth empty", this.url, dir], 
+					"checkout", ["--depth empty", this.url, dir], 
 					// and then do the directory update:
-					"update", [dir +/+ "DIRECTORY"]]
+					"update", [dir +/+ "DIRECTORY"]
 					);
 			}{
 				Post 
@@ -141,7 +154,13 @@ QuarkSVNRepository
 	}
 	update {
 		this.checkSVNandBackupIfNeeded;
-		this.svn("update",local.path.escapeChar($ ));
+		if(this.checkDir.not){
+			this.checkoutDirectory; // ensures that the main folder exists
+			this.svn("update",local.path.escapeChar($ ));
+		}{
+			// The "checkout" method can do the updating of individual quarks for us 
+			this.checkout(local.quarks, local.path);
+		}; 
 	}
 	// load all specification quark objects from DIRECTORY
 	// they may or may not be locally checked out
@@ -163,7 +182,7 @@ QuarkSVNRepository
 	// Can perform multiple svn commands in one call.
 	// Call it with [cmd, args, cmd, args] pairs - e.g. svnMulti("co", ["--quiet", "/some/repo"], "up", ["~/my/repo"]).
 	// "forceSync" is whether or not to force to run in sync (on OSX we like to do it async to avoid certificate-pain)
-	svnMulti { | forceSync ... pairs |
+	svnMulti { | forceSync=(false) ... pairs |
 		var cmd, svnpath = this.class.svnpath.escapeChar($ );
 		if (svnpath.isNil) {
 			Error("SVN is not installed! Quarks cannot be updated.").throw;
