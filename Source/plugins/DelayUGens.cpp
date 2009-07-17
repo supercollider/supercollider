@@ -7567,7 +7567,7 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+PluginLoad(Delay)
 {
 	ft = inTable;
 

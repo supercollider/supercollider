@@ -59,7 +59,7 @@
 // Symbol of initialization routine when loading plugins
 #ifndef SC_PLUGIN_LOAD_SYM
 
-# ifdef SC_DARWIN
+# if defined(SC_DARWIN) || defined(SC_IPHONE)
 #  define SC_PLUGIN_LOAD_SYM "load"
 # else
 #  define SC_PLUGIN_LOAD_SYM "_load"
@@ -107,6 +107,27 @@ void read_section(const struct mach_header *mhp, unsigned long slide, const char
 }
 #endif
 
+extern void IO_Load(InterfaceTable *table);
+extern void Osc_Load(InterfaceTable *table);
+extern void Delay_Load(InterfaceTable *table);
+extern void BinaryOp_Load(InterfaceTable *table);
+extern void Filter_Load(InterfaceTable *table);
+extern void Gendyn_Load(InterfaceTable *table);
+extern void LF_Load(InterfaceTable *table);
+extern void Noise_Load(InterfaceTable *table);
+extern void MulAdd_Load(InterfaceTable *table);
+extern void Grain_Load(InterfaceTable *table);
+extern void Pan_Load(InterfaceTable *table);
+extern void Reverb_Load(InterfaceTable *table);
+extern void Trigger_Load(InterfaceTable *table);
+extern void UnaryOp_Load(InterfaceTable *table);
+extern void DiskIO_Load(InterfaceTable *table);
+extern void Test_Load(InterfaceTable *table);
+extern void PhysicalModeling_Load(InterfaceTable *table);
+extern void Demand_Load(InterfaceTable *table);
+extern void DynNoise_Load(InterfaceTable *table);
+extern void iPhone_Load(InterfaceTable *table);
+
 void initialize_library(const char *uGensPluginPath)
 {	
 	gCmdLib     = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
@@ -115,6 +136,32 @@ void initialize_library(const char *uGensPluginPath)
 	gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
 
 	initMiscCommands();
+
+#ifdef STATIC_PLUGINS
+	IO_Load(&gInterfaceTable);
+	Osc_Load(&gInterfaceTable);
+	Delay_Load(&gInterfaceTable);
+	BinaryOp_Load(&gInterfaceTable);
+	Filter_Load(&gInterfaceTable);
+	Gendyn_Load(&gInterfaceTable);
+	LF_Load(&gInterfaceTable);
+	Noise_Load(&gInterfaceTable);
+	MulAdd_Load(&gInterfaceTable);
+	Grain_Load(&gInterfaceTable);
+	Pan_Load(&gInterfaceTable);
+	Reverb_Load(&gInterfaceTable);
+	Trigger_Load(&gInterfaceTable);
+	UnaryOp_Load(&gInterfaceTable);
+	DiskIO_Load(&gInterfaceTable);
+	PhysicalModeling_Load(&gInterfaceTable);
+	Test_Load(&gInterfaceTable);
+	Demand_Load(&gInterfaceTable);
+	DynNoise_Load(&gInterfaceTable);
+#if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
+	iPhone_Load(&gInterfaceTable);
+#endif	
+	return;
+#endif
 
 	// If uGensPluginPath is supplied, it is exclusive.
 	bool loadUGensExtDirs = true;

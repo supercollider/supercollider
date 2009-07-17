@@ -31,7 +31,7 @@
 #ifndef SC_ENDIAN_H_INCLUDED
 #define SC_ENDIAN_H_INCLUDED
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 
 # include <machine/endian.h>
 

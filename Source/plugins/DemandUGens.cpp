@@ -2181,7 +2181,7 @@ void Dbufwr_Ctor(Dbufwr *unit)
 
 
 
-void load(InterfaceTable *inTable)
+PluginLoad(Demand)
 {
 	ft = inTable;
 

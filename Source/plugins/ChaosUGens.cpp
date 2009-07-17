@@ -1764,7 +1764,8 @@ void StandardL_Ctor(StandardL* unit){
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void load(InterfaceTable *inTable) {
+PluginLoad(Chaos)
+{
 	ft = inTable;
 	
 	DefineSimpleUnit(CuspN);

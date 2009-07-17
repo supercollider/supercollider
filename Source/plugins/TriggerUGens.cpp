@@ -2560,7 +2560,7 @@ void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+PluginLoad(Trigger)
 {
 	ft = inTable;
 

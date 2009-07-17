@@ -50,6 +50,9 @@ typedef int socklen_t;
 # include <unistd.h>
 #endif
 
+#ifdef SC_IPHONE
+# include <errno.h>
+#endif
 
 #ifdef USE_RENDEZVOUS
 #include "Rendezvous.h"
@@ -678,7 +681,7 @@ int sendall(int socket, const void *msg, size_t len)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 
 SC_MachMessagePort::SC_MachMessagePort(struct World *inWorld, CFStringRef serverPortName, CFStringRef replyPortName)
     :   SC_CmdPort(inWorld), mServerPort(NULL), mReplyPort(NULL)

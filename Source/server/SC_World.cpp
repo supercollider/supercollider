@@ -727,7 +727,7 @@ int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int i
 	return false;
 }
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName)
 {
 	try {

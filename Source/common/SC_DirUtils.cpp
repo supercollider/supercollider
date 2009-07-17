@@ -37,13 +37,15 @@
 #include <stdexcept>
 #include "SC_DirUtils.h"
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 #ifndef _SC_StandAloneInfo_
 # include "SC_StandAloneInfo_Darwin.h"
 #endif
 # include <CoreFoundation/CFString.h>
 # include <CoreFoundation/CFBundle.h>
+#ifndef SC_IPHONE
 # include <CoreServices/CoreServices.h>
+#endif
 #endif
 
 // If you have libcurl, you may activate this flag and it will allow Buffer.read to read from remote URLs
@@ -131,17 +133,20 @@ bool sc_IsSymlink(const char* path)
 
 bool sc_IsNonHostPlatformDir(const char *name)
 {
-#if defined(SC_DARWIN)
-	char a[] = "linux", b[] = "windows";
+#if defined(SC_IPHONE)
+	char a[] = "linux", b[] = "windows", c[]="osx";	
+#elif defined(SC_DARWIN)
+	char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(SC_LINUX)
-	char a[] = "osx", b[] = "windows";
+	char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(SC_FREEBSD)
-	char a[] = "osx", b[] = "windows";
+	char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(SC_WIN32)
-	char a[] = "osx", b[] = "linux";
+	char a[] = "osx", b[] = "linux", c[]="iphone";
 #endif
 	return ((strcmp(name, a) == 0) ||
-			(strcmp(name, b) == 0));
+			(strcmp(name, b) == 0) ||
+			(strcmp(name, c) == 0));
 }
 
 
@@ -168,7 +173,7 @@ bool sc_SkipDirectory(const char *name)
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length) 
 {
 	isAlias = false;
-#if defined(SC_DARWIN)
+#ifdef SC_DARWIN
 	FSRef dirRef;
 	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
 	if ( !osStatusErr ) {
@@ -202,19 +207,7 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 
 // Support for Bundles
 
-#ifndef SC_DARWIN
-
-bool sc_IsStandAlone()
-{
-	return false;
-}
-
-void sc_GetResourceDirectory(char* pathBuf, int length)
-{
-	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
-}
-
-#else	// running on OS X
+#if defined(SC_DARWIN)	// running on OS X
 
 // Support for stand-alone applications
 
@@ -228,7 +221,32 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
 
-#endif	// ifndef SC_DARWIN
+#elif defined(SC_IPHONE)
+
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
+void sc_GetResourceDirectory(char* pathBuf, int length)
+{
+	sc_GetUserAppSupportDirectory(pathBuf, length);
+}
+
+#else
+
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
+void sc_GetResourceDirectory(char* pathBuf, int length)
+{
+	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
+}
+
+
+#endif
 
 void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 {
@@ -243,7 +261,7 @@ void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 void sc_GetUserHomeDirectory(char *str, int size)
 {
 #ifndef SC_WIN32
-	char *home = getenv("HOME");
+	char *home = getenv("HOME");	
 	if(home!=NULL){
 		strncpy(str, home, size);
 	}
@@ -262,6 +280,8 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 			SC_DATA_DIR,
 #elif defined(SC_DARWIN)
 			"/Library/Application Support/SuperCollider",
+#elif SC_IPHONE
+			"/",
 #elif defined(SC_WIN32)
 			"C:\\SuperCollider",
 #else
@@ -282,6 +302,8 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 			 size,
 #ifdef SC_DARWIN
 			 "%s/Library/Application Support/SuperCollider",
+#elif SC_IPHONE
+			"%s/Documents",
 #elif defined(SC_WIN32)
 			"%s\\SuperCollider",
 #else

@@ -1,4 +1,4 @@
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 
 #ifndef _SC_StandAloneInfo_
 #define _SC_StandAloneInfo_

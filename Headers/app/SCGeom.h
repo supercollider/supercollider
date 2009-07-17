@@ -18,7 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifdef SC_DARWIN
 #import <Carbon/Carbon.h>
+#endif
+#ifdef SC_IPHONE
+#import <UIKit/UIKit.h>
+#endif
 #include "SC_BoundsMacros.h"
 
 struct SCColor {

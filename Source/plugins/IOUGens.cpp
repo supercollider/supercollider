@@ -393,6 +393,43 @@ void In_next_a(IOUnit *unit, int inNumSamples)
 	}
 }
 
+#ifdef IPHONE_VEC
+void vIn_next_a(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (uint32)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+	
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		if (touched[i] == bufCounter)
+		{
+			vcopy(out, in, inNumSamples);
+		}
+		else
+		{
+			vfill(out, 0.f, inNumSamples);
+		}
+	}
+}
+#endif
+
 void In_next_k(IOUnit *unit, int inNumSamples)
 {
 //Print("->In_next_k\n");
@@ -428,7 +465,11 @@ void In_Ctor(IOUnit* unit)
 		SETCALC(In_next_a);
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
+//#ifdef IPHONE_VEC
+//		vIn_next_a(unit, 1);
+//#else
 		In_next_a(unit, 1);
+//#endif
 	} else {
 		SETCALC(In_next_k);
 		unit->m_bus = world->mControlBus;
@@ -713,6 +754,47 @@ void Out_next_a(IOUnit *unit, int inNumSamples)
 	}
 }
 
+
+
+#ifdef IPHONE_VEC
+void vOut_next_a(IOUnit *unit, int inNumSamples)
+{
+	//Print("Out_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 1;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+		
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+	
+	float *out = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i+1);
+		if (touched[i] == bufCounter)
+		{
+			vadd(out, out, in, inNumSamples);
+		}
+		else
+		{
+			vcopy(out, in, inNumSamples);
+			touched[i] = bufCounter;
+		}
+		//Print("out %d %g %g\n", i, in[0], out[0]);
+	}
+}
+#endif
+
 #if __VEC__
 
 void vOut_next_a(IOUnit *unit, int inNumSamples)
@@ -801,7 +883,12 @@ void Out_Ctor(IOUnit* unit)
 			SETCALC(Out_next_a);
 		}
 #else
+
+#ifdef IPHONE_VEC
+		SETCALC(vOut_next_a);
+#else
 		SETCALC(Out_next_a);
+#endif
 #endif
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
@@ -1440,8 +1527,7 @@ void LocalOut_Ctor(IOUnit* unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void load(InterfaceTable *inTable)
+PluginLoad(IO)
 {
 	ft = inTable;
 

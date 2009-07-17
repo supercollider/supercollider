@@ -369,7 +369,7 @@ void TBall_next(TBall *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+PluginLoad(PhysicalModeling)
 {
 	ft = inTable;
 

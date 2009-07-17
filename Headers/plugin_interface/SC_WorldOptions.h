@@ -25,7 +25,7 @@
 #include <stdarg.h>
 #include "SC_Types.h"
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 #include <CoreFoundation/CFString.h>
 #endif
 
@@ -123,7 +123,7 @@ extern "C" {
 	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, WorldOptions *inOptions);
 	SC_DLLEXPORT int World_OpenUDP(struct World *inWorld, int inPort);
 	SC_DLLEXPORT int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 	SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
 #endif
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);

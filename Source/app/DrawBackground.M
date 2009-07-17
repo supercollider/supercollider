@@ -18,9 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef SC_IPHONE
 #import <Cocoa/Cocoa.h>
-#import "DrawBackground.h"
 #import "SCImage.h"
+#endif
+
+#import "DrawBackground.h"
 
 DrawBackground::DrawBackground()
 {
@@ -113,6 +116,7 @@ void HiliteGradientBackground::drawSelf(CGContextRef cgc, CGRect inRect)
 }
 
 // SCImageBackground
+#ifndef SC_IPHONE
 
 void ScaleRectInRect( NSRect *bounds, NSSize *origSize, NSRect *destRect );
 inline void ScaleRectInRect( NSRect *bounds, NSSize *origSize, NSRect *destRect )
@@ -324,6 +328,7 @@ SCImageBackground::~SCImageBackground()
 	#endif
 	[mSCImage release];
 }
+#endif
 
 #if 0
 

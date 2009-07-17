@@ -66,7 +66,7 @@ void ampmix_k(MulAdd *unit, int inNumSamples)
 
 void ampmix_aa(MulAdd *unit, int inNumSamples);
 void ampmix_aa(MulAdd *unit, int inNumSamples)
-{
+{	
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
 	float *amp = MULIN - ZOFF;
@@ -222,8 +222,16 @@ void ampmix_ia(MulAdd *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *mix = ADDIN - ZOFF;
 	float amp_cur = unit->mPrevMul;
-	
+
+#ifdef IPHONE_VEC
+	in++;
+	out++;
+	mix++;
+	vscalarmul(in, amp_cur, in, inNumSamples);
+	vadd(out, in, mix, inNumSamples);
+#else
 	LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
+#endif
 }
 
 void ampmix_ik(MulAdd *unit, int inNumSamples);
@@ -808,7 +816,7 @@ void MulAdd_Ctor(MulAdd *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+PluginLoad(MulAdd)
 {
 	ft = inTable;
 
