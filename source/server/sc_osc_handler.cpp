@@ -478,6 +478,24 @@ void handle_g_tail(received_message const & msg)
     }
 }
 
+void handle_n_free(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        try {
+            osc::int32 id;
+            args >> id;
+
+            instance->free_node(id);
+        }
+        catch (std::exception e) {
+            cerr << e.what() << endl;
+        }
+    }
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message, udp::endpoint const & endpoint)
@@ -526,6 +544,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_g_tail(message);
         break;
 
+    case cmd_n_free:
+        handle_n_free(message);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -554,6 +576,19 @@ void dispatch_group_commands(received_message const & message, udp::endpoint con
     }
 }
 
+void dispatch_node_commands(received_message const & message, udp::endpoint const & endpoint)
+{
+    const char * address = message.AddressPattern();
+    assert(address[0] == '/');
+    assert(address[1] == 'n');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "free") == 0) {
+        handle_n_free(message);
+        return;
+    }
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint)
@@ -568,6 +603,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (address[1] == 'g') {
         dispatch_group_commands(message, endpoint);
+        return;
+    }
+
+    if (address[1] == 'n') {
+        dispatch_node_commands(message, endpoint);
         return;
     }
 
