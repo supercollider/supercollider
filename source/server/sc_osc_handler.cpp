@@ -478,6 +478,58 @@ void handle_g_tail(received_message const & msg)
     }
 }
 
+void handle_g_freeall(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id;
+        args >> id;
+
+        server_node * node = instance->find_node(id);
+
+        if (node == NULL) {
+            cerr << "node not found\n" << endl;
+            continue;
+        }
+        if (node->is_synth()) {
+            cerr << "node is a synth\n" << endl;
+            continue;
+        }
+
+        abstract_group * group = static_cast<abstract_group*>(node);
+
+        group->free_children();
+    }
+}
+
+void handle_g_deepFree(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id;
+        args >> id;
+
+        server_node * node = instance->find_node(id);
+
+        if (node == NULL) {
+            cerr << "node not found\n" << endl;
+            continue;
+        }
+        if (node->is_synth()) {
+            cerr << "node is a synth\n" << endl;
+            continue;
+        }
+
+        abstract_group * group = static_cast<abstract_group*>(node);
+
+        group->free_synths_deep();
+    }
+}
+
 void handle_n_free(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -544,6 +596,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_g_tail(message);
         break;
 
+    case cmd_g_freeAll:
+        handle_g_freeall(message);
+        break;
+
+    case cmd_g_deepFree:
+        handle_g_deepFree(message);
+        break;
+
     case cmd_n_free:
         handle_n_free(message);
         break;
@@ -572,6 +632,14 @@ void dispatch_group_commands(received_message const & message, udp::endpoint con
     }
     if (strcmp(address+3, "tail") == 0) {
         handle_g_tail(message);
+        return;
+    }
+    if (strcmp(address+3, "freeAll") == 0) {
+        handle_g_freeall(message);
+        return;
+    }
+    if (strcmp(address+3, "deepFree") == 0) {
+        handle_g_deepFree(message);
         return;
     }
 }
