@@ -118,19 +118,24 @@ sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
 
 void sc_osc_handler::received_packet::run(void)
 {
-    osc_received_packet packet(data, length);
-    if (packet.IsBundle())
-        instance->handle_bundle(this);
-    else
-        instance->handle_message(this);
+    instance->handle_packet(data, length, endpoint_);
 }
 
-void sc_osc_handler::handle_bundle(received_packet * packet)
+void sc_osc_handler::handle_packet(const char * data, std::size_t length, udp::endpoint const & endpoint)
 {
-    osc_received_packet received_packet(packet->data, packet->length);
-    received_bundle bundle(received_packet);
-    handle_bundle(bundle, packet->endpoint_);
+    osc_received_packet packet(data, length);
+    if (packet.IsBundle())
+    {
+        received_bundle bundle(packet);
+        handle_bundle(bundle, endpoint);
+    }
+    else
+    {
+        received_message message(packet);
+        handle_message (message, endpoint);
+    }
 }
+
 
 void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint)
 {
@@ -158,13 +163,6 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint
             scheduled_bundles.insert_bundle(bundle_time, element.Contents(), element.Size(), endpoint);
         }
     }
-}
-
-void sc_osc_handler::handle_message(received_packet * packet)
-{
-    osc_received_packet received_packet(packet->data, packet->length);
-    received_message message(received_packet);
-    handle_message (message, packet->endpoint_);
 }
 
 void sc_osc_handler::handle_message(received_message const & message, udp::endpoint const & endpoint)
@@ -277,7 +275,7 @@ int first_arg_as_int(received_message const & message)
 }
 
 struct sc_response_callback:
-        public system_callback
+    public system_callback
 {
     sc_response_callback(udp::endpoint const & endpoint):
         endpoint_(endpoint)
@@ -297,7 +295,7 @@ struct sc_response_callback:
 };
 
 struct quit_callback:
-        public sc_response_callback
+    public sc_response_callback
 {
     quit_callback(udp::endpoint const & endpoint):
         sc_response_callback(endpoint)
@@ -342,7 +340,7 @@ void handle_notify(received_message const & message, udp::endpoint const & endpo
 }
 
 struct status_callback:
-        public sc_response_callback
+    public sc_response_callback
 {
     status_callback(udp::endpoint const & endpoint):
         sc_response_callback(endpoint)
@@ -382,7 +380,7 @@ void handle_dumpOSC(received_message const & message)
 }
 
 struct sync_callback:
-        public sc_response_callback
+    public sc_response_callback
 {
     sync_callback(int id, udp::endpoint const & endpoint):
         sc_response_callback(endpoint), id_(id)
@@ -542,15 +540,49 @@ void handle_n_free(received_message const & msg)
 
             instance->free_node(id);
         }
-        catch (std::exception e) {
+        catch (std::exception & e) {
             cerr << e.what() << endl;
         }
     }
 }
 
+/** responding callback, which is executing an osc message when done */
+struct sc_async_callback:
+    public sc_response_callback
+{
+protected:
+    sc_async_callback(size_t msg_size, const void * data, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint), msg_size_(msg_size)
+    {
+        if (msg_size_) {
+            data_ = system_callback::allocate(msg_size);
+            memcpy(data_, data, msg_size);
+        }
+    }
+
+    void schedule_async_message(void)
+    {
+        if (msg_size_) {
+            sc_osc_handler::received_packet * p =
+                sc_osc_handler::received_packet::alloc_packet((char*)data_, msg_size_, endpoint_);
+            instance->add_sync_callback(p);
+        }
+    }
+
+    ~sc_async_callback(void)
+    {
+        if (msg_size_)
+            system_callback::deallocate(data_);
+    }
+
+    const size_t msg_size_;
+    void * data_;
+};
+
 } /* namespace */
 
-void sc_osc_handler::handle_message_int_address(received_message const & message, udp::endpoint const & endpoint)
+void sc_osc_handler::handle_message_int_address(received_message const & message,
+                                                udp::endpoint const & endpoint)
 {
     uint32_t address = message.AddressPatternAsUInt32();
 
@@ -615,7 +647,8 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
 namespace
 {
-void dispatch_group_commands(received_message const & message, udp::endpoint const & endpoint)
+void dispatch_group_commands(received_message const & message,
+                             udp::endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
     assert(address[0] == '/');
@@ -644,7 +677,8 @@ void dispatch_group_commands(received_message const & message, udp::endpoint con
     }
 }
 
-void dispatch_node_commands(received_message const & message, udp::endpoint const & endpoint)
+void dispatch_node_commands(received_message const & message,
+                            udp::endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
     assert(address[0] == '/');
@@ -659,7 +693,8 @@ void dispatch_node_commands(received_message const & message, udp::endpoint cons
 
 } /* namespace */
 
-void sc_osc_handler::handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint)
+void sc_osc_handler::handle_message_sym_address(received_message const & message,
+                                                udp::endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
 

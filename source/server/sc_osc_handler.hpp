@@ -151,7 +151,6 @@ public:
         detail::network_thread::send_udp(data, size, receiver);
     }
 
-private:
     struct received_packet:
         public audio_sync_callback
     {
@@ -174,6 +173,7 @@ private:
         udp::endpoint endpoint_;
     };
 
+private:
     /* @{ */
     /** socket handling */
     void start_receive(void)
@@ -247,8 +247,7 @@ private:
 
     /* @{ */
     /** packet handling */
-    void handle_bundle(received_packet * bundle);
-    void handle_message(received_packet * message);
+    void handle_packet(const char * data_, std::size_t length, udp::endpoint const & endpoint);
     void handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint);
     void handle_message(received_message const & message, udp::endpoint const & endpoint);
     void handle_message_int_address(received_message const & message, udp::endpoint const & endpoint);
