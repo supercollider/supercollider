@@ -184,6 +184,8 @@ void sc_osc_handler::handle_message(received_message const & message, udp::endpo
 
 namespace {
 
+typedef sc_osc_handler::received_message received_message;
+
 enum {
     cmd_none = 0,
 
@@ -264,7 +266,7 @@ enum {
     NUMBER_OF_COMMANDS = 62
 };
 
-int first_arg_as_int(sc_osc_handler::received_message const & message)
+int first_arg_as_int(received_message const & message)
 {
     osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
     osc::int32 val;
@@ -332,7 +334,7 @@ struct notify_callback:
     bool enable_;
 };
 
-void handle_notify(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
+void handle_notify(received_message const & message, udp::endpoint const & endpoint)
 {
     int enable = first_arg_as_int(message);
 
@@ -371,7 +373,7 @@ void handle_status(udp::endpoint const & endpoint)
     instance->add_system_callback(new status_callback(endpoint));
 }
 
-void handle_dumpOSC(sc_osc_handler::received_message const & message)
+void handle_dumpOSC(received_message const & message)
 {
     int val = first_arg_as_int(message);
     val = min (1, val);    /* we just support one way of dumping osc messages */
@@ -400,7 +402,7 @@ struct sync_callback:
     int id_;
 };
 
-void handle_sync(sc_osc_handler::received_message const & message, udp::endpoint const & endpoint)
+void handle_sync(received_message const & message, udp::endpoint const & endpoint)
 {
     int id = first_arg_as_int(message);
 
@@ -412,16 +414,68 @@ void handle_clearSched(void)
     instance->clear_scheduled_bundles();
 }
 
-void handle_error(sc_osc_handler::received_message const & message)
+void handle_error(received_message const & message)
 {
     int val = first_arg_as_int(message);
 
     instance->set_error_posting(val);     /* thread-safe */
 }
 
-void handle_unhandled_message(sc_osc_handler::received_message const & msg)
+void handle_unhandled_message(received_message const & msg)
 {
     cerr << "unhandled message " << msg.AddressPattern() << endl;
+}
+
+void insert_group(int node_id, int action, int target_id)
+{
+    server_node * target = instance->find_node(target_id);
+
+    if (target == NULL) {
+        cerr << "target node not found\n" << endl;
+        return;
+    }
+    node_position_constraint pos = make_pair(target, node_position(action));
+
+    instance->add_group(node_id, pos);
+}
+
+void handle_g_new(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id, action, target;
+        args >> id >> action >> target;
+
+        insert_group(id, action, target);
+    }
+}
+
+void handle_g_head(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id, target;
+        args >> id >> target;
+
+        insert_group(id, head, target);
+    }
+}
+
+void handle_g_tail(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id, target;
+        args >> id >> target;
+
+        insert_group(id, tail, target);
+    }
 }
 
 } /* namespace */
@@ -460,10 +514,47 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_error(message);
         break;
 
+    case cmd_g_new:
+        handle_g_new(message);
+        break;
+
+    case cmd_g_head:
+        handle_g_head(message);
+        break;
+
+    case cmd_g_tail:
+        handle_g_tail(message);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
 }
+
+namespace
+{
+void dispatch_group_commands(received_message const & message, udp::endpoint const & endpoint)
+{
+    const char * address = message.AddressPattern();
+    assert(address[0] == '/');
+    assert(address[1] == 'g');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "new") == 0) {
+        handle_g_new(message);
+        return;
+    }
+    if (strcmp(address+3, "head") == 0) {
+        handle_g_head(message);
+        return;
+    }
+    if (strcmp(address+3, "tail") == 0) {
+        handle_g_tail(message);
+        return;
+    }
+}
+
+} /* namespace */
 
 void sc_osc_handler::handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint)
 {
@@ -474,6 +565,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 #endif
 
     assert(address[0] == '/');
+
+    if (address[1] == 'g') {
+        dispatch_group_commands(message, endpoint);
+        return;
+    }
 
     if (strcmp(address+1, "status") == 0) {
         handle_status(endpoint);

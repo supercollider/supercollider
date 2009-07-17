@@ -158,12 +158,12 @@ typedef boost::intrusive_ptr<group> group_ptr;
 
 enum node_position
 {
-    head,
-    tail,
-    before,
-    after,
-    replace,
-    insert                      /* for pgroups */
+    head = 0,
+    tail = 1,
+    before = 2,
+    after = 3,
+    replace = 4,
+    insert = 5                  /* for pgroups */
 };
 
 typedef std::pair<server_node *, node_position> node_position_constraint;
