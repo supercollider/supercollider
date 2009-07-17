@@ -68,7 +68,7 @@ QuarkSVNRepository
 	// NOTE: despite the method name, this actually uses "svn up" rather than "svn co", to ensure the base checkout is the base for this subfolder.
 	checkout { | q, localRoot, sync = false |
 		
-		var args, subfolders, fullCheckout, pathSoFar, skeletonCheckout;
+		var argPairs, subfolders, fullCheckout, pathSoFar, skeletonCheckout;
 		subfolders = q.path.split($/);
 		
 		fullCheckout = (localRoot ++ "/" ++ q.path).escapeChar($ );
@@ -80,19 +80,14 @@ QuarkSVNRepository
 		};
 				
 		if(this.checkDir.not){ this.checkoutDirectory }; // ensures that the main folder exists
+
+		argPairs = skeletonCheckout.collect{|el|
+				["update", ["--depth empty", el.escapeChar($ )]]
+			}.flatten
+				++
+			["update", [fullCheckout]];
 		
-		args = if(skeletonCheckout.isEmpty){
-			[fullCheckout]
-		}{
-			["--depth empty"] ++ skeletonCheckout.collect{|el| el.escapeChar($ )} ++ ["&&", svnpath.escapeChar($ ), "update", fullCheckout]
-		};
-		
-		
-		
-		//var args = [(this.url ++ "/" ++ q.path).escapeChar($ ), (localRoot ++ "/" ++  q.path).escapeChar($ )];
-		if(sync)
-			{this.svnSync("update", *args)}
-			{this.svn(    "update", *args)};
+		this.svnMulti(sync, *argPairs);
 	}
 	
 	// check if the quarks directory is checked out yet
@@ -117,7 +112,7 @@ QuarkSVNRepository
 	}
 
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not.
-	updateDirectory {
+	updateDirectory { |forceSync=false|
 		var dir = (local.path.select{|c| (c != $\\)}).escapeChar($ );
 		if (svnpath.isNil) {
 			"\n\tSince SVN not installed, you cannot checkout Quarks. ".postln.halt;
@@ -127,9 +122,10 @@ QuarkSVNRepository
 		if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
 			if( PathName(Quarks.local.path).isFolder.not ) {
 				// Main folder doesn't exist at all, simply check it out
-				this.svn("checkout", "--depth", "empty", this.url, dir, 
+				this.svnMulti(forceSync, 
+					["checkout", ["--depth empty", this.url, dir], 
 					// and then do the directory update:
-					"&&", svnpath.escapeChar($ ), "update", dir +/+ "DIRECTORY"
+					"update", [dir +/+ "DIRECTORY"]]
 					);
 			}{
 				Post 
@@ -140,10 +136,8 @@ QuarkSVNRepository
 				nil.halt;
 			};
 		}{
-			this.svn("update", dir +/+ "DIRECTORY");
+			this.svnMulti(forceSync, "update", [dir +/+ "DIRECTORY"]);
 		};
-		
-		^false	// TODO: why false? none of the callers seem to care about the return value, and not clear that it ever indicates anything
 	}
 	update {
 		this.checkSVNandBackupIfNeeded;
@@ -165,18 +159,28 @@ QuarkSVNRepository
 		});
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
-	svn { | cmd ... args |
+	
+	// Can perform multiple svn commands in one call.
+	// Call it with [cmd, args, cmd, args] pairs - e.g. svnMulti("co", ["--quiet", "/some/repo"], "up", ["~/my/repo"]).
+	// "forceSync" is whether or not to force to run in sync (on OSX we like to do it async to avoid certificate-pain)
+	svnMulti { | forceSync ... pairs |
+		var cmd, svnpath = this.class.svnpath.escapeChar($ );
 		if (svnpath.isNil) {
 			Error("SVN is not installed! Quarks cannot be updated.").throw;
 		};
-		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
+		cmd = "export LANG=''";
+		pairs.pairsDo{|onecmd, args|
+			cmd = cmd + "&&" + svnpath + onecmd + args.join(" ")
+		};
+		cmd = cmd + "2>&1";
 		"".debug;
 		cmd.debug;
 		"".debug;
-		Platform.case(
-			// On OSX we run it in a terminal window to minimise the risk of people getting stuck without a certificate
-			\osx, {
-				("echo " ++ $" ++ "
+		
+		if(forceSync.not and: {thisProcess.platform.name == \osx}){
+			// asynchronous but user-friendly execution - on OSX we
+			// run it in a terminal window to minimise the risk of people getting stuck without a certificate
+			("echo " ++ $" ++ "
 --------------------------------------------------------------
 
  SuperCollider Quarks: accessing remote repository.
@@ -189,19 +193,19 @@ QuarkSVNRepository
 
 --------------------------------------------------------------
 " ++ $" ++ cmd).runInTerminal
-			},
-			// Non-OSX platforms run it internally
-			{cmd.unixCmd}
-		);
+		}{
+			// synchronous execution:
+			cmd.unixCmdGetStdOut.postln;
+		};
+	}
+	svn { | cmd ... args |
+		^this.svnMulti(false, cmd, args);
 	}
 	// Allows to wait for command to complete
 	svnSync { | cmd ... args |
-		cmd = ("export LANG='' ; " + svnpath.escapeChar($ ) + cmd + args.join(" ") + "2>&1");
-		"".debug;
-		cmd.debug;
-		"".debug;
-		cmd.systemCmd;
+		^this.svnMulti(true, cmd, args);
 	}
+		
 	// just post
 	svnp { |cmd ... args|
 		cmd = ("svn" + cmd + args.join(" "));

@@ -85,10 +85,10 @@ Quarks
 		});
 		repos.svn("commit","-m",message,"-F",local.path +/+ q.path);
 	}
+	// TODO: Deprecate "checkoutDirectory" - "updateDirectory" can be used whether or not there's an existing one
 	checkoutDirectory {
-		(repos.checkoutDirectory).if({
-			"Directory was previously checked out, please perform updateDirectory.".postln
-		}, { "Please wait for directory to be checked out.".postln });
+		"Please wait for directory to be checked out.".postln;
+		^this.updateDirectory
 	}
 	updateDirectory {
 		repos.updateDirectory
@@ -260,7 +260,7 @@ Quarks
 	///// convenience methods for Quarks.global
 	
 	*checkoutAll { this.global.repos.checkoutAll(this.global.local.path) }
-	*checkout { | name, version | this.global.checkout(name,version); }
+	*checkout { | name, version, sync | this.global.checkout(name,version, sync); }
 	
 	/* 
 	 return Quark objects for each in App Support/SuperCollider/Quarks
