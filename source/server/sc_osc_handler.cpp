@@ -24,6 +24,7 @@
 
 #include "sc_osc_handler.hpp"
 #include "server.hpp"
+#include "utilities/sized_array.hpp"
 
 namespace nova
 {
@@ -711,6 +712,75 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
                                                            blob.size, blob.data, endpoint));
 }
 
+struct b_allocReadChannel_callback:
+    public b_allocRead_callback
+{
+    b_allocReadChannel_callback(int index, const char * filename, size_t start, size_t frames,
+                                size_t channel_count, const uint * channels,
+                                size_t msg_size, const void * data, udp::endpoint const & endpoint):
+        b_allocRead_callback(index, filename, start, frames, msg_size, data, endpoint),
+        channel_count_(channel_count)
+    {
+        channels_ = (uint*)allocate(channel_count * sizeof (uint));
+        memcpy(channels_, channels, channel_count * sizeof (uint));
+    }
+
+    ~b_allocReadChannel_callback(void)
+    {
+        deallocate(channels_);
+    }
+
+    void run(void)
+    {
+        instance->read_buffer_channels_allocate(index_, filename_, start_, frames_,
+                                                channel_count_, channels_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const size_t channel_count_;
+    uint * channels_;
+};
+
+void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
+
+    osc::int32 index = arg->AsInt32(); arg++;
+    const char * filename = arg->AsString(); arg++;
+
+    osc::int32 start = arg->AsInt32(); arg++;
+    size_t frames = arg->AsInt32(); arg++;
+
+    size_t channel_args = msg.ArgumentCount() - 4; /* we already consumed 4 elements */
+
+    size_t channel_count = 0;
+    sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
+
+    const void * data = 0;
+    size_t length = 0;
+    for (uint i = 0; i != channel_args; ++i)
+    {
+        if (arg->IsInt32()) {
+            channels[i] = arg->AsInt32Unchecked();
+            ++channel_count;
+        }
+        else {
+            /* we reached the message blob */
+            if (!arg->IsBlob())
+                throw std::runtime_error("wrong arguments for /b_allocReadChannel");
+
+            arg->AsBlobUnchecked(data, length);
+            break;
+        }
+    }
+
+    instance->add_system_callback(
+        new b_allocReadChannel_callback(index, filename, start, frames,
+                                        channel_count, channels.c_array(),
+                                        length, data, endpoint));
+}
+
 
 } /* namespace */
 
@@ -785,6 +855,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_allocRead(message, endpoint);
         break;
 
+    case cmd_b_allocReadChannel:
+        handle_b_allocReadChannel(message, endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -856,6 +930,10 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "allocRead") == 0) {
         handle_b_allocRead(message, endpoint);
+        return;
+    }
+    if (strcmp(address+3, "allocReadChannel") == 0) {
+        handle_b_allocReadChannel(message, endpoint);
         return;
     }
 
