@@ -579,6 +579,40 @@ protected:
     void * data_;
 };
 
+struct b_alloc_callback:
+    public sc_async_callback
+{
+    b_alloc_callback(int index, int frames, int channels, size_t msg_size, const void * data,
+                     udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint),
+        index_(index), frames_(frames), channels_(channels)
+    {}
+
+    void run(void)
+    {
+        instance->allocate_buffer(index_, frames_, channels_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const int index_;
+    const int frames_;
+    const int channels_;
+};
+
+void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    osc::int32 index, frames, channels;
+    osc::Blob blob;
+
+    args >> index >> frames >> channels >> blob;
+
+    instance->add_system_callback(new b_alloc_callback(index, frames, channels,
+                                                       blob.size, blob.data, endpoint));
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message,
@@ -640,6 +674,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_free(message);
         break;
 
+    case cmd_b_alloc:
+        handle_b_alloc(message, endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -691,6 +729,20 @@ void dispatch_node_commands(received_message const & message,
     }
 }
 
+void dispatch_buffer_commands(received_message const & message,
+                              udp::endpoint const & endpoint)
+{
+    const char * address = message.AddressPattern();
+    assert(address[0] == '/');
+    assert(address[1] == 'b');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "alloc") == 0) {
+        handle_b_alloc(message, endpoint);
+        return;
+    }
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_sym_address(received_message const & message,
@@ -711,6 +763,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (address[1] == 'n') {
         dispatch_node_commands(message, endpoint);
+        return;
+    }
+
+    if (address[1] == 'b') {
+        dispatch_buffer_commands(message, endpoint);
         return;
     }
 

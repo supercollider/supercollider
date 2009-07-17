@@ -20,7 +20,8 @@
 
 Import("env")
 
-sources = Split("""node_graph.cpp
+sources = Split("""buffer_manager.cpp
+                   node_graph.cpp
                    dsp_context.cpp
                    memory_pool.cpp
                    server.cpp

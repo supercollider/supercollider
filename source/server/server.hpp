@@ -21,6 +21,7 @@
 
 #include <boost/thread.hpp>
 
+#include "buffer_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "sc_osc_handler.hpp"
@@ -63,6 +64,7 @@ class nova_server:
     public scheduler,
     public audio_frontend<&run_scheduler_tick>,
     public synth_factory,
+    public buffer_manager,
     public sc_osc_handler
 {
 public:
