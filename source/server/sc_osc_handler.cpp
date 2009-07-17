@@ -292,7 +292,7 @@ struct sc_response_callback:
         instance->send_udp(p.Data(), p.Size(), endpoint_);
     }
 
-    udp::endpoint endpoint_;
+    const udp::endpoint endpoint_;
 };
 
 struct quit_callback:
@@ -330,7 +330,7 @@ struct notify_callback:
         send_done();
     }
 
-    bool enable_;
+    const bool enable_;
 };
 
 void handle_notify(received_message const & message, udp::endpoint const & endpoint)
@@ -398,7 +398,7 @@ struct sync_callback:
         instance->send_udp(p.Data(), p.Size(), endpoint_);
     }
 
-    int id_;
+    const int id_;
 };
 
 void handle_sync(received_message const & message, udp::endpoint const & endpoint)

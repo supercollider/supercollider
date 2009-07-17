@@ -100,7 +100,7 @@ public:
         void run(void);
 
         const time_tag timeout_;
-        const char * data_;
+        const char * const data_;
         const udp::endpoint endpoint_;
     };
 
@@ -168,9 +168,9 @@ public:
 
         void run(void);
 
-        const char * data;
-        size_t length;
-        udp::endpoint endpoint_;
+        const char * const data;
+        const size_t length;
+        const udp::endpoint endpoint_;
     };
 
 private:
