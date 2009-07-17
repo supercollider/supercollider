@@ -1392,7 +1392,7 @@ void GVerb_next(GVerb* unit, int inNumSamples)
     unit->earlylevelslope = unit->taillevelslope = unit->drylevelslope = 0.f;
 }
 
-void load(InterfaceTable *inTable)
+PluginLoad(Reverb)
 {
 	ft = inTable;
 	DefineSimpleUnit(FreeVerb);

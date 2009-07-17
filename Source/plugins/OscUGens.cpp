@@ -1397,7 +1397,7 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 //////////////!!!
 
 void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
-{
+{	
 	float *out = ZOUT(0);
 	float freqin = ZIN0(0);
 	float phasein = ZIN0(1);
@@ -1417,8 +1417,49 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 		phase += phaseinc;
 	);
 	unit->m_phase = phase;
-		
 }
+
+#undef IPHONE_VEC
+#ifdef IPHONE_VEC
+
+void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
+{	
+	//int64 now = GetMicroseconds();
+
+	float *out = OUT(0);
+	float freqin = ZIN0(0);
+	float phasein = ZIN0(1);
+	
+	float *table0 = ft->mSineWavetable;
+	float *table1 = table0 + 1;
+		
+	int32 phase = unit->m_phase;
+	int32 lomask = unit->m_lomask;
+	
+	int32 freq = (int32)(unit->m_cpstoinc * freqin);
+	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
+	unit->m_phasein = phasein;
+
+	unsigned long frac[64];
+	float a[64];
+	float b[64];
+
+	int i;
+	for (i=0; i<inNumSamples; i++)
+	{
+		frac[i] = 0x3F800000 | (0x007FFF80 & (phase<<7));
+		uint32 index = (phase>>xlobits1)&lomask;
+		a[i] = *(float *) ((char *)table0 + index);
+		b[i] = *(float *) ((char *)table1 + index);
+		phase += phaseinc;
+	}
+	vmuladd(out, (float *) a, (float *) frac, (float *) b, inNumSamples);
+	unit->m_phase = phase;	
+
+	//printf("vSinOsc_kk : %d samples, %fms\n", inNumSamples, (float)(GetMicroseconds()-now)/1000);
+}
+#endif
+
 
 #if __VEC__
 
@@ -1479,7 +1520,6 @@ void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 
 void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float freqin = ZIN0(0);
 	float *phasein = ZIN(1);
@@ -1500,7 +1540,7 @@ void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	//unit->m_phasein = phasein;
-	
+		
 }
 
 void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
@@ -1526,7 +1566,6 @@ void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	//unit->m_phasein = ZX(phasein);
-	
 }
 
 
@@ -1556,7 +1595,6 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	unit->m_phasein = phasein;
-
 }
 
 
@@ -1594,7 +1632,11 @@ void SinOsc_Ctor(SinOsc *unit)
 			}
 #else
 			//Print("next_ikk\n");
+#ifdef IPHONE_VEC
+			SETCALC(vSinOsc_next_ikk);
+#else
 			SETCALC(SinOsc_next_ikk);
+#endif
 #endif
 			unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
 		}
@@ -3799,7 +3841,7 @@ void CantorFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+PluginLoad(Osc)
 {
 	ft = inTable;
 

@@ -33,6 +33,9 @@
 #include "clz.h"
 #include "sc_msg_iter.h"
 #include "SC_Altivec.h"
+#ifdef SC_IPHONE
+#include "SC_VFP11.h"
+#endif
 #include <stdlib.h>
 
 #ifdef SC_WIN32

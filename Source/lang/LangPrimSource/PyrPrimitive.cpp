@@ -3945,7 +3945,8 @@ void initUStringPrimitives();
 	
 void initListPrimitives();
 	initListPrimitives();
-	
+
+
 void initUnixPrimitives();
 	initUnixPrimitives();
 
@@ -3963,10 +3964,12 @@ void initSCViewPrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+#ifndef SC_IPHONE
 void initMIDIPrimitives();
 	initMIDIPrimitives();
+#endif
 
-#ifndef SC_WIN32
+#if !defined(SC_WIN32) && !defined(SC_IPHONE)
 void initHIDPrimitives();
 	initHIDPrimitives();
 

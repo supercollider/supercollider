@@ -175,5 +175,10 @@ typedef struct InterfaceTable InterfaceTable;
 	(*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, \
 	(UnitDtorFunc)&name##_Dtor, kUnitDef_CantAliasInputsToOutputs);
 
+#ifdef STATIC_PLUGINS
+#define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
+#else
+#define PluginLoad(name) void load(InterfaceTable *inTable)
+#endif
 
 #endif

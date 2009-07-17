@@ -6353,8 +6353,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void load(InterfaceTable *inTable)
+PluginLoad(Filter)
 {
 	ft = inTable;
 

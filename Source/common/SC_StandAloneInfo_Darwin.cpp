@@ -1,11 +1,11 @@
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 
 #include <sys/param.h>
 #include <stdexcept>
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFBundle.h>
-#include <CoreServices/CoreServices.h>
+//#include <CoreServices/CoreServices.h>
 
 #include "SC_StandAloneInfo_Darwin.h"
 

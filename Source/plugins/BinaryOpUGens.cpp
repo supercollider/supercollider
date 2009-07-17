@@ -21,6 +21,7 @@
 
 #include "SC_PlugIn.h"
 
+
 #ifdef _MSC_VER
 // MS libs prefer _hypot rather than hypot, and don't provide hypotf
 #define hypot _hypot
@@ -119,7 +120,7 @@ extern "C"
 
 	void BinaryOpUGen_Ctor(BinaryOpUGen *unit);
 
-	void zero_d(BinaryOpUGen *unit, int inNumSamples);
+	//void zero_d(BinaryOpUGen *unit, int inNumSamples);
 	void zero_1(BinaryOpUGen *unit, int inNumSamples);
 	void zero_aa(BinaryOpUGen *unit, int inNumSamples);
 	void firstarg_d(BinaryOpUGen *unit, int inNumSamples);
@@ -404,8 +405,7 @@ extern "C"
 	void hypotx_ak(BinaryOpUGen *unit, int inNumSamples);
 	void hypotx_ka(BinaryOpUGen *unit, int inNumSamples);
 	void hypotx_ai(BinaryOpUGen *unit, int inNumSamples);
-	void hypotx_ia(BinaryOpUGen *unit, int inNumSamples);
-	
+	void hypotx_ia(BinaryOpUGen *unit, int inNumSamples);	
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +424,7 @@ void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 	}
 }
 
-
+/*
 void zero_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
@@ -436,6 +436,7 @@ void zero_d(BinaryOpUGen *unit, int inNumSamples)
 		RESETINPUT(1);
 	}
 }
+*/
 
 void firstarg_d(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -6626,7 +6627,8 @@ void ChooseOperatorFunc(BinaryOpUGen *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void load(InterfaceTable *inTable)
+
+PluginLoad(BinaryOp)
 {
 	ft = inTable;
 

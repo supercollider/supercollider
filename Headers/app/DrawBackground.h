@@ -72,6 +72,7 @@ protected:
 };
 
 // SCImageBackground
+#ifndef SC_IPHONE
 @class SCImage;
 
 class SCImageBackground : public DrawBackground
@@ -93,7 +94,7 @@ protected:
 	float mSwappedYOrigin;
 	float mOriginalYOrigin;
 };
-
+#endif
 /*
 class TiledBackground : public DrawBackground
 {

@@ -163,6 +163,11 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
+#ifdef SC_IPHONE
+	SetInt(a, 0);
+	return errNone;
+#endif
+
 	process = (struct sc_process *)malloc(sizeof(struct sc_process));
 	process->stream = sc_popen(cmdline, &process->pid, "r");
 	setvbuf(process->stream, 0, _IONBF, 0);

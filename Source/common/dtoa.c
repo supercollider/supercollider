@@ -34,7 +34,7 @@
 #include "SC_Endian.h"
 
 #define Honor_FLT_ROUNDS 1
- 
+
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define IEEE_8087 1
 #else
@@ -352,6 +352,14 @@ typedef union { double d; ULong L[2]; } U;
 #undef Sudden_Underflow
 #endif
 #endif
+
+#ifdef SC_IPHONE
+#undef FLT_ROUNDS
+#endif
+
+
+
+
 
 #ifndef Flt_Rounds
 #ifdef FLT_ROUNDS

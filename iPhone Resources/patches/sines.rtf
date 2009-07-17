@@ -1,0 +1,21 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf460
+{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue191;\red0\green0\blue0;\red96\green96\blue96;
+}
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs18 \cf2 Server\cf3 .default = \cf2 Server\cf3 .internal;\
+s = Server.internal;\
+s.waitForBoot(\
+\{\
+	\cf2 SynthDef\cf3 (\cf4 "help-sinebechmark"\cf3 ,\'a0\
+	\{
+\f1\fs24 \
+	
+\f0\fs18 	\cf2 Out\cf3 .ar(0,\'a0\cf2 SinOsc\cf3 .ar(\cf2 Rand\cf3 (200, 700), 0, 0.01))\
+	\}).send(s);\
+	s.sync;\
+	32.do(\{\'a0\cf2 Synth\cf3 .new(\cf4 "help-sinebechmark"\cf3 ); \});\
+\});\
+}

@@ -40,7 +40,7 @@
 # include <errno.h>
 #endif
 
-#ifdef SC_DARWIN
+#if defined(SC_DARWIN) || defined(SC_IPHONE)
 #include <errno.h>
 #endif
 

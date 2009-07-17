@@ -3,7 +3,7 @@
 #include <string.h>
 #include "sc_popen.h"
 
-#ifndef SC_WIN32
+#if defined(SC_DARWIN)||defined(SC_IPHONE)
 
 /*	This code is based on popen() and pclose() from Darwin's
 	libc. The only functional difference is that sc_popen()
@@ -123,6 +123,20 @@ sc_pclose(FILE *iop, pid_t mPid)
 	} while (pid == -1 && errno == EINTR);
 
 	return (pid == -1 ? -1 : pstat);
+}
+
+#elif defined(SC_IPHONE)
+
+FILE *
+sc_popen(const char *command, pid_t *pidp, const char *type)
+{
+	return 0;
+}
+
+int
+sc_pclose(FILE *iop, pid_t mPid)
+{
+	return 0;
 }
 
 #else

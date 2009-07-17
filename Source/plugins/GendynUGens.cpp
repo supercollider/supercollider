@@ -663,7 +663,8 @@
 
 
     
-        extern "C" void load(InterfaceTable *inTable) {
+PluginLoad(Gendyn)
+		{
                 
 						ft = inTable;
 
