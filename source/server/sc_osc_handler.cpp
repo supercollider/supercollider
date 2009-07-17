@@ -560,6 +560,14 @@ protected:
         }
     }
 
+    static char * copy_string(const char * str)
+    {
+        size_t length = strlen(str);
+        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        strcpy(ret, str);
+        return ret;
+    }
+
     void schedule_async_message(void)
     {
         if (msg_size_) {
@@ -612,6 +620,79 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
     instance->add_system_callback(new b_alloc_callback(index, frames, channels,
                                                        blob.size, blob.data, endpoint));
 }
+
+struct b_free_callback:
+    public sc_async_callback
+{
+    b_free_callback(int index, size_t msg_size, const void * data,
+                     udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint),
+        index_(index)
+    {}
+
+    void run(void)
+    {
+        instance->free_buffer(index_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const int index_;
+};
+
+void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    osc::int32 index;
+    osc::Blob blob;
+
+    args >> index >> blob;
+
+    instance->add_system_callback(new b_free_callback(index, blob.size, blob.data, endpoint));
+}
+
+struct b_allocRead_callback:
+    public sc_async_callback
+{
+    b_allocRead_callback(int index, const char * filename, size_t start, size_t frames,
+                         size_t msg_size, const void * data, udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint),
+        index_(index), filename_(copy_string(filename)), start_(start), frames_(frames)
+    {}
+
+    ~b_allocRead_callback(void)
+    {
+        deallocate(filename_);
+    }
+
+    void run(void)
+    {
+        instance->read_buffer_allocate(index_, filename_, start_, frames_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const int index_;
+    char * const filename_;
+    const size_t start_;
+    const size_t frames_;
+};
+
+void handle_b_allocRead(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    osc::int32 index, start, frames;
+    const char * filename;
+    osc::Blob blob;
+
+    args >> index >> filename >> start >> frames >> blob;
+
+    instance->add_system_callback(new b_allocRead_callback(index, filename, start, frames,
+                                                           blob.size, blob.data, endpoint));
+}
+
 
 } /* namespace */
 
@@ -678,6 +759,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_alloc(message, endpoint);
         break;
 
+    case cmd_b_free:
+        handle_b_free(message, endpoint);
+        break;
+
+    case cmd_b_allocRead:
+        handle_b_allocRead(message, endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -741,6 +830,17 @@ void dispatch_buffer_commands(received_message const & message,
         handle_b_alloc(message, endpoint);
         return;
     }
+
+    if (strcmp(address+3, "free") == 0) {
+        handle_b_free(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "allocRead") == 0) {
+        handle_b_allocRead(message, endpoint);
+        return;
+    }
+
 }
 
 } /* namespace */
