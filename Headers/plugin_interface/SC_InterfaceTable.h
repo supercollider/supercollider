@@ -178,7 +178,7 @@ typedef struct InterfaceTable InterfaceTable;
 #ifdef STATIC_PLUGINS
 #define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
 #else
-#define PluginLoad(name) void load(InterfaceTable *inTable)
+#define PluginLoad(name) extern "C" void load(InterfaceTable *inTable)
 #endif
 
 #endif
