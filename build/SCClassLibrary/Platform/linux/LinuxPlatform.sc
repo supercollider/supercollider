@@ -29,6 +29,11 @@ LinuxPlatform : UnixPlatform
 	}
 	defaultHIDScheme { ^\linux_hid }
 
+	initPlatform {
+		super.initPlatform;
+		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
+	}
+
 	recompile{
 		if ( this.hasFeature( \emacs ) ) {
 			Emacs.evalLispExpression( "(sclang-start)" );
