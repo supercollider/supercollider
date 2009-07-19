@@ -176,9 +176,13 @@ typedef struct InterfaceTable InterfaceTable;
 	(UnitDtorFunc)&name##_Dtor, kUnitDef_CantAliasInputsToOutputs);
 
 #ifdef STATIC_PLUGINS
-#define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
+	#define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
 #else
-#define PluginLoad(name) extern "C" void load(InterfaceTable *inTable)
+	#ifdef __cplusplus
+		#define PluginLoad(name) extern "C" void load(InterfaceTable *inTable)
+	#else
+		#define PluginLoad(name) void load(InterfaceTable *inTable)
+	#endif
 #endif
 
 #endif
