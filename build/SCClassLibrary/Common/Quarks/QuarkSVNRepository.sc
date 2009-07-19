@@ -80,27 +80,22 @@ QuarkSVNRepository
 			
 			subfolders = oneq.path.split($/);
 			
-			fullCheckout = fullCheckout ++ [(localRoot ++ "/" ++ oneq.path).escapeChar($ )];
+			fullCheckout = fullCheckout ++ [oneq.path.escapeChar($ )];
 			subfolders.pop; // The final entry is the folder whose entire contents we want
 			
-			pathSoFar = localRoot;
+			pathSoFar = ".";
 			skeletonCheckout = skeletonCheckout ++ subfolders.collect{ |element, index|
 				pathSoFar = pathSoFar ++ "/" ++ element
 			}.collect{|el| el.escapeChar($ )};
 		};
-		
-		"skeletonCheckout".postln;
-		skeletonCheckout.postln;
-		"fullCheckout".postln;
-		fullCheckout.postln;
-		
+
 		// Now construct a svn command for the skels, and then a svn command for the fulls
 		args = if(skeletonCheckout.isEmpty){
 			[]
 		}{
-			["update", ["--depth empty"] ++ skeletonCheckout]
+			["update", ["--non-recursive"] ++ skeletonCheckout]
 		} ++ ["update", fullCheckout];
-		this.svnMulti(sync, *args);
+		this.svnMulti(localRoot, sync, *args);
 	}
 	
 	// check if the quarks directory is checked out yet
@@ -110,7 +105,7 @@ QuarkSVNRepository
 		if(File.exists(dir).not, {
 			// This method SHOULD NOT check the dir out on your behalf! That's not what it's for! Use .checkoutDirectory for that.
 			//"Quarks dir is not yet checked out.  Execute:".debug;
-			//this.svn("co","--depth","empty",this.url, local.path.escapeChar($ ));
+			//this.svn("co","--non-recursive",this.url, local.path.escapeChar($ ));
 			//this.svn("up", local.path.escapeChar($ ) +/+ "DIRECTORY");
 			^false;
 		});
@@ -126,30 +121,29 @@ QuarkSVNRepository
 
 	// DIRECTORY contains a quark spec file for each quark regardless if checked out / downloaded or not.
 	updateDirectory { |forceSync=false|
-		var dir = (local.path.select{|c| (c != $\\)}).escapeChar($ );
 		if (svnpath.isNil) {
 			"\n\tSince SVN not installed, you cannot checkout Quarks. ".postln.halt;
 		};
 		
 		// If there's no svn metadata then either there's nothing there at all or there's a non-svn thing in the way
-		if (  (Quarks.local.path ++ "/.svn").pathMatch.size == 0 ) {
-			if( PathName(Quarks.local.path).isFolder.not ) {
+		if (  File.exists(local.path ++ "/.svn").not) {
+			if( File.exists(local.path).not ) {
 				// Main folder doesn't exist at all, simply check it out
-				this.svnMulti(forceSync, 
-					"checkout", ["--depth empty", this.url, dir], 
+				this.svnMulti(".", forceSync, 
+					"checkout", ["--non-recursive", this.url, local.path.select{|c| (c != $\\)}.escapeChar($ )], 
 					// and then do the directory update:
-					"update", [dir +/+ "DIRECTORY"]
+					"update", [local.path.select{|c| (c != $\\)}.escapeChar($ ) +/+ "DIRECTORY"]
 					);
 			}{
 				Post 
 				<< "\n\tCurrent Quarks are not SVN. Delete the directories \n\t\t " 
-				<< Quarks.local.path << "\n\tand\n\t\t"
+				<< local.path << "\n\tand\n\t\t"
 				<< Platform.userExtensionDir << "/quarks\n" 
 				<< "\tand recompile before checking out quarks";
 				nil.halt;
 			};
 		}{
-			this.svnMulti(forceSync, "update", [dir +/+ "DIRECTORY"]);
+			this.svnMulti(local.path, forceSync, "update", ["DIRECTORY"]);
 		};
 	}
 	update {
@@ -180,14 +174,14 @@ QuarkSVNRepository
 	}
 	
 	// Can perform multiple svn commands in one call.
-	// Call it with [cmd, args, cmd, args] pairs - e.g. svnMulti("co", ["--quiet", "/some/repo"], "up", ["~/my/repo"]).
+	// Call it with [cmd, args, cmd, args] pairs - e.g. svnMulti(....   "co", ["--quiet", "/some/repo"], "up", ["~/my/repo"]).
 	// "forceSync" is whether or not to force to run in sync (on OSX we like to do it async to avoid certificate-pain)
-	svnMulti { | forceSync=(false) ... pairs |
+	svnMulti { | baseDir, forceSync=(false) ... pairs |
 		var cmd, svnpath = this.class.svnpath.escapeChar($ );
 		if (svnpath.isNil) {
 			Error("SVN is not installed! Quarks cannot be updated.").throw;
 		};
-		cmd = "export LANG=''";
+		cmd = "export LANG='' && cd" + baseDir.select{|c| (c != $\\)}.escapeChar($ );
 		pairs.pairsDo{|onecmd, args|
 			cmd = cmd + "&&" + svnpath + onecmd + args.join(" ")
 		};
@@ -218,11 +212,11 @@ QuarkSVNRepository
 		};
 	}
 	svn { | cmd ... args |
-		^this.svnMulti(false, cmd, args);
+		^this.svnMulti(".", false, cmd, args);
 	}
 	// Allows to wait for command to complete
 	svnSync { | cmd ... args |
-		^this.svnMulti(true, cmd, args);
+		^this.svnMulti(".", true, cmd, args);
 	}
 		
 	// just post
