@@ -186,6 +186,7 @@ Integer : SimpleNumber {
 	
 	factors {
 		var num, array, prime;
+		if(this <= 1) { ^[] }; // no prime factors exist below the first prime
 		num = this.abs;
 		// there are 6542 16 bit primes from 2 to 65521
 		6542.do {|i|
@@ -209,7 +210,7 @@ Integer : SimpleNumber {
 	pidRunning { _PidRunning; ^this.primitiveFailed }	
 	
 	factorial {
-		var	product = 1.0;
+		var	product = 1;
 		if(this <= 1) { ^1 } {
 			this.do { |x| product = product * (x+1) };
 			^product
