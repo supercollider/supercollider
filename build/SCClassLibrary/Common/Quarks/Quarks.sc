@@ -399,17 +399,23 @@ Quarks
 			["save", Color.black, Color.blue(1, 0.5)]
 		];
 		saveButton.action = { arg butt;
-			views.do{|qView|
-				qView.toBeInstalled.if({
-					this.install(qView.quark.name);
-					qView.flush
-				});
-				qView.toBeDeinstalled.if({
-					this.uninstall(qView.quark.name);
-					qView.flush;
-				})
-			};
-			warning.string = "You should now recompile sclang"
+			Task{
+				warning.string = "Applying changes, please wait";
+				warning.background_(Color(1.0, 1.0, 0.9));
+				0.1.wait;
+				views.do{|qView|
+					qView.toBeInstalled.if({
+						this.install(qView.quark.name);
+						qView.flush
+					});
+					qView.toBeDeinstalled.if({
+						this.uninstall(qView.quark.name);
+						qView.flush;
+					})
+				};
+				warning.string = "Done. You should now recompile sclang";
+				warning.background_(Color(0.9, 1.0, 0.9));
+			}.play(AppClock);
 		};
 		
 		window.view.decorator.nextLine;
