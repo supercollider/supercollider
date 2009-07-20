@@ -75,7 +75,7 @@ HistoryGui {
 			.states_([["rip"]])
 			.resize_(3)
 			.canFocus_(false)
-			.action_({ |btn| this.findDoc; doc.string_(textV.string); });		
+			.action_({ |btn| this.findDoc; doc.string_(textV.string); doc.front; });		
 		listV = ListView(w, bounds.copy.insetBy(2).height_(230))
 			.font_(font)
 			.items_([])
