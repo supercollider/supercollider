@@ -5,12 +5,12 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -20,10 +20,9 @@ p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #3850cb}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {color: #636a99}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -50,25 +49,42 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>items</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>items_ (assocArray)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>assocArray </b>- An Array of <a href="../../Collections/Association.html"><span class="s5">Association</span></a>s including the labels and the item functions: ['label' -&gt; {arg listObj; value}, ]. In menus, the OS X graphics system gives special meanings to some characters. See <a href="../Cocoa-GUI/SCPopUpMenu.html"><span class="s5">SCPopUpMenu</span></a>;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>assocArray </b>- An Array of <a href="../../Collections/Association.html"><span class="s2">Association</span></a>s including the labels and the item functions: ['label' -&gt; {arg listObj; value}, ]. In menus, the OS X graphics system gives special meanings to some characters. See <a href="../Cocoa-GUI/SCPopUpMenu.html"><span class="s2">SCPopUpMenu</span></a>;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>item</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns the item label of the current selection.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>itemFunc</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the item function of the current selection</p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>addItem (name, action)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds an item.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of <a href="../../Collections/String.html"><span class="s5">String</span></a> or <a href="../../Core/Symbol.html"><span class="s5">Symbol</span></a>. The name of the list/menu item.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. The name of the list/menu item.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- An instanc of Function.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>insertItem (index, name, action)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Inserts a list/menu item at positiion of index.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer. The index where to insert an item.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of <a href="../../Collections/String.html"><span class="s5">String</span></a> or <a href="../../Core/Symbol.html"><span class="s5">Symbol</span></a>. The name of the list/menu item.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. The name of the list/menu item.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A n instanc of Function.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>replaceItemAt (index, name, action)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Replace a list/menu item at positiion of index.<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer. The index where to insert an item.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>name </b>- An instance of <a href="../../Collections/String.html"><span class="s2">String</span></a> or <a href="../../Core/Symbol.html"><span class="s2">Symbol</span></a>. The name of the list/menu item. Default is the current item label.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A n instanc of Function. Default is the current item action-</p>
+<p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>removeItemAt (index)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Removes a list/menu item at positiion of index.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- An integer. The index where to remove an item.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>remove</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span>removes both the view, label and the list/menu from the parent view.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
