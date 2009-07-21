@@ -105,9 +105,23 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 	int j,k;
 
 	World *world = unit->mWorld; 
-	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-	SndBuf *buf = world->mSndBufs + ibufnum; 
+	//if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
+	SndBuf *buf; // = world->mSndBufs + ibufnum; 
 	//int numbins = buf->samples - 2 >> 1;
+	//support LocalBuf
+	
+	if (ibufnum >= world->mNumSndBufs) { 
+		int localBufNum = ibufnum - world->mNumSndBufs; 
+		Graph *parent = unit->mParent; 
+		if(localBufNum <= parent->localBufNum) { 
+			buf = parent->mLocalSndBufs + localBufNum; 
+		} else { 
+			buf = world->mSndBufs; 
+		}
+	} else { 
+		buf = world->mSndBufs + ibufnum; 
+	} 
+	
 	
 	float * data= buf->data;
 
