@@ -112,7 +112,7 @@ EZGui{ // an abstract class
 
 EZLists : EZGui{  // an abstract class
 
-	var <items, <>globalAction, value; 
+	var <items, <>globalAction; 
 		
 	*new { arg parentView, bounds, label,items, globalAction, initVal=0, 
 			initAction=false, labelWidth,labelHeight=20, layout, gap, margin;
@@ -153,18 +153,20 @@ EZLists : EZGui{  // an abstract class
 	
 	initViews{}  // override this for your subclass views
 	
-	value{ ^value }
+	value{ ^widget.value}
+	value_{|val| widget.value=val}
 	
-	value_{|val| value=val; widget.value_(val)}
-	
-	valueAction_{|val| this.value_(val); this.doAction}
+	valueAction_{|val| widget.value_(val); this.doAction}
 		
-	doAction {widget.doAction}
+	doAction {widget.doAction;}
 
 	items_{arg assocArray; 
 		items=assocArray;
 		widget.items=assocArray.collect({|item| item.key});
-	}	
+	}
+	
+	item {^items.at(this.value).key}	
+	itemFunc {^items.at(this.value).value}	
 		
 	addItem{arg name, action;
 		this.insertItem(nil, name, action);
@@ -183,5 +185,13 @@ EZLists : EZGui{  // an abstract class
 	
 	}
 
+	replaceItemAt{ arg index, name, action;
+		var temp;
+		name = name ? items.at(index).key;
+		action = action ? items.at(index).value;
+		this.removeItemAt(index);
+		this.insertItem(index, name, action);
+
+	}
 
 }
