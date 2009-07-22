@@ -878,6 +878,40 @@ fire_callback:
                              leave_open, length, data, endpoint));
 }
 
+struct b_zero_callback:
+    public sc_async_callback
+{
+    b_zero_callback(int index, size_t msg_size, const void * data,
+                    udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint),
+        index_(index)
+    {}
+
+    void run(void)
+    {
+        instance->zero_buffer(index_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const int index_;
+};
+
+void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    osc::int32 index;
+    osc::Blob blob(0, 0);
+
+    args >> index;
+
+    if (!args.Eos())
+        args >> blob;
+
+    instance->add_system_callback(new b_zero_callback(index, blob.size, blob.data, endpoint));
+}
+
 
 } /* namespace */
 
@@ -960,6 +994,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_write(message, endpoint);
         break;
 
+    case cmd_b_zero:
+        handle_b_zero(message, endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -1040,6 +1078,11 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "write") == 0) {
         handle_b_write(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "zero") == 0) {
+        handle_b_zero(message, endpoint);
         return;
     }
 }
