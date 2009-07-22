@@ -181,6 +181,12 @@ public:
         buffers[index].zero();
     }
 
+    buffer_wrapper & get_buffer(int index)
+    {
+        check_buffer_in_use(index);
+        return buffers[index];
+    }
+
     template <typename float_type>
     void set_samples(int index, uint count, const size_t * indices, const float_type * values)
     {
