@@ -912,6 +912,62 @@ void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
     instance->add_system_callback(new b_zero_callback(index, blob.size, blob.data, endpoint));
 }
 
+void handle_b_set(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::int32 buffer_index;
+    args >> buffer_index;
+
+    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+
+    while (!args.Eos()) {
+        osc::int32 index;
+        float value;
+
+        args >> index >> value;
+        data[index] = value;
+    }
+}
+
+void handle_b_setn(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::int32 buffer_index;
+    args >> buffer_index;
+
+    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+
+    while (!args.Eos()) {
+        osc::int32 index;
+        osc::int32 samples;
+        args >> index >> samples;
+
+        for (int i = 0; i != samples; ++i) {
+            float value;
+            args >> value;
+            data[index] = value;
+        }
+    }
+}
+
+void handle_b_fill(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::int32 buffer_index;
+    args >> buffer_index;
+
+    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+
+    while (!args.Eos()) {
+        osc::int32 index;
+        osc::int32 samples;
+        float value;
+        args >> index >> samples >> value;
+
+        for (int i = 0; i != samples; ++i)
+            data[index] = value;
+    }
+}
 
 } /* namespace */
 
@@ -996,6 +1052,18 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_b_zero:
         handle_b_zero(message, endpoint);
+        break;
+
+    case cmd_b_set:
+        handle_b_set(message);
+        break;
+
+    case cmd_b_setn:
+        handle_b_setn(message);
+        break;
+
+    case cmd_b_fill:
+        handle_b_fill(message);
         break;
 
     default:
@@ -1083,6 +1151,21 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "zero") == 0) {
         handle_b_zero(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "set") == 0) {
+        handle_b_set(message);
+        return;
+    }
+
+    if (strcmp(address+3, "setn") == 0) {
+        handle_b_setn(message);
+        return;
+    }
+
+    if (strcmp(address+3, "fill") == 0) {
+        handle_b_fill(message);
         return;
     }
 }
