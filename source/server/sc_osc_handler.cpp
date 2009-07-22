@@ -781,6 +781,103 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
                                         length, data, endpoint));
 }
 
+struct b_write_callback:
+    public sc_async_callback
+{
+    b_write_callback(int index, const char * filename, const char * header_format,
+                     const char * sample_format, size_t start, size_t frames, bool leave_open,
+                     size_t msg_size, const void * data, udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint),
+        index_(index), filename_(copy_string(filename)), header_format_(copy_string(header_format)),
+        sample_format_(copy_string(sample_format)), leave_open_(leave_open),
+        start_(start), frames_(frames)
+    {}
+
+    ~b_write_callback(void)
+    {
+        deallocate(filename_);
+        deallocate(header_format_);
+        deallocate(sample_format_);
+    }
+
+    void run(void)
+    {
+        /** \todo for now we ignore the leave_open flag  */
+        instance->write_buffer(index_, filename_, header_format_, sample_format_, start_, frames_);
+        schedule_async_message();
+        send_done();
+    }
+
+    const int index_;
+    char * const filename_;
+    char * const header_format_;
+    char * const sample_format_;
+    const bool leave_open_;
+    const size_t start_;
+    const size_t frames_;
+};
+
+
+void fire_b_write_exception(void)
+{
+    throw std::runtime_error("wrong arguments for /b_allocReadChannel");
+}
+
+void handle_b_write(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+
+    /* required args */
+    osc::int32 index = arg->AsInt32(); arg++;
+    const char * filename = arg->AsString(); arg++;
+    const char * header_format = arg->AsString(); arg++;
+    const char * sample_format = arg->AsString(); arg++;
+
+    /* optional args */
+    osc::int32 frames = -1;
+    osc::int32 start = 0;
+    osc::int32 leave_open = 0;
+
+    size_t length = 0;
+    const void * data = 0;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_write_exception();
+        frames = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_write_exception();
+        start = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_write_exception();
+        leave_open = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsBlob())
+            fire_b_write_exception();
+        arg->AsBlobUnchecked(data, length);
+    }
+
+fire_callback:
+    instance->add_system_callback(
+        new b_write_callback(index, filename, header_format, sample_format, frames, start,
+                             leave_open, length, data, endpoint));
+}
+
 
 } /* namespace */
 
@@ -857,6 +954,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_b_allocReadChannel:
         handle_b_allocReadChannel(message, endpoint);
+        break;
+
+    case cmd_b_write:
+        handle_b_write(message, endpoint);
         break;
 
     default:
@@ -937,6 +1038,10 @@ void dispatch_buffer_commands(received_message const & message,
         return;
     }
 
+    if (strcmp(address+3, "write") == 0) {
+        handle_b_write(message, endpoint);
+        return;
+    }
 }
 
 } /* namespace */
