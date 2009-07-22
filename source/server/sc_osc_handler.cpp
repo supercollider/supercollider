@@ -969,6 +969,60 @@ void handle_b_fill(received_message const & msg)
     }
 }
 
+struct b_query_callback:
+    public sc_response_callback
+{
+    static const size_t elem_size = 3*sizeof(int) * sizeof(float);
+
+    b_query_callback(received_message const & msg,
+                     udp::endpoint const & endpoint):
+        sc_response_callback(endpoint)
+    {
+        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+        size_t arg_count = msg.ArgumentCount();
+
+        size_t size = elem_size * arg_count + 128; /* should be more than required */
+        data_ = (char*)allocate(size);
+
+        osc::OutboundPacketStream p(data_, size);
+        p << osc::BeginMessage("/b_info");
+
+        while (!args.Eos()) {
+            osc::int32 buffer_index;
+            args >> buffer_index;
+
+            buffer_wrapper & buffer = instance->get_buffer(buffer_index);
+
+            p << buffer_index
+              << int(buffer.frames_)
+              << int(buffer.channels_)
+              << float (buffer.sample_rate_);
+        }
+
+        p << osc::EndMessage;
+        msg_size_ = p.Size();
+    }
+
+    ~b_query_callback(void)
+    {
+        deallocate(data_);
+    }
+
+    void run(void)
+    {
+        instance->send_udp(data_, msg_size_, endpoint_);
+    }
+
+    char * data_;
+    size_t msg_size_;
+};
+
+void handle_b_query(received_message const & msg, udp::endpoint const & endpoint)
+{
+    instance->add_system_callback(new b_query_callback(msg, endpoint));
+}
+
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message,
@@ -1064,6 +1118,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_b_fill:
         handle_b_fill(message);
+        break;
+
+    case cmd_b_query:
+        handle_b_query(message, endpoint);
         break;
 
     default:
@@ -1166,6 +1224,11 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "fill") == 0) {
         handle_b_fill(message);
+        return;
+    }
+
+    if (strcmp(address+3, "query") == 0) {
+        handle_b_query(message, endpoint);
         return;
     }
 }
