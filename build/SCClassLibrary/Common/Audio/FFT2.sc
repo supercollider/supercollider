@@ -20,23 +20,23 @@ Convolution : UGen
 //fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message 
 Convolution2 : UGen
 {
- *ar { arg in, kernel, trigger, framesize=0,mul = 1.0, add = 0.0;
-  ^this.multiNew('audio', in, kernel, trigger, framesize).madd(mul, add);
- }
+	*ar { arg in, kernel, trigger = 0, framesize=2048,mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, kernel, trigger, framesize).madd(mul, add);
+	}
 }
 
 //fixed kernel convolver with linear crossfade
 Convolution2L : UGen
 {
- *ar { arg in, kernel, trigger, framesize=0, crossfade=1, mul = 1.0, add = 0.0;
-  ^this.multiNew('audio', in, kernel, trigger, framesize, crossfade).madd(mul, add);
- }
+	*ar { arg in, kernel, trigger = 0, framesize=2048, crossfade=1, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, kernel, trigger, framesize, crossfade).madd(mul, add);
+	}
 }
 
 //fixed kernel stereo convolver with linear crossfade
 StereoConvolution2L : MultiOutUGen
 {
-	*ar { arg in, kernelL, kernelR, trigger, framesize=0, crossfade=1, mul = 1.0, add = 0.0;
+	*ar { arg in, kernelL, kernelR, trigger=0, framesize=2048, crossfade=1, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, kernelL, kernelR, trigger, framesize, crossfade).madd(mul, add);
 	}
 	init { arg ... theInputs;
@@ -52,12 +52,12 @@ StereoConvolution2L : MultiOutUGen
 //time based convolution by nescivi
 Convolution3 : UGen
 {
- *ar { arg in, kernel, trigger=0, framesize=0, mul = 1.0, add = 0.0;
-  ^this.multiNew('audio', in, kernel, trigger, framesize).madd(mul, add);
- }
- *kr { arg in, kernel, trigger=0, framesize=0, mul = 1.0, add = 0.0;
-  ^this.multiNew('control', in, kernel, trigger, framesize).madd(mul, add);
- }
+	*ar { arg in, kernel, trigger=0, framesize=2048, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, kernel, trigger, framesize).madd(mul, add);
+	}
+	*kr { arg in, kernel, trigger=0, framesize=2048, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, kernel, trigger, framesize).madd(mul, add);
+	}
 }
 
 
