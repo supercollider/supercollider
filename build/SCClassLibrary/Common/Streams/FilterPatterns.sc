@@ -350,8 +350,7 @@ Pfin : FilterPattern {
 	embedInStream { arg event, cleanup;
 		var inevent;
 		var stream = pattern.asStream;
-		cleanup = cleanup ?? { cleanup = EventStreamCleanup.new };
-		
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 		count.value.do({
 			inevent = stream.next(event) ?? { ^event };
 			cleanup.update(inevent);			
@@ -538,12 +537,13 @@ Pbindf : FilterPattern {
 				var streamout = stream.next(inevent);
 				
 				if (streamout.isNil) { ^event };
-				if (name.isSequenceableCollection) {						if (name.size > streamout.size) {  
+				if (name.isSequenceableCollection) {
+				if (name.size > streamout.size) {
 						("the pattern is not providing enough values to assign to the key set:" + name).warn;
 						^inevent 
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i]);
+						inevent.put(key, streamout[i]);
 					};
 				}{
 					inevent.put(name, streamout);
