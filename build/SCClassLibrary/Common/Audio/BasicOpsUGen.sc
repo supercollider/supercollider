@@ -16,6 +16,9 @@ BasicOpUGen : UGen {
 	operator_ { arg op;
 		operator = op;
 		specialIndex = operator.specialIndex;
+		if(specialIndex < 0) {
+			Error("Operator '%' applied to a UGen is not supported in scsynth".format(operator)).throw
+		}
 	}
 	
 	argNamesInputsOffset { ^2 }
