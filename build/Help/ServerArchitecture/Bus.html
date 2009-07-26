@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.46">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -13,16 +13,15 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2b7000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
-span.s3 {color: #0000bf}
-span.s4 {color: #000000}
-span.s5 {color: #007300}
-span.s6 {color: #606060}
+span.s2 {color: #0016bd}
+span.s3 {color: #000000}
+span.s4 {color: #2b7000}
+span.s5 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -33,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1">Note that using the <b>Bus</b> class to allocate a multichannel bus does not 'create' a multichannel bus, but rather simply reserves a series of adjacent bus indices with the bus' <a href="Server.html"><span class="s2">Server</span></a> object's bus allocators. abus.index simply returns the first of those indices. When using a Bus with an <a href="../UGens/InOut/In.html"><span class="s2">In</span></a> or <a href="../UGens/InOut/Out.html"><span class="s2">Out</span></a> ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.</p>
 <p class="p3"><br></p>
-<p class="p1">Bus objects should not be created or modified within a <a href="SynthDef.html"><span class="s3">SynthDef</span></a>.</p>
+<p class="p1">Bus objects should not be created or modified within a <a href="SynthDef.html"><span class="s2">SynthDef</span></a>.</p>
 <p class="p3"><br></p>
 <p class="p1"><b>Note:</b> The lowest <i>n</i> bus indices are reserved for hardware output and input, where <i>n</i> = server.options.numOutputBusChannels + server.options.numInputBusChannels.</p>
 <p class="p3"><br></p>
@@ -81,9 +80,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1"><b>server</b> - Get the Bus' server object.</p>
 <p class="p3"><br></p>
-<p class="p1"><b>asMap</b> - Returns a symbol consisting of the letter 'c' followed by the bus's index. This may be used when setting a synth node's control inputs to maps the input to the control bus. See the <a href="Node.html"><span class="s2">Node</span></a> help file for more information on mapping controls to buses.<span class="Apple-converted-space"> </span></p>
-<p class="p3"><br></p>
-<p class="p1"><b>Note:</b> It is impossible to map a synth control to an audio rate bus. Calling this method on an audio bus will throw an error.</p>
+<p class="p1"><b>asMap</b> - Returns a symbol consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index. This may be used when setting a synth node's control inputs to map the input to the control bus. See the <a href="Node.html"><span class="s2">Node</span></a> help file for more information on mapping controls to buses.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
@@ -91,12 +88,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">b = <span class="s2">Bus</span>.control(s, 1).set(0.01);</p>
 <p class="p6">)</p>
 <p class="p6">(</p>
-<p class="p7">SynthDef<span class="s4">(</span><span class="s5">\rlpf</span><span class="s4">, { </span>|ffreq, rq|</p>
+<p class="p7">SynthDef<span class="s3">(</span><span class="s4">\rlpf</span><span class="s3">, { </span>|ffreq, rq|</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, <span class="s2">RLPF</span>.ar(<span class="s2">WhiteNoise</span>.ar(0.2), ffreq, rq))</p>
-<p class="p6">}).play(s, [<span class="s5">\ffreq</span>, a.asMap, <span class="s5">\rq</span>, b.asMap]);</p>
+<p class="p6">}).play(s, [<span class="s4">\ffreq</span>, a.asMap, <span class="s4">\rq</span>, b.asMap]);</p>
 <p class="p6">)</p>
 <p class="p3"><br></p>
-<p class="p1"><b>subBus(offset,numChannels) </b>-<b> </b>Get a new Bus that is a subset of this bus (see *newFrom).</p>
+<p class="p1"><b>subBus(offset,numChannels) </b>-<b> </b>Get a new Bus that is a subset of this bus (see <b>*newFrom</b>).</p>
 <p class="p3"><br></p>
 <p class="p4"><b>Asynchronous Control Bus Methods</b></p>
 <p class="p3"><br></p>
@@ -130,7 +127,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span></p>
 <p class="p6">(</p>
 <p class="p8">// something to play with</p>
-<p class="p6"><span class="s2">SynthDef</span>(<span class="s5">\help_Bus</span>, { <span class="s2">arg</span> out=0,ffreq=100;</p>
+<p class="p6"><span class="s2">SynthDef</span>(<span class="s4">\help_Bus</span>, { <span class="s2">arg</span> out=0,ffreq=100;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s2">var</span> x;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = <span class="s2">RLPF</span>.ar(<span class="s2">LFPulse</span>.ar(<span class="s2">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1)</p>
@@ -140,7 +137,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p9"><span class="s4">x = </span><span class="s2">Synth</span><span class="s4">(</span>\help_Bus<span class="s4">);</span></p>
+<p class="p9"><span class="s3">x = </span><span class="s2">Synth</span><span class="s3">(</span>\help_Bus<span class="s3">);</span></p>
 <p class="p2"><br></p>
 <p class="p8">// get a bus</p>
 <p class="p6">b = <span class="s2">Bus</span>.control(s);</p>
@@ -162,14 +159,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8">// multi-channel:<span class="Apple-converted-space">  </span>b.set(300,350);</p>
 <p class="p8">// Get the current value. This is asynchronous so you can't rely on it happening immediately.</p>
 <p class="p6">(</p>
-<p class="p10"><span class="s4">a = </span>"waiting"<span class="s4">;</span></p>
-<p class="p6">b.get({<span class="s2">arg</span> value; a = value; (<span class="s6">"after the server responds a is set to:"</span> + a).postln;});</p>
-<p class="p6">(<span class="s6">"a is now:"</span> + a).postln;</p>
+<p class="p10"><span class="s3">a = </span>"waiting"<span class="s3">;</span></p>
+<p class="p6">b.get({<span class="s2">arg</span> value; a = value; (<span class="s5">"after the server responds a is set to:"</span> + a).postln;});</p>
+<p class="p6">(<span class="s5">"a is now:"</span> + a).postln;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
 <p class="p6">x.free;</p>
 <p class="p2"><br></p>
-<p class="p8"><span class="s4">b.free; </span>// release it so it may be reallocated!</p>
+<p class="p8"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 </body>
