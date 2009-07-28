@@ -264,6 +264,9 @@ void sc_GetUserHomeDirectory(char *str, int size)
 	char *home = getenv("HOME");	
 	if(home!=NULL){
 		strncpy(str, home, size);
+	}else{
+		// cwd is not the user home directory; but this is better than leaving mem uninitialised.
+		strcpy(str, "./");
 	}
 #else
 	win32_GetHomeFolder(str,size);
