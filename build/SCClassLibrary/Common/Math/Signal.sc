@@ -265,7 +265,7 @@ Signal[float] : FloatArray {
 	thresh { arg aNumber; _Thresh; ^aNumber.performBinaryOpOnSignal('thresh', this) }
 	amclip { arg aNumber; _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
 	scaleneg { arg aNumber; _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
-	clip2 { arg aNumber; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
+	clip2 { arg aNumber=1; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
 	fold2 { arg aNumber; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
 	wrap2 { arg aNumber; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
 	excess { arg aNumber; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
