@@ -22,6 +22,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">"PV_ChainUGen" is an <i>abstract class</i> - in other words, a class that you do not use directly. Instead, use one of its subclasses. It represents <b>phase-vocoder</b> <a href="UGen.html"><span class="s2">UGen</span></a>s - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by <a href="FFT/FFT.html"><span class="s2">FFT</span></a>.</p>
 <p class="p2"><br></p>
+<p class="p3">(Strictly, this class encompasses all units whose <em>output</em> is an FFT chain. This is why FFT is in this group but IFFT is not - the IFFT unit outputs ordinary time-domain audio.)</p>
+<p class="p2"><br></p>
 <p class="p3">For more info on using these units, see <a href="FFT/FFT Overview.html"><span class="s2">FFT Overview</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p3">To see all classes which derive from the PV_ChainUGen class, run this line:</p>
