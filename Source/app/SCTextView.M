@@ -20,6 +20,7 @@
 
 #import "SCTextView.h"
 #import "MyDocument.h"
+#import "SC_DirUtils.h"
 #include <pthread.h>
 
 extern bool compiledOK;
@@ -540,6 +541,71 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
         [self setSelectedRange: newSelectedRange];
     }
 }
+
+- (NSArray*)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger*)index
+{
+	if([self loadCompletionDict]){
+		NSString* queryStr = [(NSAttributedString *)[self attributedSubstringFromRange:charRange] string];
+		// create an NSArray containing all object names which match the query
+		NSMutableArray* completions;
+		completions = [[NSMutableArray alloc] init];
+		NSEnumerator * enumerator = [completionDict objectEnumerator];
+		NSString* element;
+		while(element = (NSString*)[enumerator nextObject]){
+			//post("%s hasPrefix: %s\n", element, theStr);
+			if([element hasPrefix: queryStr]){
+				[completions addObject: element];
+			}
+		}
+		//post("completionDict filtered from %u to %u entries\n", [completionDict count], [completions count]);
+		// Also append natural-language possibilities:
+		[completions addObjectsFromArray: [super completionsForPartialWordRange: charRange indexOfSelectedItem: index]];
+		return completions;
+	}{
+		// no dict file, or failure - pass through to standard non-SC suggestions.
+		return [super completionsForPartialWordRange: charRange indexOfSelectedItem: index];
+	}
+}
+
+- (bool) loadCompletionDict
+{
+	// if nsarray looks already ready, then return true
+	if(completionDict != NULL){
+		return true;
+	}
+	
+	char* fpath = (char*)malloc(PATH_MAX);
+	if(fpath==NULL) return false;
+	
+	sc_GetUserAppSupportDirectory(fpath, PATH_MAX);
+	strncat(fpath, "/sclang_completion_dict", PATH_MAX);
+	
+	// if file not exists or not openable, return false
+	FILE* fp = fopen(fpath, "r");
+	if(fp==NULL){
+		free(fpath);
+		//post("couldn't open dict file :(\n");
+		return false;
+	}
+	
+	// each line in the file becomes an entry in our array
+	char* line = (char*)malloc(100);
+	completionDict = [[NSMutableArray alloc] init];
+	while( fgets(line, 100, fp) != NULL){
+		if((line[0] != '\0') && (line[strlen(line) - 1] == '\n')){
+			line[strlen(line) - 1] = '\0'; // rm trailing newline
+		}
+		//post(line);
+		[completionDict addObject: [NSString stringWithCString: line encoding: [NSString defaultCStringEncoding]]];
+	}
+	
+	fclose(fp);
+	free(fpath);
+	free(line);
+	//post("completionDict contains %u entries\n", [completionDict count]);
+	return true;
+}
+
 
 - (IBAction)openCode:(id)sender
 {
