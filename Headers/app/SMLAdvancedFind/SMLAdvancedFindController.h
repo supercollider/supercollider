@@ -23,14 +23,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
 #import <ApplicationServices/ApplicationServices.h>
 #import "SCTextView.h"
 
-#if __LP64__
-typedef int NSInteger;
-typedef unsigned int NSUInteger;
-#else
-typedef long NSInteger;
-typedef unsigned long NSUInteger;
-#endif 
-
 typedef enum {
 	SMLCurrentDocumentScope = 0,
 	SMLCurrentProjectScope,

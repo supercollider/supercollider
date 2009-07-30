@@ -20,12 +20,21 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if __LP64__
+typedef long NSInteger;
+typedef unsigned long NSUInteger;
+#else
+typedef int NSInteger;
+typedef unsigned int NSUInteger;
+#endif 
+
 @interface SCTextView : NSTextView
 {
 	NSString *langClassToCall;
 	int keyDownActionIndex, keyUpActionIndex;
 	int objectKeyDownActionIndex, objectKeyUpActionIndex;
 	BOOL mAcceptsFirstResponder;
+	NSMutableArray *completionDict;
 }
 - (void) setAcceptsFirstResponder: (BOOL) flag;
 - (void) keyDown: (NSEvent*) event;
@@ -45,6 +54,10 @@
 - (IBAction)methodTemplates: (id)sender;
 - (IBAction)methodReferences: (id)sender;
 - (void) balanceParens: (id) sender;
+- (NSArray*)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger*)index;
+
+// If completions textfile exists, ensures it's loaded. Returns false if fail or textfile not found
+- (bool) loadCompletionDict;
 @end
 
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
