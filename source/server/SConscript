@@ -24,6 +24,7 @@ sources = Split("""node_graph.cpp
                    dsp_context.cpp
                    memory_pool.cpp
                    server.cpp
+                   sc_synth_prototype.cpp
                    ../utilities/thread.cpp
                    """)
 
