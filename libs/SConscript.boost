@@ -1,0 +1,103 @@
+# -*- coding: utf-8 -*-
+# $Id$
+#
+# SCons build system
+# Copyright (C) 2007 Tim Blechmann
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+# $Revision$
+# $LastChangedRevision$
+# $LastChangedDate$
+# $LastChangedBy$
+
+Import("env env_specific")
+
+def independent():
+    opt = Options(File('#/options.cache.boost').abspath)
+    opt.AddOptions(
+        BoolOption("system_boost", "use boost from system libraries", False),
+        BoolOption("boost_assert", "enable BOOST_ASSERT", False),
+        )
+
+    opt.Update(env)
+
+    opt.Save(File('#/options.cache.boost').abspath,env)
+    Help(opt.GenerateHelpText(env))
+
+sources = list()
+def specific():
+    if not env['boost_assert'] and env['debug']:
+        env.Append(CPPDEFINES="BOOST_DISABLE_ASSERTS")
+
+
+    if env['system_boost']:
+        conf = Configure(env)
+
+        check = True
+
+        check &= conf.CheckLib('boost_date_time-mt', language="C++") or conf.CheckLib('boost_date_time', language="C++")
+        check &= conf.CheckLib('boost_thread-mt', language="C++") or conf.CheckLib('boost_thread', language="C++")
+        check &= conf.CheckLib('boost_filesystem-mt', language="C++") or conf.CheckLib('boost_filesystem', language="C++")
+        check &= conf.CheckLib('boost_python-mt', language="C++") or conf.CheckLib('boost_python', language="C++")
+        check &= conf.CheckLib('boost_regex-mt', language="C++") or conf.CheckLib('boost_regex', language="C++")
+        check &= conf.CheckLib('boost_program_options-mt', language="C++") or conf.CheckLib('boost_program_options', language="C++")
+        check &= conf.CheckHeader('boost/spirit.hpp', language="C++")
+        check &= conf.CheckHeader('boost/serialization/serialization.hpp', language="C++")
+        check &= conf.CheckHeader('boost/foreach.hpp', language="C++")
+
+        if not check:
+            print "checking for boost libraries failed!"
+            Exit(1)
+
+        conf.Finish()
+
+    else:
+        env.Append(CPPPATH=Dir("#/libs/boost"))
+
+        def collect_sources():
+            import os
+            from os.path import join
+            folders = [Dir(join("#/libs/boost/libs", x, "src"))
+                       for x in Split("date_time filesystem program_options system thread")]
+
+            from fnmatch import fnmatch
+
+            sources = list()
+            libs_root = Dir("#/libs/")
+            for folder in folders:
+                for root, dirs, files in os.walk(folder.abspath):
+                    new_root = root.replace(libs_root.abspath+"/", "")
+                    for f in files:
+                        if fnmatch(f, "*.cpp"):
+                            sources.append(File(os.path.join(new_root, f)))
+
+                    rem = filter(lambda x: x in [".svn", "detail", "mac", "win32"], dirs)
+                    for r in rem:
+                        dirs.remove(r)
+
+            return sources
+
+        sources.append(collect_sources())
+
+    env.Append(CPPPATH=Dir("#/libs/property_tree"))
+
+    Return("sources")
+
+if env_specific:
+    specific()
+else:
+    independent()
