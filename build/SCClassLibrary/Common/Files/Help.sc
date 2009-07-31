@@ -106,6 +106,21 @@ Help {
 				{
 					this.writeTextArchive;
 				}.defer(4.312);
+				{
+					var sclang_completion_dict, dictfile;
+					// Also piggyback on the tree struct to write out an auto-completion dictionary:
+					sclang_completion_dict = SortedList.new;
+					this.do{|key, value| 
+						if("0123456789".includes(key[0]).not and:{key.includes($ ).not}){
+							sclang_completion_dict.add(key);
+						}
+					};
+					dictfile = File(Platform.userAppSupportDir +/+ "sclang_completion_dict", "w");
+					if(dictfile.isOpen){
+						sclang_completion_dict.do{|entry| dictfile.write(entry ++ Char.nl)};
+						dictfile.close;
+					};
+				}.defer(7.1101);
 			};
 		}.bench(false)).postln});
 		^tree;
