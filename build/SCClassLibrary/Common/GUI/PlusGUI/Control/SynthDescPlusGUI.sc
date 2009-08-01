@@ -27,9 +27,7 @@
 		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
 		w.view.decorator = FlowLayout(w.view.bounds);
 		
-		if( gui.id === \cocoa, {
-			w.view.background = Color.rand; // gradients are currently not swing compatible
-		});
+		w.view.background = Color.rand(0.5, 1.0);
 		
 		// add a button to start and stop the sound.
 		startButton = gui.button.new(w, 75 @ 24);
@@ -54,20 +52,27 @@
 		
 		
 		startButton.action = {|view|
-				if (view.value == 1) {
-					// start sound
-					if(id.isNil) { id = s.nextNodeID };
-					s.sendBundle(s.latency, ["/s_new", name, id, 0, 1] ++ getSliderValues.value);
-				};
-				if (view.value == 0) {
-					if (this.hasGate) {
-						// set gate to zero to cause envelope to release
-						s.sendMsg("/n_set", id, "gate", 0);
-					}{
-						s.sendMsg("/n_free", id);
+			if (view.value == 1) {
+				// start sound
+				if(id.isNil) { id = s.nextNodeID };
+				s.sendBundle(s.latency, ["/s_new", name, id, 0, 1] ++ getSliderValues.value);
+				OSCpathResponder(s.addr, ['/n_end', id], { |time, resp, msg|
+						// if the synth has a long release, a new node might be playing
+					if(id.isNil or: { id == msg[1] }) {
+						defer { startButton.value = 0 };
 					};
-					id = nil;
+					resp.remove;
+				})
+			};
+			if (view.value == 0) {
+				if (this.hasGate) {
+					// set gate to zero to cause envelope to release
+					s.sendMsg("/n_set", id, "gate", 0);
+				}{
+					s.sendMsg("/n_free", id);
 				};
+				id = nil;
+			};
 		};
 		
 		// create controls for all parameters
