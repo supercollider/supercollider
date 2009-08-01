@@ -34,6 +34,7 @@
 #include "GC.h"
 #include "VMGlobals.h"
 #include "UserPanel.h"
+#include "SC_DirUtils.h"   // for gIdeName
 
 #include <pthread.h>
 
@@ -85,6 +86,7 @@ static id sharedSCVM = nil;
 
 - (void)start
 {
+	gIdeName = "scapp"; // declare that code specific to SC.app IDE will be compiled in
 	deferredTaskTimer = 
 			[NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:
 				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        

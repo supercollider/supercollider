@@ -33,6 +33,11 @@ Platform
 
 	userExtensionDir { _Platform_userExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
+	
+	// The "ideName" is for ide-dependent compilation. 
+	// From SC.app, the value is "scapp" meaning "scide_scapp" folders will be compiled and other "scide_*" ignored.
+	ideName { _Platform_ideName }
+	*ideName { ^thisProcess.platform.ideName }
 
 	platformDir { ^this.name.asString }
 	*platformDir { ^thisProcess.platform.platformDir }
