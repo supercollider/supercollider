@@ -28,7 +28,7 @@ rundir = "/tmp/" unless (rundir = ENV["SCLANG_RUNDIR"])
 pid_loc = "/tmp/sclangpipe_app-pid" unless (pid_loc = ENV["SCVIM_PIPE_PID_LOC"])
 app = `which sclang`.chomp
 
-sclangargs = ""
+sclangargs = "-i scvim"  # this arg must always be passed, so that sclang knows to load classes from folders named "scide_scvim"
 
 opts = OptionParser.new do |opts|
   opts.on("-h", "--help", "Display this help") do
