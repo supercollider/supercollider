@@ -191,6 +191,19 @@ public:
 	bool SampleRateChanged(double sampleRate);
 	bool GraphOrderChanged();
 	bool XRun();
+
+private:
+	void ConnectPorts(const char * src, const char * dst)
+	{
+		int err = jack_connect(mClient, src, dst);
+		scprintf("%s: %s %s to %s\n",
+				 kJackDriverIdent,
+				 err ? "couldn't connect " : "connected ",
+				 src, dst);
+	}
+
+	void ConnectClientInputs(const char * pattern);
+	void ConnectClientOutputs(const char * pattern);
 };
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
@@ -356,6 +369,52 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	return true;
 }
 
+void SC_JackDriver::ConnectClientInputs(const char * pattern)
+{
+    const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsOutput);
+    jack_port_t ** ourports = mInputList->mPorts;
+
+    if (!ports)
+        return;
+
+    int i = 0;
+    while (ports[i]) {
+        if (i == mInputList->mSize)
+            break;
+
+        const char * src = ports[i];
+        const char * dst = jack_port_name(ourports[i]);
+
+        ConnectPorts(src, dst);
+        ++i;
+    }
+
+    free(ports);
+}
+
+void SC_JackDriver::ConnectClientOutputs(const char * pattern)
+{
+    const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsInput);
+    jack_port_t ** ourports = mOutputList->mPorts;
+
+    if (!ports)
+        return;
+
+    int i = 0;
+    while (ports[i]) {
+        if (i == mOutputList->mSize)
+            break;
+
+        const char * src = jack_port_name(ourports[i]);
+        const char * dst = ports[i];
+
+        ConnectPorts(src, dst);
+        ++i;
+    }
+
+    free(ports);
+}
+
 bool SC_JackDriver::DriverStart()
 {
 	if (!mClient) return false;
@@ -377,15 +436,16 @@ bool SC_JackDriver::DriverStart()
 	ports = mInputList->mPorts;
 	numPorts = mInputList->mSize;
 	for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
-		const char *thisPortName = jack_port_name(ports[i]);
 		const char *thatPortName = sp.NextToken();
-		if (thisPortName && thatPortName) {
-			err = jack_connect(mClient, thatPortName, thisPortName);
-			scprintf("%s: %s %s to %s\n",
-					 kJackDriverIdent,
-					 err ? "couldn't connect " : "connected ",
-					 thatPortName, thisPortName);
+
+		if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == 0)) {
+			ConnectClientInputs(thatPortName);
+			break;
 		}
+
+		const char *thisPortName = jack_port_name(ports[i]);
+		if (thisPortName && thatPortName)
+			ConnectPorts(thatPortName, thisPortName);
 	}
 
 	// connect default outputs
@@ -393,15 +453,16 @@ bool SC_JackDriver::DriverStart()
 	ports = mOutputList->mPorts;
 	numPorts = mOutputList->mSize;
 	for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
-		const char *thisPortName = jack_port_name(ports[i]);
 		const char *thatPortName = sp.NextToken();
-		if (thisPortName && thatPortName) {
-			err = jack_connect(mClient, thisPortName, thatPortName);
-			scprintf("%s: %s %s to %s\n",
-					 kJackDriverIdent,
-					 err ? "couldn't connect " : "connected ",
-					 thisPortName, thatPortName);
+
+		if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == 0)) {
+			ConnectClientOutputs(thatPortName);
+			break;
 		}
+
+		const char *thisPortName = jack_port_name(ports[i]);
+		if (thisPortName && thatPortName)
+			ConnectPorts(thisPortName, thatPortName);
 	}
 
 	return true;
