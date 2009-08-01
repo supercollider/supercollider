@@ -107,23 +107,27 @@ NamedControl {
 	
 	*new { arg name, values, rate, lags, fixedLag = false;
 		var res;
-		values = (values ? [0.0]).asArray;
+		
 		
 		this.initDict;
 		res = currentControls.at(name);
 		
+		
 		if(res.isNil) {
+			values = (values ? 0.0).asArray;
 			res = super.newCopyArgs(name, values, lags, rate, fixedLag).init;
 			currentControls.put(name, res);
 		} {
+			values = (values ? res.values).asArray;
 			if(res.values != values) { 
 				Error("NamedControl: cannot have more than one set of "
 						"default values in the same control.").throw;
 			};
-			if(res.rate != rate) {
+			if(rate.notNil and: { res.rate != rate }) {
 				Error("NamedControl: cannot have  more than one set of "
 						"rates in the same control.").throw;
-			}
+			};
+			
 		};
 		
 		if(res.fixedLag and: lags.notNil) {
@@ -174,7 +178,7 @@ NamedControl {
 			};
 		};
 		
-		control = control.asArray.reshapeLike(values);
+		control = control.asArray.reshapeLike(values).unbubble;
 	}
 	
 	*initDict {
