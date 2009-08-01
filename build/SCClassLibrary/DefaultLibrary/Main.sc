@@ -26,12 +26,24 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		this.platform.startup;
 		StartUp.run;
-		(
-			osx: "Welcome to SuperCollider, type cmd-d for help",
-			linux: "Welcome to SuperCollider, for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit)",
-		 	windows: "Welcome to SuperCollider, press F1 for help",
-			iphone: "Welcome to SuperCollider"
-		 ).at(platform.name).postln;
+		
+		("Welcome to SuperCollider"
+			++ (Platform.ideName.switch(
+				"scvim", {", type :SChelp for help"},
+				"scel",  {", type ctrl-c ctrl-h for help"},
+				"sced",  {", type ctrl-U for help"},
+				"scapp", {", type cmd-d for help"}
+			) ?? {
+				(
+					osx: ", type cmd-d for help",
+					linux: ", for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit)",
+				 	windows: ", press F1 for help",
+					iphone: ""
+				 ).at(platform.name);
+	
+			})
+		).postln;
+
 	}
 	
 	shutdown { // at recompile, quit
