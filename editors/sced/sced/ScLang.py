@@ -19,7 +19,7 @@ class ScLang:
             folder = os.getcwd()
 
         self.__sclang = subprocess.Popen(["sclang",
-                "-d", folder],
+                "-i", "sced", "-d", folder],
                 bufsize=0,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
