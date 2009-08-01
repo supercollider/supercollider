@@ -18,16 +18,22 @@ OSXPlatform : UnixPlatform
 	}
 	
 	startup {
-		Document.implementationClass.startup;
-		// make server window
-		Server.internal.makeWindow;
-		Server.local.makeWindow;
+		if(Platform.ideName == "scapp"){
+			Document.implementationClass.startup;
+			// make server window
+			Server.internal.makeWindow;
+			Server.local.makeWindow;
+		};
 		this.loadStartupFiles;
-		Help.addToMenu;
+		if(Platform.ideName == "scapp"){
+			Help.addToMenu;
+		};
 	}
 	shutdown {
 		HIDDeviceService.releaseDeviceList;
-		CocoaMenuItem.clearCustomItems;
+		if(Platform.ideName == "scapp"){
+			CocoaMenuItem.clearCustomItems;
+		};
 	}
 	
 		// only osx uses Cocoa guis
