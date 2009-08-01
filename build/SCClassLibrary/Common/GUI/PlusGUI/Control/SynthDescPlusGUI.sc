@@ -42,8 +42,11 @@
 			envir = ();
 			usefulControls.do {|controlName, i|
 				var ctlname;
-				ctlname = controlName.name.asSymbol;
-				envir.put(ctlname, sliders[i].value);
+				ctlname = controlName.name;
+				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
+					ctlname = ctlname[2..];
+				};
+				envir.put(ctlname.asSymbol, sliders[i].value);
 			};
 			envir.use {
 				msgFunc.valueEnvir
