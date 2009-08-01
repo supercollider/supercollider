@@ -62,7 +62,8 @@
 						defer { startButton.value = 0 };
 					};
 					resp.remove;
-				})
+					id = nil;
+				}).add;
 			};
 			if (view.value == 0) {
 				if (this.hasGate) {
