@@ -290,7 +290,7 @@ void SpecCentroid_next(SpecCentroid *unit, int inNumSamples)
 		denom += sc_abs(p->bin[i].mag);
 	}
 	
-	ZOUT0(0) = unit->outval = (float) (bintofreq * num/denom);
+	ZOUT0(0) = unit->outval = denom == 0.0 ? 0.f : (float) (bintofreq * num/denom);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
