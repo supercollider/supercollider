@@ -10,6 +10,7 @@ Headlines:
 * 2009-07-21 EnvirGui added, a gui for livecoding/editing environments - adc
 * 2009-07-24 Server.plotTree method for visualising the groups and synths on the server - sw
 * 2009-07-31 mac osx text-completion feature now includes sclang objects - ds
+* 2009-08-01 sclang now has a flag (Platform.ideName) for which IDE is in use (scapp, scvim, scel, sced, jsceclipse...) so that the same class-library can be used with different IDEs, enabling IDE-specific code as necessary - ds
 
 Bugfixes:
 ---------

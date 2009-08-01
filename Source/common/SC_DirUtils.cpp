@@ -53,6 +53,8 @@
 #include <curl/curl.h>
 #endif
 
+char *gIdeName="none";
+
 // Add a component to a path.
 
 void sc_AppendToPath(char *path, const char *component)
@@ -134,15 +136,15 @@ bool sc_IsSymlink(const char* path)
 bool sc_IsNonHostPlatformDir(const char *name)
 {
 #if defined(SC_IPHONE)
-	char a[] = "linux", b[] = "windows", c[]="osx";	
+	const char a[] = "linux", b[] = "windows", c[]="osx";	
 #elif defined(SC_DARWIN)
-	char a[] = "linux", b[] = "windows", c[]="iphone";
+	const char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(SC_LINUX)
-	char a[] = "osx", b[] = "windows", c[]="iphone";
+	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(SC_FREEBSD)
-	char a[] = "osx", b[] = "windows", c[]="iphone";
+	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(SC_WIN32)
-	char a[] = "osx", b[] = "linux", c[]="iphone";
+	const char a[] = "osx", b[] = "linux", c[]="iphone";
 #endif
 	return ((strcmp(name, a) == 0) ||
 			(strcmp(name, b) == 0) ||
@@ -163,9 +165,10 @@ bool sc_SkipDirectory(const char *name)
 {
 	return ((strcasecmp(name, "help") == 0) ||
 			(strcasecmp(name, "ignore") == 0) ||
-			(strcasecmp(name, ".svn") == 0) ||
-			(strcasecmp(name, ".git") == 0) ||
-			(strcasecmp(name, "_darcs") == 0) ||
+			(strcmp(name, ".svn") == 0) ||
+			(strcmp(name, ".git") == 0) ||
+			(strcmp(name, "_darcs") == 0) ||
+			((strncmp(name, "scide_", 6) == 0) && (strcmp(name+6, gIdeName) != 0)) ||
 			sc_IsNonHostPlatformDir(name));
 }
 

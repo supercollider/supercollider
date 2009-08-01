@@ -60,6 +60,8 @@ bool sc_SkipDirectory(const char *name);
 
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
 
+extern char *gIdeName; // string used for conditional compilation according to which IDE is in use this session.
+// for example, if the value is "scapp" then folders "scide_scapp" will be included, all other "scide_*" excluded.
 
 // Support for Bundles
 

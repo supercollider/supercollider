@@ -46,6 +46,7 @@
 #include "PyrPrimitive.h"
 #include "PyrSlot.h"
 #include "VMGlobals.h"
+#include "SC_DirUtils.h"   // for gIdeName
 
 static FILE* gPostDest = stdout;
 
@@ -100,16 +101,18 @@ void SC_TerminalClient::printUsage()
 			"   -m <memory-space>[km]          Set initial heap size (default %s)\n"
 			"   -r                             Call Main.run on startup\n"
 			"   -s                             Call Main.stop on shutdown\n"
-			"   -u <network-port-number>       Set UDP listening port (default %d)\n",
+			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
+			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n",
 			memGrowBuf,
 			memSpaceBuf,
-			opt.mPort
+			opt.mPort,
+			gIdeName
 		);
 }
 
 bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
-	const char* optstr = ":d:Dg:hl:m:rsu:";
+	const char* optstr = ":d:Dg:hl:m:rsu:i:";
 	int c;
 
 	// inhibit error reporting
@@ -157,6 +160,9 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				break;
 			case ':':
 				goto optArgExpected;
+				break;
+			case 'i':
+				gIdeName = optarg;
 				break;
 			default:
 				::post("%s: unknown error (getopt)\n", getName());
