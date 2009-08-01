@@ -1800,16 +1800,20 @@ void Peak_next_aa_k(Peak *unit, int inNumSamples)
 	float *trig = ZIN(1);
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
+	float out_level = level;
 
 	inNumSamples = INBUFLENGTH(0);
 	LOOP(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
-		if (prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
+		if (prevtrig <= 0.f && curtrig > 0.f) {
+			out_level = level;
+			level = inlevel;
+		}
 		prevtrig = curtrig;
 	);
-	ZXP(out) = level;
+	ZXP(out) = out_level;
 	unit->m_prevtrig = prevtrig;
 	unit->mLevel = level;
 }
