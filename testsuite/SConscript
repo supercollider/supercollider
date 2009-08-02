@@ -93,7 +93,8 @@ unit_test_sources = ["mutex_test.cpp",
                      "median_noise_tests.cpp",
                      "perf_counter_test.cpp",
                      "buffer_manager_test.cpp",
-                     "sized_array_test.cpp"
+                     "sized_array_test.cpp",
+                     "control_bus_test.cpp",
                      ]
 
 
