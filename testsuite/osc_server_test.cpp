@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( osc_server_test_2 )
     server.remove_responder("/foo", resp.get());
 }
 
-BOOST_AUTO_TEST_CASE( osc_sever_test_3 )
+BOOST_AUTO_TEST_CASE( osc_server_test_3 )
 {
     std::auto_ptr<osc_test_responder> resp (new osc_test_responder());
     {
