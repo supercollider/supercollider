@@ -25,6 +25,7 @@ extern "C"
 }
 
 #include <cstdlib>
+#include <cstring>              /* for std::memset */
 
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>
