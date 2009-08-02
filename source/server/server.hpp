@@ -22,6 +22,7 @@
 #include <boost/thread.hpp>
 
 #include "buffer_manager.hpp"
+#include "control_bus_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "sc_osc_handler.hpp"
