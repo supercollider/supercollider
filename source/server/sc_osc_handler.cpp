@@ -1065,6 +1065,123 @@ void handle_c_fill(received_message const & msg)
     }
 }
 
+struct c_get_callback:
+    public sc_response_callback
+{
+    static const int reply_size = sizeof(int) + sizeof(float);
+
+public:
+    c_get_callback(received_message const & msg, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint)
+    {
+        const size_t elements = msg.ArgumentCount() / 2;
+        const size_t size = elements * reply_size + 128; /* more than required */
+        data_ = (char*)allocate(size);
+
+        osc::OutboundPacketStream p(data_, size);
+
+        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+        p << osc::BeginMessage("/c_set");
+        while (!args.Eos()) {
+            osc::int32 bus_index;
+            args >> bus_index;
+
+            float value = instance->get_control_bus(bus_index);
+
+            p << bus_index
+              << value;
+        }
+
+        p << osc::EndMessage;
+        msg_size_ = p.Size();
+    }
+
+private:
+    void run(void)
+    {
+        instance->send_udp(data_, msg_size_, endpoint_);
+    }
+
+    ~c_get_callback(void)
+    {
+        deallocate(data_);
+    }
+
+    char * data_;
+    size_t msg_size_;
+};
+
+
+void handle_c_get(received_message const & msg,
+                  udp::endpoint const & endpoint)
+{
+    instance->add_system_callback(new c_get_callback(msg, endpoint));
+}
+
+struct c_getn_callback:
+    public sc_response_callback
+{
+    static const int reply_base_size = 2 * sizeof(int);
+
+public:
+    c_getn_callback(received_message const & msg, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint)
+    {
+        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+        size_t size = 128; /* more than required */
+
+        while (!args.Eos()) {
+            osc::int32 bus_index, bus_count;
+            args >> bus_index >> bus_count;
+
+            size += bus_count * sizeof(float) + reply_base_size;
+        }
+
+        data_ = (char*)allocate(size);
+
+        osc::OutboundPacketStream p(data_, size);
+
+        args = msg.ArgumentStream();
+        p << osc::BeginMessage("/c_setn");
+        while (!args.Eos()) {
+            osc::int32 bus_index, bus_count;
+            args >> bus_index >> bus_count;
+
+            p << bus_index
+              << bus_count;
+
+            for (int i = 0; i != bus_count; ++i) {
+                float value = instance->get_control_bus(bus_index);
+                p << value;
+            }
+        }
+
+        p << osc::EndMessage;
+        msg_size_ = p.Size();
+    }
+
+private:
+    void run(void)
+    {
+        instance->send_udp(data_, msg_size_, endpoint_);
+    }
+
+    ~c_getn_callback(void)
+    {
+        deallocate(data_);
+    }
+
+    char * data_;
+    size_t msg_size_;
+};
+
+
+void handle_c_getn(received_message const & msg,
+                  udp::endpoint const & endpoint)
+{
+    instance->add_system_callback(new c_getn_callback(msg, endpoint));
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message,
@@ -1176,6 +1293,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_c_fill:
         handle_c_fill(message);
+        break;
+
+    case cmd_c_get:
+        handle_c_get(message, endpoint);
+        break;
+
+    case cmd_c_getn:
+        handle_c_getn(message, endpoint);
         break;
 
     default:
@@ -1307,6 +1432,16 @@ void dispatch_control_bus_commands(received_message const & message,
 
     if (strcmp(address+3, "fill") == 0) {
         handle_c_fill(message);
+        return;
+    }
+
+    if (strcmp(address+3, "get") == 0) {
+        handle_c_get(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "getn") == 0) {
+        handle_c_getn(message, endpoint);
         return;
     }
 }
