@@ -66,6 +66,7 @@ class nova_server:
     public audio_frontend<&run_scheduler_tick>,
     public synth_factory,
     public buffer_manager,
+    public control_bus_manager,
     public sc_osc_handler
 {
 public:

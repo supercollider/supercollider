@@ -1022,6 +1022,48 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
     instance->add_system_callback(new b_query_callback(msg, endpoint));
 }
 
+void handle_c_set(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while (!args.Eos()) {
+        osc::int32 bus_index;
+        float value;
+        args >> bus_index >> value;
+
+        instance->set_control_bus(bus_index, value);
+    }
+}
+
+void handle_c_setn(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while (!args.Eos()) {
+        osc::int32 bus_index, bus_count;
+        args >> bus_index >> bus_count;
+
+        for (int i = 0; i != bus_count; ++i) {
+            float value;
+            args >> value;
+            instance->set_control_bus(bus_index + i, value);
+        }
+    }
+}
+
+void handle_c_fill(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while (!args.Eos()) {
+        osc::int32 bus_index, bus_count;
+        float value;
+        args >> bus_index >> bus_count >> value;
+
+        for (int i = 0; i != bus_count; ++i)
+            instance->set_control_bus(bus_index + i, value);
+    }
+}
 
 } /* namespace */
 
@@ -1122,6 +1164,18 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_b_query:
         handle_b_query(message, endpoint);
+        break;
+
+    case cmd_c_set:
+        handle_c_set(message);
+        break;
+
+    case cmd_c_setn:
+        handle_c_setn(message);
+        break;
+
+    case cmd_c_fill:
+        handle_c_fill(message);
         break;
 
     default:
@@ -1233,6 +1287,31 @@ void dispatch_buffer_commands(received_message const & message,
     }
 }
 
+void dispatch_control_bus_commands(received_message const & message,
+                                   udp::endpoint const & endpoint)
+{
+    const char * address = message.AddressPattern();
+    assert(address[0] == '/');
+    assert(address[1] == 'c');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "set") == 0) {
+        handle_c_set(message);
+        return;
+    }
+
+    if (strcmp(address+3, "setn") == 0) {
+        handle_c_setn(message);
+        return;
+    }
+
+    if (strcmp(address+3, "fill") == 0) {
+        handle_c_fill(message);
+        return;
+    }
+}
+
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_sym_address(received_message const & message,
@@ -1258,6 +1337,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (address[1] == 'b') {
         dispatch_buffer_commands(message, endpoint);
+        return;
+    }
+
+    if (address[1] == 'c') {
+        dispatch_control_bus_commands(message, endpoint);
         return;
     }
 
