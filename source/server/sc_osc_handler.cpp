@@ -547,6 +547,94 @@ void handle_n_free(received_message const & msg)
     }
 }
 
+/** \todo handle array arguments */
+void handle_n_set(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+    server_node * node = instance->find_node(id);
+
+    while(it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 index = it->AsInt32Unchecked(); ++it;
+                float value = it->AsFloat(); ++it;
+
+                node->set(index, value);
+            }
+            else if (it->IsString()) {
+                const char * str = it->AsString(); ++it;
+                float value = it->AsFloat(); ++it;
+
+                node->set(slot_identifier_type(str), value);
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_set handler: " << e.what() << endl;
+        }
+    }
+}
+
+/** \todo handle array arguments */
+void handle_n_setn(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+    server_node * node = instance->find_node(id);
+
+    while(it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 index = it->AsInt32Unchecked(); ++it;
+                osc::int32 count = it->AsInt32(); ++it;
+
+                for (int i = 0; i != count; ++i) {
+                    float value = it->AsFloat(); ++it;
+                    node->set(index + i, value);
+                }
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_setn handler: " << e.what() << endl;
+        }
+    }
+}
+
+void handle_n_fill(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+    server_node * node = instance->find_node(id);
+
+    while(it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 index = it->AsInt32Unchecked(); ++it;
+                osc::int32 count = it->AsInt32(); ++it;
+                float value = it->AsFloat(); ++it;
+
+                for (int i = 0; i != count; ++i)
+                    node->set(index + i, value);
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_setn handler: " << e.what() << endl;
+        }
+    }
+}
+
 /** responding callback, which is executing an osc message when done */
 struct sc_async_callback:
     public sc_response_callback
@@ -1243,6 +1331,18 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_free(message);
         break;
 
+    case cmd_n_set:
+        handle_n_set(message);
+        break;
+
+    case cmd_n_setn:
+        handle_n_setn(message);
+        break;
+
+    case cmd_n_fill:
+        handle_n_fill(message);
+        break;
+
     case cmd_b_alloc:
         handle_b_alloc(message, endpoint);
         break;
@@ -1350,6 +1450,21 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "free") == 0) {
         handle_n_free(message);
+        return;
+    }
+
+    if (strcmp(address+3, "set") == 0) {
+        handle_n_set(message);
+        return;
+    }
+
+    if (strcmp(address+3, "setn") == 0) {
+        handle_n_setn(message);
+        return;
+    }
+
+    if (strcmp(address+3, "fill") == 0) {
+        handle_n_fill(message);
         return;
     }
 }
