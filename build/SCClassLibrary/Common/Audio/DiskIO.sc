@@ -1,11 +1,12 @@
 
 DiskOut : UGen {
 	*ar { arg bufnum, channelsArray;
-		this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
-		^0.0		// DiskOut has no output
+		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
+		//^0.0		// DiskOut has no output 
+		// now it does: the number of frames written
 	}
-	numOutputs { ^0 }
-	writeOutputSpecs {}
+	//	numOutputs { ^1 }
+	//	writeOutputSpecs {}
  	checkInputs {
  		if (rate == 'audio', {
  			for(1, inputs.size - 1, { arg i;
