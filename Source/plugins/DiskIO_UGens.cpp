@@ -17,7 +17,10 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-
+/*
+  Output of frame index for DiskOut by Marije Baalman (nescivi), 2009
+  VDiskIn by Scott Wilson, 2008
+*/
 
 #include "MsgFifo.h"
 #include "SC_SyncCondition.h"
@@ -55,6 +58,7 @@ struct DiskOut : public Unit
 	float m_fbufnum;
 	SndBuf *m_buf;
 	uint32 m_framepos;
+	uint32 m_framewritten;
 };
 
 struct VDiskIn : public Unit
@@ -254,6 +258,7 @@ void DiskOut_Ctor(DiskOut* unit)
 	unit->m_fbufnum = -1.f;
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framepos = 0;
+	unit->m_framewritten = 0;
 	SETCALC(DiskOut_next);
 }
 
@@ -264,9 +269,15 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framepos = 0;
+//		unit->m_framewritten = 0;
 		return;
 	}
 	SETUP_IN(1)
+	
+	float *out = OUT(0);
+	uint32_t framew = unit->m_framewritten;
+
+//	printf("Start frames %i %i\n", unit->m_framewritten, framew );
 	
 	if (unit->m_framepos >= bufFrames) {
 		unit->m_framepos = 0;
@@ -279,6 +290,7 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 			for (uint32 i=0; i<bufChannels; ++i) {
 				*bufData++ = *in[i]++;
 			}
+			out[j] = framew++;
 		}
 	} else if (bufChannels == 2) {
 		float *in0 = in[0];
@@ -286,15 +298,22 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 		for (int j=0; j<inNumSamples; ++j) {
 			*bufData++ = *in0++;
 			*bufData++ = *in1++;
+			out[j] = framew++;
 		}
 	} else {
 		float *in0 = in[0];
 		for (int j=0; j<inNumSamples; ++j) {
 			*bufData++ = *in0++;
+			out[j] = framew++;
 		}
 	}
 	
 	unit->m_framepos += inNumSamples;
+//	unit->m_framewritten += inNumSamples;
+	unit->m_framewritten = framew;
+	
+//	printf("frames %i %i\n", unit->m_framewritten, framew );
+	
 	uint32 bufFrames2 = bufFrames >> 1;
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;
@@ -318,6 +337,7 @@ sendMessage:
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
 	}
+	
 }
 
 void DiskIOMsg::Perform()
