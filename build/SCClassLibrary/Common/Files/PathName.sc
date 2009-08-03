@@ -92,6 +92,10 @@ PathName {
 	isAbsolutePath { 
 		^fullPath.at(0).isPathSeparator
 	}
+
+	absolutePath{
+		^fullPath.absolutePath;
+	}
 	
 	asRelativePath { |relativeTo|
 		var r, a, b, i, mePath;
@@ -277,6 +281,14 @@ PathName {
 			pathname.filesDo(func)
 		}
 	}
+
+	filesDoNoSVN { arg func;
+		this.files.do(func);
+		this.foldersWithoutSVN.do { arg pathname;
+			pathname.filesDo(func)
+		}
+	}
+
 	// Iterates over all files within this path which match criteria for being help files.
 	// Doesn't iterate over the help files listed in the Help tree - see Help:do for that.
 	helpFilesDo { arg func;
