@@ -309,9 +309,15 @@ void SC_TerminalClient::commandLoop()
 
 	while (shouldBeRunning()) {
 		tick();
-		int nfds = poll(pfds, 1, 50);
+		int nfds = poll(pfds, POLLIN, 50);
 		if (nfds > 0) {
 			while (readCmdLine(fd, cmdLine));
+			#ifdef SC_DARWIN
+			if(pfds[0].revents == POLLNVAL){
+				// we reach here when reading directly from CLI, but not if being piped data! (osx 10.4.11 and 10.5.7 at least)
+				usleep(20011);
+			}
+			#endif
 		} else if (nfds == -1) {
 			perror(getName());
 			quit(1);
