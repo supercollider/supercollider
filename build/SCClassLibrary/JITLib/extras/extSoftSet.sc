@@ -15,7 +15,7 @@
 			if ( 	(oldVal.absdif(val) <= within) 
 			
 					// or also try with an exponential range of ca 1 - 1000
-				or: { max(oldVal / val, val / oldVal).postln <= (1000 ** within) })
+				or: { max(oldVal / val, val / oldVal) <= (1000 ** within) })
 				{ 
 					this.set(param, val);
 					^true
@@ -66,7 +66,7 @@
 		var newNormVol = spec.unmap(val); 
 		var myOldNormVol = lastVal !? { spec.unmap(lastVal) };
 		
-		[\oldPxNormVol, oldPxNormVol, \newNormVol, newNormVol, \myOldNormVol, myOldNormVol].postln;
+	//	[\oldPxNormVol, oldPxNormVol, \newNormVol, newNormVol, \myOldNormVol, myOldNormVol].postln;
 		
 		if ( ((oldPxNormVol - newNormVol).abs < within)
 			or: { myOldNormVol.notNil and: { oldPxNormVol.absdif(myOldNormVol) <= within } }
