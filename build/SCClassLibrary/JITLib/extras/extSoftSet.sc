@@ -3,13 +3,29 @@
 + NodeProxy { 
 				
 	softSet { |param, val, within = 0.025, mapped=false, lastVal| 
-		var spec, newNormVal, oldNormVal;
+		var spec, newNormVal, oldVal, oldNormVal, maxDiff;
 		
-		spec = param.asSpec;
-		oldNormVal = spec.unmap(
-			this.nodeMap.get(param).value 
-			?? { this.getDefaultVal(param) ? 0 }
-		);
+		oldVal = this.nodeMap.get(param).value ?? { this.getDefaultVal(param) ? 0 };
+			
+		spec = param.asSpec; 
+			
+			// if no spec, guess whether step looks small:
+		if (spec.isNil) { 
+					// within is taken linear
+			if ( 	(oldVal.absdif(val) <= within) 
+			
+					// or also try with an exponential range of ca 1 - 1000
+				or: { max(oldVal / val, val / oldVal).postln <= (1000 ** within) })
+				{ 
+					this.set(param, val);
+					^true
+				} { 
+					^false
+				}
+		};
+			// simper if we have a valid spec:
+		oldNormVal = spec.unmap( oldVal );
+		maxDiff = max(within, spec.step);
 		
 		if (mapped) { 
 			newNormVal = spec.unmap(val);
@@ -18,19 +34,17 @@
 			newNormVal = val; 
 			val = spec.map(val);
 		};
-	//	[ newNormVal, oldNormVal].postln; 
 		
 		if (
-			(newNormVal.absdif(oldNormVal) <= max(within, spec.step))   // isCloseEnough
-									// or was last value controller remembers.
-			or: { lastVal.notNil and: { oldNormVal.absdif(lastVal) <= 
-				max(within, spec.step) } }) 
+			(newNormVal.absdif(oldNormVal) <= maxDiff)   // is Close Enough
+									// or was the last value controller remembers.
+			or: { lastVal.notNil and: 
+				{ oldNormVal.absdif(lastVal) <= maxDiff } 
+			}) 
 		{ 
-		//	"ok, close enough.".postln; 
 			this.set(param, val);
 			^true
 		} { 
-		//	"too far off.".postln;
 			^false
 		}
 	}
@@ -52,7 +66,7 @@
 		var newNormVol = spec.unmap(val); 
 		var myOldNormVol = lastVal !? { spec.unmap(lastVal) };
 		
-	//	[\oldPxNormVol, oldPxNormVol, \newNormVol, newNormVol, \myOldNormVol, myOldNormVol].postln;
+		[\oldPxNormVol, oldPxNormVol, \newNormVol, newNormVol, \myOldNormVol, myOldNormVol].postln;
 		
 		if ( ((oldPxNormVol - newNormVol).abs < within)
 			or: { myOldNormVol.notNil and: { oldPxNormVol.absdif(myOldNormVol) <= within } }
