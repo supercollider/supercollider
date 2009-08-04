@@ -6,7 +6,7 @@
 		<>nSliders, <edits, <sinks, <scrolly, skipjack;
 	var buttonFuncs, pauseBut, sendBut;
 	
-	var 	<currentSettings, 	<prevSettings, <editKeys, <>ignoreKeys=#[];	var <>replaceKeys;		// a dict for slider names to be replaced
+	var 	<currentSettings=#[], 	<prevSettings=#[], <editKeys=#[], <>ignoreKeys=#[];	var <>replaceKeys;		// a dict for slider names to be replaced
 	var 	<tooManyKeys = false, <keysRotation = 0; 	
 	var oldType = "-";
 
