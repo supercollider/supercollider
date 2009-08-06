@@ -21,6 +21,11 @@ test_ugen_generator_equivalences {
 	 {XLine.ar(0.01, 10, 1) - Line.ar(-1, 1, 1).exprange(   0.01, 10)},
 	 {Line.ar(0, 1, 1) - XLine.ar(0.01, 10, 1).explin(0.01, 10, 0, 1)},
 	 
+	 //////////////////////////////////////////
+	 // Trigonometric:
+	 {SinOsc.ar(1) - Line.ar(0,2pi,1).sin},
+	 {SinOsc.ar(1, pi/2) - Line.ar(0,2pi,1).cos},
+	 
 	]
 	.do{|func| func.loadToFloatArray(1, Server.default, { |data|
 			this.assertArrayFloatEquals(data, 0, within: 0.001)
