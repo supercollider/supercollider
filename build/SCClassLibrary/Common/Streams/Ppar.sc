@@ -38,13 +38,13 @@ Ppar : ListPattern {
 					nexttime = priorityQ.topPriority;
 					if (nexttime.notNil, {
 						// that child stream ended, so rest until next one
-						outval = inval.copy;
-						outval.put(\freq, \rest);					
-						outval.put(\delta, nexttime - now);
-						
+//						outval = inval.copy;
+//						outval.put(\freq, \rest);				
+//						outval.put(\delta, nexttime - now);
+						outval = Event.silent(nexttime - now, outval);
 						inval = outval.yield;
 						// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
-						now = nexttime;	
+						now = nexttime;
 					},{
 						priorityQ.clear;
 					});		
