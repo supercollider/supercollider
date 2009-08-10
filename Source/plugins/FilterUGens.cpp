@@ -580,16 +580,40 @@ void Lag_next(Lag *unit, int inNumSamples)
 		
 }
 
+void Lag_next_1(Lag *unit, int inNumSamples)
+{
+	float *out = OUT(0);
+	float *in = IN(0);
+	float lag = IN0(1);
+
+	float y1 = unit->m_y1;
+	float b1 = unit->m_b1;
+
+	if (lag == unit->m_lag) {
+		float y0 = *in;
+		*out = y1 = y0 + b1 * (y1 - y0);
+	} else {
+		unit->m_b1 = b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
+		unit->m_lag = lag;
+		float y0 = *in;
+		*out = y1 = y0 + b1 * (y1 - y0);
+	}
+	unit->m_y1 = zapgremlins(y1);
+}
+
 void Lag_Ctor(Lag* unit)
 {
-	SETCALC(Lag_next);
-		
+	if (BUFLENGTH == 1)
+		SETCALC(Lag_next_1);
+	else
+		SETCALC(Lag_next);
+
 	unit->m_lag = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_y1 = ZIN0(0);
 	Lag_next(unit, 1);
-
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /// added by nescivi - 15 may 2007
 void LagUD_next(LagUD *unit, int inNumSamples)
