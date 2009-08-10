@@ -1058,7 +1058,8 @@ Source/lang/LangPrimSource/PyrStringPrim.cpp
 Source/lang/LangPrimSource/PyrUStringPrim.cpp
 Source/lang/LangPrimSource/PyrSymbolPrim.cpp
 Source/lang/LangPrimSource/PyrUnixPrim.cpp
-''') + [libsclangEnv.SharedObject('Source/lang/LangSource/fftlib', 'Source/common/fftlib.c')]
+Source/common/fftlib.c
+''')
 
 # optional features
 if features['midiapi']:
