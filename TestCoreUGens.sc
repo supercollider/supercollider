@@ -4,7 +4,7 @@ TestCoreUGens.run
 */
 TestCoreUGens : UnitTest {
 test_ugen_generator_equivalences {
-	var n;
+	var n, v;
 	this.bootServer;
 	
 	// These pairs should generate the same shapes, so subtracting should give zero.
@@ -63,8 +63,13 @@ test_ugen_generator_equivalences {
 	 
 	 //////////////////////////////////////////
 	 // Panners (linear panners easy to verify - sum should recover original):
-//FAILS on sc 3.3.1 - first 64 samples don't seem to pan as intended, upon first run. Subsequent runs OK - uses unintialised memory?:
-	 "LinPan2.sum is identity" -> {n=WhiteNoise.ar; LinPan2.ar(n, Line.kr(-1,1,1)).sum - n },
+	 // FAILS on sc 3.3.1 - first 64 samples don't seem to pan as intended, upon first run. Subsequent runs OK - uses unintialised memory?:
+	 "LinPan2.sum is identity (<=3.3.1 fails this)" -> {n=WhiteNoise.ar; LinPan2.ar(n, Line.kr(-1,1,1)).sum - n },
+	 // These next two verify the fix I applied to LinPan2's constructor, revealed by the above. So 3.3.1 will also fail these:
+	 "LinPan2_aa's action can be replicated by manually modulating amplitude (<=3.3.1 fails this)" ->
+	 		 {n=DC.ar(1); v=Line.ar(Rand(),Rand(),1); LinPan2.ar(n, v)[1]*2-1 - v },
+	 "LinPan2_ak's action can be replicated by manually modulating amplitude (<=3.3.1 fails this)" ->
+	 		 {n=DC.ar(1); v=Line.kr(Rand(),Rand(),1); LinPan2.ar(n, v)[1]*2-1 - v },
 
 	 //////////////////////////////////////////
 	 // Peak-followers etc:
@@ -83,7 +88,7 @@ test_ugen_generator_equivalences {
 	.keysValuesDo{|name, func| func.loadToFloatArray(1, Server.default, { |data|
 			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: false)
 		});
-		0.1.wait;
+		0.12.wait;
 	};
 	
 	
