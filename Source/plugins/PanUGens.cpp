@@ -143,6 +143,12 @@ void LinPan2_Ctor(LinPan2 *unit)
 	} else {
 		SETCALC(LinPan2_next_ak);
 	}
+	// Now we need to initialise some values, which on the first _next run will be "previous"
+	float pan = ZIN0(1) * 0.5f + 0.5f;
+	unit->m_level = ZIN0(2);
+	unit->m_rightamp = unit->m_level * pan;
+	unit->m_leftamp  = unit->m_level - unit->m_rightamp;
+
 	LinPan2_next_aa(unit, 1);
 }
 
@@ -157,7 +163,7 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;	
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		float pan = pos * 0.5 + 0.5;
+		float pan = pos * 0.5f + 0.5f;
 		float nextrightamp = level * pan;
 		float nextleftamp  = level - nextrightamp;
 
@@ -196,7 +202,7 @@ void LinPan2_next_aa(LinPan2 *unit, int inNumSamples)
 	float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
 	
 	LOOP(inNumSamples, 
-		float pan = ZXP(pos) * 0.5 + 0.5;
+		float pan = ZXP(pos) * 0.5f + 0.5f;
 		float rightamp = level * pan;
 		float leftamp  = level - rightamp;
 		float zin = ZXP(in);
