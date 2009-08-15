@@ -84,6 +84,12 @@ test_ugen_generator_equivalences {
 	 // Clipping and distortion:
 	 ".clip(2) doesn't affect signals that lie within +-1" -> {n=WhiteNoise.ar;   n.clip2(1) - n},
 	 ".clip(2) on a loud LFPulse is same as scaling" -> {n=LFPulse.ar(LFNoise0.kr(50), mul:100);   n.clip2(1) - (n/100)},
+	 
+	 //////////////////////////////////////////
+	 // FFT:
+	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
+	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
+
 	]
 	.keysValuesDo{|name, func| func.loadToFloatArray(1, Server.default, { |data|
 			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: false)
