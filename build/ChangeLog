@@ -20,6 +20,7 @@ Bugfixes:
 * 2009-07-28 catch unintialised value in sc_GetUserHomeDirectory(), fixing potential memory corruption if HOME not set - ds
 * 2009-08-01 SpecCentroid, fix its reaction to silence (output zero instead of NaN) - ds
 * 2009-08-04 fix the CPU-usage issue when calling plain "./sclang" from the terminal on OSX (seems it was caused by a bug in how OSX handles poll() calls) - ds
+* 2009-08-15 LinPan2: fix initialisation issue - panning was not correctly applied during the first calc block - ds
 
 Other additions/improvements:
 -----------------------------
