@@ -302,6 +302,15 @@ void initPatterns();
 void initThreads();
 void initGUI();
 
+#ifndef SC_WIN32
+bool running = true;
+void handleSigUsr1(int param)
+{
+  printf("handleSigUsr1()...\n");
+  running = false;
+}
+#endif
+
 bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 {
 	PyrClass *class_main;
@@ -345,6 +354,8 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	g->gc->SanityCheck();
 #endif
 	//tellPlugInsAboutToRun();
+
+	signal(SIGUSR1,handleSigUsr1);
 	
 	assert((g->gc->SanityCheck()));
 #if SANITYCHECKLITE
@@ -505,7 +516,7 @@ void Interpret(VMGlobals *g)
 	if (setjmp(g->escapeInterpreter) != 0) {
 		return;
 	}
-	while (true) {  // not going to indent body to save line space
+	while (running) {  // not going to indent body to save line space
 
 #if CHECK_MAX_STACK_USE
 	int stackDepth = (PyrSlot*)sp - g->sp + 1;
@@ -2309,7 +2320,8 @@ void Interpret(VMGlobals *g)
 			g->tailCall = 0;
 #endif
 	} // switch(op1)
-	} // end while(true)
+	} // end while(running)
+	running = true; // reset the signal
 	g->sp = (PyrSlot*)sp; g->ip = ip; 
 }
 
