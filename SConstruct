@@ -244,6 +244,7 @@ def make_opt_flags(env):
         "-O3",
         ## "-fomit-frame-pointer", # can behave strangely for sclang
         "-ffast-math",
+        "-fno-finite-math-only",
         "-fstrength-reduce"
         ]
     arch = env.get('OPT_ARCH')
