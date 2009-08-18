@@ -20,6 +20,7 @@
 #define OSC_SERVER_HPP
 
 #include <string>
+#include <iostream>
 
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
