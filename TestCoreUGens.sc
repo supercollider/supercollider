@@ -100,4 +100,43 @@ test_ugen_generator_equivalences {
 	
 	1.6.wait; // enough time for 1-second generators to run and to report back.
 }
+
+
+test_bufugens{
+	var d, b, c;
+	
+	this.bootServer;
+	
+	// channel sizes for test:
+	[1,2, 8,16, 32,33].do{ |numchans|
+		
+		// Random data for test
+		d = {1.0.rand}.dup((Server.default.sampleRate * 0.25).round * numchans);
+		
+		// load data to server
+		b = Buffer.loadCollection(Server.default, d, numchans);
+		// a buffer for recording the results
+		c = Buffer.alloc(Server.default, d.size / numchans, numchans);
+		Server.default.sync;
+		
+		// Copying data from b to c:
+		{
+			RecordBuf.ar(PlayBuf.ar(numchans, b, BufRateScale.ir(b), doneAction: 2), c, loop:0) * 0.1;
+		}.play;
+		Server.default.sync;
+		1.0.wait;
+		c.loadToFloatArray(action: { |data|
+			// The data recorded to "c" should be exactly the same as the original data "d"
+			this.assertArrayFloatEquals(data - d, 0, 
+				"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: false);
+			b.free;
+			c.free;
+		});
+		0.32.wait;
+		Server.default.sync;
+		
+	};
+	1.6.wait; // enough time for 1-second generators to run and to report back.
+}
+
 } // end TestCoreUGens class
