@@ -22,6 +22,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "synth_prototype.hpp"
+#include "sc_synthdef.hpp"
 
 namespace nova
 {
@@ -37,8 +38,8 @@ class sc_synth_prototype:
     public synth_prototype
 {
 public:
-    sc_synth_prototype(path const & p):
-        synth_prototype(p.filename())
+    sc_synth_prototype(sc_synthdef const & sd):
+        synth_prototype(sd.name()), synthdef(sd)
     {}
 
 private:
@@ -46,6 +47,8 @@ private:
     {
         return 0;
     }
+
+    sc_synthdef synthdef;
 };
 
 

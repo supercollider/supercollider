@@ -1,5 +1,5 @@
 //  supercollider-style synthdef
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <map>
 
 #include <boost/cstdint.hpp>
+#include <boost/filesystem/path.hpp>
 
 namespace nova
 {
@@ -61,11 +62,19 @@ class sc_synthdef
 
 public:
     explicit sc_synthdef(std::ifstream & istream);
+    explicit sc_synthdef(boost::filesystem::path const & path);
 
     string dump(void) const;
 
+    string const & name(void) const
+    {
+        return name_;
+    }
+
 private:
-    string name;
+    void read_synthdef(std::ifstream & istream);
+
+    string name_;
     fvector constants;
     fvector parameters;
     parameter_map_t parameter_map;

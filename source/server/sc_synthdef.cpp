@@ -1,5 +1,5 @@
 //  supercollider-style synthdef
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -137,10 +137,21 @@ sc_synthdef::unit_spec_t::unit_spec_t(std::ifstream & stream)
 
 sc_synthdef::sc_synthdef(std::ifstream & stream)
 {
+    read_synthdef(stream);
+}
+
+sc_synthdef::sc_synthdef(boost::filesystem::path const & path)
+{
+    std::ifstream stream(path.string().c_str());
+    read_synthdef(stream);
+}
+
+void sc_synthdef::read_synthdef(std::ifstream & stream)
+{
     using namespace std;
 
     /* read name */
-    name = read_pstring(stream);
+    name_ = read_pstring(stream);
 
     /* read constants */
     int16_t consts = read_int16(stream);
@@ -192,7 +203,7 @@ std::string sc_synthdef::dump(void) const
 
     stringstream stream;
 
-    stream << "name " << name << endl;
+    stream << "name " << name() << endl;
 
     stream << "constant: " << endl;
     for (int i = 0; i != constants.size(); ++i)
