@@ -63,7 +63,7 @@ private:
 
 } /* namespace detail */
 
-class synth;
+class abstract_synth;
 
 /** prototype of a synth
  *
@@ -83,7 +83,7 @@ public:
     virtual ~synth_prototype(void)
     {}
 
-    virtual synth * create_instance(int node_id) = 0;
+    virtual abstract_synth * create_instance(int node_id) = 0;
 
     /* sort prototypes by name */
     friend bool operator< (synth_prototype const & a,

@@ -88,10 +88,10 @@ public:
     }
     /* @} */
 
-    synth * add_synth(std::string const & name, int id, node_position_constraint const & constraints);
+    abstract_synth * add_synth(std::string const & name, int id, node_position_constraint const & constraints);
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
-    void free_synth(synth *);
+    void free_synth(abstract_synth *);
 
     void free_node(int id);
 

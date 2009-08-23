@@ -153,7 +153,7 @@ inline void intrusive_ptr_release(server_node * p)
 }
 
 typedef boost::intrusive_ptr<server_node> server_node_ptr;
-typedef boost::intrusive_ptr<synth> synth_ptr;
+typedef boost::intrusive_ptr<class synth> synth_ptr;
 typedef boost::intrusive_ptr<group> group_ptr;
 
 enum node_position

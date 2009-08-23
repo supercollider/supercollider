@@ -112,9 +112,9 @@ void nova_server::init_osc_handles(void)
     add_responder("/set", &set_handler);
 }
 
-synth * nova_server::add_synth(std::string const & name, int id, node_position_constraint const & constraints)
+abstract_synth * nova_server::add_synth(std::string const & name, int id, node_position_constraint const & constraints)
 {
-    synth * ret = synth_factory::create_instance(name, id);
+    abstract_synth * ret = synth_factory::create_instance(name, id);
 
     if (ret == 0)
         return 0;
@@ -165,7 +165,7 @@ void nova_server::free_node(int node_id)
     update_dsp_queue();
 }
 
-void nova_server::free_synth(synth * s)
+void nova_server::free_synth(abstract_synth * s)
 {
     node_graph::remove_node(s);
     update_dsp_queue();

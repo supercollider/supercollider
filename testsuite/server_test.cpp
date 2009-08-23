@@ -15,7 +15,7 @@ struct test_synth_prototype:
         synth_prototype("foo")
     {}
 
-    synth * create_instance(int node_id)
+    abstract_synth * create_instance(int node_id)
     {
         synth * ret = allocate<synth>();
         if (ret)
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
-    synth * s = server.add_synth("foo", 0, to_root);
+    abstract_synth * s = server.add_synth("foo", 0, to_root);
     server.free_synth(s);
 }
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
-    synth * s = server.add_synth("foo", 0, to_root);
+    abstract_synth * s = server.add_synth("foo", 0, to_root);
     server();
     server();
     server();
@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
 
     node_position_constraint to_group = std::make_pair(g, insert);
 
-    synth * s1 = server.add_synth("foo", 1, to_group);
-    synth * s2 = server.add_synth("foo", 2, to_group);
-    synth * s3 = server.add_synth("foo", 3, to_group);
+    abstract_synth * s1 = server.add_synth("foo", 1, to_group);
+    abstract_synth * s2 = server.add_synth("foo", 2, to_group);
+    abstract_synth * s3 = server.add_synth("foo", 3, to_group);
     server();
     server();
     server();

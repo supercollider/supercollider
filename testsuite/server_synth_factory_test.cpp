@@ -14,7 +14,7 @@ struct test_synth_prototype:
         synth_prototype("foo")
     {}
 
-    synth * create_instance(int node_id)
+    abstract_synth * create_instance(int node_id)
     {
         return new synth(node_id, this);
     }
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( synth_factory_test_1 )
 
     sf.register_prototype(new test_synth_prototype);
 
-    auto_ptr<synth> s(sf.create_instance("foo", 1));
+    auto_ptr<abstract_synth> s(sf.create_instance("foo", 1));
 
     BOOST_REQUIRE(s.get() != 0);
 }
