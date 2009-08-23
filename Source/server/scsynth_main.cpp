@@ -230,6 +230,10 @@ int main(int argc, char* argv[])
 				options.mLoadGraphDefs = atoi(argv[j+1]);
 				break;
 			case 'N' :
+#ifdef NO_LIBSNDFILE
+				scprintf("NRT mode not supported: scsynth compiled without libsndfile\n");
+				exit(0);
+#endif
 // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 				checkNumArgs(7);
                                 options.mRealTime = false;
@@ -315,6 +319,9 @@ int main(int argc, char* argv[])
 	if (!world) return 1;
 
 	if (!options.mRealTime) {
+#ifdef NO_LIBSNDFILE
+		return 1;
+#else
 		int exitCode = 0;
 		try {
 			World_NonRealTimeSynthesis(world, &options);
@@ -323,6 +330,7 @@ int main(int argc, char* argv[])
 			exitCode = 1;
 		}
 		return exitCode;
+#endif
 	}
 
 	if (udpPortNum >= 0) {

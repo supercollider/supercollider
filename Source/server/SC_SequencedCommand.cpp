@@ -530,6 +530,11 @@ void BufAllocReadCmd::CallDestructor()
 
 bool BufAllocReadCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_allocRead", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 #ifndef SC_WIN32
 	FILE* fp = fopenLocalOrRemote(mFilename, "r");
@@ -575,16 +580,21 @@ leave:
 	sf_close(sf);
 	
 	return true;
+#endif	
 }
 
 bool BufAllocReadCmd::Stage3()
 {
+#ifndef NO_LIBSNDFILE
+	return false;
+#else
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
 	*buf = mSndBuf;
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	
 	return true;
+#endif
 }
 
 void BufAllocReadCmd::Stage4()
@@ -638,6 +648,11 @@ void BufReadCmd::CallDestructor()
 
 bool BufReadCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_read", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	SF_INFO fileinfo;
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -693,6 +708,7 @@ bool BufReadCmd::Stage2()
 	mSampleRate = (double)fileinfo.samplerate;
 
 	return true;
+#endif
 }
 
 bool BufReadCmd::Stage3()
@@ -804,6 +820,11 @@ void BufAllocReadChannelCmd::CallDestructor()
 
 bool BufAllocReadChannelCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_allocReadChannel", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	
 	SF_INFO fileinfo;
@@ -857,6 +878,7 @@ leave:
 	sf_close(sf);
 	
 	return true;
+#endif
 }
 
 bool BufAllocReadChannelCmd::Stage3()
@@ -922,6 +944,11 @@ void BufReadChannelCmd::CallDestructor()
 
 bool BufReadChannelCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	SF_INFO fileinfo;
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -987,6 +1014,7 @@ leave:
 	mSampleRate = (double)fileinfo.samplerate;
 
 	return true;
+#endif
 }
 
 bool BufReadChannelCmd::Stage3()
@@ -1017,6 +1045,11 @@ int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, 
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_write", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
 	
@@ -1041,6 +1074,7 @@ int BufWriteCmd::Init(char *inData, int inSize)
 
 	memset(&mFileInfo, 0, sizeof(mFileInfo));
 	return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
+#endif
 }
 
 BufWriteCmd::~BufWriteCmd()
@@ -1055,6 +1089,9 @@ void BufWriteCmd::CallDestructor()
 
 bool BufWriteCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	return false;
+#else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd < 0) framesToEnd = 0;
@@ -1084,6 +1121,7 @@ bool BufWriteCmd::Stage2()
 	else sf_close(sf);
 
 	return true;
+#endif
 }
 
 bool BufWriteCmd::Stage3()
@@ -1121,12 +1159,18 @@ void BufCloseCmd::CallDestructor()
 
 bool BufCloseCmd::Stage2()
 {
+#ifdef NO_LIBSNDFILE
+	SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
+ 	scprintf("scsynth compiled without libsndfile\n");
+	return false;
+#else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	if (buf->sndfile) {
 		sf_close(buf->sndfile);
 		buf->sndfile = 0;
 	}
 	return true;
+#endif
 }
 
 bool BufCloseCmd::Stage3()

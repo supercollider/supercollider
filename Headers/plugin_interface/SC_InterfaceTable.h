@@ -89,8 +89,10 @@ struct InterfaceTable
 	bool (*fSendMsgToRT)(World *inWorld, struct FifoMsg& inMsg);
 	
 	// libsndfile support
+#ifndef NO_LIBSNDFILE
 	int (*fSndFileFormatInfoFromStrings)(SF_INFO *info, 
 		const char *headerFormatString, const char *sampleFormatString);
+#endif
 
 	// get nodes by id
 	struct Node* (*fGetNode)(World *inWorld, int inID);

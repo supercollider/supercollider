@@ -107,9 +107,11 @@ struct HiddenWorld
 	
 	SC_Semaphore* mQuitProgram;
 
+#ifndef NO_LIBSNDFILE
 	SNDFILE *mNRTInputFile; 
 	SNDFILE *mNRTOutputFile; 
 	FILE *mNRTCmdFile;
+#endif
 	
 	int32 mHiddenID;
 	int32 mRecentID;
