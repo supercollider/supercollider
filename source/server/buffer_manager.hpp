@@ -70,7 +70,7 @@ struct buffer_wrapper
     template <typename float_type>
     void set_samples(uint count, const size_t * indices, const float_type * values)
     {
-        for (int i = 0; i != count; ++i) {
+        for (uint i = 0; i != count; ++i) {
             size_t index = indices[i];
             if (index < frames_) {
                 sample_t value = values[i];
@@ -87,7 +87,7 @@ struct buffer_wrapper
         size_t avail = frames_ - position;
         count = std::min(size_t(count), avail);
 
-        for (int i = 0; i != count; ++i)
+        for (uint i = 0; i != count; ++i)
             base[i] = sample_t(values[i]);
     }
 
@@ -100,7 +100,7 @@ struct buffer_wrapper
         count = std::min(size_t(count), avail);
 
         sample_t val = sample_t(value);
-        for (int i = 0; i != count; ++i)
+        for (uint i = 0; i != count; ++i)
             base[i] = val;
     }
 

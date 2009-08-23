@@ -98,6 +98,7 @@ unit_test_sources = ["mutex_test.cpp",
                      "buffer_manager_test.cpp",
                      "sized_array_test.cpp",
                      "sc_synthdef_test.cpp",
+                     "control_bus_test.cpp",
                      ]
 
 
