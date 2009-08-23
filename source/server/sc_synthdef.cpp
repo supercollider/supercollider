@@ -99,8 +99,9 @@ std::vector<sc_synthdef> read_synthdef_file(std::string const & filename)
         return ret;
     }
 
-    int32 header = read_int32(stream);
-    int32 version = read_int32(stream);
+    /* int32 header = */ read_int32(stream);
+    /* int32 version = */ read_int32(stream);
+
     int16 definition_count = read_int16(stream);
 
     for (int i = 0; i != definition_count; ++i) {

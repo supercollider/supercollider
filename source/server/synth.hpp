@@ -47,7 +47,7 @@ public:
         return class_ptr->resolve_slot(str);
     }
 
-private:
+protected:
     synth_prototype_ptr class_ptr;
 };
 

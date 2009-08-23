@@ -16,45 +16,27 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_SYNTH_PROTOTYPE_HPP
-#define SC_SYNTH_PROTOTYPE_HPP
+#ifndef SC_UGEN_FACTORY_HPP
+#define SC_UGEN_FACTORY_HPP
 
-#include <boost/filesystem/path.hpp>
-
-#include "synth_prototype.hpp"
 #include "sc_synthdef.hpp"
 
 namespace nova
 {
 
-using boost::filesystem::path;
-
-/* read synthdefs from path pattern */
-void sc_read_synthdefs_dir(class synth_factory & factory, path const & dir);
-void sc_read_synthdef(class synth_factory & factory, path const & filename);
-void sc_read_synthdef(class synth_factory & factory, void * buffer, std::size_t size);
-
-class sc_synth_prototype:
-    public synth_prototype
+class sc_ugen_factory
 {
 public:
-    sc_synth_prototype(sc_synthdef const & sd):
-        synth_prototype(sd.name()), synthdef(sd)
-    {}
-
-private:
-    friend class sc_synth;
-
-    virtual abstract_synth * create_instance(int);
-
-    sc_synthdef synthdef;
+    sc_unit allocate_ugen(sc_synth * synth,
+                          sc_synthdef::unit_spec_t const & unit_spec)
+    {
+        return sc_unit();
+    }
 };
 
-typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;
-
-
+sc_ugen_factory ugen_factory;
 
 } /* namespace nova */
 
 
-#endif /* SC_SYNTH_PROTOTYPE_HPP */
+#endif /* SC_UGEN_FACTORY_HPP */

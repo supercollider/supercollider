@@ -34,16 +34,16 @@ class sc_synth:
     public abstract_synth
 {
     typedef std::vector<sc_unit> unit_vector;
+    typedef sc_synthdef::graph_t graph_t;
 
     friend class sc_synth_prototype;
 
 public:
-    sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
-        abstract_synth(node_id, prototype), unit_buffers(0)
-    {}
+    sc_synth(int node_id, sc_synth_prototype_ptr const & prototype);
 
     ~sc_synth(void)
     {
+        free(controls);
         free(unit_buffers);
     }
 
@@ -51,21 +51,28 @@ public:
     {}
 
     void set(slot_index_t slot_index, sample val)
-    {
-    }
+    {}
 
 private:
     void allocate_unit_buffers(uint blocksize, uint audio_bufs, uint control_bufs)
     {
-        audio_buffers = audio_bufs;
-        size_t buffer_size = sizeof(float) * (control_bufs + blocksize * audio_bufs);
-        unit_buffers = allocate(buffer_size);
+        size_t buffer_size = sizeof(sample) * (control_bufs + blocksize * audio_bufs);
+        unit_buffers = (float*)allocate(buffer_size);
         memset(unit_buffers, 0, buffer_size);
+
+        control_buffers = unit_buffers + (blocksize * audio_bufs);
+    }
+
+    sample get_constant(size_t index)
+    {
+        return static_cast<sc_synth_prototype*>(class_ptr.get())->synthdef.constants[index];
     }
 
     unit_vector units;
-    void * unit_buffers;
-    uint audio_buffers;
+    sample * unit_buffers;
+    sample * control_buffers;   /* in the same memory chunk as unit_buffers */
+
+    sample * controls;
 };
 
 } /* namespace nova */

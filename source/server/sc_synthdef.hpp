@@ -59,6 +59,8 @@ class sc_synthdef
     };
 
     friend class sc_synth_prototype;
+    friend class sc_synth;
+    friend class sc_ugen_factory;
 
 public:
     typedef std::vector<unit_spec_t> graph_t;
@@ -71,6 +73,12 @@ public:
     string const & name(void) const
     {
         return name_;
+    }
+
+    size_t parameter_count(void) const
+    {
+        assert(parameters.size() == parameter_map.size());
+        return parameters.size();
     }
 
 private:
