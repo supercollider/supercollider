@@ -20,7 +20,6 @@
 
 
 #include "SC_PlugIn.h"
-#include <sndfile.h>
 #include "SCComplex.h"
 
 #include "SC_fftlib.h"
