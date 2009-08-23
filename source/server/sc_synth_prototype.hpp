@@ -43,7 +43,7 @@ public:
     {}
 
 private:
-    virtual synth * create_instance(int);
+    virtual abstract_synth * create_instance(int);
 
     sc_synthdef synthdef;
 };

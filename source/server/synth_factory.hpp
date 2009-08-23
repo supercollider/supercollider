@@ -59,7 +59,7 @@ public:
         prototype->add_ref();
     }
 
-    synth * create_instance(std::string const & name, int node_id)
+    abstract_synth * create_instance(std::string const & name, int node_id)
     {
         prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
         if (it == prototype_map.end())

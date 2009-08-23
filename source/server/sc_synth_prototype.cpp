@@ -80,7 +80,7 @@ sc_unit allocate_unit_generator(sc_synth * synth/* , */
 }
 
 
-synth * sc_synth_prototype::create_instance(int node_id)
+abstract_synth * sc_synth_prototype::create_instance(int node_id)
 {
     typedef sc_synthdef::graph_t graph_t;
 
@@ -109,6 +109,8 @@ synth * sc_synth_prototype::create_instance(int node_id)
         sc_unit unit = allocate_unit_generator(synth/* , *it */);
         synth->units.push_back(unit);
     }
+
+    return synth;
 }
 
 
