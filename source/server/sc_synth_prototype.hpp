@@ -43,13 +43,12 @@ public:
     {}
 
 private:
-    virtual synth * create_instance(int)
-    {
-        return 0;
-    }
+    virtual synth * create_instance(int);
 
     sc_synthdef synthdef;
 };
+
+typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;
 
 
 

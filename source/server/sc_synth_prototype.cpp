@@ -21,6 +21,8 @@
 #include "sc_synth_prototype.hpp"
 #include "synth_factory.hpp"
 
+#include "sc_synth.hpp"
+
 namespace nova
 {
 
@@ -70,5 +72,44 @@ void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
         }
     }
 }
+
+sc_unit allocate_unit_generator(sc_synth * synth/* , */
+/*                                 sc_synthdef::unit_spec_t const & unit_spec */)
+{
+    return sc_unit();
+}
+
+
+synth * sc_synth_prototype::create_instance(int node_id)
+{
+    typedef sc_synthdef::graph_t graph_t;
+
+    sc_synth * synth = new sc_synth(node_id, this);
+
+    /* allocate wire buffers
+     *
+     * \todo we allocate one buffer per ugen, output, which is very inefficient,
+     *       but we can optimize it later
+     * */
+    unsigned int control_buffers, audio_buffers;
+    for (graph_t::iterator it = synthdef.graph.begin();
+         it != synthdef.graph.end(); ++it) {
+        for (int i = 0; i != it->output_specs.size(); ++i)
+            if (it->output_specs[i] == 2)
+                ++audio_buffers;
+            else
+                ++control_buffers;
+    }
+
+    synth->allocate_unit_buffers(64, audio_buffers, control_buffers);
+
+    /* allocate unit generators */
+    for (graph_t::iterator it = synthdef.graph.begin();
+         it != synthdef.graph.end(); ++it) {
+        sc_unit unit = allocate_unit_generator(synth/* , *it */);
+        synth->units.push_back(unit);
+    }
+}
+
 
 } /* namespace nova */

@@ -51,16 +51,18 @@ class sc_synthdef
         explicit unit_spec_t(std::ifstream & istream);
 
         string name;
-        int16_t rate;
+        int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
 
         std::vector<input_spec> input_specs;
         std::vector<char> output_specs;
     };
 
-    typedef std::vector<unit_spec_t> graph_t;
+    friend class sc_synth_prototype;
 
 public:
+    typedef std::vector<unit_spec_t> graph_t;
+
     explicit sc_synthdef(std::ifstream & istream);
     explicit sc_synthdef(boost::filesystem::path const & path);
 

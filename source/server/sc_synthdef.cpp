@@ -206,11 +206,11 @@ std::string sc_synthdef::dump(void) const
     stream << "name " << name() << endl;
 
     stream << "constant: " << endl;
-    for (int i = 0; i != constants.size(); ++i)
+    for (uint i = 0; i != constants.size(); ++i)
         stream << "\t" << constants[i] << endl;
 
     stream << "parameters: " << endl;
-    for (int i = 0; i != parameters.size(); ++i)
+    for (uint i = 0; i != parameters.size(); ++i)
         stream << "\t" << parameters[i] << endl;
 
     stream << "parameter names: " << endl;
@@ -219,7 +219,7 @@ std::string sc_synthdef::dump(void) const
         stream << "\t" << it->first << " " << it->second << endl;
 
     stream << "ugens: " << endl;
-    for (int i = 0; i != graph.size(); ++i)
+    for (uint i = 0; i != graph.size(); ++i)
         stream << "\t" << graph[i].name << endl;
 
     return stream.str();
