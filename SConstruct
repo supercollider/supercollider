@@ -301,6 +301,8 @@ opts.AddOptions(
                'Build the language application', 1),
     BoolOption('LID',
                'Build with Linux Input Device support [linux]', PLATFORM == 'linux'),
+    BoolOption('NO_LIBSNDFILE',
+               'Disable libsndfile (audio file reading/writing)', 0),
     BoolOption('WII',
                'Build with Linux WII support [linux]', PLATFORM == 'linux'),
     PathOption('PREFIX',
@@ -413,15 +415,18 @@ if isDefaultBuild():
         Exit(1)
     
     # sndfile
-    if PLATFORM == 'darwin' and env['INTERNAL_LIBSNDFILE']:
-        libraries['sndfile'] = Environment(LINKFLAGS = ['libsndfile/libsndfile.a'],
-                                           CPPPATH = ['#libsndfile'])
+    if env['NO_LIBSNDFILE']:
+        libraries['sndfile'] = Environment(CPPDEFINES = ['NO_LIBSNDFILE'])
     else:
-        success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
-        if not success: Exit(1)
-        succes2, libraries['sndfile18'] = conf.CheckPKG('sndfile >= 1.0.18')
-        if succes2:
-            libraries['sndfile'].Append(CPPDEFINES = ['LIBSNDFILE_1018'])
+        if PLATFORM == 'darwin' and env['INTERNAL_LIBSNDFILE']:
+            libraries['sndfile'] = Environment(LINKFLAGS = ['libsndfile/libsndfile.a'],
+                                               CPPPATH = ['#libsndfile'])
+        else:
+            success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
+            if not success: Exit(1)
+            succes2, libraries['sndfile18'] = conf.CheckPKG('sndfile >= 1.0.18')
+            if succes2:
+                libraries['sndfile'].Append(CPPDEFINES = ['LIBSNDFILE_1018'])
 
     # libcurl
     success, libraries['libcurl'] = conf.CheckPKG('libcurl >= 7')
@@ -430,19 +435,18 @@ if isDefaultBuild():
         Exit(1)
 
     # FFTW
-    success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
+    libraries['fftwf'] = Environment()
     if env['FFTW']:
+        success, libraries['fftwf'] = conf.CheckPKG('fftw3f')
         if success:
             libraries['fftwf'].Append(CPPDEFINES = ['SC_FFT_FFTW'])
-        elif PLATFORM == 'darwin':
-            libraries['fftwf'] = Environment()
         else:
-            Exit(1)
+            libraries['fftwf'].Append(CPPDEFINES = ['SC_FFT_NONE'])
     else:
-        libraries['fftwf'] = Environment()
+        libraries['fftwf'].Append(CPPDEFINES = ['SC_FFT_NONE'])
     if PLATFORM == 'darwin':
         # needed for vector multiplication
-        libraries['fftwf'].Append(LINKFLAGS = '-framework vecLib')
+        libraries['fftwf'] = Environment(LINKFLAGS = '-framework vecLib')
 else:
     libraries['sndfile'] = get_new_pkg_env()
     libraries['fftwf'] = get_new_pkg_env()
@@ -909,22 +913,23 @@ plugins.append(
     make_plugin_target('ML_UGens'), mlSources))
 
 # diskio ugens
-diskIOEnv = pluginEnv.Clone(
-    LIBS = ['common', 'm'],
-    LIBPATH = 'build'
-    )
-if PLATFORM == 'darwin':
-    diskIOEnv.Append(
-        LINKFLAGS = '-framework CoreServices'
+if not env['NO_LIBSNDFILE']:  # (libsndfile needed for all of these, so skip if unavailable)
+    diskIOEnv = pluginEnv.Clone(
+        LIBS = ['common', 'm'],
+        LIBPATH = 'build'
         )
+    if PLATFORM == 'darwin':
+        diskIOEnv.Append(
+            LINKFLAGS = '-framework CoreServices'
+            )
 
-diskIOSources = [
-    diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
-    'Source/plugins/DiskIO_UGens.cpp']
-merge_lib_info(diskIOEnv, libraries['sndfile'])
-plugins.append(
-    diskIOEnv.SharedLibrary(
-    make_plugin_target('DiskIO_UGens'), diskIOSources))
+    diskIOSources = [
+        diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
+        'Source/plugins/DiskIO_UGens.cpp']
+    merge_lib_info(diskIOEnv, libraries['sndfile'])
+    plugins.append(
+        diskIOEnv.SharedLibrary(
+        make_plugin_target('DiskIO_UGens'), diskIOSources))
 
 # ui ugens
 if PLATFORM == 'darwin':
@@ -1340,6 +1345,7 @@ print ' DEBUG:                   %s' % yesorno(env['DEBUG'])
 print ' DEVELOPMENT:             %s' % yesorno(env['DEVELOPMENT'])
 print ' LANG:                    %s' % yesorno(env['LANG'])
 print ' LID:                     %s' % yesorno(features['lid'])
+print ' NO_LIBSNDFILE:           %s' % yesorno(env['NO_LIBSNDFILE'])
 print ' WII:                     %s' % yesorno(features['wii'])
 print ' PREFIX:                  %s' % env['PREFIX']
 print ' RENDEZVOUS:              %s' % yesorno(features['rendezvous'])
@@ -1355,3 +1361,4 @@ print '------------------------------------------------------------------------'
 
 # ======================================================================
 # EOF
+

@@ -346,7 +346,9 @@ public:
 protected:
 	int mBufIndex;
 	char *mFilename;
+#ifndef NO_LIBSNDFILE
 	SF_INFO mFileInfo;
+#endif
 	int mNumFrames, mBufOffset;
 	bool mLeaveFileOpen;
 	

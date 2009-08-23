@@ -223,9 +223,9 @@ void InterfaceTable_Init()
 	
 	ft->fSendMsgFromRT = &SendMsgFromEngine;
 	ft->fSendMsgToRT = &SendMsgToEngine;
-	
+#ifndef NO_LIBSNDFILE		
 	ft->fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
-	
+#endif
 	ft->fGetNode = &World_GetNode;
 	ft->fGetGraph = &World_GetGraph;
 	
@@ -515,6 +515,7 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 
+#ifndef NO_LIBSNDFILE
 void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
 	World_LoadGraphDefs(world);
@@ -702,6 +703,7 @@ Bail:
 	
 	World_Cleanup(world);
 }
+#endif   // !NO_LIBSNDFILE
 
 int World_OpenUDP(struct World *inWorld, int inPort)
 {
@@ -1007,9 +1009,11 @@ void World_Cleanup(World *world)
 		
 		if (nrtbuf->data) free(nrtbuf->data);
 		if (rtbuf->data && rtbuf->data != nrtbuf->data) free(rtbuf->data);
-		
+
+#ifndef NO_LIBSNDFILE		
 		if (nrtbuf->sndfile) sf_close(nrtbuf->sndfile);
 		if (rtbuf->sndfile && rtbuf->sndfile != nrtbuf->sndfile) sf_close(rtbuf->sndfile);
+#endif
 	}
 		
 	free(world->mSndBufsNonRealTimeMirror);
@@ -1022,10 +1026,11 @@ void World_Cleanup(World *world)
 	delete [] world->mRGen;
 	if (hw) {
 	
+#ifndef NO_LIBSNDFILE		
 		if (hw->mNRTInputFile) sf_close(hw->mNRTInputFile);
 		if (hw->mNRTOutputFile) sf_close(hw->mNRTOutputFile);
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
-		
+#endif		
 		free(hw->mUsers);
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
@@ -1073,6 +1078,7 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
 	return kSCErr_None;
 }
 
+#ifndef NO_LIBSNDFILE		
 int sampleFormatFromString(const char* name);
 int sampleFormatFromString(const char* name)
 {		
@@ -1150,6 +1156,7 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 	info->format = (unsigned int)(headerFormat | sampleFormat);
 	return kSCErr_None;
 }
+#endif
 
 #include "scsynthsend.h"
 
