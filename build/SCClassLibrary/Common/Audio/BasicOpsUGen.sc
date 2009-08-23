@@ -16,7 +16,8 @@ BasicOpUGen : UGen {
 	operator_ { arg op;
 		operator = op;
 		specialIndex = operator.specialIndex;
-		if(specialIndex < 0) {
+			// 'firstArg' check is necessary for audio-rate Demand units
+		if(specialIndex < 0 and: { operator != 'firstArg' }) {
 			Error("Operator '%' applied to a UGen is not supported in scsynth".format(operator)).throw
 		}
 	}
