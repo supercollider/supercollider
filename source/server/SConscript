@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #
 # SCons build system
@@ -25,9 +24,9 @@ sources = Split("""node_graph.cpp
                    dsp_context.cpp
                    memory_pool.cpp
                    server.cpp
-                   sc_synth_prototype.cpp
-                   sc_synthdef.cpp
-                   sc_synth.cpp
+                   ../sc/sc_synth_prototype.cpp
+                   ../sc/sc_synthdef.cpp
+                   ../sc/sc_synth.cpp
                    ../utilities/thread.cpp
                    """)
 

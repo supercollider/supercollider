@@ -21,7 +21,7 @@
 #include "server.hpp"
 #include "sync_commands.hpp"
 
-#include "sc_synth_prototype.hpp"
+#include "sc/sc_synth_prototype.hpp"
 
 namespace nova
 {

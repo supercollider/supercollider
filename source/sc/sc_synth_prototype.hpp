@@ -21,8 +21,9 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "synth_prototype.hpp"
 #include "sc_synthdef.hpp"
+
+#include "server/synth_prototype.hpp"
 
 namespace nova
 {

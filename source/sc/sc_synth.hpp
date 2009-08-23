@@ -17,11 +17,12 @@
 //  Boston, MA 02111-1307, USA.
 
 
-#ifndef SERVER_SC_SYNTH_HPP
-#define SERVER_SC_SYNTH_HPP
+#ifndef SC_SYNTH_HPP
+#define SC_SYNTH_HPP
 
 #include "sc_synth_prototype.hpp"
-#include "synth.hpp"
+
+#include "server/synth.hpp"
 
 namespace nova
 {
@@ -77,4 +78,4 @@ private:
 
 } /* namespace nova */
 
-#endif /* SERVER_SC_SYNTH_HPP */
+#endif /* SC_SYNTH_HPP */

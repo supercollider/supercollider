@@ -18,10 +18,10 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "sc_synth_prototype.hpp"
-#include "synth_factory.hpp"
-
 #include "sc_synth.hpp"
+#include "sc_synth_prototype.hpp"
+
+#include "server/synth_factory.hpp"
 
 namespace nova
 {
