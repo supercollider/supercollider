@@ -59,6 +59,13 @@ build requirements
 
    configuration and build tool based on python
 
+ * fftw >= 3.0
+
+   http://www.fftw.org/
+
+   fast FFT transform library (for frequency-domain analysis, 
+                                        phase-vocoder effects)
+
 ------------------------------------------------------------------------
 build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
@@ -128,6 +135,9 @@ gives an overview of scons options.
    $ scons -h
 
 lists package specific options variables and their default values.
+(Note: some options allow to disable the dependencies on fftw and on 
+libsndfile, but those dependencies should be considered compulsory for
+most standard setups since they provide much core sc functionality.)
 
 options can be set on the command line
 
