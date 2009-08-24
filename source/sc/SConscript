@@ -69,11 +69,11 @@ plugins = []
 
 for source in sources:
     plugin_name = source.abspath.split('/')[-1][:-4]
-    plugin = SharedLibrary(plugin_name, source,
-                           CPPPATH=["supercollider/Headers/plugin_interface",
-                                    "supercollider/Headers/common"],
-                           SHLIBPREFIX="",
-                           )
+    plugin = env.SharedLibrary(plugin_name, source,
+                               CPPPATH=["supercollider/Headers/plugin_interface",
+                                        "supercollider/Headers/common"],
+                               SHLIBPREFIX="",
+                               )
     plugins.append(plugin)
 
 Return("plugins")

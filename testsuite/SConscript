@@ -52,7 +52,7 @@ else:
     unit_test_cflags = "-g -Wall"
 
 
-unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs],
+unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl'],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
@@ -126,6 +126,7 @@ nova_server_test_sources = ["server_node_graph_test.cpp",
                             "server_test.cpp",
                             "server_ugen_test.cpp",
                             "sc_synth_prototype_test.cpp",
+                            "sc_plugin_loader_test.cpp",
                             ]
 
 nova_server_sources = env.SConscript("#/source/server/SConscript", "env")[1] # use combined sources

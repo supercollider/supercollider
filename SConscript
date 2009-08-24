@@ -155,7 +155,7 @@ server = [release_server, debug_server]
 # build sc plugins
 #
 BuildDir('plugins', 'source/sc')
-plugins = env.SConscript("source/sc/SConscript", build_dir="plugins")
+plugins = env.SConscript("source/sc/SConscript", exports={'env':debug_env}, build_dir="plugins")
 
 Alias("plugins", plugins)
 
