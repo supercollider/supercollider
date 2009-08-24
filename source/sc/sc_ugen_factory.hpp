@@ -27,6 +27,7 @@
 #include "sc_plugin_interface.hpp"
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
+#include "supercollider/Headers/plugin_interface/SC_Unit.h"
 
 namespace nova
 {
@@ -35,7 +36,6 @@ namespace bi = boost::intrusive;
 class sc_ugen_def:
     public bi::set_base_hook<>
 {
-
 private:
     const std::string name_;
     const size_t alloc_size;
@@ -45,7 +45,16 @@ private:
 
 public:
     sc_ugen_def(const char *inUnitClassName, size_t inAllocSize,
-                 UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+                UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+
+    std::string const & name(void) const
+    {
+
+        return name_;
+    }
+
+    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec);
+    void destruct(Unit * unit);
 
 public:
     /* sort by name */
@@ -59,7 +68,6 @@ public:
 class sc_bufgen_def:
     public bi::set_base_hook<>
 {
-private:
     const std::string name_;
     const BufGenFunc func;
 
@@ -67,6 +75,11 @@ public:
     sc_bufgen_def(const char * name, BufGenFunc func):
         name_(name), func(func)
     {}
+
+    std::string const & name(void) const
+    {
+        return name_;
+    }
 
 public:
     /* sort by name */
@@ -85,6 +98,35 @@ class sc_ugen_factory:
 {
     typedef bi::set<sc_ugen_def> ugen_map_t;
     typedef bi::set<sc_bufgen_def> bufgen_map_t;
+
+    template<typename def>
+    struct compare_def
+    {
+        bool operator()(def const & lhs,
+                        std::string const & rhs) const
+        {
+            return lhs.name() < rhs;
+        }
+
+        bool operator()(std::string const & lhs,
+                        def const & rhs) const
+        {
+            return lhs < rhs.name();
+        }
+
+        bool operator()(def const & lhs,
+                        const char * rhs) const
+        {
+            return (strcmp(lhs.name().c_str(), rhs) < 0);
+        }
+
+        bool operator()(const char * lhs,
+                        def const & rhs) const
+        {
+            return (strcmp(lhs, rhs.name().c_str()) < 0);
+        }
+    };
+
     ugen_map_t ugen_map;
     bufgen_map_t bufgen_map;
 
@@ -98,11 +140,8 @@ public:
         close_handles();
     }
 
-    sc_unit allocate_ugen(sc_synth * synth,
-                          sc_synthdef::unit_spec_t const & unit_spec)
-    {
-        return sc_unit();
-    }
+    sc_unit allocate_ugen(sc_synthdef::unit_spec_t const & unit_spec);
+    void free_ugen(sc_unit const & unit);
 
     void load_ugen(boost::filesystem::path const & path);
 

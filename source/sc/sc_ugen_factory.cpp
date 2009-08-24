@@ -33,12 +33,46 @@
 namespace nova
 {
 
+
 sc_ugen_factory ugen_factory;
 
 sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
                           UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
     name_(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags)
 {}
+
+Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
+{
+    Unit * unit = (Unit*)sc_synth::allocate(alloc_size);
+
+    /* todo: later we can pack all memory chunks to the same region */
+    unit->mInput  =  (Wire**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(Wire*));
+    unit->mOutput =  (Wire**)sc_synth::allocate(unit_spec.output_specs.size() * sizeof(Wire*));
+    unit->mInBuf  = (float**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(float*));
+    unit->mOutBuf = (float**)sc_synth::allocate(unit_spec.output_specs.size() * sizeof(float*));
+
+    /* initialize members */
+    unit->mCalcRate = unit_spec.rate;
+    unit->mSpecialIndex = unit_spec.special_index;
+    unit->mDone = false;
+    unit->mUnitDef = reinterpret_cast<struct UnitDef*>(this); /* we abuse this field to store our reference */
+
+    (*ctor)(unit);
+    return unit;
+}
+
+void sc_ugen_def::destruct(Unit * unit)
+{
+    (*dtor)(unit);
+
+    /* free */
+    sc_synth::free(unit->mInput);
+    sc_synth::free(unit->mOutput);
+    sc_synth::free(unit->mInBuf);
+    sc_synth::free(unit->mOutBuf);
+    sc_synth::free(unit);
+}
+
 
 #ifdef DLOPEN
 void sc_ugen_factory::load_ugen ( boost::filesystem::path const & path )
@@ -89,5 +123,20 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
     bufgen_map.insert(*def);
 }
 
+sc_unit sc_ugen_factory::allocate_ugen(sc_synthdef::unit_spec_t const & unit_spec)
+{
+    ugen_map_t::iterator it = ugen_map.find(unit_spec.name,
+                                            compare_def<sc_ugen_def>());
+    if (it == ugen_map.end())
+        return sc_unit();
+
+    return sc_unit(it->construct(unit_spec));
+}
+
+void sc_ugen_factory::free_ugen(sc_unit const & unit)
+{
+    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit.unit->mUnitDef);
+    def->destruct(unit.unit);
+}
 
 } /* namespace nova */

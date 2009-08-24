@@ -60,7 +60,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        sc_unit unit = ugen_factory.allocate_ugen(this, *it);
+        sc_unit unit = ugen_factory.allocate_ugen(*it);
         units.push_back(unit);
     }
 }

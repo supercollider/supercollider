@@ -61,6 +61,7 @@ class sc_synthdef
     friend class sc_synth_prototype;
     friend class sc_synth;
     friend class sc_ugen_factory;
+    friend class sc_ugen_def;
 
 public:
     typedef std::vector<unit_spec_t> graph_t;

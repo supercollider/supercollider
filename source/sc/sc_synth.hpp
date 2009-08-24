@@ -20,15 +20,24 @@
 #ifndef SC_SYNTH_HPP
 #define SC_SYNTH_HPP
 
+#include "supercollider/Headers/plugin_interface/SC_Unit.h"
+
 #include "sc_synth_prototype.hpp"
 
 #include "server/synth.hpp"
+
 
 namespace nova
 {
 
 class sc_unit
 {
+public:
+    sc_unit(struct Unit * unit = NULL):
+        unit(unit)
+    {}
+
+    struct Unit * unit;
 };
 
 class sc_synth:
