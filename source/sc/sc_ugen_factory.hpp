@@ -56,6 +56,27 @@ public:
     }
 };
 
+class sc_bufgen_def:
+    public bi::set_base_hook<>
+{
+private:
+    const std::string name_;
+    const BufGenFunc func;
+
+public:
+    sc_bufgen_def(const char * name, BufGenFunc func):
+        name_(name), func(func)
+    {}
+
+public:
+    /* sort by name */
+    friend bool operator< (sc_bufgen_def const & a,
+                           sc_bufgen_def const & b)
+    {
+        return a.name_ < b.name_;
+    }
+};
+
 /** factory class for supercollider ugens
  *
  *  \todo do we need to take care of thread safety? */
@@ -63,15 +84,18 @@ class sc_ugen_factory:
     private sc_plugin_interface
 {
     typedef bi::set<sc_ugen_def> ugen_map_t;
+    typedef bi::set<sc_bufgen_def> bufgen_map_t;
     ugen_map_t ugen_map;
+    bufgen_map_t bufgen_map;
 
     std::vector<void*> open_handles;
 
 public:
     ~sc_ugen_factory (void)
     {
-        close_handles();
         ugen_map.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
+        bufgen_map.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
+        close_handles();
     }
 
     sc_unit allocate_ugen(sc_synth * synth,
@@ -83,7 +107,9 @@ public:
     void load_ugen(boost::filesystem::path const & path);
 
     void register_ugen(const char *inUnitClassName, size_t inAllocSize,
-                 UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+                       UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+
+    void register_bufgen(const char * name, BufGenFunc func);
 
 private:
     void close_handles(void);

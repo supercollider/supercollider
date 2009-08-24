@@ -35,6 +35,18 @@ bool define_unit(const char *inUnitClassName, size_t inAllocSize,
     }
 }
 
+bool define_bufgen(const char * name, BufGenFunc func)
+{
+    try {
+        nova::ugen_factory.register_bufgen(name, func);
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+}
+
 } /* extern "C" */
 
 namespace nova
@@ -43,6 +55,7 @@ namespace nova
 sc_plugin_interface::sc_plugin_interface(void)
 {
     sc_interface.fDefineUnit = &define_unit;
+    sc_interface.fDefineBufGen = &define_bufgen;
 }
 
 } /* namespace nova */

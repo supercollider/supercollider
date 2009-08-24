@@ -83,5 +83,11 @@ void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocS
     ugen_map.insert(*def);
 }
 
+void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
+{
+    sc_bufgen_def * def = new sc_bufgen_def(name, func);
+    bufgen_map.insert(*def);
+}
+
 
 } /* namespace nova */
