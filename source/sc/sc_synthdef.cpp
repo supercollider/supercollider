@@ -21,6 +21,7 @@
 #include <boost/integer/endian.hpp>
 
 #include <iostream>
+#include <sstream>
 
 namespace nova
 {
