@@ -223,7 +223,9 @@ void InterfaceTable_Init()
 	
 	ft->fSendMsgFromRT = &SendMsgFromEngine;
 	ft->fSendMsgToRT = &SendMsgToEngine;
-#ifndef NO_LIBSNDFILE		
+#ifdef NO_LIBSNDFILE		
+	ft->fSndFileFormatInfoFromStrings = NULL;
+#else
 	ft->fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
 #endif
 	ft->fGetNode = &World_GetNode;

@@ -89,7 +89,10 @@ struct InterfaceTable
 	bool (*fSendMsgToRT)(World *inWorld, struct FifoMsg& inMsg);
 	
 	// libsndfile support
-#ifndef NO_LIBSNDFILE
+#ifdef NO_LIBSNDFILE
+	int (*fSndFileFormatInfoFromStrings)(void *info, 
+		const char *headerFormatString, const char *sampleFormatString);
+#else
 	int (*fSndFileFormatInfoFromStrings)(SF_INFO *info, 
 		const char *headerFormatString, const char *sampleFormatString);
 #endif
