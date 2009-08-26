@@ -119,6 +119,12 @@ public:
         return malloc_ex(size, data_.pool);
     }
 
+    void * realloc(void * p, std::size_t size)
+    {
+        scoped_lock lock(data_);
+        return realloc_ex(p, size, data_.pool);
+    }
+
     void free(void * p)
     {
         scoped_lock lock(data_);
