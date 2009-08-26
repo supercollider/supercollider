@@ -40,15 +40,27 @@ class sc_synthdef
     typedef boost::int16_t int16;
     typedef boost::int32_t int32;
 
+public:
     struct input_spec
     {
-        int16_t source;         /* index of ugen or -1 for constant */
-        int16_t index;          /* number of output or constant index */
+        input_spec(int16_t source, int16_t index):
+            source(source), index(index)
+        {}
+
+        int16_t source;   /* index of ugen or -1 for constant */
+        int16_t index;    /* number of output or constant index */
     };
 
     struct unit_spec_t
     {
         explicit unit_spec_t(std::ifstream & istream);
+
+        unit_spec_t(string const & name, int16_t rate, int16_t special_index,
+                    std::vector<input_spec> const & in_specs,
+                    std::vector<char> const & out_specs):
+            name(name), rate(rate), special_index(special_index),
+            input_specs(in_specs), output_specs(out_specs)
+        {}
 
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
@@ -63,7 +75,6 @@ class sc_synthdef
     friend class sc_ugen_factory;
     friend class sc_ugen_def;
 
-public:
     typedef std::vector<unit_spec_t> graph_t;
 
     explicit sc_synthdef(std::ifstream & istream);

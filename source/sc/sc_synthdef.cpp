@@ -123,10 +123,9 @@ sc_synthdef::unit_spec_t::unit_spec_t(std::ifstream & stream)
 
     for (int i = 0; i != inputs; ++i)
     {
-        input_spec spec;
-        spec.source = read_int16(stream);
-        spec.index = read_int16(stream);
-
+        int16_t source = read_int16(stream);
+        int16_t index = read_int16(stream);
+        input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 

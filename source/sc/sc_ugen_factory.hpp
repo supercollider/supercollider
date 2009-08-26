@@ -49,11 +49,12 @@ public:
 
     std::string const & name(void) const
     {
-
         return name_;
     }
 
     Unit * construct(sc_synthdef::unit_spec_t const & unit_spec);
+    /* initialize io regions */
+    void initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t const & unit_spec);
     void destruct(Unit * unit);
 
 public:
@@ -140,7 +141,7 @@ public:
         close_handles();
     }
 
-    sc_unit allocate_ugen(sc_synthdef::unit_spec_t const & unit_spec);
+    sc_unit allocate_ugen(sc_synth * synth, sc_synthdef::unit_spec_t const & unit_spec);
     void free_ugen(sc_unit const & unit);
 
     void load_plugin(boost::filesystem::path const & path);

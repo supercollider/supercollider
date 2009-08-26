@@ -7,10 +7,10 @@
 using namespace nova;
 using namespace std;
 
+boost::filesystem::path base_path ("/home/tim/workspace/nova-server/plugins/");
+
 BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
 {
-    boost::filesystem::path base_path ("/home/tim/workspace/nova-server/plugins/");
-
     ugen_factory.load_plugin(base_path / "BeatTrack2.so");
     ugen_factory.load_plugin(base_path / "BeatTrack.so");
     ugen_factory.load_plugin(base_path / "BinaryOpUGens.so");
@@ -51,4 +51,15 @@ BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
     ugen_factory.load_plugin(base_path / "TriggerUGens.so");
     ugen_factory.load_plugin(base_path / "UnaryOpUGens.so");
     ugen_factory.load_plugin(base_path / "UnpackFFTUGens.so");
+}
+
+BOOST_AUTO_TEST_CASE( ugen_construct_test_1 )
+{
+    std::vector<nova::sc_synthdef> defs =
+        nova::read_synthdef_file(base_path / ".." / "testsuite/default.scsyndef");
+    sc_synth_prototype_ptr prtype(new sc_synth_prototype(defs[0]));
+
+    sc_synth * s = new sc_synth(1000, prtype);
+
+    delete s;
 }

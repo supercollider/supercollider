@@ -19,6 +19,8 @@
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 
+void Rate_Init(Rate *inRate, double inSampleRate, int inBufLength);
+
 namespace nova
 {
 
@@ -26,18 +28,40 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), unit_buffers(0),
     controls(0)
 {
+    Rate_Init(&full_rate, 44100.f, 64);
+    Rate_Init(&control_rate, 44100.f/64, 1);
+    rgen.init((uint32_t)(uint64_t)this);
+    graph.mRGen = &rgen;
+
     sc_synthdef const & synthdef = prototype->synthdef;
 
     /* allocate controls
-     *
-     * \todo control bus mappings
-     *
      * */
     size_t parameter_count = synthdef.parameter_count();
     controls = allocate<float>(parameter_count);
+
     for (size_t i = 0; i != parameter_count; ++i)
         controls[i] = synthdef.parameters[i];
 
+    /* prepare control mappings
+     * */
+    graph.mMapControls = allocate<float*>(parameter_count);
+
+    for (size_t i = 0; i != parameter_count; ++i)
+        graph.mMapControls[i] = &controls[i];
+
+    /* allocate constant wires */
+    for (size_t i = 0; i != synthdef.constants.size(); ++i) {
+        Wire * wire = allocate<Wire>(1);
+        wire->mFromUnit = 0;
+        wire->mCalcRate = 0;
+        wire->mBuffer = 0;
+        wire->mScalarValue = get_constant(i);
+
+        graph.mWire = wire;
+    }
+
+#if 0
     /* allocate wire buffers
      *
      * \todo we allocate one buffer per ugen, output, which is very inefficient,
@@ -55,12 +79,13 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     }
 
     allocate_unit_buffers(64, audio_buffers, control_buffers);
+#endif
 
     /* allocate unit generators */
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        sc_unit unit = ugen_factory.allocate_ugen(*it);
+        sc_unit unit = ugen_factory.allocate_ugen(this, *it);
         units.push_back(unit);
     }
 }

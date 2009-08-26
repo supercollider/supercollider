@@ -53,7 +53,10 @@ bool define_bufgen(const char * name, BufGenFunc func)
 
 void * rt_alloc(World * dummy, size_t size)
 {
-    return nova::rt_pool.malloc(size);
+    if (size)
+        return nova::rt_pool.malloc(size);
+    else
+        return NULL;
 }
 
 void * rt_realloc(World * dummy, void * ptr, size_t size)
@@ -63,7 +66,8 @@ void * rt_realloc(World * dummy, void * ptr, size_t size)
 
 void rt_free(World * dummy, void * ptr)
 {
-    nova::rt_pool.free(ptr);
+    if (ptr)
+        nova::rt_pool.free(ptr);
 }
 
 void * nrt_alloc(size_t size)

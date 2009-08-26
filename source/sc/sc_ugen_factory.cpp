@@ -29,6 +29,7 @@
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
 #include "supercollider/Headers/plugin_interface/SC_World.h"
+#include "supercollider/Headers/plugin_interface/SC_Wire.h"
 
 namespace nova
 {
@@ -46,6 +47,9 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
     Unit * unit = (Unit*)sc_synth::allocate(alloc_size);
 
     /* todo: later we can pack all memory chunks to the same region */
+    unit->mNumInputs  = unit_spec.input_specs.size();
+    unit->mNumOutputs = unit_spec.output_specs.size();
+
     unit->mInput  =  (Wire**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(Wire*));
     unit->mOutput =  (Wire**)sc_synth::allocate(unit_spec.output_specs.size() * sizeof(Wire*));
     unit->mInBuf  = (float**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(float*));
@@ -57,8 +61,62 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
     unit->mDone = false;
     unit->mUnitDef = reinterpret_cast<struct UnitDef*>(this); /* we abuse this field to store our reference */
 
-    (*ctor)(unit);
     return unit;
+}
+
+void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t const & unit_spec)
+{
+    unit->mParent = &s->graph;
+
+
+    if (unit_spec.rate == 2)
+        unit->mRate = &s->full_rate;
+    else
+        unit->mRate = &s->control_rate;
+
+    /* allocate wire structs */
+    size_t outputs = unit_spec.output_specs.size();
+
+    for (size_t i = 0; i != outputs; ++i) {
+        Wire * w = sc_synth::allocate<Wire>(1);
+
+        w->mFromUnit = unit;
+        w->mCalcRate = unit->mCalcRate;
+
+        w->mBuffer = 0;
+        w->mScalarValue = 0;
+
+        if (unit->mCalcRate == 2) {
+            /* allocate a new buffer */
+            unit->mOutBuf[i] = (sample*)sc_synth::allocate(64 * sizeof(sample));
+            w->mBuffer = unit->mOutBuf[i];
+        }
+        else
+            unit->mOutBuf[i] = &w->mScalarValue;
+
+        unit->mOutput[i] = w;
+    }
+
+    for (size_t i = 0; i != unit_spec.input_specs.size(); ++i)
+    {
+        int source = unit_spec.input_specs[i].source;
+        int index = unit_spec.input_specs[i].index;
+
+        if (source == -1)
+            unit->mInput[i] = &unit->mParent->mWire[index];
+        else
+        {
+            Unit * prev = s->units[source].unit;
+            unit->mInput[i] = prev->mOutput[index];
+        }
+
+        if (unit->mInput[i]->mCalcRate == 2)
+            unit->mInBuf[i] = unit->mInput[i]->mBuffer;
+        else
+            unit->mInBuf[i] = &unit->mInput[i]->mScalarValue;
+    }
+
+    (*ctor)(unit);
 }
 
 void sc_ugen_def::destruct(Unit * unit)
@@ -123,14 +181,19 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
     bufgen_map.insert(*def);
 }
 
-sc_unit sc_ugen_factory::allocate_ugen(sc_synthdef::unit_spec_t const & unit_spec)
+sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
+                                       sc_synthdef::unit_spec_t const & unit_spec)
 {
     ugen_map_t::iterator it = ugen_map.find(unit_spec.name,
                                             compare_def<sc_ugen_def>());
     if (it == ugen_map.end())
         return sc_unit();
 
-    return sc_unit(it->construct(unit_spec));
+    Unit * unit = it->construct(unit_spec);
+    unit->mWorld = &world;
+    it->initialize(unit, synth, unit_spec);
+
+    return sc_unit(unit);
 }
 
 void sc_ugen_factory::free_ugen(sc_unit const & unit)

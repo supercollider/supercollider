@@ -21,6 +21,9 @@
 #define SC_SYNTH_HPP
 
 #include "supercollider/Headers/plugin_interface/SC_Unit.h"
+#include "supercollider/Headers/plugin_interface/SC_Graph.h"
+#include "supercollider/Headers/plugin_interface/SC_Rate.h"
+#include "supercollider/Headers/plugin_interface/SC_RGen.h"
 
 #include "sc_synth_prototype.hpp"
 
@@ -53,6 +56,7 @@ public:
 
     ~sc_synth(void)
     {
+        free(graph.mMapControls);
         free(controls);
         free(unit_buffers);
     }
@@ -78,11 +82,19 @@ private:
         return static_cast<sc_synth_prototype*>(class_ptr.get())->synthdef.constants[index];
     }
 
+    friend class sc_ugen_def;
+
     unit_vector units;
     sample * unit_buffers;
     sample * control_buffers;   /* in the same memory chunk as unit_buffers */
 
     sample * controls;
+
+    Graph graph;
+
+    Rate full_rate;
+    Rate control_rate;
+    RGen rgen;
 };
 
 } /* namespace nova */
