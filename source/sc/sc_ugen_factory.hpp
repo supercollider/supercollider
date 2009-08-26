@@ -143,7 +143,7 @@ public:
     sc_unit allocate_ugen(sc_synthdef::unit_spec_t const & unit_spec);
     void free_ugen(sc_unit const & unit);
 
-    void load_ugen(boost::filesystem::path const & path);
+    void load_plugin(boost::filesystem::path const & path);
 
     void register_ugen(const char *inUnitClassName, size_t inAllocSize,
                        UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);

@@ -75,7 +75,7 @@ void sc_ugen_def::destruct(Unit * unit)
 
 
 #ifdef DLOPEN
-void sc_ugen_factory::load_ugen ( boost::filesystem::path const & path )
+void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == NULL)
@@ -102,7 +102,7 @@ void sc_ugen_factory::close_handles(void)
 }
 
 #else
-void sc_ugen_factory::load_ugen ( boost::filesystem::path const & path )
+void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
 }
 
