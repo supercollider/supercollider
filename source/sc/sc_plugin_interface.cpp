@@ -19,6 +19,8 @@
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
 
+#include "supercollider/Headers/server/SC_Samp.h"
+
 extern "C"
 {
 
@@ -56,6 +58,11 @@ sc_plugin_interface::sc_plugin_interface(void)
 {
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
+
+    sc_interface.mSine = gSine;
+    sc_interface.mCosecant = gInvSine;
+    sc_interface.mSineSize = kSineSize;
+    sc_interface.mSineWavetable = gSineWavetable;
 }
 
 } /* namespace nova */

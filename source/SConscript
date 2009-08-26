@@ -50,12 +50,13 @@ libsources, libbuildsource = SConscript("libs/SConscript", exports="env")
 #
 def build_nova_server():
     server_sources = env.SConscript("server/SConscript", "env")
+    scsynth_sources = env.SConscript("sc/SConscript.server", "env")
 
     if env['compact_build']:
-        used_libsources = libbuildsource
+        used_libsources = libbuildsource + scsynth_sources
         used_sources = server_sources[1] + server_sources[3]
     else:
-        used_libsources = libsources
+        used_libsources = libsources + scsynth_sources
         used_sources = server_sources[0] + server_sources[2]
 
     server_cflags = env['CCFLAGS']+'-fvisibility=hidden';
