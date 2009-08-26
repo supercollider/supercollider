@@ -401,6 +401,7 @@
 	    (unwind-protect
 		(progn
 		  (sclang-convert-rtf-buffer tmp-buffer)
+		  (toggle-read-only 0)
 		  (erase-buffer)
 		  (insert-buffer-substring tmp-buffer))
 	      (and (buffer-modified-p) (not modified-p) (set-buffer-modified-p nil))
