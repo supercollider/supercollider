@@ -93,7 +93,7 @@ private:
     graph_t graph;
 };
 
-std::vector<sc_synthdef> read_synthdef_file(std::string const & filename);
+std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename);
 
 } /* namespace nova */
 

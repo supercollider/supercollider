@@ -86,12 +86,12 @@ int16_t read_int32(std::ifstream & stream)
 } /* namespace */
 
 
-std::vector<sc_synthdef> read_synthdef_file(std::string const & filename)
+std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename)
 {
     using namespace std;
 
     ifstream stream;
-    stream.open(filename.c_str());
+    stream.open(filename.string().c_str());
 
     std::vector<sc_synthdef> ret;
 
