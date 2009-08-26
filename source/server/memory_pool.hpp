@@ -72,6 +72,13 @@ public:
         return static_cast<pointer>(rt_pool.malloc(size));
     }
 
+    pointer reallocate(pointer p,
+                       size_type size,
+                       void* hint = 0)
+    {
+        return static_cast<pointer>(rt_pool.realloc(p, size));
+    }
+
     void deallocate(pointer p, size_type n)
     {
         rt_pool.free(p);
