@@ -107,6 +107,21 @@ sc_plugin_interface::sc_plugin_interface(void)
     sc_interface.fNRTAlloc = &nrt_alloc;
     sc_interface.fNRTRealloc = &nrt_realloc;
     sc_interface.fNRTFree = &nrt_free;
+
+
+    /* initialize world */
+    world.mAudioBus = new float[64 * 1024];
+    world.mAudioBusTouched = new int32[1024];
+    world.mControlBus = new float[1024];
+    world.mControlBusTouched = new int32[1024];
+}
+
+sc_plugin_interface::~sc_plugin_interface(void)
+{
+    delete[] world.mAudioBus;
+    delete[] world.mAudioBusTouched;
+    delete[] world.mControlBus;
+    delete[] world.mControlBusTouched;
 }
 
 } /* namespace nova */

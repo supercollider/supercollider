@@ -20,6 +20,7 @@
 #define SC_PLUGIN_INTERFACE_HPP
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
+#include "supercollider/Headers/plugin_interface/SC_World.h"
 
 namespace nova
 {
@@ -28,8 +29,10 @@ class sc_plugin_interface
 {
 public:
     sc_plugin_interface(void);
+    ~sc_plugin_interface(void);
 
     InterfaceTable sc_interface;
+    World world;
 };
 
 } /* namespace nova */
