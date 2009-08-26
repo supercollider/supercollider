@@ -19,6 +19,8 @@
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
 
+#include "../server/memory_pool.hpp"
+
 #include "supercollider/Headers/server/SC_Samp.h"
 
 extern "C"
@@ -49,6 +51,37 @@ bool define_bufgen(const char * name, BufGenFunc func)
     }
 }
 
+void * rt_alloc(World * dummy, size_t size)
+{
+    return nova::rt_pool.malloc(size);
+}
+
+void * rt_realloc(World * dummy, void * ptr, size_t size)
+{
+    return nova::rt_pool.realloc(ptr, size);
+}
+
+void rt_free(World * dummy, void * ptr)
+{
+    nova::rt_pool.free(ptr);
+}
+
+void * nrt_alloc(size_t size)
+{
+    return malloc(size);
+}
+
+void * nrt_realloc(void * ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void nrt_free(void * ptr)
+{
+    free(ptr);
+}
+
+
 } /* extern "C" */
 
 namespace nova
@@ -56,13 +89,24 @@ namespace nova
 
 sc_plugin_interface::sc_plugin_interface(void)
 {
+    /* define functions */
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
 
+    /* wave tables */
     sc_interface.mSine = gSine;
     sc_interface.mCosecant = gInvSine;
     sc_interface.mSineSize = kSineSize;
     sc_interface.mSineWavetable = gSineWavetable;
+
+    /* memory allocation */
+    sc_interface.fRTAlloc = &rt_alloc;
+    sc_interface.fRTRealloc = &rt_realloc;
+    sc_interface.fRTFree = &rt_free;
+
+    sc_interface.fNRTAlloc = &nrt_alloc;
+    sc_interface.fNRTRealloc = &nrt_realloc;
+    sc_interface.fNRTFree = &nrt_free;
 }
 
 } /* namespace nova */
