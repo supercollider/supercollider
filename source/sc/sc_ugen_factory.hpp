@@ -41,7 +41,7 @@ private:
     const size_t alloc_size;
     const UnitCtorFunc ctor;
     const UnitDtorFunc dtor;
-    uint32_t flags;
+    const uint32_t flags;
 
 public:
     sc_ugen_def(const char *inUnitClassName, size_t inAllocSize,
