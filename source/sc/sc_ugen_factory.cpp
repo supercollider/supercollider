@@ -73,6 +73,8 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
     else
         unit->mRate = &s->control_rate;
 
+    unit->mBufLength = unit->mRate->mBufLength;
+
     /* allocate wire structs */
     size_t outputs = unit_spec.output_specs.size();
 
