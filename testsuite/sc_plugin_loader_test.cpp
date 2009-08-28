@@ -53,13 +53,29 @@ BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
     ugen_factory.load_plugin(base_path / "UnpackFFTUGens.so");
 }
 
+
+const char * test_synthdefs[] =
+{
+    "default.scsyndef",
+    "help_out.scsyndef",
+    "help_out2.scsyndef",
+    "help_InFeedback.scsyndef",
+};
+
+
 BOOST_AUTO_TEST_CASE( ugen_construct_test_1 )
 {
-    std::vector<nova::sc_synthdef> defs =
-        nova::read_synthdef_file(base_path / ".." / "testsuite/default.scsyndef");
-    sc_synth_prototype_ptr prtype(new sc_synth_prototype(defs[0]));
+    for (int i = 0; i != sizeof(test_synthdefs)/sizeof(const char*); ++i) {
+        const char * synthdef = test_synthdefs[i];
 
-    sc_synth * s = new sc_synth(1000, prtype);
+        std::vector<nova::sc_synthdef> defs =
+            nova::read_synthdef_file(base_path / ".." / "testsuite" / synthdef);
+        sc_synth_prototype_ptr prtype(new sc_synth_prototype(defs[0]));
 
-    delete s;
+        sc_synth * s = new sc_synth(1000, prtype);
+
+        dsp_context context(44100, 64, 0);
+        s->run(context);
+        delete s;
+    }
 }
