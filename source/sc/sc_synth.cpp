@@ -31,7 +31,10 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     Rate_Init(&full_rate, 44100.f, 64);
     Rate_Init(&control_rate, 44100.f/64, 1);
     rgen.init((uint32_t)(uint64_t)this);
+
+    /* initialize sc wrapper class */
     graph.mRGen = &rgen;
+    graph.mSampleOffset = 0;
 
     sc_synthdef const & synthdef = prototype->synthdef;
 
