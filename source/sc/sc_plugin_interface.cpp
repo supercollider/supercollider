@@ -20,6 +20,7 @@
 #include "sc_ugen_factory.hpp"
 
 #include "../server/memory_pool.hpp"
+#include "../simd/simd_memory.hpp"
 
 #include "supercollider/Headers/server/SC_Samp.h"
 
@@ -85,6 +86,18 @@ void nrt_free(void * ptr)
     free(ptr);
 }
 
+void clear_outputs(Unit *unit, int samples)
+{
+    size_t outputs = unit->mNumOutputs;
+
+    if ((samples & 15) == 0)
+        for (size_t i=0; i!=outputs; ++i)
+            nova::zerovec_simd(OUT(i), samples);
+    else
+        for (size_t i=0; i!=outputs; ++i)
+            nova::zerovec(OUT(i), samples);
+}
+
 
 } /* extern "C" */
 
@@ -112,6 +125,8 @@ sc_plugin_interface::sc_plugin_interface(void)
     sc_interface.fNRTRealloc = &nrt_realloc;
     sc_interface.fNRTFree = &nrt_free;
 
+    /* ugen functions */
+    sc_interface.fClearUnitOutputs = clear_outputs;
 
     /* initialize world */
     world.mAudioBus = new float[64 * 1024];
