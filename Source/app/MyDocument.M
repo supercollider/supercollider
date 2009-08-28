@@ -878,6 +878,12 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			// replace "%20" with " " as psycollider doesn't like the former
 			[html replaceOccurrencesOfString: @"%20" withString: @" " options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
 			
+			// fix faded autosyntax Colours
+			[html replaceOccurrencesOfString: @"color: #0016bd" withString: @"color: #0000bf" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // blue
+			[html replaceOccurrencesOfString: @"color: #ae1a19" withString: @"color: #bf0000" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // red
+			[html replaceOccurrencesOfString: @"color: #2b7000" withString: @"color: #007300" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // green
+			// grey doesn't fade
+			
 			// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
 			// The following figures out what the span name is for underlining, and fixes this
 			fixHTMLBoldUnderline(html);
@@ -948,7 +954,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			// html with no attachments, way more simpler
 			NSData *data = [textStorage dataFromRange:range documentAttributes:attributes error:NULL];
 			NSMutableString *html = [[NSMutableString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-			if(html) fixHTMLBoldUnderline(html);
+			if(html) {
+				fixHTMLBoldUnderline(html);
+				// fix faded autosyntax Colours
+				[html replaceOccurrencesOfString: @"color: #0016bd" withString: @"color: #0000bf" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // blue
+				[html replaceOccurrencesOfString: @"color: #ae1a19" withString: @"color: #bf0000" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // red
+				[html replaceOccurrencesOfString: @"color: #2b7000" withString: @"color: #007300" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // green
+				// grey doesn't fade
+			}
 			data = [html dataUsingEncoding: NSUTF8StringEncoding];
 			success = data ? [data writeToFile: path atomically: YES] : NO; 
 			[html release];
