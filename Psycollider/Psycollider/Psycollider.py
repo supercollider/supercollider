@@ -464,7 +464,9 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                 self.SetSelection(braceAtCaret+1, braceOpposite)
             else:
                 self.SetSelection(braceOpposite+1, braceAtCaret)
-          
+        else:
+            evt.Skip()
+
     def OnUpdateUI(self, evt):
         braceAtCaret, braceOpposite = self.CheckForMatchingBraces()
 
@@ -759,14 +761,26 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
     def __init__ (self,parent):
         wx.html.HtmlWindow.__init__(self,parent)
         self.Bind(wx.EVT_CHAR, self.OnChar)         # this hack is to enable the alt+. shortcut
-                                                    # to stop playback, which doesn't seem to work otherwise
-                                                    # bug in wx?
-	
+
     def OnChar(self, event):
         if event.GetKeyCode() == 0x2e and event.AltDown():
             self.GetParent().OnStop(None) 
+        elif event.GetKeyCode() == wx.WXK_LEFT and event.AltDown():
+            self.HistoryBack() 
+        elif event.GetKeyCode() == wx.WXK_RIGHT and event.AltDown():
+            self.HistoryForward() 
         else:
             event.Skip()
+
+    def GoForward(self, event):
+        self.HistoryForward()
+
+    def GoBack(self, event):
+        self.HistoryBack()
+
+    def GoHome(self, event):
+        filePath = os.path.join(gHelpFolder,"Help.html")
+        self.LoadPage(filePath)
 
 # ---------------------------------------------------------------------
 # HTML Window
@@ -778,6 +792,22 @@ class PsycolliderHTMLWin(PsycolliderWindow):
         self.fileMenu.Remove(self.saveFile.GetId())     # Remove unnecessary menu items
         self.fileMenu.Remove(self.saveFileAs.GetId())
         self.htmlSubWin = PsycolliderHTMLSubWin(self)
+
+        # Add navigation menu to HTML windows
+        self.navMenu = wx.Menu()
+        self.menubar.Append(self.navMenu, "&Navigation") 
+        self.home = wx.MenuItem(self.navMenu, -1, '&Home')
+        self.forward = wx.MenuItem(self.navMenu, -1, '&Forward\tAlt+Right')
+        self.back = wx.MenuItem(self.navMenu, -1, '&Back\tAlt+Left')
+
+        self.navMenu.AppendItem(self.home)
+        self.navMenu.AppendItem(self.forward)
+        self.navMenu.AppendItem(self.back)
+        self.SetMenuBar(self.menubar)
+
+        self.Bind(wx.EVT_MENU, self.htmlSubWin.GoHome, id=self.home.GetId())
+        self.Bind(wx.EVT_MENU, self.htmlSubWin.GoForward, id=self.forward.GetId())
+        self.Bind(wx.EVT_MENU, self.htmlSubWin.GoBack, id=self.back.GetId())
 
     def GetSelectedText(self):
         return self.htmlSubWin.SelectionToText()
