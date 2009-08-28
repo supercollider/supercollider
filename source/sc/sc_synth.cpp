@@ -54,14 +54,13 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         graph.mMapControls[i] = &controls[i];
 
     /* allocate constant wires */
+    graph.mWire = allocate<Wire>(synthdef.constants.size());
     for (size_t i = 0; i != synthdef.constants.size(); ++i) {
-        Wire * wire = allocate<Wire>(1);
+        Wire * wire = graph.mWire + i;
         wire->mFromUnit = 0;
         wire->mCalcRate = 0;
         wire->mBuffer = 0;
         wire->mScalarValue = get_constant(i);
-
-        graph.mWire = wire;
     }
 
 #if 0
