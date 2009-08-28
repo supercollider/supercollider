@@ -61,8 +61,7 @@ public:
         free(unit_buffers);
     }
 
-    void run(dsp_context const & context)
-    {}
+    void run(dsp_context const & context);
 
     void set(slot_index_t slot_index, sample val)
     {}

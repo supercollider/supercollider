@@ -92,5 +92,14 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     }
 }
 
+void sc_synth::run(dsp_context const & context)
+{
+    for (size_t i = 0; i != units.size(); ++i) {
+        Unit * unit = units[i].unit;
+        if (unit->mCalcRate == calc_FullRate or
+            unit->mCalcRate == calc_BufRate)
+            (unit->mCalcFunc)(unit, unit->mBufLength);
+    }
+}
 
 } /* namespace nova */

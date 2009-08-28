@@ -68,7 +68,6 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
 {
     unit->mParent = &s->graph;
 
-
     if (unit_spec.rate == 2)
         unit->mRate = &s->full_rate;
     else
