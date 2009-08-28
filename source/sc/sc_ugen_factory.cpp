@@ -154,8 +154,11 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
 void sc_ugen_factory::close_handles(void)
 {
+#if 0
+    /* closing the handles has some unwanted side effects, so we leave them open */
     foreach(void * handle, open_handles)
         dlclose(handle);
+#endif
 }
 
 #else
