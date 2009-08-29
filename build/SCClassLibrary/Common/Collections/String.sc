@@ -460,4 +460,11 @@ String[char] : RawArray {
 		if( speech.initialized.not, { speech.init });
 		speech.channels[ channel ].speak( this, force );
 	}
+
+	toLower {
+		^this.collect(_.toLower)
+	}
+	toUpper {
+		^this.collect(_.toUpper)
+	}
 }
