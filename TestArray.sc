@@ -25,8 +25,12 @@ var arsize, clumpsize, a, aclumped, ascaled, arev, mean, median, sd;
 	this.assert((0.2<mean) && (mean<0.8), "mean of uniform expected to be around 0.5");
 	median = a.median;
 	this.assert((0.2<median) && (median<0.8), "median of uniform expected to be around 0.5");
-	sd = a.stdDev(mean);
-	this.assert((0<sd) && (sd<(2*sqrt(1/12))), "stdDev of uniform expected to be around sqrt(1/12)");
+	if(Collection.findMethod(\stdDev).notNil){
+		// stdDev NOT IN CORE! 
+		// TODO: probably better to move to a dedicated TestMathLib quark
+		sd = a.stdDev(mean);
+		this.assert((0<sd) && (sd<(2*sqrt(1/12))), "stdDev of uniform expected to be around sqrt(1/12)");
+	};
 	
 	// sort-based median should be same as hoare-based median
 	this.assertEquals(a.median, a.sort.sortedMedian, ".median (Hoare method) should be same as .sort.sortedMedian");
@@ -40,7 +44,10 @@ var arsize, clumpsize, a, aclumped, ascaled, arev, mean, median, sd;
 	arev = a.reverse;
 	this.assertEquals(a.mean,   arev.mean,        "mean   should be invariant to reversing");
 	this.assertEquals(a.median, arev.median,      "median should be invariant to reversing");
-	this.assertFloatEquals(a.stdDev, arev.stdDev, "stdDev should be invariant to reversing");
+	if(Collection.findMethod(\stdDev).notNil){
+		// stdDev NOT IN CORE! 
+		this.assertFloatEquals(a.stdDev, arev.stdDev, "stdDev should be invariant to reversing");
+	};
 	
 	// scale array up by 2^16 - power-of-two scaling should preserve precision
 	ascaled = a * 65536.0;	
@@ -48,7 +55,7 @@ var arsize, clumpsize, a, aclumped, ascaled, arev, mean, median, sd;
 	// these stats should simply scale linearly
 	this.assertEquals(ascaled.mean   / 65536.0, mean,    "mean   should be invariant to linear scaling");
 	this.assertEquals(ascaled.median / 65536.0, median,  "median should be invariant to linear scaling");
-	this.assertFloatEquals(ascaled.stdDev / 65536.0, sd, "stdDev should be invariant to linear scaling");
+	// stdDev NOT IN CORE! this.assertFloatEquals(ascaled.stdDev / 65536.0, sd, "stdDev should be invariant to linear scaling");
 	
 	// Clump into array-of-arrays
 	aclumped = a.clump(clumpsize);
