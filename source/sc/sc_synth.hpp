@@ -27,7 +27,7 @@
 
 #include "sc_synth_prototype.hpp"
 
-#include "server/synth.hpp"
+#include "../server/synth.hpp"
 
 
 namespace nova

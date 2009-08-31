@@ -19,6 +19,8 @@
 #ifndef SC_PLUGIN_INTERFACE_HPP
 #define SC_PLUGIN_INTERFACE_HPP
 
+#include "../server/audio_bus_manager.hpp"
+
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
 #include "supercollider/Headers/plugin_interface/SC_World.h"
 
@@ -31,8 +33,12 @@ public:
     sc_plugin_interface(void);
     ~sc_plugin_interface(void);
 
+    void set_audio_channels(int audio_inputs, int audio_outputs);
+
     InterfaceTable sc_interface;
     World world;
+
+    audio_bus_manager audio_busses;
 };
 
 } /* namespace nova */

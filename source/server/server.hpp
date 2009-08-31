@@ -25,10 +25,11 @@
 #include "node_graph.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
-#include "audio_backend/audio_frontend.hpp"
-#include "utilities/callback_interpreter.hpp"
-#include "utilities/static_pooled_class.hpp"
-#include "utilities/osc_server.hpp"
+#include "../audio_backend/audio_frontend.hpp"
+#include "../sc/sc_ugen_factory.hpp"
+#include "../utilities/callback_interpreter.hpp"
+#include "../utilities/static_pooled_class.hpp"
+#include "../utilities/osc_server.hpp"
 
 
 namespace nova
@@ -122,7 +123,15 @@ private:
 
 inline void run_scheduler_tick(void)
 {
+    const int blocksize = 64;
+    for (int channel = 0; channel != instance->get_input_count(); ++channel)
+        instance->fetch_adc_input(ugen_factory.world.mAudioBus + (blocksize * instance->get_output_count() + channel),
+                                  channel, blocksize);
+
     (*instance)();
+
+    for (int channel = 0; channel != instance->get_output_count(); ++channel)
+        instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
 }
 
 } /* namespace nova */

@@ -22,9 +22,12 @@
 
 #include <boost/program_options.hpp>
 
-#include "audio_backend/portaudio.hpp"
-#include "utilities/utils.hpp"
-#include "server/server.hpp"
+#include "server.hpp"
+
+#include "../audio_backend/portaudio.hpp"
+#include "../sc/sc_ugen_factory.hpp"
+#include "../utilities/utils.hpp"
+
 
 using namespace nova;
 
@@ -170,7 +173,7 @@ int main(int argc, char * argv[])
                                  samplerate);
     }
     server.activate_audio();
-
+    ugen_factory.set_audio_channels(inchannels, outchannels);
     server.run();
 
     server.deactivate_audio();

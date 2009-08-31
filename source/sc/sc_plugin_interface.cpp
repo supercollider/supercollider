@@ -104,7 +104,8 @@ void clear_outputs(Unit *unit, int samples)
 namespace nova
 {
 
-sc_plugin_interface::sc_plugin_interface(void)
+sc_plugin_interface::sc_plugin_interface(void):
+    audio_busses(1024, 64)
 {
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
@@ -129,15 +130,24 @@ sc_plugin_interface::sc_plugin_interface(void)
     sc_interface.fClearUnitOutputs = clear_outputs;
 
     /* initialize world */
-    world.mAudioBus = new float[64 * 1024];
-    world.mAudioBusTouched = new int32[1024];
     world.mControlBus = new float[1024];
     world.mControlBusTouched = new int32[1024];
+
+    /* audio busses */
+    world.mAudioBus = audio_busses.buffers;
+    world.mAudioBusTouched = new int32[1024];
+    world.mAudioBusLocks = audio_busses.locks;
 }
+
+void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs)
+{
+    world.mNumInputs = audio_inputs;
+    world.mNumOutputs = audio_outputs;
+}
+
 
 sc_plugin_interface::~sc_plugin_interface(void)
 {
-    delete[] world.mAudioBus;
     delete[] world.mAudioBusTouched;
     delete[] world.mControlBus;
     delete[] world.mControlBusTouched;

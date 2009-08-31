@@ -95,7 +95,7 @@ public:
  *
  *  \todo do we need to take care of thread safety? */
 class sc_ugen_factory:
-    private sc_plugin_interface
+    public sc_plugin_interface
 {
     typedef bi::set<sc_ugen_def> ugen_map_t;
     typedef bi::set<sc_bufgen_def> bufgen_map_t;
@@ -150,6 +150,11 @@ public:
                        UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 
     void register_bufgen(const char * name, BufGenFunc func);
+
+    void set_audio_channels(int audio_inputs, int audio_outputs)
+    {
+        sc_plugin_interface::set_audio_channels(audio_inputs, audio_outputs);
+    }
 
 private:
     void close_handles(void);

@@ -3,6 +3,7 @@
 #include <boost/filesystem.hpp>
 
 #include "../source/sc/sc_ugen_factory.hpp"
+#include "../source/server/memory_pool.hpp"
 
 using namespace nova;
 using namespace std;
@@ -51,15 +52,19 @@ BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
     ugen_factory.load_plugin(base_path / "TriggerUGens.so");
     ugen_factory.load_plugin(base_path / "UnaryOpUGens.so");
     ugen_factory.load_plugin(base_path / "UnpackFFTUGens.so");
+
+    rt_pool.init(1024*1024*16, true);
 }
 
 
 const char * test_synthdefs[] =
 {
     "default.scsyndef",
+    "help-In.scsyndef",
     "help_out.scsyndef",
     "help_out2.scsyndef",
     "help_InFeedback.scsyndef",
+    "help_LocalIn.scsyndef",
 };
 
 

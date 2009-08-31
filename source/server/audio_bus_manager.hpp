@@ -23,8 +23,8 @@
 
 #include "sample_types.hpp"
 
-#include "utilities/malloc_aligned.hpp"
-#include "utilities/spin_lock.hpp"
+#include "../utilities/malloc_aligned.hpp"
+#include "../utilities/spin_lock.hpp"
 
 namespace nova
 {
@@ -65,8 +65,9 @@ public:
         locks[index].unlock();
     }
 
-
 private:
+    friend class sc_plugin_interface;
+
     uint16_t count;
     uint16_t blocksize;
     sample * buffers;
