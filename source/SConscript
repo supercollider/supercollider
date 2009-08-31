@@ -49,8 +49,9 @@ libsources, libbuildsource = SConscript("libs/SConscript", exports="env")
 # build server
 #
 def build_nova_server():
-    server_sources = env.SConscript("server/SConscript", "env")
-    scsynth_sources = env.SConscript("sc/SConscript.server", "env")
+    serverenv = env.Clone()
+    server_sources = serverenv.SConscript("server/SConscript", "env")
+    scsynth_sources = serverenv.SConscript("sc/SConscript.server", "env")
 
     if env['compact_build']:
         used_libsources = libbuildsource + scsynth_sources
@@ -59,18 +60,25 @@ def build_nova_server():
         used_libsources = libsources + scsynth_sources
         used_sources = server_sources[0] + server_sources[2]
 
-    server_cflags = env['CCFLAGS']+'-fvisibility=hidden';
+    serverenv.Append(CCFLAGS='-fvisibility=hidden');
+    serverenv.Append(CPPDEFINES='SUPERNOVA')
 
-    objects = [env.StaticObject(x, CCFLAGS=server_cflags) for x in used_sources]
-    lib_objects = [env.StaticObject(x, CCFLAGS=server_cflags) for x in used_libsources]
+    serverenv.Append(CPPPATH=Split("""#source/sc/supercollider/Headers/common
+                                      #source/sc/supercollider/Headers/plugin_interface
+                                      #source/sc/supercollider/Headers/server
+                                      """)
+                    )
 
-    if env.get('pch', False):
-        env['Gch'] = pch = env.Gch(File('server/server.hpp'))[0]
+    objects = [serverenv.StaticObject(x) for x in used_sources]
+    lib_objects = [serverenv.StaticObject(x) for x in used_libsources]
+
+    if serverenv.get('pch', False):
+        serverenv['Gch'] = pch = serverenv.Gch(File('server/server.hpp'))[0]
 
         for obj in objects:
-            env.Depends(obj[0], pch)
+            serverenv.Depends(obj[0], pch)
 
-    program = env.Program("nova_server", objects+lib_objects, CCFLAGS=server_cflags)
+    program = serverenv.Program("nova_server", objects+lib_objects)
 
     return program
 

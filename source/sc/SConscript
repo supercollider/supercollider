@@ -65,15 +65,22 @@ UnpackFFTUGens.cpp
 
 sources = [File(x, "supercollider/Source/plugins") for x in sources]
 
+pluginenv = env.Clone()
+
+pluginenv.Append(CPPDEFINES=['SUPERNOVA'])
+
 plugins = []
 
 for source in sources:
     plugin_name = source.abspath.split('/')[-1][:-4]
-    plugin = env.SharedLibrary(plugin_name, source,
-                               CPPPATH=["supercollider/Headers/plugin_interface",
-                                        "supercollider/Headers/common"],
-                               SHLIBPREFIX="",
-                               )
+    plugin = pluginenv.SharedLibrary(plugin_name, source,
+                                CPPPATH=["supercollider/Headers/plugin_interface",
+                                         "supercollider/Headers/common",
+                                         "#source",
+                                         "#libs/boost",
+                                        ],
+                                SHLIBPREFIX="",
+                                )
     plugins.append(plugin)
 
 Return("plugins")
