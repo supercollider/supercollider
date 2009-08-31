@@ -24,6 +24,7 @@
 #include "audio_backend.hpp"
 #include "portaudio.hpp"
 #include "utilities/spin_lock.hpp"
+#include <stdint.h>
 
 namespace nova
 {
@@ -99,6 +100,8 @@ public:
     void open_audio_stream(Device const & indevice, uint inchannels, Device const & outdevice, uint outchannels,
                          uint samplerate)
     {
+        input_channels = inchannels,
+        output_channels = outchannels;
         active_backend->open_audio_stream(indevice, inchannels, outdevice, outchannels, samplerate);
         samplerate_ = samplerate;
     }
@@ -106,6 +109,7 @@ public:
     void close_audio_stream(void)
     {
         active_backend->close_audio_stream();
+        input_channels = output_channels = 0;
     }
 
     bool audio_is_opened(void)
@@ -165,6 +169,16 @@ public:
         return samplerate_;
     }
 
+    uint16_t get_input_count(void) const
+    {
+        return input_channels;
+    }
+
+    uint16_t get_output_count(void) const
+    {
+        return output_channels;
+    }
+
 private:
     void activate_dummy(void)
     {
@@ -188,6 +202,7 @@ private:
 
     bool is_active;
     float samplerate_;
+    uint16_t input_channels, output_channels;
 
     audio_backend<dsp_cb> * active_backend;
 
