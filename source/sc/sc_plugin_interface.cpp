@@ -137,6 +137,10 @@ sc_plugin_interface::sc_plugin_interface(void):
     world.mAudioBus = audio_busses.buffers;
     world.mAudioBusTouched = new int32[1024];
     world.mAudioBusLocks = audio_busses.locks;
+
+    /* audio buffers */
+    world.mNumSndBufs = 1024;
+    world.mSndBufs = new SndBuf[world.mNumSndBufs];
 }
 
 void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs)
@@ -151,6 +155,7 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mAudioBusTouched;
     delete[] world.mControlBus;
     delete[] world.mControlBusTouched;
+    delete[] world.mSndBufs;
 }
 
 } /* namespace nova */
