@@ -135,7 +135,7 @@ void abstract_group::remove_child(server_node * node)
     node->clear_parent();
 }
 
-void abstract_group::set(slot_identifier_type const & slot_str, float val)
+void abstract_group::set(const char * slot_str, float val)
 {
     for(node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)

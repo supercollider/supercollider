@@ -74,7 +74,7 @@ public:
 
     /** set a slot */
     /* @{ */
-    virtual void set(slot_identifier_type const & slot_str, float val) = 0;
+    virtual void set(const char * slot_str, float val) = 0;
     virtual void set(slot_index_t slot_id, float val) = 0;
     /* @} */
 

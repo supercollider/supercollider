@@ -461,7 +461,7 @@ void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         const char * str = it->AsString(); ++it;
         float value = it->AsFloat(); ++it;
 
-        node->set(slot_identifier_type(str), value);
+        node->set(str, value);
     }
 }
 

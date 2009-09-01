@@ -88,7 +88,7 @@ void nova_server::set_node_slot(int node_id, slot_index_t slot, float value)
         node->set(slot, value);
 }
 
-void nova_server::set_node_slot(int node_id, slot_identifier_type const & slot, float value)
+void nova_server::set_node_slot(int node_id, const char * slot, float value)
 {
     server_node * node = find_node(node_id);
     if (node)
