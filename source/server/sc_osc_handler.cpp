@@ -1369,6 +1369,69 @@ void handle_d_recv(received_message const & msg,
     instance->add_system_callback(new d_recv_callback(synthdef.size, synthdef.data, blob.size, blob.data, endpoint));
 }
 
+struct d_load_callback:
+    public sc_async_callback
+{
+    d_load_callback(const char * path, size_t msg_size, const void * msg,
+                    udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, msg, endpoint),
+        path_(copy_string(path))
+    {}
+
+    ~d_load_callback(void)
+    {
+        deallocate((char*)path_);
+    }
+
+    void run(void)
+    {
+        sc_read_synthdef(*instance, path_); /* todo: we need to implment some file name pattern matching */
+        schedule_async_message();
+        send_done();
+    }
+
+    const char * const path_;
+};
+
+void handle_d_load(received_message const & msg,
+                   udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    const char * path;
+    osc::Blob blob(0, 0);
+
+    args >> path >> blob;
+    instance->add_system_callback(new d_load_callback(path, blob.size, blob.data, endpoint));
+}
+
+
+struct d_loadDir_callback:
+    public d_load_callback
+{
+    d_loadDir_callback(const char * path, size_t msg_size, const void * msg,
+                    udp::endpoint const & endpoint):
+        d_load_callback(path, msg_size, msg, endpoint)
+    {}
+
+    void run(void)
+    {
+        sc_read_synthdefs_dir(*instance, path_);
+        schedule_async_message();
+        send_done();
+    }
+};
+
+void handle_d_loadDir(received_message const & msg,
+                      udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    const char * path;
+    osc::Blob blob(0, 0);
+
+    args >> path >> blob;
+    instance->add_system_callback(new d_loadDir_callback(path, blob.size, blob.data, endpoint));
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message,
@@ -1508,6 +1571,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_d_recv:
         handle_d_recv(message, endpoint);
+        break;
+
+    case cmd_d_load:
+        handle_d_load(message, endpoint);
+        break;
+
+    case cmd_d_loadDir:
+        handle_d_loadDir(message, endpoint);
         break;
 
     default:
@@ -1681,8 +1752,17 @@ void dispatch_synthdef_commands(received_message const & message,
         handle_d_recv(message, endpoint);
         return;
     }
-}
 
+    if (strcmp(address+3, "load") == 0) {
+        handle_d_load(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "loadDir") == 0) {
+        handle_d_loadDir(message, endpoint);
+        return;
+    }
+}
 
 } /* namespace */
 

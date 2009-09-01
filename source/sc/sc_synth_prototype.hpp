@@ -33,7 +33,6 @@ using boost::filesystem::path;
 /* read synthdefs from path pattern */
 void sc_read_synthdefs_dir(class synth_factory & factory, path const & dir);
 void sc_read_synthdef(class synth_factory & factory, path const & filename);
-void sc_read_synthdef(class synth_factory & factory, void * buffer, std::size_t size);
 
 class sc_synth_prototype:
     public synth_prototype
