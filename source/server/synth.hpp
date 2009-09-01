@@ -42,7 +42,7 @@ public:
         class_ptr(ptr)
     {}
 
-    slot_index_t resolve_slot(std::string const & str)
+    slot_index_t resolve_slot(const char * str)
     {
         return class_ptr->resolve_slot(str);
     }
@@ -73,7 +73,7 @@ protected:
 public:
     /** set a slot */
     /* @{ */
-    void set(slot_identifier_type const & slot_str, sample val)
+    void set(const char * slot_str, sample val)
     {
         slot_index_t slot_id = prototype_instance::resolve_slot(slot_str);
         this->set(slot_id, val);
@@ -117,7 +117,7 @@ public:
         add_callback(cb);
     }
 
-    void set(slot_identifier_type const & slot_str, sample val)
+    void set(const char * slot_str, sample val)
     {
         abstract_synth::set(slot_str, val);
     }

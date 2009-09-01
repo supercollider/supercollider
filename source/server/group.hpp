@@ -113,7 +113,7 @@ public:
     void remove_child(server_node * node);
     /* @} */
 
-    void set(slot_identifier_type const & slot_str, float val);
+    void set(const char * slot_str, float val);
     void set(slot_index_t slot_id, float val);
 
     friend class node_graph;

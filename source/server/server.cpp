@@ -82,15 +82,15 @@ public:
 
             if (it->IsInt32())
                 instance->add_sync_callback(
-                    new set_cmd_index<slot_index_t>(nodeid,
-                                                    slot_it->AsInt32Unchecked(),
-                                                    value_it->AsFloat())
+                    new set_cmd_index(nodeid,
+                                      slot_it->AsInt32Unchecked(),
+                                      value_it->AsFloat())
                     );
             else if (it->IsString())
                 instance->add_sync_callback(
-                    new set_cmd_index<slot_identifier_type>(nodeid,
-                                                            std::string(slot_it->AsString()),
-                                                            value_it->AsFloat())
+                    new set_cmd_str(nodeid,
+                                    slot_it->AsString(),
+                                    value_it->AsFloat())
                     );
             else
                 throw std::exception();
@@ -160,7 +160,7 @@ void nova_server::set_node_slot(int node_id, slot_index_t slot, float value)
         node->set(slot, value);
 }
 
-void nova_server::set_node_slot(int node_id, slot_identifier_type const & slot, float value)
+void nova_server::set_node_slot(int node_id, const char * slot, float value)
 {
     server_node * node = find_node(node_id);
     if (node)

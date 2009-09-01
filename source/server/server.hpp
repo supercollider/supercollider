@@ -98,7 +98,7 @@ public:
     void free_node(int id);
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
-    void set_node_slot(int node_id, slot_identifier_type const & slot, float value);
+    void set_node_slot(int node_id, const char * slot, float value);
 
 #if 0
     /* node control */
