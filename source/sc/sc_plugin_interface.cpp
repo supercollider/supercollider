@@ -130,6 +130,77 @@ int print(const char *fmt, ...)
     return 0;
 }
 
+/* todo: we need to implement most of the done actions */
+void done_action(int done_action, struct Unit *unit)
+{
+    switch(done_action)
+    {
+    case 0:
+        // do nothing when the UGen is finished
+        return;
+
+    case 1:
+        // pause the enclosing synth, but do not free it
+        return;
+
+    case 2:
+        // free the enclosing synth
+        node_end(&unit->mParent->mNode);
+        return;
+
+    case 3:
+        // free both this synth and the preceding node
+        return;
+
+    case 4:
+        // free both this synth and the following node
+        return;
+
+    case 5:
+        // free this synth; if the preceding node is a group then do g_freeAll on it, else free it
+        return;
+
+    case 6:
+        // free this synth; if the following node is a group then do g_freeAll on it, else free it
+        return;
+
+    case 7:
+        //free this synth and all preceding nodes in this group
+        return;
+
+    case 8:
+        //free this synth and all following nodes in this group
+        return;
+
+    case 9:
+        // free this synth and pause the preceding node
+        return;
+
+    case 10:
+        // free this synth and pause the following node
+        return;
+
+    case 11:
+        // free this synth and if the preceding node is a group then do g_deepFree on it, else free it
+        return;
+
+    case 12:
+        // free this synth and if the following node is a group then do g_deepFree on it, else free it
+        return;
+
+    case 13:
+        // free this synth and all other nodes in this group (before and after)
+        return;
+
+    case 14:
+        // free the enclosing group and all nodes within it (including this synth)
+        return;
+
+    default:
+        return;
+    }
+}
+
 
 } /* extern "C" */
 
@@ -148,7 +219,8 @@ sc_plugin_interface::sc_plugin_interface(void):
 
     /* interface functions */
     sc_interface.fNodeEnd = &node_end;
-	sc_interface.fPrint = &print;
+    sc_interface.fPrint = &print;
+    sc_interface.fDoneAction = &done_action;
 
     /* wave tables */
     sc_interface.mSine = gSine;

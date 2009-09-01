@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE( ugen_construct_test_1 )
             sc_synth * s = new sc_synth(1000, prtype);
 
             dsp_context context(44100, 64, 0);
-            s->run(context);
+            for (int i = 0; i != 1000; ++i)
+                s->run(context);
             delete s;
         }
         catch(std::runtime_error const & e)
