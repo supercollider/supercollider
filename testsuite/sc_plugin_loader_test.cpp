@@ -1,5 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
+#include <iostream>
+
 #include <boost/filesystem.hpp>
 
 #include "../source/sc/sc_ugen_factory.hpp"
@@ -68,7 +70,7 @@ const char * test_synthdefs[] =
     "help_PlayBuf.scsyndef",
     "help_RecordBuf.scsyndef",
     "help_RecordBuf_overdub.scsyndef",
-    //"help_LocalBuf.scsyndef",
+    "help_LocalBuf.scsyndef",
 };
 
 
@@ -77,14 +79,20 @@ BOOST_AUTO_TEST_CASE( ugen_construct_test_1 )
     for (int i = 0; i != sizeof(test_synthdefs)/sizeof(const char*); ++i) {
         const char * synthdef = test_synthdefs[i];
 
-        std::vector<nova::sc_synthdef> defs =
-            nova::read_synthdef_file(base_path / ".." / "testsuite" / synthdef);
-        sc_synth_prototype_ptr prtype(new sc_synth_prototype(defs[0]));
+        try {
+            std::vector<nova::sc_synthdef> defs =
+                nova::read_synthdef_file(base_path / ".." / "testsuite" / synthdef);
+            sc_synth_prototype_ptr prtype(new sc_synth_prototype(defs[0]));
 
-        sc_synth * s = new sc_synth(1000, prtype);
+            sc_synth * s = new sc_synth(1000, prtype);
 
-        dsp_context context(44100, 64, 0);
-        s->run(context);
-        delete s;
+            dsp_context context(44100, 64, 0);
+            s->run(context);
+            delete s;
+        }
+        catch(std::runtime_error const & e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
 }

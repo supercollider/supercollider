@@ -190,8 +190,10 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
 {
     ugen_map_t::iterator it = ugen_map.find(unit_spec.name,
                                             compare_def<sc_ugen_def>());
-    if (it == ugen_map.end())
-        return sc_unit();
+    if (it == ugen_map.end()) {
+        std::cerr << "unable to create ugen: " << unit_spec.name << std::endl;
+        throw std::runtime_error("unable to create ugen");
+    }
 
     Unit * unit = it->construct(unit_spec);
     unit->mWorld = &world;
