@@ -24,6 +24,7 @@
 #include "../simd/simd_memory.hpp"
 
 #include "supercollider/Headers/server/SC_Samp.h"
+#include "supercollider/Headers/server/SC_Prototypes.h"
 
 extern "C"
 {
@@ -160,6 +161,9 @@ sc_plugin_interface::sc_plugin_interface(void):
     /* audio buffers */
     world.mNumSndBufs = 1024;
     world.mSndBufs = new SndBuf[world.mNumSndBufs];
+
+	Rate_Init(&world.mFullRate, 44100, 64);
+	Rate_Init(&world.mBufRate, 44100.f/64, 1);
 }
 
 void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs)
