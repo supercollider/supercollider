@@ -216,4 +216,13 @@ void nova_server::update_dsp_queue(void)
 }
 
 
+void synth_prototype_deleter::dispose(synth_prototype * ptr)
+{
+    if (instance) /// todo: hack to fix test suite
+        instance->add_system_callback(new delete_callback<synth_prototype>(ptr));
+    else
+        delete ptr;
+}
+
+
 } /* namespace nova */

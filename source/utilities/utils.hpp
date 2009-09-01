@@ -257,8 +257,20 @@ struct delayed_deleter
     inline void operator()(T *);
 };
 
+struct checked_deleter
+{
+    template<class T>
+    void operator()(T * x) const
+    {
+        boost::checked_delete(x);
+    }
+};
+
+
+template <typename deleter = checked_deleter >
 struct intrusive_refcountable:
-    public noncopyable
+    public noncopyable,
+    public deleter
 {
     intrusive_refcountable(void):
         use_count_(0)
@@ -274,7 +286,18 @@ struct intrusive_refcountable:
 
     void release(void)
     {
-        if(--use_count_ == 0) delete this;
+        if(--use_count_ == 0)
+            deleter::operator()(this);
+    }
+
+    inline friend void intrusive_ptr_add_ref(intrusive_refcountable * p)
+    {
+        p->add_ref();
+    }
+
+    inline friend void intrusive_ptr_release(intrusive_refcountable * p)
+    {
+        p->release();
     }
 
     boost::detail::atomic_count use_count_;
@@ -294,20 +317,5 @@ struct compare_by_instance
 
 
 } /* namespace nova */
-
-namespace boost
-{
-
-inline void intrusive_ptr_add_ref(nova::intrusive_refcountable * p)
-{
-    p->add_ref();
-}
-
-inline void intrusive_ptr_release(nova::intrusive_refcountable * p)
-{
-    p->release();
-}
-
-} /* namespace boost */
 
 #endif /* _UTILS_HPP */
