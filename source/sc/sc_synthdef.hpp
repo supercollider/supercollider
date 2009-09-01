@@ -53,7 +53,7 @@ public:
 
     struct unit_spec_t
     {
-        explicit unit_spec_t(std::ifstream & istream);
+        explicit unit_spec_t(std::istream & istream);
 
         unit_spec_t(string const & name, int16_t rate, int16_t special_index,
                     std::vector<input_spec> const & in_specs,
@@ -77,7 +77,7 @@ public:
 
     typedef std::vector<unit_spec_t> graph_t;
 
-    explicit sc_synthdef(std::ifstream & istream);
+    explicit sc_synthdef(std::istream & istream);
     explicit sc_synthdef(boost::filesystem::path const & path);
 
     string dump(void) const;
@@ -94,7 +94,7 @@ public:
     }
 
 private:
-    void read_synthdef(std::ifstream & istream);
+    void read_synthdef(std::istream & istream);
 
     string name_;
     fvector constants;

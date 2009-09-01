@@ -1327,6 +1327,48 @@ void handle_c_getn(received_message const & msg,
     instance->add_system_callback(new c_getn_callback(msg, endpoint));
 }
 
+struct d_recv_callback:
+    public sc_async_callback
+{
+    d_recv_callback(size_t def_size, const void * def, size_t msg_size, const void * msg,
+                    udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, msg, endpoint), def_size_(def_size_)
+    {
+        def_ = (char*)allocate(def_size + 1);
+        memcpy(def_, def, def_size);
+        def_[def_size] = 0;
+    }
+
+    ~d_recv_callback(void)
+    {
+        deallocate(def_);
+    }
+
+    void run(void)
+    {
+        std::string def_string(def_);
+        std::stringstream stream(def_string);
+        sc_synthdef synthdef(stream);
+        instance->register_prototype(new sc_synth_prototype(synthdef));
+        schedule_async_message();
+        send_done();
+    }
+
+    char * def_;
+    const size_t def_size_;
+};
+
+
+void handle_d_recv(received_message const & msg,
+                   udp::endpoint const & endpoint)
+{
+    osc::Blob synthdef(0, 0), blob(0, 0);
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    args >> synthdef >> blob;
+    instance->add_system_callback(new d_recv_callback(synthdef.size, synthdef.data, blob.size, blob.data, endpoint));
+}
+
 } /* namespace */
 
 void sc_osc_handler::handle_message_int_address(received_message const & message,
@@ -1460,6 +1502,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_c_getn(message, endpoint);
         break;
 
+    case cmd_d_recv:
+        handle_d_recv(message, endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -1467,6 +1513,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
 namespace
 {
+
 void dispatch_group_commands(received_message const & message,
                              udp::endpoint const & endpoint)
 {
@@ -1618,6 +1665,20 @@ void dispatch_control_bus_commands(received_message const & message,
     }
 }
 
+void dispatch_synthdef_commands(received_message const & message,
+                                udp::endpoint const & endpoint)
+{
+    const char * address = message.AddressPattern();
+    assert(address[0] == '/');
+    assert(address[1] == 'd');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "recv") == 0) {
+        handle_d_recv(message, endpoint);
+        return;
+    }
+}
+
 
 } /* namespace */
 
@@ -1649,6 +1710,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (address[1] == 'c') {
         dispatch_control_bus_commands(message, endpoint);
+        return;
+    }
+
+    if (address[1] == 'd') {
+        dispatch_synthdef_commands(message, endpoint);
         return;
     }
 

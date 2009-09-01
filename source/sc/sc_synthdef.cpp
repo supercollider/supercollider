@@ -35,7 +35,7 @@ using boost::integer::big8_t;
 
 namespace {
 
-std::string read_pstring(std::ifstream & stream)
+std::string read_pstring(std::istream & stream)
 {
     char str[256+1];
     char name_size;
@@ -46,7 +46,7 @@ std::string read_pstring(std::ifstream & stream)
     return std::string(str);
 }
 
-float read_float(std::ifstream & stream)
+float read_float(std::istream & stream)
 {
     big32_t data;
 
@@ -62,21 +62,21 @@ float read_float(std::ifstream & stream)
     return cast.f;
 }
 
-int8_t read_int8(std::ifstream & stream)
+int8_t read_int8(std::istream & stream)
 {
     big8_t data;
     stream.read((char*)&data, 1);
     return data;
 }
 
-int16_t read_int16(std::ifstream & stream)
+int16_t read_int16(std::istream & stream)
 {
     big16_t data;
     stream.read((char*)&data, 2);
     return data;
 }
 
-int16_t read_int32(std::ifstream & stream)
+int16_t read_int32(std::istream & stream)
 {
     big32_t data;
     stream.read((char*)&data, 4);
@@ -113,7 +113,7 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
     return ret;
 }
 
-sc_synthdef::unit_spec_t::unit_spec_t(std::ifstream & stream)
+sc_synthdef::unit_spec_t::unit_spec_t(std::istream & stream)
 {
     name = read_pstring(stream);
     rate = read_int8(stream);
@@ -136,7 +136,7 @@ sc_synthdef::unit_spec_t::unit_spec_t(std::ifstream & stream)
     }
 }
 
-sc_synthdef::sc_synthdef(std::ifstream & stream)
+sc_synthdef::sc_synthdef(std::istream & stream)
 {
     read_synthdef(stream);
 }
@@ -147,7 +147,7 @@ sc_synthdef::sc_synthdef(boost::filesystem::path const & path)
     read_synthdef(stream);
 }
 
-void sc_synthdef::read_synthdef(std::ifstream & stream)
+void sc_synthdef::read_synthdef(std::istream& stream)
 {
     using namespace std;
 
