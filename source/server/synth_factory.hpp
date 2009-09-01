@@ -89,6 +89,16 @@ public:
         return it->create_instance(node_id);
     }
 
+    void remove_prototype(const char * name)
+    {
+        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
+        if (it == prototype_map.end())
+            return 0;
+
+        prototype_map.erase(it);
+        it->release();
+    }
+
     ~synth_factory(void)
     {
         while(prototype_map.begin() != prototype_map.end()) {
@@ -97,7 +107,6 @@ public:
             it->release();
         }
     }
-
 
 private:
     typedef boost::intrusive::set<synth_prototype> prototype_map_type;

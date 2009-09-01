@@ -1409,7 +1409,7 @@ struct d_loadDir_callback:
     public d_load_callback
 {
     d_loadDir_callback(const char * path, size_t msg_size, const void * msg,
-                    udp::endpoint const & endpoint):
+                       udp::endpoint const & endpoint):
         d_load_callback(path, msg_size, msg, endpoint)
     {}
 
@@ -1431,6 +1431,21 @@ void handle_d_loadDir(received_message const & msg,
     args >> path >> blob;
     instance->add_system_callback(new d_loadDir_callback(path, blob.size, blob.data, endpoint));
 }
+
+
+void handle_d_free(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        const char * defname;
+        args >> defname;
+
+        instance->remove_prototype(defname);
+    }
+}
+
 
 } /* namespace */
 
@@ -1579,6 +1594,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_d_loadDir:
         handle_d_loadDir(message, endpoint);
+        break;
+
+    case cmd_d_free:
+        handle_d_free(message);
         break;
 
     default:
@@ -1760,6 +1779,11 @@ void dispatch_synthdef_commands(received_message const & message,
 
     if (strcmp(address+3, "loadDir") == 0) {
         handle_d_loadDir(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "free") == 0) {
+        handle_d_free(message);
         return;
     }
 }
