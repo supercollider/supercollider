@@ -425,6 +425,73 @@ void handle_unhandled_message(received_message const & msg)
     cerr << "unhandled message " << msg.AddressPattern() << endl;
 }
 
+server_node * find_target(int target_id)
+{
+    server_node * target = instance->find_node(target_id);
+
+    if (target == NULL) {
+        cerr << "target node not found\n" << endl;
+        return NULL;
+    }
+    return target;
+}
+
+sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
+{
+    server_node * target = find_target(target_id);
+    if (target == NULL)
+        return NULL;
+
+    node_position_constraint pos = make_pair(target, node_position(action));
+    abstract_synth * synth = instance->add_synth(name, node_id, pos);
+
+    return static_cast<sc_synth*>(synth);
+}
+
+/* set control values of node from string/float or int/float pair */
+void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 index = it->AsInt32Unchecked(); ++it;
+        float value = it->AsFloat(); ++it;
+
+        node->set(index, value);
+    }
+    else if (it->IsString()) {
+        const char * str = it->AsString(); ++it;
+        float value = it->AsFloat(); ++it;
+
+        node->set(slot_identifier_type(str), value);
+    }
+}
+
+void handle_s_new(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
+
+    const char * def_name = args->AsString(); ++args;
+    int32_t id = args->AsInt32(); ++args;
+    int32_t action = args->AsInt32(); ++args;
+    int32_t target = args->AsInt32(); ++args;
+
+    sc_synth * synth = add_synth(def_name, id, action, target);
+
+    if (synth == NULL)
+        return;
+
+    while(args != msg.ArgumentsEnd())
+    {
+        try {
+            set_control(synth, args);
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /s_new handler: " << e.what() << endl;
+        }
+    }
+}
+
+
 void insert_group(int node_id, int action, int target_id)
 {
     server_node * target = instance->find_node(target_id);
@@ -556,19 +623,9 @@ void handle_n_set(received_message const & msg)
 
     while(it != msg.ArgumentsEnd())
     {
-        try {
-            if (it->IsInt32()) {
-                osc::int32 index = it->AsInt32Unchecked(); ++it;
-                float value = it->AsFloat(); ++it;
-
-                node->set(index, value);
-            }
-            else if (it->IsString()) {
-                const char * str = it->AsString(); ++it;
-                float value = it->AsFloat(); ++it;
-
-                node->set(slot_identifier_type(str), value);
-            }
+        try
+        {
+            set_control(node, it);
         }
         catch(std::exception & e)
         {
