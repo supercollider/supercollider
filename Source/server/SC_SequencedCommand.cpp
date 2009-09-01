@@ -585,7 +585,7 @@ leave:
 
 bool BufAllocReadCmd::Stage3()
 {
-#ifndef NO_LIBSNDFILE
+#ifdef NO_LIBSNDFILE
 	return false;
 #else
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
