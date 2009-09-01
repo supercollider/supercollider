@@ -44,9 +44,23 @@ public:
 
     audio_bus_manager audio_busses;
 
+    void add_pause_node(int32_t node_id)
+    {
+        spin_lock::scoped_lock lock(cmd_lock);
+        pause_nodes.push_back(node_id);
+    }
+
+    void add_done_node(int32_t node_id)
+    {
+        spin_lock::scoped_lock lock(cmd_lock);
+        done_nodes.push_back(node_id);
+    }
+
+    std::vector<int32_t> done_nodes; /* later use vector from boost container (supports stateful allocators) */
+    std::vector<int32_t> pause_nodes;
+
     spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
                            later we can try different approaches like a lockfree stack or bitmask */
-    std::vector<int32_t> done_nodes; /* later use vector from boost container (supports stateful allocators) */
 };
 
 } /* namespace nova */

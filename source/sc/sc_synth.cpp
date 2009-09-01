@@ -26,7 +26,7 @@ namespace nova
 
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), unit_buffers(0),
-    controls(0)
+    controls(0), running_(false)
 {
     Rate_Init(&full_rate, 44100.f, 64);
     Rate_Init(&control_rate, 44100.f/64, 1);
@@ -101,6 +101,9 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
 void sc_synth::run(dsp_context const & context)
 {
+    if (running_ == false)
+        return;
+
     for (size_t i = 0; i != units.size(); ++i) {
         Unit * unit = units[i].unit;
         if (unit->mCalcRate == calc_FullRate or

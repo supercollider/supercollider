@@ -29,6 +29,16 @@
 #include "supercollider/Headers/server/SC_Samp.h"
 #include "supercollider/Headers/server/SC_Prototypes.h"
 
+namespace
+{
+
+void pause_node(int32_t node_id)
+{
+    nova::ugen_factory.add_pause_node(node_id);
+}
+
+} /* namespace */
+
 extern "C"
 {
 
@@ -111,8 +121,7 @@ void clear_outputs(Unit *unit, int samples)
 
 void node_end(struct Node * node)
 {
-    nova::spin_lock::scoped_lock lock(nova::ugen_factory.cmd_lock);
-    nova::ugen_factory.done_nodes.push_back(node->mID);
+    nova::ugen_factory.add_done_node(node->mID);
 }
 
 int print(const char *fmt, ...)

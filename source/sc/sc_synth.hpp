@@ -66,6 +66,16 @@ public:
     void set(slot_index_t slot_index, sample val)
     {}
 
+    void pause(void)
+    {
+        running_ = false;
+    }
+
+    void resume(void)
+    {
+        running_ = true;
+    }
+
 private:
     void allocate_unit_buffers(uint blocksize, uint audio_bufs, uint control_bufs)
     {
@@ -94,6 +104,8 @@ private:
     Rate full_rate;
     Rate control_rate;
     RGen rgen;
+
+    bool running_;
 };
 
 } /* namespace nova */
