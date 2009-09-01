@@ -16,6 +16,9 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include <cstdarg>
+#include <cstdio>
+
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
 
@@ -112,6 +115,21 @@ void node_end(struct Node * node)
     nova::ugen_factory.done_nodes.push_back(node->mID);
 }
 
+int print(const char *fmt, ...)
+{
+    va_list vargs;
+    va_start(vargs, fmt);
+
+    char data[1024];
+
+    vsprintf(data, fmt, vargs);
+
+    std::cout << data << std::endl;
+
+    va_end(vargs);
+    return 0;
+}
+
 
 } /* extern "C" */
 
@@ -128,8 +146,9 @@ sc_plugin_interface::sc_plugin_interface(void):
     sc_interface.fDefineBufGen = &define_bufgen;
     sc_interface.fDefinePlugInCmd = &define_plugincmd;
 
-    /* node functions */
+    /* interface functions */
     sc_interface.fNodeEnd = &node_end;
+	sc_interface.fPrint = &print;
 
     /* wave tables */
     sc_interface.mSine = gSine;

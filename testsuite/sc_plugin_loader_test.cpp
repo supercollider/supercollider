@@ -71,6 +71,7 @@ const char * test_synthdefs[] =
     "help_RecordBuf.scsyndef",
     "help_RecordBuf_overdub.scsyndef",
     "help_LocalBuf.scsyndef",
+    "help_Demand.scsyndef",
 };
 
 
