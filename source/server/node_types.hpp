@@ -104,6 +104,12 @@ private:
 public:
     /* memory management for server_nodes */
     /* @{ */
+    template<typename T>
+    static T * allocate(std::size_t count)
+    {
+        return static_cast<T*>(allocate(count * sizeof(T)));
+    }
+
     static void * allocate(std::size_t size);
     static void free(void *);
     static std::size_t get_max_size(void)

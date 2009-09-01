@@ -38,23 +38,29 @@ rbtest_fixed = env.Program("ringbuffer_fixed_test",
                            CPPDEFINES="CONST_SIZE",
                            LIBS='boost_thread-mt')
 
-libboost_thread = Environment().StaticLibrary("boost_thread", ["../libs/boost/libs/thread/src/"+x for x in Split("""
-tss_null.cpp pthread/exceptions.cpp pthread/once.cpp pthread/thread.cpp
-""")]+["../libs/boost/libs/system/src/error_code.cpp"], CPPPATH="#/libs/boost")
+libboost_thread = Environment().StaticLibrary("boost_thread", Glob("../libs/boost/libs/thread/src/*cpp") +
+                                              Glob("../libs/boost/libs/thread/src/pthread/*cpp")+
+                                              ["../libs/boost/libs/system/src/error_code.cpp"],
+                                              CPPPATH="#/libs/boost")
 
+libboost_fs = Environment().StaticLibrary("boost_fs", Glob("../libs/boost/libs/filesystem/src/*cpp"),
+                                          CPPPATH="#/libs/boost")
 
 if env['optimize_testsuite']:
     unit_test_cflags = env['CCFLAGS'] + "-O3 -Wall"
 else:
     unit_test_cflags = "-g -Wall"
 
+libscsynth = env.SConscript("../source/sc/SConscript.server", "env")
 
-unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread],
+
+unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl', 'libscsynth'],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
-                                     "#libs/tlsf/src"],
-                            CCFLAGS=unit_test_cflags)
+                                     "#libs/tlsf/src", "#libs/endian"],
+                            CCFLAGS=unit_test_cflags,
+                            CPPDEFINES="SUPERNOVA")
 
 unit_test_common = ["boost_test.cpp",
                     "#libs/tlsf/src/tlsf.c",
@@ -94,6 +100,7 @@ unit_test_sources = ["mutex_test.cpp",
                      #"perf_counter_test.cpp",
                      "buffer_manager_test.cpp",
                      "sized_array_test.cpp",
+                     "sc_synthdef_test.cpp",
                      "control_bus_test.cpp",
                      ]
 
@@ -122,6 +129,8 @@ nova_server_test_sources = ["server_node_graph_test.cpp",
                             "server_test.cpp",
                             "server_ugen_test.cpp",
                             "server_sc_osc_handler_test.cpp",
+                            "sc_synth_prototype_test.cpp",
+                            "sc_plugin_loader_test.cpp",
                             ]
 
 nova_server_sources = env.SConscript("#/source/server/SConscript", "env")[1] # use combined sources

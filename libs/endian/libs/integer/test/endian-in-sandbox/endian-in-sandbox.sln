@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "endian_test", "endian_test\endian_test.vcproj", "{74C201F3-8308-40BE-BC0F-24974DEAF405}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "endian_in_union_test", "endian_in_union_test\endian_in_union_test.vcproj", "{3926C6DC-9D1E-4227-BEF5-81F5EC621A75}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "endian_operations_test", "endian_operations_test\endian_operations_test.vcproj", "{A0060A5B-673C-4AD8-BD08-A5C643B1A1CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74C201F3-8308-40BE-BC0F-24974DEAF405}.Debug|Win32.ActiveCfg = Debug|Win32
+		{74C201F3-8308-40BE-BC0F-24974DEAF405}.Debug|Win32.Build.0 = Debug|Win32
+		{74C201F3-8308-40BE-BC0F-24974DEAF405}.Release|Win32.ActiveCfg = Release|Win32
+		{74C201F3-8308-40BE-BC0F-24974DEAF405}.Release|Win32.Build.0 = Release|Win32
+		{3926C6DC-9D1E-4227-BEF5-81F5EC621A75}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3926C6DC-9D1E-4227-BEF5-81F5EC621A75}.Debug|Win32.Build.0 = Debug|Win32
+		{3926C6DC-9D1E-4227-BEF5-81F5EC621A75}.Release|Win32.ActiveCfg = Release|Win32
+		{3926C6DC-9D1E-4227-BEF5-81F5EC621A75}.Release|Win32.Build.0 = Release|Win32
+		{A0060A5B-673C-4AD8-BD08-A5C643B1A1CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0060A5B-673C-4AD8-BD08-A5C643B1A1CB}.Debug|Win32.Build.0 = Debug|Win32
+		{A0060A5B-673C-4AD8-BD08-A5C643B1A1CB}.Release|Win32.ActiveCfg = Release|Win32
+		{A0060A5B-673C-4AD8-BD08-A5C643B1A1CB}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
