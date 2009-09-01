@@ -26,7 +26,7 @@ namespace nova
 
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), unit_buffers(0),
-    controls(0), running_(false)
+    running_(false)
 {
     Rate_Init(&full_rate, 44100.f, 64);
     Rate_Init(&control_rate, 44100.f/64, 1);
@@ -45,20 +45,19 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     sc_synthdef const & synthdef = prototype->synthdef;
 
-    /* allocate controls
-     * */
-    size_t parameter_count = synthdef.parameter_count();
-    controls = allocate<float>(parameter_count);
-
-    for (size_t i = 0; i != parameter_count; ++i)
-        controls[i] = synthdef.parameters[i];
-
-    /* prepare control mappings
-     * */
+    /* prepare controls */
+    const size_t parameter_count = synthdef.parameter_count();
+    graph.mNumControls = parameter_count;
+    graph.mControls = allocate<float>(parameter_count);
+    graph.mControlRates = allocate<int>(parameter_count);
     graph.mMapControls = allocate<float*>(parameter_count);
 
-    for (size_t i = 0; i != parameter_count; ++i)
-        graph.mMapControls[i] = &controls[i];
+    /* initialize controls */
+    for (size_t i = 0; i != parameter_count; ++i) {
+        graph.mControls[i] = synthdef.parameters[i]; /* initial parameters */
+        graph.mMapControls[i] = &graph.mControls[i]; /* map to control values */
+        graph.mControlRates[i] = 0;                  /* init to 0*/
+    }
 
     /* allocate constant wires */
     graph.mWire = allocate<Wire>(synthdef.constants.size());
@@ -98,6 +97,14 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         units.push_back(unit);
     }
 }
+
+void sc_synth::set(slot_index_t slot_index, sample val)
+{
+    graph.mControlRates[slot_index] = 0;
+    graph.mMapControls[slot_index] = &graph.mControls[slot_index];
+    graph.mControls[slot_index] = val;
+}
+
 
 void sc_synth::run(dsp_context const & context)
 {

@@ -57,14 +57,12 @@ public:
     ~sc_synth(void)
     {
         free(graph.mMapControls);
-        free(controls);
         free(unit_buffers);
     }
 
     void run(dsp_context const & context);
 
-    void set(slot_index_t slot_index, sample val)
-    {}
+    void set(slot_index_t slot_index, sample val);
 
     void pause(void)
     {
@@ -96,8 +94,6 @@ private:
     unit_vector units;
     sample * unit_buffers;
     sample * control_buffers;   /* in the same memory chunk as unit_buffers */
-
-    sample * controls;
 
     Graph graph;
 
