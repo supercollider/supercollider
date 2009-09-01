@@ -57,6 +57,27 @@ public:
     virtual void run(void) = 0;
 };
 
+/** system_callback to delete object in the system thread. useful to avoid hitting the memory allocator
+ *  from within the real-time threads
+ */
+template <typename T>
+class delete_callback:
+    public system_callback
+{
+public:
+    delete_callback (T * ptr):
+        ptr_(ptr)
+    {}
+
+private:
+    virtual void run(void)
+    {
+        delete ptr_;
+    }
+
+    const T * const ptr_;
+};
+
 class nova_server:
     public osc_server,
     public node_graph,
