@@ -1327,6 +1327,7 @@ void handle_c_getn(received_message const & msg,
     instance->add_system_callback(new c_getn_callback(msg, endpoint));
 }
 
+
 struct d_recv_callback:
     public sc_async_callback
 {
@@ -1358,7 +1359,6 @@ struct d_recv_callback:
     const size_t def_size_;
 };
 
-
 void handle_d_recv(received_message const & msg,
                    udp::endpoint const & endpoint)
 {
@@ -1380,6 +1380,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
     {
     case cmd_quit:
         handle_quit(endpoint);
+        break;
+
+    case cmd_s_new:
+        handle_s_new(message);
         break;
 
     case cmd_notify:
@@ -1693,28 +1697,36 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     assert(address[0] == '/');
 
-    if (address[1] == 'g') {
-        dispatch_group_commands(message, endpoint);
-        return;
+    if (address[2] == '_')
+    {
+        if (address[1] == 'g') {
+            dispatch_group_commands(message, endpoint);
+            return;
+        }
+
+        if (address[1] == 'n') {
+            dispatch_node_commands(message, endpoint);
+            return;
+        }
+
+        if (address[1] == 'b') {
+            dispatch_buffer_commands(message, endpoint);
+            return;
+        }
+
+        if (address[1] == 'c') {
+            dispatch_control_bus_commands(message, endpoint);
+            return;
+        }
+
+        if (address[1] == 'd') {
+            dispatch_synthdef_commands(message, endpoint);
+            return;
+        }
     }
 
-    if (address[1] == 'n') {
-        dispatch_node_commands(message, endpoint);
-        return;
-    }
-
-    if (address[1] == 'b') {
-        dispatch_buffer_commands(message, endpoint);
-        return;
-    }
-
-    if (address[1] == 'c') {
-        dispatch_control_bus_commands(message, endpoint);
-        return;
-    }
-
-    if (address[1] == 'd') {
-        dispatch_synthdef_commands(message, endpoint);
+    if (strcmp(address+1, "s_new") == 0) {
+        handle_s_new(message);
         return;
     }
 
@@ -1758,4 +1770,3 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
 } /* namespace detail */
 } /* namespace nova */
-
