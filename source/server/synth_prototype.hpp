@@ -20,7 +20,6 @@
 #define SERVER_SYNTH_PROTOTYPE_HPP
 
 #include <cassert>
-#include <map>
 
 #include <boost/cstdint.hpp>
 #include <boost/intrusive/set.hpp>
@@ -41,24 +40,89 @@ namespace detail
 class slot_resolver
 {
 protected:
+    struct map_type:
+        public boost::intrusive::set_base_hook<>
+    {
+        map_type(slot_identifier_type const & name, slot_index_t index):
+            name(name), index(index)
+        {}
+
+        bool operator<(map_type const & rhs) const
+        {
+            return name < rhs.name;
+        }
+
+        slot_identifier_type name;
+        slot_index_t index;
+    };
+
+private:
+    struct comparer
+    {
+        bool operator()(map_type const & lhs,
+                        std::string const & rhs) const
+        {
+            return lhs.name < rhs;
+        }
+
+        bool operator()(std::string const & lhs,
+                        map_type const & rhs) const
+        {
+            return lhs < rhs.name;
+        }
+
+        bool operator()(map_type const & lhs,
+                        const char * rhs) const
+        {
+            return strcmp(lhs.name.c_str(), rhs) < 0;
+        }
+
+        bool operator()(const char * lhs,
+                        map_type const & rhs) const
+        {
+            return strcmp(lhs, rhs.name.c_str()) < 0;
+        }
+    };
+
+    template<typename T>
+    bool exists(T const & t) const
+    {
+        return slot_resolver_map.find(t, comparer()) != slot_resolver_map.end();
+    }
+
+protected:
     slot_resolver(void)
     {}
 
+    ~slot_resolver(void)
+    {
+        slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>());
+    }
+
     void register_slot(slot_identifier_type const & str, slot_index_t i)
     {
-        assert(not exists(slot_resolver_map, str));
-        slot_resolver_map[str] = i;
+        assert(not exists(str));
+        map_type * elem = new map_type(str, i);
+        bool success = slot_resolver_map.insert(*elem).second;
+        assert(success);
     }
 
 public:
     slot_index_t resolve_slot(slot_identifier_type const & str) const
     {
-        assert(exists(slot_resolver_map, str));
-        return slot_resolver_map.find(str)->second;;
+        assert(exists(str));
+        return slot_resolver_map.find(str, comparer())->index;
+    }
+
+    slot_index_t resolve_slot(const char * str) const
+    {
+        assert(exists(str));
+        return slot_resolver_map.find(str, comparer())->index;
     }
 
 private:
-    std::map<slot_identifier_type, slot_index_t> slot_resolver_map;
+    typedef boost::intrusive::set<map_type> slot_resolver_map_t;
+    slot_resolver_map_t slot_resolver_map;
 };
 
 } /* namespace detail */
