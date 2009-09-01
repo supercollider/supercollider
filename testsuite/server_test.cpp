@@ -29,7 +29,7 @@ struct test_synth_prototype:
 BOOST_AUTO_TEST_CASE( server_test_1 )
 {
     nova_server server;
-    server.register_prototype(new test_synth_prototype());
+    server.synth_factory::register_prototype(new test_synth_prototype());
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
 BOOST_AUTO_TEST_CASE( server_test_2 )
 {
     nova_server server;
-    server.register_prototype(new test_synth_prototype());
+    server.synth_factory::register_prototype(new test_synth_prototype());
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
 BOOST_AUTO_TEST_CASE( server_test_3 )
 {
     nova_server server;
-    server.register_prototype(new test_synth_prototype());
+    server.synth_factory::register_prototype(new test_synth_prototype());
 
     parallel_group * g = parallel_group::allocate_parallel_group(0);
 

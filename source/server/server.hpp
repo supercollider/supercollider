@@ -100,6 +100,8 @@ public:
     void set_node_slot(int node_id, slot_index_t slot, float value);
     void set_node_slot(int node_id, const char * slot, float value);
 
+    void register_prototype(synth_prototype_ptr const & prototype);
+
 #if 0
     /* node control */
     void free_node(node_id);

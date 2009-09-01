@@ -183,6 +183,32 @@ void nova_server::free_synth(abstract_synth * s)
     update_dsp_queue();
 }
 
+namespace
+{
+
+struct register_prototype_cb:
+    public audio_sync_callback
+{
+    register_prototype_cb (synth_prototype_ptr const & prototype):
+        prototype(prototype)
+    {}
+
+    void run(void)
+    {
+        instance->synth_factory::register_prototype(prototype);
+    }
+
+    synth_prototype_ptr prototype;
+};
+
+} /* namespace */
+
+void nova_server::register_prototype(synth_prototype_ptr const & prototype)
+{
+    scheduler::add_sync_callback(new register_prototype_cb(prototype));
+}
+
+
 void nova_server::update_dsp_queue(void)
 {
     std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
