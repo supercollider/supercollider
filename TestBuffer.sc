@@ -68,7 +68,7 @@ TestBuffer : UnitTest {
 		p = OSCresponderNode(s.addr, '/b_set', {arg time, resp, msg;
 			msg.postln;
 			this.assertEquals(msg, expectg, "/b_set data returned from a /b_get message should be as expected");
-		});Ê
+		});
 			
 		o.add;
 		p.add;
@@ -87,7 +87,7 @@ TestBuffer : UnitTest {
 		s.sync;
 		
 		s.sendMsg(\b_alloc, 3, 30000);
-		s.sendMsg(\b_read, 3, "sounds/a11wlk01.wav", 0, 30000);Ê
+		s.sendMsg(\b_read, 3, "sounds/a11wlk01.wav", 0, 30000);
 		
 		0.1.wait;
 		s.sync;
