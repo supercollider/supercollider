@@ -42,6 +42,18 @@ class synth_factory
         {
             return lhs < rhs.name();
         }
+
+        bool operator()(synth_prototype const & lhs,
+                        const char * rhs) const
+        {
+            return strcmp(lhs.name().c_str(), rhs) < 0;
+        }
+
+        bool operator()(const char * lhs,
+                        synth_prototype const & rhs) const
+        {
+            return strcmp(lhs, rhs.name().c_str()) < 0;
+        }
     };
 
 public:
@@ -60,6 +72,15 @@ public:
     }
 
     abstract_synth * create_instance(std::string const & name, int node_id)
+    {
+        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
+        if (it == prototype_map.end())
+            return 0;
+
+        return it->create_instance(node_id);
+    }
+
+    abstract_synth * create_instance(const char * name, int node_id)
     {
         prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
         if (it == prototype_map.end())
