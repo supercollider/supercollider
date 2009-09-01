@@ -20,6 +20,7 @@
 #include "sc_ugen_factory.hpp"
 
 #include "../server/memory_pool.hpp"
+#include "../server/server.hpp"
 #include "../simd/simd_memory.hpp"
 
 #include "supercollider/Headers/server/SC_Samp.h"
@@ -98,6 +99,12 @@ void clear_outputs(Unit *unit, int samples)
             nova::zerovec(OUT(i), samples);
 }
 
+void node_end(struct Node * node)
+{
+    nova::spin_lock::scoped_lock lock(nova::ugen_factory.cmd_lock);
+    nova::ugen_factory.done_nodes.push_back(node->mID);
+}
+
 
 } /* extern "C" */
 
@@ -107,9 +114,14 @@ namespace nova
 sc_plugin_interface::sc_plugin_interface(void):
     audio_busses(1024, 64)
 {
+    done_nodes.reserve(1024); // reserve enough space
+
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
+
+    /* node functions */
+    sc_interface.fNodeEnd = &node_end;
 
     /* wave tables */
     sc_interface.mSine = gSine;
@@ -149,6 +161,13 @@ void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs
     world.mNumOutputs = audio_outputs;
 }
 
+void sc_plugin_interface::update_nodegraph(void)
+{
+    for (size_t i = 0; i != done_nodes.size(); ++i) {
+        instance->free_node(done_nodes[i]);
+    }
+    done_nodes.clear();
+}
 
 sc_plugin_interface::~sc_plugin_interface(void)
 {

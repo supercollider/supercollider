@@ -67,7 +67,7 @@ const char * test_synthdefs[] =
     "help_LocalIn.scsyndef",
     "help_PlayBuf.scsyndef",
     "help_RecordBuf.scsyndef",
-    //"help_RecordBuf_overdub.scsyndef",
+    "help_RecordBuf_overdub.scsyndef",
     //"help_LocalBuf.scsyndef",
 };
 

@@ -38,6 +38,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     graph.mLocalAudioBusUnit = 0;
     graph.mLocalControlBusUnit = 0;
 
+    graph.mNode.mID = node_id;
+
     sc_synthdef const & synthdef = prototype->synthdef;
 
     /* allocate controls

@@ -19,6 +19,8 @@
 #ifndef SC_PLUGIN_INTERFACE_HPP
 #define SC_PLUGIN_INTERFACE_HPP
 
+#include <vector>
+
 #include "../server/audio_bus_manager.hpp"
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
@@ -35,10 +37,16 @@ public:
 
     void set_audio_channels(int audio_inputs, int audio_outputs);
 
+    void update_nodegraph(void);
+
     InterfaceTable sc_interface;
     World world;
 
     audio_bus_manager audio_busses;
+
+    spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
+                           later we can try different approaches like a lockfree stack or bitmask */
+    std::vector<int32_t> done_nodes; /* later use vector from boost container (supports stateful allocators) */
 };
 
 } /* namespace nova */
