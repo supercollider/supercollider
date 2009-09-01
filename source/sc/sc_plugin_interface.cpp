@@ -53,6 +53,12 @@ bool define_bufgen(const char * name, BufGenFunc func)
     }
 }
 
+bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
+{
+    std::cerr << "plugin commands not implemented: " << name << std::endl;
+    return false;
+}
+
 void * rt_alloc(World * dummy, size_t size)
 {
     if (size)
@@ -119,6 +125,7 @@ sc_plugin_interface::sc_plugin_interface(void):
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
+    sc_interface.fDefinePlugInCmd = &define_plugincmd;
 
     /* node functions */
     sc_interface.fNodeEnd = &node_end;
