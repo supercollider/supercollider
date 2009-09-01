@@ -93,8 +93,8 @@ QuarkSVNRepository
 		args = if(skeletonCheckout.isEmpty){
 			[]
 		}{
-			["update", ["--non-recursive"] ++ skeletonCheckout]
-		} ++ ["update", fullCheckout];
+			["update", ["--non-recursive"] ++ skeletonCheckout.collect(_.asSymbol).as(OrderedIdentitySet).collectAs((_.asString), Array)]
+		} ++ ["update", fullCheckout.collect(_.asSymbol).as(OrderedIdentitySet).collectAs((_.asString), Array)];
 		this.svnMulti(localRoot, sync, *args);
 	}
 	
