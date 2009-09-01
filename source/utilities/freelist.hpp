@@ -34,10 +34,10 @@ class freelist
 {
     struct freelist_node
     {
-        lockfree::tagged_ptr<freelist_node> next;
+        boost::lockfree::tagged_ptr<freelist_node> next;
     };
 
-    typedef lockfree::tagged_ptr<freelist_node> tagged_ptr;
+    typedef boost::lockfree::tagged_ptr<freelist_node> tagged_ptr;
 
 public:
     freelist(void):
