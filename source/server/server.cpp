@@ -52,6 +52,18 @@ abstract_synth * nova_server::add_synth(std::string const & name, int id, node_p
     return ret;
 }
 
+abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)
+{
+    abstract_synth * ret = synth_factory::create_instance(name, id);
+
+    if (ret == 0)
+        return 0;
+
+    node_graph::add_node(ret, constraints);
+    update_dsp_queue();
+    return ret;
+}
+
 group * nova_server::add_group(int id, node_position_constraint const & constraints)
 {
     group * g = group::allocate_group(id);
