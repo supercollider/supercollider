@@ -59,6 +59,15 @@ public:
         }
     }
 
+    void zero_dac_output(uint channel, uint frames)
+    {
+        if (likely(audio_is_active()))
+        {
+            spin_lock::scoped_lock lock(output_lock);
+            active_backend->zero_dac_output(channel, frames);
+        }
+    }
+
     void deliver_dac_output_64(const_restricted_sample_ptr source, uint channel)
     {
         if (likely(audio_is_active()))

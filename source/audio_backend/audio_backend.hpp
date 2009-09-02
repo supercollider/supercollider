@@ -102,6 +102,8 @@ public:
     }
     /* } */
 
+    virtual void zero_dac_output(uint channel, uint frames) = 0;
+
     /** \brief fetch data from adc */
     /* { */
     virtual void fetch_adc_input(restricted_sample_ptr destination, uint channel, uint frames) = 0;
@@ -200,6 +202,9 @@ public:
 
     /** \brief noop */
     virtual void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
+    {}
+
+    virtual void zero_dac_output(uint channel, uint frames)
     {}
 
     /** \brief wipe buffer */

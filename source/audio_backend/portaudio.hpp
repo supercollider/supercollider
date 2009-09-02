@@ -137,7 +137,7 @@ public:
     }
 
     /** \brief deliver data to dac */
-    /* { */
+    /* @{ */
     virtual void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
     {
         if (likely(channel < out_samples.size()))
@@ -150,10 +150,16 @@ public:
             addvec_simd<64>(out_samples[channel], source);
     }
 
-    /* } */
+    /* @} */
+
+    virtual void zero_dac_output(uint channel, uint frames)
+    {
+        if (likely(channel < out_samples.size()))
+            zerovec_simd(out_samples[channel], audio_backend::dacblocksize);
+    }
 
     /** \brief fetch data from adc */
-    /* { */
+    /* @{ */
     virtual void fetch_adc_input(restricted_sample_ptr destination, uint channel, uint frames)
     {
         if (likely(channel < in_samples.size()))
@@ -169,7 +175,7 @@ public:
         else
             zerovec_simd_mp<64>(destination);
     }
-    /* } */
+    /* @} */
 
 private:
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
