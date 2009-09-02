@@ -1400,7 +1400,10 @@ void handle_d_load(received_message const & msg,
     const char * path;
     osc::Blob blob(0, 0);
 
-    args >> path >> blob;
+    args >> path;
+    if (!args.Eos())
+        args >> blob;
+
     instance->add_system_callback(new d_load_callback(path, blob.size, blob.data, endpoint));
 }
 
@@ -1428,7 +1431,10 @@ void handle_d_loadDir(received_message const & msg,
     const char * path;
     osc::Blob blob(0, 0);
 
-    args >> path >> blob;
+    args >> path;
+    if (!args.Eos())
+        args >> blob;
+
     instance->add_system_callback(new d_loadDir_callback(path, blob.size, blob.data, endpoint));
 }
 
