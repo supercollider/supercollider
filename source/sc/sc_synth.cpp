@@ -26,7 +26,7 @@ namespace nova
 
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), unit_buffers(0),
-    running_(false)
+    running_(true)
 {
     Rate_Init(&full_rate, 44100.f, 64);
     Rate_Init(&control_rate, 44100.f/64, 1);

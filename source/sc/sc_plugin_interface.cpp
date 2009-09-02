@@ -262,8 +262,11 @@ sc_plugin_interface::sc_plugin_interface(void):
     world.mNumSndBufs = 1024;
     world.mSndBufs = new SndBuf[world.mNumSndBufs];
 
-	Rate_Init(&world.mFullRate, 44100, 64);
-	Rate_Init(&world.mBufRate, 44100.f/64, 1);
+    /* audio settings */
+    world.mBufLength = 64;
+
+    Rate_Init(&world.mFullRate, 44100, 64);
+    Rate_Init(&world.mBufRate, 44100.f/64, 1);
 }
 
 void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs)
