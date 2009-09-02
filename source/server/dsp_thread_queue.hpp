@@ -77,6 +77,7 @@ public:
         reset_activation_count();
     }
 
+    /** called from the run method or once, when dsp queue is initialized */
     void reset_activation_count(void)
     {
         assert(activation_count == 0);
@@ -222,8 +223,6 @@ public:
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
             mark_as_runnable(initially_runnable_items[i]);
 
-        queue->reset_activation_counts();
-
         qdone = false;
         return true;
     }
@@ -238,6 +237,10 @@ public:
     {
         dsp_thread_queue_ptr ret(queue.release());
         queue = new_queue;
+        if (queue.get() == 0)
+            return ret;
+
+        queue->reset_activation_counts();
 
         thread_count_t thread_number =
             std::min(thread_count_t(std::min(total_node_count(),
@@ -245,7 +248,6 @@ public:
                      thread_count);
 
         used_helper_threads = thread_number - 1; /* this thread is not waked up */
-
         return ret;
     }
 
