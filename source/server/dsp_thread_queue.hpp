@@ -173,7 +173,7 @@ public:
     typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc):
-        queue(new dsp_thread_queue()), node_count(0)
+        node_count(0)
     {
         set_thread_count(tc);
     }
@@ -202,14 +202,21 @@ public:
         }
     }
 
+    /** prepares queue and queue interpreter for dsp tick
+     *
+     *  \return true, if dsp queue is valid
+     *          false, if no dsp queue is available or queue is empty
+     */
     bool init_tick(void)
     {
+        if (unlikely((queue.get() == NULL) or                /* no queue */
+                     (queue->get_total_node_count() == 0)    /* no nodes */
+                    ))
+            return false;
+
         /* reset node count */
         assert(node_count == 0);
         node_count += queue->get_total_node_count(); /* this is definitely atomic! */
-
-        if (queue->get_total_node_count() == 0)
-            return false;
 
         std::vector<dsp_thread_queue_item*> const & initially_runnable_items = queue->initially_runnable_items;
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
@@ -224,7 +231,6 @@ public:
     dsp_thread_queue_ptr release_queue(void)
     {
         dsp_thread_queue_ptr ret(queue.release());
-        queue.reset(new dsp_thread_queue());
         return ret;
     }
 
