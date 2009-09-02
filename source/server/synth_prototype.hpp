@@ -22,6 +22,7 @@
 #include <cassert>
 
 #include <boost/cstdint.hpp>
+#include <boost/checked_delete.hpp>
 #include <boost/intrusive/set.hpp>
 
 #include "utilities/exists.hpp"
@@ -129,6 +130,17 @@ private:
 
 class abstract_synth;
 
+struct synth_prototype_deleter
+{
+    template <typename T>
+    void operator()(T * ptr)
+    {
+        dispose (static_cast<class synth_prototype *>(ptr));
+    }
+
+    void dispose(class synth_prototype *);
+};
+
 /** prototype of a synth
  *
  * - works as a synth factory
@@ -137,7 +149,7 @@ class abstract_synth;
 class synth_prototype:
     public detail::slot_resolver,
     public boost::intrusive::set_base_hook<>,
-    public intrusive_refcountable
+    public intrusive_refcountable<synth_prototype_deleter>
 {
 public:
     synth_prototype(std::string const & name):

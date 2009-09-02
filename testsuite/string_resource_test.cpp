@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( string_resource_test )
 
     test_string_resource r0;
     BOOST_REQUIRE_EQUAL(r0, "");
-    BOOST_REQUIRE_EQUAL(r0.as_str().size(), 0);
+    BOOST_REQUIRE_EQUAL(r0.as_str().size(), 0u);
 
 }
 

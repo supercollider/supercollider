@@ -1,5 +1,5 @@
 //  synth factory
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ public:
     {
         prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
         if (it == prototype_map.end())
-            return 0;
+            return;
 
         prototype_map.erase(it);
         it->release();

@@ -1,5 +1,11 @@
 all:
-	scons debug=1
-	
+	scons debug=1 -j 4
+
+run_tests:
+	scons debug=1 -j 4 run_tests
+
+server:
+	scons server -j 4
+
 clean:
 	scons -c

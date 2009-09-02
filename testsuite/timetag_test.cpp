@@ -11,14 +11,14 @@ BOOST_AUTO_TEST_CASE( time_tag_test_1 )
 {
     {
         time_tag tt;
-        BOOST_REQUIRE_EQUAL(tt.get_secs(), 0);
-        BOOST_REQUIRE_EQUAL(tt.get_fraction(), 0);
+        BOOST_REQUIRE_EQUAL(tt.get_secs(), 0u);
+        BOOST_REQUIRE_EQUAL(tt.get_fraction(), 0u);
     }
 
     {
         time_tag tt(100, 200);
-        BOOST_REQUIRE_EQUAL(tt.get_secs(), 100);
-        BOOST_REQUIRE_EQUAL(tt.get_fraction(), 200);
+        BOOST_REQUIRE_EQUAL(tt.get_secs(), 100u);
+        BOOST_REQUIRE_EQUAL(tt.get_fraction(), 200u);
     }
 
     {

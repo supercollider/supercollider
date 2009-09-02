@@ -1,7 +1,5 @@
-//  $Id$
-//
 //  minblep oscillators
-//  Copyright (C) 2007 Tim Blechmann
+//  Copyright (C) 2007, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,24 +16,20 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-//  $Revision$
-//  $LastChangedRevision$
-//  $LastChangedDate$
-//  $LastChangedBy$
-
 
 #ifndef MINBLEP_HPP
 #define MINBLEP_HPP
 
 #include <deque>
+#include <cmath>
 
-#include "../utilities/knuth_Constants.h"
+#include <boost/math/constants/constants.hpp>
+
 #include "utilities.hpp"
 #include "sample_extractor.hpp"
 
 namespace nova
 {
-using knuth::pi;
 
 /** templated version of minblep algorithm, adapted from Eli Brandt's matlab files
  *
@@ -54,9 +48,7 @@ class minblep_saw
 public:
     minblep_saw(void):
         phase_(0), phase_inc_(0)
-    {
-    }
-
+    {}
 
     /* void set frequency for control-driven operation */
     void set_frequency(internal_type const & new_frequency)
@@ -153,7 +145,7 @@ private:
             return 1.0f;
         else
         {
-            internal_type pix = pi * x;
+            internal_type pix = boost::math::constants::pi< internal_type >() * x;
             return std::sin(pix) / pix;
         }
     }
@@ -167,7 +159,7 @@ private:
         fm = internal_type(m);
         for(int i = 0; i != m; i++)
         {
-            f1 = (2.0f * pi * internal_type(i)) / fm;
+            f1 = (2.0f * boost::math::constants::pi< internal_type >() * internal_type(i)) / fm;
             f2 = 2.0f * f1;
             w[i] = 0.42f - (0.5f * std::cos(f1)) + (0.08f * std::cos(f2));
         }
@@ -188,7 +180,7 @@ private:
         for(k = 0; k < n; k++)
             for(i = 0; i < n; i++)
             {
-                p = (2.0f * pi * (internal_type)(k * i)) / n;
+                p = (2.0f *  * (internal_type)(k * i)) / n;
                 sr = std::cos(p);
                 si = -std::sin(p);
                 realFreq[k] += (realTime[i] * sr) - (imagTime[i] * si);
@@ -212,7 +204,7 @@ private:
         {
             for(i = 0; i < n; i++)
             {
-                p = (2.0f * pi * (internal_type)(k * i)) / n;
+                p = (2.0f * boost::math::constants::pi< internal_type >() * (internal_type)(k * i)) / n;
                 sr = std::cos(p);
                 si = -std::sin(p);
                 realTime[k] += (realFreq[i] * sr) + (imagFreq[i] * si);
@@ -372,5 +364,3 @@ private:
 } /* namespace nova */
 
 #endif /* MINBLEP_HPP */
-
-

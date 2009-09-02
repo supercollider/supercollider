@@ -111,6 +111,32 @@ void nova_server::free_synth(abstract_synth * s)
     update_dsp_queue();
 }
 
+namespace
+{
+
+struct register_prototype_cb:
+    public audio_sync_callback
+{
+    register_prototype_cb (synth_prototype_ptr const & prototype):
+        prototype(prototype)
+    {}
+
+    void run(void)
+    {
+        instance->synth_factory::register_prototype(prototype);
+    }
+
+    synth_prototype_ptr prototype;
+};
+
+} /* namespace */
+
+void nova_server::register_prototype(synth_prototype_ptr const & prototype)
+{
+    scheduler::add_sync_callback(new register_prototype_cb(prototype));
+}
+
+
 void nova_server::update_dsp_queue(void)
 {
     std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
@@ -122,6 +148,15 @@ void scheduler::operator()(void)
     cbs.run_callbacks();
     instance->execute_scheduled_bundles();
     threads.run();
+}
+
+
+void synth_prototype_deleter::dispose(synth_prototype * ptr)
+{
+    if (instance) /// todo: hack to fix test suite
+        instance->add_system_callback(new delete_callback<synth_prototype>(ptr));
+    else
+        delete ptr;
 }
 
 

@@ -61,6 +61,27 @@ public:
     virtual void run(void) = 0;
 };
 
+/** system_callback to delete object in the system thread. useful to avoid hitting the memory allocator
+ *  from within the real-time threads
+ */
+template <typename T>
+class delete_callback:
+    public system_callback
+{
+public:
+    delete_callback (T * ptr):
+        ptr_(ptr)
+    {}
+
+private:
+    virtual void run(void)
+    {
+        delete ptr_;
+    }
+
+    const T * const ptr_;
+};
+
 class nova_server:
     public node_graph,
     public scheduler,
@@ -105,6 +126,8 @@ public:
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
     void set_node_slot(int node_id, const char * slot, float value);
+
+    void register_prototype(synth_prototype_ptr const & prototype);
 
 #if 0
     /* node control */

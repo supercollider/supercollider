@@ -24,6 +24,7 @@
 #include <cmath>
 #include <algorithm>
 
+#include <boost/math/constants/constants.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
 
@@ -33,7 +34,6 @@
 #include "parameter.hpp"
 
 #include "../utilities/branch_hints.hpp"
-#include "../utilities/knuth_Constants.h"
 #include "../utilities/template_functions.hpp"
 
 #include "cache_aligned_array.hpp"
@@ -42,7 +42,7 @@ namespace nova
 {
 
 /* the mathematical constants */
-using knuth::pi;
+#define pi boost::math::constants::pi<internal_type>()
 
 namespace detail
 {
@@ -1184,6 +1184,7 @@ protected:
     boost::array<internal_type, 2> z_;
 };
 
+#undef pi
 
 } /* namespace nova */
 
