@@ -258,9 +258,15 @@ sc_plugin_interface::sc_plugin_interface(void):
     world.mAudioBusTouched = new int32[1024];
     world.mAudioBusLocks = audio_busses.locks;
 
+    for (size_t i = 0; i != 1024; ++i) {
+        world.mAudioBusTouched[i]   = -1;
+        world.mControlBusTouched[i] = -1;
+    }
+
     /* audio buffers */
     world.mNumSndBufs = 1024;
     world.mSndBufs = new SndBuf[world.mNumSndBufs];
+    world.mBufCounter = 0;
 
     /* audio settings */
     world.mBufLength = 64;

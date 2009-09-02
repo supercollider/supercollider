@@ -151,14 +151,23 @@ private:
 inline void run_scheduler_tick(void)
 {
     const int blocksize = 64;
-    for (int channel = 0; channel != instance->get_input_count(); ++channel)
-        instance->fetch_adc_input(ugen_factory.world.mAudioBus + (blocksize * instance->get_output_count() + channel),
+    const int input_channels = instance->get_input_count();
+    const int output_channels = instance->get_output_count();
+    const int buf_counter = ugen_factory.world.mBufCounter++;
+    for (int channel = 0; channel != input_channels; ++channel) {
+        instance->fetch_adc_input(ugen_factory.world.mAudioBus + (blocksize * (output_channels + channel)),
                                   channel, blocksize);
+        ugen_factory.world.mAudioBusTouched[output_channels + channel] = buf_counter;
+    }
 
     (*instance)();
 
-    for (int channel = 0; channel != instance->get_output_count(); ++channel)
-        instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
+    for (int channel = 0; channel != output_channels; ++channel) {
+        if (ugen_factory.world.mAudioBusTouched[channel] != buf_counter)
+            instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
+        else
+            instance->zero_dac_output(channel, blocksize);
+    }
 }
 
 } /* namespace nova */
