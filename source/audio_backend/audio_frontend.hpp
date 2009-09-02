@@ -154,8 +154,8 @@ public:
 
     void activate_audio(void)
     {
-        active_backend->activate();
         is_active = true;
+        active_backend->activate();
     }
 
     void deactivate_audio(void)
