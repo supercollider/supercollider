@@ -25,6 +25,8 @@
 #include <dlfcn.h>
 #endif
 
+#include <boost/filesystem.hpp>
+
 #include "sc_ugen_factory.hpp"
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
@@ -130,6 +132,18 @@ void sc_ugen_def::destruct(Unit * unit)
     sc_synth::free(unit->mInBuf);
     sc_synth::free(unit->mOutBuf);
     sc_synth::free(unit);
+}
+
+void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
+{
+    using namespace boost::filesystem;
+
+    directory_iterator end;
+
+    for (directory_iterator it(path); it != end; ++it) {
+        if (is_regular_file(it->status()))
+            load_plugin(it->path());
+    }
 }
 
 

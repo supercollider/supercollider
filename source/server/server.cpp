@@ -22,6 +22,7 @@
 #include "sync_commands.hpp"
 
 #include "sc/sc_synth_prototype.hpp"
+#include "sc/sc_ugen_factory.hpp"
 
 namespace nova
 {
@@ -33,6 +34,8 @@ nova_server::nova_server(unsigned int port, unsigned int threads):
 {
     assert(instance == 0);
     instance = this;
+
+    ugen_factory.load_plugin_folder("plugins");
 }
 
 nova_server::~nova_server(void)
