@@ -52,15 +52,8 @@ classvar <scvim_dir, <scvim_cache_dir,
 
 	r{
 		//if scvim_cache_dir doesn't exist, make it
-		if(File.exists(scvim_cache_dir) == false){
-			("mkdir " ++ scvim_cache_dir).unixCmd;
-			//wait until the file exists
-			//while(File.exists(scvim_cache_dir) == false,  1.wait; );
-			1.wait;
-		};
-
-		if(File.exists(scvim_cache_dir ++ "/doc") == false){
-			("mkdir " ++ scvim_cache_dir ++ "/doc").unixCmd;
+		if(File.exists(scvim_cache_dir +/+ "doc").not){
+			("mkdir -p" + scvim_cache_dir +/+ "doc").unixCmd;
 			//wait until the file exists
 			//while(File.exists(scvim_cache_dir) == false,  1.wait; );
 			1.wait;
