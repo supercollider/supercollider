@@ -6,6 +6,7 @@ Recent changes (will be SuperCollider v3.3.2)
 Headlines:
 ----------
 
+* 2009-09-03 add support for Mac OS 10.5 and greater 64-bit builds of plugins and scsynth
 * 2009-07-xx iphone support by Axel Balley added - ab
 * 2009-07-21 EnvirGui added, a gui for livecoding/editing environments - adc
 * 2009-07-24 Server.plotTree method for visualising the groups and synths on the server - sw

@@ -38,8 +38,9 @@ int listDevices(struct VMGlobals *g, int type)
 	int numDevices, num = 0;
     PyrSlot *a = g->sp-2;
 	
-	unsigned long count;
-	OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+//	unsigned long count;
+    UInt32 count;
+    OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
 	AudioDeviceID *devices = (AudioDeviceID*)malloc(count);	
 	err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
 	if (err!=kAudioHardwareNoError)

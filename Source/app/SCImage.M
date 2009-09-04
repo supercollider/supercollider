@@ -2879,14 +2879,19 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 			NSLog(@"Checking for CIFilter MinMax of attribute: %@", key);
 	#endif
 		
-	if( !key ) 
-		goto BailErr;
+	if( !key ) {
+	    SetNil(receiver);
+	    return errNone;
+	}
+//	    goto BailErr;
 	
 	const char* cStr = [key cStringUsingEncoding:NSASCIIStringEncoding];
 	attribute = [attrDict objectForKey: [NSString stringWithFormat:@"input%c%s", toupper(*cStr), cStr+1]];
 	if( !attribute ) {
-		post("SCImageFilter : no attributes named %s found !\n", [key UTF8String]);
-		goto BailErr;
+	    post("SCImageFilter : no attributes named %s found !\n", [key UTF8String]);
+	    SetNil(receiver);
+	    return errNone;
+//	    goto BailErr;
 	}
 	
 	PyrObject* pyrArray = returnedArraySlot->uo; // should be an array of size 3
@@ -2897,8 +2902,11 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 	minmax[1] = [attribute objectForKey: kCIAttributeSliderMax] ? [attribute objectForKey: kCIAttributeSliderMax] : [attribute objectForKey: kCIAttributeMax];
 	minmax[2] = [attribute objectForKey: kCIAttributeDefault];
 	
-	if(!minmax[0] && !minmax[1] && !minmax[2]) // if no slider min or slider max or default - set to nil directly
-			goto BailErr;
+    if(!minmax[0] && !minmax[1] && !minmax[2]){ // if no slider min or slider max or default - set to nil directly
+	    //goto BailErr;
+	    SetNil(receiver);
+	    return errNone;
+	}
 				
 	if(attrType == kCIAttributeTypeBoolean)
 	{
@@ -2991,15 +2999,18 @@ int prSCImageFilter_GetAttributeMinMax(struct VMGlobals *g, int numArgsPushed)
 				g->gc->GCWrite(pyrArray, vector[i]);
 		}
 	}
-	else 
-		goto BailErr;
+	else {
+	    SetNil(receiver);
+	    return errNone;   
+	}
+	//	goto BailErr;
 	
 	SetObject(receiver, pyrArray);
 	return errNone;
 	
-	BailErr:
-	SetNil(receiver);
-	return errNone;
+//	BailErr:
+//	SetNil(receiver);
+//	return errNone;
 }
 
 int prSCImageFilter_Attributes(struct VMGlobals *g, int numArgsPushed);

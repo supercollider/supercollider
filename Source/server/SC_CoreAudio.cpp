@@ -29,6 +29,8 @@
 #include "SC_Lib_Cintf.h"
 #include <stdlib.h>
 #include <pthread.h>
+#include <algorithm>
+
 #ifdef SC_WIN32
 
 #else
@@ -1192,7 +1194,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProcSeparateIn;
 			err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mInputStreamsEnabled));
+			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
@@ -1204,7 +1206,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mOutputStreamsEnabled));
+			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}
@@ -1235,7 +1237,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			err = AudioDeviceGetProperty(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mInputStreamsEnabled));
+			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
@@ -1247,7 +1249,7 @@ bool SC_CoreAudioDriver::DriverStart()
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			int len = std::min(su->mNumberStreams, strlen(mWorld->hw->mOutputStreamsEnabled));
+			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}

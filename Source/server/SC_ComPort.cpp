@@ -736,7 +736,7 @@ CFDataRef SC_MachMessagePort::messagePortCallBack(CFMessagePortRef local, SInt32
     bzero(&packet->mReplyAddr, sizeof(ReplyAddress));
     packet->mReplyAddr.mReplyFunc = port->mReplyPort ? mach_reply_func : null_reply_func;
 	packet->mReplyAddr.mReplyData = 0;
-    packet->mReplyAddr.mSocket = (int) port->mReplyPort;
+    packet->mReplyAddr.mSocket = (int)(int64)port->mReplyPort;
     packet->mSize = CFDataGetLength(data);
     packet->mData = (char*) memcpy(malloc(packet->mSize), CFDataGetBytePtr(data), packet->mSize);
 

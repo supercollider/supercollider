@@ -65,7 +65,7 @@ class SuperColliderAU : public AUMIDIEffectBase
 public:
     Boolean haveSpecs;
 	SuperColliderAU(AudioUnit component);
-    virtual SuperColliderAU::~SuperColliderAU ();
+    virtual ~SuperColliderAU ();
 	
 	
 	virtual	ComponentResult		GetParameterValueStrings(AudioUnitScope			inScope,
