@@ -92,7 +92,7 @@ test_ugen_generator_equivalences {
 
 	]
 	.keysValuesDo{|name, func| func.loadToFloatArray(1, Server.default, { |data|
-			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: false)
+			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true)
 		});
 		0.12.wait;
 	};
@@ -128,7 +128,7 @@ test_bufugens{
 		c.loadToFloatArray(action: { |data|
 			// The data recorded to "c" should be exactly the same as the original data "d"
 			this.assertArrayFloatEquals(data - d, 0, 
-				"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: false);
+				"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: true);
 			b.free;
 			c.free;
 		});
@@ -137,6 +137,34 @@ test_bufugens{
 		
 	};
 	1.6.wait; // enough time for 1-second generators to run and to report back.
+}
+
+test_demand {
+	var nodestofree, tests, o, s=Server.default;
+	
+	this.bootServer;
+	nodestofree = [];
+	
+	o = OSCresponderNode(s.addr, '/n_end', {arg time, resp, msg;
+		if(nodestofree.indexOf(msg[1]).notNil){
+			nodestofree.removeAt(nodestofree.indexOf(msg[1]))
+		};
+	});
+	o.add;
+	
+	tests = [
+		{LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2)))}
+	];
+	
+	tests.do{|item| nodestofree = nodestofree.add(item.play.nodeID) };
+	
+	1.5.wait;
+	s.sync;
+	
+	// The items should all have freed by now...
+	this.assert(nodestofree.size == 0, "Duty should free itself after a limited sequence");
+	
+	o.remove;
 }
 
 } // end TestCoreUGens class
