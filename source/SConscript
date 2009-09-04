@@ -51,7 +51,7 @@ libsources, libbuildsource = SConscript("libs/SConscript", exports="env")
 def build_nova_server():
     serverenv = env.Clone()
     server_sources = serverenv.SConscript("server/SConscript", "env")
-    scsynth_sources = serverenv.SConscript("sc/SConscript.server", "env")
+    scsynth_sources, scsynth_paths = serverenv.SConscript("sc/SConscript.server", "env")
 
     if env['compact_build']:
         used_libsources = libbuildsource + scsynth_sources
@@ -63,11 +63,7 @@ def build_nova_server():
     serverenv.Append(CCFLAGS='-fvisibility=hidden');
     serverenv.Append(CPPDEFINES='SUPERNOVA')
 
-    serverenv.Append(CPPPATH=Split("""#source/sc/supercollider/Headers/common
-                                      #source/sc/supercollider/Headers/plugin_interface
-                                      #source/sc/supercollider/Headers/server
-                                      """)
-                    )
+    serverenv.Append(CPPPATH=scsynth_paths)
 
     objects = [serverenv.StaticObject(x) for x in used_sources]
     lib_objects = [serverenv.StaticObject(x) for x in used_libsources]

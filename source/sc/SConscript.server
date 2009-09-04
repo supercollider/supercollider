@@ -24,9 +24,12 @@ server_sources = Split("""SC_Rate.cpp Samp.cpp""")
 server_sources = [File(x, "supercollider/Source/server") for x in server_sources]
 
 
-env.Append(CPPPATH=["sc/supercollider/Headers/plugin_interface",
-                    "sc/supercollider/Headers/server",
-                    "sc/supercollider/Headers/common"])
+cpppaths = ["#source/sc/supercollider/Headers/plugin_interface",
+            "#source/sc/supercollider/Headers/server",
+            "#source/sc/supercollider/Headers/common"]
+
+env.Append(CPPPATH=cpppaths)
+
 Export("env")
 
-Return("server_sources")
+Return("server_sources cpppaths")

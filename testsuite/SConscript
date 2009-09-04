@@ -51,16 +51,18 @@ if env['optimize_testsuite']:
 else:
     unit_test_cflags = "-g -Wall"
 
-libscsynth = env.SConscript("../source/sc/SConscript.server", "env")
 
 
-unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl', 'libscsynth'],
+unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl'],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
                                      "#libs/tlsf/src", "#libs/endian"],
                             CCFLAGS=unit_test_cflags,
                             CPPDEFINES="SUPERNOVA")
+
+scsynth_src, sc_paths = unit_test_env.SConscript("../source/sc/SConscript.server", "env")
+unit_test_env.Append(CPPPATH = sc_paths)
 
 unit_test_common = ["boost_test.cpp",
                     "#libs/tlsf/src/tlsf.c",
@@ -141,7 +143,7 @@ nova_server_libs = [unit_test_env.Object(x) for x in nova_server_libs]
 nova_server_sources = [unit_test_env.Object(x) for x in nova_server_sources]
 
 nova_server_test = [unit_test_env.Program(test[:-4],
-                                          [test] + nova_server_sources + nova_server_libs,
+                                          [test] + nova_server_sources + nova_server_libs + scsynth_src,
                                           )
                     for test in nova_server_test_sources]
 
