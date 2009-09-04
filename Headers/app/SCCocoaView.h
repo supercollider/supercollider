@@ -119,7 +119,7 @@ public:
 	
 	int open(NSString *path);
 	NSURL* getLastURL() {return mLastURL;};
-	bool SCCocoaTextView::linkAction(NSString *path);
+	bool linkAction(NSString *path);
 	
 	virtual NSView* focusResponder() { return mTextView; }
 	
@@ -164,7 +164,7 @@ public:
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual NSView* focusResponder() { return mTextField; }
-	BOOL SCTextField::performDrag();
+	BOOL performDrag();
 	NSDragOperation draggingEntered();
 	virtual bool canReceiveDrag();
 	SCTopView* getTop() { return mTop; }

@@ -500,7 +500,7 @@ extern bool compiledOK;
 		g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, pobj); 
 		//get Size
-		int size = (int) [sender arraySize];
+		size_t size = (size_t) [sender arraySize];
 		float *src = (float*) [sender floatArray];
 		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
 		for(int i=0; i<size; i++){
@@ -525,7 +525,7 @@ extern bool compiledOK;
 		g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, pobj); 
 		//get Size
-		int size = (int) [sender arraySize];
+		size_t size = (size_t) [sender arraySize];
 		float *src = (float*) [sender floatArray];
 		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
 		for(int i=0; i<size; i++){

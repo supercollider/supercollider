@@ -34,7 +34,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		942C379B0C1B3F9F00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
 		942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
 		94930B040C190FB10018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
@@ -146,7 +145,6 @@
 		94F5FB400C1E6C07005CDF9F /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309D40C190FB10018AB50 /* scsynthsend.cpp */; };
 		94F5FBD80C1E6C16005CDF9F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		94F5FBD90C1E6C16005CDF9F /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
-		94F5FBDA0C1E6C16005CDF9F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
 		D53110730EF9A832004BAF31 /* AUBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D531105A0EF9A832004BAF31 /* AUBase.cpp */; };
 		D53110750EF9A832004BAF31 /* AUDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D531105C0EF9A832004BAF31 /* AUDispatch.cpp */; };
 		D53110770EF9A832004BAF31 /* AUEffectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D531105E0EF9A832004BAF31 /* AUEffectBase.cpp */; };
@@ -304,7 +302,9 @@
 		D55DEE440EF3314200968B95 /* SC_AU.h in Headers */ = {isa = PBXBuildFile; fileRef = D55DEE430EF3314200968B95 /* SC_AU.h */; };
 		D55DEF140EF333C000968B95 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
 		D55DEF1C0EF333C600968B95 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
-		D55DEF1E0EF333DD00968B95 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C37990C1B3F9F00360A35 /* libsndfile.a */; };
+		F3B003291051D00300929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */; };
+		F3B0032A1051D01500929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */; };
+		F3B0032B1051D02400929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -319,21 +319,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 942F96530B0337D600E00399 /* scsynth */;
+			remoteGlobalIDString = 942F96530B0337D600E00399;
 			remoteInfo = scsynth;
 		};
 		DCB51FA50FA6F5B300C7FD87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F /* libscsynth */;
+			remoteGlobalIDString = 94F5FAD00C1E6B95005CDF9F;
 			remoteInfo = libscsynth;
 		};
 		DCB51FA70FA6F5C400C7FD87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F50D04F702E68E8201CA2799 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = DCB51FA20FA6F59A00C7FD87 /* AllExceptAU */;
+			remoteGlobalIDString = DCB51FA20FA6F59A00C7FD87;
 			remoteInfo = AllExceptAU;
 		};
 /* End PBXContainerItemProxy section */
@@ -347,7 +347,6 @@
 		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = easy.h; path = curl/easy.h; sourceTree = SOURCE_ROOT; };
 		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = curl/curlver.h; sourceTree = SOURCE_ROOT; };
 		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = curl/curl.h; sourceTree = SOURCE_ROOT; };
-		942C37990C1B3F9F00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
@@ -480,13 +479,14 @@
 		D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperColliderAUVersion.h; sourceTree = "<group>"; };
 		D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperColliderAU.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55DEBD80EF32CE300968B95 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
-		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serverConfig.plist; sourceTree = "<group>"; };
-		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = version.plist; sourceTree = "<group>"; };
+		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
+		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = serverConfig.plist; sourceTree = "<group>"; };
+		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
+		F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = libsndfile/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F5EB7BE503184B8C01CA2799 /* libscsynth_exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libscsynth_exp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -498,7 +498,7 @@
 			files = (
 				942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */,
 				942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */,
-				942C379B0C1B3F9F00360A35 /* libsndfile.a in Frameworks */,
+				F3B003291051D00300929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,7 +508,7 @@
 			files = (
 				94F5FBD80C1E6C16005CDF9F /* CoreAudio.framework in Frameworks */,
 				94F5FBD90C1E6C16005CDF9F /* CoreServices.framework in Frameworks */,
-				94F5FBDA0C1E6C16005CDF9F /* libsndfile.a in Frameworks */,
+				F3B0032A1051D01500929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -519,7 +519,7 @@
 				D55DEE3C0EF3304300968B95 /* AudioUnit.framework in Frameworks */,
 				D55DEF140EF333C000968B95 /* CoreServices.framework in Frameworks */,
 				D55DEF1C0EF333C600968B95 /* CoreAudio.framework in Frameworks */,
-				D55DEF1E0EF333DD00968B95 /* libsndfile.a in Frameworks */,
+				F3B0032B1051D02400929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -810,8 +810,8 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */,
 				D55DEE3B0EF3304300968B95 /* AudioUnit.framework */,
-				942C37990C1B3F9F00360A35 /* libsndfile.a */,
 				94B6B0C30AF5390900E478BB /* CoreAudio.framework */,
 				F53F78F503B2842D011C068F /* CoreServices.framework */,
 			);
@@ -1352,8 +1352,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-faltivec",
@@ -1365,18 +1367,24 @@
 		942F96FF0B03380E00E00399 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = 4.0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-faltivec",
 				);
 				PRODUCT_NAME = scsynth;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = Deployment;
 		};
@@ -1390,8 +1398,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
@@ -1405,13 +1415,16 @@
 				EXECUTABLE_PREFIX = "";
 				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = 4.0;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
@@ -1436,8 +1449,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";
@@ -1469,14 +1484,17 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
+				GCC_VERSION = 4.0;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = SuperColliderAU/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";

@@ -32,7 +32,8 @@ Resources::Resources(){
 }
 
 CFStringRef Resources::getResourcesPathFromDyldImage(){
-	const mach_header* header = &_mh_bundle_header;
+	const mach_header* header;
+	header = (mach_header*)&_mh_bundle_header;
 	const char* image_name = 0;
 	char buffer[PATH_MAX];
 	

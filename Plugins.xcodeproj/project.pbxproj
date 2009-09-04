@@ -62,7 +62,6 @@
 		468DABF10CF2080700FA8C88 /* ML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DABED0CF2080700FA8C88 /* ML.cpp */; };
 		468DB1520CFB5F4600FA8C88 /* KeyTrack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DB1500CFB5F4600FA8C88 /* KeyTrack.cpp */; };
 		468DB2B10D01D0C300FA8C88 /* MFCC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468DB2AF0D01D0C300FA8C88 /* MFCC.cpp */; };
-		9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C38430C1B407900360A35 /* libsndfile.a */; };
 		949318990C192F1C0018AB50 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D802E69B6B01CA2799 /* FFT_UGens.cpp */; };
 		9493189A0C192F2B0018AB50 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
 		9493189B0C192F360018AB50 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
@@ -112,6 +111,7 @@
 		DC29B0A50E925FE3009D97C0 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC29B0A40E925FE3009D97C0 /* SC_fftlib.cpp */; };
 		DC43F0940CB26B450020E8B7 /* UnpackFFTUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */; };
 		DC43F0AE0CB26BC80020E8B7 /* SCComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05E202E69B6B01CA2799 /* SCComplex.cpp */; };
+		F3B003531051D10800929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B003521051D10800929F44 /* scUBlibsndfile.a */; };
 		F3F479140D03BCB0001A470F /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		F3F4791F0D03BCDB001A470F /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5499A1103A3023A01BA7E76 /* vecLib.framework */; };
 		F3F479270D03BD1A001A470F /* GrainUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3F479260D03BD1A001A470F /* GrainUGens.cpp */; };
@@ -336,7 +336,6 @@
 		92CCC51E045B451100CA2167 /* MouseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MouseUGens.cpp; path = ../../Source/plugins/MouseUGens.cpp; sourceTree = "<group>"; };
 		92CCC51F045B4BDE00CA2167 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
-		942C38430C1B407900360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		9451F5E20C1CAC250037197F /* OSCUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = OSCUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = BinaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -368,6 +367,7 @@
 		DC29B0A40E925FE3009D97C0 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
 		DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnpackFFTUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UnpackFFTUGens.cpp; path = Source/plugins/UnpackFFTUGens.cpp; sourceTree = SOURCE_ROOT; };
+		F3B003521051D10800929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = libsndfile/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F3F479180D03BCB0001A470F /* GrainUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GrainUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479230D03BCDB001A470F /* ReverbUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = ReverbUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479260D03BD1A001A470F /* GrainUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrainUGens.cpp; path = ../../Source/plugins/GrainUGens.cpp; sourceTree = "<group>"; };
@@ -463,9 +463,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9451F55B0C1CA7A00037197F /* libsndfile.a in Frameworks */,
 				949319CB0C1932730018AB50 /* Carbon.framework in Frameworks */,
 				949318E10C1931110018AB50 /* vecLib.framework in Frameworks */,
+				F3B003531051D10800929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -792,7 +792,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				942C38430C1B407900360A35 /* libsndfile.a */,
+				F3B003521051D10800929F44 /* scUBlibsndfile.a */,
 				F5499A1103A3023A01BA7E76 /* vecLib.framework */,
 				92CCC51F045B4BDE00CA2167 /* Carbon.framework */,
 			);
@@ -1837,8 +1837,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				PRODUCT_NAME = DiskIOUGens;
 			};
 			name = Development;
@@ -1849,8 +1851,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				PRODUCT_NAME = DiskIOUGens;
 			};
 			name = Deployment;

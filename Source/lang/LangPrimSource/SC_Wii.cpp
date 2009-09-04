@@ -30,7 +30,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
  */
-
+#include <Carbon/Carbon.h>
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -44,6 +44,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
+
 
 #ifdef SC_DARWIN
  	#define HAVE_WII

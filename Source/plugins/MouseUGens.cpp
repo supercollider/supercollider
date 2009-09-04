@@ -62,26 +62,53 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if SC_DARWIN
+
+#if (SC_DARWIN) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < MAC_OS_X_VERSION_10_5)
 
 void* gstate_update_func(void* arg)
 {
-	MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
-	RgnHandle rgn = GetGrayRgn();
-	Rect screenBounds;
-	GetRegionBounds(rgn, &screenBounds);
-	float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
-	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
-	for (;;) {
-		Point p;
-		GetGlobalMouse(&p);
-		gstate->mouseX = (float)p.h * rscreenWidth;
-		gstate->mouseY = (float)p.v * rscreenHeight;
-		gstate->mouseButton = Button();
-		usleep(17000);
-	}
+    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
+    RgnHandle rgn = GetGrayRgn();
+    Rect screenBounds;
+    GetRegionBounds(rgn, &screenBounds);
+    float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
+    float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
+    for (;;) {
+	Point p;
+	GetGlobalMouse(&p);
+	gstate->mouseX = (float)p.h * rscreenWidth;
+	gstate->mouseY = (float)p.v * rscreenHeight;
+	gstate->mouseButton = Button();
+	usleep(17000);
+    }
+    
+    return 0;
+}
+
+//#else
+
+#elif (SC_DARWIN) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > MAC_OS_X_VERSION_10_4)
+
+void* gstate_update_func(void* arg)
+{
+    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
+    
+    CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
+    CGRect bounds = CGDisplayBounds(display);
+    float rscreenWidth = 1. / bounds.size.width;
+    float rscreenHeight = 1. / bounds.size.height;
+    for (;;) {
+	HIPoint point;
+	HICoordinateSpace space = 2;
+	HIGetMousePosition(space, NULL, &point);
 	
-	return 0;
+	gstate->mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
+	gstate->mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
+	gstate->mouseButton = Button();
+	usleep(17000);
+    }
+    
+    return 0;
 }
 
 #else

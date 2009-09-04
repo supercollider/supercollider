@@ -67,8 +67,6 @@
 		940739EB0CBB6EBE00EAA155 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */; };
 		940739EC0CBB6ED800EAA155 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */; };
 		9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
-		942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
-		942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
 		94442C540C2C8AE40050BF9F /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 949318010C192C120018AB50 /* Credits.rtf */; };
 		94442C550C2C8AE40050BF9F /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 949318030C192C120018AB50 /* FindPanel.nib */; };
 		94442C560C2C8AE40050BF9F /* FindPanel.strings in Resources */ = {isa = PBXBuildFile; fileRef = 949318050C192C120018AB50 /* FindPanel.strings */; };
@@ -165,7 +163,6 @@
 		94442CB20C2C8AE40050BF9F /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
 		94442CB30C2C8AE40050BF9F /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
 		94442CB60C2C8AE40050BF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
-		94442CB70C2C8AE40050BF9F /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942C390C0C1B40EF00360A35 /* libsndfile.a */; };
 		94442CB80C2C8AE40050BF9F /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
 		94442CB90C2C8AE40050BF9F /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
 		94442CBA0C2C8AE40050BF9F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069802E6A1C601CA2799 /* Cocoa.framework */; };
@@ -360,6 +357,9 @@
 		94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
 		94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
 		94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */; };
+		F3B0038E1051D15C00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
+		F3B003911051D16E00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
+		F3B003921051D17A00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
 		FE0DB9890F8A0A5A005B2DE4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */; };
 		FE0DB98A0F8A0A5A005B2DE4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE0DB9870F8A0A5A005B2DE4 /* Localizable.strings */; };
 /* End PBXBuildFile section */
@@ -471,7 +471,6 @@
 		940739A40CBB6E8E00EAA155 /* HTMLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HTMLRenderer.h; sourceTree = "<group>"; };
 		940739A50CBB6E9C00EAA155 /* HTMLRenderer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HTMLRenderer.m; sourceTree = "<group>"; };
 		9415B1730B2B5CD700C87737 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
-		942C390C0C1B40EF00360A35 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
 		942C390F0C1B40F700360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		94442CC80C2C8AE40050BF9F /* Standalone Template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Standalone Template.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9456F5BC0C19E25900634E4D /* Synth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Synth.xcodeproj; sourceTree = "<group>"; };
@@ -699,7 +698,7 @@
 		9493180C0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		9493180E0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		9493180F0C192C120018AB50 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GoToLinePanel.nib; sourceTree = "<group>"; };
-		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		949318110C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		949318120C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
 		949318130C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -719,6 +718,7 @@
 		F338A4A30D0F10A100ACFF58 /* Info copy 5.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 5.plist"; sourceTree = "<group>"; };
 		F345DCE30E7ED5C500CFAB80 /* Info copy 13.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 13.plist"; sourceTree = "<group>"; };
 		F3A435FA0E89AD2900551B22 /* Info copy 14.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 14.plist"; sourceTree = "<group>"; };
+		F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = libsndfile/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F3C4BD1A0E93CD5000AC6675 /* Info copy 15.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 15.plist"; sourceTree = "<group>"; };
 		F50D069502E6A1C601CA2799 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		F50D069602E6A1C601CA2799 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -738,7 +738,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				94442CB60C2C8AE40050BF9F /* libscsynth.a in Frameworks */,
-				94442CB70C2C8AE40050BF9F /* libsndfile.a in Frameworks */,
 				94442CB80C2C8AE40050BF9F /* Carbon.framework in Frameworks */,
 				94442CB90C2C8AE40050BF9F /* CoreServices.framework in Frameworks */,
 				94442CBA0C2C8AE40050BF9F /* Cocoa.framework in Frameworks */,
@@ -753,6 +752,7 @@
 				94442CC30C2C8AE40050BF9F /* IOBluetooth.framework in Frameworks */,
 				94442CC40C2C8AE40050BF9F /* WebKit.framework in Frameworks */,
 				6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
+				F3B003921051D17A00929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -761,7 +761,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				94F5FC810C1E6F92005CDF9F /* libscsynth.a in Frameworks */,
-				942C390E0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 				949317AF0C192A7A0018AB50 /* Carbon.framework in Frameworks */,
 				949317B00C192A7A0018AB50 /* CoreServices.framework in Frameworks */,
 				949317B10C192A7A0018AB50 /* Cocoa.framework in Frameworks */,
@@ -775,6 +774,7 @@
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
 				949317BA0C192A7A0018AB50 /* IOBluetooth.framework in Frameworks */,
 				6A1C636B0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
+				F3B003911051D16E00929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -783,7 +783,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				94F5FC7F0C1E6F7F005CDF9F /* libscsynth.a in Frameworks */,
-				942C390D0C1B40EF00360A35 /* libsndfile.a in Frameworks */,
 				94B6AEF90AF45DA800E478BB /* Carbon.framework in Frameworks */,
 				94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */,
 				94B6AEFA0AF45DA800E478BB /* Cocoa.framework in Frameworks */,
@@ -798,6 +797,7 @@
 				949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */,
 				94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */,
 				6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
+				F3B0038E1051D15C00929F44 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1281,10 +1281,10 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */,
 				6A1C63690CFB6C50004ED3DA /* libicucore.dylib */,
 				94D9ED1C0C2773CF00223DF8 /* WebKit.framework */,
 				94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */,
-				942C390C0C1B40EF00360A35 /* libsndfile.a */,
 				949313CB0C19234D0018AB50 /* IOBluetooth.framework */,
 				9415B1730B2B5CD700C87737 /* Quartz.framework */,
 				94B8F16C0B463EC000097F2D /* QTKit.framework */,
@@ -1969,11 +1969,13 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
@@ -2008,11 +2010,13 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
@@ -2047,10 +2051,12 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PRODUCT_NAME = sclang;
 			};
@@ -2075,10 +2081,12 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PRODUCT_NAME = sclang;
 			};
@@ -2103,11 +2111,13 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
@@ -2142,11 +2152,13 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
