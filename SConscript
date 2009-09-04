@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # SCons build system
-# Copyright (C) 2005, 2006, 2007, 2008  Tim Blechmann
+# Copyright (C) 2005, 2006, 2007, 2008, 2009  Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -165,7 +165,8 @@ Alias("plugins", plugins)
 # build testsuite
 #
 
-testsuite = env.SConscript("./testsuite/SConscript", "env")
+BuildDir('test', 'testsuite', duplicate=0)
+testsuite = env.SConscript("./testsuite/SConscript", "env", build_dir="test")
 
 ret = dict()
 

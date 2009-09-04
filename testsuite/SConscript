@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # SCons build system for the test suite
-# Copyright (C) 2005, 2006, 2007, 2008  Tim Blechmann
+# Copyright (C) 2005, 2006, 2007, 2008, 2009  Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ simd_benchmark = unit_test_env.Program("simd_benchmark", ["dsp_simd_benchmarks.c
 median_benchmark = unit_test_env.Program("median_filter_benchmarks", ["median_filter_benchmarks.cpp"],
                                          CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftree-vectorize')
 
-unit_tests = [unit_test_env.Program("tests/"+test[:-4],
+unit_tests = [unit_test_env.Program(test[:-4],
                                     [test] + unit_test_common,
                                     )
               for test in unit_test_sources]
@@ -140,7 +140,7 @@ nova_server_libs = unit_test_common
 nova_server_libs = [unit_test_env.Object(x) for x in nova_server_libs]
 nova_server_sources = [unit_test_env.Object(x) for x in nova_server_sources]
 
-nova_server_test = [unit_test_env.Program("tests/"+test[:-4],
+nova_server_test = [unit_test_env.Program(test[:-4],
                                           [test] + nova_server_sources + nova_server_libs,
                                           )
                     for test in nova_server_test_sources]
@@ -150,7 +150,7 @@ audio_test_sources = ["audio_backend_test.cpp",
                       "audio_frontend_test.cpp",
                       ]
 
-audio_testsuite = unit_test_env.Program("tests/audio_testsuite", audio_test_sources,
+audio_testsuite = unit_test_env.Program("audio_testsuite", audio_test_sources,
                                         CPPDEFINES = "HAVE_PORTAUDIO",
                                         LIBS=["portaudio", "portaudiocpp", libboost_thread]
                                         )
