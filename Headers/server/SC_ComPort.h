@@ -58,7 +58,7 @@ class SC_ComPort : public SC_CmdPort
 {
 protected:
 	int mPortNum;
-	int64 mSocket;
+	int mSocket;
 	struct sockaddr_in mBindSockAddr;
 
 #ifdef USE_RENDEZVOUS
