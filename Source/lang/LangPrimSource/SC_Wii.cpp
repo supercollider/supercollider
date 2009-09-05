@@ -30,7 +30,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
  */
-#include <Carbon/Carbon.h>
+
+#ifdef SC_DARWIN
+    #include <Carbon/Carbon.h>
+#endif
+
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -48,7 +52,6 @@
 
 #ifdef SC_DARWIN
  	#define HAVE_WII
-	#include <Carbon/Carbon.h>
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
 	
