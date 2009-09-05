@@ -1678,7 +1678,10 @@
 		37E291980E2CEBE400CB854E /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = KeyboardUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1692,7 +1695,10 @@
 		468DABE40CF1FE1800FA8C88 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = MachineListening;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1799,7 +1805,11 @@
 		949318AC0C192F540018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = FFT_UGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1813,7 +1823,11 @@
 		949318C30C1931070018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = BinaryOpUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1827,7 +1841,11 @@
 		949318D90C19310F0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = DelayUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1848,6 +1866,9 @@
 		949318E40C1931110018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -1856,6 +1877,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				PRODUCT_NAME = DiskIOUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1869,7 +1891,11 @@
 		949318EF0C1931120018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = FilterUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1883,7 +1909,11 @@
 		949318FA0C1931130018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = IOUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1897,7 +1927,11 @@
 		949319050C1931150018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = LFUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1911,7 +1945,11 @@
 		949319100C1931160018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = MulAddUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1925,7 +1963,11 @@
 		9493191B0C1931180018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = NoiseUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1939,7 +1981,11 @@
 		949319260C19311A0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = OSCUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1953,7 +1999,11 @@
 		949319310C19311C0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				GCC_VERSION = "";
 				PRODUCT_NAME = PanUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1967,7 +2017,10 @@
 		9493193C0C19311E0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = TriggerUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1981,7 +2034,10 @@
 		949319470C1931260018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = UnaryOpUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1995,7 +2051,10 @@
 		949319520C1931280018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = MouseUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2009,7 +2068,10 @@
 		9493197D0C1931A30018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = GendynUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2023,7 +2085,10 @@
 		949319880C1931A40018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = PhysicalModellingUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2037,7 +2102,10 @@
 		949319930C1931A50018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = FFT2_UGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2051,7 +2119,10 @@
 		9493199E0C1931A60018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = DemandUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2065,7 +2136,10 @@
 		949319A90C1931A70018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = DynNoiseUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2079,7 +2153,10 @@
 		949319B40C1931A80018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = ChaosUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2093,7 +2170,10 @@
 		DC43F08E0CB26A670020E8B7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = UnpackFFTUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2107,7 +2187,10 @@
 		F3F479170D03BCB0001A470F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = GrainUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2121,7 +2204,10 @@
 		F3F479220D03BCDB001A470F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = ReverbUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -2135,7 +2221,10 @@
 		FE2582CA0C2C096A00307453 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				PRODUCT_NAME = TestUGens;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
