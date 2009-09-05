@@ -20,7 +20,7 @@
 
 #import "UserPanel.h"
 #import <objc/objc-class.h>
-#import <objc/runtime.h>
+//#import <objc/runtime.h>
 
 #include "PyrObject.h"
 #include "PyrKernel.h"
