@@ -10,6 +10,9 @@ Date {
 		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek, 
 				rawSeconds, bootSeconds);
 	}
+	storeArgs {
+		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds, bootSeconds]
+	}
 	localtime {
 		_LocalTime
 		^this.primitiveFailed
