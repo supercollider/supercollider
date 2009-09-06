@@ -62,30 +62,8 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #if (SC_DARWIN) 
-# if (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < MAC_OS_X_VERSION_10_5)
-void* gstate_update_func(void* arg)
-{
-    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
-    RgnHandle rgn = GetGrayRgn();
-    Rect screenBounds;
-    GetRegionBounds(rgn, &screenBounds);
-    float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
-    float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
-    for (;;) {
-	Point p;
-	GetGlobalMouse(&p);
-	gstate->mouseX = (float)p.h * rscreenWidth;
-	gstate->mouseY = (float)p.v * rscreenHeight;
-	gstate->mouseButton = Button();
-	usleep(17000);
-    }
-    
-    return 0;
-}
-
-# else
+# if (__x86_64__)
 
 void* gstate_update_func(void* arg)
 {
@@ -108,6 +86,30 @@ void* gstate_update_func(void* arg)
     
     return 0;
 }
+
+# else
+
+
+void* gstate_update_func(void* arg)
+{
+    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
+    RgnHandle rgn = GetGrayRgn();
+    Rect screenBounds;
+    GetRegionBounds(rgn, &screenBounds);
+    float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
+    float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
+    for (;;) {
+	Point p;
+	GetGlobalMouse(&p);
+	gstate->mouseX = (float)p.h * rscreenWidth;
+	gstate->mouseY = (float)p.v * rscreenHeight;
+	gstate->mouseButton = Button();
+	usleep(17000);
+    }
+    
+    return 0;
+}
+
 # endif
 
 #else
