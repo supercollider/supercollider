@@ -79,6 +79,12 @@ Double-click each target, and change the
 This definitely works in Mac OS 10.6, probably 10.5, and these builds will NOT support 10.4
 
 ------------------------------------------------------------------------
+Building - 10.6
+------------------------------------------------------------------------
+
+XCode in 10.6 uses the GCC 4.2 compiler by default, and this compiler will NOT work with the 10.4 SDK (the default SDK). You will need to either set your build SDK to 10.5 or 10.6 inside each XCode project, or inspect (double-click) each target and set GCC 4.0 as your compiler. 
+
+------------------------------------------------------------------------
 Outro
 ------------------------------------------------------------------------
 
