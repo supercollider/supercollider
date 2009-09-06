@@ -63,8 +63,8 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#if (SC_DARWIN) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < MAC_OS_X_VERSION_10_5)
-
+#if (SC_DARWIN) 
+# if (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < MAC_OS_X_VERSION_10_5)
 void* gstate_update_func(void* arg)
 {
     MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
@@ -85,9 +85,7 @@ void* gstate_update_func(void* arg)
     return 0;
 }
 
-//#else
-
-#elif (SC_DARWIN) && (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > MAC_OS_X_VERSION_10_4)
+# else
 
 void* gstate_update_func(void* arg)
 {
@@ -110,6 +108,7 @@ void* gstate_update_func(void* arg)
     
     return 0;
 }
+# endif
 
 #else
 
