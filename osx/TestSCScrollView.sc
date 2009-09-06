@@ -1,6 +1,10 @@
 
 TestSCScrollView : UnitTest {
 	
+/*
+THESE TESTS ARE WRONG apparently:
+http://www.listarc.bham.ac.uk/lists/sc-dev/msg09900.html
+
 	test_nestingRelVsAbs {
 		// Albers ad infinitum
 		// but this should look centered, just the one in composite view
@@ -39,6 +43,7 @@ TestSCScrollView : UnitTest {
 
 	}
 
+
 	// scroll in the center of a scroll
 	test_absoluteBounds  {
 		
@@ -60,6 +65,8 @@ TestSCScrollView : UnitTest {
 		// I think that if you run this separately (with a pause after w.front) then the bounds return correct
 		this.assertEquals(absoluteBounds , Rect(130,130,100,100),"bounds should be 130,130,100,100 for scrollView");
 	}
+
+*/
 
 	test_scrollInsideRelativeComposite {
 		var w,c,d,s,t;
