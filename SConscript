@@ -40,6 +40,7 @@ opt.AddOptions(
     PathOption('extra_path', 'extra search path', None),
     ('python_version', 'version of Python', None),
     BoolOption('optimize_testsuite', 'Optimize testsuite', False),
+    BoolOption('native_jack', 'Use native jack backend', True),
     )
 
 opt.Update(env)
@@ -77,9 +78,11 @@ if not check:
 if conf.CheckLib('tcmalloc'):
     print "Using google's tcmalloc"
 
-
-if (conf.CheckLibWithHeader('portaudio', 'portaudio.h', language='C') and
+if conf.CheckLibWithHeader('jack', 'jack/jack.h', language = 'C'):
+    env.Append(CPPDEFINES="JACK_BACKEND")
+elif (conf.CheckLibWithHeader('portaudio', 'portaudio.h', language='C') and
     conf.CheckLibWithHeader('portaudiocpp', 'portaudiocpp/PortAudioCpp.hxx', language='C++') ):
+    env.Append(CPPDEFINES="PORTAUDIO_BACKEND")
     env.Append(CPPDEFINES="HAVE_PORTAUDIO")
 else:
     print "portaudio missing"

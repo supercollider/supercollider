@@ -25,10 +25,15 @@
 #include "node_graph.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
-#include "audio_backend/audio_frontend.hpp"
 #include "utilities/callback_interpreter.hpp"
 #include "utilities/static_pooled_class.hpp"
 #include "utilities/osc_server.hpp"
+
+#ifdef PORTAUDIO_BACKEND
+#include "audio_backend/audio_frontend.hpp"
+#elif defined(JACK_BACKEND)
+#include "audio_backend/jack_backend.hpp"
+#endif
 
 
 namespace nova
@@ -82,7 +87,11 @@ class nova_server:
     public osc_server,
     public node_graph,
     public scheduler,
+#ifdef PORTAUDIO_BACKEND
     public audio_frontend<&run_scheduler_tick>,
+#elif defined(JACK_BACKEND)
+    public jack_backend<&run_scheduler_tick>,
+#endif
     public synth_factory
 {
 public:
