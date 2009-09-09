@@ -687,17 +687,17 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 
 ;; add command line switches
 (add-to-list 'command-switch-alist
-	     (cons "sclang"
+	     (cons "-sclang"
 		   (lambda (switch)
 		     (sclang-start))))
 
 (add-to-list 'command-switch-alist
-	     (cons "sclang-debug"
+	     (cons "-sclang-debug"
 		   (lambda (switch)
 		     (sclang-toggle-debug-command-handler 1))))
 
 (add-to-list 'command-switch-alist
-	     (cons "scmail"
+	     (cons "-scmail"
 		   (lambda (switch)
 		     (sclang-start)
 		     (when command-line-args-left
