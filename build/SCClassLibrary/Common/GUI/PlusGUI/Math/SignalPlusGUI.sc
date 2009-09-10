@@ -25,12 +25,12 @@
 		
 		unlaced = this.unlace(numChannels);
 		minval = if(minval.isArray, {
-			minval.collect({|oneminval, index| oneminval ?? { unlaced[index].minItem } })
+			numChannels.collect{|index| minval.wrapAt(index) ?? { unlaced[index].minItem } }
 		}, {
 			{minval ?? { this.minItem }}.dup(numChannels);
 		});
 		maxval = if(maxval.isArray, {
-			maxval.collect({|onemaxval, index| onemaxval ?? { unlaced[index].maxItem } })
+			numChannels.collect{|index| maxval.wrapAt(index) ?? { unlaced[index].maxItem } }
 		}, {
 			{maxval ?? { this.maxItem }}.dup(numChannels);
 		});
