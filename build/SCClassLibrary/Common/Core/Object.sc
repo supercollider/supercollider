@@ -386,7 +386,7 @@ Object  {
 		^dependantsDictionary.at(this) ?? { IdentitySet.new };
 	}
 	changed { arg what ... moreArgs;
-		dependantsDictionary.at(this).do({ arg item;
+		dependantsDictionary.at(this).copy.do({ arg item;
 			item.update(this, what, *moreArgs);
 		});
 	}
