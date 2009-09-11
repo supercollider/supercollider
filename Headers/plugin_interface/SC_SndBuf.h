@@ -50,16 +50,16 @@ typedef struct SndBufUpdates SndBufUpdates;
 enum { coord_None, coord_Complex, coord_Polar };
 
 
-inline float PhaseFrac(unsigned long inPhase) 
+inline float PhaseFrac(uint32 inPhase)
 		{
-			union { unsigned long itemp; float ftemp; } u;
+			union { uint32 itemp; float ftemp; } u;
 			u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
 			return u.ftemp - 1.f;
 		}
 		
-inline float PhaseFrac1(unsigned long inPhase) 
+inline float PhaseFrac1(uint32 inPhase)
 		{
-			union { unsigned long itemp; float ftemp; } u;
+			union { uint32 itemp; float ftemp; } u;
 			u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
 			return u.ftemp;
 		}
