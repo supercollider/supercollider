@@ -1765,15 +1765,18 @@ void Peak_next_ak_k(Peak *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float curtrig = ZIN0(1);
-	float level = unit->mLevel;
-	float inlevel;
+	float level;
 	inNumSamples = INBUFLENGTH(0);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) {
+		level = std::abs(ZXP(in));
+		inNumSamples -= 1;
+	}
+	else
+		level = unit->mLevel;
 	LOOP(inNumSamples,
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
+		level = std::max(std::abs(ZXP(in)), level);
 	);
 	ZXP(out) = level;
-	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
 	unit->m_prevtrig = curtrig;
 	unit->mLevel = level;
 }
@@ -1783,11 +1786,9 @@ void Peak_next_ai_k(Peak *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float level = unit->mLevel;
-	float inlevel;
 	inNumSamples = INBUFLENGTH(0);
 	LOOP(inNumSamples,
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
+		level = std::max(std::abs(ZXP(in)), level);
 	);
 	ZXP(out) = level;
 	unit->mLevel = level;
@@ -1800,7 +1801,8 @@ void Peak_next_aa_k(Peak *unit, int inNumSamples)
 	float *trig = ZIN(1);
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
-	float out_level = level;
+	float out_level;
+	bool triggered = false;
 
 	inNumSamples = INBUFLENGTH(0);
 	LOOP(inNumSamples,
@@ -1808,12 +1810,16 @@ void Peak_next_aa_k(Peak *unit, int inNumSamples)
 		float inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
+			triggered = true;
 			out_level = level;
 			level = inlevel;
 		}
 		prevtrig = curtrig;
 	);
+	if (triggered)
 	ZXP(out) = out_level;
+	else
+		ZXP(out) = level;
 	unit->m_prevtrig = prevtrig;
 	unit->mLevel = level;
 }
@@ -1823,10 +1829,15 @@ void Peak_next_ak_k_unroll(Peak *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float curtrig = ZIN0(1);
-	float level = unit->mLevel;
-	float inlevel;
+	float level;
 	inNumSamples = INBUFLENGTH(0);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f)
+		level = 0.f;
+	else
+		level = unit->mLevel;
+
 	LOOP(inNumSamples/8,
+		float inlevel;
 		inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
 		inlevel = std::abs(ZXP(in));
@@ -1847,7 +1858,6 @@ void Peak_next_ak_k_unroll(Peak *unit, int inNumSamples)
 		level = std::max(inlevel, level);
 	);
 	ZXP(out) = level;
-	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = inlevel;
 	unit->m_prevtrig = curtrig;
 	unit->mLevel = level;
 }
