@@ -270,8 +270,8 @@ void slotString(PyrSlot *slot, char *str)
 		case tagObj :
 			if (slot->uo) {
 				if (isKindOf(slot->uo, class_class)) {
-					sprintf(str, "class %s (%08X)", 
-						((PyrClass*)slot->uo)->name.us->name, (uint32)slot->uo);
+					sprintf(str, "class %s (%p)",
+						((PyrClass*)slot->uo)->name.us->name, slot->uo);
 				} else if (slot->uo->classptr == class_string) {
 					char str2[48];
 					int len;
@@ -288,9 +288,9 @@ void slotString(PyrSlot *slot, char *str)
 					}
 					sprintf(str, "\"%s\"", str2);
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "instance of Method %s:%s (%08X)", 
+					sprintf(str, "instance of Method %s:%s (%p)",
 						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name, (uint32)slot->uom);
+						slot->uom->name.us->name, slot->uom);
 				} else if (slot->uo->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method

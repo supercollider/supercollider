@@ -275,7 +275,7 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 	printf("mSockAddr.sin_family %d\n", inReplyAddress->mSockAddr.sin_family);
 	printf("mSockAddr.sin_port %d\n", inReplyAddress->mSockAddr.sin_port);
 	printf("mSockAddr.sin_addr.s_addr %d\n", inReplyAddress->mSockAddr.sin_addr.s_addr);
-	printf("mReplyFunc %08X\n", (uint32)inReplyAddress->mReplyFunc);
+	printf("mReplyFunc %p\n", inReplyAddress->mReplyFunc);
 }
 
 /*

@@ -1039,7 +1039,7 @@ void buildBigMethodMatrix()
 	//post("calc row stats\n");
 	for (i=0; i<numSelectors; ++i) {
 		//postfl("%3d %s\n", i, sels[i].selector->name);
-		sels[i].minClassIndex = LONG_MAX;
+		sels[i].minClassIndex = INT_MAX;
 		sels[i].maxClassIndex = 0;
 		//sels[i].largestChunk = 0;
 		//sels[i].chunkOffset = 0;
