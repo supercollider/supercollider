@@ -1723,41 +1723,9 @@ void Peak_next_ak_unroll(Peak *unit, int inNumSamples)
 
 void Peak_next_ai_unroll(Peak *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
-	float level = unit->mLevel;
-	float inlevel;
+	float inlevel = Peak_unroll_body(unit, inNumSamples, unit->mLevel);
 
-	LOOP(inNumSamples/8,
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-		inlevel = std::abs(ZXP(in));
-		level = std::max(inlevel, level);
-		ZXP(out) = level;
-	);
-	unit->mLevel = level;
+	unit->mLevel = inlevel;
 }
 
 void Peak_next_ak_k(Peak *unit, int inNumSamples)
