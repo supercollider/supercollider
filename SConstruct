@@ -534,6 +534,15 @@ if PLATFORM == 'linux':
 else:
         features['wii'] = env['WII']
 
+# libicu
+if conf.CheckCHeader('unicode/uregex.h'):
+        libraries['libicu'] = Environment(
+             LINKFLAGS = '-licui18n -licuuc -licudata',
+        )
+else:
+    print "libicu not found"
+    Exit(1)
+
 # only _one_ Configure context can be alive at a time
 env = conf.Finish()
 
@@ -1066,6 +1075,8 @@ Source/lang/LangPrimSource/PyrSymbolPrim.cpp
 Source/lang/LangPrimSource/PyrUnixPrim.cpp
 Source/common/fftlib.c
 ''')
+
+merge_lib_info(langEnv, libraries['libicu'])
 
 # optional features
 if features['midiapi']:

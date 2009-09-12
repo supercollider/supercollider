@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#ifdef SC_DARWIN
+#ifndef SC_WIN32
 
 struct URegularExpression;
 /**
@@ -30,10 +30,12 @@ struct URegularExpression;
 typedef struct URegularExpression URegularExpression;
 
 #define U_HIDE_DRAFT_API 1
-#define U_DISABLE_RENAMING 1
-#include "uregex.h"
-#include "ustring.h"
-#include "udraft.h"
+#ifdef SC_DARWIN
+	#define U_DISABLE_RENAMING 1
+#endif
+#include <unicode/uregex.h>
+#include <unicode/ustring.h>
+#include <unicode/udraft.h>
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "GC.h"

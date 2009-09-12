@@ -209,7 +209,7 @@ String[char] : RawArray {
 		var indices = [], i=[];
 		while { 
 			i = this.findRegexp(string, offset); 
-			i.notNil
+			i.notNil and: {i.size != 0}
 		}{
 			indices = indices.add(i);
 			offset = i[0][0] + 1;

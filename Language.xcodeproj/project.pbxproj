@@ -706,7 +706,7 @@
 		949318150C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		949318160C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		949318170C192C120018AB50 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
-		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
@@ -1920,6 +1920,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = ./Headers/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				PREBINDING = NO;
@@ -1943,6 +1944,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
+				HEADER_SEARCH_PATHS = ./Headers/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				PREBINDING = NO;
