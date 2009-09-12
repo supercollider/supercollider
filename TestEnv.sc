@@ -1,4 +1,7 @@
-
+/*
+Env.test
+UnitTest.gui
+*/
 TestEnv : UnitTest {
 	
 	test_equality {
@@ -13,6 +16,14 @@ TestEnv : UnitTest {
 		this.assert( a != c, "2 different Envs should not be equal");
 		
 		this.assert( a == a, "an Env should equal itself");
+	}
+	
+	test_equivalences {
+	
+		this.assertArrayFloatEquals(
+			Env.cutoff(1, 1, 'exp').asSignal(20).as(Array),
+			Env.cutoff(1, 1, 'lin').asSignal(20).asArray.linexp(0,1,-100.dbamp,1),
+			"Exponential Env.cutoff should be same as linear Env.cutoff.linexp");
 	}
 }
 
