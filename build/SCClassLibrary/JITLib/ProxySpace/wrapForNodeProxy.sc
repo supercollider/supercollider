@@ -70,6 +70,15 @@
 	}
 }
 
++Synth { // better information about common error
+	prepareForProxySynthDef { arg proxy;
+		Error(
+			"A synth is no valid source for a proxy.\n"
+			"For instance, ~out = { ... }.play would cause this and should be:\n"
+			"~out = { ... }; ~out.play; or (~out = { ... }).play;"
+		).throw; 
+	}
+}
 
 +RawArray {
 	prepareForProxySynthDef { arg proxy;
@@ -238,7 +247,10 @@
 	*initClass {
 		proxyControlClasses = (
 			filter: SynthDefControl, 
-			set: StreamControl
+			set: StreamControl,
+			stream: PatternControl,
+			setbus: StreamControl,
+			setsrc: StreamControl
 		);
 		
 		buildMethods = ( 		
@@ -248,7 +260,7 @@
 			if(proxy.isNeutral) { 
 				ugen = func.value(Silent.ar);
 				ok = proxy.initBus(ugen.rate, ugen.numChannels);
-				if(ok.not) { Error("wrong rate/numChannels").throw }
+				if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 			};
 			
 			{ arg out;
@@ -271,6 +283,24 @@
 				\args, args
 			).buildForProxy( proxy, channelOffset, index )
 		},
+		setbus: #{ arg pattern, proxy, channelOffset=0, index;
+			var ok = proxy.initBus(\control);
+			if(ok.not) { Error("NodeProxy input: wrong rate").throw };
+			Pbindf(
+				pattern,
+				\type, \bus,
+				\id, Pfunc { proxy.group.nodeID },
+				\array, Pkey(\value).collect { |x| x.keep(proxy.numChannels) },
+				\out, Pfunc { proxy.index }
+			).buildForProxy( proxy, channelOffset, index )
+		},
+		setsrc: #{ arg pattern, proxy, channelOffset=0, index=0;
+			pattern.collect { |event|
+				event[\type] = \rest;
+				proxy.put(index + 1, event[\source]);
+				event
+			}.buildForProxy( proxy, channelOffset, index );
+		},
 		control: #{ arg values, proxy, channelOffset=0, index;
 			{ Control.kr(values) }.buildForProxy( proxy, channelOffset, index );
 		},
@@ -279,7 +309,7 @@
 			if(proxy.isNeutral) { 
 				ugen = func.value(Silent.ar);
 				ok = proxy.initBus(ugen.rate, ugen.numChannels);
-				if(ok.not) { Error("wrong rate/numChannels").throw }
+				if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 			};
 			
 			{ arg out;

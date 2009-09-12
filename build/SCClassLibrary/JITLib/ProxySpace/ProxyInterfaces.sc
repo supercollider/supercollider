@@ -62,10 +62,10 @@ StreamControl : AbstractPlayControl {
 		^nil // return a nil object instead of a synth
 	}
 	
-	build { arg proxy;
+	build { arg proxy, orderIndex = 0;
 		clock = proxy.clock;
 		paused = proxy.paused;
-		stream = source.buildForProxy(proxy);
+		stream = source.buildForProxy(proxy, channelOffset, orderIndex);
 		^true;
 	}
 	
@@ -110,10 +110,9 @@ PatternControl : StreamControl {
 		};
 	}
 		
-	build { arg proxy;
+	build { arg proxy, orderIndex = 0;
 		fadeTime = { proxy.fadeTime }; // needed for pattern xfade
-		stream = source.buildForProxy(proxy, channelOffset); // this is needed for validity check 
-		clock = proxy.clock ? TempoClock.default;
+		stream = source.buildForProxy(proxy, channelOffset, orderIndex); 		clock = proxy.clock ? TempoClock.default;
 		paused = proxy.paused;
 		^stream.notNil;
 	}
@@ -272,11 +271,11 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 	
 
-	build { arg proxy, index=0; 
+	build { arg proxy, orderIndex = 0; 
 		var ok, rate, numChannels;
 		
 		NodeProxy.buildProxyControl = this;
-		synthDef = source.buildForProxy(proxy, channelOffset, index);
+		synthDef = source.buildForProxy(proxy, channelOffset, orderIndex);
 		NodeProxy.buildProxyControl = nil;
 		
 		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
