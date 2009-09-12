@@ -301,6 +301,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	  (append-option "-r"))
       (if sclang-main-stop
 	  (append-option "-s"))
+      (append-option "-iscel")
       res)))
 
 (defun sclang-start ()
@@ -544,6 +545,14 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
     (when (and string (string-match "^(" string))
       (sclang-eval-string string (not silent-p))
       string)))
+
+(defun sclang-eval-document (&optional silent-p)
+  "Execute the whole document as SuperCollider code."
+  (interactive "P")
+  (mark-whole-buffer)
+  (sclang-eval-string
+   (buffer-substring-no-properties (region-beginning) (region-end))
+   (not silent-p)))
 
 (defvar sclang-eval-results nil
   "Save results of sync SCLang evaluation.")
