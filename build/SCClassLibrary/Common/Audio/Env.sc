@@ -112,7 +112,13 @@ Env {
 	
 	// envelopes with sustain
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
-		^this.new([level, 0], [releaseTime], curve, 0)
+		var curveNo = this.shapeNumber(curve);
+		var releaseLevel = if(curveNo==2){
+			-100.dbamp
+		}{
+			0
+		};
+		^this.new([level, releaseLevel], [releaseTime], curve, 0)
 	}
 	*dadsr { arg delayTime=0.1, attackTime=0.01, decayTime=0.3, 
 			sustainLevel=0.5, releaseTime=1.0,
@@ -205,6 +211,10 @@ Env {
 	}
 		
 	shapeNumber { arg shapeName;
+		this.deprecated(thisMethod, this.class.class.findMethod(\shapeNumber));
+		^this.class.shapeNumber(shapeName)
+	}
+	*shapeNumber { arg shapeName;
 		var shape;
 		if (shapeName.isValidUGenInput) { ^5 };
 		shape = shapeNames.at(shapeName);
@@ -260,7 +270,7 @@ Env {
 			contents = contents ++ [
 				levels.at(i+1),
 				times.at(i),
-				this.shapeNumber(curvesArray.wrapAt(i)),
+				this.class.shapeNumber(curvesArray.wrapAt(i)),
 				this.curveValue(curvesArray.wrapAt(i))
 			];
 		});	
