@@ -86,6 +86,7 @@
      ["Evaluate Line"		sclang-eval-region-or-line]
      ["Evaluate Defun"		sclang-eval-defun]
      ["Evaluate Expression ..."	sclang-eval-expression]
+     ["Evaluate Document"	sclang-eval-document]
      "-"
      ["Find Definitions ..."	sclang-find-definitions]
      ["Find References ..."	sclang-find-references]
@@ -117,6 +118,7 @@
   (define-key map "\C-c\C-d"		        'sclang-eval-region)
   (define-key map "\C-\M-x"			'sclang-eval-defun)
   (define-key map "\C-c\C-e"			'sclang-eval-expression)
+  (define-key map "\C-c\C-f"			'sclang-eval-document)
   ;; language information
   (define-key map "\C-c\C-n"			'sclang-complete-symbol)
   (define-key map "\M-\t"			'sclang-complete-symbol)

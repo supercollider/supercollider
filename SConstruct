@@ -1174,7 +1174,7 @@ if is_installing():
     if env['SCEL']:
         env.Alias('install-library', install_dir(
             env, 'editors/scel/sc',
-            pkg_extension_dir(INSTALL_PREFIX, 'scel'),
+            pkg_extension_dir(INSTALL_PREFIX, 'scide_scel'),
             SC_FILE_RE, 3))
     # scvim
 #    if env['SCVIM']:
