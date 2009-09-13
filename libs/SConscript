@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # SCons build system
-# Copyright (C) 2006, 2007, 2008 Tim Blechmann
+# Copyright (C) 2006, 2007, 2008, 2009 Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,12 +63,6 @@ sources.append(oscsources)
 # lockfree
 
 env.Append(CPPPATH=Dir("#/libs/."))
-
-######################################################################
-#
-# portaudio configuration
-
-SConscript("SConscript.portaudio", exports={'env':env})
 
 ######################################################################
 #

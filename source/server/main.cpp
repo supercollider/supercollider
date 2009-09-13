@@ -24,10 +24,12 @@
 
 #include "server.hpp"
 
-#include "../audio_backend/portaudio.hpp"
 #include "../sc/sc_ugen_factory.hpp"
 #include "../utilities/utils.hpp"
 
+#ifdef PORTAUDIO_BACKEND
+#include "audio_backend/portaudio.hpp"
+#endif
 
 using namespace nova;
 
@@ -39,6 +41,7 @@ using namespace std;
 void dummy(void)
 {}
 
+#ifdef PORTAUDIO_BACKEND
 void list_pa_devices(void)
 {
     portaudio_backend<dummy> pa_backend;
@@ -48,6 +51,7 @@ void list_pa_devices(void)
     for (int i = 0; i != devices.size(); ++i)
         cout << i << ": " << devices[i].name << endl;
 }
+#endif /* PORTAUDIO_BACKEND */
 
 void parse_args(boost::program_options::variables_map & vm, int argc, char * argv[])
 {
@@ -65,15 +69,17 @@ void parse_args(boost::program_options::variables_map & vm, int argc, char * arg
     options_description audio_options("audio options");
 
     audio_options.add_options()
+#ifdef PORTAUDIO_BACKEND
         ("device,d", value<int>()->default_value(0), "portaudio device")
         ("indevice", value<int>()->default_value(-1), "input device")
         ("outdevice", value<int>()->default_value(-1), "output device")
-
+#endif /* PORTAUDIO_BACKEND */
         ("inchannels,i", value<int>()->default_value(2), "input channels")
         ("outchannels,o", value<int>()->default_value(2), "output channels")
+#ifdef PORTAUDIO_BACKEND
         ("samplerate,s", value<int>()->default_value(44100), "sample rate")
-
         ("lsdev", "list audio devices")
+#endif /* PORTAUDIO_BACKEND */
         ;
 
     options_description cmdline_options;
@@ -130,6 +136,7 @@ int main(int argc, char * argv[])
 
         parse_args(vm, argc, argv);
 
+#ifdef PORTAUDIO_BACKEND
         if (vm.count("lsdev"))
         {
             list_pa_devices();
@@ -147,10 +154,11 @@ int main(int argc, char * argv[])
         if (out_device == -1)
             out_device = device;
 
+        samplerate = vm["samplerate"].as<int>();
+#endif /* PORTAUDIO_BACKEND */
+
         inchannels = vm["inchannels"].as<int>();
         outchannels = vm["outchannels"].as<int>();
-
-        samplerate = vm["samplerate"].as<int>();
 
         threads = vm["threads"].as<unsigned int>();
         threads = std::min(threads, boost::thread::hardware_concurrency());
@@ -163,6 +171,7 @@ int main(int argc, char * argv[])
     nova_server server(port, threads);
     register_handles();
 
+#ifdef PORTAUDIO_BACKEND
     server.open_portaudio_backend();
 
     {
@@ -172,13 +181,18 @@ int main(int argc, char * argv[])
                                  devs[out_device], outchannels,
                                  samplerate);
     }
+#elif defined (JACK_BACKEND)
+    server.open_client("supernova", inchannels, outchannels);
+#endif
+
     server.activate_audio();
     ugen_factory.set_audio_channels(inchannels, outchannels);
     server.run();
 
     server.deactivate_audio();
+#ifdef PORTAUDIO_BACKEND
     server.close_audio_stream();
     server.close_audio_backend();
-
+#endif /* PORTAUDIO_BACKEND */
     return 0;
 }

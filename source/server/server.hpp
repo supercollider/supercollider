@@ -34,6 +34,11 @@
 #include "../utilities/static_pooled_class.hpp"
 #include "../utilities/osc_server.hpp"
 
+#ifdef PORTAUDIO_BACKEND
+#include "audio_backend/audio_frontend.hpp"
+#elif defined(JACK_BACKEND)
+#include "audio_backend/jack_backend.hpp"
+#endif
 
 namespace nova
 {
@@ -85,7 +90,11 @@ private:
 class nova_server:
     public node_graph,
     public scheduler,
+#ifdef PORTAUDIO_BACKEND
     public audio_frontend<&run_scheduler_tick>,
+#elif defined(JACK_BACKEND)
+    public jack_backend<&run_scheduler_tick>,
+#endif
     public synth_factory,
     public buffer_manager,
     public control_bus_manager,
@@ -165,8 +174,6 @@ inline void run_scheduler_tick(void)
     for (int channel = 0; channel != output_channels; ++channel) {
         if (ugen_factory.world.mAudioBusTouched[channel] != buf_counter)
             instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
-        else
-            instance->zero_dac_output(channel, blocksize);
     }
 }
 

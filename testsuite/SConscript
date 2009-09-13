@@ -53,13 +53,13 @@ else:
 
 
 
-unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl'],
+unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl'] + env['LIBS'],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
                                      "#libs/tlsf/src", "#libs/endian"],
                             CCFLAGS=unit_test_cflags,
-                            CPPDEFINES="SUPERNOVA")
+                            CPPDEFINES=["SUPERNOVA"] + env['CPPDEFINES'])
 
 scsynth_src, sc_paths = unit_test_env.SConscript("../source/sc/SConscript.server", "env")
 unit_test_env.Append(CPPPATH = sc_paths)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # SCons build system
-# Copyright (C) 2005, 2006, 2007, 2008, 2009  Tim Blechmann
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ opt.AddOptions(
     PathOption('extra_path', 'extra search path', None),
     ('python_version', 'version of Python', None),
     BoolOption('optimize_testsuite', 'Optimize testsuite', False),
+    BoolOption('native_jack', 'Use native jack backend', True),
     )
 
 opt.Update(env)
@@ -77,10 +78,15 @@ if not check:
 if conf.CheckLib('tcmalloc'):
     print "Using google's tcmalloc"
 
-
-if (conf.CheckLibWithHeader('portaudio', 'portaudio.h', language='C') and
+if conf.CheckLibWithHeader('jack', 'jack/jack.h', language = 'C'):
+    env.Append(CPPDEFINES="JACK_BACKEND")
+elif (conf.CheckLibWithHeader('portaudio', 'portaudio.h', language='C') and
     conf.CheckLibWithHeader('portaudiocpp', 'portaudiocpp/PortAudioCpp.hxx', language='C++') ):
+    env.Append(CPPDEFINES="PORTAUDIO_BACKEND")
     env.Append(CPPDEFINES="HAVE_PORTAUDIO")
+    if conf.CheckHeader("portaudio/portaudio_config.h"):
+        env.Append(CPPDEFINES=["HAVE_PORTAUDIO_CONFIG_H"])
+
 else:
     print "portaudio missing"
     Exit(1)
