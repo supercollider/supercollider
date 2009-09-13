@@ -83,6 +83,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + InfoUGenBase    { *categories { ^ #["UGens>Info"] } }
 + InRange         { *categories { ^ #["UGens>Maths"] } }
 + InRect          { *categories { ^ #["UGens>Maths"] } }
++ Integrator      { *categories { ^ #["UGens>Filters>Linear", "UGens>Maths"] } }
 + IRand           { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
 + K2A             { *categories { ^ #["UGens>Conversion"] } }
 + KeyTrack        { *categories { ^ #["UGens>Analysis>Pitch"] } }
@@ -169,6 +170,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + SinOsc          { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + SinOscFB        { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Slew            { *categories { ^ #["UGens>Filters>Nonlinear"] } }
++ Slope           { *categories { ^ #["UGens>Filters>Linear", "UGens>Maths"] } }
 + SpecCentroid    { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
 + SpecFlatness    { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
 + SpecPcile       { *categories { ^ #["UGens>Analysis", "UGens>FFT"] } }
