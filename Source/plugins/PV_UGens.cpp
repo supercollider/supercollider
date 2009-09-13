@@ -425,7 +425,7 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
         int i;
 	q->dc = p->dc;
 	q->nyq = p->nyq;
-	for (i=0, fpos = shift+stretch; i < numbins; ++i, fpos += stretch) {
+	for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
 		int32 pos = (int32)(fpos + 0.5);
 		if (pos >= 0 && pos < numbins) {
 			q->bin[pos].mag += p->bin[i].mag;
