@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # SCons build system
-# Copyright (C) 2005, 2006, 2007, 2008, 2009  Tim Blechmann
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -84,6 +84,9 @@ elif (conf.CheckLibWithHeader('portaudio', 'portaudio.h', language='C') and
     conf.CheckLibWithHeader('portaudiocpp', 'portaudiocpp/PortAudioCpp.hxx', language='C++') ):
     env.Append(CPPDEFINES="PORTAUDIO_BACKEND")
     env.Append(CPPDEFINES="HAVE_PORTAUDIO")
+    if conf.CheckHeader("portaudio/portaudio_config.h"):
+        env.Append(CPPDEFINES=["HAVE_PORTAUDIO_CONFIG_H"])
+
 else:
     print "portaudio missing"
     Exit(1)
