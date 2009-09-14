@@ -1723,9 +1723,9 @@ void Peak_next_ak_unroll(Peak *unit, int inNumSamples)
 
 void Peak_next_ai_unroll(Peak *unit, int inNumSamples)
 {
-	float inlevel = Peak_unroll_body(unit, inNumSamples, unit->mLevel);
-
-	unit->mLevel = inlevel;
+	float level = unit->mLevel;
+	Peak_unroll_body(unit, inNumSamples, level);
+	unit->mLevel = level;
 }
 
 void Peak_next_ak_k(Peak *unit, int inNumSamples)
