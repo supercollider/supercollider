@@ -1007,6 +1007,11 @@ if PLATFORM == 'darwin':
 elif PLATFORM == 'linux':
     langEnv.Append(
         LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
+
+    if env.has_key('amd64') and env['amd64']:
+        langEnv.Append(LIBPATH="/emul/ia32-linux/usr/lib/",
+		       LINKFLAGS = '-Wl,-rpath,/emul/ia32-linux/usr/lib/')
+
 elif PLATFORM == 'freebsd':
     langEnv.Append(
     LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
