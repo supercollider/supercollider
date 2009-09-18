@@ -368,6 +368,7 @@ extern PyrSymbol *s_scview;
 //- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)fieldEditor
 //{
 //	//[(SCFieldEditor*)fieldEditor setCurrentTextField:self];
+//	post("ctsbe\n");
 //	return YES;
 //}
 //
@@ -415,8 +416,22 @@ extern PyrSymbol *s_scview;
 	SCTopView *mTopView = mSCViewObject->getTop();
     if (mSCViewObject) {
 		mDragStarted = NO;
+		bool mouseMoved = NO;
 		//mMenuView = 0;
         mSCViewObject->makeFocus(true);
+		// force focus ring into drawing even if we're already in focus
+		SEL sel = @selector(setNeedsDisplay:);
+		NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
+		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+		[anInvocation setTarget: [self superview]];
+		[anInvocation setSelector: sel];
+		BOOL flag = YES;
+		[anInvocation setArgument: &flag atIndex: 2];       
+		[scvm defer: anInvocation];
+		
+		[self setEditingInactive:NO]; // in this way we know that editing was started by a mouse click rather than a key down
+		
 		bool constructionmode = mTopView->ConstructionMode();
 		if(!constructionmode)
 		{
@@ -458,6 +473,7 @@ extern PyrSymbol *s_scview;
 					}else
 						mSCViewObject->mouseTrack(scpoint, modifiers,theEvent);
 					mSCViewObject->mouseMoveAction(scpoint, modifiers,theEvent);				
+					mouseMoved = YES;
 					//							post("drag \n");
 					break;
                 case NSLeftMouseUp:
@@ -469,6 +485,21 @@ extern PyrSymbol *s_scview;
 						mTopView->refresh();
 					}else
 					{
+						if(mouseMoved) { // check if this was just a mouse down or also a drag; if the latter end editing
+							[[self window] endEditingFor:self];
+							[self setEditingInactive:YES];
+							//[[self window] makeFirstResponder:[self superview]];
+							// trick focus ring into drawing 
+							SEL sel = @selector(setNeedsDisplay:);
+							NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
+							NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+							SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+							[anInvocation setTarget: [self superview]];
+							[anInvocation setSelector: sel];
+							BOOL flag = YES;
+							[anInvocation setArgument: &flag atIndex: 2];       
+							[scvm defer: anInvocation];
+						}
 						//							if(!view.GetSCObj()) break;						
 						mSCViewObject->mouseUpAction(scpoint, modifiers,theEvent);						
 						mSCViewObject->mouseEndTrack(scpoint, modifiers,theEvent);
@@ -691,6 +722,7 @@ const int circDiam = 20;
 // this for keyDowns. KeyUps come in keyUp below. 
 - (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {	
+	//post("sctir\n");
 	NSEvent* event = [NSApp currentEvent];
 	NSString *characters = [event characters];
     unsigned int modifiers = [event modifierFlags];
@@ -708,6 +740,7 @@ const int circDiam = 20;
 // handle tabs and enter
 - (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector
 {
+	//post("dcbs\n");
 	//NSLog(@"sel: %@", NSStringFromSelector(aSelector));
 	if (aSelector == @selector(insertTab:)){
 		mSCViewObject->tabPrevFocus(); 
@@ -729,7 +762,24 @@ const int circDiam = 20;
 			g->canCallOS = false;
 		}
 		pthread_mutex_unlock (&gLangMutex);
+		//NSLog(@"sv: %@", [self superview]);
+		[self setEditingInactive:YES];
+		[[self window] makeFirstResponder:[self superview]];
+		//NSLog(@"firstresp: %@", [[self window] firstResponder]);
 		return NO; // this will let the field editor end editing
+	} else if (aSelector == @selector(moveUp:) || aSelector == @selector(moveDown:)){ // stop editing and forward key event (for numbox)
+		NSEvent* event = [NSApp currentEvent];
+		NSString *characters = [event characters];
+		unsigned int modifiers = [event modifierFlags];
+		unichar character = 0;
+		if([characters length] > 0) {
+			character = [characters characterAtIndex: 0];
+		}
+		[[self window] endEditingFor:self];
+		[self setEditingInactive:YES];
+		[[self window] makeFirstResponder:[self superview]];
+		mSCViewObject->keyDown(character, modifiers,[event keyCode]);
+		return YES;
 	}
 	return NO;
 }
@@ -801,7 +851,7 @@ const int circDiam = 20;
 - (void)keyUp:(NSEvent*)event
 {
 
-//	post("doKeyUpAction\n");
+	//post("doKeyUpAction\n");
 	NSString *characters = [event characters];
     unsigned int modifiers = [event modifierFlags];
     unichar character = 0;
@@ -810,6 +860,7 @@ const int circDiam = 20;
     }
 	mSCViewObject->keyUp(character, modifiers,[event keyCode]);
 }
+
 
 void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)drawRect:(NSRect)aRect
@@ -821,6 +872,30 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	QDDrawBevelRect(cgc, (*(CGRect *)&([self bounds])), 1, true);
 	CGContextRestoreGState(cgc);
 
+}
+
+// doing this here keeps C++ classes much simpler
+- (void) addNumberFormatter
+{
+	[NSNumberFormatter setDefaultFormatterBehavior:NSNumberFormatterBehavior10_4];
+	mFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+	[mFormatter setNumberStyle: NSNumberFormatterDecimalStyle];
+	[mFormatter setAlwaysShowsDecimalSeparator:NO];
+	[mFormatter setExponentSymbol:@"e"];
+	[mFormatter setMaximumFractionDigits:20];
+	[[self cell] setFormatter:mFormatter];
+}
+
+// with these two methods we can check in C++ keyDown methods to see if editing is active
+// if not, we start it and replace the string in the field editor
+- (void) setEditingInactive: (BOOL)flag
+{
+	mEditingInactive = flag;
+}
+
+- (BOOL) editingInactive
+{
+	return mEditingInactive;
 }
 @end
 
@@ -2222,9 +2297,12 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	//mCocoaToLangAction = [SCTextFieldResponder alloc];
 	[mTextField setSCView: this];
 	[mTextField setDelegate: mTextField];
+	[mTextField setEditingInactive:NO];
 
 	[mTextField setBordered:NO]; // for some reason, if we don't set this we can't have transparency
 	[mTextField setDrawsBackground:NO]; // SCView will draw for us. This also allows 0 < alpha < 1
+	
+	[[mTextField cell] setScrollable:YES];
 	
 	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
 	
@@ -2415,9 +2493,19 @@ void SCTextField::setVisibleFromParent()
 void SCTextField::makeFocus(bool focus)
 {
     if (focus) {
-        if (canFocus() && !isFocus()) {
+		if (canFocus() && !isFocus()) {
 			[mTextField setAcceptsFirstResponder:YES];
-			//[[mTextView window] makeFirstResponder: mTextView];	
+			
+			// trick focus ring into drawing 
+			SEL sel = @selector(setNeedsDisplay:);
+			NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
+			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+			SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+			[anInvocation setTarget: [mTextField superview]];
+			[anInvocation setSelector: sel];
+			BOOL flag = YES;
+			[anInvocation setArgument: &flag atIndex: 2];       
+			[scvm defer: anInvocation];
         }
     } else {
         if (isFocus()) {
@@ -2435,6 +2523,24 @@ void SCTextField::tabNextFocus()
 {
 	//post("next focus\n");
 	mTop->tabNextFocus();
+}
+
+void SCTextField::keyDown(int character, int modifiers, unsigned short keycode)
+{
+	// when enter was pressed firstResponder was passed to the parent SCGraphView
+	// this checks if keyDown was passed from there and if so starts to edit using the key pressed
+	// We access the field editor as that's the receiving object while editing is active
+	if([mTextField editingInactive] && (character != 13 || character !=3)) {
+		//post("keydownEP\n");
+		[[mTextField window] makeFirstResponder:mTextField];
+		unichar charVal = (unichar)character;
+		NSString *charstring = [[NSString alloc] initWithCharacters: &charVal length: 1];
+		NSText *fieldEditor = [[mTextField window] fieldEditor:YES forObject:mTextField];
+		[fieldEditor setString:charstring];
+		[charstring release];
+		[mTextField setEditingInactive:NO];
+	}
+	SCView::keyDown(character, modifiers, keycode);
 }
 
 extern PyrSymbol* s_canReceiveDrag;
@@ -2462,6 +2568,7 @@ BOOL SCTextField::performDrag()
         if (flag) {
             mTop->setDragView(this);
             sendMessage(s_receiveDrag, 0, 0, 0);
+			mTop->setDragView(0);
         } else {
             mTop->setDragView(0);
         }
@@ -2502,6 +2609,78 @@ void SCTextField::beginDrag(SCPoint where)
     //mTop->beginDragCallback(where, &slot, string, label);
 	NSPoint point = NSMakePoint(where.x, where.y);
     [mTextField beginDragFrom: point of: &slot string: string label: label];
+}
+
+////////////////////
+SCView* NewSCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCNumberBox2(inParent, inObj, inBounds);
+}
+
+SCNumberBox2::SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+: SCTextField(inParent, inObj, inBounds)
+//: SCStaticText(inParent, inObj, inBounds)
+{
+	[mTextField addNumberFormatter];
+}
+
+SCNumberBox2::~SCNumberBox2()
+{
+}
+
+int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{	
+	int err;
+	char *name = symbol->name;
+	
+	if (strcmp(name, "value")==0) {
+		double value;
+		err = slotDoubleVal(slot, &value);
+		if (err) return err;
+		[mTextField setDoubleValue:value];
+		return errNone;
+	}
+	
+//	if (strcmp(name, "clipLo")==0) {
+//		double value;
+//		err = slotDoubleVal(slot, &value);
+//		if (err) return err;
+//		[[mTextField formatter] setMinimum:[NSNumber numberWithDouble:value]];
+//		return errNone;
+//	}
+//	
+//	if (strcmp(name, "clipHi")==0) {
+//		double value;
+//		err = slotDoubleVal(slot, &value);
+//		if (err) return err;
+//		[[mTextField formatter] setMaximum:[NSNumber numberWithDouble:value]];
+//		return errNone;
+//	}
+	
+	return SCTextField::setProperty(symbol, slot);
+}
+
+int SCNumberBox2::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	
+	if (strcmp(name, "value")==0) {
+		double val = [mTextField doubleValue];
+        SetFloat(slot, val);
+		return errNone;
+	}
+
+	return SCTextField::getProperty(symbol, slot);
+}
+
+void SCNumberBox2::keyDown(int character, int modifiers, unsigned short keycode)
+{
+	// test for arrows enter and return
+	if([mTextField editingInactive] && (character == 63232 || character == 63233 || character == 63234 || character == 63235 || character == 3 || character == 13)){ 
+		SCView::keyDown(character, modifiers, keycode);
+	} else {
+		SCTextField::keyDown(character, modifiers, keycode);
+	}
 }
 
 ////////////////////
