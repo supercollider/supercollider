@@ -64,11 +64,16 @@
 	struct SCTextField *mSCViewObject;
 	BOOL mDragStarted;
 	BOOL mAcceptsFirstResponder;
+	BOOL mEditingInactive; // we use this to determine if editing is not active when keyDown is received
+	NSNumberFormatter *mFormatter; // for numbox
 }
 
 - (struct PyrObject*)getSCObject;
 - (void)setSCView: (struct SCTextField*)inObject;
 - (void) setAcceptsFirstResponder: (BOOL) flag;
+- (void) addNumberFormatter;
+- (void) setEditingInactive: (BOOL)flag;
+- (BOOL) editingInactive;
 @end
 
 @interface SCNSMenuItem : NSMenuItem {
@@ -161,6 +166,7 @@ public:
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void setVisibleFromParent();
 	virtual void makeFocus(bool focus);
+	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual NSView* focusResponder() { return mTextField; }
@@ -177,6 +183,16 @@ protected:
 	//SCTextFieldResponder *mCocoaToLangAction;
 	
 	SCColor mStringColor;
+};
+
+class SCNumberBox2 : public SCTextField
+{
+public:	
+	SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	virtual ~SCNumberBox2();
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 };
 
 //////////////////////////////////////
