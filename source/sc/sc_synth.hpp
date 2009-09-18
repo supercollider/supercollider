@@ -29,7 +29,6 @@
 
 #include "../server/synth.hpp"
 
-
 namespace nova
 {
 
@@ -73,8 +72,8 @@ public:
 private:
     void allocate_unit_buffers(uint blocksize, uint audio_bufs, uint control_bufs)
     {
-        size_t buffer_size = sizeof(sample) * (control_bufs + blocksize * audio_bufs);
-        unit_buffers = (float*)allocate(buffer_size);
+        size_t buffer_size = control_bufs + blocksize * audio_bufs;
+        unit_buffers = allocate<float> (buffer_size);
         memset(unit_buffers, 0, buffer_size);
 
         control_buffers = unit_buffers + (blocksize * audio_bufs);
