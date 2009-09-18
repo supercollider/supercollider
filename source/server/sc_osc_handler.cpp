@@ -278,6 +278,16 @@ int first_arg_as_int(received_message const & message)
     return val;
 }
 
+bool check_node_id(int node_id)
+{
+    if (!instance->node_id_available(node_id)) {
+        cerr << "node id " << node_id << " already in use" << endl;
+        return false;
+    }
+    return true;
+}
+
+
 struct sc_response_callback:
     public system_callback
 {
@@ -497,6 +507,9 @@ void handle_s_new(received_message const & msg)
 
 void insert_group(int node_id, int action, int target_id)
 {
+    if (!check_node_id(node_id))
+        return;
+
     server_node * target = instance->find_node(target_id);
 
     if (target == NULL) {
@@ -1457,6 +1470,9 @@ void handle_d_free(received_message const & msg)
 
 void insert_parallel_group(int node_id, int action, int target_id)
 {
+    if (!check_node_id(node_id))
+        return;
+
     server_node * target = instance->find_node(target_id);
 
     if (target == NULL) {

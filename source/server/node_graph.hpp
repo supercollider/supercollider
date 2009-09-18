@@ -79,6 +79,12 @@ public:
         return &(*it);
     }
 
+    bool node_id_available(int node_id)
+    {
+        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        return (it == node_set.end());
+    }
+
 private:
     struct compare_node
     {
