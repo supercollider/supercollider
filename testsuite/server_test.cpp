@@ -17,10 +17,7 @@ struct test_synth_prototype:
 
     abstract_synth * create_instance(int node_id)
     {
-        synth * ret = allocate<synth>();
-        if (ret)
-            ::new(ret) synth(node_id, this);
-        return ret;
+        return new synth(node_id, this);
     }
 };
 }
@@ -56,7 +53,7 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
     nova_server server;
     server.synth_factory::register_prototype(new test_synth_prototype());
 
-    parallel_group * g = parallel_group::allocate_parallel_group(0);
+    parallel_group * g = new parallel_group(0);
 
     server.add_node(g);
 

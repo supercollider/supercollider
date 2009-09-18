@@ -117,21 +117,24 @@ public:
         return pool.get_max_size();
     }
 
+    inline void * operator new(std::size_t size)
+    {
+        return allocate(size);
+    }
+
+    inline void operator delete(void * p)
+    {
+        free(p);
+    }
+
 private:
     typedef static_pool<1024*1024> node_pool;
     static node_pool pool;
     /* @} */
 
-    /* call destructor and free to node_pool */
-    void delete_this(void)
-    {
-        this->~server_node();
-        server_node::free(this);
-    }
-
+public:
     /* refcountable */
     /* @{ */
-public:
     void add_ref(void)
     {
         ++use_count_;
@@ -140,7 +143,7 @@ public:
     void release(void)
     {
         if(--use_count_ == 0)
-            delete_this();
+            delete this;
     }
 
 private:
