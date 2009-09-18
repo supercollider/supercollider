@@ -124,7 +124,8 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
 
 void sc_ugen_def::destruct(Unit * unit)
 {
-    (*dtor)(unit);
+    if (dtor)
+        (*dtor)(unit);
 
     /* free */
     sc_synth::free(unit->mInput);

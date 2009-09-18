@@ -98,6 +98,18 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     }
 }
 
+sc_synth::~sc_synth(void)
+{
+    free(graph.mMapControls);
+    free(graph.mControls);
+    free(graph.mControlRates);
+    free(graph.mWire);
+    free(unit_buffers);
+
+    std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &ugen_factory, _1));
+}
+
+
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
     graph.mControlRates[slot_index] = 0;

@@ -54,11 +54,7 @@ class sc_synth:
 public:
     sc_synth(int node_id, sc_synth_prototype_ptr const & prototype);
 
-    ~sc_synth(void)
-    {
-        free(graph.mMapControls);
-        free(unit_buffers);
-    }
+    ~sc_synth(void);
 
     void run(dsp_context const & context);
 
