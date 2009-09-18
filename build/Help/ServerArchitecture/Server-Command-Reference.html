@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -24,7 +24,6 @@ p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 span.s1 {font: 12.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #000000}
-span.s4 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -278,6 +277,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Causes a synth to print out the values of the inputs and outputs of its unit generators for one control period. Causes a group to print the node IDs and names of each node in the group for one control period.</p>
 <p class="p2"><br></p>
+<p class="p3"><b>/n_order<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>move and order a list of nodes</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>int - add action (0,1,2, 3 or 4 see below)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>int - add target ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>[</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - node ID</p>
+<p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Move the listed nodes to the location specified by the target and add action, and place them in the order specified. Nodes which have already been freed will be ignored.</p>
+<p class="p3"><b>add actions:</b></p>
+<p class="p3"><span class="Apple-tab-span">	</span>0 - construct the node order at the head of the group specified by the add target ID.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>1 - construct the node order at the tail of the group specified by the add target ID.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>2 - construct the node order just before the node specified by the add target ID.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>3 - construct the node order<span class="Apple-converted-space">  </span>just after the node specified by the add target ID.</p>
 <p class="p2"><br></p>
 <p class="p6"><b>Synth Commands</b></p>
 <p class="p2"><br></p>
@@ -814,81 +826,81 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">These are the currently defined command numbers. More may be added to the end of the list in the future.</p>
 <p class="p11"><br></p>
 <p class="p12">enum<span class="s3"> {</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_none = <span class="s4">0</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_none = <span class="s2">0</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_notify = <span class="s4">1</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_status = <span class="s4">2</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_quit = <span class="s4">3</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_cmd = <span class="s4">4</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_notify = <span class="s2">1</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_status = <span class="s2">2</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_quit = <span class="s2">3</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_cmd = <span class="s2">4</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_recv = <span class="s4">5</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_load = <span class="s4">6</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_loadDir = <span class="s4">7</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_freeAll = <span class="s4">8</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_recv = <span class="s2">5</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_load = <span class="s2">6</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_loadDir = <span class="s2">7</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_freeAll = <span class="s2">8</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_new = <span class="s4">9</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_new = <span class="s2">9</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_trace = <span class="s4">10</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_free = <span class="s4">11</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_run = <span class="s4">12</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_cmd = <span class="s4">13</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_map = <span class="s4">14</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_set = <span class="s4">15</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_setn = <span class="s4">16</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_fill = <span class="s4">17</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_before = <span class="s4">18</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_after = <span class="s4">19</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_trace = <span class="s2">10</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_free = <span class="s2">11</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_run = <span class="s2">12</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_cmd = <span class="s2">13</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_map = <span class="s2">14</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_set = <span class="s2">15</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_setn = <span class="s2">16</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_fill = <span class="s2">17</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_before = <span class="s2">18</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_after = <span class="s2">19</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_u_cmd = <span class="s4">20</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_u_cmd = <span class="s2">20</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_new = <span class="s4">21</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_head = <span class="s4">22</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_tail = <span class="s4">23</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_freeAll = <span class="s4">24</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_new = <span class="s2">21</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_head = <span class="s2">22</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_tail = <span class="s2">23</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_freeAll = <span class="s2">24</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_set = <span class="s4">25</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_setn = <span class="s4">26</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_fill = <span class="s4">27</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_set = <span class="s2">25</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_setn = <span class="s2">26</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_fill = <span class="s2">27</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_alloc = <span class="s4">28</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_allocRead = <span class="s4">29</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_read = <span class="s4">30</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_write = <span class="s4">31</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_free = <span class="s4">32</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_close = <span class="s4">33</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_zero = <span class="s4">34</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_set = <span class="s4">35</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_setn = <span class="s4">36</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_fill = <span class="s4">37</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_gen = <span class="s4">38</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_alloc = <span class="s2">28</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_allocRead = <span class="s2">29</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_read = <span class="s2">30</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_write = <span class="s2">31</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_free = <span class="s2">32</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_close = <span class="s2">33</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_zero = <span class="s2">34</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_set = <span class="s2">35</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_setn = <span class="s2">36</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_fill = <span class="s2">37</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_gen = <span class="s2">38</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_dumpOSC = <span class="s4">39</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_dumpOSC = <span class="s2">39</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_get = <span class="s4">40</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_getn = <span class="s4">41</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_get = <span class="s4">42</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_getn = <span class="s4">43</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_get = <span class="s4">44</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_getn = <span class="s4">45</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_get = <span class="s2">40</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_c_getn = <span class="s2">41</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_get = <span class="s2">42</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_getn = <span class="s2">43</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_get = <span class="s2">44</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_getn = <span class="s2">45</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_query = <span class="s4">46</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_query = <span class="s4">47</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_query = <span class="s2">46</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_query = <span class="s2">47</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapn = <span class="s4">48</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_noid = <span class="s4">49</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapn = <span class="s2">48</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_s_noid = <span class="s2">49</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_deepFree = <span class="s4">50</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_clearSched = <span class="s4">51</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_deepFree = <span class="s2">50</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_clearSched = <span class="s2">51</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_sync = <span class="s4">52</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_sync = <span class="s2">52</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_free = <span class="s4">53</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_d_free = <span class="s2">53</span>,</p>
 <p class="p14"><br></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_allocReadChannel = <span class="s4">54</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_readChannel = <span class="s4">55</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_allocReadChannel = <span class="s2">54</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_b_readChannel = <span class="s2">55</span>,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_dumpTree = <span class="s4">56</span>,</p>
-<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_queryTree = <span class="s4">57</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_dumpTree = <span class="s2">56</span>,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_g_queryTree = <span class="s2">57</span>,</p>
 <p class="p14"><br></p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="Apple-converted-space">     </span>cmd_error = 58,</p>
@@ -897,8 +909,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p14"><br></p>
 <p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapa = 60,</p>
 <p class="p13"><span class="Apple-tab-span">	</span>cmd_n_mapan = 61,</p>
+<p class="p13"><span class="Apple-tab-span">	</span>cmd_n_order = 62,</p>
 <p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>NUMBER_OF_COMMANDS = <span class="s4">62</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>NUMBER_OF_COMMANDS = <span class="s2">63</span></p>
 <p class="p13">};</p>
 <p class="p10">copyright © 2002 James McCartney</p>
 </body>

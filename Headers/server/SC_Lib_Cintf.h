@@ -127,11 +127,12 @@ enum {
 	cmd_s_newargs = 59,
     
 	cmd_n_mapa = 60,
-        cmd_n_mapan = 61,
-
+	cmd_n_mapan = 61,
+	cmd_n_order = 62,
+	
 	//NUMBER_OF_COMMANDS = 59
 	//NUMBER_OF_COMMANDS = 60
-	NUMBER_OF_COMMANDS = 62
+	NUMBER_OF_COMMANDS = 63
 };
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

@@ -896,4 +896,9 @@ Server : Model {
 	unmute {
 		volume.unmute;
 	}
+	
+	reorder { arg nodeList, target, addAction=\addToHead;
+		target = target.asTarget; 
+		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
+	}  
 }

@@ -1068,6 +1068,115 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 	return kSCErr_None;
 }
 
+SCErr meth_n_order(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_n_order(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
+{
+	SCErr err;
+	
+	Node *prevNode = 0;
+	Node *node = 0;
+	
+	sc_msg_iter msg(inSize, inData);	
+	int32 addAction = msg.geti();
+	
+	// place the first node in the list based on target and addAction
+	switch (addAction) {
+		case 0 : {
+			Group *group = Msg_GetGroup(inWorld, msg);
+			if (!group) return kSCErr_GroupNotFound;
+			while(!node && msg.remain()) {
+				node = Msg_GetNode(inWorld, msg);
+				if(!node) scprintf("Warning Node not found\n");
+			}
+			if (!node) return kSCErr_NodeNotFound;
+			
+			Group *prevGroup = node->mParent;
+			
+			Node_Remove(node);
+			
+			Group_AddHead(group, node);
+			
+			if (group != prevGroup) {
+				Node_StateMsg(node, kNode_Move);
+			}
+			
+			prevNode = node;
+			
+		} break;
+		case 1 : {
+			Group *group = Msg_GetGroup(inWorld, msg);
+			if (!group) return kSCErr_GroupNotFound;
+			while(!node && msg.remain()) {
+				node = Msg_GetNode(inWorld, msg);
+				if(!node) scprintf("Warning Node not found\n");
+			}
+			if (!node) return kSCErr_NodeNotFound;
+			
+			Group *prevGroup = node->mParent;
+			
+			Node_Remove(node);
+			
+			Group_AddTail(group, node);
+			
+			if (group != prevGroup) {
+				Node_StateMsg(node, kNode_Move);
+			}
+			
+			prevNode = node;
+			
+		} break;
+		case 2 : {
+			Node *beforeNode = Msg_GetNode(inWorld, msg);
+			if (!beforeNode) return kSCErr_TargetNodeNotFound;
+			while(!node && msg.remain()) {
+				node = Msg_GetNode(inWorld, msg);
+				if(!node) scprintf("Warning Node not found\n");
+			}
+			if (!node) return kSCErr_NodeNotFound;
+			
+			
+			Node_Remove(node);
+			Node_AddBefore(node, beforeNode);
+			Node_StateMsg(node, kNode_Move);
+			
+			prevNode = node;
+		} break;
+		case 3 : {
+			Node *afterNode = Msg_GetNode(inWorld, msg);
+			if (!afterNode) return kSCErr_TargetNodeNotFound;
+			while(!node && msg.remain()) {
+				node = Msg_GetNode(inWorld, msg);
+				if(!node) scprintf("Warning Node not found\n");
+			}
+			if (!node) return kSCErr_NodeNotFound;
+			
+			
+			Node_Remove(node);
+			Node_AddAfter(node, afterNode);
+			Node_StateMsg(node, kNode_Move);
+			
+			prevNode = node;
+		} break;
+		default: return kSCErr_Failed;
+	}
+	
+	// now iterate through in order
+	while (msg.remain()) {
+		node = Msg_GetNode(inWorld, msg);
+		if(!node) {
+			scprintf("Warning Node not found\n");
+			continue;
+		}
+		Node_Remove(node);
+		Node_AddAfter(node, prevNode);
+		Node_StateMsg(node, kNode_Move);
+			
+		prevNode = node;
+	}
+	
+	return kSCErr_None;
+}
+
 SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_g_head(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -1760,7 +1869,8 @@ void initMiscCommands()
 	NEW_COMMAND(n_fill);		
 	
 	NEW_COMMAND(n_before);		
-	NEW_COMMAND(n_after);		
+	NEW_COMMAND(n_after);	
+	NEW_COMMAND(n_order);	
 
 	NEW_COMMAND(g_new);			
 	NEW_COMMAND(g_head);		
