@@ -181,18 +181,21 @@ int main(int argc, char * argv[])
                                  devs[out_device], outchannels,
                                  samplerate);
     }
+    server.activate_audio();
 #elif defined (JACK_BACKEND)
     server.open_client("supernova", inchannels, outchannels);
+    server.activate_audio();
 #endif
 
-    server.activate_audio();
     ugen_factory.set_audio_channels(inchannels, outchannels);
     server.run();
 
-    server.deactivate_audio();
 #ifdef PORTAUDIO_BACKEND
     server.close_audio_stream();
     server.close_audio_backend();
+    server.deactivate_audio();
+#elif defined (JACK_BACKEND)
+    server.deactivate_audio();
 #endif /* PORTAUDIO_BACKEND */
     return 0;
 }
