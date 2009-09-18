@@ -122,18 +122,10 @@ public:
 class group:
     public abstract_group
 {
+public:
     group(int node_id):
         abstract_group(node_id)
     {}
-
-public:
-    static group *allocate_group(int node_id)
-    {
-        group * ret = static_cast<group*>(allocate(sizeof(group)));
-        if (ret)
-            ::new(ret) group(node_id);
-        return ret;
-    }
 
 private:
     void add_child(server_node * node, node_position_constraint const & constraint);
@@ -159,19 +151,10 @@ typedef intrusive_ptr<group> group_ptr;
 class parallel_group:
     public abstract_group
 {
-private:
+public:
     parallel_group(int node_id):
         abstract_group(node_id)
     {}
-
-public:
-    static parallel_group *allocate_parallel_group(int node_id)
-    {
-        parallel_group * ret = static_cast<parallel_group*>(allocate(sizeof(parallel_group)));
-        if (ret)
-            ::new(ret) parallel_group(node_id);
-        return ret;
-    }
 
 private:
     void add_child(server_node * node, node_position_constraint const & constraint);

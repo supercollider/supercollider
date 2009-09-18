@@ -138,16 +138,18 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
 
 group * nova_server::add_group(int id, node_position_constraint const & constraints)
 {
-    group * g = group::allocate_group(id);
-    instance->add_node(g, constraints);
+    group * g = new group(id);
+    if (g)
+        instance->add_node(g, constraints);
     /* no need to update the dsp queue */
     return g;
 }
 
 parallel_group * nova_server::add_parallel_group(int id, node_position_constraint const & constraints)
 {
-    parallel_group * g = parallel_group::allocate_parallel_group(id);
-    instance->add_node(g, constraints);
+    parallel_group * g = new parallel_group(id);
+    if (g)
+        instance->add_node(g, constraints);
     /* no need to update the dsp queue */
     return g;
 }
