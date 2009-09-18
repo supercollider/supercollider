@@ -262,7 +262,10 @@ enum {
 
     cmd_n_mapa = 60,
     cmd_n_mapan = 61,
-    NUMBER_OF_COMMANDS = 62
+
+    cmd_p_new = 63,
+
+    NUMBER_OF_COMMANDS = 64
 };
 
 int first_arg_as_int(received_message const & message)
@@ -1452,6 +1455,33 @@ void handle_d_free(received_message const & msg)
     }
 }
 
+void insert_parallel_group(int node_id, int action, int target_id)
+{
+    server_node * target = instance->find_node(target_id);
+
+    if (target == NULL) {
+        cerr << "target node not found\n" << endl;
+        return;
+    }
+    node_position_constraint pos = make_pair(target, node_position(action));
+
+    instance->add_parallel_group(node_id, pos);
+}
+
+void handle_p_new(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 id, action, target;
+        args >> id >> action >> target;
+
+        insert_parallel_group(id, action, target);
+    }
+}
+
+
 
 } /* namespace */
 
@@ -1604,6 +1634,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_d_free:
         handle_d_free(message);
+        break;
+
+    case cmd_p_new:
+        handle_p_new(message);
         break;
 
     default:
@@ -1837,6 +1871,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "s_new") == 0) {
         handle_s_new(message);
+        return;
+    }
+
+    if (strcmp(address+1, "p_new") == 0) {
+        handle_p_new(message);
         return;
     }
 
