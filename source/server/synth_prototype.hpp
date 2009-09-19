@@ -31,7 +31,7 @@
 namespace nova
 {
 
-typedef boost::uint_fast16_t slot_index_t;
+typedef boost::int_fast16_t slot_index_t;
 typedef std::string slot_identifier_type;
 
 namespace detail
@@ -109,17 +109,30 @@ protected:
     }
 
 public:
+    /*@{*/
+    /** resolve slot by symbolic name
+     *
+     *  \return nonnegative index of slot
+     *          -1, if symbolic name cannot be resolved
+     */
     slot_index_t resolve_slot(slot_identifier_type const & str) const
     {
-        assert(exists(str));
-        return slot_resolver_map.find(str, comparer())->index;
+        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, comparer());
+        if (it == slot_resolver_map.end())
+            return -1;
+        else
+            return it->index;
     }
 
     slot_index_t resolve_slot(const char * str) const
     {
-        assert(exists(str));
-        return slot_resolver_map.find(str, comparer())->index;
+        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, comparer());
+        if (it == slot_resolver_map.end())
+            return -1;
+        else
+            return it->index;
     }
+    /*@}*/
 
 private:
     typedef boost::intrusive::set<map_type> slot_resolver_map_t;
