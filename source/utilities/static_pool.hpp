@@ -62,7 +62,8 @@ public:
     static_pool(bool lock = false) throw()
     {
         data_.pool.assign(0);
-        init_memory_pool(bytes, data_.pool.begin());
+        std::size_t status = init_memory_pool(bytes, data_.pool.begin());
+        assert(status > 0);
 
         if (lock)
             lock_memory();
@@ -70,7 +71,7 @@ public:
 
     void lock_memory(void)
     {
-        mlock(data_.pool.begin(), poolsize);
+        mlock(data_.pool.begin(), bytes);
     }
 
     ~static_pool() throw()
