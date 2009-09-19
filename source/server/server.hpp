@@ -138,6 +138,25 @@ public:
 
     void register_prototype(synth_prototype_ptr const & prototype);
 
+    uint32_t synth_count(void) const
+    {
+        return synth_count_;
+    }
+
+    uint32_t group_count(void) const
+    {
+        return group_count_;
+    }
+
+    float cpu_load(void) const
+    {
+#ifdef JACK_BACKEND
+        return get_cpuload();
+#else
+        return 0.f
+#endif
+    }
+
 #if 0
     /* node control */
     void free_node(node_id);
@@ -155,6 +174,7 @@ private:
     void update_dsp_queue(void);
 
     callback_interpreter<system_callback> system_interpreter;
+    uint32_t synth_count_, group_count_;
 };
 
 inline void run_scheduler_tick(void)

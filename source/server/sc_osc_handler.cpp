@@ -365,15 +365,15 @@ struct status_callback:
         char buffer[1024];
         osc::OutboundPacketStream p(buffer, 1024);
         p << osc::BeginMessage("status.reply")
-          << 1                  /* unused */
-          << -1                 /* ugens */
-          << -1                 /* synths */
-          << -1                 /* groups */
-          << -1                 /* synthdefs */
-          << -1.f               /* average cpu % */
-          << -1.f               /* peak cpu % */
-          << -1.0               /* nominal samplerate */
-          << -1.0               /* actual samplerate */
+          << 1                                    /* unused */
+          << (int32_t)ugen_factory.ugen_count()   /* ugens */
+          << (int32_t)instance->synth_count()     /* synths */
+          << (int32_t)instance->group_count()     /* groups */
+          << (int32_t)instance->prototype_count() /* synthdefs */
+          << instance->cpu_load()                 /* average cpu % */
+          << instance->cpu_load()                 /* peak cpu % */
+          << instance->get_samplerate()           /* nominal samplerate */
+          << instance->get_samplerate()           /* actual samplerate */
           << osc::EndMessage;
 
         instance->send_udp(p.Data(), p.Size(), endpoint_);

@@ -188,6 +188,14 @@ public:
         return output_channels;
     }
 
+    float get_cpuload(void) const
+    {
+        if (likely(client))
+            return jack_cpu_load(client);
+        else
+            return 0.f;
+    }
+
 private:
     static int jack_process_callback(jack_nframes_t frames, void * arg)
     {

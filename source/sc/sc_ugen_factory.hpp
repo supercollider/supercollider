@@ -152,8 +152,14 @@ public:
 
     void register_bufgen(const char * name, BufGenFunc func);
 
+    uint32_t ugen_count(void) const
+    {
+        return ugen_count_;
+    }
+
 private:
     void close_handles(void);
+    uint32_t ugen_count_;
 };
 
 extern sc_ugen_factory ugen_factory;

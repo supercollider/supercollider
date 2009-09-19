@@ -214,6 +214,7 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
     unit->mWorld = &world;
     it->initialize(unit, synth, unit_spec);
 
+    ++ugen_count_;
     return sc_unit(unit);
 }
 
@@ -221,6 +222,7 @@ void sc_ugen_factory::free_ugen(sc_unit const & unit)
 {
     sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit.unit->mUnitDef);
     def->destruct(unit.unit);
+    --ugen_count_;
 }
 
 } /* namespace nova */

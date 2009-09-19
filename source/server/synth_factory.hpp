@@ -99,6 +99,11 @@ public:
         it->release();
     }
 
+    std::size_t prototype_count(void) const
+    {
+        return prototype_map.size();
+    }
+
     ~synth_factory(void)
     {
         while(prototype_map.begin() != prototype_map.end()) {
