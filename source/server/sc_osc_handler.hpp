@@ -148,7 +148,7 @@ public:
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
     {
-        detail::network_thread::send_udp(data, size, receiver);
+        socket_.send_to(boost::asio::buffer(data, size), receiver);
     }
 
     struct received_packet:
