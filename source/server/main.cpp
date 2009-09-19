@@ -19,6 +19,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <csignal>
+#include <vector>
+#include <string>
 
 #include <boost/program_options.hpp>
 
@@ -59,11 +61,36 @@ void parse_args(boost::program_options::variables_map & vm, int argc, char * arg
 
     options_description options("general options");
     options.add_options()
-        ("help", "show this help")
-        ("port,p", value<unsigned int>()->default_value(59595), "osc port")
-        ("threads,t", value<unsigned int>()->default_value(boost::thread::hardware_concurrency()), "threads")
-        ("rt-memory,m", value<unsigned int>()->default_value(8192),
+        ("help,h", "show this help")
+        ("udp-port,u", value<uint32_t>()->default_value(59595), "udp port")
+        ("tcp-port,t", value<uint32_t>()->default_value(59595), "tdp port")
+        ("control-busses,c", value<uint32_t>()->default_value(4096), "number of control busses")
+        ("audio-busses,a", value<uint32_t>()->default_value(128), "number of audio busses")
+        ("block-size,z", value<uint32_t>()->default_value(64), "audio block size")
+        ("hardware-buffer-size,Z", value<uint32_t>()->default_value(0), "hardware buffer size")
+        ("samplerate,S", value<uint32_t>()->default_value(44100), "hardware sample rate")
+        ("buffers,b", value<uint32_t>()->default_value(1024), "number of sample buffers")
+        ("max-nodes,n", value<uint32_t>()->default_value(1024), "maximum number of server nodes")
+        ("max-synthdefs,d", value<uint32_t>()->default_value(1024), "maximum number of synthdefs")
+        ("rt-memory,m", value<uint32_t>()->default_value(8192),
          "size of real-time memory pool in kb")
+        ("wires,w", value<uint32_t>()->default_value(64), "number of wire buffers")
+        ("randomseeds,r", value<uint32_t>()->default_value(64), "number of random seeds")
+        ("load-synthdefs,D", value<uint16_t>()->default_value(1), "load synthdefs? (1 or 0)")
+        ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
+        ("max-logins,l", value<uint32_t>()->default_value(64), "maximum number of named return addresses")
+        ("password,p", value<std::string>()->default_value(""), "When using TCP, the session password must be the first command sent.\n"
+                                                               "The default is no password.\n"
+                                                               "UDP ports never require passwords, so for security use TCP.")
+        ("nrt,N", "non-realtime command string")
+        ("memory-locking,L", "enable memory locking")
+        ("hardware-device-name,H", value<std::string>()->default_value(""), "hardware device name")
+        ("verbose,v", value<int16_t>()->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
+                                                         "-2 suppresses informational and many error messages")
+        ("ugen-search-path,U", value<std::vector<std::string> >(), "a colon-separated list of paths\n"
+                                                                 "if -U is specified, the standard paths are NOT searched for plugins.")
+        ("restricted-path,P", value<std::vector<std::string> >(), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
+        ("threads,T", value<uint32_t>()->default_value(boost::thread::hardware_concurrency()), "threads")
         ;
 
     options_description audio_options("audio options");
@@ -74,10 +101,9 @@ void parse_args(boost::program_options::variables_map & vm, int argc, char * arg
         ("indevice", value<int>()->default_value(-1), "input device")
         ("outdevice", value<int>()->default_value(-1), "output device")
 #endif /* PORTAUDIO_BACKEND */
-        ("inchannels,i", value<int>()->default_value(2), "input channels")
-        ("outchannels,o", value<int>()->default_value(2), "output channels")
+        ("inchannels,i", value<uint32_t>()->default_value(8), "number of input channels")
+        ("outchannels,o", value<uint32_t>()->default_value(8), "number of output channels")
 #ifdef PORTAUDIO_BACKEND
-        ("samplerate,s", value<int>()->default_value(44100), "sample rate")
         ("lsdev", "list audio devices")
 #endif /* PORTAUDIO_BACKEND */
         ;
