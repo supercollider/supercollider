@@ -46,6 +46,10 @@ libboost_thread = Environment().StaticLibrary("boost_thread", Glob("../libs/boos
 libboost_fs = Environment().StaticLibrary("boost_fs", Glob("../libs/boost/libs/filesystem/src/*cpp"),
                                           CPPPATH="#/libs/boost")
 
+libboost_po = Environment().StaticLibrary("boost_po", Glob("../libs/boost/libs/program_options/src/*cpp"),
+                                          CPPPATH="#/libs/boost")
+
+
 if env['optimize_testsuite']:
     unit_test_cflags = env['CCFLAGS'] + "-O3 -Wall"
 else:
@@ -53,7 +57,7 @@ else:
 
 
 
-unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, 'dl'] + env['LIBS'],
+unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, libboost_po, 'dl'] + env['LIBS'],
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",

@@ -22,16 +22,11 @@
 #include <vector>
 #include <string>
 
-#include <boost/program_options.hpp>
-
 #include "server.hpp"
+#include "server_args.hpp"
 
 #include "../sc/sc_ugen_factory.hpp"
 #include "../utilities/utils.hpp"
-
-#ifdef PORTAUDIO_BACKEND
-#include "audio_backend/portaudio.hpp"
-#endif
 
 using namespace nova;
 
@@ -39,101 +34,6 @@ namespace
 {
 
 using namespace std;
-
-void dummy(void)
-{}
-
-#ifdef PORTAUDIO_BACKEND
-void list_pa_devices(void)
-{
-    portaudio_backend<dummy> pa_backend;
-
-    device_list devices =  pa_backend.list_devices();
-
-    for (int i = 0; i != devices.size(); ++i)
-        cout << i << ": " << devices[i].name << endl;
-}
-#endif /* PORTAUDIO_BACKEND */
-
-void parse_args(boost::program_options::variables_map & vm, int argc, char * argv[])
-{
-    using namespace boost::program_options;
-
-    options_description options("general options");
-    options.add_options()
-        ("help,h", "show this help")
-        ("udp-port,u", value<uint32_t>()->default_value(59595), "udp port")
-        ("tcp-port,t", value<uint32_t>()->default_value(59595), "tdp port")
-        ("control-busses,c", value<uint32_t>()->default_value(4096), "number of control busses")
-        ("audio-busses,a", value<uint32_t>()->default_value(128), "number of audio busses")
-        ("block-size,z", value<uint32_t>()->default_value(64), "audio block size")
-        ("hardware-buffer-size,Z", value<uint32_t>()->default_value(0), "hardware buffer size")
-        ("samplerate,S", value<uint32_t>()->default_value(44100), "hardware sample rate")
-        ("buffers,b", value<uint32_t>()->default_value(1024), "number of sample buffers")
-        ("max-nodes,n", value<uint32_t>()->default_value(1024), "maximum number of server nodes")
-        ("max-synthdefs,d", value<uint32_t>()->default_value(1024), "maximum number of synthdefs")
-        ("rt-memory,m", value<uint32_t>()->default_value(8192),
-         "size of real-time memory pool in kb")
-        ("wires,w", value<uint32_t>()->default_value(64), "number of wire buffers")
-        ("randomseeds,r", value<uint32_t>()->default_value(64), "number of random seeds")
-        ("load-synthdefs,D", value<uint16_t>()->default_value(1), "load synthdefs? (1 or 0)")
-        ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
-        ("max-logins,l", value<uint32_t>()->default_value(64), "maximum number of named return addresses")
-        ("password,p", value<std::string>()->default_value(""), "When using TCP, the session password must be the first command sent.\n"
-                                                               "The default is no password.\n"
-                                                               "UDP ports never require passwords, so for security use TCP.")
-        ("nrt,N", "non-realtime command string")
-        ("memory-locking,L", "enable memory locking")
-        ("hardware-device-name,H", value<std::string>()->default_value(""), "hardware device name")
-        ("verbose,v", value<int16_t>()->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
-                                                         "-2 suppresses informational and many error messages")
-        ("ugen-search-path,U", value<std::vector<std::string> >(), "a colon-separated list of paths\n"
-                                                                 "if -U is specified, the standard paths are NOT searched for plugins.")
-        ("restricted-path,P", value<std::vector<std::string> >(), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
-        ("threads,T", value<uint32_t>()->default_value(boost::thread::hardware_concurrency()), "threads")
-        ;
-
-    options_description audio_options("audio options");
-
-    audio_options.add_options()
-#ifdef PORTAUDIO_BACKEND
-        ("device,d", value<int>()->default_value(0), "portaudio device")
-        ("indevice", value<int>()->default_value(-1), "input device")
-        ("outdevice", value<int>()->default_value(-1), "output device")
-#endif /* PORTAUDIO_BACKEND */
-        ("inchannels,i", value<uint32_t>()->default_value(8), "number of input channels")
-        ("outchannels,o", value<uint32_t>()->default_value(8), "number of output channels")
-#ifdef PORTAUDIO_BACKEND
-        ("lsdev", "list audio devices")
-#endif /* PORTAUDIO_BACKEND */
-        ;
-
-    options_description cmdline_options;
-    cmdline_options
-        .add(options)
-        .add(audio_options)
-        ;
-
-    try
-    {
-        store(command_line_parser(argc, argv).options(cmdline_options).run(), vm);
-    }
-    catch(error const & e)
-    {
-        cout << "Error when parsing command line arguments:" << endl
-             << e.what() << endl << endl;
-        std::exit(EXIT_FAILURE);
-    };
-
-    notify(vm);
-
-    if (vm.count("help"))
-    {
-        cout << options << endl;
-        cout << audio_options << endl;
-        std::exit(EXIT_SUCCESS);
-    }
-}
 
 /* signal handler */
 void terminate(int i)
@@ -152,76 +52,26 @@ void register_handles(void)
 
 int main(int argc, char * argv[])
 {
-    int in_device, out_device, inchannels, outchannels, samplerate;
+    server_arguments::initialize(argc, argv);
+    server_arguments const & args = server_arguments::instance();
 
-    unsigned int port, threads;
+    uint32_t threads = std::min(uint(args.threads), boost::thread::hardware_concurrency());
 
-    {
-        unsigned int rt_mem_size;
-        boost::program_options::variables_map vm;
+    rt_pool.init(args.rt_pool_size, args.memory_locking);
 
-        parse_args(vm, argc, argv);
-
-#ifdef PORTAUDIO_BACKEND
-        if (vm.count("lsdev"))
-        {
-            list_pa_devices();
-            return 0;
-        }
-
-        int device = vm["device"].as<int>();
-
-        in_device = vm["outdevice"].as<int>();
-        out_device = vm["indevice"].as<int>();
-
-        if (in_device == -1)
-            in_device = device;
-
-        if (out_device == -1)
-            out_device = device;
-
-        samplerate = vm["samplerate"].as<int>();
-#endif /* PORTAUDIO_BACKEND */
-
-        inchannels = vm["inchannels"].as<int>();
-        outchannels = vm["outchannels"].as<int>();
-
-        threads = vm["threads"].as<unsigned int>();
-        threads = std::min(threads, boost::thread::hardware_concurrency());
-        port = vm["port"].as<unsigned int>();
-
-        rt_mem_size = vm["rt-memory"].as<unsigned int>() * 1024;
-        rt_pool.init(rt_mem_size, true);
-    }
-
-    nova_server server(port, threads);
+    nova_server server(args.udp_port, threads);
     register_handles();
 
-#ifdef PORTAUDIO_BACKEND
-    server.open_portaudio_backend();
-
-    {
-        device_list devs = server.list_devices();
-
-        server.open_audio_stream(devs[in_device], inchannels,
-                                 devs[out_device], outchannels,
-                                 samplerate);
-    }
-    server.activate_audio();
-#elif defined (JACK_BACKEND)
-    server.open_client("supernova", inchannels, outchannels);
+#if defined (JACK_BACKEND)
+    server.open_client("supernova", args.input_channels, args.output_channels);
     server.activate_audio();
 #endif
 
-    ugen_factory.set_audio_channels(inchannels, outchannels);
+    ugen_factory.set_audio_channels(args.input_channels, args.output_channels);
     server.run();
 
-#ifdef PORTAUDIO_BACKEND
-    server.close_audio_stream();
-    server.close_audio_backend();
+#if defined (JACK_BACKEND)
     server.deactivate_audio();
-#elif defined (JACK_BACKEND)
-    server.deactivate_audio();
-#endif /* PORTAUDIO_BACKEND */
+#endif
     return 0;
 }
