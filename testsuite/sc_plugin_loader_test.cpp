@@ -6,6 +6,7 @@
 
 #include "../source/sc/sc_ugen_factory.hpp"
 #include "../source/server/memory_pool.hpp"
+#include "../source/server/server_args.hpp"
 
 using namespace nova;
 using namespace std;
@@ -14,6 +15,9 @@ boost::filesystem::path base_path ("/home/tim/workspace/nova-server/plugins/");
 
 BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
 {
+    server_arguments::initialize(0, 0);
+    ugen_factory.initialize();
+
     ugen_factory.load_plugin(base_path / "BeatTrack2.so");
     ugen_factory.load_plugin(base_path / "BeatTrack.so");
     ugen_factory.load_plugin(base_path / "BinaryOpUGens.so");

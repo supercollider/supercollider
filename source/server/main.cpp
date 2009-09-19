@@ -62,12 +62,24 @@ int main(int argc, char * argv[])
 
     rt_pool.init(args.rt_pool_size, args.memory_locking);
 
+    ugen_factory.initialize();
+    ugen_factory.load_plugin_folder("plugins");
+
     nova_server server(args.udp_port, threads);
     register_handles();
 
 #if defined (JACK_BACKEND)
     server.open_client("supernova", args.input_channels, args.output_channels);
     server.activate_audio();
+
+    if (args.samplerate == 0)
+        server_arguments::set_samplerate((uint32_t)server.get_samplerate());
+    else
+        if (args.samplerate != server.get_samplerate()) {
+            std::cerr << "samplerate mismatch between command line argument and jack" << endl;
+            server.deactivate_audio();
+            return 1;
+        }
 #endif
 
     if (args.load_synthdefs) {
@@ -76,7 +88,6 @@ int main(int argc, char * argv[])
         sc_read_synthdefs_dir(server, synthdef_path);
     }
 
-    ugen_factory.set_audio_channels(args.input_channels, args.output_channels);
     server.run();
 
 #if defined (JACK_BACKEND)

@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../source/server/server.hpp"
+#include "../source/server/server_args.hpp"
 
 using namespace nova;
 using namespace boost;
@@ -26,6 +27,10 @@ struct test_synth_prototype:
 BOOST_AUTO_TEST_CASE( server_test_1 )
 {
     nova_server server;
+    server_arguments::initialize(0, 0);
+    ugen_factory.initialize();
+
+
     server.synth_factory::register_prototype(new test_synth_prototype());
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);

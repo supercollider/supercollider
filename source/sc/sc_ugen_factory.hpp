@@ -152,11 +152,6 @@ public:
 
     void register_bufgen(const char * name, BufGenFunc func);
 
-    void set_audio_channels(int audio_inputs, int audio_outputs)
-    {
-        sc_plugin_interface::set_audio_channels(audio_inputs, audio_outputs);
-    }
-
 private:
     void close_handles(void);
 };

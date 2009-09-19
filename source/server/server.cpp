@@ -34,8 +34,6 @@ nova_server::nova_server(unsigned int port, unsigned int threads):
 {
     assert(instance == 0);
     instance = this;
-
-    ugen_factory.load_plugin_folder("plugins");
 }
 
 nova_server::~nova_server(void)

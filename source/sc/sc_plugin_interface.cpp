@@ -22,6 +22,7 @@
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
 
+#include "../server/server_args.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server.hpp"
 #include "../simd/simd_memory.hpp"
@@ -216,10 +217,11 @@ void done_action(int done_action, struct Unit *unit)
 namespace nova
 {
 
-sc_plugin_interface::sc_plugin_interface(void):
-    audio_busses(1024, 64)
+void sc_plugin_interface::initialize(void)
 {
     done_nodes.reserve(1024); // reserve enough space
+
+    server_arguments const & args = server_arguments::instance();
 
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
@@ -250,35 +252,34 @@ sc_plugin_interface::sc_plugin_interface(void):
     sc_interface.fClearUnitOutputs = clear_outputs;
 
     /* initialize world */
-    world.mControlBus = new float[1024];
-    world.mControlBusTouched = new int32[1024];
+    /* control busses */
+    world.mControlBus = new float[args.control_busses];
+    world.mControlBusTouched = new int32[args.control_busses];
+    for (size_t i = 0; i != args.control_busses; ++i)
+        world.mControlBusTouched[i] = -1;
 
     /* audio busses */
-    world.mAudioBus = audio_busses.buffers;
-    world.mAudioBusTouched = new int32[1024];
-    world.mAudioBusLocks = audio_busses.locks;
+    audio_busses.initialize(args.audio_busses, args.blocksize);
 
-    for (size_t i = 0; i != 1024; ++i) {
+    world.mAudioBus = audio_busses.buffers;
+    world.mAudioBusTouched = new int32[args.audio_busses];
+    world.mAudioBusLocks = audio_busses.locks;
+    for (size_t i = 0; i != args.audio_busses; ++i)
         world.mAudioBusTouched[i]   = -1;
-        world.mControlBusTouched[i] = -1;
-    }
 
     /* audio buffers */
-    world.mNumSndBufs = 1024;
+    world.mNumSndBufs = args.buffers;
     world.mSndBufs = new SndBuf[world.mNumSndBufs];
     world.mBufCounter = 0;
 
     /* audio settings */
-    world.mBufLength = 64;
+    world.mBufLength = args.blocksize;
 
-    Rate_Init(&world.mFullRate, 44100, 64);
-    Rate_Init(&world.mBufRate, 44100.f/64, 1);
-}
+    Rate_Init(&world.mFullRate, args.samplerate, args.blocksize);
+    Rate_Init(&world.mBufRate, float(args.samplerate)/args.blocksize, 1);
 
-void sc_plugin_interface::set_audio_channels(int audio_inputs, int audio_outputs)
-{
-    world.mNumInputs = audio_inputs;
-    world.mNumOutputs = audio_outputs;
+    world.mNumInputs = args.input_channels;
+    world.mNumOutputs = args.output_channels;
 }
 
 void sc_plugin_interface::update_nodegraph(void)

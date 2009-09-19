@@ -42,6 +42,12 @@ public:
         return *instance_;
     }
 
+    /** set the sample rate (from the audio backend) */
+    static void set_samplerate(uint32_t samplerate)
+    {
+        instance_->samplerate = samplerate;
+    }
+
     uint32_t udp_port, tcp_port;
     uint32_t control_busses, audio_busses;
     uint32_t blocksize, samplerate;

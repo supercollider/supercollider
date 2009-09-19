@@ -32,10 +32,12 @@ namespace nova
 class sc_plugin_interface
 {
 public:
-    sc_plugin_interface(void);
-    ~sc_plugin_interface(void);
+    void initialize(void);
 
-    void set_audio_channels(int audio_inputs, int audio_outputs);
+    sc_plugin_interface(void)
+    {}
+
+    ~sc_plugin_interface(void);
 
     void update_nodegraph(void);
 

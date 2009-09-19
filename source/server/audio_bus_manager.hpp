@@ -35,9 +35,18 @@ class audio_bus_manager:
     typedef boost::uint16_t uint16_t;
 
 public:
-    audio_bus_manager(uint16_t count = 4096, uint16_t blocksize = 64):
-        count(count), blocksize(blocksize)
+/*    audio_bus_manager(uint16_t count = 4096, uint16_t blocksize = 64)
     {
+        initialize(count, blocksize);
+    }
+*/
+    audio_bus_manager(void)
+    {}
+
+    void initialize(uint16_t c, uint16_t b)
+    {
+        count = c;
+        blocksize = b;
         buffers = calloc_aligned<sample>(count * blocksize);
         locks = new spin_lock[count];
     }
