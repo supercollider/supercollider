@@ -22,10 +22,13 @@
 #include <vector>
 #include <string>
 
+#include <boost/filesystem/path.hpp>
+
 #include "server.hpp"
 #include "server_args.hpp"
 
 #include "../sc/sc_ugen_factory.hpp"
+#include "../sc/sc_synth_prototype.hpp"
 #include "../utilities/utils.hpp"
 
 using namespace nova;
@@ -66,6 +69,12 @@ int main(int argc, char * argv[])
     server.open_client("supernova", args.input_channels, args.output_channels);
     server.activate_audio();
 #endif
+
+    if (args.load_synthdefs) {
+        boost::filesystem::path synthdef_path(getenv("HOME"));
+        synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
+        sc_read_synthdefs_dir(server, synthdef_path);
+    }
 
     ugen_factory.set_audio_channels(args.input_channels, args.output_channels);
     server.run();

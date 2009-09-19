@@ -76,7 +76,7 @@ int16_t read_int16(std::istream & stream)
     return data;
 }
 
-int16_t read_int32(std::istream & stream)
+int32_t read_int32(std::istream & stream)
 {
     big32_t data;
     stream.read((char*)&data, 4);
@@ -159,21 +159,14 @@ void sc_synthdef::read_synthdef(std::istream& stream)
 
     for (int i = 0; i != consts; ++i) {
         float data = read_float(stream);
-
-        cout << "constant " << data << endl;
-
         constants.push_back(data);
     }
 
     /* read parameters */
     int16_t pars = read_int16(stream);
-    cout << "parameters " << pars << endl;
 
     for (int i = 0; i != pars; ++i) {
         float data = read_float(stream);
-
-        cout << "parameter " << data << endl;
-
         parameters.push_back(data);
     }
 
@@ -183,8 +176,6 @@ void sc_synthdef::read_synthdef(std::istream& stream)
     for (int i = 0; i != par_names; ++i) {
         string data = read_pstring(stream);
         int16_t index = read_int16(stream);
-
-        cout << data << " " << index << endl;
 
         parameter_map[data] = index;
     }
