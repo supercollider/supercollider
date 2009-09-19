@@ -75,6 +75,15 @@ void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
     }
 }
 
+sc_synth_prototype::sc_synth_prototype(sc_synthdef const & sd):
+    synth_prototype(sd.name()), synthdef(sd)
+{
+    typedef sc_synthdef::parameter_map_t::const_iterator iterator;
+
+    for (iterator it = sd.parameter_map.begin(); it != sd.parameter_map.end(); ++it)
+        slot_resolver::register_slot(it->first, it->second);
+}
+
 
 abstract_synth * sc_synth_prototype::create_instance(int node_id)
 {

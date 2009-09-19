@@ -35,12 +35,13 @@ class sc_synthdef
     typedef std::string string;
     typedef std::vector<float> fvector;
     typedef std::vector<string> svector;
-    typedef std::map<string, int> parameter_map_t;
 
     typedef boost::int16_t int16;
     typedef boost::int32_t int32;
 
 public:
+    typedef std::map<string, int> parameter_map_t;
+
     struct input_spec
     {
         input_spec(int16_t source, int16_t index):
