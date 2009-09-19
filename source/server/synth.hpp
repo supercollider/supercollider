@@ -20,6 +20,7 @@
 #define SERVER_SYNTH_HPP
 
 #include <cassert>
+#include <iostream>
 
 #include <boost/cstdint.hpp>
 
@@ -76,7 +77,10 @@ public:
     void set(const char * slot_str, sample val)
     {
         slot_index_t slot_id = prototype_instance::resolve_slot(slot_str);
-        this->set(slot_id, val);
+        if (unlikely(slot_id < 0))
+            std::cerr << "cannot resolve slot " << slot_str << std::endl;
+        else
+            this->set(slot_id, val);
     }
 
     virtual void set(slot_index_t slot_id, sample val) = 0;
