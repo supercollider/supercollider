@@ -191,6 +191,8 @@ inline void run_scheduler_tick(void)
 
     (*instance)();
 
+    ugen_factory.update_nodegraph();
+
     for (int channel = 0; channel != output_channels; ++channel) {
         if (ugen_factory.world.mAudioBusTouched[channel] == buf_counter)
             instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
