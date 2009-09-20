@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_3 )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
 
         n.add_node(s, to_group);
         n.remove_node(s);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_4 )
 
     n.add_node(g);
 
-    synth * s = new synth(1, 0);
+    synth * s = new synth(2, 0);
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
@@ -74,8 +74,8 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_5 )
 {
     node_graph n;
 
-    synth * s = new synth(1, 0);
-    synth * s2 = new synth(2, 0);
+    synth * s = new synth(2, 0);
+    synth * s2 = new synth(3, 0);
 
     n.add_node(s);
     n.add_node(s2);
@@ -89,24 +89,24 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_6 )
 {
     node_graph n;
 
-    synth * s1 = new  synth(1, 0);
+    synth * s1 = new synth(2, 0);
     n.add_node(s1);
 
-    synth * s2 = new synth(2, 0);
+    synth * s2 = new synth(3, 0);
     {
         node_position_constraint to_group = std::make_pair(n.root_group(), insert);
 
         n.add_node(s2, to_group);
     }
 
-    synth * s3 = new synth(3, 0);
+    synth * s3 = new synth(4, 0);
     {
         node_position_constraint position = std::make_pair(s1, after);
 
         n.add_node(s3, position);
     }
 
-    synth * s4 = new synth(4, 0);
+    synth * s4 = new synth(5, 0);
     {
         node_position_constraint position = std::make_pair(s1, before);
 
@@ -132,10 +132,10 @@ BOOST_AUTO_TEST_CASE( free_all_test )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
 
-        synth * s2 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
         n.add_node(s2, to_group);
     }
     g->free_children();
@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_1 )
 {
     node_graph n;
 
-    synth * s = new synth(1, 0);
-    synth * s2 = new synth(2, 0);
+    synth * s = new synth(2, 0);
+    synth * s2 = new synth(3, 0);
 
     n.add_node(s);
     n.add_node(s2);
@@ -175,13 +175,13 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_3 )
 {
     node_graph n;
 
-    synth * s = new synth(1, 0);
+    synth * s = new synth(2, 0);
     n.add_node(s);
 
     auto_ptr<node_graph::dsp_thread_queue> q1 = n.generate_dsp_queue();
     BOOST_REQUIRE_EQUAL(q1->get_total_node_count(), 1u);
 
-    synth * s2 = new synth(2, 0);
+    synth * s2 = new synth(3, 0);
     n.add_node(s2);
 
     auto_ptr<node_graph::dsp_thread_queue> q2 = n.generate_dsp_queue();
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_2 )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
         n.remove_node(s);
     }
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_3 )
 
     n.add_node(g);
 
-    synth * s = new synth(1, 0);
+    synth * s = new synth(2, 0);
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_4 )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
 
         auto_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
@@ -273,8 +273,8 @@ BOOST_AUTO_TEST_CASE( pgroup_test_5 )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s1 = new synth(1, 0);
-        synth * s2 = new synth(2, 0);
+        synth * s1 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
         n.add_node(s1, to_group);
         n.add_node(s2, to_group);
 
@@ -299,9 +299,9 @@ BOOST_AUTO_TEST_CASE( pgroup_test_6 )
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s1 = new synth(1, 0);
-        synth * s2 = new synth(2, 0);
-        synth * s3 = new synth(3, 0);
+        synth * s1 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
+        synth * s3 = new synth(4, 0);
         n.add_node(s1, to_group);
         n.add_node(s2, to_group);
         n.add_node(s3, to_group);

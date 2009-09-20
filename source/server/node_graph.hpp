@@ -43,7 +43,7 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(1000)
+        root_group_(1)
     {
         root_group_.add_ref();
         node_set.insert(root_group_);

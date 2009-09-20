@@ -34,7 +34,7 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
 
     std::pair< node_set_type::iterator, bool > inserted = node_set.insert(*n);
 
-    assert(inserted.second == true);
+    assert(inserted.second == true); /* node id already present (should be checked earlier)! */
 
     switch (position)
     {
