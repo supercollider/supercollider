@@ -46,16 +46,22 @@ sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
 {
-    Unit * unit = (Unit*)sc_synth::allocate(alloc_size);
+    /* size for wires and buffers */
+    std::size_t mem_size = unit_spec.input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
+                           unit_spec.output_specs.size() * (sizeof(Wire*) + sizeof(float*));
 
-    /* todo: later we can pack all memory chunks to the same region */
+    char * chunk = (char*)sc_synth::allocate(alloc_size + mem_size);
+    if (!chunk)
+        return NULL;
+
+    Unit * unit = (Unit*)chunk;     chunk += alloc_size;
+    unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
+    unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
+    unit->mInBuf  = (float**)chunk; chunk += unit_spec.input_specs.size() * sizeof(float*);
+    unit->mOutBuf = (float**)chunk;
+
     unit->mNumInputs  = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
-
-    unit->mInput  =  (Wire**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(Wire*));
-    unit->mOutput =  (Wire**)sc_synth::allocate(unit_spec.output_specs.size() * sizeof(Wire*));
-    unit->mInBuf  = (float**)sc_synth::allocate( unit_spec.input_specs.size() * sizeof(float*));
-    unit->mOutBuf = (float**)sc_synth::allocate(unit_spec.output_specs.size() * sizeof(float*));
 
     /* initialize members */
     unit->mCalcRate = unit_spec.rate;
@@ -128,11 +134,7 @@ void sc_ugen_def::destruct(Unit * unit)
         (*dtor)(unit);
 
     /* free */
-    sc_synth::free(unit->mInput);
-    sc_synth::free(unit->mOutput);
-    sc_synth::free(unit->mInBuf);
-    sc_synth::free(unit->mOutBuf);
-    sc_synth::free(unit);
+    sc_synth::free(unit); /* we only have one memory chunk to free */
 }
 
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
@@ -211,6 +213,8 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
     }
 
     Unit * unit = it->construct(unit_spec);
+    if (!unit)
+        throw std::runtime_error("cannot allocate ugen, out of memory");
     unit->mWorld = &world;
     it->initialize(unit, synth, unit_spec);
 
