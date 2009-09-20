@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
 
     uint32_t threads = std::min(uint(args.threads), boost::thread::hardware_concurrency());
 
-    rt_pool.init(args.rt_pool_size, args.memory_locking);
+    rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
 
     ugen_factory.initialize();
     ugen_factory.load_plugin_folder("plugins");
