@@ -45,12 +45,21 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     sc_synthdef const & synthdef = prototype->synthdef;
 
-    /* prepare controls */
     const size_t parameter_count = synthdef.parameter_count();
+    const size_t constants_count = synthdef.constants.size();
+
+    /* we allocate one memory chunk */
+    const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
+                              + constants_count * sizeof(Wire);
+    char * chunk = (char*)allocate(alloc_size);
+    if (chunk == NULL)
+        throw std::bad_alloc();
+
+    /* prepare controls */
     graph.mNumControls = parameter_count;
-    graph.mControls = allocate<float>(parameter_count);
-    graph.mControlRates = allocate<int>(parameter_count);
-    graph.mMapControls = allocate<float*>(parameter_count);
+    graph.mControls = (float*)chunk;     chunk += sizeof(float) * parameter_count;
+    graph.mControlRates = (int*)chunk;   chunk += sizeof(int) * parameter_count;
+    graph.mMapControls = (float**)chunk; chunk += sizeof(float*) * parameter_count;
 
     /* initialize controls */
     for (size_t i = 0; i != parameter_count; ++i) {
@@ -60,7 +69,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     }
 
     /* allocate constant wires */
-    graph.mWire = allocate<Wire>(synthdef.constants.size());
+    graph.mWire = (Wire*)chunk;          chunk += sizeof(Wire) * constants_count;
     for (size_t i = 0; i != synthdef.constants.size(); ++i) {
         Wire * wire = graph.mWire + i;
         wire->mFromUnit = 0;
@@ -100,10 +109,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
 sc_synth::~sc_synth(void)
 {
-    free(graph.mMapControls);
     free(graph.mControls);
-    free(graph.mControlRates);
-    free(graph.mWire);
     free(unit_buffers);
 
     std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &ugen_factory, _1));
