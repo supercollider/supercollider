@@ -128,7 +128,7 @@ public:
     }
 
 private:
-    typedef static_pool<1024*1024> node_pool;
+    typedef static_pool<1024*1024*8> node_pool;
     static node_pool pool;
     /* @} */
 
