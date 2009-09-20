@@ -77,17 +77,12 @@
 		recorder = gui.button.new(w, Rect(0,0, 66, 18));
 		recorder.font = font;
 		recorder.states = [
-			["prepare rec", Color.black, Color.clear],
-			["record >", Color.red, Color.gray(0.1).alpha_(0.3)],
+			["record >", Color.black, Color.clear],
 			["stop []", Color.black, Color.red.alpha_(0.3)]
 		];
 		
 		recorder.action = {
-			if (recorder.value == 1) {
-				this.prepareForRecord;
-			}{
-				if (recorder.value == 2) { this.record } { this.stopRecording };
-			};
+			if (recorder.value == 1) { this.record } { this.stopRecording };
 		};
 		recorder.enabled = false;
 		

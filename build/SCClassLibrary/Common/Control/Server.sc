@@ -757,15 +757,22 @@ Server : Model {
 	}
 	
 	// recording output
-	
-	record {
-		recordBuf.isNil.if({"Please execute Server-prepareForRecord before recording".warn; }, {
-			recordNode.isNil.if({
-				recordNode = Synth.tail(RootNode(this), "server-record", [\bufnum, 
-					recordBuf.bufnum]);
-			}, { recordNode.run(true) });
+	record { |path|
+		if(recordBuf.isNil){
+			this.prepareForRecord(path);
+			Routine({
+				this.sync;
+				this.record;
+			}).play;
+		}{
+			if(recordNode.isNil){
+				recordNode = Synth.tail(RootNode(this), "server-record", 
+						[\bufnum, recordBuf.bufnum]);
+			}{
+				recordNode.run(true)
+			};
 			"Recording".postln;
-		});
+		};
 	}
 
 	pauseRecording {
