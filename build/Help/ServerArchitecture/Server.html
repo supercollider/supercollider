@@ -5,40 +5,38 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.54">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #922b2a}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862e2c}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #595959}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica; min-height: 18.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #922b2a; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #862e2c; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0027b9}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0020bb}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9f2423}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0027b9; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #476b00}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0030b4}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002ab6}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #912825}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #002ab6; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4f6914}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0027b9}
+span.s2 {color: #0030b4}
 span.s3 {color: #000000}
 span.s4 {font: 12.0px Helvetica}
 span.s5 {color: #606060}
 span.s6 {color: #595959}
 span.s7 {font: 9.0px Monaco}
-span.s8 {font: 12.0px Helvetica; color: #000000}
-span.s9 {color: #0000bf}
-span.s10 {color: #007300}
-span.s11 {color: #476b00}
-span.s12 {color: #922b2a}
-span.s13 {color: #002afb}
-span.s14 {color: #0020bb}
-span.s15 {text-decoration: underline ; color: #001bec}
+span.s8 {color: #001bb9}
+span.s9 {color: #2c7014}
+span.s10 {color: #4f6914}
+span.s11 {color: #862e2c}
+span.s12 {color: #0038f4}
+span.s13 {color: #002ab6}
+span.s14 {text-decoration: underline ; color: #0021e7}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -183,11 +181,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>reorder(nodeList, target, addAction)</b> - Move the nodes in <b>nodeList</b> to the location specified by <b>target</b> and <b>addAction</b>, placing them there in the order indicated by <b>nodeList</b>. Any nodes which have already been freed will be skipped. Passing nil for target and addAction will result in the location being the head of the default group.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s8"><span class="Apple-tab-span">	</span></span>g = <span class="s9">Group</span>.new;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>x = <span class="s9">Array</span>.fill(5, {<span class="s9">Synth</span>(<span class="s10">\default</span>)});</p>
-<p class="p12"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>s.reorder(x, g, <span class="s10">\addToTail</span>);</p>
-<p class="p12"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
+<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>g = <span class="s8">Group</span>.new;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>x = <span class="s8">Array</span>.fill(5, {<span class="s8">Synth</span>(<span class="s9">\default</span>)});</p>
+<p class="p9"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
+<p class="p9"><span class="Apple-tab-span">	</span>s.reorder(x, g, <span class="s9">\addToTail</span>);</p>
+<p class="p9"><span class="Apple-tab-span">	</span>s.queryAllNodes;</p>
 <p class="p11"><br></p>
 <p class="p8"><b>Automatic Message Bundling</b></p>
 <p class="p7"><br></p>
@@ -209,7 +207,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>s.makeBundle(2.0, {</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = <span class="s2">Synth</span>.new(<span class="s6">"tpulse"</span>);</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s2">Bus</span>.control.set(440);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.map(<span class="s11">\freq</span>, a);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.map(<span class="s10">\freq</span>, a);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>});</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span>x.free;</p>
@@ -223,7 +221,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span>// now pass b as a pre-existing bundle, and start both synths synchronously</p>
 <p class="p9"><span class="Apple-tab-span">	</span>(</p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>s.makeBundle(</span><span class="s2">nil</span><span class="s3">, { </span>// nil executes ASAP</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = { <span class="s2">SinOsc</span>.kr(0.2).abs }.play(x, 0, 0, <span class="s11">\addBefore</span>); <span class="s12">// sine envelope</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = { <span class="s2">SinOsc</span>.kr(0.2).abs }.play(x, 0, 0, <span class="s10">\addBefore</span>); <span class="s11">// sine envelope</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>}, b);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span>x.free; y.free;</p>
@@ -234,9 +232,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.makeBundle(<span class="s2">nil</span>, {</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.farkermartin;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span>} { </span>|error|</p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span>} { </span>|error|</p>
 <p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</span>"Look Ma, normal operations resume even though:\n"<span class="s3"> + error.errorString).postln;<span class="Apple-converted-space"> </span></span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = { <span class="s2">FSinOsc</span>.ar(440, 0, 0.2) }.play; <span class="s12">// This works fine</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = { <span class="s2">FSinOsc</span>.ar(440, 0, 0.2) }.play; <span class="s11">// This works fine</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>}</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
 <p class="p9"><span class="Apple-tab-span">	</span>x.free;</p>
@@ -248,7 +246,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span>s.bind {</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = { <span class="s2">|freq=100|</span> <span class="s2">SinOsc</span>.ar(freq, <span class="s2">LFTri</span>.ar(freq)) * 0.2 }.play;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.sync;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s11">\freq</span>, 400);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.set(<span class="s10">\freq</span>, 400);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>}</p>
 <p class="p9"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><br></p>
@@ -264,18 +262,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p8"><b>Persistent Node Trees</b></p>
 <p class="p2"><br></p>
-<p class="p1">The class <a href="../Control/ServerTree.html"><span class="s13">ServerTree</span></a> can be used to store functions which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed. This allows, for example, for one to create a persistent basic node structure. ServerTree is evaluated in the method <b>initTree</b> after the default group is created, so its existence can be relied upon.</p>
+<p class="p1">The class <a href="../Control/ServerTree.html"><span class="s12">ServerTree</span></a> can be used to store functions which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed. This allows, for example, for one to create a persistent basic node structure. ServerTree is evaluated in the method <b>initTree</b> after the default group is created, so its existence can be relied upon.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>initTree</b> - This method initializes the <a href="default_group.html"><span class="s2">default_group</span></a> and runs ServerTree. This method is called automatically when you boot a Server from the language. <b>N.B.</b> If you started a server app from the command line you will have to call initTree manually if you need this functionality.</p>
 <p class="p2"><br></p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>s.quit;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>f = {<span class="s14">Group</span>.new(s.defaultGroup); <span class="s5">"Other code can be evaluated too"</span>.postln;};</p>
-<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>ServerTree<span class="s3">.add(f);</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>f = {<span class="s13">Group</span>.new(s.defaultGroup); <span class="s5">"Other code can be evaluated too"</span>.postln;};</p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>ServerTree<span class="s3">.add(f);</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.boot;</p>
-<p class="p15"><span class="s3"><span class="Apple-tab-span">	</span>s.queryAllNodes; </span>// note the group within the default group</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s14">ServerTree</span>.remove(f);</p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span>s.queryAllNodes; </span>// note the group within the default group</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s13">ServerTree</span>.remove(f);</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="s15"><a href="../Control/ServerBoot.html">ServerBoot</a></span> and <a href="../Control/ServerQuit.html"><span class="s13">ServerQuit</span></a> provide similar functionality at boot and quit times.</p>
+<p class="p1"><span class="s14"><a href="../Control/ServerBoot.html">ServerBoot</a></span> and <a href="../Control/ServerQuit.html"><span class="s12">ServerQuit</span></a> provide similar functionality at boot and quit times.</p>
 <p class="p2"><br></p>
 <p class="p8"><b>Keyboard Shortcuts</b></p>
 <p class="p2"><br></p>
@@ -302,19 +300,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p8"><b>Recording Support</b></p>
 <p class="p2"><br></p>
-<p class="p1">The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the <a href="../UGens/Playback and Recording/DiskOut.html"><span class="s2">DiskOut</span></a> helpfile for more info. For non-realtime recording, see the <a href="../Other Topics/Non-Realtime-Synthesis.html"><span class="s2">Non-Realtime-Synthesis</span></a> helpfile.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the <a href="../UGens/Playback and Recording/DiskOut.html"><span class="s13">DiskOut</span></a> helpfile for more info. For non-realtime recording, see the <a href="../Other Topics/Non-Realtime-Synthesis.html"><span class="s13">Non-Realtime-Synthesis</span></a> helpfile.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p1">This functionality is also available through the recording button on the server windows. Pressing it once calls <b>prepareForRecord</b>, pressing it again calls <b>record</b>, and pressing it a third time calls <b>stopRecording</b> (see below). When doing so the file created will be in your recordings folder and be named for the current date and time. The default location of the recordings folder varies from platform to platform but is always stored in <b>thisProcess.platform.recordingsDir</b>. Setting this variable allows you to change the default.</p>
+<p class="p1">This functionality is also available through the recording button on the server windows. Pressing it once calls <b>record</b>, and pressing it again calls <b>stopRecording</b> (see below). When doing so the file created will be in your recordings folder and be named for the current date and time. The default location of the recordings folder varies from platform to platform but is always stored in <b>thisProcess.platform.recordingsDir</b>. Setting this variable allows you to change the default.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>NOTE:</b> <b>record</b> creates the recording synth after the Server's default group and uses <b>In.ar</b>. Thus if you add nodes after the recording synth their output will not be captured. To avoid this, either use <b>Node</b> objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1 .</p>
-<p class="p16"><br></p>
+<p class="p15"><br></p>
 <p class="p9">s.sendMsg(<span class="s6">"/s_new"</span>, <span class="s6">"default"</span>, s.nextNodeID, 1,1);</p>
 <p class="p2"><br></p>
-<p class="p1">For more detail on this subject see <a href="Order-of-execution.html"><span class="s2">Order-of-execution</span></a><b>,</b> <a href="default_group.html"><span class="s2">default_group</span></a>, and <a href="NodeMessaging.html"><span class="s2">NodeMessaging</span></a>.</p>
+<p class="p1">For more detail on this subject see <a href="Order-of-execution.html"><span class="s13">Order-of-execution</span></a><b>,</b> <a href="default_group.html"><span class="s13">default_group</span></a>, and <a href="NodeMessaging.html"><span class="s13">NodeMessaging</span></a>.</p>
 <p class="p2"><br></p>
 <p class="p1"><b>prepareForRecord(path) - </b>Allocates the necessary buffer, etc. for recording the server's output. (See <b>record</b> below.) <b>path </b>is a String representing the path and name of the output file. If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made BEFORE calling this.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><b>record - </b>Starts or resumes recording the output. You must have called prepareForRecord first (see above).</p>
+<p class="p1"><b>record(path) - </b>Starts or resumes recording the output. If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real). The <b>path</b> argument is optional and is passed to <b>prepareForRecord</b> (above).</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b>pauseRecording - </b>Pauses recording. Can be resumed by executing record again.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -340,8 +338,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9">(</p>
 <p class="p5"><span class="s2">SynthDef</span><span class="s3">(</span>"bubbles"<span class="s3">, {</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s2">var</span> f, zout;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>f = <span class="s2">LFSaw</span>.kr(0.4, 0, 24, <span class="s2">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps; <span class="s12">// glissando function</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span>zout = <span class="s2">CombN</span>.ar(<span class="s2">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4); <span class="s12">// echoing sine wave</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>f = <span class="s2">LFSaw</span>.kr(0.4, 0, 24, <span class="s2">LFSaw</span>.kr([8,7.23], 0, 3, 80)).midicps; <span class="s11">// glissando function</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>zout = <span class="s2">CombN</span>.ar(<span class="s2">SinOsc</span>.ar(f, 0, 0.04), 0.2, 0.2, 4); <span class="s11">// echoing sine wave</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, zout);</p>
 <p class="p9">}).send(s);</p>
 <p class="p9"><span class="s2">SynthDef</span>(<span class="s6">"tpulse"</span>, { <span class="s2">arg</span> out=0,freq=700,sawFreq=440.0;<span class="Apple-converted-space"> </span></p>
@@ -356,7 +354,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><br></p>
 <p class="p9">s.record;</p>
 <p class="p11"><br></p>
-<p class="p9">s.pauseRecording; <span class="s12">// pausable</span></p>
+<p class="p9">s.pauseRecording; <span class="s11">// pausable</span></p>
 <p class="p11"><br></p>
 <p class="p4"><span class="s3">s.record </span>// start again</p>
 <p class="p11"><br></p>
@@ -377,37 +375,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>sync(condition, bundles, latency)</b> - Send a /sync message to the server, which will replie with the message /synced when all pending asynchronous commands have been completed. <b>condition</b> is an optional instance of <a href="../Scheduling/Condition.html"><span class="s2">Condition</span></a> used for evaluating this. This may be slightly less safe then <b>sendMsgSync</b> under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe. <b>bundles</b> is one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). <b>latency </b>allows for the message to be evaluated at a specific point in the future.</p>
 <p class="p2"><br></p>
 <p class="p9">(</p>
-<p class="p13">Routine<span class="s3">.run {</span></p>
+<p class="p12">Routine<span class="s3">.run {</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s2">var</span> c;</p>
 <p class="p11"><br></p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span>// create a condition variable to control execution of the Routine</p>
 <p class="p9"><span class="Apple-tab-span">	</span>c = <span class="s2">Condition</span>.new;</p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.bootSync(c);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">\BOOTED</span>.postln;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s10">\BOOTED</span>.postln;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 0, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 1, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsgSync(c, <span class="s6">"/b_alloc"</span>, 2, 44100, 2);</p>
-<p class="p17"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
+<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
 <p class="p9">};</p>
 <p class="p9">)</p>
 <p class="p11"><br></p>
 <p class="p9">(</p>
-<p class="p13">Routine<span class="s3">.run {</span></p>
+<p class="p12">Routine<span class="s3">.run {</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s2">var</span> c;</p>
 <p class="p11"><br></p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span></span>// create a condition variable to control execution of the Routine</p>
 <p class="p9"><span class="Apple-tab-span">	</span>c = <span class="s2">Condition</span>.new;</p>
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.bootSync(c);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s11">\BOOTED</span>.postln;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="s10">\BOOTED</span>.postln;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s6">"/b_alloc"</span>, 0, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s6">"/b_alloc"</span>, 1, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s6">"/b_alloc"</span>, 2, 44100, 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>s.sync(c);</p>
-<p class="p17"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
+<p class="p16"><span class="s3"><span class="Apple-tab-span">	</span></span>\b_alloc_DONE<span class="s3">.postln;</span></p>
 <p class="p9">};</p>
 <p class="p9">)</p>
 <p class="p2"><br></p>
