@@ -438,20 +438,20 @@ void handle_unhandled_message(received_message const & msg)
     cerr << "unhandled message " << msg.AddressPattern() << endl;
 }
 
-server_node * find_target(int target_id)
+server_node * find_node(int target_id)
 {
-    server_node * target = instance->find_node(target_id);
+    server_node * node = instance->find_node(target_id);
 
-    if (target == NULL) {
-        cerr << "target node not found\n" << endl;
+    if (node == NULL) {
+        cerr << "node not found\n" << endl;
         return NULL;
     }
-    return target;
+    return node;
 }
 
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
-    server_node * target = find_target(target_id);
+    server_node * target = find_node(target_id);
     if (target == NULL)
         return NULL;
 
@@ -510,12 +510,11 @@ void insert_group(int node_id, int action, int target_id)
     if (!check_node_id(node_id))
         return;
 
-    server_node * target = instance->find_node(target_id);
+    server_node * target = find_node(target_id);
 
-    if (target == NULL) {
-        cerr << "target node not found\n" << endl;
+    if (!target)
         return;
-    }
+
     node_position_constraint pos = make_pair(target, node_position(action));
 
     instance->add_group(node_id, pos);
@@ -569,12 +568,11 @@ void handle_g_freeall(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        server_node * node = instance->find_node(id);
+        server_node * node = find_node(id);
 
-        if (node == NULL) {
-            cerr << "node not found\n" << endl;
+        if (node == NULL)
             continue;
-        }
+
         if (node->is_synth()) {
             cerr << "node is a synth\n" << endl;
             continue;
@@ -595,12 +593,8 @@ void handle_g_deepFree(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        server_node * node = instance->find_node(id);
+        server_node * node = find_node(id);
 
-        if (node == NULL) {
-            cerr << "node not found\n" << endl;
-            continue;
-        }
         if (node->is_synth()) {
             cerr << "node is a synth\n" << endl;
             continue;
@@ -635,7 +629,10 @@ void handle_n_set(received_message const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::int32 id = it->AsInt32(); ++it;
-    server_node * node = instance->find_node(id);
+
+    server_node * node = find_node(id);
+    if(!node)
+        return;
 
     while(it != msg.ArgumentsEnd())
     {
@@ -655,7 +652,10 @@ void handle_n_setn(received_message const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::int32 id = it->AsInt32(); ++it;
-    server_node * node = instance->find_node(id);
+
+    server_node * node = find_node(id);
+    if(!node)
+        return;
 
     while(it != msg.ArgumentsEnd())
     {
@@ -684,7 +684,10 @@ void handle_n_fill(received_message const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::int32 id = it->AsInt32(); ++it;
-    server_node * node = instance->find_node(id);
+
+    server_node * node = find_node(id);
+    if(!node)
+        return;
 
     while(it != msg.ArgumentsEnd())
     {
@@ -1473,12 +1476,10 @@ void insert_parallel_group(int node_id, int action, int target_id)
     if (!check_node_id(node_id))
         return;
 
-    server_node * target = instance->find_node(target_id);
-
-    if (target == NULL) {
-        cerr << "target node not found\n" << endl;
+    server_node * target = find_node(target_id);
+    if(!target)
         return;
-    }
+
     node_position_constraint pos = make_pair(target, node_position(action));
 
     instance->add_parallel_group(node_id, pos);
