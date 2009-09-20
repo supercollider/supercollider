@@ -71,4 +71,9 @@ Float : SimpleNumber {
 			stream << ".0";
 		}
 	}
+
+	switch { | ... cases|
+		"Float:switch is unsafe, rounding via Float:asInteger:switch".warn;
+		^this.asInteger.switch(*cases)
+	}
 }

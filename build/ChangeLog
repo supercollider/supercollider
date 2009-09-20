@@ -26,6 +26,7 @@ Bugfixes:
 * 2009-08-04 fix the CPU-usage issue when calling plain "./sclang" from the terminal on OSX (seems it was caused by a bug in how OSX handles poll() calls) - ds
 * 2009-08-15 LinPan2: fix initialisation issue - panning was not correctly applied during the first calc block - ds
 * 2009-09-13 fix PV_MagShift argument handling, so that the defaults mean no-change, matching the behaviour of PV_BinShift - ds
+* 2009-09-20 warn about weirdness of Float:switch - ds
 
 Other additions/improvements:
 -----------------------------
