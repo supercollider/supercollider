@@ -55,6 +55,11 @@ public:
     Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world);
     void destruct(Unit * unit);
 
+    bool cant_alias(void) const
+    {
+        return flags & kUnitDef_CantAliasInputsToOutputs;
+    }
+
 public:
     /* sort by name */
     friend bool operator< (sc_ugen_def const & a,
@@ -154,6 +159,8 @@ public:
     {
         return ugen_count_;
     }
+
+    bool ugen_can_alias(const char * name);
 
 private:
     void close_handles(void);

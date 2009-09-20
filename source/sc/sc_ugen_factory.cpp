@@ -224,6 +224,18 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
     return sc_unit(unit);
 }
 
+bool sc_ugen_factory::ugen_can_alias(const char * name)
+{
+    ugen_map_t::iterator it = ugen_map.find(name,
+                                            compare_def<sc_ugen_def>());
+    if (it == ugen_map.end()) {
+        std::cerr << "ugen not registered: " << name << std::endl;
+        return false;
+    }
+    return !it->cant_alias();
+}
+
+
 void sc_ugen_factory::free_ugen(sc_unit const & unit)
 {
     sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit.unit->mUnitDef);
