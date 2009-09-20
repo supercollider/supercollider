@@ -44,11 +44,14 @@ sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
     name_(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags)
 {}
 
-Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
+Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world)
 {
+    const size_t output_count = unit_spec.output_specs.size();
+
     /* size for wires and buffers */
-    std::size_t mem_size = unit_spec.input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
-                           unit_spec.output_specs.size() * (sizeof(Wire*) + sizeof(float*));
+    const std::size_t mem_size = unit_spec.input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
+                                 unit_spec.output_specs.size() * (sizeof(Wire*) + sizeof(float*)) +
+                                 output_count * sizeof(Wire);
 
     char * chunk = (char*)sc_synth::allocate(alloc_size + mem_size);
     if (!chunk)
@@ -58,7 +61,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
     unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
     unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
     unit->mInBuf  = (float**)chunk; chunk += unit_spec.input_specs.size() * sizeof(float*);
-    unit->mOutBuf = (float**)chunk;
+    unit->mOutBuf = (float**)chunk; chunk += unit_spec.output_specs.size() * sizeof(float*);
 
     unit->mNumInputs  = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
@@ -68,14 +71,10 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec)
     unit->mSpecialIndex = unit_spec.special_index;
     unit->mDone = false;
     unit->mUnitDef = reinterpret_cast<struct UnitDef*>(this); /* we abuse this field to store our reference */
+    unit->mWorld = world;
 
-    return unit;
-}
-
-void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t const & unit_spec)
-{
+    /* initialize members from synth */
     unit->mParent = &s->graph;
-
     if (unit_spec.rate == 2)
         unit->mRate = &s->full_rate;
     else
@@ -83,11 +82,9 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
 
     unit->mBufLength = unit->mRate->mBufLength;
 
-    /* allocate wire structs */
-    size_t outputs = unit_spec.output_specs.size();
-
-    for (size_t i = 0; i != outputs; ++i) {
-        Wire * w = sc_synth::allocate<Wire>(1);
+    /* allocate buffers */
+    for (size_t i = 0; i != output_count; ++i) {
+        Wire * w = (Wire*)chunk; chunk += sizeof(Wire);
 
         w->mFromUnit = unit;
         w->mCalcRate = unit->mCalcRate;
@@ -97,7 +94,7 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
 
         if (unit->mCalcRate == 2) {
             /* allocate a new buffer */
-            unit->mOutBuf[i] = (sample*)sc_synth::allocate(64 * sizeof(sample));
+            unit->mOutBuf[i] = (sample*)sc_synth::allocate(64 * sizeof(sample)); /**< \todo out of memory handling! */
             w->mBuffer = unit->mOutBuf[i];
         }
         else
@@ -106,6 +103,7 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
         unit->mOutput[i] = w;
     }
 
+    /* prepare inputs */
     for (size_t i = 0; i != unit_spec.input_specs.size(); ++i)
     {
         int source = unit_spec.input_specs[i].source;
@@ -126,12 +124,18 @@ void sc_ugen_def::initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t
     }
 
     (*ctor)(unit);
+
+    return unit;
 }
 
 void sc_ugen_def::destruct(Unit * unit)
 {
     if (dtor)
         (*dtor)(unit);
+
+    if (unit->mCalcRate == 2)
+        for (int i = 0; i != unit->mNumOutputs; ++i)
+            sc_synth::free(unit->mOutBuf[i]);
 
     /* free */
     sc_synth::free(unit); /* we only have one memory chunk to free */
@@ -212,11 +216,9 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
         throw std::runtime_error("unable to create ugen");
     }
 
-    Unit * unit = it->construct(unit_spec);
+    Unit * unit = it->construct(unit_spec, synth, &world);
     if (!unit)
         throw std::runtime_error("cannot allocate ugen, out of memory");
-    unit->mWorld = &world;
-    it->initialize(unit, synth, unit_spec);
 
     ++ugen_count_;
     return sc_unit(unit);

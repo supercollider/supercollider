@@ -52,9 +52,7 @@ public:
         return name_;
     }
 
-    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec);
-    /* initialize io regions */
-    void initialize(Unit * unit, sc_synth * s, sc_synthdef::unit_spec_t const & unit_spec);
+    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world);
     void destruct(Unit * unit);
 
 public:
