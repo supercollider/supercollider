@@ -451,6 +451,9 @@ server_node * find_node(int target_id)
 
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
+    if (!check_node_id(node_id))
+        return 0;
+
     server_node * target = find_node(target_id);
     if (target == NULL)
         return NULL;
