@@ -23,6 +23,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include <cassert>
+
 #if (_POSIX_SEMAPHORES - 0) >= 200112L
 
 #define POSIX_SEMAPHORE_WRAPPER
@@ -99,8 +101,7 @@ class semaphore:
 public:
     semaphore(int i=0):
         m_count(i)
-    {
-    }
+    {}
 
     /** \brief signal semaphore */
     void post(void)
