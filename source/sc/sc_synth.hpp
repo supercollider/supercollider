@@ -70,15 +70,6 @@ public:
     }
 
 private:
-    void allocate_unit_buffers(uint blocksize, uint audio_bufs, uint control_bufs)
-    {
-        size_t buffer_size = control_bufs + blocksize * audio_bufs;
-        unit_buffers = allocate<float> (buffer_size);
-        memset(unit_buffers, 0, buffer_size);
-
-        control_buffers = unit_buffers + (blocksize * audio_bufs);
-    }
-
     sample get_constant(size_t index)
     {
         return static_cast<sc_synth_prototype*>(class_ptr.get())->synthdef.constants[index];
@@ -88,7 +79,6 @@ private:
 
     unit_vector units;
     sample * unit_buffers;
-    sample * control_buffers;   /* in the same memory chunk as unit_buffers */
 
     Graph graph;
 

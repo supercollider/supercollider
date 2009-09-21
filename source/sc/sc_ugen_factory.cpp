@@ -94,7 +94,9 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 
         if (unit->mCalcRate == 2) {
             /* allocate a new buffer */
-            unit->mOutBuf[i] = (sample*)sc_synth::allocate(64 * sizeof(sample)); /**< \todo out of memory handling! */
+            assert(unit_spec.buffer_mapping[i] >= 0);
+            std::size_t buffer_id = unit_spec.buffer_mapping[i];
+            unit->mOutBuf[i] = s->unit_buffers + 64 * buffer_id;
             w->mBuffer = unit->mOutBuf[i];
         }
         else
@@ -132,10 +134,6 @@ void sc_ugen_def::destruct(Unit * unit)
 {
     if (dtor)
         (*dtor)(unit);
-
-    if (unit->mCalcRate == 2)
-        for (int i = 0; i != unit->mNumOutputs; ++i)
-            sc_synth::free(unit->mOutBuf[i]);
 
     /* free */
     sc_synth::free(unit); /* we only have one memory chunk to free */

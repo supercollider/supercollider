@@ -78,25 +78,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         wire->mScalarValue = get_constant(i);
     }
 
-#if 0
-    /* allocate wire buffers
-     *
-     * \todo we allocate one buffer per ugen, output, which is very inefficient,
-     *       but we can optimize it later
-     * */
-    unsigned int control_buffers, audio_buffers;
-    for (graph_t::const_iterator it = synthdef.graph.begin();
-         it != synthdef.graph.end(); ++it)
-    {
-        for (size_t i = 0; i != it->output_specs.size(); ++i)
-            if (it->output_specs[i] == 2)
-                ++audio_buffers;
-            else
-                ++control_buffers;
-    }
-
-    allocate_unit_buffers(64, audio_buffers, control_buffers);
-#endif
+    unit_buffers = allocate<sample>(64 * synthdef.buffer_count); /* todo: memory alignment! */
 
     /* allocate unit generators */
     for (graph_t::const_iterator it = synthdef.graph.begin();
