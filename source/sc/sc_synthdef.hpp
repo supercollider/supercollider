@@ -26,6 +26,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
+#include <SC_Types.h>
 
 namespace nova
 {
@@ -68,7 +69,8 @@ public:
         int16_t special_index;
 
         std::vector<input_spec> input_specs;
-        std::vector<char> output_specs;
+        std::vector<char> output_specs;      /* calculation rates */
+        std::vector<int16_t> buffer_mapping;
     };
 
     friend class sc_synth_prototype;
@@ -88,7 +90,7 @@ public:
         return name_;
     }
 
-    size_t parameter_count(void) const
+    std::size_t parameter_count(void) const
     {
         assert(parameters.size() == parameter_map.size());
         return parameters.size();
@@ -97,12 +99,15 @@ public:
 private:
     void read_synthdef(std::istream & istream);
 
+    void assign_buffers(void);
+
     string name_;
     fvector constants;
     fvector parameters;
     parameter_map_t parameter_map;
 
     graph_t graph;
+    boost::uint16_t buffer_count;
 };
 
 std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename);

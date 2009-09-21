@@ -33,6 +33,8 @@ using boost::integer::big32_t;
 using boost::integer::big16_t;
 using boost::integer::big8_t;
 
+using std::size_t;
+
 namespace {
 
 std::string read_pstring(std::istream & stream)
@@ -181,13 +183,94 @@ void sc_synthdef::read_synthdef(std::istream& stream)
     }
 
     int16_t ugens = read_int16(stream);
+    graph.reserve(ugens);
 
     for (int i = 0; i != ugens; ++i) {
         unit_spec_t data(stream);
-
         graph.push_back(data);
     }
+
+   assign_buffers();
 }
+
+namespace
+{
+
+template <typename Alloc = std::allocator<int16_t> >
+class buffer_allocator
+{
+
+    std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */
+
+public:
+    /** allocate buffer for current ugen
+     *
+     *  buffers are reused, if the last reference to the buffer is done before current_ugen
+     *  otherwise, a new buffer is allocated
+     */
+    int16_t allocate_buffer(size_t current_ugen)
+    {
+        for (size_t i = 0; i != buffers.size(); ++i) {
+            if (buffers[i] <= current_ugen)
+                return i;
+        }
+        buffers.push_back(current_ugen);
+        return buffers.size() - 1;
+    }
+
+    size_t buffer_count (void) const
+    {
+        return buffers.size();
+    }
+
+    void set_last_reference (int16_t buffer_id, size_t ugen_index)
+    {
+        buffers[buffer_id] = ugen_index;
+    }
+};
+
+} /* namespace */
+
+void sc_synthdef::assign_buffers(void)
+{
+    const size_t ugens = graph.size();
+
+    buffer_allocator<> allocator;
+
+    for (size_t ugen_index = 0; ugen_index != ugens; ++ugen_index) {
+        unit_spec_t & spec = graph[ugen_index];
+        spec.buffer_mapping.resize(spec.output_specs.size());
+
+        for (size_t output_index = 0; output_index != spec.output_specs.size(); ++output_index) {
+            int16_t buffer_id;
+            if (spec.output_specs[output_index] == 2) {
+                buffer_id = allocator.allocate_buffer(ugen_index);
+
+                /* find last reference to this buffer */
+                size_t last_ref = ugen_index;
+                for (size_t i = ugens - 1; i != ugen_index; --i) {
+                    unit_spec_t const & test_spec = graph[i];
+                    for (size_t j = 0; j != test_spec.input_specs.size(); ++j) {
+                        input_spec const & in_spec = test_spec.input_specs[j];
+                        if (in_spec.source == (int16_t)ugen_index &&
+                            in_spec.index == (int16_t)output_index) {
+                            last_ref = i;
+                            goto found_last_reference;
+                        }
+                    }
+                }
+            found_last_reference:
+                allocator.set_last_reference(buffer_id, last_ref);
+            }
+            else
+                buffer_id = -1;
+            spec.buffer_mapping[output_index] = buffer_id;
+        }
+    }
+
+    buffer_count = uint16_t(allocator.buffer_count());
+}
+
 
 std::string sc_synthdef::dump(void) const
 {
