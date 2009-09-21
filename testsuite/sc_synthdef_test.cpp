@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 
-#include "../source/sc/sc_synthdef.cpp"
+#include "../source/sc/sc_synthdef.hpp"
 
 BOOST_AUTO_TEST_CASE( sc_synthdef_test )
 {

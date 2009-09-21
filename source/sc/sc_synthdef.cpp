@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include "sc_synthdef.hpp"
+#include "sc_ugen_factory.hpp"
 
 #include <boost/integer/endian.hpp>
 
@@ -205,13 +206,26 @@ class buffer_allocator
 public:
     /** allocate buffer for current ugen
      *
-     *  buffers are reused, if the last reference to the buffer is done before current_ugen
-     *  otherwise, a new buffer is allocated
+     *  reuse buffers, which are not used after the current ugen
      */
     int16_t allocate_buffer(size_t current_ugen)
     {
         for (size_t i = 0; i != buffers.size(); ++i) {
             if (buffers[i] <= current_ugen)
+                return i;
+        }
+        buffers.push_back(current_ugen);
+        return buffers.size() - 1;
+    }
+
+    /** allocate buffer for current ugen
+     *
+     * reuse the buffers, which have been used before the current ugen
+     */
+    int16_t allocate_buffer_noalias(size_t current_ugen)
+    {
+        for (size_t i = 0; i != buffers.size(); ++i) {
+            if (buffers[i] < current_ugen)
                 return i;
         }
         buffers.push_back(current_ugen);
@@ -241,14 +255,19 @@ void sc_synthdef::assign_buffers(void)
         unit_spec_t & spec = graph[ugen_index];
         spec.buffer_mapping.resize(spec.output_specs.size());
 
+        const bool can_alias = ugen_factory.ugen_can_alias(spec.name.c_str());
+
         for (size_t output_index = 0; output_index != spec.output_specs.size(); ++output_index) {
             int16_t buffer_id;
             if (spec.output_specs[output_index] == 2) {
-                buffer_id = allocator.allocate_buffer(ugen_index);
+                if (can_alias)
+                    buffer_id = allocator.allocate_buffer(ugen_index);
+                else
+                    buffer_id = allocator.allocate_buffer_noalias(ugen_index);
 
                 /* find last reference to this buffer */
                 size_t last_ref = ugen_index;
-                for (size_t i = ugens - 1; i != ugen_index; --i) {
+                for (size_t i = ugens - 1; i > ugen_index; --i) {
                     unit_spec_t const & test_spec = graph[i];
                     for (size_t j = 0; j != test_spec.input_specs.size(); ++j) {
                         input_spec const & in_spec = test_spec.input_specs[j];

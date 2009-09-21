@@ -106,7 +106,6 @@ unit_test_sources = ["mutex_test.cpp",
                      #"perf_counter_test.cpp",
                      "buffer_manager_test.cpp",
                      "sized_array_test.cpp",
-                     "sc_synthdef_test.cpp",
                      "control_bus_test.cpp",
                      ]
 
@@ -136,6 +135,7 @@ nova_server_test_sources = ["server_node_graph_test.cpp",
                             "server_ugen_test.cpp",
                             "server_sc_osc_handler_test.cpp",
                             "sc_synth_prototype_test.cpp",
+                            "sc_synthdef_test.cpp",
                             "sc_plugin_loader_test.cpp",
                             ]
 
