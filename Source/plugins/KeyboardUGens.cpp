@@ -96,10 +96,10 @@ void* gstate_update_func(void* arg)
 }
 
 # else
+static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
   KeyboardUGenGlobalState* gstate ;
-  Display *d ;		
   Window r ;			
   struct timespec requested_time , remaining_time ;
 
@@ -163,7 +163,6 @@ void KeyState_Ctor(KeyState *unit)
 	KeyState_next(unit, 1);
 }
 
-
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
@@ -173,3 +172,13 @@ void load(InterfaceTable *inTable)
 
 	DefineSimpleUnit(KeyState);
 }
+
+#ifdef __GNUC__
+#if !defined(SC_DARWIN) && !defined(SC_WIN32)
+static void __attribute__ ((destructor)) finalize(void)
+{
+	if (d)
+		XCloseDisplay(d);
+}
+#endif
+#endif

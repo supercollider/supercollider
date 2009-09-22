@@ -150,10 +150,10 @@ void* gstate_update_func(void* arg)
 }
 
 # else
+static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
   MouseUGenGlobalState* gstate ;
-  Display *d ;		
   Window r ;			
   Window rep_root , rep_child ;
   XWindowAttributes attributes ;
@@ -462,3 +462,13 @@ void load(InterfaceTable *inTable)
 	gMyPlugin.b = 3.4f;
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
+
+#ifdef __GNUC__
+#if !defined(SC_DARWIN) && !defined(SC_WIN32)
+static void __attribute__ ((destructor)) finalize(void)
+{
+	if (d)
+		XCloseDisplay(d);
+}
+#endif
+#endif
