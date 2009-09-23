@@ -21,6 +21,7 @@
 
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
+#include "sc_synth.hpp"
 
 #include "../server/server_args.hpp"
 #include "../server/memory_pool.hpp"
@@ -143,6 +144,7 @@ int print(const char *fmt, ...)
 /* todo: we need to implement most of the done actions */
 void done_action(int done_action, struct Unit *unit)
 {
+    using namespace nova;
     switch(done_action)
     {
     case 0:
@@ -150,11 +152,17 @@ void done_action(int done_action, struct Unit *unit)
         return;
 
     case 1:
+    {
         // pause the enclosing synth, but do not free it
+        sc_synth * synth = static_cast<sc_synth*>(unit->mParent);
+        synth->pause();
         return;
-
+    }
     case 2:
         // free the enclosing synth
+        /** \todo this can be optimized by not using the node id, but the reference to the server_node.
+         *  this would avoid the lookup from node id to server_node, which is currently required
+         */
         node_end(&unit->mParent->mNode);
         return;
 
