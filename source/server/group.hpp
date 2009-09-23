@@ -64,6 +64,12 @@ public:
     virtual int tail_nodes(void) const = 0;
 
     /* @{ */
+    /** pause/resume handling (set pause/resume on children)  */
+    virtual void pause(void);
+    virtual void resume(void);
+    /* @} */
+
+    /* @{ */
     /** child management  */
     void add_child(server_node * node);
     virtual void add_child(server_node * node, node_position_constraint const &) = 0;

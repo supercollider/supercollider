@@ -45,6 +45,8 @@ public:
 
     void operator()(thread_count_type index)
     {
+        if (unlikely(!node->is_running()))
+            return;
         dsp_context context(44100, 64, index);
         node->run(context);
     }

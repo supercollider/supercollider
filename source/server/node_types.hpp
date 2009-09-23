@@ -43,7 +43,7 @@ class server_node:
 {
 protected:
     server_node(uint32_t node_id, bool type):
-        node_id(node_id), synth_(type), parent_(0), use_count_(0)
+        node_id(node_id), synth_(type), running_(true), parent_(0), use_count_(0)
     {}
 
     virtual ~server_node(void)
@@ -81,6 +81,28 @@ public:
 private:
     bool synth_;
 
+    /** support for pausing node */
+    /* @{ */
+    bool running_;
+
+public:
+    virtual void pause(void)
+    {
+        running_ = false;
+    }
+
+    virtual void resume(void)
+    {
+        running_ = true;
+    }
+
+    bool is_running(void) const
+    {
+        return running_;
+    }
+    /* @} */
+
+private:
     friend class node_graph;
     friend class abstract_group;
     friend class group;
