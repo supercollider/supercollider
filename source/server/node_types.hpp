@@ -118,6 +118,13 @@ private:
     friend class group;
     friend class parallel_group;
 
+
+public:
+    const abstract_group * get_parent(void) const
+    {
+        return parent_;
+    }
+
     void set_parent(abstract_group * parent)
     {
         add_ref();

@@ -39,7 +39,213 @@ namespace
 void pause_node(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    nova::ugen_factory.add_pause_node(node);
+    ugen_factory.add_pause_node(node);
+}
+
+void free_node(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+}
+
+void free_node_and_preceding(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        return;
+    }
+
+    server_node * preceding = node->previous_node();
+    if (preceding)
+        ugen_factory.add_done_node(preceding);
+}
+
+void free_node_and_pause_preceding(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        return;
+    }
+
+    server_node * preceding = node->previous_node();
+    if (preceding)
+        ugen_factory.add_pause_node(preceding);
+}
+
+void free_node_and_preceding_children(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        return;
+    }
+
+    server_node * preceding = node->previous_node();
+    if (!preceding)
+        return;
+    if (preceding->is_synth())
+        ugen_factory.add_done_node(preceding);
+    else {
+        abstract_group * preceding_group = static_cast<abstract_group*>(preceding);
+        ugen_factory.add_freeAll_node(preceding_group);
+    }
+}
+
+
+void free_node_and_preceding_deep(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        return;
+    }
+
+    server_node * preceding = node->previous_node();
+    if (!preceding)
+        return;
+    if (preceding->is_synth())
+        ugen_factory.add_done_node(preceding);
+    else {
+        abstract_group * preceding_group = static_cast<abstract_group*>(preceding);
+        ugen_factory.add_freeDeep_node(preceding_group);
+    }
+}
+
+void free_node_and_all_preceding(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        return;
+    }
+
+    for(;;)
+    {
+        node = node->previous_node();
+        if (node)
+            ugen_factory.add_done_node(node);
+        else
+            return;
+    }
+}
+
+void free_node_and_following(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        return;
+    }
+
+    server_node * next = node->next_node();
+    if (next)
+        ugen_factory.add_done_node(next);
+}
+
+void free_node_and_pause_following(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        return;
+    }
+
+    server_node * next = node->next_node();
+    if (next)
+        ugen_factory.add_pause_node(next);
+}
+
+void free_node_and_following_children(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        return;
+    }
+
+    server_node * following = node->previous_node();
+    if (!following)
+        return;
+    if (following->is_synth())
+        ugen_factory.add_done_node(following);
+    else {
+        abstract_group * following_group = static_cast<abstract_group*>(following);
+        ugen_factory.add_freeAll_node(following_group);
+    }
+}
+
+void free_node_and_following_deep(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        return;
+    }
+
+    server_node * following = node->previous_node();
+    if (!following)
+        return;
+    if (following->is_synth())
+        ugen_factory.add_done_node(following);
+    else {
+        abstract_group * following_group = static_cast<abstract_group*>(following);
+        ugen_factory.add_freeDeep_node(following_group);
+    }
+}
+
+void free_node_and_all_following(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    ugen_factory.add_done_node(node);
+
+    if (node->get_parent()->is_parallel()) {
+        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        return;
+    }
+
+    for(;;)
+    {
+        node = node->previous_node();
+        if (node)
+            ugen_factory.add_done_node(node);
+        else
+            return;
+    }
+}
+
+void free_group_members(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    abstract_group * group = const_cast<abstract_group*>(node->get_parent());
+
+    ugen_factory.add_freeAll_node(group);
+}
+
+void free_parent_group(Unit * unit)
+{
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    abstract_group * group = const_cast<abstract_group*>(node->get_parent());
+    ugen_factory.add_done_node(group);
 }
 
 } /* namespace */
@@ -127,7 +333,8 @@ void clear_outputs(Unit *unit, int samples)
 
 void node_end(struct Node * node)
 {
-    nova::ugen_factory.add_done_node(node->mID);
+    nova::server_node * s = nova::instance->find_node(node->mID);
+    nova::ugen_factory.add_done_node(s);
 }
 
 int print(const char *fmt, ...)
@@ -161,58 +368,67 @@ void done_action(int done_action, struct Unit *unit)
         return;
     case 2:
         // free the enclosing synth
-        /** \todo this can be optimized by not using the node id, but the reference to the server_node.
-         *  this would avoid the lookup from node id to server_node, which is currently required
-         */
-        node_end(&unit->mParent->mNode);
+        nova::free_node(unit);
         return;
 
     case 3:
         // free both this synth and the preceding node
+        nova::free_node_and_preceding(unit);
         return;
 
     case 4:
         // free both this synth and the following node
+        nova::free_node_and_following(unit);
         return;
 
     case 5:
         // free this synth; if the preceding node is a group then do g_freeAll on it, else free it
+        nova::free_node_and_preceding_children(unit);
         return;
 
     case 6:
+        nova::free_node_and_following_children(unit);
         // free this synth; if the following node is a group then do g_freeAll on it, else free it
         return;
 
     case 7:
         //free this synth and all preceding nodes in this group
+        nova::free_node_and_all_preceding(unit);
         return;
 
     case 8:
         //free this synth and all following nodes in this group
+        nova::free_node_and_all_following(unit);
         return;
 
     case 9:
         // free this synth and pause the preceding node
+        nova::free_node_and_pause_preceding(unit);
         return;
 
     case 10:
         // free this synth and pause the following node
+        nova::free_node_and_pause_following(unit);
         return;
 
     case 11:
         // free this synth and if the preceding node is a group then do g_deepFree on it, else free it
+        nova::free_node_and_preceding_deep(unit);
         return;
 
     case 12:
         // free this synth and if the following node is a group then do g_deepFree on it, else free it
+        nova::free_node_and_following_deep(unit);
         return;
 
     case 13:
         // free this synth and all other nodes in this group (before and after)
+        nova::free_group_members(unit);
         return;
 
     case 14:
         // free the enclosing group and all nodes within it (including this synth)
+        nova::free_parent_group(unit);
         return;
 
     default:
@@ -299,6 +515,12 @@ void sc_plugin_interface::update_nodegraph(void)
 
     std::for_each(pause_nodes.begin(), pause_nodes.end(), boost::mem_fn(&server_node::pause));
     pause_nodes.clear();
+
+    std::for_each(freeDeep_nodes.begin(), freeDeep_nodes.end(), boost::mem_fn(&abstract_group::free_synths_deep));
+    freeDeep_nodes.clear();
+
+    std::for_each(freeAll_nodes.begin(), freeAll_nodes.end(), boost::mem_fn(&abstract_group::free_children));
+    freeAll_nodes.clear();
 }
 
 sc_plugin_interface::~sc_plugin_interface(void)

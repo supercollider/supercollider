@@ -53,14 +53,27 @@ public:
         pause_nodes.push_back(node);
     }
 
-    void add_done_node(int32_t node_id)
+    void add_done_node(server_node * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
-        done_nodes.push_back(node_id);
+        done_nodes.push_back(node);
     }
 
-    std::vector<int32_t> done_nodes; /* later use vector from boost container (supports stateful allocators) */
+    void add_freeDeep_node(abstract_group * node)
+    {
+        spin_lock::scoped_lock lock(cmd_lock);
+        freeDeep_nodes.push_back(node);
+    }
+
+    void add_freeAll_node(abstract_group * node)
+    {
+        spin_lock::scoped_lock lock(cmd_lock);
+        freeAll_nodes.push_back(node);
+    }
+
+    std::vector<server_node*> done_nodes; /* later use vector from boost container (supports stateful allocators) */
     std::vector<server_node*> pause_nodes;
+    std::vector<abstract_group*> freeAll_nodes, freeDeep_nodes;
 
     spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
                            later we can try different approaches like a lockfree stack or bitmask */
