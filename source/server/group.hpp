@@ -78,23 +78,6 @@ public:
         return child_nodes.empty();
     }
 
-private:
-    struct node_disposer
-    {
-        void operator()(server_node * node)
-        {
-            node->clear_parent();
-        }
-    };
-
-    struct is_synth
-    {
-        bool operator()(server_node const & node)
-        {
-            return node.is_synth();
-        }
-    };
-
 public:
     server_node * next_node(server_node * node)
     {
@@ -118,12 +101,13 @@ public:
 
     void free_children(void)
     {
-        child_nodes.clear_and_dispose(node_disposer());
+        child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
     }
 
     void free_synths_deep(void)
     {
-        child_nodes.remove_and_dispose_if(is_synth(), node_disposer());
+        child_nodes.remove_and_dispose_if(boost::mem_fn(&server_node::is_synth),
+                                          boost::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
         for(server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
