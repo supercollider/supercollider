@@ -40,13 +40,19 @@ public:
 
 protected:
     server_node_list child_nodes;
+    const bool is_parallel_;
 
-    abstract_group(int node_id):
-        server_node(node_id, false)
+    abstract_group(int node_id, bool is_parallel):
+        server_node(node_id, false), is_parallel_(is_parallel)
     {}
 
 public:
     virtual ~abstract_group(void);
+
+    bool is_parallel(void) const
+    {
+        return is_parallel_;
+    }
 
 protected:
     virtual successor_container fill_queue_recursive(thread_queue & queue,
@@ -141,7 +147,7 @@ class group:
 {
 public:
     group(int node_id):
-        abstract_group(node_id)
+        abstract_group(node_id, false)
     {}
 
 private:
@@ -170,7 +176,7 @@ class parallel_group:
 {
 public:
     parallel_group(int node_id):
-        abstract_group(node_id)
+        abstract_group(node_id, true)
     {}
 
 private:

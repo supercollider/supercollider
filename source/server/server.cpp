@@ -112,19 +112,17 @@ void nova_server::free_node(int node_id)
     if (node == NULL)
         throw std::runtime_error("cannot find server node");
 
+    free_node(node);
+}
+
+void nova_server::free_node(server_node * node)
+{
     if (node->is_synth())
         --synth_count_;
     else
         --group_count_;
 
-    remove_node(node);
-    update_dsp_queue();
-}
-
-void nova_server::free_synth(abstract_synth * s)
-{
-    node_graph::remove_node(s);
-    --synth_count_;
+    node_graph::remove_node(node);
     update_dsp_queue();
 }
 
