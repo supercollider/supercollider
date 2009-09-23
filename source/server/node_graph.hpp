@@ -71,7 +71,7 @@ public:
 
     node_position_constraint to_root;
 
-    server_node * find_node(int node_id)
+    server_node * find_node(uint32_t node_id)
     {
         node_set_type::iterator it = node_set.find(node_id, compare_node());
         if (it == node_set.end())
@@ -83,12 +83,12 @@ private:
     struct compare_node
     {
         bool operator()(server_node const & lhs,
-                        int const & rhs) const
+                        uint32_t const & rhs) const
         {
             return lhs.node_id < rhs;
         }
 
-        bool operator()(int const &lhs,
+        bool operator()(uint32_t const &lhs,
                         server_node const & rhs) const
         {
             return lhs < rhs.node_id;
