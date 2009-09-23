@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "../server/audio_bus_manager.hpp"
+#include "../server/node_types.hpp"
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
 #include "supercollider/Headers/plugin_interface/SC_World.h"
@@ -46,10 +47,10 @@ public:
 
     audio_bus_manager audio_busses;
 
-    void add_pause_node(int32_t node_id)
+    void add_pause_node(server_node * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
-        pause_nodes.push_back(node_id);
+        pause_nodes.push_back(node);
     }
 
     void add_done_node(int32_t node_id)
@@ -59,7 +60,7 @@ public:
     }
 
     std::vector<int32_t> done_nodes; /* later use vector from boost container (supports stateful allocators) */
-    std::vector<int32_t> pause_nodes;
+    std::vector<server_node*> pause_nodes;
 
     spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
                            later we can try different approaches like a lockfree stack or bitmask */

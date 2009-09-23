@@ -31,15 +31,19 @@
 #include "supercollider/Headers/server/SC_Samp.h"
 #include "supercollider/Headers/server/SC_Prototypes.h"
 
+namespace nova
+{
 namespace
 {
 
-void pause_node(int32_t node_id)
+void pause_node(Unit * unit)
 {
-    nova::ugen_factory.add_pause_node(node_id);
+    server_node * node = static_cast<sc_synth*>(unit->mParent);
+    nova::ugen_factory.add_pause_node(node);
 }
 
 } /* namespace */
+} /* namespace nova */
 
 extern "C"
 {
@@ -152,12 +156,9 @@ void done_action(int done_action, struct Unit *unit)
         return;
 
     case 1:
-    {
         // pause the enclosing synth, but do not free it
-        sc_synth * synth = static_cast<sc_synth*>(unit->mParent);
-        synth->pause();
+        nova::pause_node(unit);
         return;
-    }
     case 2:
         // free the enclosing synth
         /** \todo this can be optimized by not using the node id, but the reference to the server_node.
@@ -292,10 +293,12 @@ void sc_plugin_interface::initialize(void)
 
 void sc_plugin_interface::update_nodegraph(void)
 {
-    for (size_t i = 0; i != done_nodes.size(); ++i) {
+    for (size_t i = 0; i != done_nodes.size(); ++i)
         instance->free_node(done_nodes[i]);
-    }
     done_nodes.clear();
+
+    std::for_each(pause_nodes.begin(), pause_nodes.end(), boost::mem_fn(&server_node::pause));
+    pause_nodes.clear();
 }
 
 sc_plugin_interface::~sc_plugin_interface(void)
