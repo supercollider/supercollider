@@ -37,8 +37,12 @@ class group;
 
 namespace bi = boost::intrusive;
 
+typedef boost::intrusive::list<class server_node,
+                                boost::intrusive::constant_time_size<false> >
+server_node_list;
+
 class server_node:
-    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >,
+    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >, /* group member */
     public bi::set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
@@ -76,6 +80,12 @@ public:
     /* @{ */
     virtual void set(const char * slot_str, float val) = 0;
     virtual void set(slot_index_t slot_id, float val) = 0;
+    /* @} */
+
+    /* @{ */
+    /* group traversing */
+    inline server_node * previous_node(void);
+    inline server_node * next_node(void);
     /* @} */
 
 private:

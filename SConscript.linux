@@ -1,9 +1,7 @@
-
 # -*- coding: utf-8 -*-
-# $Id$
 #
 # SCons build system, linux specific part
-# Copyright (C) 2006, 2007 Tim Blechmann
+# Copyright (C) 2006, 2007, 2009 Tim Blechmann
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,11 +17,6 @@
 # along with this program; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
-
-# $Revision$
-# $LastChangedRevision$
-# $LastChangedDate$
-# $LastChangedBy$
 
 import os
 
@@ -187,7 +180,7 @@ def specific():
         if env['arch'] not in ["False", "None", "0"]:
             conf.CheckCFlag("-march=" + env['arch'])
 
-    if not env.get('debug', False) and env.get('simd', True):
+    if env.get('simd', True):
         conf.CheckCFlag("-mfpmath=sse")
         conf.CheckCFlag("-msse")
 

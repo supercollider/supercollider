@@ -38,12 +38,8 @@ class abstract_group:
 public:
     typedef std::vector<thread_queue_item*> successor_container;
 
-    typedef boost::intrusive::list<server_node,
-                                   boost::intrusive::constant_time_size<false> >
-    node_list;
-
 protected:
-    node_list child_nodes;
+    server_node_list child_nodes;
 
     abstract_group(int node_id):
         server_node(node_id, false)
@@ -82,35 +78,39 @@ public:
         return child_nodes.empty();
     }
 
-private:
-    struct node_disposer
-    {
-        void operator()(server_node * node)
-        {
-            node->clear_parent();
-        }
-    };
-
-    struct is_synth
-    {
-        bool operator()(server_node const & node)
-        {
-            return node.is_synth();
-        }
-    };
-
 public:
+    server_node * next_node(server_node * node)
+    {
+        assert(has_child(node));
+        server_node_list::iterator next = ++server_node_list::s_iterator_to(*node);
+        if (next == child_nodes.end())
+            return 0;
+        else
+            return &(*next);
+    }
+
+    server_node * previous_node(server_node * node)
+    {
+        assert(has_child(node));
+        server_node_list::iterator it = server_node_list::s_iterator_to(*node);
+        if (it == child_nodes.begin())
+            return 0;
+        else
+            return &(*--it);
+    }
+
     void free_children(void)
     {
-        child_nodes.clear_and_dispose(node_disposer());
+        child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
     }
 
     void free_synths_deep(void)
     {
-        child_nodes.remove_and_dispose_if(is_synth(), node_disposer());
+        child_nodes.remove_and_dispose_if(boost::mem_fn(&server_node::is_synth),
+                                          boost::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
-        for(node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
+        for(server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
             abstract_group * group = static_cast<abstract_group*>(&*it);
             group->free_synths_deep();
         }
@@ -124,6 +124,17 @@ public:
 
     friend class node_graph;
 };
+
+inline server_node * server_node::previous_node(void)
+{
+    return parent_->previous_node(this);
+}
+
+inline server_node * server_node::next_node(void)
+{
+    return parent_->next_node(this);
+}
+
 
 class group:
     public abstract_group
