@@ -43,7 +43,8 @@ public:
 };
 
 class sc_synth:
-    public abstract_synth
+    public abstract_synth,
+    public Graph
 {
     typedef std::vector<sc_unit> unit_vector;
     typedef sc_synthdef::graph_t graph_t;
@@ -69,8 +70,6 @@ private:
 
     unit_vector units;
     sample * unit_buffers;
-
-    Graph graph;
 
     Rate full_rate;
     Rate control_rate;

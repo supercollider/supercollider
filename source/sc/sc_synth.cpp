@@ -32,15 +32,15 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     rgen.init((uint32_t)(uint64_t)this);
 
     /* initialize sc wrapper class */
-    graph.mRGen = &rgen;
-    graph.mSampleOffset = 0;
-    graph.mLocalAudioBusUnit = 0;
-    graph.mLocalControlBusUnit = 0;
+    mRGen = &rgen;
+    mSampleOffset = 0;
+    mLocalAudioBusUnit = 0;
+    mLocalControlBusUnit = 0;
 
-    graph.localBufNum = 0;
-    graph.localMaxBufNum = 0;
+    localBufNum = 0;
+    localMaxBufNum = 0;
 
-    graph.mNode.mID = node_id;
+    mNode.mID = node_id;
 
     sc_synthdef const & synthdef = prototype->synthdef;
 
@@ -55,22 +55,22 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         throw std::bad_alloc();
 
     /* prepare controls */
-    graph.mNumControls = parameter_count;
-    graph.mControls = (float*)chunk;     chunk += sizeof(float) * parameter_count;
-    graph.mControlRates = (int*)chunk;   chunk += sizeof(int) * parameter_count;
-    graph.mMapControls = (float**)chunk; chunk += sizeof(float*) * parameter_count;
+    mNumControls = parameter_count;
+    mControls = (float*)chunk;     chunk += sizeof(float) * parameter_count;
+    mControlRates = (int*)chunk;   chunk += sizeof(int) * parameter_count;
+    mMapControls = (float**)chunk; chunk += sizeof(float*) * parameter_count;
 
     /* initialize controls */
     for (size_t i = 0; i != parameter_count; ++i) {
-        graph.mControls[i] = synthdef.parameters[i]; /* initial parameters */
-        graph.mMapControls[i] = &graph.mControls[i]; /* map to control values */
-        graph.mControlRates[i] = 0;                  /* init to 0*/
+        mControls[i] = synthdef.parameters[i]; /* initial parameters */
+        mMapControls[i] = &mControls[i]; /* map to control values */
+        mControlRates[i] = 0;                  /* init to 0*/
     }
 
     /* allocate constant wires */
-    graph.mWire = (Wire*)chunk;          chunk += sizeof(Wire) * constants_count;
+    mWire = (Wire*)chunk;          chunk += sizeof(Wire) * constants_count;
     for (size_t i = 0; i != synthdef.constants.size(); ++i) {
-        Wire * wire = graph.mWire + i;
+        Wire * wire = mWire + i;
         wire->mFromUnit = 0;
         wire->mCalcRate = 0;
         wire->mBuffer = 0;
@@ -90,7 +90,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
 sc_synth::~sc_synth(void)
 {
-    free(graph.mControls);
+    free(mControls);
     free(unit_buffers);
 
     std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &ugen_factory, _1));
@@ -99,9 +99,9 @@ sc_synth::~sc_synth(void)
 
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
-    graph.mControlRates[slot_index] = 0;
-    graph.mMapControls[slot_index] = &graph.mControls[slot_index];
-    graph.mControls[slot_index] = val;
+    mControlRates[slot_index] = 0;
+    mMapControls[slot_index] = &mControls[slot_index];
+    mControls[slot_index] = val;
 }
 
 
