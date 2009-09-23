@@ -82,6 +82,8 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 
     unit->mBufLength = unit->mRate->mBufLength;
 
+    float * buffer_base = (float*) ((size_t(s->unit_buffers) + 63) & ~63); /* next multiple of 64 */
+
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
         Wire * w = (Wire*)chunk; chunk += sizeof(Wire);
@@ -96,7 +98,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
             /* allocate a new buffer */
             assert(unit_spec.buffer_mapping[i] >= 0);
             std::size_t buffer_id = unit_spec.buffer_mapping[i];
-            unit->mOutBuf[i] = s->unit_buffers + 64 * buffer_id;
+            unit->mOutBuf[i] = buffer_base + 64 * buffer_id;
             w->mBuffer = unit->mOutBuf[i];
         }
         else

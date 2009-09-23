@@ -77,7 +77,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         wire->mScalarValue = get_constant(i);
     }
 
-    unit_buffers = allocate<sample>(64 * synthdef.buffer_count); /* todo: memory alignment! */
+    unit_buffers = allocate<sample>(64 * synthdef.buffer_count + 64); /* allocate 64 bytes more than required */
 
     /* allocate unit generators */
     for (graph_t::const_iterator it = synthdef.graph.begin();
