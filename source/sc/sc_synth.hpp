@@ -59,16 +59,6 @@ public:
 
     void set(slot_index_t slot_index, sample val);
 
-    void pause(void)
-    {
-        running_ = false;
-    }
-
-    void resume(void)
-    {
-        running_ = true;
-    }
-
 private:
     sample get_constant(size_t index)
     {
@@ -85,8 +75,6 @@ private:
     Rate full_rate;
     Rate control_rate;
     RGen rgen;
-
-    bool running_;
 };
 
 } /* namespace nova */
