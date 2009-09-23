@@ -128,7 +128,7 @@ bool abstract_group::has_child(server_node * node)
         return false;
 
     /* find node in container */
-    for (node_list::iterator it = child_nodes.begin();
+    for (server_node_list::iterator it = child_nodes.begin();
          it != child_nodes.end(); ++it) {
         if (&*it == node)
             return true;
@@ -146,14 +146,14 @@ void abstract_group::remove_child(server_node * node)
 
 void abstract_group::set(const char * slot_str, float val)
 {
-    for(node_list::iterator it = child_nodes.begin();
+    for(server_node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
         it->set(slot_str, val);
 }
 
 void abstract_group::set(slot_index_t slot_id, float val)
 {
-    for(node_list::iterator it = child_nodes.begin();
+    for(server_node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
         it->set(slot_id, val);
 }
@@ -193,7 +193,7 @@ group::fill_queue_recursive(thread_queue & queue,
                             abstract_group::successor_container successors,
                             int previous_activation_limit)
 {
-    for (node_list::reverse_iterator it = child_nodes.rbegin();
+    for (server_node_list::reverse_iterator it = child_nodes.rbegin();
          it != child_nodes.rend(); ++it)
     {
         server_node & node = *it;
@@ -238,7 +238,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
 
     successor_container ret;
 
-    for (node_list::iterator it = child_nodes.begin();
+    for (server_node_list::iterator it = child_nodes.begin();
          it != child_nodes.end(); ++it)
     {
         server_node & node = *it;
@@ -271,7 +271,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
 int parallel_group::tail_nodes(void) const
 {
     int ret = 0;
-    for(node_list::const_iterator it = child_nodes.begin();
+    for(server_node_list::const_iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
     {
         const server_node & node = *it;
@@ -297,7 +297,7 @@ void group::add_child(server_node * node, node_position_constraint const & const
             (position == before) ||
             (position == insert));
 
-    node_list::const_iterator it = child_nodes.iterator_to(*ref);
+    server_node_list::const_iterator it = child_nodes.iterator_to(*ref);
 
     if (position == after)
         ++it;
