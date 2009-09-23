@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
     abstract_synth * s = server.add_synth("foo", 0, to_root);
-    server.free_synth(s);
+    server.free_node(s);
 }
 
 BOOST_AUTO_TEST_CASE( server_test_2 )
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
     server();
     server();
     server();
-    server.free_synth(s);
+    server.free_node(s);
 }
 
 BOOST_AUTO_TEST_CASE( server_test_3 )
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
     server();
     server();
     server();
-    server.free_synth(s1);
-    server.free_synth(s2);
-    server.free_synth(s3);
+    server.free_node(s1);
+    server.free_node(s2);
+    server.free_node(s3);
 }

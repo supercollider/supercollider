@@ -123,9 +123,9 @@ public:
 
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
-    void free_synth(abstract_synth *);
 
     void free_node(int id);
+    void free_node(server_node * node);
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
     void set_node_slot(int node_id, const char * slot, float value);
