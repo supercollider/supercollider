@@ -734,19 +734,47 @@ void handle_n_fill(received_message const & msg)
     }
 }
 
+/** wrapper class for osc completion message */
+struct completion_message
+{
+    completion_message(size_t size, const void * data):
+        size_(size)
+    {
+        if (size)
+        {
+            data_ = system_callback::allocate(size);
+            memcpy(data_, data, size);
+        }
+    }
+
+    ~completion_message(void)
+    {
+        if (size_)
+            system_callback::deallocate(data_);
+    }
+
+    void trigger_async(udp::endpoint const & endpoint)
+    {
+        if (size_)
+        {
+            sc_osc_handler::received_packet * p =
+                sc_osc_handler::received_packet::alloc_packet((char*)data_, size_, endpoint);
+            instance->add_sync_callback(p);
+        }
+    }
+
+    const size_t size_;
+    void * data_;
+};
+
 /** responding callback, which is executing an osc message when done */
 struct sc_async_callback:
     public sc_response_callback
 {
 protected:
     sc_async_callback(size_t msg_size, const void * data, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint), msg_size_(msg_size)
-    {
-        if (msg_size_) {
-            data_ = system_callback::allocate(msg_size);
-            memcpy(data_, data, msg_size);
-        }
-    }
+        sc_response_callback(endpoint), msg_(msg_size, data)
+    {}
 
     static char * copy_string(const char * str)
     {
@@ -758,21 +786,10 @@ protected:
 
     void schedule_async_message(void)
     {
-        if (msg_size_) {
-            sc_osc_handler::received_packet * p =
-                sc_osc_handler::received_packet::alloc_packet((char*)data_, msg_size_, endpoint_);
-            instance->add_sync_callback(p);
-        }
+        msg_.trigger_async(endpoint_);
     }
 
-    ~sc_async_callback(void)
-    {
-        if (msg_size_)
-            system_callback::deallocate(data_);
-    }
-
-    const size_t msg_size_;
-    void * data_;
+    completion_message msg_;
 };
 
 struct buffer_sync_callback:
