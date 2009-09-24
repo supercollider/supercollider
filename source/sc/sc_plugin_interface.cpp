@@ -444,7 +444,10 @@ namespace nova
 
 void sc_plugin_interface::initialize(void)
 {
-    done_nodes.reserve(1024); // reserve enough space
+    done_nodes.reserve(64);
+    pause_nodes.reserve(16);
+    freeAll_nodes.reserve(16);
+    freeDeep_nodes.reserve(16);
 
     server_arguments const & args = server_arguments::instance();
 
@@ -507,7 +510,7 @@ void sc_plugin_interface::initialize(void)
     world.mNumOutputs = args.output_channels;
 }
 
-void sc_plugin_interface::update_nodegraph(void)
+void sc_done_action_handler::update_nodegraph(void)
 {
     for (size_t i = 0; i != done_nodes.size(); ++i)
         instance->free_node(done_nodes[i]);

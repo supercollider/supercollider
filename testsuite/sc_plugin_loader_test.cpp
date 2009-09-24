@@ -16,6 +16,7 @@ boost::filesystem::path base_path ("/home/tim/workspace/nova-server/plugins/");
 BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
 {
     server_arguments::initialize(0, 0);
+    rt_pool.init(1024*1024);
     ugen_factory.initialize();
 
     ugen_factory.load_plugin(base_path / "BeatTrack2.so");

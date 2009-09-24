@@ -23,6 +23,7 @@
 
 #include "../server/audio_bus_manager.hpp"
 #include "../server/node_types.hpp"
+#include "../server/memory_pool.hpp"
 
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
 #include "supercollider/Headers/plugin_interface/SC_World.h"
@@ -30,23 +31,9 @@
 namespace nova
 {
 
-class sc_plugin_interface
+class sc_done_action_handler
 {
 public:
-    void initialize(void);
-
-    sc_plugin_interface(void)
-    {}
-
-    ~sc_plugin_interface(void);
-
-    void update_nodegraph(void);
-
-    InterfaceTable sc_interface;
-    World world;
-
-    audio_bus_manager audio_busses;
-
     void add_pause_node(server_node * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
@@ -71,12 +58,33 @@ public:
         freeAll_nodes.push_back(node);
     }
 
-    std::vector<server_node*> done_nodes; /* later use vector from boost container (supports stateful allocators) */
-    std::vector<server_node*> pause_nodes;
-    std::vector<abstract_group*> freeAll_nodes, freeDeep_nodes;
+    void update_nodegraph(void);
 
+protected:
+    typedef rt_pool_allocator<int> Alloc;
+    std::vector<server_node*, Alloc> done_nodes, pause_nodes;
+    std::vector<abstract_group*, Alloc> freeAll_nodes, freeDeep_nodes;
+
+private:
     spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
                            later we can try different approaches like a lockfree stack or bitmask */
+};
+
+class sc_plugin_interface:
+    public sc_done_action_handler
+{
+public:
+    void initialize(void);
+
+    sc_plugin_interface(void)
+    {}
+
+    ~sc_plugin_interface(void);
+
+    InterfaceTable sc_interface;
+    World world;
+
+    audio_bus_manager audio_busses;
 };
 
 } /* namespace nova */
