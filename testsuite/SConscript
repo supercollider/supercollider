@@ -63,7 +63,7 @@ unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboos
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
                                      "#libs/tlsf/src", "#libs/endian"],
                             CCFLAGS=unit_test_cflags,
-                            CPPDEFINES=["SUPERNOVA"] + env['CPPDEFINES'])
+                            CPPDEFINES=["SUPERNOVA", "TLSF_STATISTIC=1"] + env['CPPDEFINES'])
 
 scsynth_src, sc_paths = unit_test_env.SConscript("../source/sc/SConscript.server", "env")
 unit_test_env.Append(CPPPATH = sc_paths)
