@@ -287,6 +287,31 @@ bool check_node_id(int node_id)
     return true;
 }
 
+void send_done_message(udp::endpoint const & endpoint)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+    << osc::EndMessage;
+
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
+
+struct send_done_callback:
+    public system_callback
+{
+    send_done_callback(udp::endpoint const & endpoint):
+        endpoint_(endpoint)
+    {}
+
+    void run(void)
+    {
+        send_done_message(endpoint_);
+    }
+
+private:
+    const udp::endpoint endpoint_;
+};
 
 struct sc_response_callback:
     public system_callback
@@ -295,14 +320,9 @@ struct sc_response_callback:
         endpoint_(endpoint)
     {}
 
-    void send_done(void)
+    inline void send_done(void)
     {
-        char buffer[128];
-        osc::OutboundPacketStream p(buffer, 128);
-        p << osc::BeginMessage("/done")
-          << osc::EndMessage;
-
-        instance->send_udp(p.Data(), p.Size(), endpoint_);
+        send_done_message(endpoint_);
     }
 
     const udp::endpoint endpoint_;
@@ -755,23 +775,60 @@ protected:
     void * data_;
 };
 
-struct b_alloc_callback:
+struct buffer_sync_callback:
     public sc_async_callback
+{
+private:
+    struct buffer_sync_cb:
+        public audio_sync_callback
+    {
+    public:
+        buffer_sync_cb(uint32_t index, udp::endpoint const & endpoint):
+            index_(index), endpoint_(endpoint)
+        {}
+
+        void run(void)
+        {
+            ugen_factory.buffer_sync(index_);
+            instance->add_system_callback(new send_done_callback(endpoint_));
+        }
+
+    private:
+        const uint32_t index_;
+        udp::endpoint endpoint_;
+    };
+
+public:
+    buffer_sync_callback(uint32_t index, size_t msg_size, const void * data,
+                         udp::endpoint const & endpoint):
+        sc_async_callback(msg_size, data, endpoint), index_(index)
+    {}
+
+    void schedule_buffer_sync(void)
+    {
+        instance->add_sync_callback(new buffer_sync_cb(index_, endpoint_));
+    }
+
+protected:
+    const uint32_t index_;
+};
+
+struct b_alloc_callback:
+    public buffer_sync_callback
 {
     b_alloc_callback(int index, int frames, int channels, size_t msg_size, const void * data,
                      udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint),
-        index_(index), frames_(frames), channels_(channels)
+        buffer_sync_callback(index, msg_size, data, endpoint),
+        frames_(frames), channels_(channels)
     {}
 
     void run(void)
     {
-        instance->allocate_buffer(index_, frames_, channels_);
+        ugen_factory.allocate_buffer(index_, frames_, channels_);
+        schedule_buffer_sync();
         schedule_async_message();
-        send_done();
     }
 
-    const int index_;
     const int frames_;
     const int channels_;
 };

@@ -27,9 +27,12 @@
 #include "../server/memory_pool.hpp"
 #include "../server/server.hpp"
 #include "../simd/simd_memory.hpp"
+#include "../utilities/malloc_aligned.hpp"
 
 #include "supercollider/Headers/server/SC_Samp.h"
 #include "supercollider/Headers/server/SC_Prototypes.h"
+#include "supercollider/Headers/server/SC_Errors.h"
+#include "supercollider/Headers/plugin_interface/clz.h"
 
 namespace nova
 {
@@ -436,6 +439,10 @@ void done_action(int done_action, struct Unit *unit)
     }
 }
 
+int buf_alloc(SndBuf * buf, int channels, int frames, double samplerate)
+{
+    return nova::ugen_factory.allocate_buffer(buf, channels, frames, samplerate);
+}
 
 } /* extern "C" */
 
@@ -479,6 +486,9 @@ void sc_plugin_interface::initialize(void)
     /* ugen functions */
     sc_interface.fClearUnitOutputs = clear_outputs;
 
+    /* buffer functions */
+    sc_interface.fBufAlloc = &buf_alloc;
+
     /* initialize world */
     /* control busses */
     world.mControlBus = new float[args.control_busses];
@@ -498,6 +508,11 @@ void sc_plugin_interface::initialize(void)
     /* audio buffers */
     world.mNumSndBufs = args.buffers;
     world.mSndBufs = new SndBuf[world.mNumSndBufs];
+    world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs];
+    world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs];
+    memset(world.mSndBufs, 0, world.mNumSndBufs*sizeof(SndBuf));
+    memset(world.mSndBufsNonRealTimeMirror, 0, world.mNumSndBufs*sizeof(SndBuf));
+    memset(world.mSndBufUpdates, 0, world.mNumSndBufs*sizeof(SndBufUpdates));
     world.mBufCounter = 0;
 
     /* audio settings */
@@ -532,6 +547,102 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mControlBus;
     delete[] world.mControlBusTouched;
     delete[] world.mSndBufs;
+    delete[] world.mSndBufUpdates;
 }
+
+namespace
+{
+
+sample * allocate_buffer(size_t samples)
+{
+    const size_t alloc_size = samples * sizeof(sample);
+    sample * ret = (sample*)calloc_aligned(alloc_size);
+    if (ret)
+        mlock(ret, alloc_size);
+    return ret;
+}
+
+void free_buffer(sample * chunk)
+{
+    free_aligned(chunk);
+}
+
+inline int32 bufmask(int32 x)
+{
+    return (1 << (31 - CLZ(x))) - 1;
+}
+
+inline void sndbuf_init(SndBuf * buf)
+{
+    buf->data = 0;
+    buf->channels = 0;
+    buf->samples = 0;
+    buf->frames = 0;
+    buf->mask = 0;
+    buf->mask1 = 0;
+    buf->coord = 0;
+}
+
+inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
+{
+    dest->samplerate = src->samplerate;
+    dest->sampledur = src->sampledur;
+    dest->data = src->data;
+    dest->channels = src->channels;
+    dest->samples = src->samples;
+    dest->frames = src->frames;
+    dest->mask = src->mask;
+    dest->mask1 = src->mask1;
+    dest->coord = src->coord;
+    dest->sndfile = src->sndfile;
+}
+
+
+
+} /* namespace */
+
+int sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t channels, double samplerate)
+{
+    const uint32_t samples = frames * channels;
+    if (samples == 0)
+        return kSCErr_Failed; /* invalid buffer size */
+
+    sample * data = nova::allocate_buffer(samples);
+    if (data == NULL)
+        return kSCErr_Failed; /* could not allocate memory */
+
+    buf->data = data;
+
+    buf->channels = channels;
+    buf->frames = frames;
+    buf->samples = samples;
+    buf->mask = bufmask(samples); /* for delay lines */
+    buf->mask1 = buf->mask - 1;    /* for oscillators */
+    buf->samplerate = samplerate;
+    buf->samplerate = 1.0 / samplerate;
+    return kSCErr_None;
+}
+
+SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+    allocate_buffer(buf, frames, channels, world.mFullRate.mSampleRate);
+    return buf;
+}
+
+void sc_plugin_interface::buffer_sync(uint32_t index)
+{
+    sndbuf_copy(world.mSndBufs + index , world.mSndBufsNonRealTimeMirror + index);
+    world.mSndBufUpdates[index].writes++;
+}
+
+sample * sc_plugin_interface::free_buffer_prepare(uint32_t index)
+{
+    sample * ret = world.mSndBufsNonRealTimeMirror[index].data;
+    sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
+}
+
+
+
 
 } /* namespace nova */
