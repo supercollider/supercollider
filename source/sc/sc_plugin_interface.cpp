@@ -632,7 +632,7 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
 
 void sc_plugin_interface::buffer_sync(uint32_t index)
 {
-    sndbuf_copy(world.mSndBufs + index , world.mSndBufsNonRealTimeMirror + index);
+    sndbuf_copy(world.mSndBufs + index, world.mSndBufsNonRealTimeMirror + index);
     world.mSndBufUpdates[index].writes++;
 }
 
@@ -640,6 +640,7 @@ sample * sc_plugin_interface::free_buffer_prepare(uint32_t index)
 {
     sample * ret = world.mSndBufsNonRealTimeMirror[index].data;
     sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
+    return ret;
 }
 
 

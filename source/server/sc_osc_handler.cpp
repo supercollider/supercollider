@@ -297,6 +297,52 @@ void send_done_message(udp::endpoint const & endpoint)
     instance->send_udp(p.Data(), p.Size(), endpoint);
 }
 
+template <typename Functor>
+struct fn_system_callback:
+    public system_callback
+{
+    fn_system_callback (Functor const & fn):
+        fn_(fn)
+    {}
+
+    void run(void)
+    {
+        fn_();
+    }
+
+    Functor fn_;
+};
+
+template <typename Functor>
+void fire_system_callback(Functor const & f)
+{
+    instance->add_system_callback(new fn_system_callback<Functor>(f));
+}
+
+
+template <typename Functor>
+struct fn_sync_callback:
+    public audio_sync_callback
+{
+    fn_sync_callback (Functor const & fn):
+        fn_(fn)
+    {}
+
+    void run(void)
+    {
+        fn_();
+    }
+
+    Functor fn_;
+};
+
+template <typename Functor>
+void fire_rt_callback(Functor const & f)
+{
+    instance->add_sync_callback(new fn_sync_callback<Functor>(f));
+}
+
+
 struct send_done_callback:
     public system_callback
 {
@@ -734,9 +780,11 @@ void handle_n_fill(received_message const & msg)
     }
 }
 
-/** wrapper class for osc completion message */
+/** wrapper class for osc completion message
+ */
 struct completion_message
 {
+    /** constructor should only be used from the real-time thread */
     completion_message(size_t size, const void * data):
         size_(size)
     {
@@ -747,12 +795,23 @@ struct completion_message
         }
     }
 
+    /** copy constructor has move semantics!!! */
+    completion_message(completion_message const & rhs)
+    {
+        size_ = rhs.size_;
+        data_ = rhs.data_;
+        const_cast<completion_message&>(rhs).size_ = 0;
+    }
+
     ~completion_message(void)
     {
         if (size_)
             system_callback::deallocate(data_);
     }
 
+    /** handle package in the rt thread
+     *  not to be called from the rt thread
+     */
     void trigger_async(udp::endpoint const & endpoint)
     {
         if (size_)
@@ -763,7 +822,16 @@ struct completion_message
         }
     }
 
-    const size_t size_;
+    /** handle package directly
+     *  only to be called from the rt thread
+     */
+    void handle(udp::endpoint const & endpoint)
+    {
+        if (size_)
+            instance->handle_packet((char*)data_, size_, endpoint);
+    }
+
+    size_t size_;
     void * data_;
 };
 
@@ -885,6 +953,31 @@ struct b_free_callback:
     const int index_;
 };
 
+
+void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
+void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, udp::endpoint const & endpoint);
+void b_free_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+
+void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
+{
+    sample * free_buf = ugen_factory.free_buffer_prepare(index);
+    fire_rt_callback(boost::bind(b_free_2_rt, index, free_buf, msg, endpoint));
+}
+
+void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_sync(index);
+    fire_system_callback(boost::bind(b_free_3_nrt, free_buf, endpoint));
+    msg.handle(endpoint);
+}
+
+void b_free_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+{
+    free_aligned(free_buf);
+    send_done_message(endpoint);
+}
+
+
 void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -897,7 +990,8 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
     if (!args.Eos())
         args >> blob;
 
-    instance->add_system_callback(new b_free_callback(index, blob.size, blob.data, endpoint));
+    completion_message message(blob.size, blob.data);
+    fire_system_callback(boost::bind(b_free_1_nrt, index, message, endpoint));
 }
 
 struct b_allocRead_callback:

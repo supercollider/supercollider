@@ -247,7 +247,9 @@ private:
 
     /* @{ */
     /** packet handling */
+public:
     void handle_packet(const char * data_, std::size_t length, udp::endpoint const & endpoint);
+private:
     void handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint);
     void handle_message(received_message const & message, udp::endpoint const & endpoint);
     void handle_message_int_address(received_message const & message, udp::endpoint const & endpoint);

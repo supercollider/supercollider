@@ -90,7 +90,7 @@ public:
     /* audio buffer handling */
     SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels);
     int allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t channels, double samplerate);
-    sample * sc_plugin_interface::free_buffer_prepare(uint32_t index);
+    sample * free_buffer_prepare(uint32_t index);
     /* @} */
 
     /* copies nrt mirror to rt buffers */
