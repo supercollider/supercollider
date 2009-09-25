@@ -287,16 +287,6 @@ bool check_node_id(int node_id)
     return true;
 }
 
-void send_done_message(udp::endpoint const & endpoint)
-{
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
-    p << osc::BeginMessage("/done")
-    << osc::EndMessage;
-
-    instance->send_udp(p.Data(), p.Size(), endpoint);
-}
-
 template <typename Functor>
 struct fn_system_callback:
     public system_callback
@@ -342,22 +332,22 @@ void fire_rt_callback(Functor const & f)
     instance->add_sync_callback(new fn_sync_callback<Functor>(f));
 }
 
-
-struct send_done_callback:
-    public system_callback
+void send_done_message(udp::endpoint const & endpoint)
 {
-    send_done_callback(udp::endpoint const & endpoint):
-        endpoint_(endpoint)
-    {}
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+    << osc::EndMessage;
 
-    void run(void)
-    {
-        send_done_message(endpoint_);
-    }
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
 
-private:
-    const udp::endpoint endpoint_;
-};
+/** send done message from the system callback, only to be called from the rt thread */
+void fire_done_message(udp::endpoint const & endpoint)
+{
+    fire_system_callback(boost::bind(send_done_message, endpoint));
+}
+
 
 struct sc_response_callback:
     public system_callback
@@ -875,7 +865,7 @@ private:
         void run(void)
         {
             ugen_factory.buffer_sync(index_);
-            instance->add_system_callback(new send_done_callback(endpoint_));
+            fire_done_message(endpoint_);
         }
 
     private:
