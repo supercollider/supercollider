@@ -364,81 +364,54 @@ struct sc_response_callback:
     const udp::endpoint endpoint_;
 };
 
-struct quit_callback:
-    public sc_response_callback
+void quit_perform(udp::endpoint const & endpoint)
 {
-    quit_callback(udp::endpoint const & endpoint):
-        sc_response_callback(endpoint)
-    {}
-
-    void run(void)
-    {
-        send_done();
-        instance->terminate();
-    }
-};
+    send_done_message(endpoint);
+    instance->terminate();
+}
 
 void handle_quit(udp::endpoint const & endpoint)
 {
-    instance->add_system_callback(new quit_callback(endpoint));
+    fire_system_callback(boost::bind(quit_perform, endpoint));
 }
 
-struct notify_callback:
-    public sc_response_callback
+void notify_perform(bool enable, udp::endpoint const & endpoint)
 {
-    notify_callback(bool enable, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint), enable_(enable)
-    {}
-
-    void run(void)
-    {
-        if (enable_)
-            instance->add_observer(endpoint_);
-        else
-            instance->remove_observer(endpoint_);
-        send_done();
-    }
-
-    const bool enable_;
-};
+    if (enable)
+        instance->add_observer(endpoint);
+    else
+        instance->remove_observer(endpoint);
+    send_done_message(endpoint);
+}
 
 void handle_notify(received_message const & message, udp::endpoint const & endpoint)
 {
     int enable = first_arg_as_int(message);
-
-    instance->add_system_callback(new notify_callback(enable != 0, endpoint));
+    fire_system_callback(boost::bind(notify_perform, bool(enable), endpoint));
 }
 
-struct status_callback:
-    public sc_response_callback
+void status_perform(udp::endpoint const & endpoint)
 {
-    status_callback(udp::endpoint const & endpoint):
-        sc_response_callback(endpoint)
-    {}
+    char buffer[1024];
+    osc::OutboundPacketStream p(buffer, 1024);
+    p << osc::BeginMessage("status.reply")
+      << 1                                    /* unused */
+      << (int32_t)ugen_factory.ugen_count()   /* ugens */
+      << (int32_t)instance->synth_count()     /* synths */
+      << (int32_t)instance->group_count()     /* groups */
+      << (int32_t)instance->prototype_count() /* synthdefs */
+      << instance->cpu_load()                 /* average cpu % */
+      << instance->cpu_load()                 /* peak cpu % */
+      << instance->get_samplerate()           /* nominal samplerate */
+      << instance->get_samplerate()           /* actual samplerate */
+      << osc::EndMessage;
 
-    void run(void)
-    {
-        char buffer[1024];
-        osc::OutboundPacketStream p(buffer, 1024);
-        p << osc::BeginMessage("status.reply")
-          << 1                                    /* unused */
-          << (int32_t)ugen_factory.ugen_count()   /* ugens */
-          << (int32_t)instance->synth_count()     /* synths */
-          << (int32_t)instance->group_count()     /* groups */
-          << (int32_t)instance->prototype_count() /* synthdefs */
-          << instance->cpu_load()                 /* average cpu % */
-          << instance->cpu_load()                 /* peak cpu % */
-          << instance->get_samplerate()           /* nominal samplerate */
-          << instance->get_samplerate()           /* actual samplerate */
-          << osc::EndMessage;
-
-        instance->send_udp(p.Data(), p.Size(), endpoint_);
-    }
-};
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
 
 void handle_status(udp::endpoint const & endpoint)
 {
-    instance->add_system_callback(new status_callback(endpoint));
+    fire_system_callback(boost::bind(status_perform, endpoint));
 }
 
 void handle_dumpOSC(received_message const & message)
@@ -449,32 +422,22 @@ void handle_dumpOSC(received_message const & message)
     instance->dumpOSC(val);     /* thread-safe */
 }
 
-struct sync_callback:
-    public sc_response_callback
+void sync_perform(int id, udp::endpoint const & endpoint)
 {
-    sync_callback(int id, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint), id_(id)
-    {}
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/synced")
+      << id
+      << osc::EndMessage;
 
-    void run(void)
-    {
-        char buffer[128];
-        osc::OutboundPacketStream p(buffer, 128);
-        p << osc::BeginMessage("/synced")
-          << id_
-          << osc::EndMessage;
-
-        instance->send_udp(p.Data(), p.Size(), endpoint_);
-    }
-
-    const int id_;
-};
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
 
 void handle_sync(received_message const & message, udp::endpoint const & endpoint)
 {
     int id = first_arg_as_int(message);
 
-    instance->add_system_callback(new sync_callback(id, endpoint));
+    fire_system_callback(boost::bind(sync_perform, id, endpoint));
 }
 
 void handle_clearSched(void)
