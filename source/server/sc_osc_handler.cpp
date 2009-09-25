@@ -850,63 +850,29 @@ protected:
     completion_message msg_;
 };
 
-struct buffer_sync_callback:
-    public sc_async_callback
+
+void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
+void b_alloc_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+
+void b_alloc_1_nrt(uint32_t index, uint32_t frames, uint32_t channels, completion_message & msg, udp::endpoint const & endpoint)
 {
-private:
-    struct buffer_sync_cb:
-        public audio_sync_callback
-    {
-    public:
-        buffer_sync_cb(uint32_t index, udp::endpoint const & endpoint):
-            index_(index), endpoint_(endpoint)
-        {}
+    sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
+    ugen_factory.allocate_buffer(index, frames, channels);
+    fire_rt_callback(boost::bind(b_alloc_2_rt, index, msg, free_buf, endpoint));
+}
 
-        void run(void)
-        {
-            ugen_factory.buffer_sync(index_);
-            fire_done_message(endpoint_);
-        }
-
-    private:
-        const uint32_t index_;
-        udp::endpoint endpoint_;
-    };
-
-public:
-    buffer_sync_callback(uint32_t index, size_t msg_size, const void * data,
-                         udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint), index_(index)
-    {}
-
-    void schedule_buffer_sync(void)
-    {
-        instance->add_sync_callback(new buffer_sync_cb(index_, endpoint_));
-    }
-
-protected:
-    const uint32_t index_;
-};
-
-struct b_alloc_callback:
-    public buffer_sync_callback
+void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint)
 {
-    b_alloc_callback(int index, int frames, int channels, size_t msg_size, const void * data,
-                     udp::endpoint const & endpoint):
-        buffer_sync_callback(index, msg_size, data, endpoint),
-        frames_(frames), channels_(channels)
-    {}
+    ugen_factory.buffer_sync(index);
+    msg.handle(endpoint);
+    fire_system_callback(boost::bind(b_alloc_3_nrt, free_buf, endpoint));
+}
 
-    void run(void)
-    {
-        ugen_factory.allocate_buffer(index_, frames_, channels_);
-        schedule_buffer_sync();
-        schedule_async_message();
-    }
-
-    const int frames_;
-    const int channels_;
-};
+void b_alloc_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+{
+    free_aligned(free_buf);
+    send_done_message(endpoint);
+}
 
 void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint)
 {
@@ -920,29 +886,9 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
     if (!args.Eos())
         args >> blob;
 
-    instance->add_system_callback(new b_alloc_callback(index, frames, channels,
-                                                       blob.size, blob.data, endpoint));
+    completion_message message(blob.size, blob.data);
+    fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint);
 }
-
-struct b_free_callback:
-    public sc_async_callback
-{
-    b_free_callback(int index, size_t msg_size, const void * data,
-                     udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint),
-        index_(index)
-    {}
-
-    void run(void)
-    {
-        instance->free_buffer(index_);
-        schedule_async_message();
-        send_done();
-    }
-
-    const int index_;
-};
-
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
 void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, udp::endpoint const & endpoint);
@@ -950,7 +896,8 @@ void b_free_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
-    sample * free_buf = ugen_factory.free_buffer_prepare(index);
+    sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
+    ugen_factory.free_buffer(index);
     fire_rt_callback(boost::bind(b_free_2_rt, index, free_buf, msg, endpoint));
 }
 

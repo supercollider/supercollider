@@ -90,7 +90,12 @@ public:
     /* audio buffer handling */
     SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels);
     int allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t channels, double samplerate);
-    sample * free_buffer_prepare(uint32_t index);
+    sample * get_nrt_mirror_buffer(uint32_t index)
+    {
+        return world.mSndBufsNonRealTimeMirror[index].data;
+    }
+
+    void free_buffer(uint32_t index);
     /* @} */
 
     /* copies nrt mirror to rt buffers */

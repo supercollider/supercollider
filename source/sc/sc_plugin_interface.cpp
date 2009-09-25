@@ -574,6 +574,8 @@ inline int32 bufmask(int32 x)
 
 inline void sndbuf_init(SndBuf * buf)
 {
+    buf->samplerate = 0;
+    buf->sampledur = 0;
     buf->data = 0;
     buf->channels = 0;
     buf->samples = 0;
@@ -581,6 +583,7 @@ inline void sndbuf_init(SndBuf * buf)
     buf->mask = 0;
     buf->mask1 = 0;
     buf->coord = 0;
+    buf->sndfile = 0;
 }
 
 inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
@@ -619,7 +622,7 @@ int sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t
     buf->mask = bufmask(samples); /* for delay lines */
     buf->mask1 = buf->mask - 1;    /* for oscillators */
     buf->samplerate = samplerate;
-    buf->samplerate = 1.0 / samplerate;
+    buf->sampledur = 1.0 / samplerate;
     return kSCErr_None;
 }
 
@@ -636,11 +639,9 @@ void sc_plugin_interface::buffer_sync(uint32_t index)
     world.mSndBufUpdates[index].writes++;
 }
 
-sample * sc_plugin_interface::free_buffer_prepare(uint32_t index)
+void sc_plugin_interface::free_buffer(uint32_t index)
 {
-    sample * ret = world.mSndBufsNonRealTimeMirror[index].data;
     sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
-    return ret;
 }
 
 
