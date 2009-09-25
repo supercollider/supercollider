@@ -101,6 +101,13 @@ public:
     int buffer_write(uint32_t index, const char * filename, const char * header_format, const char * sample_format,
                      uint32_t start, uint32_t frames, bool leave_open);
 
+    void buffer_zero(uint32_t index);
+
+    void increment_write_updates(uint32_t index)
+    {
+        world.mSndBufUpdates[index].writes++;
+    }
+
     void free_buffer(uint32_t index);
     /* @} */
 

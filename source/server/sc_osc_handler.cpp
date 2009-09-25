@@ -1167,24 +1167,21 @@ fire_callback:
                                      start, frames, bool(leave_open), message, endpoint));
 }
 
-struct b_zero_callback:
-    public sc_async_callback
+
+void b_zero_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
+
+void b_zero_nrt_1(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
-    b_zero_callback(int index, size_t msg_size, const void * data,
-                    udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint),
-        index_(index)
-    {}
+    ugen_factory.buffer_zero(index);
+    fire_rt_callback(boost::bind(b_zero_rt_2, index, msg, endpoint));
+}
 
-    void run(void)
-    {
-        instance->zero_buffer(index_);
-        schedule_async_message();
-        send_done();
-    }
-
-    const int index_;
-};
+void b_zero_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
+{
+    ugen_factory.increment_write_updates(index);
+    msg.handle(endpoint);
+    fire_done_message(endpoint);
+}
 
 void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
 {
@@ -1198,7 +1195,9 @@ void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
     if (!args.Eos())
         args >> blob;
 
-    instance->add_system_callback(new b_zero_callback(index, blob.size, blob.data, endpoint));
+    completion_message message(blob.size, blob.data);
+
+    fire_system_callback(boost::bind(b_zero_nrt_1, index, message, endpoint));
 }
 
 void handle_b_set(received_message const & msg)

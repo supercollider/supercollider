@@ -803,10 +803,23 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
+void sc_plugin_interface::buffer_zero(uint32_t index)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+
+    uint32_t length = buf->frames * buf->channels;
+
+    uint32_t unrolled = length & ~63;
+    uint32_t remain = length & 63;
+
+    zerovec_simd(buf->data, unrolled);
+    zerovec(buf->data + unrolled, remain);
+}
+
 void sc_plugin_interface::buffer_sync(uint32_t index)
 {
     sndbuf_copy(world.mSndBufs + index, world.mSndBufsNonRealTimeMirror + index);
-    world.mSndBufUpdates[index].writes++;
+    increment_write_updates(index);
 }
 
 void sc_plugin_interface::free_buffer(uint32_t index)
