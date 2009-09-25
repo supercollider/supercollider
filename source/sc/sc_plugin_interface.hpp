@@ -98,6 +98,9 @@ public:
         return world.mSndBufsNonRealTimeMirror[index].data;
     }
 
+    int buffer_write(uint32_t index, const char * filename, const char * header_format, const char * sample_format,
+                     uint32_t start, uint32_t frames, bool leave_open);
+
     void free_buffer(uint32_t index);
     /* @} */
 

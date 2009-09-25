@@ -1094,42 +1094,14 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     fire_system_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
 }
 
-struct b_write_callback:
-    public sc_async_callback
+void b_write_nrt_1(uint32_t index, movable_string const & filename, movable_string const & header_format,
+                   movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
+                   completion_message & msg, udp::endpoint const & endpoint)
 {
-    b_write_callback(int index, const char * filename, const char * header_format,
-                     const char * sample_format, size_t start, size_t frames, bool leave_open,
-                     size_t msg_size, const void * data, udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint),
-        index_(index), filename_(copy_string(filename)), header_format_(copy_string(header_format)),
-        sample_format_(copy_string(sample_format)), leave_open_(leave_open),
-        start_(start), frames_(frames)
-    {}
-
-    ~b_write_callback(void)
-    {
-        deallocate(filename_);
-        deallocate(header_format_);
-        deallocate(sample_format_);
-    }
-
-    void run(void)
-    {
-        /** \todo for now we ignore the leave_open flag  */
-        instance->write_buffer(index_, filename_, header_format_, sample_format_, start_, frames_);
-        schedule_async_message();
-        send_done();
-    }
-
-    const int index_;
-    char * const filename_;
-    char * const header_format_;
-    char * const sample_format_;
-    const bool leave_open_;
-    const size_t start_;
-    const size_t frames_;
-};
-
+    ugen_factory.buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
+    msg.trigger_async(endpoint);
+    fire_done_message(endpoint);
+}
 
 void fire_b_write_exception(void)
 {
@@ -1186,9 +1158,13 @@ void handle_b_write(received_message const & msg, udp::endpoint const & endpoint
     }
 
 fire_callback:
-    instance->add_system_callback(
-        new b_write_callback(index, filename, header_format, sample_format, frames, start,
-                             leave_open, length, data, endpoint));
+    completion_message message(length, data);
+    movable_string fname(filename);
+    movable_string header_f(header_format);
+    movable_string sample_f(sample_format);
+
+    fire_system_callback(boost::bind(b_write_nrt_1, index, fname, header_f, sample_f,
+                                     start, frames, bool(leave_open), message, endpoint));
 }
 
 struct b_zero_callback:
