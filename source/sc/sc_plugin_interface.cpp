@@ -849,6 +849,72 @@ int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint
     return 0;
 }
 
+int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
+                                             uint32_t start_buffer, bool leave_open, uint32_t channel_count,
+                                             const uint32_t * channel_data)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+
+    if (channel_count != uint32_t(buf->channels))
+        /* channel count mismatch */
+        return -2;
+
+    if (uint32_t(buf->frames) >= start_buffer)
+        /* buffer already full */
+        return -2;
+
+    SF_INFO info;
+    SNDFILE * sf = sf_open(filename, SFM_WRITE, &info);
+
+    if (!sf)
+        return -1;
+
+    if (info.frames >= start_file)
+    {
+        /* no more frames to read */
+        sf_close(sf);
+        return -2;
+    }
+
+    const uint32_t buffer_remain = buf->frames - start_buffer;
+    const uint32_t file_remain = info.frames - start_file;
+
+    const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
+
+    if (info.samplerate != buf->samplerate)
+    {
+        /* sample rate or channel count mismatch */
+        sf_close(sf);
+        return -3;
+    }
+
+    sf_seek(sf, start_file, SEEK_SET);
+
+    sized_array<sample> read_frame(channel_count);
+
+    sample * data = buf->data + start_file * channel_count;
+
+    for (size_t i = 0; i != frames_to_read; ++i)
+    {
+        sf_readf_float(sf, read_frame.c_array(), 1);
+
+        for (size_t c = 0; c != channel_count; ++c)
+        {
+            size_t channel_mapping = channel_data[c];
+            data[channel_mapping] = read_frame[c];
+        }
+
+        data += channel_count;
+    }
+
+    if (leave_open)
+        buf->sndfile = sf;
+    else
+        sf_close(sf);
+    return 0;
+}
+
+
 
 void sc_plugin_interface::buffer_zero(uint32_t index)
 {

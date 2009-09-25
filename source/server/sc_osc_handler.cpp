@@ -1255,6 +1255,106 @@ fire_callback:
 }
 
 
+void b_readChannel_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
+
+void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file, uint32_t frames,
+                         uint32_t start_buffer, bool leave_open, movable_array<uint32_t> & channel_map,
+                         completion_message & msg, udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
+                                     channel_map.length(), channel_map.data());
+    fire_rt_callback(boost::bind(b_readChannel_rt_2, index, msg, endpoint));
+}
+
+void b_readChannel_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_sync(index);
+    msg.handle(endpoint);
+    fire_done_message(endpoint);
+}
+
+void fire_b_readChannel_exception(void)
+{
+    throw std::runtime_error("wrong arguments for /b_readChannel");
+}
+
+void handle_b_readChannel(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+
+    /* required args */
+    osc::int32 index = arg->AsInt32(); arg++;
+    const char * filename = arg->AsString(); arg++;
+
+    /* optional args */
+    osc::int32 start_file = 0;
+    osc::int32 frames = -1;
+    osc::int32 start_buffer = 0;
+    osc::int32 leave_open = 0;
+
+    sized_array<uint32_t, rt_pool_allocator<uint32_t> > channel_mapping(msg.ArgumentCount()); /* larger than required */
+    uint32_t channel_count = 0;
+
+    size_t length = 0;
+    const void * data = 0;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_read_exception();
+        start_file = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_read_exception();
+        frames = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_write_exception();
+        start_buffer = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    if (arg != end) {
+        if (!arg->IsInt32())
+            fire_b_write_exception();
+        leave_open = arg->AsInt32Unchecked(); arg++;
+    }
+    else
+        goto fire_callback;
+
+    while (arg != end)
+    {
+        if (arg->IsBlob()) {
+            arg->AsBlobUnchecked(data, length);
+            goto fire_callback;
+        }
+        else if (arg->IsInt32()) {
+            channel_mapping[channel_count] = arg->AsInt32Unchecked();
+            ++arg;
+        }
+        else
+            fire_b_readChannel_exception();
+    }
+
+fire_callback:
+    completion_message message(length, data);
+    movable_string fname(filename);
+    movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
+
+    fire_system_callback(boost::bind(b_readChannel_nrt_1, index, fname, start_file, frames, start_buffer,
+                                     bool(leave_open), channel_map, message, endpoint));
+}
+
+
 void b_zero_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
 
 void b_zero_nrt_1(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
@@ -1793,6 +1893,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_read(message, endpoint);
         break;
 
+    case cmd_b_readChannel:
+        handle_b_readChannel(message, endpoint);
+        break;
+
     case cmd_b_write:
         handle_b_write(message, endpoint);
         break;
@@ -1953,6 +2057,11 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "read") == 0) {
         handle_b_read(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "readChannel") == 0) {
+        handle_b_readChannel(message, endpoint);
         return;
     }
 
