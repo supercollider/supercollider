@@ -1206,7 +1206,7 @@ void handle_b_set(received_message const & msg)
     osc::int32 buffer_index;
     args >> buffer_index;
 
-    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+    buffer_wrapper::sample_t * data = ugen_factory.get_buffer(buffer_index);
 
     while (!args.Eos()) {
         osc::int32 index;
@@ -1223,7 +1223,7 @@ void handle_b_setn(received_message const & msg)
     osc::int32 buffer_index;
     args >> buffer_index;
 
-    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+    buffer_wrapper::sample_t * data = ugen_factory.get_buffer(buffer_index);
 
     while (!args.Eos()) {
         osc::int32 index;
@@ -1244,7 +1244,7 @@ void handle_b_fill(received_message const & msg)
     osc::int32 buffer_index;
     args >> buffer_index;
 
-    buffer_wrapper::sample_t * data = instance->get_buffer(buffer_index).data;
+    buffer_wrapper::sample_t * data = ugen_factory.get_buffer(buffer_index);
 
     while (!args.Eos()) {
         osc::int32 index;
@@ -1257,57 +1257,42 @@ void handle_b_fill(received_message const & msg)
     }
 }
 
-struct b_query_callback:
-    public sc_response_callback
+void b_query_nrt(movable_array<char> data, udp::endpoint const & endpoint)
 {
-    static const size_t elem_size = 3*sizeof(int) * sizeof(float);
-
-    b_query_callback(received_message const & msg,
-                     udp::endpoint const & endpoint):
-        sc_response_callback(endpoint)
-    {
-        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-        size_t arg_count = msg.ArgumentCount();
-
-        size_t size = elem_size * arg_count + 128; /* should be more than required */
-        data_ = (char*)allocate(size);
-
-        osc::OutboundPacketStream p(data_, size);
-        p << osc::BeginMessage("/b_info");
-
-        while (!args.Eos()) {
-            osc::int32 buffer_index;
-            args >> buffer_index;
-
-            buffer_wrapper & buffer = instance->get_buffer(buffer_index);
-
-            p << buffer_index
-              << int(buffer.frames_)
-              << int(buffer.channels_)
-              << float (buffer.sample_rate_);
-        }
-
-        p << osc::EndMessage;
-        msg_size_ = p.Size();
-    }
-
-    ~b_query_callback(void)
-    {
-        deallocate(data_);
-    }
-
-    void run(void)
-    {
-        instance->send_udp(data_, msg_size_, endpoint_);
-    }
-
-    char * data_;
-    size_t msg_size_;
-};
+    instance->send_udp(data.data(), data.length(), endpoint);
+}
 
 void handle_b_query(received_message const & msg, udp::endpoint const & endpoint)
 {
-    instance->add_system_callback(new b_query_callback(msg, endpoint));
+    const size_t elem_size = 3*sizeof(int) * sizeof(float);
+
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    size_t arg_count = msg.ArgumentCount();
+
+    size_t size = elem_size * arg_count + 128; /* should be more than required */
+    char * data = (char*)rt_pool.malloc(size);
+
+    osc::OutboundPacketStream p(data, size);
+    p << osc::BeginMessage("/b_info");
+
+    while (!args.Eos()) {
+        osc::int32 buffer_index;
+        args >> buffer_index;
+
+        SndBuf * buf = ugen_factory.get_buffer_struct(buffer_index);
+
+        p << buffer_index
+          << int(buf->frames)
+          << int(buf->channels)
+          << float (buf->samplerate);
+    }
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), data);
+    rt_pool.free(data);
+
+    fire_system_callback(boost::bind(b_query_nrt, message, endpoint));
 }
 
 void handle_c_set(received_message const & msg)

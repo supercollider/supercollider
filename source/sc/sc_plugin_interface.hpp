@@ -98,6 +98,16 @@ public:
         return world.mSndBufsNonRealTimeMirror[index].data;
     }
 
+    sample * get_buffer(uint32_t index)
+    {
+        return world.mSndBufs[index].data;
+    }
+
+    SndBuf * get_buffer_struct(uint32_t index)
+    {
+        return world.mSndBufs + index;
+    }
+
     int buffer_write(uint32_t index, const char * filename, const char * header_format, const char * sample_format,
                      uint32_t start, uint32_t frames, bool leave_open);
 
