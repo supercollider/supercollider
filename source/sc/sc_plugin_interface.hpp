@@ -93,6 +93,9 @@ public:
     int buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames);
     int buffer_alloc_read_channels(uint32_t index, const char * filename, uint32_t start, uint32_t frames, uint32_t channel_count,
                                    const uint32_t * channel_data);
+    int buffer_read(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames, uint32_t start_buffer,
+                    bool leave_open);
+
     sample * get_nrt_mirror_buffer(uint32_t index)
     {
         return world.mSndBufsNonRealTimeMirror[index].data;

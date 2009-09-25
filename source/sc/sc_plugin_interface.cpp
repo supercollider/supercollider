@@ -803,6 +803,53 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
+int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
+                                     uint32_t start_buffer, bool leave_open)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+
+    if (uint32_t(buf->frames) >= start_buffer)
+        /* buffer already full */
+        return -2;
+
+    SF_INFO info;
+    SNDFILE * sf = sf_open(filename, SFM_WRITE, &info);
+
+    if (!sf)
+        return -1;
+
+    if (info.frames >= start_file)
+    {
+        /* no more frames to read */
+        sf_close(sf);
+        return -2;
+    }
+
+    const uint32_t buffer_remain = buf->frames - start_buffer;
+    const uint32_t file_remain = info.frames - start_file;
+
+    const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
+
+    if (info.samplerate != buf->samplerate ||
+        info.channels != buf->channels)
+    {
+        /* sample rate or channel count mismatch */
+        sf_close(sf);
+        return -3;
+    }
+
+    sf_seek(sf, start_file, SEEK_SET);
+
+    sf_readf_float(sf, buf->data + start_buffer*buf->channels, frames_to_read);
+
+    if (leave_open)
+        buf->sndfile = sf;
+    else
+        sf_close(sf);
+    return 0;
+}
+
+
 void sc_plugin_interface::buffer_zero(uint32_t index)
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
@@ -826,8 +873,5 @@ void sc_plugin_interface::free_buffer(uint32_t index)
 {
     sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
 }
-
-
-
 
 } /* namespace nova */
