@@ -825,6 +825,38 @@ struct completion_message
     void * data_;
 };
 
+struct movable_string
+{
+    /** allocate new string, only allowed to be called from the rt thread */
+    explicit movable_string(const char * str)
+    {
+        size_t length = strlen(str);
+        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        strcpy(ret, str);
+    }
+
+    /** copy constructor has move semantics!!! */
+    movable_string(movable_string const & rhs)
+    {
+        data_ = rhs.data_;
+        const_cast<movable_string&>(rhs).data_ = NULL;
+    }
+
+    ~movable_string(void)
+    {
+        if (data_)
+            system_callback::deallocate((char*)data_);
+    }
+
+    const char * c_str(void) const
+    {
+        return data_;
+    }
+
+private:
+    const char * data_;
+};
+
 /** responding callback, which is executing an osc message when done */
 struct sc_async_callback:
     public sc_response_callback
@@ -887,7 +919,7 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
         args >> blob;
 
     completion_message message(blob.size, blob.data);
-    fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint);
+    fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint));
 }
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
@@ -931,32 +963,33 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(b_free_1_nrt, index, message, endpoint));
 }
 
-struct b_allocRead_callback:
-    public sc_async_callback
+void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
+void b_allocRead_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+
+void b_allocRead_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
+                       udp::endpoint const & endpoint)
 {
-    b_allocRead_callback(int index, const char * filename, size_t start, size_t frames,
-                         size_t msg_size, const void * data, udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, data, endpoint),
-        index_(index), filename_(copy_string(filename)), start_(start), frames_(frames)
-    {}
+    sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
+    int error = ugen_factory.buffer_read_alloc(index, filename.c_str(), start, frames);
+    if (!error)
+        fire_rt_callback(boost::bind(b_allocRead_2_rt, index, msg, free_buf, endpoint));
+    else
+        /* post nice error message */;
+}
 
-    ~b_allocRead_callback(void)
-    {
-        deallocate(filename_);
-    }
+void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
+                      udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_sync(index);
+    msg.handle(endpoint);
+    fire_system_callback(boost::bind(b_allocRead_3_nrt, free_buf, endpoint));
+}
 
-    void run(void)
-    {
-        instance->read_buffer_allocate(index_, filename_, start_, frames_);
-        schedule_async_message();
-        send_done();
-    }
-
-    const int index_;
-    char * const filename_;
-    const size_t start_;
-    const size_t frames_;
-};
+void b_allocRead_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+{
+    free_aligned(free_buf);
+    send_done_message(endpoint);
+}
 
 void handle_b_allocRead(received_message const & msg, udp::endpoint const & endpoint)
 {
@@ -980,39 +1013,78 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
     if (!args.Eos())
         args >> blob;
 
-    instance->add_system_callback(new b_allocRead_callback(index, filename, start, frames,
-                                                           blob.size, blob.data, endpoint));
+    completion_message message(blob.size, blob.data);
+    movable_string fname(filename);
+    fire_system_callback(boost::bind(b_allocRead_1_nrt, index, fname, start, frames, message, endpoint));
 }
 
-struct b_allocReadChannel_callback:
-    public b_allocRead_callback
+struct movable_int_array
 {
-    b_allocReadChannel_callback(int index, const char * filename, size_t start, size_t frames,
-                                size_t channel_count, const uint * channels,
-                                size_t msg_size, const void * data, udp::endpoint const & endpoint):
-        b_allocRead_callback(index, filename, start, frames, msg_size, data, endpoint),
-        channel_count_(channel_count)
+    movable_int_array(size_t length, uint32_t * data):
+        length_(length)
     {
-        channels_ = (uint*)allocate(channel_count * sizeof (uint));
-        memcpy(channels_, channels, channel_count * sizeof (uint));
+        data_ = (uint32_t*)system_callback::allocate(length * sizeof(uint32_t));
+        for (size_t i = 0; i != length; ++i)
+            data_[i] = data[i];
     }
 
-    ~b_allocReadChannel_callback(void)
+    movable_int_array(movable_int_array const & rhs)
     {
-        deallocate(channels_);
+        length_ = rhs.length_;
+        data_ = rhs.data_;
+        const_cast<movable_int_array&>(rhs).data_ = NULL;
     }
 
-    void run(void)
+    ~movable_int_array(void)
     {
-        instance->read_buffer_channels_allocate(index_, filename_, start_, frames_,
-                                                channel_count_, channels_);
-        schedule_async_message();
-        send_done();
+        if (data_)
+            system_callback::deallocate((char*)data_);
     }
 
-    const size_t channel_count_;
-    uint * channels_;
+    const uint32_t * data(void) const
+    {
+        return data_;
+    }
+
+    const size_t length(void) const
+    {
+        return length_;
+    }
+
+private:
+    size_t length_;
+    uint32_t * data_;
 };
+
+void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
+                             udp::endpoint const & endpoint);
+void b_allocReadChannel_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+
+void b_allocReadChannel_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames,
+                              movable_int_array const & channels, completion_message & msg,
+                              udp::endpoint const & endpoint)
+{
+    sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
+    int error = ugen_factory.buffer_alloc_read_channels(index, filename.c_str(), start, frames,
+                                                        channels.length(), channels.data());
+    if (!error)
+        fire_rt_callback(boost::bind(b_allocReadChannel_2_rt, index, msg, free_buf, endpoint));
+}
+
+void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
+                             udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_sync(index);
+    msg.handle(endpoint);
+    fire_system_callback(boost::bind(b_allocReadChannel_3_nrt, free_buf, endpoint));
+}
+
+void b_allocReadChannel_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+{
+    free_aligned(free_buf);
+    send_done_message(endpoint);
+}
+
 
 void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const & endpoint)
 {
@@ -1047,10 +1119,11 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
         }
     }
 
-    instance->add_system_callback(
-        new b_allocReadChannel_callback(index, filename, start, frames,
-                                        channel_count, channels.c_array(),
-                                        length, data, endpoint));
+    movable_int_array channel_mapping(channel_count, channels.c_array());
+    completion_message message(length, data);
+    movable_string fname(filename);
+
+    fire_system_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
 }
 
 struct b_write_callback:

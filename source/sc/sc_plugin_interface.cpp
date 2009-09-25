@@ -19,6 +19,8 @@
 #include <cstdarg>
 #include <cstdio>
 
+#include "sndfile.hh"
+
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
 #include "sc_synth.hpp"
@@ -28,6 +30,7 @@
 #include "../server/server.hpp"
 #include "../simd/simd_memory.hpp"
 #include "../utilities/malloc_aligned.hpp"
+#include "../utilities/sized_array.hpp"
 
 #include "supercollider/Headers/server/SC_Samp.h"
 #include "supercollider/Headers/server/SC_Prototypes.h"
@@ -632,6 +635,71 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
     allocate_buffer(buf, frames, channels, world.mFullRate.mSampleRate);
     return buf;
 }
+
+int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
+{
+    SndfileHandle f(filename);
+
+    if (!f)
+        return -1; /* file cannot be opened */
+
+    const size_t sf_frames = f.frames();
+
+    if (sf_frames > start)
+        start = sf_frames;
+
+    if (frames == 0 || frames + start > sf_frames)
+        frames = sf_frames - start;
+
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+    allocate_buffer(buf, frames, f.channels(), f.samplerate());
+
+    f.seek(start, SEEK_SET);
+    f.readf(buf->data, frames);
+    return 0;
+}
+
+int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char * filename, uint32_t start,
+                                                    uint32_t frames, uint32_t channel_count,
+                                                    const uint32_t * channel_data)
+{
+    SndfileHandle f(filename);
+
+    if (!f)
+        return -1; /* file cannot be opened */
+
+    const size_t sf_frames = f.frames();
+
+    if (sf_frames > start)
+        start = sf_frames;
+
+    if (frames == 0 || frames + start > sf_frames)
+        frames = sf_frames - start;
+
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+    allocate_buffer(buf, frames, channel_count, f.samplerate());
+
+    sample * data = buf->data;
+    f.seek(start, SEEK_SET);
+
+    sized_array<sample> read_frame(f.channels());
+
+    for (size_t i = 0; i != frames; ++i)
+    {
+        f.readf(read_frame.c_array(), 1);
+
+        for (size_t c = 0; c != channel_count; ++c)
+        {
+            size_t channel_mapping = channel_data[c];
+            data[channel_mapping] = read_frame[c];
+        }
+
+        data += channel_count;
+    }
+
+    return 0;
+}
+
 
 void sc_plugin_interface::buffer_sync(uint32_t index)
 {
