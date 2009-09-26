@@ -1482,6 +1482,21 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
     fire_system_callback(boost::bind(b_query_nrt, message, endpoint));
 }
 
+void b_close_nrt_1(uint32_t index)
+{
+    ugen_factory.buffer_close(index);
+}
+
+void handle_b_close(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::int32 index;
+
+    args >> index;
+
+    fire_system_callback(boost::bind(b_close_nrt_1, index));
+}
+
 void handle_c_set(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();

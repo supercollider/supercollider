@@ -117,6 +117,7 @@ public:
                      uint32_t start, uint32_t frames, bool leave_open);
 
     void buffer_zero(uint32_t index);
+    void buffer_close(uint32_t index);
 
     void increment_write_updates(uint32_t index)
     {

@@ -914,6 +914,15 @@ int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filena
     return 0;
 }
 
+void sc_plugin_interface::buffer_close(uint32_t index)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+
+    if (buf->sndfile == NULL)
+        return;
+    sf_close(buf->sndfile);
+    buf->sndfile = NULL;
+}
 
 
 void sc_plugin_interface::buffer_zero(uint32_t index)
