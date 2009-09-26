@@ -10,7 +10,7 @@
 
 @interface isclangAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
-	
+
 	IBOutlet UITabBarController *tabBarController;
 }
 

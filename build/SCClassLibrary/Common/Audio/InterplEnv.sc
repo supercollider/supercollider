@@ -1,20 +1,20 @@
 // InterplEnvs are a fixed duration
 
-InterplEnv { 
+InterplEnv {
 	// envelope specification for an IEnvGen, InterplEnv is not a UGen itself
 	var <levels;
 	var <times;
-	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value, 
+	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value,
 							// or an array of curve values
 	var <offset;
 	var <array;
-	
+
 	classvar shapeNames;
-	
+
 	*new { arg levels=#[0,1,0], times=#[1,1], curve='lin', offset = 0.0;
 		^super.newCopyArgs(levels, times, curve, offset)
 	}
-	*newClear { arg numSegments=8; 
+	*newClear { arg numSegments=8;
 		// make an envelope for filling in later.
 		^this.new(Array.fill(numSegments+1,0), Array.fill(numSegments,1))
 	}
@@ -34,37 +34,37 @@ InterplEnv {
 			\squared -> 6,
 			\cub -> 7,
 			\cubed -> 7
-		];	
+		];
 	}
-	
-	levels_ { arg z; 
+
+	levels_ { arg z;
 		levels = z;
 		array = nil;
-	} 
-	times_ { arg z; 
+	}
+	times_ { arg z;
 		times = z;
 		array = nil;
-	} 
-	curves_ { arg z; 
+	}
+	curves_ { arg z;
 		curves = z;
 		array = nil;
 	}
-	
+
 	asArray {
 		if (array.isNil) { array = this.prAsArray }
 		^array
 	}
-	
+
 	at { arg time;
 		var env;
 		env = this.asEnv;
 		^env.asArray.envAt((time - offset).max(0))
 	}
-	
+
 	asEnv {
 		^Env(this.levels, this.times, this.curves);
 		}
-		
+
 	shapeNumber { arg shapeName;
 		var shape;
 		if (shapeName.isValidUGenInput) { ^5 };
@@ -77,7 +77,7 @@ InterplEnv {
 	}
 
 	storeArgs { ^[levels, times, curves] }
-	
+
 	plot {arg size = 400;
 		this.asEnv.plot(size);
 		}
@@ -93,7 +93,7 @@ InterplEnv {
 				this.curveValue(curvesArray.wrapAt(i)),
 				levels[i+1]
 			];
-		});	
+		});
 		^contents
 	}
 
@@ -126,7 +126,7 @@ InterplPairs : InterplEnv {
 		^InterplEnv.new(levels, times, curve, offset);
 		}
 	}
-	
+
 // pairs is an array of [time, [val, val, val], time, [val, val, val]]
 // format. All chords MUST have the same number of members
 
@@ -135,7 +135,7 @@ InterplChord {
 	*new {arg pairs;
 		^super.new.init(pairs);
 	}
-	
+
 	init {arg pairs;
 		var points;
 		times = Array.newClear(pairs.size * 0.5 - 1);
@@ -148,14 +148,13 @@ InterplChord {
 			Env(levels, times)
 			})
 		}
-		
+
 	at {arg time;
 		^Array.fill(envs.size, {arg i; envs[i][time]});
 		}
-		
+
 	choose {arg time;
 		^envs.choose[time]
 		}
 	}
-	
-	
+

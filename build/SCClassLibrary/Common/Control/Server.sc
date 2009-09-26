@@ -7,33 +7,33 @@ ServerOptions
 	var <>numInputBusChannels=8;
 	var <>numOutputBusChannels=8;
 	var numBuffers=1026;
-	
+
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
 	var <>protocol = \udp;
 	var <>blockSize = 64;
 	var <>hardwareBufferSize = nil;
-	
+
 	var <>memSize = 8192;
 	var <>numRGens = 64;
 	var <>numWireBufs = 64;
 
 	var <>sampleRate = nil;
 	var <>loadDefs = true;
-	
+
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
 
 	var <>inDevice = nil;
 	var <>outDevice = nil;
-	
+
 	var <>blockAllocClass;
-	
+
 	var <>verbosity = 0;
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
-	
+
 	var <>restrictedPath = nil;
-	
+
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
 
@@ -49,7 +49,7 @@ ServerOptions
 			[inDevice, outDevice]
 		}
 	}
-	
+
 	device_
 	{
 		|dev|
@@ -63,31 +63,31 @@ ServerOptions
 	// ensuring reserved buffers
 	numBuffers { ^(numBuffers -2) }
 	numBuffers_ { | argNumBuffers | numBuffers = argNumBuffers + 2; }
-	
+
 	asOptionsString { arg port=57110;
 		var o;
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
-		
-		if (numAudioBusChannels != 128, { 
+
+		if (numAudioBusChannels != 128, {
 			o = o ++ " -a " ++ numAudioBusChannels;
 		});
-		if (numControlBusChannels != 4096, { 
+		if (numControlBusChannels != 4096, {
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
-		if (numInputBusChannels != 8, { 
+		if (numInputBusChannels != 8, {
 			o = o ++ " -i " ++ numInputBusChannels;
 		});
-		if (numOutputBusChannels != 8, { 
+		if (numOutputBusChannels != 8, {
 			o = o ++ " -o " ++ numOutputBusChannels;
 		});
-		if (numBuffers != 1024, { 
+		if (numBuffers != 1024, {
 			o = o ++ " -b " ++ numBuffers;
 		});
-		if (maxNodes != 1024, { 
+		if (maxNodes != 1024, {
 			o = o ++ " -n " ++ maxNodes;
 		});
-		if (maxSynthDefs != 1024, { 
+		if (maxSynthDefs != 1024, {
 			o = o ++ " -d " ++ maxSynthDefs;
 		});
 		if (blockSize != 64, {
@@ -141,7 +141,7 @@ ServerOptions
 		});
 		^o
 	}
-	
+
 	firstPrivateBus { // after the outs and ins
 		^numOutputBusChannels + numInputBusChannels
 	}
@@ -150,12 +150,12 @@ ServerOptions
 		_BootInProcessServer
 		^this.primitiveFailed
 	}
-	
+
 	rendezvous_ {|bool|
 		zeroConf = bool;
 		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf_))
 	}
-	
+
 	rendezvous {|bool|
 		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf));
 		^zeroConf;
@@ -167,12 +167,12 @@ ServerOptions
 		_ListAudioDevices
 		^this.primitiveFailed
 	}
-	
+
 	*devices
 	{
 		^this.prListDevices(1, 1);
 	}
-	
+
 	*inDevices
 	{
 		^this.prListDevices(1, 0);
@@ -186,7 +186,7 @@ ServerOptions
 
 Server : Model {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program;
-	
+
 	var <name, <>addr, <clientID=0;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
@@ -200,31 +200,31 @@ Server : Model {
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
-	
+
 	var alive = false, booting = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 	var <>tree;
-	
+
 	var <window, <>scopeWindow;
 	var <emacsbuf;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
 
 	var <volume;
-	
+
 	var <pid;
-	
+
 	*default_ { |server, sync_s = false|
-		default = server; // sync with s? 
+		default = server; // sync with s?
 		if (sync_s, { thisProcess.interpreter.s = server });
 		this.all.do(_.changed(\default));
 	}
-	
+
 	*new { arg name, addr, options, clientID=0;
 		^super.new.init(name, addr, options, clientID)
 	}
-	
+
 	*all { ^set }
 	*all_ { arg dict; set = dict }
-	
+
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName.asSymbol;
 		addr = argAddr;
@@ -241,7 +241,7 @@ Server : Model {
 		Server.changed(\serverAdded, this);
 		volume = Volume.new(server: this, persist: true);
 	}
-	
+
 	initTree {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 		this.sendMsg("/g_new", 1);
@@ -254,21 +254,21 @@ Server : Model {
 		this.newBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
-	
+
 	newNodeAllocators {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
 	}
-	
+
 	newBusAllocators {
 		controlBusAllocator = ContiguousBlockAllocator.new(options.numControlBusChannels);
-		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels, 
+		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels,
 			options.firstPrivateBus);
 	}
-	
+
 	newBufferAllocators {
 		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
 	}
-	
+
 	nextNodeID {
 		^nodeAllocator.alloc
 	}
@@ -278,7 +278,7 @@ Server : Model {
 	freePermNodeID { |id|
 		^nodeAllocator.freePerm(id)
 	}
-	
+
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
@@ -292,13 +292,13 @@ Server : Model {
 			program = "cd % && exec ./scsynth".format(String.scDir.quote);
 		});
 	}
-	
+
 	*fromName { arg name;
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new, 0) 
+			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new, 0)
 		}
 	}
-	
+
 	// bundling support added
 	sendMsg { arg ... msg;
 		addr.sendMsg(*msg);
@@ -306,11 +306,11 @@ Server : Model {
 	sendBundle { arg time ... msgs;
 		addr.sendBundle(time, *msgs)
 	}
-	
+
 	sendRaw { arg rawArray;
 		addr.sendRaw(rawArray);
 	}
-	
+
 	sendMsgSync { arg condition ... args;
 		var cmdName, resp;
 		if (condition.isNil) { condition = Condition.new };
@@ -327,23 +327,23 @@ Server : Model {
 		addr.sendBundle(nil, args);
 		condition.wait;
 	}
-	
+
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		addr.sync(condition, bundles, latency)
 	}
-	
+
 	schedSync { arg func;
 		syncTasks = syncTasks.add(func);
-		if(syncThread.isNil) { 
-			syncThread = Routine.run { 
+		if(syncThread.isNil) {
+			syncThread = Routine.run {
 				var c; c = Condition.new;
 				while { syncTasks.notEmpty } { syncTasks.removeAt(0).value(c) };
 				syncThread = nil;
 		 	};
 		};
-		
+
 	}
-	
+
 	// bundling support added
 	listSendMsg { arg msg;
 		addr.sendMsg(*msg);
@@ -371,13 +371,13 @@ Server : Model {
 		dir = dir ? SynthDef.synthDefDir;
 		this.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
-		) 
+		)
 	}
 	//loadDir
 	loadDirectory { arg dir, completionMsg;
 		this.listSendMsg(["/d_loadDir", dir, completionMsg]);
 	}
-	
+
 	serverRunning_ { arg val;
 		if(addr.hasBundle) {
 			{ this.changed(\bundling); }.defer;
@@ -385,10 +385,10 @@ Server : Model {
 			if (val != serverRunning) {
 				if(thisProcess.platform.isSleeping.not) {
 					serverRunning = val;
-					if (serverRunning.not) { 
-						
+					if (serverRunning.not) {
+
 						ServerQuit.run(this);
-						
+
 						AppClock.sched(5.0, {
 							// still down after 5 seconds, assume server is really dead
 							// if you explicitly shut down the server then newAllocators
@@ -398,7 +398,7 @@ Server : Model {
 							};
 							recordNode = nil;
 						})
-						
+
 					}{
 						ServerBoot.run(this);
 					};
@@ -407,30 +407,30 @@ Server : Model {
 			}
 		};
 	}
-	
+
 	wait { arg responseName;
 		var resp, routine;
 		routine = thisThread;
-		resp = OSCresponderNode(addr, responseName, { 
-			resp.remove; routine.resume(true); 
+		resp = OSCresponderNode(addr, responseName, {
+			resp.remove; routine.resume(true);
 		});
 		resp.add;
 	}
-	
+
 	waitForBoot { arg onComplete, limit=100;
 		if(serverRunning.not) { this.boot };
 		this.doWhenBooted(onComplete, limit);
 	}
-	
+
 	doWhenBooted { arg onComplete, limit=100;
 		var mBootNotifyFirst = bootNotifyFirst;
 		bootNotifyFirst = false;
-	
+
 		^Routine({
 			while({
 				(serverRunning.not or: (serverBooting and: mBootNotifyFirst.not)) and: {(limit = limit - 1) > 0}
 			},{
-				0.2.wait;	
+				0.2.wait;
 			});
 
 			if(serverRunning.not,{
@@ -450,7 +450,7 @@ Server : Model {
 		});
 		condition.wait;
 	}
-	
+
 	ping { arg n=1, wait=0.1, func;
 		var result=0, pingFunc;
 		if(serverRunning.not) { "server not running".postln; ^this };
@@ -463,30 +463,30 @@ Server : Model {
 					("measured latency:" + dt + "s").postln;
 					result = max(result, dt);
 					n = n - 1;
-					if(n > 0) { 
-						SystemClock.sched(wait, {pingFunc.value; nil }) 
+					if(n > 0) {
+						SystemClock.sched(wait, {pingFunc.value; nil })
 					} {
 						("maximum determined latency of" + name + ":" + result + "s").postln;
-						func.value(result) 
+						func.value(result)
 					}
 				};
 		};
 		pingFunc.value;
 	}
-	
+
 	addStatusWatcher {
-		statusWatcher = 
+		statusWatcher =
 			OSCresponderNode(addr, 'status.reply', { arg time, resp, msg;
 				var cmd, one;
 				alive = true;
-				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.serverRunning_(true);
 					this.changed(\counts);
 					nil // no resched
 				}.defer;
-			}).add;	
+			}).add;
 	}
 	// Buffer objects are cached in an Array for easy
 	// auto buffer info updating
@@ -494,27 +494,27 @@ Server : Model {
 		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
 		buffer.cache;
 	}
-	
+
 	freeBuf { |i|
 		var	buf;
 		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\uncache));
 		if((buf = Buffer.cachedBufferAt(this, i)).notNil) { buf.free };
 	}
-	
+
 	// /b_info on the way
 	// keeps a reference count of waiting Buffers so that only one responder is needed
 	waitForBufInfo {
 		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
 	}
-	
+
 	resetBufferAutoInfo {
 		this.deprecated(thisMethod, Meta_Buffer.findRespondingMethodFor(\clearServerCaches));
 		Buffer.clearServerCaches(this);
 	}
-	
+
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
-	
+
 	startAliveThread { arg delay=4.0;
 		^aliveThread ?? {
 			this.addStatusWatcher;
@@ -533,11 +533,11 @@ Server : Model {
 		}
 	}
 	stopAliveThread {
-		if( aliveThread.notNil, { 
-			aliveThread.stop; 
+		if( aliveThread.notNil, {
+			aliveThread.stop;
 			aliveThread = nil;
 		});
-		if( statusWatcher.notNil, { 
+		if( statusWatcher.notNil, {
 			statusWatcher.remove;
 			statusWatcher = nil;
 		});
@@ -551,22 +551,22 @@ Server : Model {
 			server.startAliveThread(server.aliveThreadPeriod);
 		});
 	}
-	
+
 	boot { arg startAliveThread=true, recover=false;
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
-		
+
 		serverBooting = true;
 		if(startAliveThread, { this.startAliveThread });
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
 		bootNotifyFirst = true;
-		this.doWhenBooted({ 
-			if(notified, { 
+		this.doWhenBooted({
+			if(notified, {
 				this.notify;
 				"notification is on".inform;
-			}, { 
-				"notification is off".inform; 
+			}, {
+				"notification is off".inform;
 			});
 			serverBooting = false;
 			this.initTree;
@@ -574,17 +574,17 @@ Server : Model {
 				volume.play;
 				});
 		});
-		if (remoteControlled.not, { 
+		if (remoteControlled.not, {
 			"You will have to manually boot remote server.".inform;
 		},{
 			this.bootServerApp;
 		});
 	}
-	
+
 	bootServerApp {
-		if (inProcess, { 
+		if (inProcess, {
 			"booting internal".inform;
-			this.bootInProcess; 
+			this.bootInProcess;
 			//alive = true;
 			//this.serverRunning = true;
 			pid = thisProcess.pid;
@@ -594,7 +594,7 @@ Server : Model {
 			("booting " ++ addr.port.asString).inform;
 		});
 	}
-	
+
 	reboot { arg func; // func is evaluated when server is off
 		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
 		if(serverRunning) {
@@ -610,7 +610,7 @@ Server : Model {
 			this.boot
 		}
 	}
-	
+
 	status {
 		addr.sendStatusMsg
 	}
@@ -631,7 +631,7 @@ Server : Model {
 
 	quit {
 		addr.sendMsg("/quit");
-		if (inProcess, { 
+		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
 		},{
@@ -665,7 +665,7 @@ Server : Model {
 		// over from crashes, unexpected quits etc.
 		// you can't cause them to quit via OSC (the boot button)
 
-		// this brutally kills them all off		
+		// this brutally kills them all off
 		"killall -9 scsynth".unixCmd;
 		this.quitAll;
 	}
@@ -677,7 +677,7 @@ Server : Model {
 
 	*freeAll { arg evenRemote = false;
 		if (evenRemote) {
-			set.do { arg server; 
+			set.do { arg server;
 				if ( server.serverRunning ) { server.freeAll }
 			}
 		} {
@@ -689,7 +689,7 @@ Server : Model {
 
 	*hardFreeAll { arg evenRemote = false;
 		if (evenRemote) {
-			set.do { arg server; 
+			set.do { arg server;
 				server.freeAll
 			}
 		} {
@@ -700,11 +700,11 @@ Server : Model {
 	}
 
 	// bundling support
-	
-	
-	openBundle { arg bundle;	// pass in a bundle that you want to 
+
+
+	openBundle { arg bundle;	// pass in a bundle that you want to
 							// continue adding to, or nil for a new bundle.
-		if(addr.hasBundle) { 
+		if(addr.hasBundle) {
 			bundle = addr.bundle.addAll(bundle);
 			addr.bundle = []; // debatable
 		};
@@ -734,7 +734,7 @@ Server : Model {
 	bind { arg func;
 		^this.makeBundle(this.latency, func)
 	}
-	
+
 	// internal server commands
 	bootInProcess {
 		^options.bootInProcess;
@@ -755,7 +755,7 @@ Server : Model {
 		_GetSharedControl
 		^this.primitiveFailed
 	}
-	
+
 	// recording output
 	record { |path|
 		if(recordBuf.isNil){
@@ -766,7 +766,7 @@ Server : Model {
 			}).play;
 		}{
 			if(recordNode.isNil){
-				recordNode = Synth.tail(RootNode(this), "server-record", 
+				recordNode = Synth.tail(RootNode(this), "server-record",
 						[\bufnum, recordBuf.bufnum]);
 			}{
 				recordNode.run(true)
@@ -778,17 +778,17 @@ Server : Model {
 	pauseRecording {
 		recordNode.notNil.if({ recordNode.run(false); "Paused".postln }, { "Not Recording".warn });
 	}
-	
+
 	stopRecording {
-		recordNode.notNil.if({ 
+		recordNode.notNil.if({
 			recordNode.free;
 			recordNode = nil;
 			recordBuf.close({ arg buf; buf.free; });
-			recordBuf = nil; 
-			"Recording Stopped".postln }, 
+			recordBuf = nil;
+			"Recording Stopped".postln },
 		{ "Not Recording".warn });
 	}
-	
+
 	prepareForRecord { arg path;
 		if (path.isNil) {
 			if(File.exists(thisProcess.platform.recordingsDir).not) {
@@ -807,12 +807,12 @@ Server : Model {
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		SynthDef("server-record", { arg bufnum;
-			DiskOut.ar(bufnum, In.ar(0, recChannels)) 
+			DiskOut.ar(bufnum, In.ar(0, recChannels))
 		}).send(this);
 		// cmdPeriod support
 		CmdPeriod.add(this);
 	}
-	
+
 	// CmdPeriod support for Server-scope and Server-record and Server-volume
 	cmdPeriod {
 		if(recordNode.notNil) { recordNode = nil; };
@@ -825,9 +825,9 @@ Server : Model {
 			CmdPeriod.remove(this)
 		};
 	}
-	
+
 	defaultGroup { ^Group.basicNew(this, 1) }
-	
+
 	queryAllNodes { arg queryControls = false;
 		var resp, done = false;
 		if(isLocal, {this.sendMsg("/g_dumpTree", 0, queryControls.binaryValue);}, {
@@ -866,7 +866,7 @@ Server : Model {
 									});
 									"\n".post;
 								});
-							});		
+							});
 						});
 						tabs = tabs - 1;
 					};
@@ -875,11 +875,11 @@ Server : Model {
 				done = true;
 			}).add.removeWhenDone;
 			this.sendMsg("/g_queryTree", 0, queryControls.binaryValue);
-			SystemClock.sched(3, { 
+			SystemClock.sched(3, {
 				done.not.if({
 					resp.remove;
 					"Remote server failed to respond to queryAllNodes!".warn;
-				}); 
+				});
 			});
 		})
 	}
@@ -891,21 +891,21 @@ Server : Model {
 	}
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
-	
+
 	volume_ {arg newVolume;
 		volume.volume_(newVolume);
 		}
-		
+
 	mute {
 		volume.mute;
 		}
-		
+
 	unmute {
 		volume.unmute;
 	}
-	
+
 	reorder { arg nodeList, target, addAction=\addToHead;
-		target = target.asTarget; 
+		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
-	}  
+	}
 }

@@ -52,7 +52,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, res;
 	PyrSymbol *msg;
 	int opcode = g->primitiveIndex;
-	
+
 	a = g->sp;
 
 	switch (a->utag) {
@@ -118,7 +118,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opSCurve : res.uf = sc_scurve((double)a->ui); break;
 				case opRamp : res.uf = sc_ramp((double)a->ui); break;
 				default : goto send_normal_1;
-			}	
+			}
 			break;
 		case tagChar :
 			switch (opcode) {
@@ -126,7 +126,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
 				case opAsInt : res.utag = tagInt; break;
-				case opDigitValue : 
+				case opDigitValue :
 					if (a->ui >= '0' && a->ui <= '9') res.ui = a->ui - '0';
 					else if (a->ui >= 'A' && a->ui <= 'Z') res.ui = a->ui - 'A';
 					else if (a->ui >= 'a' && a->ui <= 'z') res.ui = a->ui - 'a';
@@ -136,21 +136,21 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				default : goto send_normal_1;
 			}
 			break;
-		case tagPtr : 
+		case tagPtr :
 			switch (opcode) {
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
 				default : goto send_normal_1;
 			}
 			break;
-		case tagNil : 
+		case tagNil :
 			switch (opcode) {
 				case opIsNil : SetTrue(a); break;
 				case opNotNil : SetFalse(a); break;
 				default : goto send_normal_1;
 			}
 			break;
-		case tagFalse : 
+		case tagFalse :
 			switch (opcode) {
 				case opNot : a->utag = tagTrue; break;
 				case opIsNil : /*SetFalse(a);*/ break;
@@ -158,7 +158,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				default : goto send_normal_1;
 			}
 			break;
-		case tagTrue : 
+		case tagTrue :
 			switch (opcode) {
 				case opNot : a->utag = tagFalse; break;
 				case opIsNil : SetFalse(a); break;
@@ -261,8 +261,8 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 //				case opGaussRand : res.uf = g->rgen->gaussrand(a->uf); break;
 //				case opPoiRand   : res.uf = g->rgen->poirand(a->uf); break;
 
-				case opDistort : 
-					res.uf = sc_distort(a->uf); 
+				case opDistort :
+					res.uf = sc_distort(a->uf);
 					break;
 				case opSoftClip :
 					res.uf = sc_softclip(a->uf);
@@ -275,23 +275,23 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opSCurve : res.uf = sc_scurve(a->uf); break;
 				case opRamp : res.uf = sc_ramp(a->uf); break;
 				default : goto send_normal_1;
-			}	
+			}
 			break;
 	}
-	
+
 	g->sp[0].ucopy = res.ucopy;
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
 	return errNone;
-	
+
 	send_normal_1:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;
 
 	msg = gSpecialUnarySelectors[opcode];
 	sendMessage(g, msg, 1);
-	
+
 	return errNone;
 }
 
@@ -305,7 +305,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 	PyrSlot *a, *b, res;
 	PyrSymbol *msg;
 	int opcode = g->primitiveIndex;
-	
+
 	a = g->sp - (numArgsPushed - 1);
 	b = a + 1;
 
@@ -346,7 +346,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							long ia = a->ui;
 							long ib = b->ui;
 							if (ib>0) ia <<= ib;
-							else if (ib<0) ia >>= -ib; 
+							else if (ib<0) ia >>= -ib;
 							res.ui = ia;
 							res.utag = tagInt;
 						} break;
@@ -354,7 +354,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 							long ia = a->ui;
 							long ib = b->ui;
 							if (ib>0) ia >>= ib;
-							else if (ib<0) ia <<= -ib; 
+							else if (ib<0) ia <<= -ib;
 							res.ui = ia;
 							res.utag = tagInt;
 						} break;
@@ -362,7 +362,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
               unsigned long ia = a->ui;
               long ib = b->ui;
 							if (ib>0) ia >>= ib;
-							else if (ib<0) ia <<= -ib; 
+							else if (ib<0) ia <<= -ib;
 							res.ui = ia;
 							res.utag = tagInt;
 						} break;
@@ -376,54 +376,54 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum : {
 							long z;
 							z = a->ui + b->ui;
-							res.ui = z*z; 
-							res.utag = tagInt; 
+							res.ui = z*z;
+							res.utag = tagInt;
 						} break;
 						case opSqrDif : {
 							long z;
 							z = a->ui - b->ui;
-							res.ui = z*z; 
-							res.utag = tagInt; 
+							res.ui = z*z;
+							res.utag = tagInt;
 						} break;
 						case opAbsDif : res.ui = abs(a->ui - b->ui); res.utag = tagInt; break;
 						case opThresh : res.ui = a->ui<b->ui ? 0 : a->ui; res.utag = tagInt; break;
 						case opAMClip : res.ui = b->ui<0 ? 0 : a->ui*b->ui; res.utag = tagInt; break;
 						case opScaleNeg : res.ui = a->ui<0 ? a->ui*b->ui : a->ui; res.utag = tagInt; break;
-						case opClip2 : 
-							res.ui = a->ui < -b->ui ? -b->ui : (a->ui > b->ui ? b->ui : a->ui); 
-							res.utag = tagInt; 
+						case opClip2 :
+							res.ui = a->ui < -b->ui ? -b->ui : (a->ui > b->ui ? b->ui : a->ui);
+							res.utag = tagInt;
 							break;
-						case opFold2 : 							
-							res.ui = sc_fold2(a->ui, b->ui); 
-							res.utag = tagInt; 
+						case opFold2 :
+							res.ui = sc_fold2(a->ui, b->ui);
+							res.utag = tagInt;
 							break;
-						case opWrap2 : 
+						case opWrap2 :
 							res.ui = sc_mod((int)(a->ui + b->ui), (int)(2 * b->ui)) - b->ui;
-							res.utag = tagInt; 
+							res.utag = tagInt;
 							break;
-						case opExcess : 
-							res.ui = a->ui - (a->ui < -b->ui ? -b->ui : (a->ui > b->ui ? b->ui : a->ui)); 
-							res.utag = tagInt; 
+						case opExcess :
+							res.ui = a->ui - (a->ui < -b->ui ? -b->ui : (a->ui > b->ui ? b->ui : a->ui));
+							res.utag = tagInt;
 							break;
 						case opFirstArg : res.ui = a->ui; res.utag = tagInt; break;
-						case opRandRange : 
-							res.ui = b->ui > a->ui ? a->ui + g->rgen->irand(b->ui - a->ui + 1) 
+						case opRandRange :
+							res.ui = b->ui > a->ui ? a->ui + g->rgen->irand(b->ui - a->ui + 1)
 								: b->ui + g->rgen->irand(a->ui - b->ui + 1);
-							res.utag = tagInt; 
+							res.utag = tagInt;
 							break;
-						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->ui, b->ui); 
+						case opExpRandRange :
+							res.uf = g->rgen->exprandrng(a->ui, b->ui);
 							break;
 						default : goto send_normal_2;
 					}
 					break;
 				case tagChar :
-				case tagPtr : 
-				case tagNil : 
-				case tagFalse : 
-				case tagTrue : 
+				case tagPtr :
+				case tagNil :
+				case tagFalse :
+				case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					if (IS_BINARY_BOOL_OP(opcode)) {
 						res = opcode == opNE ? o_true : o_false;
 					} else {
@@ -500,35 +500,35 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum : {
 							double z;
 							z = a->ui + b->uf;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->ui - b->uf;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opAbsDif : res.uf = fabs(a->ui - b->uf); break;
 						case opThresh : res.ui = a->ui<b->uf ? 0 : a->ui; res.utag = tagInt; break;
 						case opAMClip : res.uf = b->uf<0 ? 0 : a->ui*b->uf; break;
 						case opScaleNeg : res.uf = a->ui<0 ? a->ui*b->uf : a->ui; break;
-						case opClip2 : 
-							res.uf = a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui); 
+						case opClip2 :
+							res.uf = a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui);
 							break;
-						case opFold2 : 
-							res.uf = sc_fold2((double)a->ui, b->uf); 
+						case opFold2 :
+							res.uf = sc_fold2((double)a->ui, b->uf);
 							break;
-						case opWrap2 : 
-							res.uf = sc_wrap((double)a->ui, -b->uf, -b->uf); 
+						case opWrap2 :
+							res.uf = sc_wrap((double)a->ui, -b->uf, -b->uf);
 							break;
-						case opExcess : 
-							res.uf = a->ui - (a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui)); 
+						case opExcess :
+							res.uf = a->ui - (a->ui < -b->uf ? -b->uf : (a->ui > b->uf ? b->uf : a->ui));
 							break;
 						case opFirstArg : res.ui = a->ui; res.utag = tagInt; break;
-						case opRandRange : 
+						case opRandRange :
 							res.uf = a->ui + g->rgen->frand() * (b->uf - a->ui);
 							break;
-						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->ui, b->uf); 
+						case opExpRandRange :
+							res.uf = g->rgen->exprandrng(a->ui, b->uf);
 							break;
 						default : goto send_normal_2;
 					}
@@ -554,12 +554,12 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				goto send_normal_2;
 			}
 		} break;
-		case tagPtr : 
-		case tagNil : 
-		case tagFalse : 
-		case tagTrue : 
+		case tagPtr :
+		case tagNil :
+		case tagFalse :
+		case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			if (b->utag == tagSym) {
 				switch (opcode) {
 					case opEQ  : res = BOOL(a->us == b->us); break;
@@ -614,19 +614,19 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						}
 						break;
 					case tagChar :
-					case tagPtr : 
-					case tagNil : 
-					case tagFalse : 
-					case tagTrue : 
+					case tagPtr :
+					case tagNil :
+					case tagFalse :
+					case tagTrue :
 						goto send_normal_2;
-					case tagSym : 
+					case tagSym :
 						if (IS_BINARY_BOOL_OP(opcode)) {
 							res = opcode == opNE ? o_true : o_false;
 						} else {
 							res.us = b->us; res.utag = tagSym;
 						}
 						break;
-					case tagObj : 
+					case tagObj :
 						if (isKindOf(b->uo, class_signal)) {
 							switch (opcode) {
 								case opAdd : res.uo = signal_add_xx(g, a->uo, b->uo); res.utag = tagObj; break;
@@ -733,46 +733,46 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum : {
 							double z;
 							z = a->uf + b->ui;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->uf - b->ui;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opAbsDif : res.uf = fabs(a->uf - b->ui); break;
 						case opThresh : res.uf = a->uf<b->ui ? 0. : a->uf; break;
 						case opAMClip : res.uf = b->ui<0 ? 0. : a->uf*b->ui; break;
 						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->ui : a->uf; break;
-						case opClip2 : 
-							res.uf = a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf); 
+						case opClip2 :
+							res.uf = a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf);
 							break;
-						case opFold2 : 
-							res.uf = sc_fold2(a->uf, (double)b->ui); 
+						case opFold2 :
+							res.uf = sc_fold2(a->uf, (double)b->ui);
 							break;
-						case opWrap2 : 
-							res.uf = sc_wrap(a->uf, (double)-b->ui, (double)b->ui); 
+						case opWrap2 :
+							res.uf = sc_wrap(a->uf, (double)-b->ui, (double)b->ui);
 							break;
-						case opExcess : 
-							res.uf = a->uf - (a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf)); 
+						case opExcess :
+							res.uf = a->uf - (a->uf < -b->ui ? -b->ui : (a->uf > b->ui ? b->ui : a->uf));
 							break;
 						case opFirstArg : res.uf = a->uf; break;
-						case opRandRange : 
+						case opRandRange :
 							res.uf = a->uf + g->rgen->frand() * (b->ui - a->uf);
 							break;
-						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->uf, b->ui); 
+						case opExpRandRange :
+							res.uf = g->rgen->exprandrng(a->uf, b->ui);
 							break;
 						default : goto send_normal_2;
 					}
 					break;
 				case tagChar :
-				case tagPtr : 
-				case tagNil : 
-				case tagFalse : 
-				case tagTrue : 
+				case tagPtr :
+				case tagNil :
+				case tagFalse :
+				case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					if (IS_BINARY_BOOL_OP(opcode)) {
 						res = opcode == opNE ? o_true : o_false;
 					} else {
@@ -847,35 +847,35 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum : {
 							double z;
 							z = a->uf + b->uf;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opSqrDif : {
 							double z;
 							z = a->uf - b->uf;
-							res.uf = z*z; 
+							res.uf = z*z;
 						} break;
 						case opAbsDif : res.uf = fabs(a->uf - b->uf); break;
 						case opThresh : res.uf = a->uf<b->uf ? 0. : a->uf; break;
 						case opAMClip : res.uf = b->uf<0 ? 0 : a->uf*b->uf; break;
 						case opScaleNeg : res.uf = a->uf<0 ? a->uf*b->uf : a->uf; break;
-						case opClip2 : 
-							res.uf = a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf); 
+						case opClip2 :
+							res.uf = a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf);
 							break;
-						case opFold2 : 
-							res.uf = sc_fold2(a->uf, b->uf); 
+						case opFold2 :
+							res.uf = sc_fold2(a->uf, b->uf);
 							break;
-						case opWrap2 : 
-							res.uf = sc_wrap(a->uf, -b->uf, b->uf); 
+						case opWrap2 :
+							res.uf = sc_wrap(a->uf, -b->uf, b->uf);
 							break;
-						case opExcess : 
-							res.uf = a->uf - (a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf)); 
+						case opExcess :
+							res.uf = a->uf - (a->uf < -b->uf ? -b->uf : (a->uf > b->uf ? b->uf : a->uf));
 							break;
 						case opFirstArg : res.uf = a->uf; break;
-						case opRandRange : 
-							res.uf = a->uf + g->rgen->frand() * (b->uf - a->uf); 
+						case opRandRange :
+							res.uf = a->uf + g->rgen->frand() * (b->uf - a->uf);
 							break;
-						case opExpRandRange : 
-							res.uf = g->rgen->exprandrng(a->uf, b->uf); 
+						case opExpRandRange :
+							res.uf = g->rgen->exprandrng(a->uf, b->uf);
 							break;
 						default : goto send_normal_2;
 					}
@@ -890,14 +890,14 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 	g->tailCall = 0;
 #endif
 	return errNone;
-	
+
 	send_normal_2:
 	if (isPrimitive)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[opcode];
 	sendMessage(g, msg, numArgsPushed);
 	return errNone;
-		
+
 }
 

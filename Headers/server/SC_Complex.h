@@ -40,10 +40,10 @@ struct Complex
 
 	Polar ToPolar();
 	Polar ToPolarApx();
-	
+
 	void ToPolarInPlace();
 	void ToPolarApxInPlace();
-	
+
 	float real, imag;
 };
 
@@ -55,10 +55,10 @@ struct Polar
 
 	Complex ToComplex();
 	Complex ToComplexApx();
-	
+
 	void ToComplexInPlace();
 	void ToComplexApxInPlace();
-	
+
 	float mag, phase;
 };
 
@@ -90,7 +90,7 @@ inline Complex operator-(float a, Complex b) { return Complex(a - b.real, b.imag
 inline Complex operator-=(Complex a, Complex b) { a.real -= b.real, a.imag -= b.imag; return a; }
 inline Complex operator-=(Complex a, float b) { a.real -= b; return a; }
 
-inline Complex operator*(Complex a, Complex b) 
+inline Complex operator*(Complex a, Complex b)
 {
 	return Complex(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real);
 }
@@ -105,7 +105,7 @@ inline Complex operator*(float a, Complex b)
 	return Complex(b.real * a, b.imag * a);
 }
 
-inline Complex operator*=(Complex a, Complex b) 
+inline Complex operator*=(Complex a, Complex b)
 {
 	a.Set(
 		a.real * b.real - a.imag * b.imag,
@@ -114,7 +114,7 @@ inline Complex operator*=(Complex a, Complex b)
 	return a;
 }
 
-inline Complex operator*=(Complex a, float b) 
+inline Complex operator*=(Complex a, float b)
 {
 	a.real *= b;
 	a.imag *= b;

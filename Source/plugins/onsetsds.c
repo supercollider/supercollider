@@ -42,7 +42,7 @@ inline float onsetsds_phase_rewrap(float phase){
 #endif
 
 size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
-	
+
 	/*
 	Need memory for:
 	- median calculation (2 * medspan floats)
@@ -51,19 +51,19 @@ size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
 	- storing the PSP (numbins + 2 values)
 	All these are floats.
 	*/
-	
+
 	int numbins = (fftsize >> 1) - 1; // No of bins, not counting DC/nyq
-	
+
 	switch(odftype){
 		case ODS_ODF_POWER:
 		case ODS_ODF_MAGSUM:
-			
+
 			// No old FFT frames needed, easy:
 			return (medspan+medspan + fftsize + numbins + 2) * sizeof(float);
 
 		case ODS_ODF_COMPLEX:
 		case ODS_ODF_RCOMPLEX:
-	
+
 			return (medspan+medspan + fftsize + numbins + 2
 					// For each bin (NOT dc/nyq) we store mag, phase and d_phase
 					+ numbins + numbins + numbins
@@ -71,14 +71,14 @@ size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
 
 		case ODS_ODF_PHASE:
 		case ODS_ODF_WPHASE:
-	
+
 			return (medspan+medspan + fftsize + numbins + 2
 					// For each bin (NOT dc/nyq) we store phase and d_phase
 					+ numbins + numbins
 				) * sizeof(float);
 
 		case ODS_ODF_MKL:
-	
+
 			return (medspan+medspan + fftsize + numbins + 2
 					// For each bin (NOT dc/nyq) we store mag
 					+ numbins
@@ -86,13 +86,13 @@ size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan){
 
 
 			break;
-	
+
 	}
 	return -1; //bleh
 }
 
 
-void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat, 
+void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat,
                            int odftype, size_t fftsize, unsigned int medspan, float srate){
 
    int numbins, realnumbins;
@@ -101,9 +101,9 @@ void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat,
 	ods->data = odsdata;
 	// Set all vals in processing area to zero
 	memset(odsdata, 0, onsetsds_memneeded(odftype, fftsize, medspan));
-	
+
 	ods->srate = srate;
-	
+
 	numbins  = (fftsize >> 1) - 1; // No of bins, not counting DC/nyq
 	realnumbins = numbins + 2;
 
@@ -113,11 +113,11 @@ void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat,
 	ods->odfvals  = odsdata + fftsize + realnumbins;
 	ods->sortbuf  = odsdata + fftsize + realnumbins + medspan;
 	ods->other    = odsdata + fftsize + realnumbins + medspan + medspan;
-	
+
 	// Default settings for Adaptive Whitening, user can set own values after init
 	onsetsds_setrelax(ods, 1.f, fftsize>>1);
 	ods->floor    = 0.1;
-	
+
 	switch(odftype){
 		case ODS_ODF_POWER:
 			ods->odfparam = 0.01; // "powthresh" in SC code
@@ -150,22 +150,22 @@ void onsetsds_init(OnsetsDS *ods, float *odsdata, int fftformat,
 		default:
 			printf("onsetsds_init ERROR: \"odftype\" is not a recognised value\n");
 	}
-	
+
 	ods->odfvalpost = 0.f;
 	ods->odfvalpostprev = 0.f;
 	ods->thresh   = 0.5f;
 	ods->logmags = false;
-	
+
 	ods->odftype  = odftype;
 	ods->whtype   = ODS_WH_ADAPT_MAX1;
 	ods->fftformat = fftformat;
-	
+
 	ods->whiten   = (odftype != ODS_ODF_MKL); // Deactivate whitening for MKL by default
 	ods->detected = false;
 	ods->med_odd  = (medspan & 1) != 0;
-	
+
 	ods->medspan  = medspan;
-	
+
 	ods->mingap   = 0;
 	ods->gapleft  = 0;
 
@@ -182,7 +182,7 @@ bool onsetsds_process(OnsetsDS* ods, float* fftbuf){
 	onsetsds_whiten(ods);
 	onsetsds_odf(ods);
 	onsetsds_detect(ods);
-	
+
 	return ods->detected;
 }
 
@@ -195,21 +195,21 @@ void onsetsds_setrelax(OnsetsDS* ods, float time, size_t hopsize){
 
 
 void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
-	
+
 	float *pos, *pos2, imag, real;
 	int i;
-	
+
 	switch(ods->fftformat){
 		case ODS_FFT_SC3_POLAR:
 			// The format is the same! dc, nyq, mag[1], phase[1], ...
 			memcpy(ods->curr, fftbuf, ods->fftsize * sizeof(float));
 			break;
-			
+
 		case ODS_FFT_SC3_COMPLEX:
-		
+
 			ods->curr->dc  = fftbuf[0];
 			ods->curr->nyq = fftbuf[1];
-			
+
 			// Then convert cartesian to polar:
 			pos = fftbuf + 2;
 			for(i=0; i< (ods->numbins << 1); i += 2){
@@ -219,12 +219,12 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
 				ods->curr->bin[i].phase = atan2f(imag, real);
 			}
 			break;
-			
+
 		case ODS_FFT_FFTW3_HC:
-			
+
 			ods->curr->dc  = fftbuf[0];
 			ods->curr->nyq = fftbuf[ods->fftsize>>1];
-			
+
 			// Then convert cartesian to polar:
 			// (Starting positions: real and imag for bin 1)
 			pos  = fftbuf + 1;
@@ -236,12 +236,12 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
 				ods->curr->bin[i].phase = atan2f(imag, real);
 			}
 			break;
-			
+
 		case ODS_FFT_FFTW3_R2C:
-		
+
 			ods->curr->dc  = fftbuf[0];
 			ods->curr->nyq = fftbuf[ods->fftsize];
-			
+
 			// Then convert cartesian to polar:
 			pos = fftbuf + 2;
 			for(i=0; i<ods->numbins; i++){
@@ -251,26 +251,26 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf){
 				ods->curr->bin[i].phase = atan2f(imag, real);
 			}
 			break;
-			
+
 	}
-	
+
 	// Conversion to log-domain magnitudes, including re-scaling to aim back at the zero-to-one range.
 	// Not well tested yet.
 	if(ods->logmags){
 		for(i=0; i<ods->numbins; i++){
-			ods->curr->bin[i].mag = 
+			ods->curr->bin[i].mag =
 				(log(ods_max(ods->curr->bin[i].mag, ODS_LOG_LOWER_LIMIT)) - ODS_LOGOF_LOG_LOWER_LIMIT) * ODS_ABSINVOF_LOGOF_LOG_LOWER_LIMIT;
 		}
-		ods->curr->dc = 
+		ods->curr->dc =
 			(log(ods_max(ods_abs(ods->curr->dc ), ODS_LOG_LOWER_LIMIT)) - ODS_LOGOF_LOG_LOWER_LIMIT) * ODS_ABSINVOF_LOGOF_LOG_LOWER_LIMIT;
-		ods->curr->nyq = 
+		ods->curr->nyq =
 			(log(ods_max(ods_abs(ods->curr->nyq), ODS_LOG_LOWER_LIMIT)) - ODS_LOGOF_LOG_LOWER_LIMIT) * ODS_ABSINVOF_LOGOF_LOG_LOWER_LIMIT;
 	}
-	
+
 }
 
 void onsetsds_whiten(OnsetsDS* ods){
-	
+
 	float val,oldval, relaxcoef, floor;
 	int numbins, i;
 	OdsPolarBuf *curr;
@@ -281,9 +281,9 @@ void onsetsds_whiten(OnsetsDS* ods){
 		//printf("onsetsds_whiten(): ODS_WH_NONE, skipping\n");
 		return;
 	}
-	
+
 	// NB: Apart from the above, ods->whtype is currently IGNORED and only one mode is used.
-	
+
 	relaxcoef = ods->relaxcoef;
 	numbins = ods->numbins;
 	curr = ods->curr;
@@ -294,7 +294,7 @@ void onsetsds_whiten(OnsetsDS* ods){
 	//printf("onsetsds_whiten: relaxcoef=%g, relaxtime=%g, floor=%g\n", relaxcoef, ods->relaxtime, floor);
 
 	////////////////////// For each bin, update the record of the peak value /////////////////////
-	
+
 	val = fabs(curr->dc);	// Grab current magnitude
 	oldval = psp[0];
 	// If it beats the amplitude stored then that's our new amplitude;
@@ -303,14 +303,14 @@ void onsetsds_whiten(OnsetsDS* ods){
 		val = val + (oldval - val) * relaxcoef;
 	}
 	psp[0] = val; // Store the "amplitude trace" back
-	
+
 	val = fabs(curr->nyq);
 	oldval = pspp1[numbins];
 	if(val < oldval) {
 		val = val + (oldval - val) * relaxcoef;
 	}
 	pspp1[numbins] = val;
-	
+
 	for(i=0; i<numbins; ++i){
 		val = fabs(curr->bin[i].mag);
 		oldval = pspp1[i];
@@ -319,7 +319,7 @@ void onsetsds_whiten(OnsetsDS* ods){
 		}
 		pspp1[i] = val;
 	}
-	
+
 	//////////////////////////// Now for each bin, rescale the current magnitude ////////////////////////////
 	curr->dc  /= ods_max(floor, psp[0]);
 	curr->nyq /= ods_max(floor, pspp1[numbins]);
@@ -329,7 +329,7 @@ void onsetsds_whiten(OnsetsDS* ods){
 }
 
 void onsetsds_odf(OnsetsDS* ods){
-	
+
 	int numbins = ods->numbins;
 	OdsPolarBuf *curr = ods->curr;
 	float* val = ods->odfvals;
@@ -339,72 +339,72 @@ void onsetsds_odf(OnsetsDS* ods){
 	float predmag, predphase, yesterphase, yesterphasediff;
 	float yestermag;
 
-	
+
 	bool rectify = true;
-	
+
 	// Here we shunt the "old" ODF values down one place
 	memcpy(val + 1, val, (ods->medspan - 1)*sizeof(float));
-	
+
 	// Now calculate a new value and store in ods->odfvals[0]
 	switch(ods->odftype){
 		case ODS_ODF_POWER:
-			
+
 			*val = (curr->nyq  *  curr->nyq)  +  (curr->dc  *  curr->dc);
 			for(i=0; i<numbins; i++){
 				*val += curr->bin[i].mag  *  curr->bin[i].mag;
 			}
 			break;
-			
+
 		case ODS_ODF_MAGSUM:
-	
+
 			*val = ods_abs(curr->nyq) + ods_abs(curr->dc);
-			
+
 			for(i=0; i<numbins; i++){
 				*val += ods_abs(curr->bin[i].mag);
 			}
 			break;
-			
+
 		case ODS_ODF_COMPLEX:
 			rectify = false;
 			// ...and then drop through to:
 		case ODS_ODF_RCOMPLEX:
-			
+
 			// Note: "other" buf is stored in this format: mag[0],phase[0],d_phase[0],mag[1],phase[1],d_phase[1], ...
-			
+
 			// Iterate through, calculating the deviation from expected value.
 			totdev = 0.0;
 			tbpointer = 0;
 			for (i=0; i<numbins; ++i) {
 				curmag = ods_abs(curr->bin[i].mag);
-			
+
 				// Predict mag as yestermag
 				predmag         = ods->other[tbpointer++];
 				yesterphase     = ods->other[tbpointer++];
 				yesterphasediff = ods->other[tbpointer++];
-				
+
 				// Thresholding as Brossier did - discard (ignore) bin's deviation if bin's power is minimal
 				if(curmag > ods->odfparam) {
 					// If rectifying, ignore decreasing bins
 					if((!rectify) || !(curmag < predmag)){
-						
+
 						// Predict phase as yesterval + yesterfirstdiff
 						predphase = yesterphase + yesterphasediff;
-						
+
 						// Here temporarily using the "deviation" var to store the phase difference
 						//  so that the rewrap macro can use it more efficiently
 						deviation = predphase - curr->bin[i].phase;
-						
+
 						// Deviation is Euclidean distance between predicted and actual.
 						// In polar coords: sqrt(r1^2 +  r2^2 - r1r2 cos (theta1 - theta2))
 						deviation = sqrtf(predmag * predmag + curmag * curmag
 										  - predmag * curmag * cosf(onsetsds_phase_rewrap(deviation))
-										);			
-						
+										);
+
 						totdev += deviation;
 					}
 				}
 			}
-			
+
 			// totdev will be the output, but first we need to fill tempbuf with today's values, ready for tomorrow.
 			tbpointer = 0;
 			for (i=0; i<numbins; ++i) {
@@ -413,34 +413,34 @@ void onsetsds_odf(OnsetsDS* ods){
 				ods->other[tbpointer++] = curr->bin[i].phase; // Storing phase
 				// Wrap onto +-PI range
 				diff = onsetsds_phase_rewrap(diff);
-				
+
 				ods->other[tbpointer++] = diff; // Storing first diff to buf
-				
+
 			}
 			*val = (float)totdev;
-			
+
 			break;
-			
-			
+
+
 		case ODS_ODF_PHASE:
 			rectify = false; // So, actually, "rectify" means "useweighting" in this context
 			// ...and then drop through to:
 		case ODS_ODF_WPHASE:
-			
+
 			// Note: "other" buf is stored in this format: phase[0],d_phase[0],phase[1],d_phase[1], ...
-			
+
 			// Iterate through, calculating the deviation from expected value.
 			totdev = 0.0;
 			tbpointer = 0;
 			for (i=0; i<numbins; ++i) {
 				// Thresholding as Brossier did - discard (ignore) bin's phase deviation if bin's power is low
 				if(ods_abs(curr->bin[i].mag) > ods->odfparam) {
-					
+
 					// Deviation is the *second difference* of the phase, which is calc'ed as curval - yesterval - yesterfirstdiff
 					deviation = curr->bin[i].phase - ods->other[tbpointer++] - ods->other[tbpointer++];
 					// Wrap onto +-PI range
 					deviation = onsetsds_phase_rewrap(deviation);
-					
+
 					if(rectify){ // "rectify" meaning "useweighting"...
 						totdev += fabs(deviation * ods_abs(curr->bin[i].mag));
 					} else {
@@ -448,7 +448,7 @@ void onsetsds_odf(OnsetsDS* ods){
 					}
 				}
 			}
-			
+
 			// totdev will be the output, but first we need to fill tempbuf with today's values, ready for tomorrow.
 			tbpointer = 0;
 			for (i=0; i<numbins; ++i) {
@@ -456,40 +456,40 @@ void onsetsds_odf(OnsetsDS* ods){
 				ods->other[tbpointer++] = curr->bin[i].phase; // Storing phase
 				// Wrap onto +-PI range
 				diff = onsetsds_phase_rewrap(diff);
-				
+
 				ods->other[tbpointer++] = diff; // Storing first diff to buf
-				
+
 			}
 			*val = (float)totdev;
 			break;
-			
-			
+
+
 		case ODS_ODF_MKL:
-			
+
 			// Iterate through, calculating the Modified Kullback-Liebler distance
 			totdev = 0.0;
 			tbpointer = 0;
 			for (i=0; i<numbins; ++i) {
 				curmag = ods_abs(curr->bin[i].mag);
 				yestermag = ods->other[tbpointer];
-				
+
 				// Here's the main implementation of Brossier's MKL eq'n (eqn 2.9 from his thesis):
 				deviation = ods_abs(curmag) / (ods_abs(yestermag) + ods->odfparam);
 				totdev += log(1.f + deviation);
-				
+
 				// Store the mag as yestermag
 				ods->other[tbpointer++] = curmag;
 			}
 			*val = (float)totdev;
 			break;
-	
+
 	}
-		
+
 #if ODS_DEBUG_POST_CSV
 	printf("%g,", *val);
 	printf("%g,", ods->odfvals[0] * ods->normfactor);
 #endif
-	
+
 	ods->odfvals[0] *= ods->normfactor;
 }
 // End of ODF function
@@ -515,30 +515,30 @@ void SelectionSort(float *array, int length)
 
 
 void onsetsds_detect(OnsetsDS* ods){
-	
+
 	float* sortbuf = ods->sortbuf;
 	int medspan = ods->medspan;
 
 	// Shift the yesterval to its rightful place
 	ods->odfvalpostprev = ods->odfvalpost;
-	
+
 	///////// MEDIAN REMOVAL ////////////
-		
+
 	// Copy odfvals to sortbuf
 	memcpy(sortbuf, ods->odfvals, medspan * sizeof(float));
-	
+
 	// Sort sortbuf
 	SelectionSort(sortbuf, medspan);
-			
+
 	// Subtract the middlest value === the median
 	if(ods->med_odd){
-		ods->odfvalpost = ods->odfvals[0] 
+		ods->odfvalpost = ods->odfvals[0]
 			   - sortbuf[(medspan - 1) >> 1];
 	}else{
-		ods->odfvalpost = ods->odfvals[0] 
+		ods->odfvalpost = ods->odfvals[0]
 			   - ((sortbuf[medspan >> 1]
 				 + sortbuf[(medspan >> 1) - 1]) * 0.5f);
-			   
+
 	}
 
 	// Detection not allowed if we're too close to a previous detection.

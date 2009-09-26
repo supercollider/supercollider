@@ -24,7 +24,7 @@
 #include "SC_BoundsMacros.h"
 #include <assert.h>
 
-/* 
+/*
    Requests are `small' if both the corresponding and the next bin are small
 */
 
@@ -37,7 +37,7 @@
 #define garbage_fill(P) DoGarbageFill(P)
 #else
 #define check_pool()
-#define check_free_chunk(P) 
+#define check_free_chunk(P)
 #define check_inuse_chunk(P)
 #define check_chunk(P)
 #define check_malloced_chunk(P,N)
@@ -74,8 +74,8 @@ void AllocPool::InitAlloc()
 	/* get chunk */
 	AllocAreaPtr area = mAreas;
 	AllocChunkPtr chunk = &area->mChunk;
-	LinkFree(chunk); 
-	
+	LinkFree(chunk);
+
 	check_pool();
 }
 
@@ -89,9 +89,9 @@ void AllocPool::InitBins()
 	}
 }
 
-AllocPool::AllocPool(NewAreaFunc inAllocArea, FreeAreaFunc inFreeArea, 
+AllocPool::AllocPool(NewAreaFunc inAllocArea, FreeAreaFunc inFreeArea,
 					size_t inAreaInitSize, size_t inAreaMoreSize)
-{	
+{
 	InitBins();
 	mAreaInitSize = inAreaInitSize;
 	mAreaMoreSize = inAreaMoreSize;
@@ -99,7 +99,7 @@ AllocPool::AllocPool(NewAreaFunc inAllocArea, FreeAreaFunc inFreeArea,
 	mFreeArea = inFreeArea;
 	mAreas = 0;
 	check_pool();
-	
+
 	InitAlloc();
 }
 
@@ -138,7 +138,7 @@ void AllocPool::FreeAllInternal()
 			size_t size = area->mSize;
 		AllocChunkPtr chunk = &area->mChunk;
 			chunk->SetSizeFree(size);
-			chunk->SetNeighborsInUse(size);	    
+			chunk->SetNeighborsInUse(size);
 			LinkFree(chunk);
 			area = nextarea;
 		} while (area != firstArea);
@@ -153,7 +153,7 @@ void AllocPool::Reinit()
 }
 
 void AllocPool::Free(void *inPtr)
-{	
+{
 
 	check_pool();
 	if (inPtr == 0) return;                   /* free(0) has no effect */
@@ -162,7 +162,7 @@ void AllocPool::Free(void *inPtr)
 
 	check_inuse_chunk(chunk);
 	garbage_fill(chunk);
-	
+
 	size_t size = chunk->Size();
 
 	if (!chunk->PrevInUse()) /* consolidate backward */
@@ -179,13 +179,13 @@ void AllocPool::Free(void *inPtr)
 		size += next->Size();
 		UnlinkFree(next);
 	}
-	
+
 	chunk->SetSizeFree(size);
 	if (mAreaMoreSize && chunk->IsArea()) {
 		// whole area is free
 		FreeArea(chunk);
 	} else {
-		LinkFree(chunk);  
+		LinkFree(chunk);
 	}
 	check_pool();
 }
@@ -196,8 +196,8 @@ AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 {
 	void *ptr = (AllocAreaPtr)(mAllocArea)(inAreaSize + kAreaOverhead);
 
-	if (ptr == NULL) { 
-		throw std::runtime_error("Could not allocate new area"); 
+	if (ptr == NULL) {
+		throw std::runtime_error("Could not allocate new area");
 	}
 	// AllocAreaPtr area = (AllocAreaPtr)((unsigned long)ptr & ~kAlignMask);
 	AllocAreaPtr area = (AllocAreaPtr)(((unsigned long)ptr + kAlignMask) & ~kAlignMask);
@@ -222,11 +222,11 @@ AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 	area->mChunk.BeEmpty();
 	area->mChunk.SetNeighborsInUse(inAreaSize);
 	area->mChunk.SetSizeFree(inAreaSize);
-	
+
 	return area;
 }
 
-void AllocPool::FreeArea(AllocChunkPtr chunk) 
+void AllocPool::FreeArea(AllocChunkPtr chunk)
 {
 	AllocAreaPtr area = (AllocAreaPtr)((char*)chunk - sizeof(AllocAreaHdr));
 
@@ -237,7 +237,7 @@ void AllocPool::FreeArea(AllocChunkPtr chunk)
 		mAreas = area->mPrev->mNext = area->mNext;
 		area->mNext->mPrev = area->mPrev;
 	}
-	
+
 	(mFreeArea)(area->mUnalignedPointerToThis);
 }
 
@@ -271,7 +271,7 @@ size_t AllocPool::LargestFreeChunk()
 	AllocChunkPtr bin = mBins + index;
 	//postbuf("** %08X %08X %08X %08X\n", mBinBlocks[0], mBinBlocks[1], mBinBlocks[2], mBinBlocks[3]);
 	//postbuf("%d %d %d %08X    %08X %08X\n", word, bitPosition, index, binBits, bin->Prev(), bin->Next());
-	
+
 	AllocChunkPtr candidate;
 	size_t maxsize = 0;
 	for (candidate = bin->Prev(); candidate != bin; candidate = candidate->Prev()) {
@@ -279,7 +279,7 @@ size_t AllocPool::LargestFreeChunk()
 		maxsize = sc_max(maxsize, candidate_size);
 		//postbuf("  %d %d\n", maxsize, candidate_size);
 	}
-	
+
 	/*for (int i=0; i<kNumAllocBins; ++i) {
 		bin = mBins + i;
 		if (bin->Prev() != bin) {
@@ -299,9 +299,9 @@ void* AllocPool::Alloc(size_t inReqSize)
 	// The old bin block scheme has been replaced by 4 x 32 bit words so that each bin has a bit
 	// and the next bin is found using a count leading zeroes instruction. Much faster.
 	// Also now each bin's flag can be kept accurate. This simplifies the searching code quite a bit.
-	
+
 	// Also fwiw, changed 'victim' in the original code to 'candidate'. 'victim' just bothered me.
-	
+
 
 	AllocChunkPtr 	candidate;        /* inspected/selected chunk */
 	size_t			candidate_size;   /* its size */
@@ -309,14 +309,14 @@ void* AllocPool::Alloc(size_t inReqSize)
 	int32			remainder_size;   /* its size */
 	AllocAreaPtr	area;
 	size_t			areaSize;
-  
+
 	size_t size = RequestToSize(inReqSize);
-	int index = BinIndex(size); 
+	int index = BinIndex(size);
 	assert(index < 128);
 	AllocChunkPtr bin = mBins + index;
-	
+
 	check_pool();
-	
+
 	/* Check for exact match in a bin */
 	if (index < kMaxSmallBin) { /* Faster version for small requests */
 		/* No traversal or size check necessary for small bins.  */
@@ -328,7 +328,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 			candidate_size = candidate->Size();
 			goto found_exact_fit;
 		}
-		
+
 		index += 2; /* Set for bin scan below. We've already scanned 2 bins. */
 	} else {
 		for (candidate = bin->Prev(); candidate != bin; candidate = candidate->Prev()) {
@@ -337,7 +337,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 			remainder_size = (int)(candidate_size - size);
 			if (remainder_size >= (int32)kMinAllocSize) { /* too big */
 				--index; /* adjust to rescan below after checking last remainder */
-				break;   
+				break;
 			} else if (remainder_size >= 0) { /* exact fit */
 				goto found_exact_fit;
 			}
@@ -345,7 +345,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 		++index;
 	}
 
-	for(; (index = NextFullBin(index)) >= 0; ++index) {		  
+	for(; (index = NextFullBin(index)) >= 0; ++index) {
 		bin = mBins + index;
 
 		/* Find and use first big enough chunk ... */
@@ -357,9 +357,9 @@ void* AllocPool::Alloc(size_t inReqSize)
 				goto found_bigger_fit;
 			} else if (remainder_size >= 0) goto found_exact_fit;
 		}
-	} 
+	}
 	check_pool();
-  
+
 	if (mAreaMoreSize == 0) { /* pool has a non-growable area */
 		if (mAreas != NULL /* fixed size area exhausted */
 				|| size > mAreaInitSize)  /* too big anyway */
@@ -367,7 +367,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 		areaSize = mAreaInitSize;
 		goto split_new_area;
 	}
-  
+
 	if (size > mAreaMoreSize) {
 		areaSize = size;
 		goto whole_new_area;
@@ -375,20 +375,20 @@ void* AllocPool::Alloc(size_t inReqSize)
 		areaSize = mAreaMoreSize;
 		goto split_new_area;
 	}
-	
+
 	// exit paths:
 	found_nothing:
 		//ipostbuf("alloc failed. size: %d\n", inReqSize);
-		throw std::runtime_error("alloc failed, increase server's memory allocation (e.g. via ServerOptions)"); 
-		
+		throw std::runtime_error("alloc failed, increase server's memory allocation (e.g. via ServerOptions)");
+
 	whole_new_area:
 		//ipostbuf("whole_new_area\n");
 		area = NewArea(areaSize);
 		if (!area) return 0;
-		candidate = &area->mChunk;	
+		candidate = &area->mChunk;
 		candidate_size = candidate->Size();
 		goto return_chunk;
-		
+
 	split_new_area:
 		//ipostbuf("split_new_area\n");
 		area = NewArea(areaSize);
@@ -404,7 +404,7 @@ void* AllocPool::Alloc(size_t inReqSize)
 		candidate_size -= remainder_size;
 		LinkFree(remainder);
 		goto return_chunk;
-		
+
 	found_exact_fit:
 			check_pool();
 		UnlinkFree(candidate);
@@ -425,7 +425,7 @@ void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 	AllocChunkPtr prev;
 	check_pool();
 	bool docopy = false;
-	
+
 	/* realloc of null is supposed to be same as malloc */
 	if (inPtr == 0) return Alloc(inReqSize);
 
@@ -483,7 +483,7 @@ void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 		check_pool();
 		if (outPtr == 0) {
 			//ipostbuf("realloc failed. size: %d\n", inReqSize);
-			throw std::runtime_error("realloc failed, increase server's memory allocation (e.g. via ServerOptions)"); 
+			throw std::runtime_error("realloc failed, increase server's memory allocation (e.g. via ServerOptions)");
 		}
 
 		/* Otherwise copy, free, and exit */
@@ -519,10 +519,10 @@ void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 }
 
 void AllocPool::LinkFree(AllocChunkPtr inChunk)
-{	
+{
 	size_t size = inChunk->Size();
 	int index = BinIndex(size);
-	
+
 	AllocChunkPtr bin = mBins + index;
 
 	if (index < kNumSmallBins || bin->IsEmpty()) {
@@ -536,9 +536,9 @@ void AllocPool::LinkFree(AllocChunkPtr inChunk)
 }
 
 void AllocPool::DoCheckArea(AllocAreaPtr area)
-{	
+{
 	assert(area->mChunk.PrevInUse());
-	
+
 	AllocChunkPtr p = &area->mChunk;
 	while (p->mSize != kChunkInUse) {
 		if (p->InUse()) {
@@ -593,8 +593,8 @@ void AllocPool::DoCheckChunk(AllocChunkPtr p)
 }
 
 
-void AllocPool::DoCheckFreeChunk(AllocChunkPtr p) 
-{ 
+void AllocPool::DoCheckFreeChunk(AllocChunkPtr p)
+{
   size_t size = p->Size();
 #ifndef NDEBUG
   AllocChunkPtr next = p->ChunkAtOffset(size);
@@ -612,17 +612,17 @@ void AllocPool::DoCheckFreeChunk(AllocChunkPtr p)
     /* ... and is fully consolidated */
     assert(p->PrevInUse());
     assert(next->InUse());
-    
+
     /* ... and has minimally sane links */
 	assert(p->Next()->Prev() == p);
 	assert(p->Prev()->Next() == p);
   }
   else /* end markers are always of size 0 */
-    assert(size == 0); 
+    assert(size == 0);
 }
 
-void AllocPool::DoCheckInUseChunk(AllocChunkPtr p) 
-{ 
+void AllocPool::DoCheckInUseChunk(AllocChunkPtr p)
+{
 	size_t size = p->Size();
 	AllocChunkPtr next = p->NextChunk();
 
@@ -648,7 +648,7 @@ void AllocPool::DoCheckInUseChunk(AllocChunkPtr p)
 	}
 }
 
-void AllocPool::DoCheckAllocedChunk(AllocChunkPtr p, size_t s) 
+void AllocPool::DoCheckAllocedChunk(AllocChunkPtr p, size_t s)
 {
 #ifndef NDEBUG
   size_t size = p->Size();
@@ -668,7 +668,7 @@ void AllocPool::DoCheckAllocedChunk(AllocChunkPtr p, size_t s)
 
 
   /* ... and was allocated at front of an available chunk */
-  assert(p->PrevInUse());  // huh??  - jmc 
+  assert(p->PrevInUse());  // huh??  - jmc
 
 }
 

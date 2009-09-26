@@ -1,12 +1,12 @@
 SCFont {
 	classvar <>default;
 	var <>name, <>size;
-	
+
 	*new { arg name, size;
 		^super.newCopyArgs(name, size);
 	}
 	setDefault { default = this }
-	
+
 	*availableFonts {
 		// returns an Array of font names.
 		_Font_AvailableFonts
@@ -21,19 +21,19 @@ SCFont {
 		^this.primitiveFailed
 	}
 	storeArgs { ^[name,size] }
-	
+
 	boldVariant {
 		^if( name.endsWith( "-Bold" ), this, { this.class.new( name ++ "-Bold", size )});
 	}
-	
+
 	*defaultSansFace {
 		^"Helvetica";
 	}
-	
+
 	*defaultSerifFace {
 		^"Times";
 	}
-	
+
 	*defaultMonoFace {
 		^"Monaco";
 	}

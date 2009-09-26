@@ -5,9 +5,9 @@
 SCImage {
 	classvar <formats, <compositingOperations, <interpolations, <allPlotWindows;
 	var dataptr, <width, <height, <background, <>name, <url, <>autoMode=true, <filters, prCache, prFinalizer;
-	
+
 	*initClass {
-	
+
 		formats = [
 			'tiff',	// 0
 			'bmp',	// 1
@@ -15,12 +15,12 @@ SCImage {
 			'jpeg',	// 3
 			'png'	// 4
 		];
-		
+
 		interpolations = [
 			'default', 	// 0
 			'none', 		// 1
 			'low', 		// 2
-			'high'		// 3 
+			'high'		// 3
 		];
 
 		compositingOperations = [
@@ -39,28 +39,28 @@ SCImage {
 			'highlight',		// 12
 			'plusLighter'		// 13
 		];
-		
+
 	}
 	*new { arg multiple, height=nil;
-		
+
 		if(multiple.isKindOf(Point), {
 			^super.new.init(multiple.x, multiple.y);
 		});
-		
+
 		if(multiple.isKindOf(Number), {
 			^super.new.init(multiple, height ? multiple);
 		});
-		
+
 		if(multiple.isKindOf(String), {
-			
+
 			if ( multiple.beginsWith("http://").not
 				and:{ multiple.beginsWith("file://").not }
 				and:{ multiple.beginsWith("ftp://").not  }) {
-								
+
 				^this.open(multiple);
-				
+
 			};
-			
+
 			^this.openURL( multiple );
 		});
 		^nil;
@@ -108,12 +108,12 @@ SCImage {
 		});
 		^this.prFromWindowRect(window, rect);
 	}
-	
+
 	*prFromWindowRect {arg window, rect;
 		_SCImage_fromWindowRect
 		^this.primitiveFailed;
 	}
-	
+
 	init { arg width, height;
 		this.prInit(width, height);
 		filters = [];
@@ -150,10 +150,10 @@ SCImage {
 	}
 	isValid {
 		^dataptr.notNil
-	}		
+	}
 	bounds { // helper
 		^Rect(0,0,width?0,height?0)
-	}	
+	}
 	write { arg path, format; // ok
 		if (this.isValid) {
 			path = path.standardizePath;
@@ -236,7 +236,7 @@ SCImage {
 		});
 		this.prLoadPixels(array, region, start);
 		^this;
-	}	
+	}
 	pixels_ {|array|
 		this.setPixels(array);
 	}
@@ -258,12 +258,12 @@ SCImage {
 		_SCImage_setAccelerated
 		^this.primitiveFailed;
 	}
-	
+
 	accelerated {
 		_SCImage_isAccelerated
 		^this.primitiveFailed;
 	}
-	
+
 	// filters
 	addFilter {|filter|
 		if(filter.isKindOf(SCImageFilter), {
@@ -295,7 +295,7 @@ SCImage {
 		filters = []; // clear all filters
 		if(autoMode, {this.accelerated_(false)}); // ensure bitmap representation
 	}
-	
+
 	applyFilters {|filters, crop=0, region|
 		if(filters.isNil, {^this});
 		// passing nil to crop says use the result extent of the filter
@@ -311,7 +311,7 @@ SCImage {
 		if(autoMode, {this.accelerated_(true)});
 		^this.prApplyFilters(filters, true, region, crop);
 	}
-	
+
 	// returns a copy of the receiver filtered with filter
 	filteredWith {|filters, crop=0|
 		if(filters.isNil, {^this});
@@ -326,11 +326,11 @@ SCImage {
 		if(autoMode, {this.accelerated_(true)});
 		^this.prApplyFilters(filters, false, nil, crop);
 	}
-	
+
 	clearCache {
 		if(prCache.notNil, {prCache.free; prCache=nil});
 	}
-	
+
 	// still experimental
 	applyKernel {|kernel, crop|
 		if(kernel.isKindOf(SCImageKernel).not, {
@@ -343,7 +343,7 @@ SCImage {
 		});
 		^this.prApplyKernel(kernel, crop, true);
 	}
-	
+
 	// drawing the image
 	lockFocus {
 		if(autoMode, {this.accelerated_(false)});
@@ -376,7 +376,7 @@ SCImage {
 		});
 	}
 	tileInRect { arg rect, fromRect, operation='sourceOver', fraction=1.0;		if(filters.size == 0, {
-			this.prTileInRect(rect, fromRect ? this.bounds, 
+			this.prTileInRect(rect, fromRect ? this.bounds,
 				compositingOperations.indexOf(operation) ? 2, fraction);
 		}, {
 			this.clearCache;
@@ -384,13 +384,13 @@ SCImage {
 			this.createCache;
 			prCache.tileInRect(rect, fromRect, operation, fraction);
 		})
-	}	
+	}
 	draw {|aFunction|
 		this.lockFocus;
 		aFunction.value(this);
 		this.unlockFocus;
 	}
-	
+
 	// string drawing support
 	drawStringAtPoint { arg string, point, font, color;
 		var strbounds;
@@ -412,17 +412,17 @@ SCImage {
 		nh = nw / ratio;
 		window = SCWindow.new(name ? "plot", bounds ? Rect(400,400,nw,nh)/*, textured: false*/);
 		allPlotWindows = allPlotWindows.add(window);
-		
+
 		if(background.notNil, {
 			window.view.background_(background);
 		});
 		window.acceptsMouseOver = true;
-		
+
 		uview = SCUserView(window, window.view.bounds)
 			.relativeOrigin_(false)
 			.resize_(5)
 			.focusColor_(Color.clear);
-			
+
 		window.onClose_({
 			allPlotWindows.remove(window);
 			if(freeOnClose, {
@@ -430,11 +430,11 @@ SCImage {
 			});
 		});
 		uview.drawFunc_({
-			
+
 			SCPen.use {
 				this.drawInRect(window.view.bounds, this.bounds, 2, 1.0);
 			};
-			
+
 			if(showInfo, {
 				SCPen.use {
 					SCPen.width_(0.5);
@@ -463,13 +463,13 @@ SCImage {
 	*closeAllPlotWindows {
 		allPlotWindows.do(_.close);
 	}
-	
+
 	storeOn { arg stream;
 		stream << this.class.name << ".openURL(" << url.asCompileString <<")"
 	}
 
 	archiveAsCompileString { ^true }
-	
+
 	// cocoa bridge additions
 	asNSObject {
 		^dataptr.asNSReturn
@@ -526,37 +526,37 @@ SCImage {
 		_SCImage_interpolation
 		^this.primitiveFailed;
 	}
-	
+
 	prSetInterpolation {|index|
 		_SCImage_setInterpolation
 		^this.primitiveFailed;
 	}
-	
+
 	prDrawAtPoint { arg point, fromRect, operation, fraction;
 		_SCImage_DrawAtPoint
 		^this.primitiveFailed
 	}
-	
+
 	prDrawInRect { arg rect, fromRect, operation, fraction;
 		_SCImage_DrawInRect
 		^this.primitiveFailed
 	}
-	
+
 	prSetName { arg newName; // currently does nothing
 		_SCImage_setName
 		^this.primitiveFailed
 	}
-	
+
 	prSetBackground { arg color; // currently does nothing
 		_SCImage_setBackgroundColor
 		^this.primitiveFailed
 	}
-	
+
 	prSync { 	// should never be used -- be provided in case
 		_SCImage_sync
 		^this.primitiveFailed
 	}
-	
+
 	//
 	prInit { arg width, height;
 		_SCImage_New
@@ -587,7 +587,7 @@ SCImage {
 	*prFreeAll {
 		_SCImage_FreeAll
 		^this.primitiveFailed
-	}	
+	}
 	prLoadPixels {arg array, region, startIndex;
 		_SCImage_loadPixels
 		^this.primitiveFailed
@@ -613,11 +613,11 @@ SCImage {
 SCImageFilter {
 	classvar categories;
 	var <name, <attributes, <values, <>enable=true;
-	
+
 	*filterCategories {
 		^categories;
 	}
-	
+
 	*initClass {
 		var categoryNames = [
 			\CICategoryDistortionEffect,
@@ -641,7 +641,7 @@ SCImageFilter {
 			\CICategoryDistortionEffect,
 			\CICategoryBuiltIn
 		];
-		
+
 		categories = IdentityDictionary.new;
 
 		Platform.when(#[\_SCImageFilter_NamesInCategory], {
@@ -649,38 +649,38 @@ SCImageFilter {
 			categoryNames.do {|key|
 				categories.add(key -> this.getFilterNames(key));
 			};
-		
+
 			//"SCImage filter categories done !".postln;
 		});
 
 	}
-	
+
 	*new {|filterName, args|
 		^super.newCopyArgs(filterName.asSymbol).initSCImageFilter(args);
 	}
-	
+
 	defaults {
 		values = Array.new;
 	}
-	
+
 	initSCImageFilter {|arguments|
 		attributes = this.class.getFilterAttributes(name);
 		values = Array.new;
 		this.attributes_(arguments);
 	}
-	
+
 	*translateObject {|object|
 		if(object.isKindOf(Boolean), {
 			^ if(object == true, {1}, {0});
 		});
-		
+
 		if(object.isKindOf(Rect), {
 			^ [object.left, object.top, object.width, object.height];
 		});
-		
+
 		^ object; // no translation
 	}
-	
+
 	doesNotUnderstand { arg selector ... args;
 		var key, index;
 		if(selector.isSetter && attributes.includesKey(selector.asGetter), {
@@ -702,11 +702,11 @@ SCImageFilter {
 			^attributes.at(selector);
 		});
 	}
-	
+
 	*getFilterNames {|category|
 		^this.prGetFilterNames(category, Array.newClear(64));
 	}
-	
+
 	*getFilterAttributes {|filterName|
 		var key, class;
 		var array, result;
@@ -726,19 +726,19 @@ SCImageFilter {
 				\NSAffineTransform, {class = \Array},
 				\NSPoint,		{class = \Point}
 			);
-			
+
 			result.put(key.asSymbol, class.asClass);
 		};
-		
+
 		^result;
 	}
-	
+
 	attributeRange { |attributeName|
 		var result = [nil, nil, nil];
 		this.prAttributeRange(attributeName.asSymbol, result);
 		^result;
 	}
-	
+
 	// new
 	attributes_ {|array|
 		var method, value, max;
@@ -750,27 +750,27 @@ SCImageFilter {
 			this.perform(method.asSymbol.asSetter, value);
 		};
 	}
-	
+
 	set {arg ... values;
 		this.attributes_(values);
 	}
-	
+
 	prAttributeRange { |attr|
 		_SCImageFilter_GetAttributeMinMax
 		^this.primitiveFailed
 	}
-	
+
 	*prGetFilterNames {|cat, array|
 		_SCImageFilter_NamesInCategory
 		^this.primitiveFailed
 	}
-	
+
 	// direct primitive call - should not be used !!!
 	*prFilterSet{ |filterName, filterArguments|
 		_SCImageFilter_Set
 		^this.primitiveFailed
 	}
-	
+
 	*prGetFilterAttributes {|filterName|
 		_SCImageFilter_Attributes
 		^this.primitiveFailed
@@ -792,14 +792,14 @@ SCImageKernel {
 			"SCImageKernel shader should be a Rect !".warn;
 			^nil;
 		});
-		
+
 		^super.newCopyArgs(shader, values, bounds, true);
 	}
-	
+
 	isValid {
 		^(shader.notNil.or(shader.size > 0).and(values.notNil.or(values.size <= 0)));
 	}
-	
+
 	compile {
 		_SCImageKernel_Compile
 		^this.primitiveFailed
@@ -815,24 +815,24 @@ SCImageKernel {
 			((r.asInteger & 16r000000FF) << 24) | ((g.asInteger & 16r000000FF) << 16) | ((b.asInteger & 16r000000FF) << 8) | (a.asInteger & 16r000000FF)
 		);
 	}
-	
+
 	*fromColor {|color|
 		^this.fromRGBA(
-			(color.red * 255).asInteger, 
+			(color.red * 255).asInteger,
 			(color.green * 255).asInteger,
 			(color.blue * 255).asInteger,
 			(color.alpha * 255).asInteger
 		)
 	}
-	
+
 	asColor {
 		^Color.new255(this.red, this.green, this.blue, this.alpha);
 	}
-	
+
 	rgbaArray {
 		^[this.red, this.green, this.blue, this.alpha];
 	}
-	
+
 	red {
 		^((this >> 24) & 16r000000FF);
 	}
@@ -842,12 +842,12 @@ SCImageKernel {
 	blue {
 		^((this >> 8) & 16r000000FF);
 	}
-	alpha {	
+	alpha {
 		^(this & 16r000000FF);
 	}
 }
 
-+Array {	
++Array {
 	asRGBA {
 		^Integer.fromRGBA(this.at(0)?0,this.at(1)?0, this.at(2)?0, this.at(3)?0);
 	}
@@ -856,7 +856,7 @@ SCImageKernel {
 +Color {
 	asInteger {
 		^Integer.fromRGBA(
-			(this.red * 255).asInteger, 
+			(this.red * 255).asInteger,
 			(this.green * 255).asInteger,
 			(this.blue * 255).asInteger,
 			(this.alpha * 255).asInteger
@@ -866,7 +866,7 @@ SCImageKernel {
 
 /*
 	SCView:backgroundImage
-	
+
 	modes :
 	1 - fixed to left, fixed to top
 	2 - horizontally tile, fixed to top

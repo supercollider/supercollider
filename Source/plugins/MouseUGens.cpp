@@ -68,7 +68,7 @@ extern "C"
 void* gstate_update_func(void* arg)
 {
     MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
-    
+
     CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
     CGRect bounds = CGDisplayBounds(display);
     float rscreenWidth = 1. / bounds.size.width;
@@ -77,13 +77,13 @@ void* gstate_update_func(void* arg)
 	HIPoint point;
 	HICoordinateSpace space = 2;
 	HIGetMousePosition(space, NULL, &point);
-	
+
 	gstate->mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
 	gstate->mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
 	gstate->mouseButton = Button();
 	usleep(17000);
     }
-    
+
     return 0;
 }
 
@@ -106,7 +106,7 @@ void* gstate_update_func(void* arg)
 	gstate->mouseButton = Button();
 	usleep(17000);
     }
-    
+
     return 0;
 }
 
@@ -128,17 +128,17 @@ void* gstate_update_func(void* arg)
 		mButton = VK_LBUTTON; // not swapped (normal)
 	}
 
-	int screenWidth  = GetSystemMetrics( SM_CXSCREEN ); 
+	int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
 	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
 		// default: SM_CX/CYSCREEN gets the size of a primary screen.
 		// lines uncommented below are just for a specially need on multi-display.
-	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN ); 
+	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
 	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
 	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
 	float r_screenHeight = 1.f / (float)(screenHeight -1);
 
 	gstate = &gMouseUGenGlobals;
-	
+
 	for(;;)	{
 		GetCursorPos(&p);
 		gstate->mouseX = (float)p.x * r_screenWidth;
@@ -154,7 +154,7 @@ static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
   MouseUGenGlobalState* gstate ;
-  Window r ;			
+  Window r ;
   Window rep_root , rep_child ;
   XWindowAttributes attributes ;
   int rep_rootx , rep_rooty ;
@@ -169,30 +169,30 @@ void* gstate_update_func(void* arg)
 
   d = XOpenDisplay ( NULL ) ;
   if (!d) return 0;
-  
+
   r = DefaultRootWindow ( d ) ;
   XGetWindowAttributes ( d , r , &attributes ) ;
   r_width = 1.0 / (float)attributes.width ;
   r_height = 1.0 / (float)attributes.height ;
-  
+
   gstate = &gMouseUGenGlobals ;
-	
+
   for (;;) {
-    
-    XQueryPointer ( d , r , 
+
+    XQueryPointer ( d , r ,
 		    &rep_root , &rep_child ,
-		    &rep_rootx , &rep_rooty , 
+		    &rep_rootx , &rep_rooty ,
 		    &dx , &dy ,
 		    &rep_mask ) ;
-    
+
     gstate->mouseX = (float)dx * r_width ;
     gstate->mouseY = 1.0 - ( (float)dy * r_height ) ;
-    
+
     gstate->mouseButton = (bool) ( rep_mask & Button1Mask ) ;
 
     nanosleep ( &requested_time , &remaining_time ) ;
   }
-  
+
   return 0;
 }
 # endif
@@ -201,7 +201,7 @@ void* gstate_update_func(void* arg)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MouseX_next(MouseInputUGen *unit, int inNumSamples)
-{	
+{
 	// minval, maxval, warp, lag
 
 	float minval = ZIN0(0);
@@ -211,12 +211,12 @@ void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 
 	float y1 = unit->m_y1;
 	float b1 = unit->m_b1;
-	
+
 	if (lag != unit->m_lag) {
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseX; 
+	float y0 = unit->gstate->mouseX;
 	if (warp == 0.0) {
 		y0 = (maxval - minval) * y0 + minval;
 	} else {
@@ -227,7 +227,7 @@ void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 }
 
 void MouseX_Ctor(MouseInputUGen *unit)
-{	
+{
 	SETCALC(MouseX_next);
 	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
@@ -237,7 +237,7 @@ void MouseX_Ctor(MouseInputUGen *unit)
 
 
 void MouseY_next(MouseInputUGen *unit, int inNumSamples)
-{	
+{
 	// minval, maxval, warp, lag
 
 	float minval = ZIN0(0);
@@ -247,12 +247,12 @@ void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 
 	float y1 = unit->m_y1;
 	float b1 = unit->m_b1;
-	
+
 	if (lag != unit->m_lag) {
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseY; 
+	float y0 = unit->gstate->mouseY;
 	if (warp == 0.0) {
 		y0 = (maxval - minval) * y0 + minval;
 	} else {
@@ -263,7 +263,7 @@ void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 }
 
 void MouseY_Ctor(MouseInputUGen *unit)
-{	
+{
 	SETCALC(MouseY_next);
 	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
@@ -274,7 +274,7 @@ void MouseY_Ctor(MouseInputUGen *unit)
 
 
 void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
-{	
+{
 	// minval, maxval, warp, lag
 
 	float minval = ZIN0(0);
@@ -283,18 +283,18 @@ void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 
 	float y1 = unit->m_y1;
 	float b1 = unit->m_b1;
-	
+
 	if (lag != unit->m_lag) {
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseButton ? maxval : minval; 
+	float y0 = unit->gstate->mouseButton ? maxval : minval;
 	ZOUT0(0) = y1 = y0 + b1 * (y1 - y0);
 	unit->m_y1 = zapgremlins(y1);
 }
 
 void MouseButton_Ctor(MouseInputUGen *unit)
-{	
+{
 	SETCALC(MouseButton_next);
 	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
@@ -324,28 +324,28 @@ MyPluginData gMyPlugin; // global
 
 bool cmdStage2(World* world, void* inUserData)
 {
-	
+
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
 	// just print out the values
-	Print("cmdStage2 a %g  b %g  x %g  y %g  name %s\n", 
-		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+	Print("cmdStage2 a %g  b %g  x %g  y %g  name %s\n",
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b,
 		myCmdData->x, myCmdData->y,
 		myCmdData->name);
-		
+
 	return true;
 }
 
 bool cmdStage3(World* world, void* inUserData)
 {
-	
+
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
 	// just print out the values
-	Print("cmdStage3 a %g  b %g  x %g  y %g  name %s\n", 
-		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+	Print("cmdStage3 a %g  b %g  x %g  y %g  name %s\n",
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b,
 		myCmdData->x, myCmdData->y,
 		myCmdData->name);
 
@@ -355,31 +355,31 @@ bool cmdStage3(World* world, void* inUserData)
 
 bool cmdStage4(World* world, void* inUserData)
 {
-	
+
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
 	// just print out the values
-	Print("cmdStage4 a %g  b %g  x %g  y %g  name %s\n", 
-		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+	Print("cmdStage4 a %g  b %g  x %g  y %g  name %s\n",
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b,
 		myCmdData->x, myCmdData->y,
 		myCmdData->name);
-	
+
 	// scsynth will send /done after this returns
 	return true;
 }
 
 void cmdCleanup(World* world, void* inUserData)
 {
-	
+
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
-	Print("cmdCleanup a %g  b %g  x %g  y %g  name %s\n", 
-		myCmdData->myPlugin->a, myCmdData->myPlugin->b, 
+	Print("cmdCleanup a %g  b %g  x %g  y %g  name %s\n",
+		myCmdData->myPlugin->a, myCmdData->myPlugin->b,
 		myCmdData->x, myCmdData->y,
 		myCmdData->name);
-	
+
 	RTFree(world, myCmdData->name); // free the string
 	RTFree(world, myCmdData); // free command data
 	// scsynth will delete the completion message for you.
@@ -388,30 +388,30 @@ void cmdCleanup(World* world, void* inUserData)
 void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr)
 {
 	Print("->cmdDemoFunc %08X\n", inUserData);
-	
+
 	// user data is the plug-in's user data.
 	MyPluginData* thePlugInData = (MyPluginData*)inUserData;
-	
+
 	// allocate command data, free it in cmdCleanup.
 	MyCmdData* myCmdData = (MyCmdData*)RTAlloc(inWorld, sizeof(MyCmdData));
 	myCmdData->myPlugin = thePlugInData;
-	
+
 	// ..get data from args..
 	myCmdData->x = 0.;
 	myCmdData->y = 0.;
 	myCmdData->name = 0;
-	
+
 	// float arguments
 	myCmdData->x = args->getf();
 	myCmdData->y = args->getf();
-	
+
 	// how to pass a string argument:
 	const char *name = args->gets(); // get the string argument
 	if (name) {
 		myCmdData->name = (char*)RTAlloc(inWorld, strlen(name)+1); // allocate space, free it in cmdCleanup.
 		strcpy(myCmdData->name, name); // copy the string
 	}
-	
+
 	// how to pass a completion message
 	int msgSize = args->getbsize();
 	char* msgData = 0;
@@ -421,14 +421,14 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 		msgData = (char*)RTAlloc(inWorld, msgSize);
 		args->getb(msgData, msgSize); // copy completion message.
 	}
-	
+
 	DoAsynchronousCommand(inWorld, replyAddr, "cmdDemoFunc", (void*)myCmdData,
 						  (AsyncStageFn)cmdStage2,
 						  (AsyncStageFn)cmdStage3,
 						  (AsyncStageFn)cmdStage4,
 						  cmdCleanup,
 						  msgSize, msgData);
-	
+
 	Print("<-cmdDemoFunc\n");
 }
 
@@ -449,14 +449,14 @@ s.sendMsg(\cmd, \pluginCmdDemo);
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
-	
+
 	pthread_t mouseListenThread;
 	pthread_create (&mouseListenThread, NULL, gstate_update_func, (void*)0);
 
 	DefineUnit("MouseX", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseX_Ctor, 0, 0);
 	DefineUnit("MouseY", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseY_Ctor, 0, 0);
 	DefineUnit("MouseButton", sizeof(MouseInputUGen), (UnitCtorFunc)&MouseButton_Ctor, 0, 0);
-	
+
 	// define a plugin command - example code
 	gMyPlugin.a = 1.2f;
 	gMyPlugin.b = 3.4f;

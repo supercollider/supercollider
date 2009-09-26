@@ -53,7 +53,7 @@ public:
     GradientBackground(SCColor inStartColor, SCColor inEndColor, int inDirection, int inSteps);
 	virtual ~GradientBackground() {}
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
-    
+
 protected:
     SCColor mStartColor, mEndColor;
     int mDirection, mSteps;
@@ -64,9 +64,9 @@ class HiliteGradientBackground : public GradientBackground
 public:
     HiliteGradientBackground(SCColor inStartColor, SCColor inEndColor, int inDirection, int inSteps, float inFrac = .33);
 	virtual ~HiliteGradientBackground() {}
-    
+
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
-    
+
 protected:
     float mFrac, mFrac1;
 };
@@ -100,9 +100,9 @@ class TiledBackground : public DrawBackground
 {
 public:
     TiledBackground(NSImage* inTile);
-    
+
     virtual void drawSelf(CGContextRef cgc, CGRect rect);
-    
+
 protected:
     NSImage* mTile;
     CGRect mTiledBounds;

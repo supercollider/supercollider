@@ -6,7 +6,7 @@
 ClassBrowser {
 	classvar	updateProtos, searchMenuKeys, viewList, buttonSet,
 			black, gray, clear;
-	
+
 	var	<views,
 			// historyPos == 0 means one item in history[0]
 			// so it must be negative for empty history
@@ -28,30 +28,30 @@ ClassBrowser {
 		this.class.initGUI;
 		gui = GUI.scheme;
 		hvBold12 = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
-		
+
 		history = [];
-		
+
 		views = Environment(parent: updateProtos, know: true).make {
-			
+
 			~window = gui.window.new("class browser", Rect(128, (GUI.window.screenBounds.height - 638).clip(0, 320), 720, 600))
 				.onClose_({ this.free });
-	
+
 			~window.view.decorator = FlowLayout(~window.view.bounds);
-			
+
 			~currentClassNameView = gui.textField.new(~window, Rect(0,0, 308, 32));
 			~currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
 			~currentClassNameView.background = clear;
 			~currentClassNameView.align = \center;
-			
+
 			~currentClassNameView.action = {
 				this.makeState(views.currentClassNameView.string.asSymbol.asClass, \class);
 			};
-			
+
 			~superClassNameView = gui.staticText.new(~window, Rect(0,0, 256, 32));
 			~superClassNameView.font = hvBold12 = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
-			
+
 			~window.view.decorator.nextLine;
-	
+
 			~bakButton = gui.button.new(~window, Rect(0,0, 24, 24));
 			~bakButton.states = [["<", black, clear]];
 			~bakButton.action = {
@@ -60,7 +60,7 @@ ClassBrowser {
 					this.restoreHistory;
 				}
 			};
-			
+
 			~fwdButton = gui.button.new(~window, Rect(0,0, 24, 24));
 			~fwdButton.states = [[">", black, clear]];
 			~fwdButton.action = {
@@ -69,45 +69,45 @@ ClassBrowser {
 					this.restoreHistory;
 				}
 			};
-			
-			
+
+
 			~superButton = gui.button.new(~window, Rect(0,0, 50, 24));
 			~superButton.states = [["super", black, clear]];
-			
+
 			~superButton.action = {
 				if(currentState.currentClass.notNil) {
 					this.makeState( currentState.currentClass.superclass );
 				}
 			};
-			
+
 			~metaButton = gui.button.new(~window, Rect(0,0, 50, 24));
 			~metaButton.states = [["meta", black, clear]];
-			
+
 			~metaButton.action = {
 				if(currentState.currentClass.notNil) {
 					this.makeState( currentState.currentClass.class );
 				};
 			};
-			
-			
+
+
 			~helpButton = gui.button.new(~window, Rect(0,0, 50, 24));
 			~helpButton.states = [["help", black, clear]];
-			
-			~helpButton.action = {	
+
+			~helpButton.action = {
 				if(currentState.currentClass.notNil) {
 					currentState.currentClass.openHelpFile;
 				}
 			};
-			
+
 			~classSourceButton = gui.button.new(~window, Rect(0,0, 90, 24));
 			~classSourceButton.states = [["class source", black, clear]];
-			
+
 			~classSourceButton.action = {
 				if(currentState.currentClass.notNil) {
 					currentState.currentClass.openCodeFile;
 				}
 			};
-			
+
 			~methodSourceButton = gui.button.new(~window, Rect(0,0, 90, 24));
 			~methodSourceButton.states = [["method source", black, clear]];
 			~methodSourceButton.action = {
@@ -115,7 +115,7 @@ ClassBrowser {
 					currentState.currentMethod.openCodeFile;
 				};
 			};
-			
+
 			~implementationButton = gui.button.new(~window, Rect(0,0, 100, 24));
 			~implementationButton.states = [["implementations", black, clear]];
 			~implementationButton.action = {
@@ -124,7 +124,7 @@ ClassBrowser {
 					thisProcess.methodTemplates;
 				};
 			};
-			
+
 			~refsButton = gui.button.new(~window, Rect(0,0, 70, 24));
 			~refsButton.states = [["references", black, clear]];
 			~refsButton.action = {
@@ -133,7 +133,7 @@ ClassBrowser {
 					thisProcess.methodReferences;
 				};
 			};
-			
+
 			if(this.respondsTo(\openSVN)) {
 				~svnButton = gui.button.new(~window, Rect(0,0, 32, 24));
 				~svnButton.states = [["svn", black, clear]];
@@ -147,10 +147,10 @@ ClassBrowser {
 						this.openSVN( svnAddr );
 					};
 				};
-			};		
-			
+			};
+
 			~window.view.decorator.nextLine;
-			
+
 			GUI.staticText.new(~window, Rect(0, 0, 65, 20)).string_("Search for");
 			~searchField = GUI.textField.new(~window, Rect(0, 0, 235, 20))
 				.action_({
@@ -161,33 +161,33 @@ ClassBrowser {
 			~searchMenu = GUI.popUpMenu.new(~window, Rect(0, 0, 200, 20));
 			~matchCaseButton = GUI.button.new(~window, Rect(0, 0, 100, 20))
 				.states_([["Case insensitive", black, clear], ["Match case", black, clear]]);
-	
+
 			~searchButton = GUI.button.new(~window, Rect(0, 0, 40, 20))
 				.states_([["GO", black, clear]])
 				.action_({
 					this.searchClasses(views.searchField.string,
 						views.searchMenu.value, views.matchCaseButton.value);
 				});
-	
+
 			~window.view.decorator.nextLine;
-	
+
 			~filenameView = gui.staticText.new(~window, Rect(0,0, 600, 18));
 			~filenameView.font = gui.font.new( gui.font.defaultSansFace, 10 );
-			
+
 			~window.view.decorator.nextLine;
 			gui.staticText.new(~window, Rect(0,0, 180, 24))
 				.font_(hvBold12).align_(\center).string_("class vars");
 			gui.staticText.new(~window, Rect(0,0, 180, 24))
 				.font_(hvBold12).align_(\center).string_("instance vars");
 			~window.view.decorator.nextLine;
-			
+
 			~classVarView = gui.listView.new(~window, Rect(0,0, 180, 130));
 			~instVarView = gui.listView.new(~window, Rect(0,0, 180, 130));
 			~classVarView.value = 0;
 			~instVarView.value = 0;
-	
+
 			~window.view.decorator.nextLine;
-			
+
 			~subclassTitle = gui.staticText.new(~window, Rect(0,0, 220, 24))
 				.font_(hvBold12).align_(\center).string_("subclasses  (press return)");
 			~methodTitle = gui.staticText.new(~window, Rect(0,0, 240, 24))
@@ -195,15 +195,15 @@ ClassBrowser {
 			gui.staticText.new(~window, Rect(0,0, 200, 24))
 				.font_(hvBold12).align_(\center).string_("arguments");
 			~window.view.decorator.nextLine;
-			
+
 			~subclassView = gui.listView.new(~window, Rect(0,0, 220, 260));
 			~methodView = gui.listView.new(~window, Rect(0,0, 240, 260));
 			~argView = gui.listView.new(~window, Rect(0,0, 200, 260));
 			~subclassView.resize = 4;
 			~methodView.resize = 4;
 			~argView.resize = 4;
-			
-			~window.view.decorator.nextLine;			
+
+			~window.view.decorator.nextLine;
 		};
 
 		this	.addInstanceActions
@@ -266,7 +266,7 @@ ClassBrowser {
 			~window.refresh;
 		}
 	}
-	
+
 	close {
 		if(views.window.isClosed.not) { views.window.close };
 		currentState = history = views = nil;		// dump garbage
@@ -280,7 +280,7 @@ ClassBrowser {
 			class.name.asString[5..].asSymbol.asClass;
 		} { class }
 	}
-	
+
 	getClass { |method| ^this.class.getClass(method) }
 
 	searchClasses { |string, rootNumber, matchCase, addHistory = true|
@@ -360,13 +360,13 @@ ClassBrowser {
 			caseButtonValue: matchCase.binaryValue
 		));
 	}
-	
+
 	*initGUI {
 		updateProtos ?? {
 			black = Color.black;
 			gray = Color.gray;
 			clear = Color.clear;
-	
+
 			searchMenuKeys = #[classSearch, methodSearch, classSearch, methodSearch, classSearch];
 			viewList = #[currentClassNameView, superClassNameView, filenameView,
 				classVarView, instVarView, subclassTitle, methodTitle, subclassView,
@@ -586,7 +586,7 @@ ClassBrowser {
 			);
 		}
 	}
-	
+
 		// because these use instance variables, they cannot be defined in the above class method
 		// each ClassBrowser instance gets a separate dictionary with the proper object scope
 	addInstanceActions {
@@ -659,4 +659,3 @@ ClassBrowser {
 		));
 	}
 }
- 

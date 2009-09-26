@@ -59,19 +59,19 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 
 void SC_TerminalClient::postText(const char* str, size_t len)
 {
-	fwrite(str, sizeof(char), len, gPostDest);	
+	fwrite(str, sizeof(char), len, gPostDest);
 }
 
 void SC_TerminalClient::postFlush(const char* str, size_t len)
 {
-	fwrite(str, sizeof(char), len, gPostDest);	
+	fwrite(str, sizeof(char), len, gPostDest);
 	fflush(gPostDest);
 }
 
 void SC_TerminalClient::postError(const char* str, size_t len)
 {
 	fprintf(gPostDest, "ERROR: ");
-	fwrite(str, sizeof(char), len, gPostDest);	
+	fwrite(str, sizeof(char), len, gPostDest);
 }
 
 void SC_TerminalClient::flush()
@@ -82,7 +82,7 @@ void SC_TerminalClient::flush()
 void SC_TerminalClient::printUsage()
 {
 	Options opt;
-	
+
 	const size_t bufSize = 128;
 	char memGrowBuf[bufSize];
 	char memSpaceBuf[bufSize];
@@ -217,7 +217,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 	opt.mArgc = argc;
 	opt.mArgv = argv;
 
-	// read library configuration file 
+	// read library configuration file
 	bool success;
 	if (opt.mLibraryConfigFile) {
 		readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
@@ -260,7 +260,7 @@ bool SC_TerminalClient::readCmdLine(int fd, SC_StringBuffer& cmdLine)
 	char buf[bufSize];
 
 	int n = read(fd, buf, bufSize);
-	
+
 	if (n > 0) {
 		char* ptr = buf;
 		while (n--) {
@@ -275,7 +275,7 @@ bool SC_TerminalClient::readCmdLine(int fd, SC_StringBuffer& cmdLine)
 		}
 		return true;
 	}
-	
+
 	if (n == 0) {
 		quit(0);
 	} else if (errno != EAGAIN) {

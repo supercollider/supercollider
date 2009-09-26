@@ -64,20 +64,20 @@ void Graph_Dtor(Graph *inGraph)
 	}
 	world->mNumUnits -= numUnits;
 	world->mNumGraphs --;
-	
+
 	GraphDef* def = GRAPHDEF(inGraph);
 	if (--def->mRefCount <= 0) {
 		if (world->mRealTime) GraphDef_DeleteMsg(world, def);
 		else GraphDef_Free(def);
 	}
-	
+
 	Node_Dtor(&inGraph->mNode);
 	//scprintf("<-Graph_Dtor\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID, 
+int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID,
 	      struct sc_msg_iter* args, Graph** outGraph,bool argtype)//true for normal args , false for setn type args
 {
 	Graph* graph;
@@ -90,24 +90,24 @@ int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID,
 
 
 void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter *msg,bool argtype)//true for normal args , false for setn type args
-{	
+{
 	//scprintf("->Graph_Ctor\n");
-	
+
 	// hit the memory allocator only once.
 	char *memory = (char*)graph + sizeof(Graph);
-	
+
 	// allocate space for children
 	int numUnits = inGraphDef->mNumUnitSpecs;
 	graph->mNumUnits = numUnits;
 	inWorld->mNumUnits += numUnits;
-	inWorld->mNumGraphs ++;	
-	
-	graph->mUnits = (Unit**)memory; 
+	inWorld->mNumGraphs ++;
+
+	graph->mUnits = (Unit**)memory;
 	memory += inGraphDef->mUnitsAllocSize;
 
 	// set calc func
 	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_FirstCalc;
-	
+
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
 	graph->mWire = (Wire*)memory;
@@ -116,19 +116,19 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mNumCalcUnits = inGraphDef->mNumCalcUnits;
 	graph->mCalcUnits = (Unit**)memory;
 	memory += inGraphDef->mCalcUnitsAllocSize;
-	
+
 	// initialize controls
 	int numControls = inGraphDef->mNumControls;
 	graph->mNumControls = numControls;
 	graph->mControls = (float*)memory;
 	memory += inGraphDef->mControlAllocSize;
-	
+
 	graph->mMapControls = (float**)memory;
 	memory += inGraphDef->mMapControlsAllocSize;
-	
-	graph->mControlRates = (int*)memory; 
+
+	graph->mControlRates = (int*)memory;
 	memory += inGraphDef->mMapControlRatesAllocSize;
-    
+
 	{
 		float*  graphControls = graph->mControls;
 		float*  initialControlValues = inGraphDef->mInitialControlValues;
@@ -142,9 +142,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			graphControlRates[i] = 0;  // init to 0 for now... control bus is 1, audio is 2
 		}
 	}
-	
+
 	// set controls
-	//if argtype == true -> normal args as always 
+	//if argtype == true -> normal args as always
 	//if argtype == false -> setn type args
     if(argtype) {
 	while( msg->remain()>=8) {
@@ -229,10 +229,10 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		while (loop);
 	    }
 	}
-	
+
     }
-    
-    
+
+
 	    //{
 //	    while( msg->remain()>=8) {
 //		int i = 0;
@@ -290,7 +290,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 //		    while (loop);
 //		}
 //	    }
-//	    
+//
 //	}
 	else{
 
@@ -341,7 +341,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 				}
 			}
 		}
-	  }	  
+	  }
 	}
 
 	// set up scalar values
@@ -357,17 +357,17 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			wire->mScalarValue = constants[i];
 		}
 	}
-	
+
 	graph->mSampleOffset = inWorld->mSampleOffset;
 	graph->mSubsampleOffset = inWorld->mSubsampleOffset;
 	graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
-	
+
 	graph->mLocalAudioBusUnit = NULL;
 	graph->mLocalControlBusUnit = NULL;
-	
+
 	graph->localBufNum = 0;
 	graph->localMaxBufNum = 0; // this is set from synth
-	
+
 	// initialize units
 	//scprintf("initialize units\n");
 	Unit** calcUnits = graph->mCalcUnits;
@@ -380,13 +380,13 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	for (int i=0; i<numUnits; ++i, ++unitSpec) {
 		// construct unit from spec
 		Unit *unit = Unit_New(inWorld, unitSpec, memory);
-		
+
 		// set parent
 		unit->mParent = graph;
 		unit->mParentIndex = i;
-		
+
 		graphUnits[i] = unit;
-		
+
 		{
 			// hook up unit inputs
 			//scprintf("hook up unit inputs\n");
@@ -394,13 +394,13 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			Wire** unitInput = unit->mInput;
 			float** unitInBuf = unit->mInBuf;
 			int numInputs = unitSpec->mNumInputs;
-			for (int j=0; j<numInputs; ++j, ++inputSpec) {			
+			for (int j=0; j<numInputs; ++j, ++inputSpec) {
 				Wire *wire = graphWires + inputSpec->mWireIndex;
 				unitInput[j] = wire;
 				unitInBuf[j] = wire->mBuffer;
 			}
 		}
-		
+
 		{
 			// hook up unit outputs
 			//scprintf("hook up unit outputs\n");
@@ -456,7 +456,7 @@ void Graph_RemoveID(World* inWorld, Graph *inGraph)
 		int err = kSCErr_Failed; // shouldn't happen..
 		throw err;
     }
-	
+
 	//inWorld->hw->mRecentID = id;
 }
 
@@ -471,7 +471,7 @@ void Graph_FirstCalc(Graph *inGraph)
 		(*unit->mUnitDef->mUnitCtorFunc)(unit);
 	}
 	//scprintf("<-Graph_FirstCalc\n");
-	
+
 	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
 	// now do actual graph calculation
 	Graph_Calc(inGraph);
@@ -490,7 +490,7 @@ void Graph_NullFirstCalc(Graph *inGraph)
 		(*unit->mUnitDef->mUnitCtorFunc)(unit);
 	}
 	//scprintf("<-Graph_FirstCalc\n");
-	
+
 	inGraph->mNode.mCalcFunc = &Node_NullCalc;
 }
 
@@ -604,7 +604,7 @@ void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 //    inGraph->mControlRates[inIndex] = 2;
     /* what is the below doing??? it is unmapping by looking for negative ints */
     if (inBus >= 0x80000000) {
-	inGraph->mControlRates[inIndex] = 0;	
+	inGraph->mControlRates[inIndex] = 0;
 	inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumAudioBusChannels) {
         inGraph->mControlRates[inIndex] = 2;

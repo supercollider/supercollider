@@ -40,7 +40,7 @@ struct TriggerMsg {
 	int32 mNodeID;
 	int32 mTriggerID;
 	float mValue;
-	
+
 	void Perform();
 };
 
@@ -68,13 +68,13 @@ struct NodeEndMsg {
 	int32 mHeadID;
 	int32 mTailID;
 	int32 mState;
-	
+
 	void Perform();
 };
 
 struct DeleteGraphDefMsg {
 	struct GraphDef* mDef;
-	
+
 	void Perform();
 };
 
@@ -93,26 +93,26 @@ struct HiddenWorld
 	GrafDefTable *mGraphDefLib;
 	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
-	
+
 	class SC_AudioDriver *mAudioDriver;
 	char mPassword[32];
-	
+
 	uint32 mMaxWireBufs;
 	float *mWireBufSpace;
-	
+
 	TriggersFifo mTriggers;
 	NodeReplyFifo mNodeMsgs;
 	NodeEndsFifo mNodeEnds;
 	DeleteGraphDefsFifo mDeleteGraphDefs;
-	
+
 	SC_Semaphore* mQuitProgram;
 
 #ifndef NO_LIBSNDFILE
-	SNDFILE *mNRTInputFile; 
-	SNDFILE *mNRTOutputFile; 
+	SNDFILE *mNRTInputFile;
+	SNDFILE *mNRTOutputFile;
 	FILE *mNRTCmdFile;
 #endif
-	
+
 	int32 mHiddenID;
 	int32 mRecentID;
 

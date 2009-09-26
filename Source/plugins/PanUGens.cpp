@@ -137,7 +137,7 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LinPan2_Ctor(LinPan2 *unit)
-{	
+{
 	if (INRATE(1) == calc_FullRate) {
 		SETCALC(LinPan2_next_aa);
 	} else {
@@ -160,7 +160,7 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
 	float leftamp =  unit->m_leftamp;
-	float rightamp = unit->m_rightamp;	
+	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
 		float pan = pos * 0.5f + 0.5f;
@@ -171,10 +171,10 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
+			ZXP(rightout) = zin * rightamp;
 			leftamp += leftampslope;
 			rightamp += rightampslope;
 		);
@@ -183,10 +183,10 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 		unit->m_leftamp = leftamp;
 		unit->m_rightamp = rightamp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
+			ZXP(rightout) = zin * rightamp;
 		);
 	}
 }
@@ -200,15 +200,15 @@ void LinPan2_next_aa(LinPan2 *unit, int inNumSamples)
 	float nextlevel = ZIN0(2);
 	float level = unit->m_level;
 	float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float pan = ZXP(pos) * 0.5f + 0.5f;
 		float rightamp = level * pan;
 		float leftamp  = level - rightamp;
 		float zin = ZXP(in);
 		ZXP(leftout)  = zin * leftamp;
 		ZXP(rightout) = zin * rightamp;
-		level += levelSlope;	
+		level += levelSlope;
 	);
 	unit->m_level = level;
 }
@@ -217,7 +217,7 @@ void LinPan2_next_aa(LinPan2 *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Balance2_Ctor(Balance2 *unit)
-{	
+{
 	if (INRATE(2) == calc_FullRate) {
 		SETCALC(Balance2_next_aa);
 	} else {
@@ -227,7 +227,7 @@ void Balance2_Ctor(Balance2 *unit)
 	unit->m_level = ZIN0(3);
 	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
 	ipos = sc_clip(ipos, 0, 2048);
-	
+
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
 	unit->m_rightamp = unit->m_level * ft->mSine[ipos];
 	Balance2_next_aa(unit, 1);
@@ -242,12 +242,12 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 	float pos = ZIN0(2);
 	float level = ZIN0(3);
 	float leftamp =  unit->m_leftamp;
-	float rightamp = unit->m_rightamp;	
+	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
 		int32 ipos = (int32)(1024.f * pos + 1024.f);
 		ipos = sc_clip(ipos, 0, 2048);
-		
+
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
 		float nextrightamp = level * ft->mSine[ipos];
 
@@ -255,9 +255,9 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			ZXP(leftout)  = ZXP(leftin) * leftamp;
-			ZXP(rightout) = ZXP(rightin) * rightamp;	
+			ZXP(rightout) = ZXP(rightin) * rightamp;
 			leftamp += leftampslope;
 			rightamp += rightampslope;
 		);
@@ -266,9 +266,9 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 		unit->m_leftamp = leftamp;
 		unit->m_rightamp = rightamp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			ZXP(leftout)  = ZXP(leftin) * leftamp;
-			ZXP(rightout) = ZXP(rightin) * rightamp;	
+			ZXP(rightout) = ZXP(rightin) * rightamp;
 		);
 	}
 }
@@ -282,30 +282,30 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 	float *pos = ZIN(2);
 	float nextlevel = ZIN0(3);
 	float level = unit->m_level;
-	
+
 	float *sineTable = ft->mSine;
 	if (level != nextlevel) {
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * sineTable[2048 - ipos];
 			float rightamp = level * sineTable[ipos];
 			ZXP(leftout)  = ZXP(leftin) * leftamp;
-			ZXP(rightout) = ZXP(rightin) * rightamp;	
-			level += levelSlope;	
+			ZXP(rightout) = ZXP(rightin) * rightamp;
+			level += levelSlope;
 		);
 		unit->m_level = level;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * sineTable[2048 - ipos];
 			float rightamp = level * sineTable[ipos];
 			ZXP(leftout)  = ZXP(leftin) * leftamp;
-			ZXP(rightout) = ZXP(rightin) * rightamp;	
+			ZXP(rightout) = ZXP(rightin) * rightamp;
 		);
 	}
 }
@@ -313,7 +313,7 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void XFade2_Ctor(XFade2 *unit)
-{	
+{
 	if (INRATE(2) == calc_FullRate) {
 		SETCALC(XFade2_next_aa);
 	} else {
@@ -323,7 +323,7 @@ void XFade2_Ctor(XFade2 *unit)
 	unit->m_level = ZIN0(3);
 	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
 	ipos = sc_clip(ipos, 0, 2048);
-	
+
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
 	unit->m_rightamp = unit->m_level * ft->mSine[ipos];
 	XFade2_next_aa(unit, 1);
@@ -337,12 +337,12 @@ void XFade2_next_ak(XFade2 *unit, int inNumSamples)
 	float pos = ZIN0(2);
 	float level = ZIN0(3);
 	float leftamp =  unit->m_leftamp;
-	float rightamp = unit->m_rightamp;	
+	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
 		int32 ipos = (int32)(1024.f * pos + 1024.f);
 		ipos = sc_clip(ipos, 0, 2048);
-		
+
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
 		float nextrightamp = level * ft->mSine[ipos];
 
@@ -350,7 +350,7 @@ void XFade2_next_ak(XFade2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			ZXP(out) = ZXP(leftin) * leftamp + ZXP(rightin) * rightamp;
 			leftamp += leftampslope;
 			rightamp += rightampslope;
@@ -360,7 +360,7 @@ void XFade2_next_ak(XFade2 *unit, int inNumSamples)
 		unit->m_leftamp = leftamp;
 		unit->m_rightamp = rightamp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			ZXP(out) = ZXP(leftin) * leftamp + ZXP(rightin) * rightamp;
 		);
 	}
@@ -374,25 +374,25 @@ void XFade2_next_aa(XFade2 *unit, int inNumSamples)
 	float *pos = ZIN(2);
 	float nextlevel = ZIN0(3);
 	float level = unit->m_level;
-	
+
 	float *sineTable = ft->mSine;
 	if (level != nextlevel) {
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * sineTable[2048 - ipos];
 			float rightamp = level * sineTable[ipos];
 			ZXP(out) = ZXP(leftin) * leftamp + ZXP(rightin) * rightamp;
-			level += levelSlope;	
+			level += levelSlope;
 		);
 		unit->m_level = level;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * sineTable[2048 - ipos];
 			float rightamp = level * sineTable[ipos];
 			ZXP(out) = ZXP(leftin) * leftamp + ZXP(rightin) * rightamp;
@@ -405,7 +405,7 @@ void XFade2_next_aa(XFade2 *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LinXFade2_Ctor(LinXFade2 *unit)
-{	
+{
 	if (INRATE(2) == calc_FullRate) {
 		SETCALC(LinXFade2_next_a);
 	} else {
@@ -414,7 +414,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 	unit->m_pos = ZIN0(2);
 	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
 	unit->m_amp = unit->m_pos * 0.5 + 0.5;
-	
+
 	LinXFade2_next_a(unit, 1);
 }
 
@@ -428,11 +428,11 @@ void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
 
 	if (pos != unit->m_pos) {
 		pos = sc_clip(pos, -1.f, 1.f);
-		
+
 		float nextamp  = (pos * 0.5 + 0.5);
 		float amp_slope  = (nextamp - amp) * unit->mRate->mSlopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float l = ZXP(leftin);
 			float r = ZXP(rightin);
 			ZXP(out) = l + amp * (r - l);
@@ -441,7 +441,7 @@ void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
 		unit->m_pos = pos;
 		unit->m_amp = amp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float l = ZXP(leftin);
 			float r = ZXP(rightin);
 			ZXP(out) = l + amp * (r - l);
@@ -456,7 +456,7 @@ void LinXFade2_next_a(LinXFade2 *unit, int inNumSamples)
 	float *rightin = ZIN(1);
 	float *posp = ZIN(2);
 
-	LOOP(inNumSamples, 
+	LOOP(inNumSamples,
 		float pos = ZXP(posp);
 		pos = sc_clip(pos, -1.f, 1.f);
 		float amp = pos * 0.5 + 0.5;
@@ -476,12 +476,12 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
 	float leftamp =  unit->m_leftamp;
-	float rightamp = unit->m_rightamp;	
+	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
 		int32 ipos = (int32)(1024.f * pos + 1024.f);
 		ipos = sc_clip(ipos, 0, 2048);
-		
+
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
 		float nextrightamp = level * ft->mSine[ipos];
 
@@ -489,10 +489,10 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
+			ZXP(rightout) = zin * rightamp;
 			leftamp += leftampslope;
 			rightamp += rightampslope;
 		);
@@ -501,10 +501,10 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 		unit->m_leftamp = leftamp;
 		unit->m_rightamp = rightamp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
+			ZXP(rightout) = zin * rightamp;
 		);
 	}
 }
@@ -526,7 +526,7 @@ void vPan2_next_ak(Pan2 *unit, int inNumSamples)
 	if (pos != unit->m_pos || unit->m_level != level) {
 		int32 ipos = (int32)(1024.f * pos + 1024.f);
 		ipos = sc_clip(ipos, 0, 2048);
-		
+
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
 		float nextrightamp = level * ft->mSine[ipos];
 
@@ -573,38 +573,38 @@ void Pan2_next_aa(Pan2 *unit, int inNumSamples)
 	float *pos = ZIN(1);
 	float nextlevel = ZIN0(2);
 	float level = unit->m_level;
-	
+
 	if (level != nextlevel) {
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
-		
-		LOOP(inNumSamples, 
+
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * ft->mSine[2048 - ipos];
 			float rightamp = level * ft->mSine[ipos];
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
-			level += levelSlope;	
+			ZXP(rightout) = zin * rightamp;
+			level += levelSlope;
 		);
 		unit->m_level = level;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
 			ipos = sc_clip(ipos, 0, 2048);
-			
+
 			float leftamp  = level * ft->mSine[2048 - ipos];
 			float rightamp = level * ft->mSine[ipos];
 			float zin = ZXP(in);
 			ZXP(leftout)  = zin * leftamp;
-			ZXP(rightout) = zin * rightamp;	
+			ZXP(rightout) = zin * rightamp;
 		);
 	}
 }
 
 void Pan2_Ctor(Pan2 *unit)
-{	
+{
 	if (INRATE(1) == calc_FullRate) {
 		SETCALC(Pan2_next_aa);
 	} else {
@@ -623,7 +623,7 @@ void Pan2_Ctor(Pan2 *unit)
 	unit->m_level = ZIN0(2);
 	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
 	ipos = sc_clip(ipos, 0, 2048);
-	
+
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
 	unit->m_rightamp = unit->m_level * ft->mSine[ipos];
 	Pan2_next_aa(unit, 1);
@@ -632,7 +632,7 @@ void Pan2_Ctor(Pan2 *unit)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Pan4_Ctor(Pan4 *unit)
-{	
+{
 	SETCALC(Pan4_next);
 	//float *in = ZIN(0);
 	float xpos = ZIN0(1);
@@ -660,26 +660,26 @@ void Pan4_Ctor(Pan4 *unit)
 				ypos = (ypos - xpos) / -xpos - 1.f;
 				xpos = -1.f;
 			}
-		}						
+		}
 	}
 
 	int32 ixpos = (int32)(1024.f * xpos + 1024.f);
 	ixpos = sc_clip(ixpos, 0, 2048);
 	float leftamp  = ft->mSine[2048 - ixpos];
 	float rightamp = ft->mSine[ixpos];
-	
+
 	int32 iypos = (int32)(1024.f * ypos + 1024.f);
 	iypos = sc_clip(iypos, 0, 2048);
 	float frontamp = ft->mSine[iypos];
 	float backamp  = ft->mSine[2048 - iypos];
-	
+
 	frontamp *= level;
 	backamp  *= level;
-	
+
 	unit->m_LF_amp = leftamp  * frontamp;
 	unit->m_RF_amp = rightamp * frontamp;
 	unit->m_LB_amp = leftamp  * backamp;
-	unit->m_RB_amp = rightamp * backamp;		
+	unit->m_RB_amp = rightamp * backamp;
 
 	float z = ZIN0(0);
 	ZOUT0(0) = z * unit->m_LF_amp;
@@ -694,7 +694,7 @@ void Pan4_next(Pan4 *unit, int inNumSamples)
 	float *RFout = ZOUT(1);
 	float *LBout = ZOUT(2);
 	float *RBout = ZOUT(3);
-	
+
 	float *in = ZIN(0);
 	float xpos = ZIN0(1);
 	float ypos = ZIN0(2);
@@ -727,33 +727,33 @@ void Pan4_next(Pan4 *unit, int inNumSamples)
 					ypos = (ypos - xpos) / -xpos - 1.f;
 					xpos = -1.f;
 				}
-			}						
+			}
 		}
 
 		int32 ixpos = (int32)(1024.f * xpos + 1024.f);
 		ixpos = sc_clip(ixpos, 0, 2048);
 		float leftamp  = ft->mSine[2048 - ixpos];
 		float rightamp = ft->mSine[ixpos];
-		
+
 		int32 iypos = (int32)(1024.f * ypos + 1024.f);
 		iypos = sc_clip(iypos, 0, 2048);
 		float frontamp = ft->mSine[iypos];
 		float backamp  = ft->mSine[2048 - iypos];
-		
+
 		frontamp *= level;
 		backamp  *= level;
-		
+
 		float next_LF_amp = leftamp  * frontamp;
 		float next_RF_amp = rightamp * frontamp;
 		float next_LB_amp = leftamp  * backamp;
 		float next_RB_amp = rightamp * backamp;
-		
+
 		float LF_slope = CALCSLOPE(next_LF_amp, LF_amp);
 		float RF_slope = CALCSLOPE(next_RF_amp, RF_amp);
 		float LB_slope = CALCSLOPE(next_LB_amp, LB_amp);
 		float RB_slope = CALCSLOPE(next_RB_amp, RB_amp);
-		
-		LOOP(inNumSamples, 
+
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(LFout) = z * LF_amp;
 			ZXP(RFout) = z * RF_amp;
@@ -769,7 +769,7 @@ void Pan4_next(Pan4 *unit, int inNumSamples)
 		unit->m_LB_amp = LB_amp;
 		unit->m_RB_amp = RB_amp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(LFout) = z * LF_amp;
 			ZXP(RFout) = z * RF_amp;
@@ -790,17 +790,17 @@ void PanB_Ctor(PanB *unit)
 
 	int kSineSize = ft->mSineSize;
 	int kSineMask = kSineSize - 1;
-	
+
 	long iazimuth   = kSineMask & (long)(azimuth   * (float)(kSineSize >> 1));
 	long ielevation = kSineMask & (long)(elevation * (float)(kSineSize >> 2));
 	float sina = -ft->mSine[iazimuth];
 	float sinb =  ft->mSine[ielevation];
-	
+
 	iazimuth   = kSineMask & (iazimuth   + (kSineSize>>2));
 	ielevation = kSineMask & (ielevation + (kSineSize>>2));
 	float cosa = ft->mSine[iazimuth];
 	float cosb = ft->mSine[ielevation];
-	
+
 	unit->m_W_amp = rsqrt2 * level;
 	unit->m_X_amp = cosa * cosb * level;
 	unit->m_Y_amp = sina * cosb * level;
@@ -815,7 +815,7 @@ void PanB_next(PanB *unit, int inNumSamples)
 	float *Xout = ZOUT(1);
 	float *Yout = ZOUT(2);
 	float *Zout = ZOUT(3);
-	
+
 	float *in = ZIN(0);
 	float azimuth = ZIN0(1);
 	float elevation = ZIN0(2);
@@ -832,28 +832,28 @@ void PanB_next(PanB *unit, int inNumSamples)
 		unit->m_azimuth = azimuth;
 		unit->m_elevation = elevation;
 		unit->m_level = level;
-		
+
 		long iazimuth   = kSineMask & (long)(azimuth   * (float)(kSineSize >> 1));
 		long ielevation = kSineMask & (long)(elevation * (float)(kSineSize >> 2));
 		float sina = -ft->mSine[iazimuth];
 		float sinb =  ft->mSine[ielevation];
-		
+
 		iazimuth   = kSineMask & (iazimuth   + (kSineSize>>2));
 		ielevation = kSineMask & (ielevation + (kSineSize>>2));
 		float cosa = ft->mSine[iazimuth];
 		float cosb = ft->mSine[ielevation];
-		
+
 		float next_W_amp = rsqrt2 * level;
 		float next_X_amp = cosa * cosb * level;
 		float next_Y_amp = sina * cosb * level;
 		float next_Z_amp = sinb * level;
-		
+
 		float W_slope = CALCSLOPE(next_W_amp, W_amp);
 		float X_slope = CALCSLOPE(next_X_amp, X_amp);
 		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
 		float Z_slope = CALCSLOPE(next_Z_amp, Z_amp);
-		
-		LOOP(inNumSamples, 
+
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(Wout) = z * W_amp;
 			ZXP(Xout) = z * X_amp;
@@ -869,7 +869,7 @@ void PanB_next(PanB *unit, int inNumSamples)
 		unit->m_Y_amp = Y_amp;
 		unit->m_Z_amp = Z_amp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(Wout) = z * W_amp;
 			ZXP(Xout) = z * X_amp;
@@ -886,7 +886,7 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 	float *Wout = ZOUT(0);
 	float *Xout = ZOUT(1);
 	float *Yout = ZOUT(2);
-	
+
 	float *in = ZIN(0);
 	float azimuth = ZIN0(1);
 	float level = ZIN0(2);
@@ -903,19 +903,19 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 
 		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
 		float sina = -ft->mSine[isinpos];
-		
+
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
-		
+
 		float next_W_amp = rsqrt2 * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
-				
+
 		float W_slope = CALCSLOPE(next_W_amp, W_amp);
 		float X_slope = CALCSLOPE(next_X_amp, X_amp);
 		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
-		
-		LOOP(inNumSamples, 
+
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(Wout) = z * W_amp;
 			ZXP(Xout) = z * X_amp;
@@ -928,7 +928,7 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 		unit->m_X_amp = X_amp;
 		unit->m_Y_amp = Y_amp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float z = ZXP(in);
 			ZXP(Wout) = z * W_amp;
 			ZXP(Xout) = z * X_amp;
@@ -963,18 +963,18 @@ void vPanB2_next(PanB2 *unit, int inNumSamples)
 
 		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
 		float sina = -ft->mSine[isinpos];
-		
+
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
-		
+
 		float next_W_amp = rsqrt2 * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
-				
+
 		float W_slope = CALCSLOPE(next_W_amp, W_amp);
 		float X_slope = CALCSLOPE(next_X_amp, X_amp);
 		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
-		
+
 		vfloat32 vW_slope = vload(4.f * W_slope);
 		vfloat32 vX_slope = vload(4.f * X_slope);
 		vfloat32 vY_slope = vload(4.f * Y_slope);
@@ -1028,17 +1028,17 @@ void PanB2_Ctor(PanB2 *unit)
 
 	int kSineSize = ft->mSineSize;
 	int kSineMask = kSineSize - 1;
-	
+
 	long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
 	float sina = -ft->mSine[isinpos];
-	
+
 	long icospos = kSineMask & (isinpos + (kSineSize>>2));
 	float cosa = ft->mSine[icospos];
-	
+
 	unit->m_W_amp = rsqrt2 * level;
 	unit->m_X_amp = cosa * level;
 	unit->m_Y_amp = sina * level;
-	
+
 	PanB2_next(unit, 1);
 }
 
@@ -1049,7 +1049,7 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 	float *Wout = ZOUT(0);
 	float *Xout = ZOUT(1);
 	float *Yout = ZOUT(2);
-	
+
 	float *inA = ZIN(0);
 	float *inB = ZIN(1);
 	float azimuth = ZIN0(2);
@@ -1067,20 +1067,20 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 
 		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
 		float sina = -ft->mSine[isinpos];
-		
+
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
-		
+
 		float next_W_amp = rsqrt2 * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
-				
+
 		float W_slope = CALCSLOPE(next_W_amp, W_amp);
 		float X_slope = CALCSLOPE(next_X_amp, X_amp);
 		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
-		
+
 		if (W_slope == 0.f) {
-			LOOP(inNumSamples, 
+			LOOP(inNumSamples,
 				float a = ZXP(inA);
 				float b = ZXP(inB);
 				float abdiff = a - b;
@@ -1091,7 +1091,7 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 				Y_amp += Y_slope;
 			);
 		} else {
-			LOOP(inNumSamples, 
+			LOOP(inNumSamples,
 				float a = ZXP(inA);
 				float b = ZXP(inB);
 				float abdiff = a - b;
@@ -1107,7 +1107,7 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 		unit->m_X_amp = X_amp;
 		unit->m_Y_amp = Y_amp;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float a = ZXP(inA);
 			float b = ZXP(inB);
 			float abdiff = a - b;
@@ -1119,7 +1119,7 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 }
 
 void BiPanB2_Ctor(BiPanB2 *unit)
-{	
+{
 	SETCALC(BiPanB2_next);
 
 	float azimuth = unit->m_azimuth = ZIN0(2);
@@ -1127,17 +1127,17 @@ void BiPanB2_Ctor(BiPanB2 *unit)
 
 	int kSineSize = ft->mSineSize;
 	int kSineMask = kSineSize - 1;
-	
+
 	long iazimuth = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
 	float sina = -ft->mSine[iazimuth];
-	
+
 	iazimuth = kSineMask & (iazimuth + (kSineSize>>2));
 	float cosa = ft->mSine[iazimuth];
-	
+
 	unit->m_W_amp = rsqrt2 * level;
 	unit->m_X_amp = cosa * level;
 	unit->m_Y_amp = sina * level;
-	
+
 	BiPanB2_next(unit, 1);
 }
 
@@ -1151,15 +1151,15 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 	float rwidth = 1.f / width;
 	float range = numOutputs * rwidth;
 	float rrange = 1.f / range;
-	
+
 	float zpos = pos * 0.5 * numOutputs + width * 0.5 + orientation;
-	Print("pos %6.2g    rwidth %6.3g  range %6.3g  rrange %6.3g  zpos %6.3g\n", 
+	Print("pos %6.2g    rwidth %6.3g  range %6.3g  rrange %6.3g  zpos %6.3g\n",
 		pos, rwidth, range, rrange, zpos);
 	for (int i=0; i<numOutputs; ++i) {
 		float amp;
 		float chanpos = zpos - i;
 		chanpos *= rwidth;
-		float zchanpos = chanpos - range * floor(rrange * chanpos); 
+		float zchanpos = chanpos - range * floor(rrange * chanpos);
 		if (zchanpos > 1.f) {
 			amp = 0.f;
 		} else {
@@ -1173,11 +1173,11 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 
 
 void PanAz_Ctor(PanAz *unit)
-{	
+{
 	int numOutputs = unit->mNumOutputs;
 	for (int i=0; i<numOutputs; ++i) {
 		unit->m_chanamp[i] = 0;
-		ZOUT0(i) = 0.f;	
+		ZOUT0(i) = 0.f;
 	}
 	SETCALC(PanAz_next);
 }
@@ -1188,22 +1188,22 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	float level = ZIN0(2);
 	float width = ZIN0(3);
 	float orientation = ZIN0(4);
-	
+
 	int numOutputs = unit->mNumOutputs;
 	float rwidth = 1.f / width;
 	float range = numOutputs * rwidth;
 	float rrange = 1.f / range;
-	
+
 	pos = pos * 0.5 * numOutputs + width * 0.5 + orientation;
-	
+
 	float *zin0 = ZIN(0);
-	
+
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = ZOUT(i);
 		float nextchanamp;
 		float chanpos = pos - i;
 		chanpos *= rwidth;
-		chanpos = chanpos - range * floor(rrange * chanpos); 
+		chanpos = chanpos - range * floor(rrange * chanpos);
 		if (chanpos > 1.f) {
 			nextchanamp = 0.f;
 		} else {
@@ -1216,14 +1216,14 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 				ZClear(inNumSamples, out);
 			} else {
 				float *in = zin0;
-				LOOP(inNumSamples, 
+				LOOP(inNumSamples,
 					ZXP(out) = ZXP(in) * chanamp;
 				)
 			}
 		} else {
 			float chanampslope  = CALCSLOPE(nextchanamp, chanamp);
 			float *in = zin0;
-			LOOP(inNumSamples, 
+			LOOP(inNumSamples,
 				ZXP(out) = ZXP(in) * chanamp;
 				chanamp += chanampslope;
 			)
@@ -1244,52 +1244,52 @@ void Rotate2_next_ak(Rotate2 *unit, int inNumSamples)
 	float *yin = ZIN(1);
 	float pos = ZIN0(2);
 	float sint = unit->m_sint;
-	float cost = unit->m_cost;	
+	float cost = unit->m_cost;
 
 	if (pos != unit->m_pos) {
 		int kSineSize = ft->mSineSize;
 		int kSineMask = kSineSize - 1;
-		
+
 		int32 isinpos = kSineMask & (int32)(pos * (float)(kSineSize >> 1));
 		int32 icospos = kSineMask & ((kSineSize>>2) + isinpos);
-	
+
 		float nextsint = unit->m_sint = ft->mSine[isinpos];
 		float nextcost = unit->m_cost = ft->mSine[icospos];
-		
+
 		float slopeFactor = unit->mRate->mSlopeFactor;
 		float sinslope = (nextsint - sint) * slopeFactor;
 		float cosslope = (nextcost - cost) * slopeFactor;
 
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float x = ZXP(xin);
 			float y = ZXP(yin);
 			ZXP(xout) = cost * x + sint * y;
-			ZXP(yout) = cost * y - sint * x;	
+			ZXP(yout) = cost * y - sint * x;
 			sint += sinslope;
 			cost += cosslope;
 		);
 		unit->m_pos = pos;
 	} else {
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			float x = ZXP(xin);
 			float y = ZXP(yin);
 			ZXP(xout) = cost * x + sint * y;
-			ZXP(yout) = cost * y - sint * x;	
+			ZXP(yout) = cost * y - sint * x;
 		);
 	}
 }
 
 void Rotate2_Ctor(Rotate2 *unit)
-{	
+{
 	SETCALC(Rotate2_next_ak);
 
 	unit->m_pos = ZIN0(2);
 	int32 isinpos = 8191 & (int32)(4096.f * unit->m_pos);
 	int32 icospos = 8191 & (2048 + isinpos);
-	
+
 	unit->m_sint = ft->mSine[isinpos];
 	unit->m_cost = ft->mSine[icospos];
-	
+
 	Rotate2_next_ak(unit, 1);
 }
 
@@ -1311,7 +1311,7 @@ void DecodeB2_Ctor(DecodeB2 *unit)
 	DecodeB2_next(unit, 1);
 
 	float orientation = ZIN0(3);
-	
+
 	int numOutputs = unit->mNumOutputs;
 	float angle = (twopi / numOutputs);
 	unit->m_cosa = cos(angle);
@@ -1326,21 +1326,21 @@ void DecodeB2_next(DecodeB2 *unit, int inNumSamples)
 	float *Win0 = ZIN(0);
 	float *Xin0 = ZIN(1);
 	float *Yin0 = ZIN(2);
-	
+
 	float W_amp = unit->m_W_amp;
 	float X_amp = unit->m_X_amp;
 	float Y_amp = unit->m_Y_amp;
 	float X_tmp;
 	float cosa = unit->m_cosa;
 	float sina = unit->m_sina;
-	
+
 	int numOutputs = unit->mNumOutputs;
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = ZOUT(i);
 		float *Win = Win0;
 		float *Xin = Xin0;
 		float *Yin = Yin0;
-		LOOP(inNumSamples, 
+		LOOP(inNumSamples,
 			ZXP(out) = ZXP(Win) * W_amp + ZXP(Xin) * X_amp + ZXP(Yin) * Y_amp;
 		);
 		X_tmp = X_amp * cosa + Y_amp * sina;
@@ -1356,7 +1356,7 @@ void vDecodeB2_next(DecodeB2 *unit, int inNumSamples)
 	float *Win = IN(0);
 	float *Xin = IN(1);
 	float *Yin = IN(2);
-	
+
 	float W_amp = unit->m_W_amp;
 	float X_amp = unit->m_X_amp;
 	float Y_amp = unit->m_Y_amp;
@@ -1367,7 +1367,7 @@ void vDecodeB2_next(DecodeB2 *unit, int inNumSamples)
 	int numOutputs = unit->mNumOutputs;
 	int len = inNumSamples >> 2;
 	define_vzero
-	
+
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = OUT(i);
 		vfloat32 vW_amp = vload(W_amp);

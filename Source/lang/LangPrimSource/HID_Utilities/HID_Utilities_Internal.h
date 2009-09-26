@@ -2,7 +2,7 @@
 	File:		HID_Utilities_Internal.h
 
 	Contains:   Definition of HID Utilities internal functions
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved

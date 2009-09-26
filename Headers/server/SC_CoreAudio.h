@@ -35,7 +35,7 @@
 #define SC_AUDIO_API_AUDIOUNITS  4
 #define SC_AUDIO_API_COREAUDIOIPHONE	5
 
- 
+
 #ifdef SC_WIN32
 # ifndef SC_INNERSC
 #  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
@@ -76,15 +76,15 @@ const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 const double kOSCtoSecs = 2.328306436538696e-10;
 
-struct SC_ScheduledEvent 
+struct SC_ScheduledEvent
 {
 	SC_ScheduledEvent() : mTime(0), mPacket(0) {}
-	SC_ScheduledEvent(struct World *inWorld, int64 inTime, OSC_Packet *inPacket) 
+	SC_ScheduledEvent(struct World *inWorld, int64 inTime, OSC_Packet *inPacket)
 		: mTime(inTime), mPacket(inPacket), mWorld(inWorld) {}
-	
+
 	int64 Time() { return mTime; }
 	void Perform();
-	
+
 	int64 mTime;
 	OSC_Packet *mPacket;
 	struct World *mWorld;
@@ -123,7 +123,7 @@ protected:
 	double mAvgCPU, mPeakCPU;
 	int mPeakCounter, mMaxPeakCounter;
 	double mOSCincrementNumerator;
-	
+
 	double mStartHostSecs;
 	double mPrevHostSecs;
 	double mStartSampleTime;
@@ -135,27 +135,27 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) = 0;
 	virtual bool DriverStart() = 0;
 	virtual bool DriverStop() = 0;
-    
+
 public:
 	// Common methods
 	SC_AudioDriver(struct World *inWorld);
 	virtual ~SC_AudioDriver();
 
     int64 mOSCbuftime;
-    
+
 	bool Setup();
 	bool Start();
 	bool Stop();
-	
+
 	void ClearSched() { mScheduler.Empty(); }
-	
+
 	void RunNonRealTime(float *in, float *out, int numSamples, int64 oscTime);
 	void* RunThread();
 
 	int SafetyOffset() const { return mSafetyOffset; }
 	int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }
-	void SetPreferredHardwareBufferFrameSize(int inSize) 
-	{ 
+	void SetPreferredHardwareBufferFrameSize(int inSize)
+	{
 		mPreferredHardwareBufferFrameSize = inSize;
 	}
 	void SetPreferredSampleRate(int inRate)
@@ -164,7 +164,7 @@ public:
 	}
 
 	bool SendMsgToEngine(FifoMsg& inMsg);           // called by NRT thread
-	bool SendMsgFromEngine(FifoMsg& inMsg);         
+	bool SendMsgFromEngine(FifoMsg& inMsg);
 	bool SendOscPacketMsgToEngine(FifoMsg& inMsg);  // called by OSC socket listener threads, protected by mWorld->mDriverLock
 
 	void AddEvent(SC_ScheduledEvent& event) { mScheduler.Add(event); }
@@ -172,7 +172,7 @@ public:
 	double GetAvgCPU() const { return mAvgCPU; }
 	double GetPeakCPU() const { return mPeakCPU; }
 	double GetSampleRate() const { return mSampleRate; }
-	double GetActualSampleRate() const { return mSmoothSampleRate; }	
+	double GetActualSampleRate() const { return mSmoothSampleRate; }
 };
 
 extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
@@ -190,18 +190,18 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 	AudioStreamBasicDescription	inputStreamDesc;	// info about the default device
 	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
 
-	friend OSStatus appIOProc (		AudioDeviceID inDevice, 
-									const AudioTimeStamp* inNow, 
+	friend OSStatus appIOProc (		AudioDeviceID inDevice,
+									const AudioTimeStamp* inNow,
 									const AudioBufferList* inInputData,
-									const AudioTimeStamp* inInputTime, 
-									AudioBufferList* outOutputData, 
+									const AudioTimeStamp* inInputTime,
+									AudioBufferList* outOutputData,
 									const AudioTimeStamp* inOutputTime,
 									void* defptr);
-									
-	friend OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow, 
+
+	friend OSStatus appIOProcSeparateIn (AudioDeviceID device, const AudioTimeStamp* inNow,
 									const AudioBufferList* inInputData,
-									const AudioTimeStamp* inInputTime, 
-									AudioBufferList* outOutputData, 
+									const AudioTimeStamp* inInputTime,
+									AudioBufferList* outOutputData,
 									const AudioTimeStamp* inOutputTime,
 									void* defptr);
 
@@ -210,7 +210,7 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
-    
+
 public:
     SC_CoreAudioDriver(struct World *inWorld);
 	virtual ~SC_CoreAudioDriver();
@@ -221,9 +221,9 @@ public:
 	bool UseSeparateIO() { return UseInput() && mInputDevice != mOutputDevice; }
 	AudioDeviceID InputDevice() { return mInputDevice; }
 	AudioDeviceID OutputDevice() { return mOutputDevice; }
-	
+
 	void SetInputBufferList(AudioBufferList * inBufList) { mInputBufList = inBufList; }
-	AudioBufferList* GetInputBufferList() const { return mInputBufList; }	
+	AudioBufferList* GetInputBufferList() const { return mInputBufList; }
 };
 
 #endif
@@ -241,7 +241,7 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
-    
+
 public:
     SC_iCoreAudioDriver(struct World *inWorld);
 	virtual ~SC_iCoreAudioDriver();
@@ -252,8 +252,8 @@ public:
 	AudioBufferList * floatInputList;
 	AudioBufferList * floatOutputList;
 	AudioConverterRef converter_in_to_F32;
-	AudioConverterRef converter_F32_to_out;	
-	AudioConverterRef converter_in_to_out;	
+	AudioConverterRef converter_F32_to_out;
+	AudioConverterRef converter_in_to_out;
 	int *converter_buffer;
 
 	int receivedIn;
@@ -283,7 +283,7 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
-    
+
 public:
     SC_PortAudioDriver(struct World *inWorld);
 	virtual ~SC_PortAudioDriver();
@@ -316,10 +316,10 @@ protected:
 	virtual bool  DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool  DriverStart();
 	virtual bool  DriverStop();
-  void          Callback( 
+  void          Callback(
                   const void *input, void *output,
                   unsigned long frameCount, const VstTimeInfo* timeInfo );
-    
+
 public:
               SC_VSTAudioDriver(struct World *inWorld);
   	virtual  ~SC_VSTAudioDriver();

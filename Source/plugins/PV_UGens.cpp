@@ -192,8 +192,8 @@ extern "C"
 		average magnitude over a range of bins
 		max magnitude over a range of bins
 		max magnitude bin freq
-		
-		
+
+
 */
 
 }
@@ -244,7 +244,7 @@ void PV_MagAbove_next(PV_Unit *unit, int inNumSamples)
 	PV_GET_BUF
 
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float thresh = ZIN0(1);
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
@@ -261,11 +261,11 @@ void PV_MagAbove_Ctor(PV_Unit *unit)
 void PV_MagBelow_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float thresh = ZIN0(1);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag > thresh) p->bin[i].mag = 0.;
@@ -281,11 +281,11 @@ void PV_MagBelow_Ctor(PV_Unit *unit)
 void PV_MagClip_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float thresh = ZIN0(1);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag > thresh) p->bin[i].mag = thresh;
@@ -301,11 +301,11 @@ void PV_MagClip_Ctor(PV_Unit *unit)
 void PV_LocalMax_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float thresh = ZIN0(1);
-	
+
 	for (int i=1; i<numbins-1; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag < thresh || mag < p->bin[i-1].mag || mag < p->bin[i+1].mag) {
@@ -324,10 +324,10 @@ void PV_MagSmear_next(PV_MagSmear *unit, int inNumSamples)
 {
 	PV_GET_BUF
 	MAKE_TEMP_BUF
-		
+
 	SCPolarBuf *p = ToPolarApx(buf);
 	SCPolarBuf *q = (SCPolarBuf*)unit->m_tempbuf;
-	
+
 	int width = (int)ZIN0(1);
 	width = sc_clip(width, 0, numbins-1);
 	float scale = 1. / (2*width+1);
@@ -368,15 +368,15 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 	// get shift and stretch params
 	float stretch = ZIN0(1);
 	float shift = ZIN0(2);
-	
+
 	SCComplexBuf *p = ToComplexApx(buf);
 	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
-	
+
 	// initialize output buf to zeroes
 	for (int i=0; i<numbins; ++i) {
 		q->bin[i] = 0.;
 	}
-	
+
 	float fpos;
         int i;
 	q->dc = p->dc;
@@ -411,16 +411,16 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 	// get shift and stretch params
 	float stretch = ZIN0(1);
 	float shift = ZIN0(2);
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
 	SCPolarBuf *q = (SCPolarBuf*)unit->m_tempbuf;
-	
+
 	// initialize output buf to zeroes
 	for (int i=0; i<numbins; ++i) {
 		q->bin[i].mag = 0.;
 		q->bin[i].phase = p->bin[i].phase;
 	}
-	
+
 	float fpos;
         int i;
 	q->dc = p->dc;
@@ -477,11 +477,11 @@ void PV_MagNoise_Ctor(PV_Unit *unit)
 void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float shift = ZIN0(1);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		p->bin[i].phase += shift;
 	}
@@ -496,9 +496,9 @@ void PV_PhaseShift_Ctor(PV_Unit *unit)
 void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCComplexBuf *p = ToComplexApx(buf);
-		
+
 	for (int i=0; i<numbins; ++i) {
 		float temp = p->bin[i].real;
 		p->bin[i].real = -p->bin[i].imag;
@@ -515,9 +515,9 @@ void PV_PhaseShift90_Ctor(PV_Unit *unit)
 void PV_PhaseShift270_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCComplexBuf *p = ToComplexApx(buf);
-		
+
 	for (int i=0; i<numbins; ++i) {
 		float temp = p->bin[i].real;
 		p->bin[i].real = p->bin[i].imag;
@@ -534,9 +534,9 @@ void PV_PhaseShift270_Ctor(PV_Unit *unit)
 void PV_MagSquared_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		p->bin[i].mag = mag * mag;
@@ -552,7 +552,7 @@ void PV_MagSquared_Ctor(PV_Unit *unit)
 void PV_BrickWall_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCComplexBuf *p = (SCComplexBuf*)buf->data;
 
 	int wipe = (int)(ZIN0(1) * numbins);
@@ -560,12 +560,12 @@ void PV_BrickWall_next(PV_Unit *unit, int inNumSamples)
 		wipe = sc_min(wipe, numbins);
 		for (int i=0; i < wipe; ++i) {
 			p->bin[i] = 0.;
-		}	
+		}
 	} else if (wipe < 0) {
 		wipe = sc_max(wipe, -numbins);
 		for (int i=numbins+wipe; i < numbins; ++i) {
 			p->bin[i] = 0.;
-		}	
+		}
 	}
 }
 
@@ -578,7 +578,7 @@ void PV_BrickWall_Ctor(PV_Unit *unit)
 void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCComplexBuf *p = (SCComplexBuf*)buf1->data;
 	SCComplexBuf *q = (SCComplexBuf*)buf2->data;
 
@@ -587,12 +587,12 @@ void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
 		wipe = sc_min(wipe, numbins);
 		for (int i=0; i < wipe; ++i) {
 			p->bin[i] = q->bin[i];
-		}	
+		}
 	} else if (wipe < 0) {
 		wipe = sc_max(wipe, -numbins);
 		for (int i=numbins+wipe; i < numbins; ++i) {
 			p->bin[i] = q->bin[i];
-		}	
+		}
 	}
 }
 
@@ -605,10 +605,10 @@ void PV_BinWipe_Ctor(PV_Unit *unit)
 void PV_MagMul_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
-	
+
 	p->dc *= q->dc;
 	p->nyq *= q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -625,12 +625,12 @@ void PV_MagMul_Ctor(PV_Unit *unit)
 void PV_MagDiv_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
-	
+
 	float zeroed = ZIN0(2);
-	
+
 	p->dc /= sc_max(q->dc, zeroed);
 	p->nyq /= sc_max(q->nyq, zeroed);
 	for (int i=0; i<numbins; ++i) {
@@ -646,45 +646,45 @@ void PV_MagDiv_Ctor(PV_Unit *unit)
 
 void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 {
-	
-	float fbufnum1 = ZIN0(0); 
-	float fbufnum2 = ZIN0(1); 
-	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; } 
-	ZOUT0(0) = fbufnum2; 
-	uint32 ibufnum1 = (int)fbufnum1; 
-	uint32 ibufnum2 = (int)fbufnum2; 
-	World *world = unit->mWorld; 
-	SndBuf *buf1; 
-	SndBuf *buf2; 
-	if (ibufnum1 >= world->mNumSndBufs) { 
-		int localBufNum = ibufnum1 - world->mNumSndBufs; 
-		Graph *parent = unit->mParent; 
-		if(localBufNum <= parent->localBufNum) { 
-			buf1 = parent->mLocalSndBufs + localBufNum; 
-		} else { 
-			buf1 = world->mSndBufs; 
-		} 
-	} else { 
-		buf1 = world->mSndBufs + ibufnum1; 
-	} 
-	if (ibufnum2 >= world->mNumSndBufs) { 
-		int localBufNum = ibufnum2 - world->mNumSndBufs; 
-		Graph *parent = unit->mParent; 
-		if(localBufNum <= parent->localBufNum) { 
-			buf2 = parent->mLocalSndBufs + localBufNum; 
-		} else { 
-			buf2 = world->mSndBufs; 
-		} 
-	} else { 
-		buf2 = world->mSndBufs + ibufnum2; 
-	} 
-	if (buf1->samples != buf2->samples) return; 
+
+	float fbufnum1 = ZIN0(0);
+	float fbufnum2 = ZIN0(1);
+	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; }
+	ZOUT0(0) = fbufnum2;
+	uint32 ibufnum1 = (int)fbufnum1;
+	uint32 ibufnum2 = (int)fbufnum2;
+	World *world = unit->mWorld;
+	SndBuf *buf1;
+	SndBuf *buf2;
+	if (ibufnum1 >= world->mNumSndBufs) {
+		int localBufNum = ibufnum1 - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf1 = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf1 = world->mSndBufs;
+		}
+	} else {
+		buf1 = world->mSndBufs + ibufnum1;
+	}
+	if (ibufnum2 >= world->mNumSndBufs) {
+		int localBufNum = ibufnum2 - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			buf2 = parent->mLocalSndBufs + localBufNum;
+		} else {
+			buf2 = world->mSndBufs;
+		}
+	} else {
+		buf2 = world->mSndBufs + ibufnum2;
+	}
+	if (buf1->samples != buf2->samples) return;
 	int numbins = buf1->samples - 2 >> 1;
-	
+
 	// copy to buf2
 	buf2->coord = buf1->coord;
 	memcpy(buf2->data, buf1->data, buf1->samples * sizeof(float));
-	
+
 }
 
 void PV_Copy_Ctor(PV_Unit *unit)
@@ -696,10 +696,10 @@ void PV_Copy_Ctor(PV_Unit *unit)
 void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
-	
+
 	p->dc *= q->dc;
 	p->nyq *= q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -716,12 +716,12 @@ void PV_CopyPhase_Ctor(PV_Unit *unit)
 void PV_Mul_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCComplexBuf *p = ToComplexApx(buf1);
 	SCComplexBuf *q = ToComplexApx(buf2);
-	
+
 	float preal, realmul, imagmul;
-	
+
 	p->dc *= q->dc;
 	p->nyq *= q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -743,12 +743,12 @@ void PV_Mul_Ctor(PV_Unit *unit)
 void PV_Div_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCComplexBuf *p = ToComplexApx(buf1);
 	SCComplexBuf *q = ToComplexApx(buf2);
-	
+
 	float hypot, preal;
-	
+
 	p->dc  /= q->dc;
 	p->nyq /= q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -772,10 +772,10 @@ void PV_Div_Ctor(PV_Unit *unit)
 void PV_Add_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCComplexBuf *p = ToComplexApx(buf1);
 	SCComplexBuf *q = ToComplexApx(buf2);
-	
+
 	p->dc += q->dc;
 	p->nyq += q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -793,10 +793,10 @@ void PV_Add_Ctor(PV_Unit *unit)
 void PV_Max_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		if (q->bin[i].mag > p->bin[i].mag) {
 			p->bin[i] = q->bin[i];
@@ -813,10 +813,10 @@ void PV_Max_Ctor(PV_Unit *unit)
 void PV_Min_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF2
-	
+
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		if (q->bin[i].mag < p->bin[i].mag) {
 			p->bin[i] = q->bin[i];
@@ -838,9 +838,9 @@ void PV_RectComb_next(PV_Unit *unit, int inNumSamples)
 	float phase = ZIN0(2);
 	float width = ZIN0(3);
 	float freq = numTeeth / (numbins + 1);
-	
+
 	SCComplexBuf *p = (SCComplexBuf*)buf->data;
-	
+
 	if (phase > width) p->dc = 0.f;
 		phase += freq;
 		if (phase >= 1.f) phase -= 1.f;
@@ -851,7 +851,7 @@ void PV_RectComb_next(PV_Unit *unit, int inNumSamples)
 		phase += freq;
 		if (phase >= 1.f) phase -= 1.f;
 		else if (phase < 0.f) phase += 1.f;
-	}	
+	}
 
 	if (phase > width) p->nyq = 0.f;
 
@@ -874,7 +874,7 @@ void PV_RectComb2_next(PV_Unit *unit, int inNumSamples)
 
 	SCComplexBuf *p = (SCComplexBuf*)buf1->data;
 	SCComplexBuf *q = (SCComplexBuf*)buf2->data;
-	
+
 	if (phase > width) p->dc = q->dc;
 		phase += freq;
 		if (phase >= 1.f) phase -= 1.f;
@@ -885,7 +885,7 @@ void PV_RectComb2_next(PV_Unit *unit, int inNumSamples)
 		phase += freq;
 		if (phase >= 1.f) phase -= 1.f;
 		else if (phase < 0.f) phase += 1.f;
-	}	
+	}
 
 	if (phase > width) p->nyq = q->nyq;
 
@@ -920,9 +920,9 @@ void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 	float trig = ZIN0(2);
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) unit->m_triggered = true;
 	unit->m_prevtrig = trig;
-	
+
 	PV_GET_BUF
-	
+
 	if (!unit->m_ordering) {
 		unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
 		unit->m_numbins = numbins;
@@ -937,14 +937,14 @@ void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 
 	int n = (int)(ZIN0(1) * numbins);
 	n = sc_clip(n, 0, numbins);
-	
+
 	SCComplexBuf *p = (SCComplexBuf*)buf->data;
-	
+
 	int *ordering = unit->m_ordering;
 	for (int i=0; i<n; ++i) {
 		p->bin[ordering[i]] = 0.;
 	}
-	
+
 }
 
 
@@ -988,7 +988,7 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 	unit->m_prevtrig = trig;
 
 	PV_GET_BUF2
-	
+
 	if (!unit->m_ordering) {
 		unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
 		unit->m_numbins = numbins;
@@ -1003,15 +1003,15 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 
 	int n = (int)(ZIN0(2) * numbins);
 	n = sc_clip(n, 0, numbins);
-	
+
 	SCComplexBuf *p = (SCComplexBuf*)buf1->data;
 	SCComplexBuf *q = (SCComplexBuf*)buf2->data;
-	
+
 	int *ordering = unit->m_ordering;
 	for (int i=0; i<n; ++i) {
 		p->bin[ordering[i]] = q->bin[ordering[i]];
 	}
-	
+
 }
 
 
@@ -1048,7 +1048,7 @@ void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 	unit->m_prevtrig = trig;
 
 	PV_GET_BUF
-	
+
 	if (!unit->m_shift) {
 		unit->m_shift = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
 		unit->m_numbins = numbins;
@@ -1063,14 +1063,14 @@ void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 
 	int n = (int)(ZIN0(1) * numbins);
 	n = sc_clip(n, 0, numbins);
-	
+
 	SCPolarBuf *p = ToPolarApx(buf);
-	
+
 	float *shift = unit->m_shift;
 	for (int i=0; i<n; ++i) {
 		p->bin[i].phase += shift[i];
 	}
-	
+
 }
 
 
@@ -1093,7 +1093,7 @@ void PV_Diffuser_Dtor(PV_Diffuser* unit)
 void PV_MagFreeze_next(PV_MagFreeze *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	if (!unit->m_mags) {
 		unit->m_mags = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
 		unit->m_numbins = numbins;
@@ -1140,7 +1140,7 @@ void PV_BinScramble_choose(PV_BinScramble* unit)
 	int numbins = unit->m_numbins;
 	int *to = unit->m_to;
 	int *from = unit->m_from;
-	
+
 	for (int i=0; i<numbins; ++i) {
 		to[i] = i;
 	}
@@ -1170,7 +1170,7 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 	unit->m_prevtrig = trig;
 
 	PV_GET_BUF
-	
+
 	if (!unit->m_to) {
 		unit->m_to = (int*)RTAlloc(unit->mWorld, numbins * 2 * sizeof(int));
 		unit->m_from = unit->m_to + numbins;
@@ -1187,10 +1187,10 @@ void PV_BinScramble_next(PV_BinScramble *unit, int inNumSamples)
 
 	SCComplexBuf *p = (SCComplexBuf*)buf->data;
 	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
-	
+
 	float wipe = ZIN0(1);
 	int32 scrambleBins = (int32)(numbins * sc_clip(wipe, 0.f, 1.f));
-	
+
 	int *to = unit->m_to;
 	int *from = unit->m_from;
 	for (int j=0; j<scrambleBins; j++) {
@@ -1232,9 +1232,9 @@ void PV_Conj_Ctor(PV_Unit *unit)
 void PV_Conj_next(PV_Unit *unit, int inNumSamples)
 {
 	PV_GET_BUF
-	
+
 	SCComplexBuf *p = ToComplexApx(buf);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		p->bin[i].imag = 0.f - p->bin[i].imag;
 	}
@@ -1247,10 +1247,10 @@ void init_SCComplex(InterfaceTable *inTable);
 
 #define DefinePVUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(PV_Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
-	
+
 
 void initPV(InterfaceTable *inTable)
-{	
+{
 	DefinePVUnit(PV_MagAbove);
 	DefinePVUnit(PV_MagBelow);
 	DefinePVUnit(PV_MagClip);

@@ -174,7 +174,7 @@ BooleanEditorGui : EditorGui {
 		var bg,b;
 		bg = Color.clear;
 		if(bounds.isNil,{ bounds = layout.bounds; });
-		
+
 		b = Rect(0,0,14,14);
 		if(bounds.notNil,{
 			if(b.width > bounds.width,{

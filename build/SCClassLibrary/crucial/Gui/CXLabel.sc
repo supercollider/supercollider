@@ -18,7 +18,7 @@ CXAbstractLabel : SCViewHolder {
 	label_ { arg string;
 		view.string_(" " ++ string ++ " ");
 	}
-	bold { 
+	bold {
 		this.font = GUI.font.new("Helvetica-Bold",11.0);
 	}
 }

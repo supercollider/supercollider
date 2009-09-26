@@ -35,37 +35,37 @@ public:
 		}
 	void MakeEmpty() { mReadHead = mWriteHead; }
 	bool IsEmpty() { return mReadHead == mWriteHead; }
-	int CanGet() { 
+	int CanGet() {
 		int diff = mWriteHead - mReadHead;
-		return diff >= 0 ? diff : N - diff; 
+		return diff >= 0 ? diff : N - diff;
 	}
 	int CanPut() { return N-1-CanGet(); }
-	
+
 	int NextPos(int inPos) { return (inPos + 1) & mMask; }
-	
+
 	bool Put(const T& inItem)
 		{
-			long next = NextPos(mWriteHead); 
+			long next = NextPos(mWriteHead);
 			if (next == mReadHead) return false; // fifo is full
 			mItems[next] = inItem;
 			mWriteHead = next;
 			return true;
 		}
-		
+
 	bool Get(T& outItem) // get next and advance
 		{
 			if (IsEmpty()) return false;
-			long next = NextPos(mReadHead); 
+			long next = NextPos(mReadHead);
 			outItem = mItems[next];
 			mReadHead = next;
 			return true;
 		}
-	void DebugDump() 
+	void DebugDump()
 		{
-			post("FIFO N %d  mMask %d  mReadHead %d  mWriteHead%d\n", 
+			post("FIFO N %d  mMask %d  mReadHead %d  mWriteHead%d\n",
 				N, mMask, mReadHead, mWriteHead);
 		}
-		
+
 private:
 	long mMask;
 	volatile long mReadHead, mWriteHead;// mReclaimHead;

@@ -1,5 +1,5 @@
 + ClassBrowser{
 	openSVN{ |svnAddr|
-		systemCmd("open \"" ++ svnAddr ++ "\"");		
+		systemCmd("open \"" ++ svnAddr ++ "\"");
 	}
 }

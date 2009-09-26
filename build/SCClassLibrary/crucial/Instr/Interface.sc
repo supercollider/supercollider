@@ -2,24 +2,24 @@
 Interface : AbstractPlayerProxy {
 
 	var <interfaceDef,<args,environment;
-	
+
 	var <>onPrepareToBundle,
 		<>onPlay,
 		<>onStop, // also on command-.
 		<>onFree, // not on command-.
-		
+
 		<>onNoteOn,
 		<>onNoteOff,
 		//<>onPitchBend,
 		<>onCC,
-		
+
 		<guiFunction,
 		<guiBodyFunction,
 		<>keyDownAction,
 		<>keyUpAction;
 
 	var nor,nfr,ccr;
-	
+
 	*new { arg interfaceDef,args;
 		^super.new.init(interfaceDef,args);
 	}
@@ -41,10 +41,10 @@ Interface : AbstractPlayerProxy {
 		})
 	}
 	createArgs { arg argargs;
-		^Array.fill(interfaceDef.argsSize,{arg i; 
+		^Array.fill(interfaceDef.argsSize,{arg i;
 			var spec,proto,darg,ag;
 			ag = argargs.at(i) // explictly specified
-			?? 
+			??
 			{ //  or auto-create a suitable control...
 				spec = interfaceDef.specs.at(i);
 				darg = interfaceDef.initAt(i);
@@ -59,7 +59,7 @@ Interface : AbstractPlayerProxy {
 			ag
 		});
 	}
-		
+
 	prepareToBundle { arg agroup,bundle,private=false,bus,defWasLoaded = false;
 		super.prepareToBundle(agroup,bundle,private,bus,defWasLoaded);
 		environment.use({ onPrepareToBundle.value(this.group,bundle,true,this.bus); });
@@ -70,17 +70,17 @@ Interface : AbstractPlayerProxy {
 		environment.use(onPlay ? interfaceDef.onPlay);
 		// if midi, install
 		if(onNoteOn.notNil,{
-			nor = NoteOnResponder({ arg num,veloc; 
-				environment.use({ onNoteOn.value(num,veloc) }) 
+			nor = NoteOnResponder({ arg num,veloc;
+				environment.use({ onNoteOn.value(num,veloc) })
 			});
 		});
 		if(onNoteOff.notNil,{
-			nfr = NoteOffResponder({ arg num,veloc; 
+			nfr = NoteOffResponder({ arg num,veloc;
 				environment.use({ onNoteOff.value(num,veloc) })
 			 });
 		});
 		if(onCC.notNil,{
-			CCResponder.add(ccr = { arg src,chan,num,val; 
+			CCResponder.add(ccr = { arg src,chan,num,val;
 				environment.use({ onCC.value(src,chan,num,val); })
 			})
 		});
@@ -101,7 +101,7 @@ Interface : AbstractPlayerProxy {
 	guiBody { arg ... args;
 		var g,layout,a;
 		layout = args.first;
-		
+
 		a = keyDownAction ? interfaceDef.keyDownAction;
 		if(a.notNil,{
 			layout.keyDownAction = { environment.use(a) };
@@ -110,7 +110,7 @@ Interface : AbstractPlayerProxy {
 		if(a.notNil,{
 			layout.keyUpAction = { environment.use(a) };
 		});
-		
+
 		g = guiBodyFunction ? interfaceDef.guiBodyFunction;
 		if(g.notNil,{
 			environment.use({ g.valueArray(([layout,this] ++ args.copyRange(1,args.size-1))) })
@@ -123,14 +123,14 @@ Interface : AbstractPlayerProxy {
 			})
 		})
 	}
-	
+
 	use { arg function;
 		environment.use(function);
 	}
 	defer { arg function;
 		{ environment.use(function); nil }.defer;
 	}
-	
+
 	storeArgs { ^[interfaceDef.name,args] }
 	storeModifiersOn { arg stream;
 		// gui

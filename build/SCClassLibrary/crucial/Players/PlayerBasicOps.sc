@@ -3,7 +3,7 @@
 PlayerUnop : AbstractPlayer {
 
 	var <>operator, <>a;
-	
+
 	*new { arg operator, a;
 		^super.new.a_(loadDocument(a)).operator_(operator)
 	}
@@ -25,10 +25,10 @@ PlayerUnop : AbstractPlayer {
 					In.kr(abus,a.numChannels).perform(operator)
 				)
 			})
-		})			
+		})
 		//synthDefArgs { ^[ a.synthArg, patchOut.synthArg ] }
 	}*/
-	defName { ^(this.class.name.asString ++ operator.asString 
+	defName { ^(this.class.name.asString ++ operator.asString
 					++ a.numChannels.asString ++ a.rate.asString) }
 	children { ^[a] }
 	rate { ^a.rate }

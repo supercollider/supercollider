@@ -103,5 +103,5 @@ LorenzL : ChaosGen {
 	const <equation="x' = s*(y-x)\ny' = x*(r-z)-y\nz' = x*y - b*z";
 	*ar { arg freq=22050, s=10, r=28, b=2.667, h=0.05, xi=0.1, yi=0, zi=0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, s, r, b, h, xi, yi, zi).madd(mul, add)
-	}	
+	}
 }

@@ -4,7 +4,7 @@ HIDInfo{
 	*new{arg  product, bustype, vendorID, productID, version;
 		^super.newCopyArgs( product, bustype, vendorID, productID, version ).init;
 	}
-	
+
 	init{
 	}
 
@@ -53,25 +53,25 @@ HIDDevice {
 		isQueued = true;
 		HIDDeviceService.queueDevice(locID);
 	}
-	
+
 	dequeueDevice{
 		isQueued = false;
 		HIDDeviceService.dequeueDevice(locID);
 	}
-	
+
 	queueElement{arg elementNum=0;
 		HIDDeviceService.queueElement(locID, elements.at(elementNum).cookie);
 	}
-	
+
 	dequeueElement{arg elementNum=0;
 		HIDDeviceService.dequeueElement(locID, elements.at(elementNum).cookie);
 	}
-	
+
 	wasClosed{
 		("WARNING: Device was removed: " + info).postln;
 		closeAction.value;
 	}
-	
+
 	//private:
 	prAddElement{arg type, usage, cookie, min, max, ioType, usagePage, usageType;
 		elements = elements.add(HIDDeviceElement(type, usage, cookie, min, max, ioType, usagePage, usageType));
@@ -85,7 +85,7 @@ HIDDeviceElement {
 	}
 //	value_{|val|
 //		HIDDeviceService.setValue(locID, cookie, val)
-//	
+//
 //	}
 }
 
@@ -100,7 +100,7 @@ HIDDeviceService{
 		deviceSpecs = IdentityDictionary.new;
 		closeAction = {};
 	}
-	
+
 	*keyToIndex { arg key, locID=0;
 		var device, deviceSpec;
 		device = devices.at(locID);
@@ -109,15 +109,15 @@ HIDDeviceService{
 			if(deviceSpec.notNil, { deviceSpec.at(key) }, { nil });
 		})
 	}
-	
+
 	*value{arg locID, cookie;
 		_HIDGetValue
-	}	
+	}
 
 	*setValue{arg locID, cookie, value;
 		_HIDSetValue
 	}
-	
+
 	*buildDeviceList{arg usagePage=1, usage=4;
 		var devlist, elelist;
 		// the following line would solve the bug when rebuilding the device list, but then there is no way to keep track of already opened devices:
@@ -144,26 +144,26 @@ HIDDeviceService{
 		});
 		initialized = true;
 	}
-	
+
 	*prbuildDeviceList{arg usagePage=1, usage;
 		_HIDBuildDeviceList
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
 	*prbuildElementList{arg locID;
 		_HIDBuildElementList
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
 	*prGetElementListSize{arg locID;
 		_HIDGetElementListSize
-		^this.primitiveFailed	
-	}	
+		^this.primitiveFailed
+	}
 	*releaseDeviceList{
 		//must be called before closing the program..
 		if(initialized,{
 			this.prreleaseDeviceList;
 			devices = nil;
 		});
-	}	
+	}
 	*prreleaseDeviceList{
 		//must be called before closing the program..
 		_HIDReleaseDeviceList
@@ -177,7 +177,7 @@ HIDDeviceService{
 		eventLoopIsRunning = true;
 	}
 
-	*pr_runEventLoop{arg rate; 
+	*pr_runEventLoop{arg rate;
 		_HIDRunEventLoop
 	}
 	*stopEventLoop{
@@ -191,7 +191,7 @@ HIDDeviceService{
 	*prHidAction{arg vendorID, productID, locID, cookie, val;
 		action.value(vendorID, productID, locID, cookie, val);
 	}
-	
+
 	*prReadError{ arg locID;
 		var dev;
 		HIDDeviceService.dequeueDevice( locID );
@@ -199,25 +199,25 @@ HIDDeviceService{
 		dev.wasClosed;
 		closeAction.value( locID );
 	}
-	
+
 	*queueDevice{arg locID;
 		_HIDQueueDevice
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
-	
+
 	*dequeueDevice{arg locID;
 		_HIDDequeueDevice
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
-	
+
 	*queueElement{arg locID, cookie;
 		_HIDQueueElement
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
-	
+
 	*dequeueElement{arg locID, cookie;
 		_HIDDequeueElement
-		^this.primitiveFailed	
+		^this.primitiveFailed
 	}
 }
 
@@ -284,6 +284,6 @@ enum
 	kHIDUsage_Game_PinballDevice	= 0x02,	/* Application Collection */
 	kHIDUsage_Game_GunDevice	= 0x03,	/* Application Collection */
 }
- 
+
 
 */

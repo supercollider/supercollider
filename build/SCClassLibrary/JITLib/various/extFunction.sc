@@ -2,11 +2,11 @@
 	valueFuncProxy {
 		^this
 	}
-	
+
 	reduceFuncProxy {
 		^this
 	}
-	
+
 	postString {
 		^this.asString
 	}
@@ -16,7 +16,7 @@
 	reduceFuncProxy { arg args;
 		^this.valueArray(args).valueFuncProxy(args)
 	}
-	
+
 }
 
 +Function {

@@ -16,17 +16,17 @@ GeneralHIDSpec{
 			all = filename.load;
 		}
 	}
-	
+
 	*checkSaveFolder{
 		^File.exists( folder );
 	}
-	
-	*makeSaveFolder { 
-		var testfile, testname = "zzz_generalhid_test_delete_me.txt"; 
+
+	*makeSaveFolder {
+		var testfile, testname = "zzz_generalhid_test_delete_me.txt";
 		folder = (Platform.userAppSupportDir +/+ "GeneralHIDSpecs").standardizePath;
 		testfile = File(folder +/+ testname, "w");
 
-		if (testfile.isOpen.not) 
+		if (testfile.isOpen.not)
 			{ unixCmd("mkdir" + folder.escapeChar($ )) }
 			{ testfile.close;  unixCmd("rm" + folder.escapeChar($ ) +/+ testname) }
 	}
@@ -52,7 +52,7 @@ GeneralHIDSpec{
 			( thisspec[\name] == device.info.name ) and:
 			( thisspec[\product] == device.info.product ) and:
 			( thisspec[\version] == device.info.version ) and:
-			( thisspec[\scheme] == GeneralHID.current )	
+			( thisspec[\scheme] == GeneralHID.current )
 		}.keys.asArray;
 	}
 
@@ -60,7 +60,7 @@ GeneralHIDSpec{
 		map.put( key, slot );
 		this.at( key ).key = key;
 	}
-	
+
 	// returns the slot
 	at{ |key|
 		var id1,id2;
@@ -85,7 +85,7 @@ GeneralHIDSpec{
 		var slot;
 		slot = this.at(key);
 		slot.action_(action);
-		^slot;		
+		^slot;
 	}
 
 	bus{ |key|
@@ -124,8 +124,8 @@ GeneralHIDSpec{
 		all.put( name.asSymbol, info );
 		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
 		filename = folder +/+ name ++ ".spec";
-		file = File(filename, "w"); 
-		if (file.isOpen) { 
+		file = File(filename, "w");
+		if (file.isOpen) {
 			res = file.write(map.asCompileString);
 			file.close;
 		};
@@ -138,8 +138,8 @@ GeneralHIDSpec{
 		var filename;
 		if ( GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
 		filename = folder +/+ "allspecs.info";
-		file = File(filename, "w"); 
-		if (file.isOpen) { 
+		file = File(filename, "w");
+		if (file.isOpen) {
 			res = file.write(all.asCompileString);
 			file.close;
 		};
@@ -152,6 +152,6 @@ GeneralHIDSpec{
 		map.keysValuesDo{ |key,it|
 			this.at( key ).key = key;
 		}
-	} 
+	}
 
 }

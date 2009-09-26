@@ -28,7 +28,7 @@ Pindex : Pattern {
 
 ListPattern : Pattern {
 	var <>list, <>repeats=1;
-	
+
 	*new { arg list, repeats=1;
 		if (list.size > 0) {
 			^super.new.list_(list).repeats_(repeats)
@@ -88,12 +88,12 @@ Pser : Pseq {
 		});
 		^inval;
 	}
-}	
+}
 
 Pshuf : ListPattern {
 	embedInStream { arg inval;
 		var item, stream;
-		
+
 		var localList = list.copy.scramble;
 		repeats.value.do({ arg j;
 			localList.size.do({ arg i;
@@ -108,17 +108,17 @@ Pshuf : ListPattern {
 Prand : ListPattern {
 	embedInStream { arg inval;
 		var item;
-		
+
 		repeats.value.do({ arg i;
 			item = list.at(list.size.rand);
 			inval = item.embedInStream(inval);
 		});
 		^inval;
 	}
-}		
+}
 
 Pxrand : ListPattern {
-	embedInStream { arg inval;			
+	embedInStream { arg inval;
 		var item, size;
 		var index = list.size.rand;
 		repeats.value.do({ arg i;
@@ -129,7 +129,7 @@ Pxrand : ListPattern {
 		});
 		^inval;
 	}
-}		
+}
 
 Pwrand : ListPattern {
 	var <>weights;
@@ -148,7 +148,7 @@ Pwrand : ListPattern {
 		^inval
 	}
 	storeArgs { ^[ list, weights, repeats ] }
-}		
+}
 
 
 Pfsm : ListPattern {
@@ -178,10 +178,10 @@ Pdfsm : ListPattern {
 		var sig, state, stream;
 		var numStates = list.size - 1;
 		repeats.value.do({
-			
+
 			currState = startState;
 			sigStream = list[0].asStream;
-			
+
 			while({
 				sig = sigStream.next(inval);
 				state = list[currState + 1];
@@ -208,7 +208,7 @@ Pswitch : Pattern {
 	}
 	embedInStream {  arg inval;
 		var item, index;
-		
+
 		var indexStream = which.asStream;
 		while ({
 			(index = indexStream.next(inval)).notNil;
@@ -220,10 +220,10 @@ Pswitch : Pattern {
 	storeArgs { ^[ list, which ]  }
 }
 
-Pswitch1 : Pswitch {	
+Pswitch1 : Pswitch {
 	embedInStream { arg inval;
 		var index, outval;
-		
+
 		var streamList = list.collect({ arg pattern; pattern.asStream; });
 		var indexStream = which.asStream;
 		loop {
@@ -235,18 +235,18 @@ Pswitch1 : Pswitch {
 	}
 }
 
-//Pswitch1 : Pattern {	
+//Pswitch1 : Pattern {
 //	var <>list, <>which=0;
 //	*new { arg list, which=0;
 //		^super.new.list_(list).which_(which)
 //	}
-//	
-//	asStream { 
+//
+//	asStream {
 //		var streamList, indexStream;
-//		
+//
 //		streamList = list.collect({ arg pattern; pattern.asStream; });
 //		indexStream = which.asStream;
-//		
+//
 //		^FuncStream.new({ arg inval;
 //			var index;
 //			if ((index = indexStream.next).notNil, {
@@ -257,19 +257,19 @@ Pswitch1 : Pswitch {
 //		});
 //	}
 //	storeArgs { ^[ list, which ]  }
-//}	
+//}
 
 Ptuple : ListPattern {
 	embedInStream {  arg inval;
 		var item, streams, tuple, outval;
-					
+
 		repeats.value.do({ arg j;
 			var sawNil = false;
 			streams = list.collect({ arg item; item.asStream });
-							
+
 			while ({
 				tuple = Array.new(streams.size);
-				streams.do({ arg stream; 
+				streams.do({ arg stream;
 					outval = stream.next(inval);
 					if (outval.isNil, { sawNil = true; });
 					tuple.add(outval);
@@ -286,7 +286,7 @@ Ptuple : ListPattern {
 Place : Pseq {
 	embedInStream {  arg inval;
 		var item;
-		
+
 		var offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
 			repeats.value.do({ arg j;
@@ -359,7 +359,7 @@ Pslide : ListPattern {
 	    	var pos = start;
 	    	var stepStr = step.asStream, stepVal;
 	    	var lenghtStr = len.asStream, lengthVal;
-	    	
+
 	   	repeats.value.do {
 				lengthVal = lenghtStr.next(inval);
 		    		if(lengthVal.isNil) { ^inval };
@@ -368,7 +368,7 @@ Pslide : ListPattern {
 						item = list.wrapAt(pos + j);
 						inval = item.embedInStream(inval);
 					}
-				
+
 				} {
 					lengthVal.do { |j|
 						item = list.at(pos + j);
@@ -383,14 +383,14 @@ Pslide : ListPattern {
 		    		if(stepVal.isNil) { ^inval };
 		    		pos = pos + stepVal;
 		};
-	
-	     ^inval;  		
+
+	     ^inval;
     }
 }
 
 Pwalk : ListPattern {
 		// random walk pattern - hjh - jamshark70@gmail.com
-	
+
 	var	<>startPos,	// starting index
 		<>stepPattern,	// pattern for steps
 		<>directionPattern;	// pattern should return a stream of:
@@ -398,28 +398,28 @@ Pwalk : ListPattern {
 							// -1 to reverse the direction of stepPattern
 							// a new direction will be chosen when the walker
 							// reaches a boundary
-	
+
 	*new { arg list, stepPattern, directionPattern = 1, startPos = 0;
 		^super.new(list).startPos_(startPos)
 			.stepPattern_(stepPattern ?? { Prand([-1, 1], inf) })
 			.directionPattern_(directionPattern ? 1);
 	}
-	
+
 	storeArgs { ^[list, stepPattern, directionPattern, startPos] }
 
-	
+
 	embedInStream { arg inval;
-		var	step;	
+		var	step;
 		var index = startPos;
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
 		// 1 = use steps as is; -1 = reverse direction
 		var direction = directionStream.next(inval) ? 1;		// start with first value
 
-		while({ 
+		while({
 			// get step, stop when nil
-			(step = stepStream.next(inval)).notNil 
-		},{  
+			(step = stepStream.next(inval)).notNil
+		},{
 			inval = list[index].embedInStream(inval);  // get value/stream out
 			step = step * direction;	// apply direction
 				// if next thing will be out of bounds

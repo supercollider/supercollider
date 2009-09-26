@@ -90,12 +90,12 @@ def in_home_directory(dir):
 	return HOME_DIR_RE.match(dir)
 
 ##build help, the help depends on having the home directory enviroment variable.. that could change
-#build_help = Builder(action = 
+#build_help = Builder(action =
 		#'export HOME=' + os.environ.get('HOME') + ' && ruby ' + os.getcwd() + '/bin/scvim_make_help -f -s $SOURCE -d $TARGET')
 
 #create our options
 opts = Options()
-opts.Add(PathOption('PREFIX', 'Specify the prefix for the bin and share files', 
+opts.Add(PathOption('PREFIX', 'Specify the prefix for the bin and share files',
 	DEFAULT_PREFIX, PathOption.PathIsDir))
 
 #create our enviroment, with our options and custom builders
@@ -120,13 +120,13 @@ install_scedfiles = env.Alias('install-scedfiles', [
 	])
 
 
-update_mime = Builder(action = 
+update_mime = Builder(action =
 		'update-mime-database ' + os.path.join( share_dir(PREFIX), 'mime/packages' ) )
 
 env.BUILDERS = update_mime
 
 #install_doc = env.Alias('install-doc', env.Install(DOC_DIR, ['SCVim.scd']))
-#build_help = env.Alias('build-help', env.BuildHelp(target = Dir(DOC_DIR), 
+#build_help = env.Alias('build-help', env.BuildHelp(target = Dir(DOC_DIR),
 	#source = Dir(SUPERCOLLIDER_HELP_DIR)))
 #AlwaysBuild(Dir(DOC_DIR))
 #Depends(build_help, install_doc)

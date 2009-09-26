@@ -10,7 +10,7 @@ IPhonePlatform : UnixPlatform
 		var filename = "startup.rtf";
 		^[this.systemAppSupportDir +/+ filename];
 	}
-	
+
 	startup {
 		"starting up iPhone Platform !".postln;
 		PathName.tmp_("~/Documents/tmp/".standardizePath);
@@ -27,7 +27,7 @@ IPhonePlatform : UnixPlatform
 	shutdown {
 		//HIDDeviceService.releaseDeviceList;
 	}
-	
+
 		// only osx uses Cocoa guis
 	defaultGUIScheme { ^\iphone }
 	defaultHIDScheme { ^\osx_hid }

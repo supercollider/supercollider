@@ -10,17 +10,17 @@
 				"IRCAM", 	- old IRCAM format
 				"none"	- no header = raw data
 			A huge number of other formats are supported read only.
-			
+
 		sample formats:
 			"int8", "int16", "int24", "int32"
 			"mulaw", "alaw",
-			"float"			
+			"float"
 		not all header formats support all sample formats.
 */
 
-SoundFile {	
+SoundFile {
 	classvar <openFiles;
-	
+
 	var <>fileptr;
 	var <>headerFormat = "AIFF";
 	var <>sampleFormat = "float";
@@ -28,8 +28,8 @@ SoundFile {
 	var <>numChannels = 1;	// number of channels
 	var <>sampleRate = 44100.0;
 	var <> path;
-	
-	
+
+
 	*closeAll {
 		if (openFiles.notNil, {
 			openFiles.copy.do({ arg file; file.close; });
@@ -38,41 +38,41 @@ SoundFile {
 	isOpen {
 		^fileptr.notNil
 	}
-	
+
 	*new{arg pathName;
 		^super.new.path_(pathName);
 	}
-	
+
 	*openRead{ arg pathName;
 		var file;
 		file = SoundFile(pathName);
 		if(file.openRead(pathName)){^file}{^nil}
 	}
-	
+
 	*openWrite{ arg pathName;
 		var file;
 		file = SoundFile(pathName);
 		if(file.openWrite(pathName)){ ^file}{^nil}
 	}
-	
-	openRead{ arg pathName; 
+
+	openRead{ arg pathName;
 		path = pathName ? path;
 		^this.prOpenRead(path);
 	}
-	
-	prOpenRead { arg pathName; 
+
+	prOpenRead { arg pathName;
 		// returns true if success, false if file not found or error reading.
 		_SFOpenRead
 		^this.primitiveFailed;
 	}
-	
+
 	readData { arg rawArray;
 		// must have called openRead first!
 		// returns true if success, false if file not found or error reading.
 		_SFRead
 		^this.primitiveFailed;
 	}
-	
+
 	readHeaderAsString {
 		// must have called openRead first!
 		//returns the whole header as String
@@ -85,17 +85,17 @@ SoundFile {
 		pathName = pathName ? path;
 		^this.prOpenWrite(pathName)
 	}
-	
+
 	prOpenWrite { arg pathName;
 		// write the header
-		// format written is that indicated in headerFormat and sampleFormat. 
+		// format written is that indicated in headerFormat and sampleFormat.
 		// return true if successful, false if not found or error writing.
 		_SFOpenWrite
 		^this.primitiveFailed;
 	}
 	writeData { arg rawArray;
 		// must have called openWrite first!
-		// format written is that indicated in sampleFormat. 
+		// format written is that indicated in sampleFormat.
 		// return true if successful, false if not found or error writing.
 		_SFWrite
 		^this.primitiveFailed;
@@ -105,16 +105,16 @@ SoundFile {
 		^this.primitiveFailed;
 	}
 
-	seek { arg offset = 0, origin = 0; 
+	seek { arg offset = 0, origin = 0;
 		// offset is in frames
-		// origin is an integer, one of: 
+		// origin is an integer, one of:
 		// 0 - from beginning of file
 		// 1 - from current position
 		// 2 - from end of file
 		_SFSeek
 		^this.primitiveFailed;
 	}
-	
+
 	duration { ^numFrames/sampleRate }
 
 		// normalizer utility
@@ -122,7 +122,7 @@ SoundFile {
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
 		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
 		threaded = false|
-		
+
 		var	file, outFile,
 			action = {
 				protect {
@@ -131,29 +131,29 @@ SoundFile {
 				} { file.close };
 				file.close;
 			};
-		
+
 		(file = SoundFile.openRead(path.standardizePath)).notNil.if({
 				// need to clean up in case of error
 			if(threaded, {
 				Routine(action).play(AppClock)
 			}, action);
-			^outFile	
+			^outFile
 		}, {
 			MethodError("Unable to read soundfile at: " ++ path, this).throw;
 		});
 	}
-	
+
 	normalize { |outPath, newHeaderFormat, newSampleFormat,
 		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
 		threaded = false|
-		
+
 		var	peak, outFile;
-		
+
 		outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { this.headerFormat })
 			.sampleFormat_(newSampleFormat ?? { this.sampleFormat })
 			.numChannels_(this.numChannels)
 			.sampleRate_(this.sampleRate);
-		
+
 			// can we open soundfile for writing?
 		outFile.openWrite(outPath.standardizePath).if({
 			protect {
@@ -179,7 +179,7 @@ SoundFile {
 			MethodError("Unable to write soundfile at: " ++ outPath, this).throw;
 		});
 	}
-	
+
 	channelPeaks { |startFrame = 0, numFrames, chunkSize = 1048576, threaded = false|
 		var rawData, peak, numChunks, chunksDone, test;
 
@@ -196,7 +196,7 @@ SoundFile {
 		};
 
 		this.seek(startFrame, 0);
-		
+
 		{	(numFrames > 0) and: {
 				rawData = FloatArray.newClear(min(numFrames, chunkSize));
 				this.readData(rawData);
@@ -221,10 +221,10 @@ SoundFile {
 		if(threaded) { $\n.postln };
 		^peak
 	}
-	
+
 	scaleAndWrite { |outFile, scale, startFrame, numFrames, chunkSize, threaded = false|
 		var	rawData, numChunks, chunksDone, test;
-		
+
 		numFrames.isNil.if({ numFrames = this.numFrames });
 		numFrames = numFrames * numChannels;
 		scale = scale.asArray;
@@ -239,7 +239,7 @@ SoundFile {
 		};
 
 		this.seek(startFrame, 0);
-		
+
 		{	(numFrames > 0) and: {
 				rawData = FloatArray.newClear(min(numFrames, chunkSize));
 				this.readData(rawData);
@@ -274,7 +274,7 @@ SoundFile {
 //		StartUp.add {
 //			(1..16).do { | i |
 //				SynthDef("diskIn" ++ i, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-//					Out.ar(out, DiskIn.ar(i, bufnum) 
+//					Out.ar(out, DiskIn.ar(i, bufnum)
 //					* Linen.kr(gate, ar, 1, dr, 2)
 //					* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
 //				}).store
@@ -285,18 +285,18 @@ SoundFile {
 	info { | path |
 		var flag = this.openRead;
 		if (flag) {
-			this.close; 
+			this.close;
 		} {
 			^nil
 		}
 	}
-	
+
 	*collect { | path = "sounds/*" |
 		var paths, files;
 		paths = path.pathMatch;
 		files = paths.collect { | p | SoundFile(p).info };
 		files = files.select(_.notNil);
-		^files;	
+		^files;
 	}
 
 	*collectIntoBuffers { | path = "sounds/*", server |
@@ -305,7 +305,7 @@ SoundFile {
 			^SoundFile.collect(path)
 				.collect { |  sf |
 					Buffer(server, sf.numFrames, sf.numChannels).allocRead(sf.path)
-				}	
+				}
 		} {
 			"the server must be running to collection soundfiles into buffers ".error
 		}
@@ -320,7 +320,7 @@ SoundFile {
 				server = ~server ?? { Server.default};
 				if(~instrument.isNil) {
 					SynthDef(defname, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-						Out.ar(out, VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum) ) 
+						Out.ar(out, VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum) )
 						* Linen.kr(gate, ar, 1, dr, 2)
 						* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
 					}).memStore;
@@ -340,16 +340,16 @@ SoundFile {
 							["/b_free", ev[\bufnum] ]  )
 				};
 				~setwatchers = { |ev|
-					OSCpathResponder(server.addr, ["/n_end", ev[\id][0]], 
+					OSCpathResponder(server.addr, ["/n_end", ev[\id][0]],
 					{ | time, resp, msg |
-						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]], 
+						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
 						["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
 						resp.remove;
-					} 
+					}
 					).add;
 				};
 				if (playNow) {
-					packet = server.makeBundle(false, {ev.play})[0];    
+					packet = server.makeBundle(false, {ev.play})[0];
 						// makeBundle creates an array of messages
 						// need one message, take the first
 				} {
@@ -360,47 +360,47 @@ SoundFile {
 						]);
 			};
 		};
-		^ev;	
+		^ev;
 	}
-	
-	play { | ev, playNow = true | 
-		^this.cue(ev, playNow) 
+
+	play { | ev, playNow = true |
+		^this.cue(ev, playNow)
 	}
 
 	asEvent { | type = \allocRead |
 		if (type == \cue) {
 			^(	type: 			type,
-				path: 			path, 
-				numFrames: 		numFrames, 
-				sampleRate: 		sampleRate, 
+				path: 			path,
+				numFrames: 		numFrames,
+				sampleRate: 		sampleRate,
 				numChannels: 		numChannels,
 				bufferSize:		0x10000,
 				firstFileFrame:	0,
 				firstBufferFrame: 	0,
 				leaveOpen:		1
 			)
-		} {	
+		} {
 			^(	type: 			type,
-				path: 			path, 
-				numFrames: 		numFrames, 
-				sampleRate: 		sampleRate, 
+				path: 			path,
+				numFrames: 		numFrames,
+				sampleRate: 		sampleRate,
 				numChannels: 		numChannels,
 				firstFileFrame:	0
 			)
 		}
 
-	}	
-	
+	}
+
 	toCSV { |outpath, headers, delim=",", append=false, func, action|
-		
+
 		var outfile, dataChunk;
-		
+
 		// Prepare input
 		if(this.openRead(this.path).not){
 			^"SoundFile:toCSV could not open the sound file".error
 		};
 		dataChunk = FloatArray.newClear(this.numChannels * min(this.numFrames, 1024));
-		
+
 		// Prepare output
 		if(outpath.isNil){	outpath = path.splitext.at(0) ++ ".csv" };
 		outfile = File(outpath, if(append, "a", "w"));
@@ -411,16 +411,16 @@ SoundFile {
 				outfile.write(headers.join(delim) ++ Char.nl);
 			}
 		};
-		
+
 		// Now do it
 		while{this.readData(dataChunk); dataChunk.size > 0}{
-			dataChunk.clump(this.numChannels).do{|row| 
+			dataChunk.clump(this.numChannels).do{|row|
 				outfile.write(if(func.isNil, {row}, {func.value(row)}).join(delim) ++ Char.nl)
 			};
 		};
 		outfile.close;
 		this.close;
-		
+
 		action.value(outpath);
 	}
 

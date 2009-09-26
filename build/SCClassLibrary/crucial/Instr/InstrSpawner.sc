@@ -1,16 +1,16 @@
 
 InstrSpawner : Patch {
-	
+
 	classvar <>latency=0.07;
-	
+
 	var <>deltaPattern,<deltaStream,<delta;
 	var streams,sendArray,firstSecretDefArgIndex,spawnTask,<clock,spawnGroup;
-	
+
 	*new { arg func,args,deltaPattern = 1.0;
 		^super.new(func,args).deltaPattern_(deltaPattern)
 	}
 	storeArgs { ^[instr.name,args,deltaPattern] }
-	
+
 	asSynthDef {
 		var initArgs;
 		^synthDef ?? {
@@ -61,8 +61,8 @@ InstrSpawner : Patch {
 		// if sample changes, need to put into sendArray
 		streams.do({ arg s,i;
 			var val;
-			if((val = s.next(this)).isNil ,{ 						
-				 ^false 
+			if((val = s.next(this)).isNil ,{
+				 ^false
 			});
 			sendArray.put(i * 2 + 6,val);
 		});
@@ -89,7 +89,7 @@ InstrSpawner : Patch {
 	}
 	prepareToBundle { arg agroup,bundle,private = false, bus,defWasLoaded = false;
 		super.prepareToBundle(agroup,bundle,private,bus,defWasLoaded);
-		
+
 		streams = Array(argsForSynth.size);
 		sendArray = Array(argsForSynth.size * 2);
 		synthArgsIndices.do({ arg ind,i;
@@ -112,9 +112,9 @@ InstrSpawner : Patch {
 
 		sendArray = ["/s_new",defName,-1,1,nil] ++ sendArray;
 		firstSecretDefArgIndex = sendArray.size;
-		sendArray = sendArray	++ synthDef.secretDefArgs(args) 
+		sendArray = sendArray	++ synthDef.secretDefArgs(args)
 					++ [\out, this.patchOut.synthArg];
-					
+
 		streams.do({ arg s,i;
 			// replace players with their outputs
 			if(s.isKindOf(AbstractPlayer),{
@@ -124,7 +124,7 @@ InstrSpawner : Patch {
 		sendArray.put(4,spawnGroup.nodeID);
 		sendArray.put(sendArray.size - 1, this.patchOut.synthArg);
 
-		CmdPeriod.add(this);		
+		CmdPeriod.add(this);
 	}
 	freeResourcesToBundle { arg bundle;
 		spawnGroup.freeToBundle(bundle);
@@ -143,15 +143,15 @@ InstrSpawner : Patch {
 	}
 
 	spawnToBundle { arg bundle;
-		if(patchOut.isNil,{ 
-			(thisMethod.asString 
+		if(patchOut.isNil,{
+			(thisMethod.asString
 				+ "patchOut is nil. This has not been prepared for play.").die(this);
 		});
 		this.makeTask;
 
 		if((delta = deltaStream.next).notNil and: {this.spawnNext},{
 			this.asSynthDef;// make sure it exists
-			
+
 			this.children.do({ arg child;
 				//child.group = spawnGroup;
 				child.spawnToBundle(bundle);
@@ -187,15 +187,15 @@ InstrSpawner : Patch {
 	cmdPeriod {
 		this.didStop;
 	}
-	
-	guiClass { ^InstrSpawnerGui }	
+
+	guiClass { ^InstrSpawnerGui }
 }
 
 
 InstrGateSpawner : InstrSpawner {
-	
+
 	var <beat=0;
-	
+
 	makeTask {
 		deltaStream.reset; delta = 0.0; beat = 0.0;
 		streams.do({ arg stream; stream.reset });
@@ -221,12 +221,12 @@ InstrGateSpawner : InstrSpawner {
 }
 
 ScurryableInstrGateSpawner : InstrGateSpawner {
-	
+
 	var scurried = 0,stepsToDo = 0;
 
 	scurry { arg by=10;
 		if(stepsToDo == 0,{ stepsToDo = by; },{
-			"already scurrying".inform;	
+			"already scurrying".inform;
 		});
 	}
 	makeTask {
@@ -283,25 +283,25 @@ InstrGateSleepSpawner : InstrGateSpawner {
 		deltaStream = delta.asStream;
 		durationStream = duration.asStream;
 		synths.put(0,synth);
-		
+
 		spawnTask = Task({
-		
+
 			var delta,dur,server,latency,beat,itSynth,index=1;
 			aintSeenNil=true;
 			beat = TempoClock.default.elapsedBeats;
-			
+
 			server = this.server;
 			latency = server.latency;
-			
+
 			//first synth already started
 			delta = deltaStream.next;
 			dur = durationStream.next(delta,beat);
 			// sched first gate off
 			server.listSendBundle(Tempo.beats2secs(dur), [ synth.releaseMsg ]);
-			
+
 			// small slippage if tempo changes during first event !
 			(delta - Tempo.secs2beats(latency)).wait;
-			
+
 			while({
 				beat = TempoClock.default.elapsedBeats;
 				this.synthDefArgs(beat);
@@ -311,11 +311,11 @@ InstrGateSleepSpawner : InstrGateSpawner {
 			},{
 				itSynth = synths.wrapAt(index = index + 1);
 				server.listSendBundle(server.latency,
-					[ 
+					[
 						["/n_set",itSynth.nodeID,\gate,1] ++ sendArray,
 						[12,itSynth.nodeID ,1] // wake up
 					]);
-					
+
 				// tempo change during play screws up release time
 				server.listSendBundle(server.latency + Tempo.beats2secs(dur),
 					[	["/n_set", itSynth.nodeID, \gate, 0] ]);

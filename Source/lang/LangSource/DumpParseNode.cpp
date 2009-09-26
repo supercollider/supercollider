@@ -61,7 +61,7 @@ void PyrSlotNode::dump(int level)
 		dumpLiteral(level);
 	else {
 		postfl("%2d SlotNode\n", level);
-		dumpPyrSlot(&mSlot); 
+		dumpPyrSlot(&mSlot);
 	}
 	DUMPNODE(mNext, level);
 }
@@ -301,7 +301,7 @@ void slotString(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "instance of FunctionDef in Method %s:%s", 
+							sprintf(str, "instance of FunctionDef in Method %s:%s",
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -321,8 +321,8 @@ void slotString(PyrSlot *slot, char *str)
 						sprintf(str, "Frame (%0X) of Function", slot->ui);
 					}
 				} else {
-					sprintf(str, "instance of %s (%08lX, size=%d, set=%d)", 
-						slot->uo->classptr->name.us->name, 
+					sprintf(str, "instance of %s (%08lX, size=%d, set=%d)",
+						slot->uo->classptr->name.us->name,
 						(unsigned long)slot->uo, slot->uo->size,
 						slot->uo->obj_sizeclass);
 				}
@@ -392,7 +392,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 					}
 					sprintf(str, "\"%s\"", str2);
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "%s:%s", 
+					sprintf(str, "%s:%s",
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else if (slot->uo->classptr == class_fundef) {
@@ -405,7 +405,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "< FunctionDef in Method %s:%s >", 
+							sprintf(str, "< FunctionDef in Method %s:%s >",
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -430,7 +430,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 					sprintf(str, "[*%d]", slot->uo->size);
 				} else {
 					sprintf(str, "<instance of %s>", slot->uo->classptr->name.us->name);
-				}				
+				}
 			} else {
 				sprintf(str, "NULL Object Pointer");
 			}
@@ -470,12 +470,12 @@ bool postString(PyrSlot *slot, char *str)
 		case tagObj :
 			/*if (slot->uo) {
 				if (slot->uo->classptr == class_method) {
-					sprintf(str, "instance of Method %s:%s", 
+					sprintf(str, "instance of Method %s:%s",
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else {
-					sprintf(str, "instance of %s (%08X, size=%d, set=%02X)", 
-						slot->uo->classptr->name.us->name, 
+					sprintf(str, "instance of %s (%08X, size=%d, set=%02X)",
+						slot->uo->classptr->name.us->name,
 						slot->uo, slot->uo->size,
 						slot->uo->obj_sizeclass);
 				}
@@ -503,7 +503,7 @@ bool postString(PyrSlot *slot, char *str)
 					sprintf(str, "\"%s\"", str2);
 */
 				} else if (slot->uo->classptr == class_method) {
-					sprintf(str, "Method %s:%s", 
+					sprintf(str, "Method %s:%s",
 						slot->uom->ownerclass.uoc->name.us->name,
 						slot->uom->name.us->name);
 				} else if (slot->uo->classptr == class_fundef) {
@@ -516,7 +516,7 @@ bool postString(PyrSlot *slot, char *str)
 							nextcontext = &context->uoblk->contextDef;
 						} while (nextcontext->utag != tagNil);
 						if (isKindOf(context->uo, class_method)) {
-							sprintf(str, "a FunctionDef in Method %s:%s", 
+							sprintf(str, "a FunctionDef in Method %s:%s",
 								context->uom->ownerclass.uoc->name.us->name,
 								context->uom->name.us->name);
 						} else {
@@ -540,8 +540,8 @@ bool postString(PyrSlot *slot, char *str)
 				} else {
 					str[0] = 0;
 					res = false;
-//					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)", 
-//						slot->uo->classptr->name.us->name, 
+//					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)",
+//						slot->uo->classptr->name.us->name,
 //						slot->uo, slot->uo->size,
 //						slot->uo->obj_sizeclass);
 				}

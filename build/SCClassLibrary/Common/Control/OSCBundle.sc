@@ -102,7 +102,7 @@ MixedBundle : OSCBundle {
 			});
 		});
 		if(functions.notNil) {
-			SystemClock.sched(delta ? 0.0, { 
+			SystemClock.sched(delta ? 0.0, {
 				this.doFunctions;
 			});
 		};

@@ -1,9 +1,9 @@
 GeneralHID{
-	classvar <>all, <>maps, <>verbose=false; 
+	classvar <>all, <>maps, <>verbose=false;
 	classvar <deviceList;
 	classvar <scheme, <schemes;
 
-	*initClass { 
+	*initClass {
 		schemes	= IdentityDictionary.new;
 	}
 
@@ -54,5 +54,5 @@ GeneralHID{
 		});
 		^scheme;
 	}
-	
+
 }

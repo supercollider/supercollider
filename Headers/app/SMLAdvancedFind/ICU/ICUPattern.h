@@ -23,7 +23,7 @@ extern unsigned UnicodeWordBoundaries;
     @class		 ICUPattern
     @abstract    A compiled regular expression.
     @discussion  <a href="http://icu.sourceforge.net/">ICU</a> provides a widely used Unicode
- regular expression library.  This class can be roughly mapped to the <a href="http://icu.sourceforge.net/apiref/icu4c/classRegexPattern.html">ICU C++ Pattern class</a>.  Notes about ICU regular expressions can be found at the 
+ regular expression library.  This class can be roughly mapped to the <a href="http://icu.sourceforge.net/apiref/icu4c/classRegexPattern.html">ICU C++ Pattern class</a>.  Notes about ICU regular expressions can be found at the
  <a href="http://icu.sourceforge.net/userguide/regexp.html">ICU User Guide</a>.
 */
 @interface ICUPattern: NSObject <NSCopying> {
@@ -93,7 +93,7 @@ extern unsigned UnicodeWordBoundaries;
     @method     stringToSearch
     @abstract   Returns the string that is being searched over with the pattern.
     @discussion This method creates an NSString from the underlying UTF16 character array used by ICU.  For large
- strings, this may be memory-intensive/time-consuming.  Performance-critical applications may want to modify this 
+ strings, this may be memory-intensive/time-consuming.  Performance-critical applications may want to modify this
  class to suite their needs to reduce the number of NSString objects that are created.
 */
 -(NSString *)stringToSearch;

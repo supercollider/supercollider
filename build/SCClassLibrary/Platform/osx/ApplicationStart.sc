@@ -1,7 +1,7 @@
 
 ApplicationStart : StartUp {
 	classvar <>objects;
-	
+
 	*run {
 		this.objects.do({ arg item; item.doOnApplicationStart;  });
 	}

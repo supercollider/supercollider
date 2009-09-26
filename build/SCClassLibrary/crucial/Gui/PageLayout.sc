@@ -116,7 +116,7 @@ MultiPageLayout  {
 		var fs, b,wb,wbw,wbh;
 
 		b = this.view.resizeToFit(reflow);
-		wbw = b.width + 4; 
+		wbw = b.width + 4;
 		wbh = b.height + 17;
 		window.setInnerExtent(wbw,wbh);
 
@@ -139,7 +139,7 @@ MultiPageLayout  {
 			window.setTopLeftBounds(wb);
 		}
 	}
-		
+
 	reflowAll {
 		view.reflowAll;
 	}

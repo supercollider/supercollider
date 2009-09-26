@@ -5,7 +5,7 @@
  *  Created by j. trutzschler on 02 sept 2003.
 	derived from TextFinder.m by Ali Ozer
 
-	a panel that searches and selects a line 
+	a panel that searches and selects a line
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -36,11 +36,11 @@ void post(const char *fmt, ...);
 void postbuf(const char *fmt, ...);
 
 template<class Hdr, class Obj, class Elem, int LargeObjSizeClass, int Align>
-class PowerOfTwoAllocPool 
+class PowerOfTwoAllocPool
 {
 public:
-	PowerOfTwoAllocPool(::AllocPool *inPool, 
-		size_t initSize = 64*1024, 
+	PowerOfTwoAllocPool(::AllocPool *inPool,
+		size_t initSize = 64*1024,
 		size_t growSize = 64*1024
 	)
 		{
@@ -59,7 +59,7 @@ public:
 			//assert(mNumLargeObjects == 0); // you have to free the big ones yourself
 			mSmallObjPool.FreeAll();
 		}
-		
+
 	Obj* Alloc(int32 inNumElems)
 		{
 			//mNumAlloc++;
@@ -70,7 +70,7 @@ public:
 				size_t size = sizeof(Hdr) + (sizeof(Elem) * inNumElems);
 				return (Obj*)mLargeObjPool->Alloc(size);
 			}
-			
+
 			// get from free list
 			Obj* obj = mFreeLists[sizeclass];
 			if (obj != NULL) {
@@ -112,7 +112,7 @@ public:
 			mSmallObjPool.FreeAll();
 			Init();
 		}
-	
+
 	bool SanityCheck()
 		{
 			//postbuf("PowerOfTwoAllocPool::SanityCheck %d %d\n", mNumAlloc, mNumFree);
@@ -140,7 +140,7 @@ private:
 				mSizes[i] = (size + (Align-1)) & ~(Align-1); // alignment
 			}
 		}
-	
+
 	Obj* mFreeLists[LargeObjSizeClass];
 	size_t mSizes[LargeObjSizeClass];
 	AllocPool* mLargeObjPool;

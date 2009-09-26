@@ -1,19 +1,19 @@
 SortedList : List {
 	var <>function;
-	
+
 	*new { arg size = 8, function;
 		function = function ? { arg a, b; a < b }
 		^super.new(size).function_(function)
 	}
 	add { arg item;
 		var nextIndex;
-		
+
 		if ( this.isEmpty, {
 			^super.add(item);
 		});
 		nextIndex = this.indexForInserting(item);
 		this.insert(nextIndex, item);
-	}	
+	}
 	addAll { arg aCollection;
 		aCollection = aCollection.asCollection;
 		if ( aCollection.size > (this.size div: 3), {
@@ -24,18 +24,18 @@ SortedList : List {
 			aCollection.do({ arg each; this.add(each) });
 		});
 	}
-	
+
 	copyRange { arg start, end; ^this.class.newUsing(array.copyRange(start, end)).function_(function) }
-	copySeries { arg first, second, last; 
+	copySeries { arg first, second, last;
 		^this.class.newUsing(array.copySeries(first, second, last)).function_(function)
 	}
-	
+
 	// PRIVATE
 	indexForInserting { arg newObject;
 		var index;
 		var low = 0;
 		var high = this.size-1;
-		while ({ 
+		while ({
 			index = high + low div: 2;
 			low <= high;
 		},{
@@ -45,11 +45,11 @@ SortedList : List {
 				high = index - 1;
 			});
 		});
-		^low	
+		^low
 	}
-	
+
 	sort { this.sortRange(0, array.size - 1) }
-	
+
 	sortRange { arg i, j;
 		//Sort elements i through j of this to be nondescending according to
 		// function.
@@ -57,7 +57,7 @@ SortedList : List {
 		var di, dij, dj, tt, ij, k, l, n;
 		// The prefix d means the data at that index.
 		if ((n = j + 1  - i) <= 1, { ^this });	// Nothing to sort.
-		
+
 		//Sort di,dj.
 		di = array.at(i);
 		dj = array.at(j);
@@ -86,16 +86,16 @@ SortedList : List {
 				l = j;
 				while ({
 				 	while ({
-				 		l = l - 1;  
+				 		l = l - 1;
 				 		k <= l and: { function.value(dij, array.at(l)) }
 				 	}); // i.e. while dl succeeds dij
 				 	while ({
-				 		k = k + 1;  
+				 		k = k + 1;
 				 		k <= l and: { function.value(array.at(k), dij) };
 				 	}); // i.e. while dij succeeds dk
 				 	k <= l
 				},{
-					array.swap(k, l); 
+					array.swap(k, l);
 				});
 		// Now l<k (either 1 or 2 less), and di through dl are all less than or equal to dk
 		// through dj.  Sort those two segments.

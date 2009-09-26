@@ -2,7 +2,7 @@
 	File:		HID_Name_Lookup.c
 
 	Contains:	Implementation of the HID device name lookup functions for the HID utilites.
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -120,14 +120,14 @@ static Boolean xml_search_cookie(const long pVendorID, const long pProductID, co
 
 					if (CFDictionaryGetValueIfPresent(productCFDictionaryRef, cookieKeyCFStringRef, (const void**) &cookieCFStringRef))
 					{
-						fullCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%@ %@ %@"), 
+						fullCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%@ %@ %@"),
 												 vendorCFStringRef, productCFStringRef, cookieCFStringRef);
 						// CFShow(cookieCFStringRef);
 					}
 #if FAKE_IT
 					else
 					{
-						fullCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%@ %@ #%@"), 
+						fullCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%@ %@ #%@"),
 												 vendorCFStringRef, productCFStringRef, cookieKeyCFStringRef);
 					}
 #endif
@@ -232,7 +232,7 @@ Boolean HIDGetElementNameFromVendorProductCookie (const long pVendorID, const lo
 
 	if (xml_search_cookie(pVendorID, pProductID, pCookie, pName))
 		return true;
-	
+
 	switch (pVendorID) {
 		case kMacally:
 			switch (pProductID) {
@@ -342,7 +342,7 @@ Boolean HIDGetElementNameFromVendorProductUsage (const long pVendorID, const lon
 	sprintf(pName, "#{V:%ld, P:%ld, U:%ld:%ld}#", pVendorID, pProductID, pUsagePage, pUsage);
 	result = true;
 #endif
-	
+
 	return result;
 }
 #endif //SC_DARWIN

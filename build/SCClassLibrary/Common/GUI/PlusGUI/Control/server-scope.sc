@@ -5,9 +5,9 @@
 		numChannels = (numChannels ? 2).min(16);
 		if(scopeWindow.isNil) {
 			gui = GUI.current;
-			scopeWindow = 
-				gui.stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil, 
-					this.options.numBuffers); 
+			scopeWindow =
+				gui.stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil,
+					this.options.numBuffers);
 					// prevent buffer conflicts by using reserved bufnum
 			CmdPeriod.add(this);
 		} {
@@ -17,12 +17,12 @@
 		};
 		^scopeWindow
 	}
-	
+
 	freqscope {
 		GUI.freqScope.new;
 	}
 
-	
+
 }
 
 + Bus {
@@ -40,7 +40,7 @@
 		if(server.serverRunning.not) { (server.name.asString ++ " server not running!").postln; ^nil };
 		synthDef = this.asSynthDef(fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
-		
+
 		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
 		synth = Synth.basicNew(synthDef.name, server);
 		bytes = synthDef.asBytes;
@@ -49,7 +49,7 @@
 		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
 		^synth
 	}
-	
+
 	freqscope {
 		this.play(GUI.stethoscope.defaultServer);
 		GUI.freqScope.new;

@@ -4,7 +4,7 @@ Function : AbstractFunction {
 	// it consists of the function's code and the variables in its defining context
 
 	*new { ^this.shouldNotImplement(thisMethod) }
-	
+
 	isFunction { ^true }
 	isClosed { ^def.sourceCode.notNil }
 
@@ -12,51 +12,51 @@ Function : AbstractFunction {
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }
-	
+
 	shallowCopy { ^this }
-	
+
 	choose { ^this.value }
-	
+
 	update { |obj, what ... args| this.value(obj, what, *args) }
-	
-	
+
+
 	// evaluation
-	value { arg ... args; 
-		_FunctionValue 
+	value { arg ... args;
+		_FunctionValue
 		// evaluate a function with args
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	valueArray { arg ... args;
-		_FunctionValueArray 
-		// evaluate a function, if the last argument is an array it will be 
+		_FunctionValueArray
+		// evaluate a function, if the last argument is an array it will be
 		// expanded into separate args.
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	
-	valueEnvir { arg ... args; 
+
+	valueEnvir { arg ... args;
 		_FunctionValueEnvir
-		// evaluate a function with args. 
+		// evaluate a function with args.
 		// unsupplied argument names are looked up in the currentEnvironment
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	valueArrayEnvir { arg ... args;
-		_FunctionValueArrayEnvir 
-		// evaluate a function, if the last argument is an array it will be 
+		_FunctionValueArrayEnvir
+		// evaluate a function, if the last argument is an array it will be
 		// expanded into separate args.
 		// unsupplied argument names are looked up in the currentEnvironment
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	functionPerformList { arg selector, arglist;
-		_ObjectPerformList; 
-		^this.primitiveFailed 
+		_ObjectPerformList;
+		^this.primitiveFailed
 	}
-		
+
 	valueWithEnvir { arg envir;
 		var prototypeFrame;
 		if(envir.isNil) { ^this.value };
 		prototypeFrame = def.prototypeFrame.copy;
 
-		def.argNames.do { |name,i| 
+		def.argNames.do { |name,i|
 			var val = envir[name];
 			val !? { prototypeFrame[i] = val };
 		};
@@ -70,7 +70,7 @@ Function : AbstractFunction {
 	numArgs { ^def.numArgs }		// return number of arguments to the function
 	numVars { ^def.numVars }		// return number of variables in the function
 	varArgs { ^def.varArgs }		// return boolean whether function has ellipsis argument
-	
+
 	loop {
 		// loop is supported magically by the compiler,
 		// thus it can be implemented in terms of itself
@@ -85,7 +85,7 @@ Function : AbstractFunction {
 //		try {
 //			result = this.value #{|val| Break(val).throw };
 //		}{|error|
-//			if (error.class == Break) { 
+//			if (error.class == Break) {
 //				^error.value
 //			}{
 //				error.throw
@@ -93,11 +93,11 @@ Function : AbstractFunction {
 //		}
 //		^result
 //	}
-	
+
 	asRoutine {
 		^Routine.new(this)
 	}
-			
+
 	dup { arg n = 2;
 		var array = Array(n);
 		n.do {|i| array.add(this.value(i)) };
@@ -108,7 +108,7 @@ Function : AbstractFunction {
 		n.do {|i| sum = sum + this.value(i) };
 		^sum
 	}
-	
+
 	defer { arg delta = 0;
 		if (delta == 0 and: {this.canCallOS}) {
 			this.value
@@ -116,7 +116,7 @@ Function : AbstractFunction {
 			AppClock.sched(delta, { this.value; nil })
 		}
 	}
-	
+
 	thunk { ^Thunk(this) }
 
 	// Pattern support
@@ -127,22 +127,22 @@ Function : AbstractFunction {
 	// ControlView support
 	set { arg ... args; ^this.valueArray(args) }
 	get { arg prevVal; ^prevVal }
-	
+
 	fork { arg clock, quant=0.0, stackSize=64;
 		^Routine(this, stackSize).play(clock, quant);
 	}
-	
+
 	forkIfNeeded {
 		if(thisThread.isKindOf(Routine), this, { Routine.run(this) })
 	}
-	
+
 	awake { arg beats, seconds, clock;
 		var time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)
 	}
 
-	cmdPeriod { this.value }	
-	
+	cmdPeriod { this.value }
+
 
 	bench { arg print = true;
 		var dt;
@@ -152,7 +152,7 @@ Function : AbstractFunction {
 		if (print) { Post << "time to run: " << dt << " seconds.\n"; }
 		^dt
 	}
-	
+
 	protect { arg handler;
 		var result = this.prTry;
 		if (result.isException) {
@@ -163,7 +163,7 @@ Function : AbstractFunction {
 			^result
 		};
 	}
-	
+
 	try { arg handler;
 		var result = this.prTry;
 		if (result.isException) { ^handler.value(result); }
@@ -172,7 +172,7 @@ Function : AbstractFunction {
 	prTry {
 		var result, thread = thisThread;
 		var next = thread.exceptionHandler;
-		thread.exceptionHandler = {|error| 
+		thread.exceptionHandler = {|error|
 			thread.exceptionHandler = next; // pop
 			^error
 		};
@@ -180,7 +180,7 @@ Function : AbstractFunction {
 		thread.exceptionHandler = next; // pop
 		^result
 	}
-	
+
 	handleError { arg error; ^this.value(error) }
 
 	case { arg ... cases;
@@ -194,42 +194,42 @@ Function : AbstractFunction {
 
 	r { ^Routine(this) }
 	p { ^Prout(this) }
-	
+
 	matchItem { arg item;
 		^this.value(item)
 	}
-	
+
 	// scale suppoert
-	
+
 	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
 		^this.value(scaleDegree, stepsPerOctave, accidental)
 	}
 
 	// multichannel expand function return values
-	
+
 	flop {
 		if(def.argNames.isNil) { ^this };
 		^{ |... args| args.flop.collect(this.valueArray(_)) }
 	}
 
-	
+
 	envirFlop {
 		var func = this.makeFlopFunc;
 		^{ |... args|
 			func.valueArrayEnvir(args).collect(this.valueArray(_))
 		}
 	}
-	
+
 	makeFlopFunc {
 		if(def.argNames.isNil) { ^this };
-		
+
 		^interpret(
-				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; " 
+				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
 				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
 				)
 	}
 
-		// attach the function to a specific environment	
+		// attach the function to a specific environment
 	inEnvir { |envir|
 		envir ?? { envir = currentEnvironment };
 		^{ |... args| envir.use({ this.valueArray(args) }) }
@@ -237,12 +237,12 @@ Function : AbstractFunction {
 }
 
 Thunk : AbstractFunction {
-	// a thunk is an unevaluated value. 
+	// a thunk is an unevaluated value.
 	// it gets evaluated once and then always returns that value.
 	// also known as a "promise" in Scheme.
 	// thunks have no arguments.
 	var function, value;
-	
+
 	*new { arg function;
 		^super.newCopyArgs(function)
 	}

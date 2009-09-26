@@ -8,7 +8,7 @@
  *  Avahi implementation (c) 2006 stefan kersten
  *  Howl implementation (c) 2005 2006 stefan kersten
  */
- 
+
 /*
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
@@ -64,8 +64,8 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 			serviceType = CFSTR("_osc._tcp.");
 			break;
 	}
-	
-	CFNetServiceRef netServiceRef =  
+
+	CFNetServiceRef netServiceRef =
 		CFNetServiceCreate(NULL, // use default allocator
 			CFSTR(""),           // use default domain
 			serviceType,
@@ -77,7 +77,7 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 		scprintf("Couldn't create a Rendezvous net service.\n");
 		return;
 	}
-	
+
 	CFNetServiceRegisterWithOptions(netServiceRef, 0, NULL); // don't care about the error
 }
 
@@ -157,16 +157,16 @@ AvahiSession::AvahiSession()
 	  mServiceName(0)
 {
 	int err;
-	
+
 	pthread_mutex_init(&mMutex, 0);
 	mServiceName = avahi_strdup(kSCRendezvousServiceName);
-	
+
 	mPoll = avahi_threaded_poll_new();
 	if (!mPoll) {
 		scprintf("Zeroconf: failed to create poll API\n");
 		return;
 	}
-	
+
 	mClient = avahi_client_new(
 		avahi_threaded_poll_get(mPoll),
 		(AvahiClientFlags)0, client_cb, this, &err);
@@ -176,7 +176,7 @@ AvahiSession::AvahiSession()
 		mPoll = 0;
 		return;
 	}
-	
+
 	avahi_threaded_poll_start(mPoll);
 }
 
@@ -253,7 +253,7 @@ void AvahiSession::PublishPort(SCRendezvousProtocol proto, short port)
 	entry->mProto = proto;
 	entry->mPort = port;
 	entry->mRegistered = false;
-	
+
 	pthread_mutex_lock(&mMutex);
 	entry->mNext = mEntries;
 	mEntries = entry;

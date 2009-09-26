@@ -81,7 +81,7 @@ void Usage()
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
 		"   -M <server-mach-port-name> <reply-mach-port-name>\n"
-#endif 
+#endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 		"   -L enable memory locking\n"
 #endif
@@ -97,7 +97,7 @@ void Usage()
 		"          accessing files outside <restricted-path>.\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
 		kDefaultWorldOptions.mNumControlBusChannels,
-		kDefaultWorldOptions.mNumAudioBusChannels, 
+		kDefaultWorldOptions.mNumAudioBusChannels,
 		kDefaultWorldOptions.mNumInputBusChannels,
 		kDefaultWorldOptions.mNumOutputBusChannels,
 		kDefaultWorldOptions.mBufLength,
@@ -123,7 +123,7 @@ void Usage()
 		Usage(); \
 	} \
 	i += n;
-	
+
 
 int main(int argc, char* argv[]);
 int main(int argc, char* argv[])
@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
 	int tcpPortNum = -1;
 
 	WorldOptions options = kDefaultWorldOptions;
-	
+
 	for (int i=1; i<argc;) {
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
@@ -254,12 +254,12 @@ int main(int argc, char* argv[])
 				options.mOutputStreamsEnabled = argv[j+1];
 				break;
             case 'M':
-// -M serverPortName replyPortName                
+// -M serverPortName replyPortName
                 checkNumArgs(3);
                 options.mServerPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 1], kCFStringEncodingUTF8, kCFAllocatorNull);
                 options.mReplyPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 2], kCFStringEncodingUTF8, kCFAllocatorNull);
                 break;
-#endif 
+#endif
 			case 'H' :
 				checkNumArgs(2);
 				options.mInDeviceName = argv[j+1];
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
 				}
 #else
 				options.mOutDeviceName = options.mInDeviceName; // Non-Mac platforms always use same device
-#endif				
+#endif
 				break;
 			case 'L' :
 				checkNumArgs(1);
@@ -314,7 +314,7 @@ int main(int argc, char* argv[])
 		scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
 		Usage();
 	}
-	
+
 	struct World *world = World_New(&options);
 	if (!world) return 1;
 
@@ -349,15 +349,15 @@ int main(int argc, char* argv[])
 #ifdef SC_DARWIN
     //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
 #endif
-	
+
 	if(options.mVerbosity >=0){
 		scprintf("SuperCollider 3 server ready..\n");
 	}
 	fflush(stdout);
-	
+
 	World_WaitForQuit(world);
 
-    
+
 #ifdef SC_WIN32
     // clean up winsock
     WSACleanup();

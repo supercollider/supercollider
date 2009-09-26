@@ -26,7 +26,7 @@ typedef unsigned long NSUInteger;
 #else
 typedef int NSInteger;
 typedef unsigned int NSUInteger;
-#endif 
+#endif
 
 @interface SCTextView : NSTextView
 {
@@ -46,7 +46,7 @@ typedef unsigned int NSUInteger;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
 - (NSString*)currentlySelectedText: (NSRange*) outRange;
 - (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex ;
-- (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex; 
+- (void) setObjectKeyDownActionIndex:(int) mindex setObjectKeyUpActionIndex:(int) downIndex;
 - (void)setDefaultTabsTo:(float)value;
 - (IBAction)openCode:(id)sender;
 - (IBAction) showHelp: (id) sender;

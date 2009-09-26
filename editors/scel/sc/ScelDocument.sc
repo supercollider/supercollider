@@ -65,25 +65,25 @@ ScelDocument : Document{
 	}
 
 	string_ { | argName, rangestart = -1, rangesize = 1 |
-		if ( thisdoc.notNil, { 
+		if ( thisdoc.notNil, {
 			thisdoc.string_( argName, rangestart, rangesize )
-		},{ 
-			cFuncs = cFuncs ++ { this.string_( argName ) };  
+		},{
+			cFuncs = cFuncs ++ { this.string_( argName ) };
 		});
 	}
 
 	title_ { | argName, completFunc |
-		if ( thisdoc.notNil, { 
+		if ( thisdoc.notNil, {
 			thisdoc.title_( argName, completFunc )
-		},{ 
-			cFuncs = cFuncs ++ { this.title_( argName, completFunc ) };  
+		},{
+			cFuncs = cFuncs ++ { this.title_( argName, completFunc ) };
 		});
 	}
 
 	title{
 		if ( thisdoc.notNil, {
 			^thisdoc.title;
-		},{ 
+		},{
 			^("***"++title_p++"***")
 		});
 	}
@@ -97,7 +97,7 @@ ScelDocument : Document{
 	prGetFileName {
 		if ( thisdoc.notNil, {
 			^thisdoc.path;
-		},{ 
+		},{
 			^path_p;
 		});
 	}
@@ -106,7 +106,7 @@ ScelDocument : Document{
 		if ( thisdoc.notNil, {
 			thisdoc.prSetFileName( argPath );
 		},{
-			cFuncs = cFuncs ++ { this.prSetFileName( argPath ) };  
+			cFuncs = cFuncs ++ { this.prSetFileName( argPath ) };
 		});
 	}
 
@@ -122,42 +122,42 @@ ScelDocument : Document{
 		//		^this
 	}
 
-	front {	
-		if ( thisdoc.notNil, { 
+	front {
+		if ( thisdoc.notNil, {
 			thisdoc.front
-		},{ 
-			cFuncs = cFuncs ++ { this.front };  
+		},{
+			cFuncs = cFuncs ++ { this.front };
 		});
 	}
 
-	unfocusedFront { 
-		if ( thisdoc.notNil, { 
+	unfocusedFront {
+		if ( thisdoc.notNil, {
 			thisdoc.unfocusedFront;
 		},{
-			cFuncs = cFuncs ++ { this.unfocusedFront };  
+			cFuncs = cFuncs ++ { this.unfocusedFront };
 		});
 	}
-	syntaxColorize { 
-		if ( thisdoc.notNil, { 
+	syntaxColorize {
+		if ( thisdoc.notNil, {
 			thisdoc.syntaxColorize;
 		},{
-			cFuncs = cFuncs ++ { this.syntaxColorize };  
+			cFuncs = cFuncs ++ { this.syntaxColorize };
 		});
 	}
-	prisEditable_{ | flag = true | 
-		if ( thisdoc.notNil, { 
+	prisEditable_{ | flag = true |
+		if ( thisdoc.notNil, {
 			thisdoc.prisEditable_( flag );
 		},{
 			cFuncs = cFuncs ++ { this.prisEditable_( flag ) };
 		});
 		editable = flag;
 	}
-	
-	removeUndo{ 
-		if ( thisdoc.notNil, { 
+
+	removeUndo{
+		if ( thisdoc.notNil, {
 			thisdoc.removeUndo
 		},{
-			cFuncs = cFuncs ++ { this.removeUndo };  
+			cFuncs = cFuncs ++ { this.removeUndo };
 		});
 	}
 
@@ -194,29 +194,29 @@ ScelDocument : Document{
 		//		dataptr = nil;
 	}
 
-	isEdited { 
+	isEdited {
 		if ( thisdoc.notNil, {
 			^thisdoc.isEdited
 		},{
-			^false;  
+			^false;
 		});
 	}
 	//	isFront { thisdoc.isFront }
 	editable_{arg abool=true; this.prisEditable_( abool ) }
 
 	/* should maybe be this:
-	path{ 
+	path{
 		if ( thisdoc.notNil, {
 			^^thisdoc.prGetFileName;
-		},{ 
+		},{
 			^path_p;
 		});
 	*/
-	
+
 	path{^thisdoc.prGetFileName }
-	
-	*addToList{ |doc| 
-		var key, sceld; 
+
+	*addToList{ |doc|
+		var key, sceld;
 		//		"adding to List".postln;
 		key = allDocuments.detectIndex( { |it| it.thisdoc === doc } );
 		if ( key.isNil,
@@ -234,13 +234,13 @@ ScelDocument : Document{
 				allDocuments.removeAt(toremove);
 			});
 	}
-	
-	prclose { 
+
+	prclose {
 		if ( thisdoc.notNil,{
 			thisdoc.prclose
 		},{
-			cFuncs = cFuncs ++ { this.prclose };  
-		});			
+			cFuncs = cFuncs ++ { this.prclose };
+		});
 	}
 
 	string {arg rangestart, rangesize = 1;
@@ -291,14 +291,14 @@ ScelDocument : Document{
 	text {
 		^this.string;
 	}
-	rangeText { arg rangestart=0, rangesize=1; 
+	rangeText { arg rangestart=0, rangesize=1;
 		^this.string( rangestart, rangesize );
 	}
 
 	// not implemented:
 	selectRange { arg start=0, length=0; }
 	background_ {arg color, rangestart= -1, rangesize = 0;
-	}	
+	}
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
 	}
 
@@ -313,7 +313,7 @@ ScelDocument : Document{
 	}
 	insertTextRange { arg string, rangestart, rangesize;
 	}
-	setBackgroundColor { }	
+	setBackgroundColor { }
 	selectedRangeLocation {
 		^0
 	}
@@ -325,7 +325,7 @@ ScelDocument : Document{
 
 	bounds_{
 	}
-	
+
 	*current {
 		var cur = EmacsDocument.current;
 		if ( cur.isNil ){
@@ -333,7 +333,7 @@ ScelDocument : Document{
 		}{
 			^cur.sceld;
 		}
-	}	
+	}
 
 	*prGetIndexOfListener{
 		^this.allDocuments.detectIndex( { |doc| doc.title == "*SCLang:PostBuffer*" } );
@@ -345,7 +345,7 @@ ScelDocument : Document{
 	}
 	prinitByIndex {
 		^this.shouldNotImplement(thisMethod)
-	}	
+	}
 	initLast {
 		^this.shouldNotImplement(thisMethod)
 	}

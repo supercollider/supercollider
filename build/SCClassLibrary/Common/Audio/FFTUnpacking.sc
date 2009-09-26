@@ -8,7 +8,7 @@ UnpackFFT : MultiOutUGen {
 	*new { | chain, bufsize, frombin=0, tobin |
 		var upperlimit = bufsize/2;
 		tobin = if(tobin.isNil, upperlimit, {tobin.min(upperlimit)});
-		^[Unpack1FFT(chain, bufsize, (frombin..tobin), 0), 
+		^[Unpack1FFT(chain, bufsize, (frombin..tobin), 0),
 		  Unpack1FFT(chain, bufsize, (frombin..tobin), 1)].flop.flatten;
 	}
 }
@@ -32,7 +32,7 @@ PackFFT : PV_ChainUGen {
 
 // Conveniences to apply calculations to an FFT chain
 PV_ChainUGen : UGen {
-	
+
 	// Give it a func to apply to whole set of vals: func(mags, phases)
 	pvcalc { |numframes, func, frombin=0, tobin, zeroothers=0|
 		var origmagsphases, magsphases, ret;
@@ -64,7 +64,7 @@ PV_ChainUGen : UGen {
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
-	
+
 	// Give it a func to apply to each bin in turn: func(mag, phase, index)
 	pvcollect { |numframes, func, frombin=0, tobin, zeroothers=0|
 		var magsphases, ret;

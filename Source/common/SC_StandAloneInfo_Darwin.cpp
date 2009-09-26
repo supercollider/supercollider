@@ -15,7 +15,7 @@ char SC_StandAloneInfo::dirPath[PATH_MAX];
 
 void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 	CFStringEncoding encoding = kCFStringEncodingASCII;
-	
+
 	if ( !haveCheckedBundleStatus )
 	{
 		haveCheckedBundleStatus = true;
@@ -36,7 +36,7 @@ void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 				// we can't, we can only get a relative path, or an absolute path to a
 				// specific resource. Since we don't know the application name, we get the
 				// latter, and then hack off the resource name.
-				
+
 				sIsStandAlone = true;
 				CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
 
@@ -45,17 +45,17 @@ void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 				   stringToFind,
 				   0
 				);
-				
+
 				CFRange validRange;
 				validRange.location = 0;
 				validRange.length = discardRange.location - 1;
-				
+
 				CFStringRef dirPathCFString = CFStringCreateWithSubstring (
 					kCFAllocatorDefault,
 					rawPath,
 					validRange
 				);
-				
+
 				CFStringGetCString (
 					dirPathCFString,
 					dirPath,

@@ -1,6 +1,6 @@
-MultiLevelIdentityDictionary : Collection 
+MultiLevelIdentityDictionary : Collection
 {
-	
+
 	var <>dictionary;
 
 	*new {
@@ -9,7 +9,7 @@ MultiLevelIdentityDictionary : Collection
 	init {
 		dictionary = this.newInternalNode;
 	}
-	
+
 	newInternalNode { ^this.nodeType.new }
 
 	nodeType {
@@ -22,7 +22,7 @@ MultiLevelIdentityDictionary : Collection
 	atPathFail { arg path, function;
 		var item;
 		item = dictionary;
-		path.do({ arg name; 
+		path.do({ arg name;
 			item = item.at(name);
 			if (item.isNil, { ^function.value });
 		});
@@ -36,15 +36,15 @@ MultiLevelIdentityDictionary : Collection
 		var item;
 		item = path.pop;
 		^this.putAtPath(path, item);
-	}	
+	}
 	putAtPath { arg path, val;
 		var item, lastName;
 		path = path.copy;
 		lastName = path.pop;
 		item = dictionary;
-		path.do({ arg name; 
+		path.do({ arg name;
 			item = item.atFail(name, {
-				var newitem; 
+				var newitem;
 				newitem = this.newInternalNode;
 				item.put(name, newitem);
 				newitem
@@ -56,16 +56,16 @@ MultiLevelIdentityDictionary : Collection
 	create { arg ... args;
 		var item;
 		item = dictionary;
-		args.do({ arg name; 
+		args.do({ arg name;
 			item = item.atFail(name, {
-				var newitem; 
+				var newitem;
 				newitem = this.newInternalNode;
 				item.put(name, newitem);
 				newitem
 			});
 		});
-	}	
-	
+	}
+
 	choose { arg ... start;
 		var item;
 		if(start.isEmpty,{
@@ -110,8 +110,8 @@ MultiLevelIdentityDictionary : Collection
 		path = path.copy;
 		lastName = path.pop;
 		item = dictionary;
-		path.do({ arg name; 
-			item = item.at(name); 
+		path.do({ arg name;
+			item = item.at(name);
 			if (item.isNil, { ^nil });
 		});
 		^item.removeAt(lastName);
@@ -136,14 +136,14 @@ MultiLevelIdentityDictionary : Collection
 	removeEmptyAt { arg ...path;
 		^this.prRemoveAtPathRecursive(path, 0, dictionary);
 	}
-	
+
 	//private
 	add { arg assn;
 		this.put(assn.key, assn.value);
 	}
 	remove { ^this.shouldNotImplement(thisMethod) }
 	removeFail { ^this.shouldNotImplement(thisMethod) }
-	
+
 	prChooseFrom { arg dict;
 		var item;
 		item = dict.choose;
@@ -345,11 +345,11 @@ MultiLevelIdentityDictionary : Collection
 			});
 		});
 	}
-	
+
 	storeOn { arg stream;
 		stream << this.class.name << "[" <<<* dictionary << "]"
 	}
-	
+
 	printOn { arg stream;
 		stream << this.class.name << "[" <<* dictionary << "]"
 	}
@@ -357,15 +357,15 @@ MultiLevelIdentityDictionary : Collection
 
 
 
-LibraryBase : MultiLevelIdentityDictionary 
-{	
+LibraryBase : MultiLevelIdentityDictionary
+{
 	*global {
 		^this.subclassResponsibility(thisMethod);
 	}
 	*global_ { arg obj;
 		^this.subclassResponsibility(thisMethod);
 	}
-	
+
 
 	*clear {
 		this.global = this.new;
@@ -394,26 +394,26 @@ LibraryBase : MultiLevelIdentityDictionary
 
 }
 
-Library : LibraryBase 
+Library : LibraryBase
 {
 	classvar global;
-	
+
 	*global { ^global }
 	*global_ { arg obj; global = obj; }
-	
+
 	*initClass {
 		global = this.new;
 	}
 }
 
-Archive : LibraryBase 
+Archive : LibraryBase
 {
 	classvar global;
 	classvar <>archiveDir;
-	
+
 	*global { ^global }
 	*global_ { arg obj; global = obj; }
-	
+
 	*initClass {
 		global = this.new;
 		archiveDir = Platform.userAppSupportDir;

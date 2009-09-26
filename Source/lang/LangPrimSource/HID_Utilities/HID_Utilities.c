@@ -2,7 +2,7 @@
 	File:		HID_Utilities.c
 
 	Contains:	Implementation of HID Utilities
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -553,7 +553,7 @@ static void hid_GetDeviceInfo (io_object_t hidDevice, CFMutableDictionaryRef hid
 static pRecDevice* hid_AddDevice (pRecDevice *ppListDeviceHead, pRecDevice pNewDevice)
 {
 	pRecDevice* result = NULL;
-	
+
     if (NULL == *ppListDeviceHead)
         result = ppListDeviceHead;
     else
@@ -2088,7 +2088,7 @@ Boolean HIDFindSubElement(const pRecElement pStartElement, const pRecElement pSe
 			HIDPrintElement(pElement);
 		}
 #endif
-		
+
 		if (score > bestScore)
 		{
 			pBestElement = pElement;
@@ -2108,7 +2108,7 @@ Boolean HIDFindSubElement(const pRecElement pStartElement, const pRecElement pSe
 		printf("\n");
 	}
 #endif
-	
+
 	*ppFoundElement = pBestElement;
 	return (NULL != pBestElement);
 }
@@ -2191,7 +2191,7 @@ Boolean HIDIsValidElement(const pRecDevice pSearchDevice, const pRecElement pSea
 		{
 			if (pRecElementTemp == pSearchElement)
 				return true;
-			pRecElementTemp = HIDGetNextDeviceElement(pRecElementTemp,kHIDElementTypeAll);	
+			pRecElementTemp = HIDGetNextDeviceElement(pRecElementTemp,kHIDElementTypeAll);
 		}
 	}
 	return false;

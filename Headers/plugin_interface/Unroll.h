@@ -56,7 +56,7 @@ what loop constructs the compiler can best generate code.
 #if FOR_IS_FASTER
 
 #define LOOP(length, stmt) for (int xxi=0; xxi<(length); ++xxi) { stmt; }
-	
+
 #elif WHILE_IS_FASTER
 
 #define LOOP(length, stmt)			\
@@ -65,7 +65,7 @@ what loop constructs the compiler can best generate code.
 			stmt;					\
 		}							\
 	}
-	
+
 #endif
 
 
@@ -74,11 +74,11 @@ what loop constructs the compiler can best generate code.
 #if FOR_IS_FASTER
 
 #define LooP(length) for (int xxi=0; xxi<(length); ++xxi)
-	
+
 #elif WHILE_IS_FASTER
 
 #define LooP(length) for (int xxi=(length); --xxi;)
-	
+
 #endif
 
 
@@ -197,7 +197,7 @@ inline void Scale(int numSamples, float *out, float *in, float level)
 inline void ZCopy(int numSamples, float *out, float *in)
 {
 	// pointers must be 8 byte aligned
-	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0)); 
+	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0));
 	if (in == out) return;
 	if ((numSamples & 1) == 0) {
 		// copying doubles is faster on powerpc.
@@ -212,7 +212,7 @@ inline void ZCopy(int numSamples, float *out, float *in)
 inline void ZClear(int numSamples, float *out)
 {
 	// pointers must be 8 byte aligned
-	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0)); 
+	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0));
 	if ((numSamples & 1) == 0) {
 		// copying doubles is faster on powerpc.
 		double *outd = (double*)(out + ZOFF) - ZOFF;

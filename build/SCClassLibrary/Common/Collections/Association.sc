@@ -1,18 +1,18 @@
 Association : Magnitude {
 	var <>key, <>value;
-	
+
 	*new { arg key, value;
 		^super.newCopyArgs(key, value)
 	}
-	
+
 	== { arg anAssociation;
 		^anAssociation respondsTo: \key and: { key == anAssociation.key }
 	}
-	
+
 	hash {
 		^key.hash
 	}
-	
+
 	< { arg anAssociation;
 		^key < anAssociation.key
 	}

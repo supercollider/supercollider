@@ -1,15 +1,15 @@
 
-Updater { 
+Updater {
 
 	var <>model,<>updateFunc;
-	
+
 	*new { arg model,updateFunc;
 		^super.new.model_(model).updateFunc_(updateFunc).init
 	}
 	init {
 		model.addDependant(this);
 	}
-	
+
 	update { arg ... args;
 		updateFunc.valueArray(args)
 	}

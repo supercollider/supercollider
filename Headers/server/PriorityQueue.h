@@ -33,14 +33,14 @@ const int64 kMaxInt64 = 0x7FFFFFFFFFFFFFFF;
 const int64 kMaxInt64 = ~(1LL<<63);
 #endif
 
-template <class Event, int N> 
+template <class Event, int N>
 class PriorityQueueT
 {
 public:
 	PriorityQueueT() {
 		Empty();
 	}
-	
+
 	bool Add(Event& inEvent)
 		{
 			if (mSize >= N) return false;
@@ -72,7 +72,7 @@ public:
 	void Empty() { mSize = 0; SetEmptyTime(); }
 	void SetEmptyTime() { mEvents[0].mTime = kMaxInt64; }
 	int Size() { return mSize; }
-	
+
 	Event Remove()
 		{
 			Event event = mEvents[0];
@@ -98,9 +98,9 @@ public:
 #endif
 			return event;
 		}
-	void SanityCheck() 
+	void SanityCheck()
 	{
-		for (int i=0; i<mSize; ++i) 
+		for (int i=0; i<mSize; ++i)
 		{
 			int j = (i<<1)+1;
 			int k = j+1;
@@ -108,9 +108,9 @@ public:
 			//if (k<mSize && mEvents[i].mTime > mEvents[k].mTime) throw std::runtime_error("priority queue unsorted");
 		}
 	}
-	void DebugDump() 
+	void DebugDump()
 	{
-		for (int i=0; i<mSize; ++i) 
+		for (int i=0; i<mSize; ++i)
 		{
 			printf("%d %016llX\n", i, mEvents[i].mTime);
 		}

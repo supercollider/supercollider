@@ -18,21 +18,21 @@
 	WorldOptions options;
 	struct World *world;
 	NSTimer *timer;
-		
+
 	int lastNodeID;
-	
+
 	IBOutlet UILabel *avgCPULabel;
 	IBOutlet UILabel *peakCPULabel;
 	IBOutlet UILabel *synthsLabel;
 	IBOutlet UILabel *ugensLabel;
 	IBOutlet UISwitch *speakerSwitch;
 	IBOutlet UIButton *freeAllButton;
-	
+
 	IBOutlet UITextView *logView;
-	
+
 	IBOutlet UIViewController *logViewController;
 	IBOutlet DirBrowserViewController *synthdefsViewController;
-	
+
 }
 
 - (IBAction) toggleState:(id)sender;

@@ -24,7 +24,7 @@
 
 #include "SC_Types.h"
 
-struct Wire 
+struct Wire
 {
 	struct Unit *mFromUnit;
 	int32 mCalcRate;

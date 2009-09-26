@@ -5,7 +5,7 @@
 
 (easy-mmode-define-minor-mode sclang-minor-mode
   "Toggle sclang-minor-mode.
-With no argument, this command toggles the mode. 
+With no argument, this command toggles the mode.
 Non-null prefix argument turns on the mode.
 Null prefix argument turns off the mode.
 
@@ -18,7 +18,7 @@ sclang code with the normal command C-c C-c and C-c C-d."
  ;; The minor mode bindings.
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-d" . sclang-eval-region)
-   ("\C-\M-x" . sclang-eval-defun)	
+   ("\C-\M-x" . sclang-eval-defun)
    ("\C-c\C-h" . sclang-find-help)
    ("\C-\M-h"  . sclang-goto-help-browser)
    ("\C-c\C-s" . sclang-main-stop)
@@ -29,7 +29,7 @@ sclang code with the normal command C-c C-c and C-c C-d."
 
 (easy-mmode-define-minor-mode sclang-help-minor-mode
   "Toggle sclang-minor-mode.
-With no argument, this command toggles the mode. 
+With no argument, this command toggles the mode.
 Non-null prefix argument turns on the mode.
 Null prefix argument turns off the mode.
 

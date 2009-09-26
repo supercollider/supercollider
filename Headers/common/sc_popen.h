@@ -16,7 +16,7 @@
  *	return values < 0x100 are used for exit() termination, and higher
  *	values are used to indicated non-exit() termination, which is
  *	similar to a unix-style signal exit (think SIGSEGV ==
- *	STATUS_ACCESS_VIOLATION).  See this URL for a list of WIN32 
+ *	STATUS_ACCESS_VIOLATION).  See this URL for a list of WIN32
  *	STATUS_* values from Wine:
  *
  *		http://source.winehq.org/source/include/ntstatus.h

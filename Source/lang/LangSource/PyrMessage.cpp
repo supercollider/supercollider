@@ -63,20 +63,20 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	PyrClass *classobj;
 	long index;
 	PyrObject *obj;
-		
+
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendMessageWithKeys");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
-	
+
 	classobj = classOfSlot(recvrSlot);
-	
-	lookup_again:	
+
+	lookup_again:
 	index = classobj->classIndex.ui + selector->u.index;
 	meth = gRowTable[index];
-	
+
 	if (meth->name.us != selector) {
 		doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	} else {
@@ -156,18 +156,18 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
 				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
-							
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
-				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
-							
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
@@ -196,20 +196,20 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrClass *classobj;
 	long index;
 	PyrObject *obj;
-		
+
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendMessage");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
-	
+
 	classobj = classOfSlot(recvrSlot);
-	
-	lookup_again:	
+
+	lookup_again:
 	index = classobj->classIndex.ui + selector->u.index;
 	meth = gRowTable[index];
-	
+
 	if (meth->name.us != selector) {
 		doesNotUnderstand(g, selector, numArgsPushed);
 	} else {
@@ -310,9 +310,9 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
 				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
-				
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -326,10 +326,10 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					g->sp += mmax;
 				}
 				selector = meth->selectors.us;
-				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
-							
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitive(g, meth, numArgsPushed);
@@ -359,7 +359,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 			} break;
 			*/
-				
+
 		}
 	}
 #if TAILCALLOPTIMIZE
@@ -381,21 +381,21 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	PyrClass *classobj;
 	long index;
 	PyrObject *obj;
-		
+
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendSuperMessageWithKeys");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
-	
+
 	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
 	//assert(isKindOfSlot(recvrSlot, classobj));
 
-	lookup_again:	
+	lookup_again:
 	index = classobj->classIndex.ui + selector->u.index;
 	meth = gRowTable[index];
-	
+
 	if (meth->name.us != selector) {
 		doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	} else {
@@ -475,18 +475,18 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
 				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
-							
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
 				selector = meth->selectors.us;
-				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
-							
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
@@ -515,21 +515,21 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrClass *classobj;
 	long index;
 	PyrObject *obj;
-		
+
 	//postfl("->sendMessage\n");
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendSuperMessage");
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
-	
+
 	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
 	//assert(isKindOfSlot(recvrSlot, classobj));
-	
-	lookup_again:	
+
+	lookup_again:
 	index = classobj->classIndex.ui + selector->u.index;
 	meth = gRowTable[index];
-	
+
 	if (meth->name.us != selector) {
 		doesNotUnderstand(g, selector, numArgsPushed);
 	} else {
@@ -629,10 +629,10 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 				selector = meth->selectors.us;
 				index = methraw->specialIndex;
-				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;				
-							
+				recvrSlot->ucopy = recvrSlot->uo->slots[index].ucopy;
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -646,10 +646,10 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					g->sp += mmax;
 				}
 				selector = meth->selectors.us;
-				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;				
-				
+				recvrSlot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+
 				classobj = classOfSlot(recvrSlot);
-				
+
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitive(g, meth, numArgsPushed);
@@ -679,7 +679,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				}
 			} break;
 			*/
-				
+
 		}
 	}
 #if TAILCALLOPTIMIZE
@@ -699,7 +699,7 @@ long arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
 #endif
 
 extern PyrClass *class_identdict;
-void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector, 
+void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	long numArgsPushed, long numKeyArgsPushed)
 {
 	double *qslot, *pslot, *pend;
@@ -719,11 +719,11 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	while (pslot > pend) *--pslot = *--qslot;
 
 	selSlot = g->sp - numArgsPushed + 2;
-	SetSymbol(selSlot, selector);	
+	SetSymbol(selSlot, selector);
 	g->sp++;
 
 	recvrSlot = selSlot - 1;
-	
+
 	classobj = classOfSlot(recvrSlot);
 
 	index = classobj->classIndex.ui + s_nocomprendo->u.index;
@@ -749,7 +749,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 									slot = array->slots + i;
 									if (NotNil(slot)) {
 										++slot;
-										selSlot->ucopy = recvrSlot->ucopy; 
+										selSlot->ucopy = recvrSlot->ucopy;
 										recvrSlot->ucopy = slot->ucopy;
 										blockValueWithKeys(g, numArgsPushed+1, numKeyArgsPushed);
 										return;
@@ -764,7 +764,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	}
 
 	executeMethodWithKeys(g, meth, numArgsPushed+1, numKeyArgsPushed);
-	
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif
@@ -772,7 +772,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 int blockValue(struct VMGlobals *g, int numArgsPushed);
 
-void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector, 
+void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	long numArgsPushed)
 {
 	double *qslot, *pslot, *pend;
@@ -792,17 +792,17 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	while (pslot > pend) *--pslot = *--qslot;
 
 	selSlot = g->sp - numArgsPushed + 2;
-	SetSymbol(selSlot, selector);	
+	SetSymbol(selSlot, selector);
 	g->sp++;
 
 	recvrSlot = selSlot - 1;
-	
+
 	classobj = classOfSlot(recvrSlot);
 
 	index = classobj->classIndex.ui + s_nocomprendo->u.index;
 	meth = gRowTable[index];
 
-	
+
 	if (meth->ownerclass.uoc == class_object) {
 		// lookup instance specific method
 		uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
@@ -822,7 +822,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 									slot = array->slots + i;
 									if (NotNil(slot)) {
 										++slot;
-										selSlot->ucopy = recvrSlot->ucopy; 
+										selSlot->ucopy = recvrSlot->ucopy;
 										recvrSlot->ucopy = slot->ucopy;
 										blockValue(g, numArgsPushed+1);
 										return;
@@ -837,7 +837,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	}
 
 	executeMethod(g, meth, numArgsPushed+1);
-	
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif
@@ -853,7 +853,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	PyrSlot *vars;
 	PyrObject *proto;
 	long i, j, m, mmax, numtemps, numargs, numArgsPushed;
-		
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "executeMethodWithKeys");
@@ -861,11 +861,11 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
 		if (g->method) {
-			postfl(" %s:%s -> %s:%s\n", 
+			postfl(" %s:%s -> %s:%s\n",
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		} else {
-			postfl(" top -> %s:%s\n", 
+			postfl(" top -> %s:%s\n",
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		}
 	}
@@ -875,7 +875,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 		meth->callMeter.ui++;
 	}
 #endif
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -888,7 +888,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 #endif
 
 	g->execMethod = 10;
-	
+
 	proto = meth->prototypeFrame.uo;
 	methraw = METHRAW(meth);
 	numtemps = methraw->numtemps;
@@ -897,7 +897,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	numArgsPushed = allArgsPushed - (numKeyArgsPushed<<1);
 	//DumpStack(g, g->sp);
 	//postfl("executeMethod allArgsPushed %d numKeyArgsPushed %d\n", allArgsPushed, numKeyArgsPushed);
-	
+
 	frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
 	vars = frame->vars - 1;
 	frame->classptr = class_frame;
@@ -914,19 +914,19 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	}
 	SetInt(&frame->ip,  0);
 	g->method = meth;
-	
+
 	g->ip = meth->code.uob->b - 1;
 	g->frame = frame;
 	g->block = (PyrBlock*)meth;
-		
+
 	g->sp -= allArgsPushed;
 	qslot = (double*)(g->sp);
 	pslot = (double*)(vars);
-	
+
 	if (numArgsPushed <= numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg & var values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
@@ -934,24 +934,24 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-					
+
 		/* push all normal args to frame */
 		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		for (m=0,mmax=i; m<mmax; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + numargs + 1);
@@ -961,7 +961,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	} else {
 		/* push all args to frame */
 		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + numargs);
@@ -990,7 +990,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 			found1: ;
 		}
 	}
-	
+
 	g->receiver.ucopy = vars[1].ucopy;
 #if SANITYCHECK
 	g->gc->SanityCheck();
@@ -1009,7 +1009,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	PyrSlot *vars;
 	PyrObject *proto;
 	long i, m, mmax, numtemps, numargs;
-		
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "executeMethod");
@@ -1017,11 +1017,11 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 #if DEBUGMETHODS
 	if (gTraceInterpreter) {
 		if (g->method) {
-			postfl(" %s:%s -> %s:%s\n", 
+			postfl(" %s:%s -> %s:%s\n",
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		} else {
-			postfl(" top -> %s:%s\n", 
+			postfl(" top -> %s:%s\n",
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		}
 	}
@@ -1031,7 +1031,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 		meth->callMeter.ui++;
 	}
 #endif
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -1044,15 +1044,15 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 #endif
 
 	g->execMethod = 20;
-	
+
 	proto = meth->prototypeFrame.uo;
 	methraw = METHRAW(meth);
 	numtemps = methraw->numtemps;
 	numargs = methraw->numargs;
-	
+
 	caller = g->frame;
 	//postfl("executeMethod allArgsPushed %d numKeyArgsPushed %d\n", allArgsPushed, numKeyArgsPushed);
-		
+
 	frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
 	vars = frame->vars - 1;
 	frame->classptr = class_frame;
@@ -1069,19 +1069,19 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	}
 	SetInt(&frame->ip,  0);
 	g->method = meth;
-	
+
 	g->ip = meth->code.uob->b - 1;
 	g->frame = frame;
 	g->block = (PyrBlock*)meth;
-		
+
 	g->sp -= numArgsPushed;
 	qslot = (double*)(g->sp);
 	pslot = (double*)(vars);
-	
+
 	if (numArgsPushed <= numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg & var values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
@@ -1089,24 +1089,24 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-					
+
 		/* push all normal args to frame */
 		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		for (m=0,mmax=i; m<mmax; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + numargs + 1);
@@ -1116,7 +1116,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	} else {
 		/* push all args to frame */
 		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + numargs);
@@ -1143,7 +1143,7 @@ void returnFromBlock(VMGlobals *g)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	PyrMethodRaw *blockraw;
-	
+
 	//if (gTraceInterpreter) postfl("->returnFromBlock\n");
 	//printf("->returnFromBlock\n");
 #if SANITYCHECK
@@ -1157,7 +1157,7 @@ void returnFromBlock(VMGlobals *g)
 	if (returnFrame) {
 		block = curframe->method.uoblk;
 		blockraw = METHRAW(block);
-		
+
 		g->frame = returnFrame;
 		g->ip = (unsigned char *)returnFrame->ip.ui;
 		g->block = returnFrame->method.uoblk;
@@ -1166,7 +1166,7 @@ void returnFromBlock(VMGlobals *g)
 		methraw = METHRAW(meth);
 		g->receiver.ucopy = homeContext->vars[0].ucopy; //??
 		g->method = meth;
-		
+
 		meth = curframe->method.uom;
 		methraw = METHRAW(meth);
 		if (!methraw->needsHeapContext) {
@@ -1198,9 +1198,9 @@ void returnFromMethod(VMGlobals *g)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 	curframe = g->frame;
-	
+
 	//assert(curframe->context.uof == NULL);
-	
+
 	/*if (gTraceInterpreter) {
 		post("returnFromMethod %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
 		post("tailcall %d\n", g->tailCall);
@@ -1217,11 +1217,11 @@ void returnFromMethod(VMGlobals *g)
 
 	/*
 		static bool once = true;
-		if (once || gTraceInterpreter) 
+		if (once || gTraceInterpreter)
 		{
 			once = false;
 			post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
-			postfl("%s:%s\n", 
+			postfl("%s:%s\n",
 				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
 			);
 			post("tailcall %d\n", g->tailCall);
@@ -1234,7 +1234,7 @@ void returnFromMethod(VMGlobals *g)
 		gTraceInterpreter = false;
 	*/
 		//if (IsNil(&homeContext->caller)) return; // do nothing.
-	
+
 		// return all the way out.
 		PyrSlot *bottom = g->gc->Stack()->slots;
 		bottom->ucopy = g->sp->ucopy;
@@ -1245,11 +1245,11 @@ void returnFromMethod(VMGlobals *g)
 		longjmp(g->escapeInterpreter, 2);
 	} else {
 		returnFrame = homeContext->caller.uof;
-		
+
 		if (returnFrame == NULL) goto null_return;
 		// make sure returnFrame is a caller and find earliest stack frame
 		{
-			PyrFrame *tempFrame = curframe; 
+			PyrFrame *tempFrame = curframe;
 			while (tempFrame != returnFrame) {
 				tempFrame = tempFrame->caller.uof;
 				if (!tempFrame) {
@@ -1264,20 +1264,20 @@ void returnFromMethod(VMGlobals *g)
 						// on the other side of the looking glass, put the yielded value on the stack as the result..
 						g->sp -= numArgsPushed - 1;
 						g->sp->ucopy = value.ucopy;
-						
+
 						curframe = tempFrame = g->frame;
 					} else {
 						g->sp[2].ucopy = g->sp[0].ucopy;
 						g->sp->ucopy = g->receiver.ucopy;
 						g->sp++; SetObject(g->sp, g->method);
-						g->sp++; 
+						g->sp++;
 						sendMessage(g, getsym("outOfContextReturn"), 3);
 						return;
 					}
 				}
 			}
 		}
-		
+
 		{
 			PyrFrame *tempFrame = curframe;
 			while (tempFrame != returnFrame) {
@@ -1292,19 +1292,19 @@ void returnFromMethod(VMGlobals *g)
 				tempFrame = nextFrame;
 			}
 		}
-				
+
 		// return to it
 		g->ip = (unsigned char *)returnFrame->ip.ui;
 		g->frame = returnFrame;
 		g->block = returnFrame->method.uoblk;
-								
+
 		homeContext = returnFrame->homeContext.uof;
 		meth = homeContext->method.uom;
 		methraw = METHRAW(meth);
 
 #if DEBUGMETHODS
 if (gTraceInterpreter) {
-	postfl("%s:%s <- %s:%s\n", 
+	postfl("%s:%s <- %s:%s\n",
 		meth->ownerclass.uoc->name.us->name, meth->name.us->name,
 		g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
 	);
@@ -1312,8 +1312,8 @@ if (gTraceInterpreter) {
 #endif
 
 		g->method = meth;
-		g->receiver.ucopy = homeContext->vars[0].ucopy; 
-		
+		g->receiver.ucopy = homeContext->vars[0].ucopy;
+
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
@@ -1321,12 +1321,12 @@ if (gTraceInterpreter) {
 }
 
 
-int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed, 
+int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed,
 		long numKeyArgsPushed)
 {
 	double *pslot, *qslot;
 	long i, j, m, diff, numArgsPushed, numArgsNeeded;
-		
+
 	if (numKeyArgsPushed) {
 		// evacuate keyword args to separate area
 		pslot = (double*)(keywordstack + (numKeyArgsPushed<<1));
@@ -1336,9 +1336,9 @@ int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long a
 			*--pslot = *--qslot;
 		}
 	}
-	
+
 	PyrSlot *vars = g->sp - allArgsPushed + 1;
-	
+
 	numArgsPushed = allArgsPushed - (numKeyArgsPushed<<1);
 	numArgsNeeded = methraw->numargs;
 	diff = numArgsNeeded - numArgsPushed;
@@ -1348,7 +1348,7 @@ int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long a
 		for (m=0; m<diff; ++m) *++pslot = *++qslot;
 		numArgsPushed = numArgsNeeded;
 	}
-	
+
 	// do keyword lookup:
 	if (numKeyArgsPushed && methraw->posargs) {
 		PyrSymbol **name0 = meth->argNames.uosym->symbols + 1;

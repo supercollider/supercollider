@@ -563,7 +563,7 @@ Either visit file internally (.sc) or start external editor (.rtf)."
 	  )
       )
 ;    (if buffer
-;	
+;
 ;      )
     )
   )

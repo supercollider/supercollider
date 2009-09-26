@@ -102,7 +102,7 @@ struct DiskIOMsg
 	int32 mBufNum;
 	int32 mPos;
 	int32 mFrames;
-	
+
 	void Perform();
 };
 
@@ -150,7 +150,7 @@ static float cubicinterp(float x, float y0, float y1, float y2, float y3)
 		return; \
 	} \
 	float *out[MAXCHANNELS]; \
-	for (uint32 i=0; i<bufChannels; ++i) out[i] = OUT(i+offset); 
+	for (uint32 i=0; i<bufChannels; ++i) out[i] = OUT(i+offset);
 
 #define SETUP_IN(offset) \
 	if (unit->mNumInputs - (uint32)offset != bufChannels) { \
@@ -158,8 +158,8 @@ static float cubicinterp(float x, float y0, float y1, float y2, float y3)
 		return; \
 	} \
 	float *in[MAXCHANNELS]; \
-	for (uint32 i=0; i<bufChannels; ++i) in[i] = IN(i+offset); 
-		
+	for (uint32 i=0; i<bufChannels; ++i) in[i] = IN(i+offset);
+
 void DiskIn_Ctor(DiskIn* unit)
 {
 	unit->m_fbufnum = -1.f;
@@ -177,13 +177,13 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 		return;
 	}
 	SETUP_OUT(0)
-	
+
 	if (unit->m_framepos >= bufFrames) {
 		unit->m_framepos = 0;
 	}
 
 	bufData += unit->m_framepos * bufChannels;
-	
+
 	// buffer must be allocated as a multiple of 2*blocksize.
 	if (bufChannels > 2) {
 		for (int j=0; j<inNumSamples; ++j) {
@@ -204,7 +204,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 			*out0++ = *bufData++;
 		}
 	}
-	
+
 	unit->m_framepos += inNumSamples;
 	uint32 bufFrames2 = bufFrames >> 1;
 	if (unit->m_framepos == bufFrames) {
@@ -273,16 +273,16 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 		return;
 	}
 	SETUP_IN(1)
-	
+
 	float *out = OUT(0);
 	uint32_t framew = unit->m_framewritten;
 
 //	printf("Start frames %i %i\n", unit->m_framewritten, framew );
-	
+
 	if (unit->m_framepos >= bufFrames) {
 		unit->m_framepos = 0;
 	}
-	
+
 	bufData += unit->m_framepos * bufChannels;
 
 	if (bufChannels > 2) {
@@ -307,13 +307,13 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 			out[j] = framew++;
 		}
 	}
-	
+
 	unit->m_framepos += inNumSamples;
 //	unit->m_framewritten += inNumSamples;
 	unit->m_framewritten = framew;
-	
+
 //	printf("frames %i %i\n", unit->m_framewritten, framew );
-	
+
 	uint32 bufFrames2 = bufFrames >> 1;
 	if (unit->m_framepos == bufFrames) {
 		unit->m_framepos = 0;
@@ -337,7 +337,7 @@ sendMessage:
 		pgDiskFifoHasData->Signal();
 #endif //#ifndef SC_WIN32
 	}
-	
+
 }
 
 void DiskIOMsg::Perform()
@@ -372,7 +372,7 @@ void DiskIOMsg::Perform()
 			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
 		break;
 	}
-	
+
 leave:
 	NRTUnlock(mWorld);
 }
@@ -386,7 +386,7 @@ void VDiskIn_Ctor(VDiskIn* unit)
 	unit->m_bufPos = 0.;
 	unit->m_pchRatio = IN0(1);
 	unit->m_count = 0;
-		
+
 	SETCALC(VDiskIn_first); // should be first
 }
 
@@ -397,12 +397,12 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 {
 
 	SETCALC(VDiskIn_next);
-	
+
 	float a, b, c, d, oldBufPos;
 	bool test = false;
 
 	GET_BUF
-	
+
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
 		unit->m_count = 0;
@@ -414,9 +414,9 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	float fbufFrames2 = (float)bufFrames2;
 	float fbufFrames = (float)bufFrames;
 	unit->m_rBufSize = 1. / bufFrames;
-		
+
 	SETUP_OUT(0)
-	
+
 	float framePos = unit->m_framePos;
 	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
 	float newPchRatio = IN0(1);
@@ -427,7 +427,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	    SETCALC(VDiskIn_first);
 	    return;
 	    }
-	    
+
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
 
@@ -436,16 +436,16 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	for (uint32 i = 0; i < bufChannels; i++){
 	    out[i][0] = bufData[0 + i];
 	    };
-	    
+
 	pchRatio += pchSlope;
 	framePos += pchRatio;
 	bufPos += pchRatio;
 
 	for (int j = 1; j < inNumSamples; j++){
-	    uint32 iBufPos = (uint32)bufPos;   
+	    uint32 iBufPos = (uint32)bufPos;
 	    float frac = bufPos - (float)iBufPos;
 	    int table1 = iBufPos * bufChannels;
-	    int table0 = table1 - bufChannels; 
+	    int table0 = table1 - bufChannels;
 	    int table2 = table1 + bufChannels;
 	    int table3 = table2 + bufChannels;
 	    while(table1 >= bufSamples) table1 -= bufSamples;
@@ -493,7 +493,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 				pgDiskFifo->Write(msg);
 				pgDiskFifoHasData->Signal();
 			#endif //#ifndef SC_WIN32
-				
+
 
 				if((int)ZIN0(3)) {
 				//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
@@ -521,20 +521,20 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }
 		    }
-			
+
 	    }
 	}
-	
+
 	unit->m_framePos = framePos;
 	unit->m_pchRatio = pchRatio;
 	unit->m_bufPos = bufPos;
 }
 
 void VDiskIn_next(VDiskIn *unit, int inNumSamples)
-{	
+{
 	float a, b, c, d, oldBufPos;
 	bool test = false;
-	
+
 	GET_BUF
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
@@ -542,9 +542,9 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
-	
+
 	SETUP_OUT(0)
-	
+
 	float framePos = unit->m_framePos;
 	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
 	float newPchRatio = IN0(1);
@@ -553,15 +553,15 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	    ClearUnitOutputs(unit, inNumSamples);
 	    return;
 	    }
-	    
+
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
 	uint32 bufFrames2 = bufFrames >> 1;
 	float fbufFrames2 = (float)bufFrames2;
 	float fbufFrames = (float)bufFrames;
-	
+
 	for (int j = 0; j < inNumSamples; ++j){
-	    int iBufPos = (int)bufPos;   
+	    int iBufPos = (int)bufPos;
 	    float frac = bufPos - (float)iBufPos;
 	    int table1 = iBufPos * bufChannels;
 	    int table0 = table1 - bufChannels;
@@ -613,12 +613,12 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 			#endif //#ifndef SC_WIN32
 
 				if((int)ZIN0(3)) {
-					
+
 					// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
 					float outval = bufPos + (float)(unit->m_count * bufFrames2);
 					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), "/diskin", 1, &outval);
 				}
-				
+
 		} else {
 		    SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int)fbufnum);
 		    uint32 mPos;
@@ -639,12 +639,12 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 			      memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
 			    }
 		    }
-			
+
 	    }
 	}
-	
-	
-	
+
+
+
 	unit->m_framePos = framePos;
 	unit->m_pchRatio = pchRatio;
 	unit->m_bufPos = bufPos;
@@ -657,7 +657,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 PluginLoad(DiskIO)
 {
 	ft = inTable;
-	
+
 #ifdef SC_WIN32
   pgDiskFifo = new MsgFifoNoFree<DiskIOMsg, 256>;
   pgDiskFifoHasData = new SC_SyncCondition;
@@ -666,7 +666,7 @@ PluginLoad(DiskIO)
 
   pthread_t diskioThread;
 	pthread_create (&diskioThread, NULL, disk_io_thread_func, (void*)0);
-	
+
 	DefineSimpleUnit(DiskIn);
 	DefineSimpleUnit(DiskOut);
 	DefineSimpleUnit(VDiskIn);

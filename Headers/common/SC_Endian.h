@@ -19,7 +19,7 @@
 */
 
 /* NOTE: This file should declare/define the following functions/macros:
-	
+
 	htonl
 	htons
 	ntohl

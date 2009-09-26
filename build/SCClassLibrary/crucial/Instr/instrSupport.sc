@@ -59,7 +59,7 @@
 }
 
 + SynthDef {
-	/* 
+	/*
 	// doesnt hang onto its function
 	*def { arg name, ugenGraphFunc, rates, prependArgs, variants;
 		var new;
@@ -112,11 +112,11 @@
 + ControlSpec 	{
 
 	defaultControl { arg val;
-		^KrNumberEditor.new(this.constrain(val ? this.default),this); 
+		^KrNumberEditor.new(this.constrain(val ? this.default),this);
 	}
 
 	rate { ^\control }
-	
+
 	optimalRange { arg stdDev=0.3;
 		var linMinVal,linMaxVal,linDefault,toSpec;
 		toSpec = this.copy;
@@ -131,7 +131,7 @@
 
 /** spec **/
 
-	
+
 + ListPattern {
 
 	spec {
@@ -145,7 +145,7 @@
 				^StreamSpec(firstItemSpec)
 			});
 		});
-		// something with spec unknowable 
+		// something with spec unknowable
 		firstItemClass = list.first.class;
 		if(list.every({ |item| item.class == firstItemClass }),{
 			// this is dodgy
@@ -158,12 +158,12 @@
 		});
 		("unable to determine spec of" + this.asCompileString).warn;
 		^nil
-	}	
+	}
 }
 
 + Pfsm {
 	spec {
-		^thisMethod.notYetImplemented	
+		^thisMethod.notYetImplemented
 	}
 }
 

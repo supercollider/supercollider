@@ -10,14 +10,14 @@
 
 
 ClassHelper {
-	
+
 	var <>class, <>path ;
 	classvar doctype, head, preface, examples, parents ;
-	
+
 	*new { arg class, path ;
-			^super.new.initClassHelper( class, path ) 
+			^super.new.initClassHelper( class, path )
 	}
-	
+
 	initClassHelper { arg aClass, aPath ;
 		var superclasses ;
 		parents  = "" ;
@@ -31,7 +31,7 @@ ClassHelper {
 				 path = newPath ; {this.makeHelp}.defer })
 			}, { this.makeHelp }) ;
 	}
-	
+
 	createText {
 		// <head> tag
 		head = "
@@ -84,10 +84,10 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p1\">Explanation of the issues. For more information see <a href=\"../Core/Nil.html\"><span class=\"s3\">Nil</span></a> and [some other help files].</p>
 <p class=\"p2\"><br></p>
 "			.replace("SomeClass", class.name.asString)
-			.replace("Parents", parents[..parents.size-2]) ;		
+			.replace("Parents", parents[..parents.size-2]) ;
 			doctype = "
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
-" ;	
+" ;
 		examples = "
 <p class=\"p11\"><b>Examples</b></p>
 <p class=\"p3\"><br></p>
@@ -113,7 +113,7 @@ span.Apple-tab-span {white-space:pre}
 				 head+
 				 "<body>\n"+
 				 preface+
-				 classMethodBlock + 
+				 classMethodBlock +
 				 getterSetter +
 				 instanceMethodBlock +
 				 examples+
@@ -125,11 +125,11 @@ span.Apple-tab-span {white-space:pre}
 				.close ;
 		// and reopen thru class.openHelpFile
 		// open works if the path is a place where SC looks for Help files
-		class.openHelpFile 
+		class.openHelpFile
 	}
 
-	
-	
+
+
 	createClassMethodBlock {
 		var classMethods = "
 <p class=\"p4\"><b>Creation / Class Methods</b></p>
@@ -137,11 +137,11 @@ span.Apple-tab-span {white-space:pre}
 " ;
 		var methods = class.class.methods.collect(_.name) ;
 		var methodBlock = "" ;
-		methods.do({ arg m ;  
-			methodBlock = methodBlock+ 
-			this.createMethod([m, 
+		methods.do({ arg m ;
+			methodBlock = methodBlock+
+			this.createMethod([m,
 				class.class.findMethod(m).argNames,
-				 class.class.findMethod(m).argumentString 
+				 class.class.findMethod(m).argumentString
 				]) ;
 		 }) ;
 		^(classMethods+methodBlock) ;
@@ -157,11 +157,11 @@ span.Apple-tab-span {white-space:pre}
 " ;
 		var methods = class.methods.collect(_.name) ;
 		var methodBlock = "" ;
-		methods.do({ arg m ;  
-			methodBlock = methodBlock+ 
-			this.createMethod([m, 
-						class.findMethod(m).argNames, 
-						class.findMethod(m).argumentString], 
+		methods.do({ arg m ;
+			methodBlock = methodBlock+
+			this.createMethod([m,
+						class.findMethod(m).argNames,
+						class.findMethod(m).argumentString],
 						true) ;
 		 }) ;
 		^(instanceMethods+methodBlock) ;
@@ -199,18 +199,18 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p8\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><b>arg1 </b>- Explanation of arg1. Default value is argDefault. Other information.</p>
 " ;
 		// OK, the following is tricky
-		methodArr[1][1..].do({ arg anArg, index ; 
-			defaultValue = methodArr[2].split($,)[index+1].split($=) ; 
-			defaultValue = if (defaultValue.size == 1, { "nil" }, { 
+		methodArr[1][1..].do({ arg anArg, index ;
+			defaultValue = methodArr[2].split($,)[index+1].split($=) ;
+			defaultValue = if (defaultValue.size == 1, { "nil" }, {
 				defaultValue[1] }) ;
 			methodBlock = methodBlock+argsBlock
 				.replace("arg1", anArg)
-				.replace( "argDefault", defaultValue) ; 
+				.replace( "argDefault", defaultValue) ;
 		}) ;
 		^methodBlock +
 			example +
-			"<p class=\"p5\"><br></p>\n" 	
-	} 
+			"<p class=\"p5\"><br></p>\n"
+	}
 
 
 	createGetterSetterBlock {
@@ -229,10 +229,10 @@ span.Apple-tab-span {white-space:pre}
 		var methodBlock = "" ;
 		var defaultValue = "nil" ;
 		if (names.notNil, { names = names.asSet.asArray } ) ;
-		
+
 		class.classVarNames.do({ arg clvar ;
-				getterSetterBlock = getterSetterBlock + 
-"	
+				getterSetterBlock = getterSetterBlock +
+"
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>someVar</b></p>
 ".replace("someVar", clvar.asString)+
 "
@@ -242,20 +242,20 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p7\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></p>
 "		.replace("someVar", clvar.asString)
 			});
-		
-		names.do({ arg m ;  
-			case 
+
+		names.do({ arg m ;
+			case
 				{ getter.includes(m.asSymbol) and: setter.includes((m++"_").asSymbol) }
-					{  
+					{
 					defaultValue = class.findMethod(m.asSymbol).argumentString ;
-					getterSetter = 
+					getterSetter =
 "
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>someVar_(arg1)</b></p>
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>someVar</b></p>
-"					
+"
 					}
 				{ getter.includes(m.asSymbol) and: setter.includes((m++"_").asSymbol).not }
-					{ 
+					{
 					defaultValue = class.findMethod(m.asSymbol).argumentString ;
 					getterSetter =
 "
@@ -267,10 +267,10 @@ span.Apple-tab-span {white-space:pre}
 					defaultValue = class.findMethod((m++"_").asSymbol).argumentString ;					getterSetter =
 "
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>someVar_(arg1)</b></p>
-"					
-					} ;	
+"
+					} ;
 			if ( defaultValue.isNil, { defaultValue = "nil" }) ;
-			methodBlock = methodBlock+ 
+			methodBlock = methodBlock+
 						getterSetter.replace("someVar", m.asString) +
 "
 <p class=\"p7\"><b><span class=\"Apple-tab-span\">	</span></b><span class=\"Apple-tab-span\">	</span></p>
@@ -283,10 +283,10 @@ span.Apple-tab-span {white-space:pre}
 		^(getterSetterBlock+methodBlock+
 "
 <p class=\"p7\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></p>
-"		
+"
 		) ;
 	}
-	
+
 }
 
 //"

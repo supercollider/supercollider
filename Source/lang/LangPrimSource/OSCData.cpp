@@ -81,9 +81,9 @@ extern bool compiledOK;
 
 ///////////
 
-inline bool IsBundle(char* ptr) 
-{ 
-	return strcmp(ptr, "#bundle") == 0; 
+inline bool IsBundle(char* ptr)
+{
+	return strcmp(ptr, "#bundle") == 0;
 }
 
 ///////////
@@ -207,11 +207,11 @@ int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size);
 int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
-	
+
 	for (int i=0; i<size; ++i) {
 		addMsgSlot(packet, slots+i);
 	}
-	
+
 	packet->EndMsg();
 	return errNone;
 }
@@ -220,18 +220,18 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
 int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
-	
+
 	addMsgSlot(packet, slots); // msg address
-	
+
 	// skip space for tags
 	packet->maketags(size);
-	
+
 	packet->addtag(',');
 
 	for (int i=1; i<size; ++i) {
 		addMsgSlotWithTags(packet, slots+i);
 	}
-		
+
 	packet->EndMsg();
 
 	return errNone;
@@ -245,7 +245,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
     bool isBundle = IsBundle(inBuf);
-    
+
     pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
@@ -256,7 +256,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 		}
 	}
     pthread_mutex_unlock (&gLangMutex);
-	
+
 }
 
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed)
@@ -264,7 +264,7 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 	double time;
 	int err;
 	int64 oscTime;
-	
+
 	err = slotDoubleVal(slots, &time);
 	if (!err) {
 		if (useElapsed) {
@@ -276,7 +276,7 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 		oscTime = 1;	// immediate
 	}
 	packet->OpenBundle(oscTime);
-	
+
 	for (int i=1; i<size; ++i) {
 		if (isKindOfSlot(slots+i, class_array)) {
 			PyrObject *obj = slots[i].uo;
@@ -312,7 +312,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		// send UDP
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 		if (err) return err;
-		
+
 		if (addr == 0) {
 #ifdef NO_INTERNAL_SERVER
       // no internal server under SC_WIN32 yet
@@ -325,11 +325,11 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		}
 
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
-		if (err) return err;		
-		
+		if (err) return err;
+
 		struct sockaddr_in toaddr;
 		makeSockAddr(toaddr, addr, port);
-	
+
 		sendallto(gUDPport->Socket(), bufptr, msglen, (sockaddr*)&toaddr, sizeof(toaddr));
 	}
 
@@ -339,7 +339,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 
 ///////////
 
-inline int OSCStrLen(char *str) 
+inline int OSCStrLen(char *str)
 {
 	return (strlen(str) + 4) & ~3;
 }
@@ -366,27 +366,27 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = netAddrSlot->uo;
-	
+
 	int err, port, addr;
-	
+
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
 	if (err) return err;
-	
+
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 	if (err) return err;
-	
+
 	struct sockaddr_in toaddr;
 	makeSockAddr(toaddr, addr, port);
-	
+
     int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (aSocket == -1) {
         //post("\nCould not create socket\n");
 		return errFailed;
 	}
-	
+
 	const int on = 1;
 #ifdef SC_WIN32
 	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on)) != 0) {
@@ -401,7 +401,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 #endif
 		return errFailed;
 	};
-	
+
 
     if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
     {
@@ -413,7 +413,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 #endif
         return errFailed;
     }
-	
+
 	SC_TcpClientPort *comPort = new SC_TcpClientPort(aSocket, netAddrTcpClientNotifyFunc, netAddrObj);
 	SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 
@@ -422,10 +422,10 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = netAddrSlot->uo;
-	
+
 	SC_TcpClientPort *comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
 	if (comPort) comPort->Close();
 
@@ -435,11 +435,11 @@ int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed);
 int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
 	big_scpacket packet;
-	
+
 	int numargs = numArgsPushed - 1;
 	makeSynthMsgWithTags(&packet, args, numargs);
 
@@ -451,11 +451,11 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed);
 int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
 	big_scpacket packet;
-	
+
 	double time;
 	int err = slotDoubleVal(args, &time);
 	if (!err) {
@@ -464,28 +464,28 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	}
 	int numargs = numArgsPushed - 1;
 	makeSynthBundle(&packet, args, numargs, true);
-	
+
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
-	
+
 	return netAddrSend(netAddrSlot->uo, packet.size(), (char*)packet.buf);
 }
 
 int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed);
 int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* arraySlot = g->sp;
 	PyrObject* netAddrObj = netAddrSlot->uo;
-	
+
 	if (!IsObj(arraySlot) || !isKindOf(arraySlot->uo, class_rawarray)) {
 		error("sendRaw arg must be a kind of RawArray.\n");
 		return errWrongType;
 	}
 	PyrObject *array = arraySlot->uo;
-	
+
 	char *bufptr = (char*)array->slots;
 	int32 msglen = array->size * gFormatElemSize[array->obj_format];
-	
+
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
@@ -521,7 +521,7 @@ int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
 	int numargs = args->uo->size;
@@ -533,10 +533,10 @@ int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
 int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
-	
+
 	int numargs = args->uo->size;
 	if (numargs < 1) return errFailed;
 	makeSynthMsgWithTags(&packet, args->uo->slots, numargs);
@@ -547,25 +547,25 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 
 int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed);
 int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
-{	
+{
 	//PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* flag = g->sp;
 
 	gUseDoubles = IsTrue(flag);
-	
+
 	return errNone;
 }
 
 int prArray_OSCBytes(VMGlobals *g, int numArgsPushed);
 int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* a = g->sp;
 	PyrObject *array = a->uo;
 	PyrSlot* args = array->slots;
 	int numargs = array->size;
 	if (numargs < 1) return errFailed;
 	big_scpacket packet;
-	
+
 	if (IsFloat(args) || IsNil(args) || IsInt(args)) {
 		makeSynthBundle(&packet, args, numargs, false);
 	} else if (IsSym(args) || isKindOfSlot(args, class_string)) {
@@ -573,20 +573,20 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	} else {
 		return errWrongType;
 	}
-	
+
 	int size = packet.size();
 	PyrInt8Array* obj = newPyrInt8Array(g->gc, size, 0, true);
 	obj->size = size;
 	memcpy(obj->b, packet.data(), size);
 	SetObject(a, (PyrObject*)obj);
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
-	
+
 	return errNone;
 }
 
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
- 
+
 static PyrInt8Array* MsgToInt8Array ( sc_msg_iter msg ) ;
 static PyrInt8Array* MsgToInt8Array ( sc_msg_iter msg )
 {
@@ -603,7 +603,7 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
 	char *cmdName = inData;
 	int cmdNameLen = OSCstrlen(cmdName);
 	sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
-        
+
 	int numElems;
         if (inSize == cmdNameLen) {
             numElems = 0;
@@ -616,13 +616,13 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
 			}
         }
         //post("tags %s %d\n", msg.tags, numElems);
-        
+
         VMGlobals *g = gMainVMGlobals;
         PyrObject *obj = newPyrArray(g->gc, numElems + 1, 0, false);
         PyrSlot *slots = obj->slots;
 
         SetSymbol(slots+0, getsym(cmdName));
-        
+
         for (int i=0; i<numElems; ++i) {
             char tag = msg.nextTag();
             //post("%d %c\n", i, tag);
@@ -669,7 +669,7 @@ PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 {
     // convert all data to arrays
-    
+
     int64 oscTime = OSCtime(inData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
@@ -677,7 +677,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
     ++g->sp; SetObject(g->sp, g->process);
     ++g->sp; SetFloat(g->sp, seconds);
     ++g->sp; SetObject(g->sp, replyObj);
-    
+
     PyrSlot *stackBase = g->sp;
     char *data = inData + 16;
     char* dataEnd = inData + inSize;
@@ -688,21 +688,21 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
         ++g->sp; SetObject(g->sp, arrayObj);
         data += msgSize;
     }
-	
+
 	int numMsgs = g->sp - stackBase;
-	
+
     runInterpreter(g, s_recvoscbndl, 3+numMsgs);
 }
 
 void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 {
     // convert all data to arrays
-    
+
     //int64 oscTime = OSCtime(inData + 8);
     //double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;
-    
+
     int numMsgs = 0;
     char *data = inData + 16;
     char* dataEnd = inData + inSize;
@@ -718,18 +718,18 @@ void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 
 void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
 {
-    
+
     PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
-   
+
     // call virtual machine to handle message
     VMGlobals *g = gMainVMGlobals;
     ++g->sp; SetObject(g->sp, g->process);
     ++g->sp; SetFloat(g->sp, elapsedTime());	// time
     ++g->sp; SetObject(g->sp, replyObj);
-    ++g->sp; SetObject(g->sp, arrayObj);	
-	
+    ++g->sp; SetObject(g->sp, arrayObj);
+
     runInterpreter(g, s_recvoscmsg, 4);
-	
+
 
 }
 
@@ -746,7 +746,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket)
 {
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
-    
+
     pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
@@ -765,7 +765,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket)
 
 void init_OSC(int port);
 void init_OSC(int port)
-{	
+{
     postfl("init_OSC\n");
     try {
         gUDPport = new SC_UdpInPort(port);
@@ -779,15 +779,15 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	char hostname[256];
-	
+
 	int err = slotStrVal(a, hostname, 255);
 	if (err) return err;
-		
+
 	struct hostent *he = gethostbyname(hostname);
 	if (!he) return errFailed;
-	
+
 	SetInt(a, ntohl(*(int*)he->h_addr));
-	
+
 	return errNone;
 }
 
@@ -804,9 +804,9 @@ int prExit(VMGlobals *g, int numArgsPushed);
 int prExit(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 	exit(a->ui);
-        
+
 	//post("exit %d\n", a->ui);
 	//DumpBackTrace(g);
 	return errNone;
@@ -821,87 +821,87 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 	if (!gInternalSynthServer.mWorld) {
 		SetPrintFunc(&vpost);
 		WorldOptions options = kDefaultWorldOptions;
-		
+
 		PyrObject *optionsObj = a->uo;
 		PyrSlot *optionsSlots = optionsObj->slots;
 
 		static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mDeviceName[512];
 		int err;
-		
+
 		err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 1, (int*)&options.mNumControlBusChannels);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 2, (int*)&options.mNumInputBusChannels);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 3, (int*)&options.mNumOutputBusChannels);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 4, (int*)&options.mNumBuffers);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 5, (int*)&options.mMaxNodes);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 6, (int*)&options.mMaxGraphDefs);
 		if (err) return err;
-				
+
 		err = slotIntVal(optionsSlots + 8, (int*)&options.mBufLength);
 		if (err) return err;
-		
+
 		if (NotNil(optionsSlots + 9)) {
 			err = slotIntVal(optionsSlots + 9, (int*)&options.mPreferredHardwareBufferFrameSize);
 			if (err) return err;
 		}
-		
+
 		err = slotIntVal(optionsSlots + 10, (int*)&options.mRealTimeMemorySize);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 11, (int*)&options.mNumRGens);
 		if (err) return err;
-		
+
 		err = slotIntVal(optionsSlots + 12, (int*)&options.mMaxWireBufs);
 		if (err) return err;
-		
+
 		if (NotNil(optionsSlots + 13)) {
 			err = slotIntVal(optionsSlots + 13, (int*)&options.mPreferredSampleRate);
 			if (err) return err;
 		}
-		
+
 		options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
-		
+
 		#ifdef SC_DARWIN
 		err = slotStrVal(optionsSlots+15, mInputStreamsEnabled, 512);
 		if(err) options.mInputStreamsEnabled = NULL;
 		else options.mInputStreamsEnabled = mInputStreamsEnabled;
-		
+
 		err = slotStrVal(optionsSlots+16, mOutputStreamsEnabled, 512);
 		if(err) options.mOutputStreamsEnabled = NULL;
 		else options.mOutputStreamsEnabled = mOutputStreamsEnabled;
 		#endif
-		
+
 		err = slotStrVal(optionsSlots+17, mDeviceName, 512);
 		if(err) options.mInDeviceName = options.mOutDeviceName = NULL;
-		else options.mInDeviceName = options.mOutDeviceName = mDeviceName;		
+		else options.mInDeviceName = options.mOutDeviceName = mDeviceName;
 
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
-		
+
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
-	
+
 	return errNone;
 }
 
 int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
-{	
+{
 	if (gInternalSynthServer.mWorld) {
 		int serverErr = World_CopySndBuf(gInternalSynthServer.mWorld, index, buf, true, didChange);
 		if (serverErr) return errFailed;
@@ -922,16 +922,16 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp;
-	
+
 	if (gInternalSynthServer.mWorld) {
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
-		
+
         pthread_t thread;
         pthread_create(&thread, NULL, wait_for_quit, (void*)world);
 		pthread_detach(thread);
 	}
-	
+
 	return errNone;
 }
 #else   // is windows
@@ -954,7 +954,7 @@ int prAllocSharedControls(VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	if (gInternalSynthServer.mWorld) {
 		post("can't allocate while internal server is running\n");
 		return errNone;
@@ -983,7 +983,7 @@ int prGetSharedControl(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	int index;
 	int err = slotIntVal(b, &index);
 	if (err) return err;
@@ -1002,15 +1002,15 @@ int prSetSharedControl(VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+
 	int index;
 	int err = slotIntVal(b, &index);
 	if (err) return err;
-	
+
 	float val;
 	err = slotFloatVal(c, &val);
 	if (err) return err;
-	
+
 	if (index < 0 || index >= gInternalSynthServer.mNumSharedControls) {
 		return errNone;
 	}
@@ -1022,32 +1022,32 @@ void init_OSC_primitives();
 void init_OSC_primitives()
 {
 	int base, index;
-	
+
 	base = nextPrimitiveIndex();
 	index = 0;
 
-	definePrimitive(base, index++, "_NetAddr_Connect", prNetAddr_Connect, 1, 0);	
-	definePrimitive(base, index++, "_NetAddr_Disconnect", prNetAddr_Disconnect, 1, 0);	
-	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);	
-	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);	
-	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);	
+	definePrimitive(base, index++, "_NetAddr_Connect", prNetAddr_Connect, 1, 0);
+	definePrimitive(base, index++, "_NetAddr_Disconnect", prNetAddr_Disconnect, 1, 0);
+	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);
+	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);
+	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);
 	definePrimitive(base, index++, "_NetAddr_GetBroadcastFlag", prNetAddr_GetBroadcastFlag, 1, 0);
 	definePrimitive(base, index++, "_NetAddr_SetBroadcastFlag", prNetAddr_SetBroadcastFlag, 2, 0);
-	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);	
-	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);	
+	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);
+	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);
 
-	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);	
-	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);	
-	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);	
-	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);	
-	definePrimitive(base, index++, "_Exit", prExit, 1, 0);	
+	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);
+	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
+	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
+	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
+	definePrimitive(base, index++, "_Exit", prExit, 1, 0);
 #ifndef NO_INTERNAL_SERVER
-	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);	
+	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
 #endif
 	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
-	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);	
-	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);	
-	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);	
+	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
+	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
+	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");

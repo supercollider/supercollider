@@ -47,7 +47,7 @@ struct ReplyAddress
 	struct sockaddr_in mSockAddr;
 	int mSockAddrLen;
 	int mSocket;
-	ReplyFunc mReplyFunc;	
+	ReplyFunc mReplyFunc;
 };
 
 inline void SendReply(ReplyAddress *inReplyAddr, char* inBuf, int inSize)
@@ -63,7 +63,7 @@ struct OSC_Packet
 	char *mData;
 	int32 mSize;
 	bool mIsBundle;
-	
+
 	ReplyAddress mReplyAddr;
 };
 

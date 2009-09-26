@@ -12,7 +12,7 @@
 			});
 		^[pos+1, origpos-pos-1]
 	}
-	
+
 	*allowAutoComp { ^true }		// maybe you want to turn off the IDE features
 
 	*autoCompAll {
@@ -22,7 +22,7 @@
 	*autoComplete {
 		^Document.new.autoComplete;
 	}
-	
+
 	autoComplete {	// enable ide for this document
 		Document.allowAutoComp.if({
 			keyDownAction = Document.autoCompleteKeyAction;
@@ -49,14 +49,14 @@
 			});
 		};
 	}
-	
+
 	*openFileAutoComplete {	arg path;		// open a file by path
 							// can use wildcards
 		path.pathMatch.do({ |p|
 			Document.open(p).autoComplete;
 		});
 	}
-	
+
 	*openAutoComplete {	// open a file by opendialog
 		File.openDialog("Choose the codefile to open", { |path|
 			this.openFileAutoComplete(path);

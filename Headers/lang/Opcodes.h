@@ -38,33 +38,33 @@ enum {
 	opSendSpecialMsg,
 	opSendSpecialUnaryArithMsg,
 	opSendSpecialBinaryArithMsg,
-	opSpecialOpcode,		// 15			
-	
-	
+	opSpecialOpcode,		// 15
+
+
 	opNumOpcodes
 };
 
 /* special opcodes */
 enum {
-	opcDrop,		// 0	
+	opcDrop,		// 0
 	opcDup,
 	opcFunctionReturn,
 	opcReturn,
 	opcReturnSelf,
-	opcReturnTrue,	//  5	
-	opcReturnFalse,	
+	opcReturnTrue,	//  5
+	opcReturnFalse,
 	opcReturnNil,
 	opcJumpIfFalse,				// IF 3 args
 	opcJumpIfFalsePushNil,		// IF 2 args
 	opcJumpIfFalsePushFalse,	// AND:		(10)
-	opcJumpIfTruePushTrue,		// OR: 		
-	opcJumpFwd,			
-	opcJumpBak,			
-	opcSpecialBinaryOpWithAdverb,				
+	opcJumpIfTruePushTrue,		// OR:
+	opcJumpFwd,
+	opcJumpBak,
+	opcSpecialBinaryOpWithAdverb,
 	opcSuperSpecial,		// 15
-	
+
 	opcNewList,
-	
+
 	opcNumSpecialOpcodes
 /*
 	opcSlotAt,
@@ -93,16 +93,16 @@ enum {
 	opSign,
 	opSquared,
 	opCubed,		//10
-	opSqrt,		
+	opSqrt,
 	opExp,
 	opRecip,
 	opMIDICPS,
 	opCPSMIDI,		//15
-	
+
 	opMIDIRatio,
 	opRatioMIDI,
 	opDbAmp,
-	opAmpDb,	
+	opAmpDb,
 	opOctCPS,		//20
 	opCPSOct,
 	opLog,
@@ -132,7 +132,7 @@ enum {
 	opDistort,
 	opSoftClip,
 	opCoin,
-	
+
 	opDigitValue,
 	opSilence,
 	opThru,
@@ -140,10 +140,10 @@ enum {
 	opHanWindow,
 	opWelchWindow,
 	opTriWindow,
-	
+
 	opRamp,
 	opSCurve,
-	
+
 	opNumUnarySelectors
 };
 
@@ -152,32 +152,32 @@ enum {
 
 /* special binary math operators */
 enum {
-	opAdd,		
-	opSub, 
-	opMul, 
-	opIDiv, 
-	opFDiv, 
+	opAdd,
+	opSub,
+	opMul,
+	opIDiv,
+	opFDiv,
 	opMod,
-	opEQ,		
-	opNE, 
-	opLT, 
-	opGT, 
+	opEQ,
+	opNE,
+	opLT,
+	opGT,
 	opLE,
 	opGE,
 	//opIdentical,
-	//opNotIdentical,	
-	
-	opMin, 
+	//opNotIdentical,
+
+	opMin,
 	opMax,
 	opBitAnd,
 	opBitOr,
-	opBitXor,	
+	opBitXor,
 	opLCM,
 	opGCD,
 	opRound,
 	opRoundUp,
 	opTrunc,
-	opAtan2,	
+	opAtan2,
 	opHypot,
 	opHypotx,
 	opPow,
@@ -204,7 +204,7 @@ enum {
 	opFirstArg,
 	opRandRange,
 	opExpRandRange,
-	
+
 	opNumBinarySelectors
 };
 
@@ -221,7 +221,7 @@ enum {
 	opPoly3,
 	/* 5 operands */
 	opMapRange
-};	
+};
 
 enum {
 	opmNew,
@@ -234,19 +234,19 @@ enum {
 	opmCopyToEnd,		// used by multi assign
 	opmAdd,					// used by dynamic list
 	//opmIsNil,
-	//opmNotNil,		
-	opmSize,		
+	//opmNotNil,
+	opmSize,
 	opmClass,
 	opmIf,
-	opmWhile,		
-	opmFor,			
-	opmAnd,			
+	opmWhile,
+	opmFor,
+	opmAnd,
 	opmOr,
 	opmCase,
 	opmSwitch,
 	opmIdentical,
 	opmNotIdentical,
-	opmPrint,		
+	opmPrint,
 	opmRemove,
 	opmIndexOf,
 	opmWrapAt,
@@ -257,7 +257,7 @@ enum {
 	opmFoldPut,
 	opmDo,
 	opmCollect,
-	opmSelect, 
+	opmSelect,
 	opmReject,
 	opmAny,
 	opmEvery,
@@ -283,48 +283,48 @@ enum {
 	opmAR,
 	opmKR,
 	opmIR,
-	
+
 	opmCopy,
 	opmPerformList,
 	opmIsKindOf,
 	opmPostln,
 	opmAsString,
-	
+
 	opmEnvirGet,
 	opmEnvirPut,
-	
+
 	opmHalt,
 	opmForBy,
 	opmForSeries,
 	opmReverseDo,
 	opmLoop,
-	
+
 	opmNonBooleanError,
-	
+
 	opmPlusPlus,
 	opmLTLT,
 	opmQuestionMark,
 	opmDoubleQuestionMark,
 	opmExclamationQuestionMark,
-	
+
 	opmYield,
 	opmName,
 	opmMulAdd,
-	
+
 	opmSeries,
-	
+
 	opmNumSpecialSelectors
 };
-	
+
 enum {
 	opsvSelf,		// 0
-	opsvMinusOne,		
+	opsvMinusOne,
 	opsvNegOne,
 	opsvZero,
 	opsvOne,
 	opsvTwo,		// 5
-	opsvFHalf,			
-	opsvFNegOne,	
+	opsvFHalf,
+	opsvFNegOne,
 	opsvFZero,
 	opsvFOne,
 	opsvFTwo,		// 10
@@ -333,7 +333,7 @@ enum {
 	opsvFalse,
 	opsvNil,
 	opsvInf,		// 15
-	
+
 	opsvNumSpecialValues
 };
 
@@ -346,18 +346,18 @@ enum {
 	//opgSampleRate,
 	//opgAudioClock,
 	//opgLogicalClock,
-	
+
 	opgNumPseudoVars
 };
 
 /* selector types */
-enum { 
-	selNormal, 
-	selSpecial, 
-	selUnary, 
-	selBinary, 
-	selIf, 
-	selWhile, 
+enum {
+	selNormal,
+	selSpecial,
+	selUnary,
+	selBinary,
+	selIf,
+	selWhile,
 	selAnd,
 	selOr,
 	selCase,
@@ -425,11 +425,11 @@ enum {
 		op_class_event,
 		op_class_wavetable,
 		op_class_env,
-		
+
 		op_class_routine,
 		op_class_color,
 		op_class_rect,
-	
+
 	op_NumSpecialClasses
 };
 

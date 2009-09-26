@@ -18,7 +18,7 @@
 
 SCVim {
 
-classvar <scvim_dir, <scvim_cache_dir, 
+classvar <scvim_dir, <scvim_cache_dir,
 	// autoFirstRun is whether we should attempt to create the caches if they're not found
 	<>autoFirstRun=true;
 
@@ -37,7 +37,7 @@ classvar <scvim_dir, <scvim_cache_dir,
 			Task{
 				"SCVim: generating help docs, it will take a few moments. (This only happens the first time you launch scvim. See SCVim help file for more info.)".inform;
 				this.updateCaches;
-				this.updateHelpCache;	
+				this.updateHelpCache;
 				"SCVim: finished generating help docs".inform;
 			}.play;
 		};
@@ -75,7 +75,7 @@ classvar <scvim_dir, <scvim_cache_dir,
 		object_dict.add(Object.asString -> Object);
 		//sort the Objects (add to a sorted list)
 		Object.allSubclasses.do(
-			{|i| 
+			{|i|
 				object_list = object_list.add(i.asString);
 				object_dict.add(i.asString -> i);
 			});
@@ -85,10 +85,10 @@ classvar <scvim_dir, <scvim_cache_dir,
 				/* disregard any Meta_ Classes */
 				if(ob_string.find("Meta_",false,0).isNil,
 					{ob_comp_file.write(ob_string ++ "\n")});
-				tags_file.write("SCdef:" ++ 
-						ob_string ++ 
-						"\t" ++ object_dict.at(ob_string).filenameSymbol ++ 
-						"\tgo " ++ 
+				tags_file.write("SCdef:" ++
+						ob_string ++
+						"\t" ++ object_dict.at(ob_string).filenameSymbol ++
+						"\tgo " ++
 						(object_dict.at(ob_string).charPos + 1) ++ "\n");
 			};
 		//add some extra new lines

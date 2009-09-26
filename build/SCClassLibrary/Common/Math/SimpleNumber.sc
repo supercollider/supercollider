@@ -4,10 +4,10 @@ SimpleNumber : Number {
 
 	isValidUGenInput { ^this.isNaN.not }
 	numChannels { ^1 }
-	
+
 	magnitude { ^this.abs }
 	angle { if (this >= 0, {^0.0}, {^pi} ) }
-	
+
 
 	neg { _Neg; ^this.primitiveFailed }
 	bitNot { _BitNot; ^this.primitiveFailed }
@@ -26,7 +26,7 @@ SimpleNumber : Number {
 	midiratio { _MIDIRatio; ^this.primitiveFailed }
 	ratiomidi { _RatioMIDI; ^this.primitiveFailed }
 	ampdb { _AmpDb; ^this.primitiveFailed }
-	dbamp { _DbAmp; ^this.primitiveFailed }	
+	dbamp { _DbAmp; ^this.primitiveFailed }
 	octcps { _OctCPS; ^this.primitiveFailed }
 	cpsoct { _CPSOct; ^this.primitiveFailed }
 	log { _Log; ^this.primitiveFailed }
@@ -64,7 +64,7 @@ SimpleNumber : Number {
 
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
-	
+
 	+ { arg aNumber, adverb; _Add; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
 	- { arg aNumber, adverb; _Sub; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
 	* { arg aNumber, adverb; _Mul; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
@@ -72,11 +72,11 @@ SimpleNumber : Number {
 	mod { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
 	div { arg aNumber, adverb; _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
 	pow { arg aNumber, adverb; _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
-	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) } 
+	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) }
 	max { arg aNumber=0.0, adverb; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
 	bitAnd { arg aNumber, adverb; _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this, adverb) }
 	bitOr { arg aNumber, adverb; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
-	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }	
+	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }
 	bitHammingDistance { arg aNumber, adverb; _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
 	bitTest { arg bit; ^( (this & 1.leftShift(bit)) != 0) }
 	lcm { arg aNumber, adverb; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
@@ -84,7 +84,7 @@ SimpleNumber : Number {
 	round { arg aNumber=1.0, adverb; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
 	roundUp { arg aNumber=1.0, adverb; _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
 	trunc { arg aNumber=1.0, adverb; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
-	atan2 { arg aNumber, adverb; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }	
+	atan2 { arg aNumber, adverb; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
 	hypot { arg aNumber, adverb; _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
 	hypotApx { arg aNumber, adverb; _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this, adverb) }
 	leftShift { arg aNumber=1, adverb; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
@@ -117,29 +117,29 @@ SimpleNumber : Number {
 	> { arg aNumber, adverb; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this, adverb) }
 	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
 	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
-	
+
 	equalWithPrecision { arg that, precision=0.0001;
 		^absdif(this, that) < precision
 	}
 
 	hash { _ObjectHash; ^this.primitiveFailed }
-		
+
 	asInteger { _AsInt; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
 
 	fontID { ^this }
-	
+
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
-	
+
 	nextPowerOfTwo { ^this.nextPowerOf(2) }
 	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
 	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
-	
+
 	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
 		var round = round(this, quantum);
 		var diff = round - this;
@@ -149,11 +149,11 @@ SimpleNumber : Number {
 			^this
 		}
 	}
-		
+
 
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to linear mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -170,7 +170,7 @@ SimpleNumber : Number {
 
 	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to exponential mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -187,7 +187,7 @@ SimpleNumber : Number {
 
 	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// exponential to linear mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -204,7 +204,7 @@ SimpleNumber : Number {
 
 	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// exponential to exponential mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -221,7 +221,7 @@ SimpleNumber : Number {
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		// triangular linear mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -239,10 +239,10 @@ SimpleNumber : Number {
 			this.linlin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
-	
+
 	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		// triangular exponential mapping
-		switch(clip, 
+		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
 				if (this >= inMax, { ^outMax });
@@ -295,11 +295,11 @@ SimpleNumber : Number {
 	storeOn { arg stream;
 		stream.putAll(this.asString);
 	}
-	
+
 
 	rate { ^'scalar' } // scalarRate constant
 	asAudioRateInput { ^if(this == 0) { Silent.ar } { DC.ar(this) } }
-	
+
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);
@@ -309,7 +309,7 @@ SimpleNumber : Number {
 		file.putInt16(-1);
 		file.putInt16(constIndex);
 	}
-	
+
 	series { arg second, last;
 		_SimpleNumberSeries
 		^this.primitiveFailed
@@ -321,8 +321,8 @@ SimpleNumber : Number {
 	}
 	seriesIter { arg second, last;
 		var step, size;
-		if (second.isNil) { 
-			last = last ? inf; 
+		if (second.isNil) {
+			last = last ? inf;
 			step = if (this < last, 1, -1);
 		}{
 			last ?? { last = if (second < this, -inf, inf) };
@@ -350,20 +350,20 @@ SimpleNumber : Number {
 			}
 		}
 	}
-	
-	
+
+
 	degreeToKey { arg scale, stepsPerOctave = 12;
 		var scaleDegree = this.round.asInteger;
 		var accidental = (this - scaleDegree) * 10.0;
 		^scale.performDegreeToKey(scaleDegree, stepsPerOctave, accidental)
 	}
-			
+
 	keyToDegree { arg scale, stepsPerOctave=12;
 		var n = this div: stepsPerOctave * scale.size;
 		var key = this % stepsPerOctave;
 		^scale.indexInBetween(key) + n
 	}
-	
+
 	nearestInList { arg list;  // collection is sorted
 		^list.performNearestInList(this);
 	}
@@ -371,17 +371,17 @@ SimpleNumber : Number {
 	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
 		^scale.performNearestInScale(this, stepsPerOctave);
 	}
-	
+
 	partition { arg parts=2, min=1;
 		// randomly partition a number into parts of at least min size :
 		var n = this - (min - 1 * parts);
 		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
 	}
-	
+
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(this, 0);
 	}
-	
+
 	playAndDelta {}
 
 	asQuant { ^Quant(this) }
@@ -390,7 +390,7 @@ SimpleNumber : Number {
 	asTimeString { arg precision=0.1;
 		var hours,mins,secs;
 		mins = this.div(60);
-		if(mins >= 60,{ hours = mins.div(60).asString ++ ":"; 
+		if(mins >= 60,{ hours = mins.div(60).asString ++ ":";
 			mins = mins%60;
 			if(mins < 10 ,{ mins = "0"++ mins.asString; },{ mins = mins.asString; });
 		},{
@@ -402,7 +402,7 @@ SimpleNumber : Number {
 		^(hours ++ mins ++ ":" ++ secs);
 	}
 
-	asFraction {|denominator=100, fasterBetter=true| 
+	asFraction {|denominator=100, fasterBetter=true|
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given
 		// denominator.

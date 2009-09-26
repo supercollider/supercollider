@@ -16,7 +16,7 @@ Panner : MultiOutUGen {
 
 
 Pan2 : Panner {
-	
+
 	*ar { arg in, pos = 0.0, level = 1.0;
 		^this.multiNew('audio', in, pos, level )
 	}
@@ -24,10 +24,10 @@ Pan2 : Panner {
 		^this.multiNew('control', in, pos, level )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ 
-			OutputProxy(rate, this, 0), 
-			OutputProxy(rate, this, 1) 
+		inputs = theInputs;
+		channels = [
+			OutputProxy(rate, this, 0),
+			OutputProxy(rate, this, 1)
 		];
 		^channels
 	}
@@ -36,7 +36,7 @@ Pan2 : Panner {
 LinPan2 : Pan2 {}
 
 Pan4 : Panner {
-	
+
 	*ar { arg in, xpos = 0.0, ypos = 0.0, level = 1.0;
 		^this.multiNew('audio', in, xpos, ypos, level )
 	}
@@ -44,7 +44,7 @@ Pan4 : Panner {
 		^this.multiNew('control', in, xpos, ypos, level )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = [ OutputProxy(rate,this, 0), OutputProxy(rate,this, 1),
 					OutputProxy(rate,this, 2), OutputProxy(rate,this, 3) ];
 		^channels
@@ -52,7 +52,7 @@ Pan4 : Panner {
 }
 
 Balance2 : Panner {
-	
+
 	*ar { arg left, right, pos = 0.0, level = 1.0;
 		^this.multiNew('audio', left, right, pos, level )
 	}
@@ -60,17 +60,17 @@ Balance2 : Panner {
 		^this.multiNew('control', left, right, pos, level )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ 
-			OutputProxy(rate, this, 0), 
-			OutputProxy(rate, this, 1) 
+		inputs = theInputs;
+		channels = [
+			OutputProxy(rate, this, 0),
+			OutputProxy(rate, this, 1)
 		];
 		^channels
 	}
 }
 
 Rotate2 : Panner {
-	
+
 	*ar { arg x, y, pos = 0.0;
 		^this.multiNew('audio', x, y, pos )
 	}
@@ -78,10 +78,10 @@ Rotate2 : Panner {
 		^this.multiNew('control', x, y, pos )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ 
-			OutputProxy(rate, this, 0), 
-			OutputProxy(rate, this, 1) 
+		inputs = theInputs;
+		channels = [
+			OutputProxy(rate, this, 0),
+			OutputProxy(rate, this, 1)
 		];
 		^channels
 	}
@@ -90,7 +90,7 @@ Rotate2 : Panner {
 
 
 PanB : Panner {
-	
+
 	*ar { arg in, azimuth=0, elevation=0, gain=1;
 		^this.multiNew('audio', in, azimuth, elevation, gain )
 	}
@@ -98,7 +98,7 @@ PanB : Panner {
 		^this.multiNew('control', in, azimuth, elevation, gain )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
 					OutputProxy(rate,this,2), OutputProxy(rate,this,3) ];
 		^channels
@@ -106,7 +106,7 @@ PanB : Panner {
 }
 
 PanB2 : Panner {
-	
+
 	*ar { arg in, azimuth=0, gain=1;
 		^this.multiNew('audio', in, azimuth, gain )
 	}
@@ -114,7 +114,7 @@ PanB2 : Panner {
 		^this.multiNew('control', in, azimuth, gain )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
 					OutputProxy(rate,this,2) ];
 		^channels
@@ -122,7 +122,7 @@ PanB2 : Panner {
 }
 
 BiPanB2 : Panner {
-	
+
 	*ar { arg inA, inB, azimuth, gain=1;
 		^this.multiNew('audio', inA, inB, azimuth, gain )
 	}
@@ -130,7 +130,7 @@ BiPanB2 : Panner {
 		^this.multiNew('control', inA, inB, azimuth, gain )
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = [ OutputProxy(rate,this,0), OutputProxy(rate,this,1),
 					OutputProxy(rate,this,2) ];
 		^channels
@@ -139,7 +139,7 @@ BiPanB2 : Panner {
 }
 
 DecodeB2 : Panner {
-	
+
 	*ar { arg numChans, w, x, y, orientation = 0.5;
 		^this.multiNew('audio', numChans, w, x, y, orientation = 0.5 )
 	}
@@ -147,7 +147,7 @@ DecodeB2 : Panner {
 		^this.multiNew('control', numChans, w, x, y, orientation = 0.5 )
 	}
 	init { arg numChans ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = Array.fill(numChans, { arg i; OutputProxy(rate,this, i) });
 		^channels
 	}
@@ -155,7 +155,7 @@ DecodeB2 : Panner {
 }
 
 PanAz : Panner {
-	
+
 	*ar { arg numChans, in, pos = 0.0, level = 1.0, width = 2.0, orientation = 0.5;
 		^this.multiNew('audio', numChans, in, pos, level, width, orientation )
 	}
@@ -163,7 +163,7 @@ PanAz : Panner {
 		^this.multiNew('control', numChans, in, pos, level, width, orientation )
 	}
 	init { arg numChans ... theInputs;
-		inputs = theInputs;		
+		inputs = theInputs;
 		channels = Array.fill(numChans, { arg i; OutputProxy(rate,this, i) });
 		^channels
 	}

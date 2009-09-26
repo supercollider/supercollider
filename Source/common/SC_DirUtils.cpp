@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2005 Tim Walters. All rights reserved.
- *  Created by Tim Walters on 10/19/05. 
+ *  Created by Tim Walters on 10/19/05.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
@@ -78,7 +78,7 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 	if ((pathLen >= 2) && (path[0] == '~') && ((path[1] == '/') || (path[1] == '\\'))) {
       char home[PATH_MAX];
       sc_GetUserHomeDirectory(home, PATH_MAX);
- 
+
 	    if (home != 0) {
 			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
 				return 0;
@@ -98,7 +98,7 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 		}
 		strcpy(newpath1, path);
 	}
-  
+
 	bool isAlias = false;
 	sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX);
 
@@ -108,7 +108,7 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 
 // Returns TRUE iff dirname is an existing directory.
 
-bool sc_DirectoryExists(const char *dirname) 
+bool sc_DirectoryExists(const char *dirname)
 {
 #if defined(SC_WIN32)
 	DWORD attr = GetFileAttributes(dirname);
@@ -136,7 +136,7 @@ bool sc_IsSymlink(const char* path)
 bool sc_IsNonHostPlatformDir(const char *name)
 {
 #if defined(SC_IPHONE)
-	const char a[] = "linux", b[] = "windows", c[]="osx";	
+	const char a[] = "linux", b[] = "windows", c[]="osx";
 #elif defined(SC_DARWIN)
 	const char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(SC_LINUX)
@@ -173,7 +173,7 @@ bool sc_SkipDirectory(const char *name)
 }
 
 
-void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length) 
+void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
 #ifdef SC_DARWIN
@@ -264,7 +264,7 @@ void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 void sc_GetUserHomeDirectory(char *str, int size)
 {
 #ifndef SC_WIN32
-	char *home = getenv("HOME");	
+	char *home = getenv("HOME");
 	if(home!=NULL){
 		strncpy(str, home, size);
 	}else{
@@ -303,7 +303,7 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 {
 	char home[PATH_MAX];
 	sc_GetUserHomeDirectory(home, PATH_MAX);
-	
+
 	snprintf(str,
 			 size,
 #ifdef SC_DARWIN
@@ -372,7 +372,7 @@ SC_DirHandle* sc_OpenDir(const char* dirname)
 
 	dir->mAtEnd = false;
 #else
-	dir->mHandle = opendir(dirname);	
+	dir->mHandle = opendir(dirname);
 	if (!dir->mHandle) {
 		delete dir;
 		return 0;

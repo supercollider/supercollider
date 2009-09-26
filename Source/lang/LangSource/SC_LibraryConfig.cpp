@@ -53,7 +53,7 @@ SC_LibraryConfig::SC_LibraryConfig(void) :
 {
 	m_includedDirectories = (char **)malloc(sizeof(char *) * 1);
 	m_excludedDirectories = (char **)malloc(sizeof(char *) * 1);
-  
+
 	m_includedDirectories[0] = 0;
 	m_excludedDirectories[0] = 0;
 }
@@ -88,7 +88,7 @@ bool SC_LibraryConfig::pathIsExcluded(const char *path)
 	if (m_nExcludedDirectories != 0)
 		for (i = 0; i < m_nExcludedDirectories; ++i)
 			if (strcmp(path, m_excludedDirectories[i]) == 0) return true;
-  
+
 	return false;
 }
 
@@ -128,7 +128,7 @@ bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char*
 {
 	freeLibraryConfig();
 	gLibraryConfig = new SC_LibraryConfig();
-	return file.read(fileName, gLibraryConfig);	
+	return file.read(fileName, gLibraryConfig);
 }
 
 void SC_LibraryConfig::freeLibraryConfig()
@@ -314,7 +314,7 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 		file.close();
 		return success;
 	}
-	
+
 	char* str = strdup(realPath);
 	if (str == 0) {
 		(*mErrorFunc)("%s,%d: memory allocation failure\n", fileName, lineNumber);
@@ -333,7 +333,7 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 void SC_LibraryConfigFile::defaultErrorFunc(const char* fmt, ...)
 {
     va_list ap;
-    va_start(ap, fmt); 
+    va_start(ap, fmt);
     vprintf(fmt, ap);
 }
 

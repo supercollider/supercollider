@@ -227,7 +227,7 @@ def pkg_doc_dir(prefix, *args):
         if is_home_directory(prefix):
             base = os.path.join(prefix, base)
     else:
-        base = os.path.join(prefix, 'share', 'doc')   
+        base = os.path.join(prefix, 'share', 'doc')
     return os.path.join(base, PACKAGE, *args)
 def pkg_include_dir(prefix, *args):
     return os.path.join(prefix, 'include', PACKAGE, *args)
@@ -266,7 +266,7 @@ def make_static_object(env, source, postfix="_a"):
 
 def make_static_objects(env, sources, postfix="_a"):
     return map(lambda x: make_static_object(env, x, postfix), sources)
-    
+
 # ======================================================================
 # command line options
 # ======================================================================
@@ -339,7 +339,7 @@ if PLATFORM == 'darwin':
 #                  'Architectures to build for',
 #                  'all', ['ppc', 'i386'])
         )
-    
+
 # ======================================================================
 # basic environment
 # ======================================================================
@@ -358,12 +358,12 @@ if os.path.exists('/usr/lib/distcc/bin'):
     os.environ['PATH']         = '/usr/lib/distcc/bin:' + os.environ['PATH']
     #env['ENV']['DISTCC_HOSTS'] = os.environ['DISTCC_HOSTS']
     env['ENV']['DISTCC_HOSTS'] = os.environ.get('DISTCC_HOSTS')
-    
+
 if os.path.exists('/usr/lib/ccache/bin'):
     os.environ['PATH']         = '/usr/lib/ccache/bin:' + os.environ['PATH']
     #env['ENV']['CCACHE_DIR']   = os.environ['CCACHE_DIR']
     env['ENV']['CCACHE_DIR']   = os.environ.get('CCACHE_DIR')
-    
+
 env['ENV']['PATH'] = os.environ['PATH']
 if PLATFORM == 'windows':
 	env['ENV']['HOME'] = os.environ['HOMEPATH']
@@ -413,7 +413,7 @@ if isDefaultBuild():
     if not conf.CheckPKGConfig('0'):
         print 'pkg-config not found.'
         Exit(1)
-    
+
     # sndfile
     if env['NO_LIBSNDFILE']:
         libraries['sndfile'] = Environment(CPPDEFINES = ['NO_LIBSNDFILE'])
@@ -897,9 +897,9 @@ plugins.append(
     make_plugin_target('FFT_UGens'),
         ['Source/plugins/FFTInterfaceTable.cpp',
          'Source/plugins/FFT_UGens.cpp',
-         'Source/plugins/PV_UGens.cpp', 
+         'Source/plugins/PV_UGens.cpp',
 	 'Source/plugins/PartitionedConvolution.cpp'] + fftSources))
-    
+
 plugins.append(
     fftEnv.SharedLibrary(
     make_plugin_target('PV_ThirdParty'),
@@ -1263,7 +1263,7 @@ if env['DEVELOPMENT']:
     pkgconfig_dir = os.path.join(lib_dir(INSTALL_PREFIX), 'pkgconfig')
     env.Alias('install-dev', env.Install(pkgconfig_dir, pkgconfig_files))
     installEnv.Append(ALL = 'install-dev')
-    
+
 # documentation
 if is_installing():
     # TODO: build html documentation?

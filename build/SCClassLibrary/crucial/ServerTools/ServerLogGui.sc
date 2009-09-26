@@ -8,9 +8,9 @@ ServerLogGui : ObjectGui {
 		var w,events,tail=500;
 		w = layout.bounds.width;
 		nodeColors = Dictionary.new;
-		
+
 		events = args.first;
-		
+
 		events.do({ |ev|
 			var eventTime,timeSent,delta,dir,bg,row;
 			eventTime = ev.eventTime;
@@ -224,11 +224,11 @@ ServerLogGui : ObjectGui {
 		this.guiArgs(msg.copyToEnd(2),r); // args
 	}
 	cmd_statusreply { |msg,r|
-		var cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+		var cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate;
-		 #cmd, one, numUGens, numSynths, numGroups, numSynthDefs, 
+		 #cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-					
+
 			("status.reply % ugens % synths % groups % synthDefs".format(numUGens,numSynths,numGroups,numSynthDefs)).gui(r);
 	}
 

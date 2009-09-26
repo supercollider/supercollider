@@ -3,7 +3,7 @@ AbstractBusDriver : SynthlessPlayer {
 
 	var <>lag=0.0,<>latency=0.1;
 	var sched,bus,msg,bnd,resched,routine;
-	
+
 	rate { ^\control }
 	instrArgFromControl { arg control;
 		^if(lag == 0.0,{
@@ -24,11 +24,11 @@ AbstractBusDriver : SynthlessPlayer {
 BusDriver : AbstractBusDriver {
 
 	var <value,<>spec;
-	
+
 	*new { |value=0.0,spec=\unipolar|
 		^super.new.spec_(spec.asSpec).value_(value)
 	}
-	
+
 	poll { ^value }
 	value_ { |v|
 		value = spec.constrain(v);
@@ -60,14 +60,14 @@ BusDriver : AbstractBusDriver {
 
 /*
 StreamKr : Kr { // trigger is a kr rate trigger
-	
+
 	var <>trigger;
-	
+
 	*new { arg subject=0.0,trigger=0.0,lag=0.0;
 		^super.new(subject,lag).trigger_(trigger)
 	}
-	
-	kr { 
+
+	kr {
 		var k;
 		k=Sequencer.kr(subject.asStream,trigger.value);
 		^if(lag != 0.0,{
@@ -76,13 +76,13 @@ StreamKr : Kr { // trigger is a kr rate trigger
 			k
 		})
 	}
-	
+
 	storeParamsOn { arg stream;
 		stream.storeArgs([this.enpath(subject),trigger,lag]);
 	}
 	children { ^[subject,trigger,lag] }
 	*guiClass { ^StreamKrGui }
-	
+
 }
 */
 
@@ -105,7 +105,7 @@ StreamKrDur : AbstractBusDriver {
 	}
 	skdinit {
 		// if values is of spec EventStreamSpec, throw an error (Pbind)
-		
+
 		sched = TempoClock.default;
 		routine = Routine({
 			var val,server,beatsTillNext,beatLatency;
@@ -118,7 +118,7 @@ StreamKrDur : AbstractBusDriver {
 			beat = beat + delta;
 			// what beat am I really supposed to play at ?
 			// this is accurate enough for now.  its just minor scheduler drift
-			
+
 			beatsTillNext = delta - beatLatency;
 			// this goes negative if delta is less than server latency
 			while({ beatsTillNext < beatLatency},{
@@ -177,7 +177,7 @@ StreamKrDur : AbstractBusDriver {
 		// immediately
 		sched.schedAbs(sched.elapsedBeats, routine);
 		//because sched.play(routine); <- this uses nexttime on grid
-		
+
 		super.didSpawn;
 	}
 	poll { ^lastValue }
@@ -186,7 +186,7 @@ StreamKrDur : AbstractBusDriver {
 		// values might have a stream spec, who has an item spec that is the result
 		valuesSpec = values.tryPerform(\spec);
 		if(valuesSpec.notNil,{
-			if(valuesSpec.isKindOf(StreamSpec),{ 
+			if(valuesSpec.isKindOf(StreamSpec),{
 				valuesSpec = valuesSpec.itemSpec;
 				if(valuesSpec.isKindOf(ControlSpec),{
 					makeSpec = ControlSpec(valuesSpec.minval,valuesSpec.maxval,valuesSpec.warp,
@@ -199,9 +199,9 @@ StreamKrDur : AbstractBusDriver {
 			^ControlSpec(values,values,default: values)
 		});
 		// else I couldn't tell you so we continue to guess "control"
-		^super.spec	
+		^super.spec
 	}
-		
+
 	children { ^[values,durations] }
 	storeArgs { ^[values,durations,lag] }
 	guiClass { ^StreamKrDurGui }
@@ -211,8 +211,8 @@ StreamKrDur : AbstractBusDriver {
 Stream2Trig : StreamKrDur { // outputs just a single pulse trig with the amplitude of the value stream
 
 	// *new(amplitudes, deltas)
-	
-	// doesn't use lag	
+
+	// doesn't use lag
 	instrArgFromControl { arg control;
 		^InTrig.kr( control,1)
 	}

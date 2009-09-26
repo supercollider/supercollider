@@ -20,7 +20,7 @@
 /*
 
 PyrSlot is a value holder for SC variables.
-A PyrSlot is an 8-byte value which is either a double precision float or a 
+A PyrSlot is an 8-byte value which is either a double precision float or a
 32-bit tag plus a 32-bit value.
 
 */
@@ -31,7 +31,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "SC_Endian.h"
 #include "PyrSymbol.h"
 
-/* 
+/*
 	Pyrite slots are the size of an 8 byte double. If the upper bits
 	indicate that the double is a 'Not-A-Number' then the upper 32
 	bits are used as a tag to indicate one of a number of other types
@@ -55,9 +55,9 @@ enum {
 	tagPtr     = 0x7FF90008,
 	/* anything else is a double */
 	tagUnused  = 0x7FF9000D
-	
-	
-#if !DOUBLESLOTS	
+
+
+#if !DOUBLESLOTS
 	,tagFloat = 0x7FF9000F /* used only to initialized 4 byte float tags, never compared with */
 #endif
 };
@@ -97,7 +97,7 @@ typedef union pyrslot {
 	} s;
 } PyrSlot;
 
-/* 
+/*
 	these are some defines to make accessing the structure less verbose.
 	obviously it polutes the namespace of identifiers beginning with 'u'.
 */
@@ -137,7 +137,7 @@ typedef union pyrslot {
 
 #define ucopy f
 
-/* 
+/*
 	Note that on the PowerPC, the fastest way to copy a slot is to
 	copy the double field, not the struct.
 */
@@ -148,17 +148,17 @@ inline void SetObject(PyrSlot* slot, void* val) {  (slot)->utag = tagObj;   (slo
 inline void SetSymbol(PyrSlot* slot, PyrSymbol *val) {  (slot)->utag = tagSym;   (slot)->us = (val); }
 inline void SetChar(PyrSlot* slot, char val)   {  (slot)->utag = tagChar;  (slot)->uc = (val); }
 inline void SetPtr(PyrSlot* slot, void* val)    {  (slot)->utag = tagPtr;  (slot)->uptr = (void*)(val); }
-inline void SetObjectOrNil(PyrSlot* slot, PyrObject* val)  
-{ 
-	if (val) { 
-		(slot)->utag = tagObj; 
-		(slot)->uo = (val); 
+inline void SetObjectOrNil(PyrSlot* slot, PyrObject* val)
+{
+	if (val) {
+		(slot)->utag = tagObj;
+		(slot)->uo = (val);
 	} else {
-		(slot)->utag = tagNil;  
-		(slot)->ui = 0; 
+		(slot)->utag = tagNil;
+		(slot)->ui = 0;
 	}
 }
-									
+
 inline void SetTrue(PyrSlot* slot)   { (slot)->utag = tagTrue; (slot)->ui = 0; }
 inline void SetFalse(PyrSlot* slot)   { (slot)->utag = tagFalse; (slot)->ui = 0; }
 inline void SetBool(PyrSlot* slot, bool test)	{ (slot)->utag = ((test) ? tagTrue : tagFalse); (slot)->ui = 0;  }
@@ -237,7 +237,7 @@ inline int slotIntVal(PyrSlot *slot, int *value)
 	} else if (IsFloat(slot)) {
 		*value = (int)slot->uf;
 		return errNone;
-	}  
+	}
 	return errWrongType;
 }
 
@@ -264,7 +264,7 @@ inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 {
 	double *dstp = (double*)dst - 1;
 	double *srcp = (double*)src - 1;
-	for (int i=0;i<num;++i) { *++dstp = *++srcp; } 
+	for (int i=0;i<num;++i) { *++dstp = *++srcp; }
 }
 
 

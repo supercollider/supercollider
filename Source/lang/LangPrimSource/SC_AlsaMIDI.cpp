@@ -155,13 +155,13 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 	pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
-		PyrInt8Array* sysexArray; 
+		PyrInt8Array* sysexArray;
 
 		SC_AlsaMidiPacket pkt;
 
-		g->canCallOS = false; // cannot call the OS		
+		g->canCallOS = false; // cannot call the OS
 
-		// class MIDIIn	
+		// class MIDIIn
 		++g->sp; SetObject(g->sp, s_midiin->u.classobj);
 		// source
 		++g->sp; SetInt(g->sp, SC_AlsaMakeUID(evt->source.client, evt->source.port));
@@ -174,7 +174,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
 				runInterpreter(g, s_midiNoteOffAction, 5);
 				break;
-			case SND_SEQ_EVENT_NOTEON:			// noteOn 
+			case SND_SEQ_EVENT_NOTEON:			// noteOn
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
@@ -202,7 +202,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, evt->data.control.value);
 				runInterpreter(g, s_midiTouchAction, 4);
 				break;
-			case SND_SEQ_EVENT_PITCHBEND:		// bend	
+			case SND_SEQ_EVENT_PITCHBEND:		// bend
 				++g->sp; SetInt(g->sp, evt->data.control.channel);
 				++g->sp; SetInt(g->sp, evt->data.control.value + 8192);
 				runInterpreter(g, s_midiBendAction, 4);
@@ -212,7 +212,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 			{
 				int index = evt->data.control.value >> 4;
 				int data = evt->data.control.value & 0xf;
-				
+
 #if 0
 				post(
 					"mtc qframe: byte 0x%x index 0x%x data 0x%x\n",
@@ -350,7 +350,7 @@ int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_s
 
 	//post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", inputIndex, uid, dst.client, dst.port, src.client, src.port);
 
-	snd_seq_port_subscribe_alloca(&subs);	
+	snd_seq_port_subscribe_alloca(&subs);
 	snd_seq_port_subscribe_set_sender(subs, &src);
 	snd_seq_port_subscribe_set_dest(subs, &dst);
 
@@ -386,7 +386,7 @@ int SC_AlsaMidiClient::connectOutput(int outputIndex, int uid, int (*action)(snd
 
 // 	post("MIDI (ALSA): connect ndx %d uid %u dst %d:%d src %d:%d\n", outputIndex, uid, dst.client, dst.port, src.client, src.port);
 
-	snd_seq_port_subscribe_alloca(&subs);	
+	snd_seq_port_subscribe_alloca(&subs);
 	snd_seq_port_subscribe_set_sender(subs, &src);
 	snd_seq_port_subscribe_set_dest(subs, &dst);
 
@@ -401,7 +401,7 @@ int SC_AlsaMidiClient::connectOutput(int outputIndex, int uid, int (*action)(snd
 int SC_AlsaMidiClient::sendEvent(int outputIndex, int uid, snd_seq_event_t* evt, float late)
 {
 	snd_seq_real_time time;
-	
+
 	if ((outputIndex < 0) || (outputIndex >= mNumOutPorts)) return errIndexOutOfRange;
 
 	snd_seq_ev_set_source(evt, mOutPorts[outputIndex]);
@@ -459,7 +459,7 @@ int initMIDI(int numIn, int numOut)
 	}
 
 	snd_seq_set_client_name(client->mHandle, "SuperCollider");
-    
+
 	// allocate i/o ports
     for (i=0; i < numIn; i++) {
         char str[32];
@@ -481,7 +481,7 @@ int initMIDI(int numIn, int numOut)
     }
 
     client->mNumInPorts = i;
-    
+
     for (i=0; i < numOut; i++) {
         char str[32];
 		int port;
@@ -713,7 +713,7 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 	g->gc->GCWrite(idarray, namearrayDe);
 
     PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-	SetObject(idarray->slots+idarray->size++, devarrayDe);       
+	SetObject(idarray->slots+idarray->size++, devarrayDe);
 	g->gc->GCWrite(idarray, devarrayDe);
 
 
@@ -733,7 +733,7 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
         SetInt(idarraySo->slots+i, srcPorts[i].uid);
         idarraySo->size++;
     }
-    
+
     for (int i=0; i<numDst; ++i) {
 		char* name = dstPorts[i].name;
 
@@ -790,7 +790,7 @@ int sendMIDI(int port, int uid, int length, int hiStatus, int loStatus, int aval
 	pkt.data[0] = (hiStatus & 0xF0) | (loStatus & 0x0F);
 	pkt.data[1] = (uint8)aval;
 	pkt.data[2] = (uint8)bval;
-		
+
 	snd_midi_event_reset_encode(gMIDIClient.mMidiToEvent);
 
 	if (snd_midi_event_encode(gMIDIClient.mMidiToEvent, pkt.data, length, &evt) < 0) {
@@ -887,14 +887,14 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-        
+
 	int err, numIn, numOut;
 	err = slotIntVal(b, &numIn);
 	if (err) return errWrongType;
-	
+
 	err = slotIntVal(c, &numOut);
 	if (err) return errWrongType;
-	
+
 	return initMIDI(numIn, numOut);
 }
 
@@ -928,11 +928,11 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-        
+
 	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
-	
+
 	err = slotIntVal(c, &uid);
 	if (err) return err;
 
@@ -944,7 +944,7 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-        
+
 	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
@@ -961,11 +961,11 @@ int prConnectMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-        
+
 	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
-	
+
 	err = slotIntVal(c, &uid);
 	if (err) return err;
 
@@ -977,7 +977,7 @@ int prDisconnectMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-        
+
 	int err, inputIndex, uid;
 	err = slotIntVal(b, &inputIndex);
 	if (err) return err;
@@ -994,13 +994,13 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	//port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;
-        
+
 	PyrSlot *u = g->sp - 6;
 	PyrSlot *l = g->sp - 5;
-        
+
 	PyrSlot *his = g->sp - 4;
 	PyrSlot *los = g->sp - 3;
-        
+
     PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
     PyrSlot *plat = g->sp;
@@ -1009,25 +1009,25 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
     float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
-	
+
 	err = slotIntVal(u, &uid);
 	if (err) return err;
 
 	err = slotIntVal(l, &length);
 	if (err) return err;
-	
+
 	err = slotIntVal(his, &hiStatus);
 	if (err) return err;
-    
+
     err = slotIntVal(los, &loStatus);
 	if (err) return err;
-    
+
     err = slotIntVal(a, &aval);
 	if (err) return err;
-	
+
 	err = slotIntVal(b, &bval);
 	if (err) return err;
-    
+
     err = slotFloatVal(plat, &late);
 	if (err) return err;
 
@@ -1036,7 +1036,7 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 
 int prSendSysex(VMGlobals *g, int numArgsPushed);
 int prSendSysex(VMGlobals *g, int numArgsPushed)
-{	
+{
     int err, uid, outputIndex;
 	PyrInt8Array* packet;
 
@@ -1060,7 +1060,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 void initMIDIPrimitives()
 {
 	int base, index;
-        
+
 	base = nextPrimitiveIndex();
 	index = 0;
 
@@ -1080,12 +1080,12 @@ void initMIDIPrimitives()
 
 	g_ivx_MIDIOut_port = instVarOffset("MIDIOut", "port");
 
-	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);	
-	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);	
-	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);        
+	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
+	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);
+	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
 	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
 
-	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_ConnectMIDIOut", prConnectMIDIOut, 3, 0);

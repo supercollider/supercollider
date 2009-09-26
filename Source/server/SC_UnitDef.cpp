@@ -36,14 +36,14 @@ bool UnitDef_Create(const char *inName, size_t inAllocSize, UnitCtorFunc inCtor,
 
 	str4cpy(unitDef->mUnitDefName, inName);
 	unitDef->mHash = Hash(unitDef->mUnitDefName);
-		
+
 	unitDef->mAllocSize = inAllocSize;
 	unitDef->mUnitCtorFunc = inCtor;
 	unitDef->mUnitDtorFunc = inDtor;
-	
+
 	unitDef->mCmds = 0;
 	unitDef->mFlags = inFlags;
-	
+
 	if (!AddUnitDef(unitDef)) {
 		free(unitDef);
 		return false;
@@ -60,16 +60,16 @@ bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFun
 	int32 unitDefName[kSCNameLen];
 	memset(unitDefName, 0, kSCNameByteLen);
 	strcpy((char*)unitDefName, inUnitDefName);
-	
+
 	if (strlen(inCmdName) >= kSCNameByteLen) return false;
-	
+
 	UnitDef* unitDef = GetUnitDef(unitDefName);
 	if (!unitDef) return false;
-	
+
 	if (!unitDef->mCmds) {
 		unitDef->mCmds = new HashTable<UnitCmd, Malloc>(&gMalloc, 4, true);
 	}
-	
+
 	UnitCmd *cmd = new UnitCmd();
 	memset(cmd->mCmdName, 0, kSCNameByteLen);
 	strcpy((char*)cmd->mCmdName, inCmdName);
@@ -77,15 +77,15 @@ bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFun
 	cmd->mFunc = inFunc;
 	cmd->mHash = Hash(cmd->mCmdName);
 	unitDef->mCmds->Add(cmd);
-		
+
 	return true;
 }
 
 bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData)
 {
-	
+
 	if (strlen(inCmdName) >= kSCNameByteLen) return false;
-	
+
 	PlugInCmd *cmd = new PlugInCmd();
 	memset(cmd->mCmdName, 0, kSCNameByteLen);
 	strcpy((char*)cmd->mCmdName, inCmdName);
@@ -94,7 +94,7 @@ bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserD
 	cmd->mHash = Hash(cmd->mCmdName);
 	cmd->mUserData = inUserData;
 	AddPlugInCmd(cmd);
-		
+
 	return true;
 }
 
@@ -107,38 +107,38 @@ int Unit_DoCmd(World *inWorld, int inSize, char *inData)
 	int nodeID = msg.geti();
 	Graph* graph = World_GetGraph(inWorld, nodeID);
 	if (!graph) return kSCErr_NodeNotFound;
-	
+
 	uint32 unitID = msg.geti();
 	if (unitID >= graph->mNumUnits) return kSCErr_IndexOutOfRange;
-	
+
 	Unit *unit = graph->mUnits[unitID];
-	
+
 	UnitDef* unitDef = unit->mUnitDef;
-	
+
 	int32 *cmdName = msg.gets4();
 	if (!cmdName) return kSCErr_Failed;
-	
+
 	if (!unitDef->mCmds) return kSCErr_Failed;
 	UnitCmd *cmd = unitDef->mCmds->Get(cmdName);
 	if (!cmd) return kSCErr_Failed;
-	
+
 	(cmd->mFunc)(unit, &msg);
-	
+
 	return kSCErr_None;
 }
 
 int PlugIn_DoCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{	
+{
 	sc_msg_iter msg(inSize, inData);
 
 	int32 *cmdName = msg.gets4();
 	if (!cmdName) return kSCErr_Failed;
-	
+
 	PlugInCmd *cmd = GetPlugInCmd(cmdName);
 	if (!cmd) return kSCErr_Failed;
-	
+
 	(cmd->mFunc)(inWorld, cmd->mUserData, &msg, (void*)inReply);
-	
+
 	return kSCErr_None;
 }
 

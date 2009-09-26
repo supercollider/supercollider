@@ -45,13 +45,13 @@ typedef unsigned char uint8;
 typedef float float32;
 typedef double float64;
 
-typedef union { 
+typedef union {
 	uint32 u;
 	int32 i;
 	float32 f;
 } elem32;
 
-typedef union { 
+typedef union {
 	uint64 u;
 	int64 i;
 	float64 f;

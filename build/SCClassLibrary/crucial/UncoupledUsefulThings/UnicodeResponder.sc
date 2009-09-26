@@ -3,7 +3,7 @@ UnicodeResponder {
 
 	classvar global;
 	var <>dict;
-	
+
 	*new { ^super.new.clear }
 
 	// use this as your view's keyDownAction in place of a function
@@ -13,22 +13,22 @@ UnicodeResponder {
 	}
 
 	// ur.normal( unicode -> { } [, unicode -> { } ... ]  )
-	normal { arg ... assns; 
+	normal { arg ... assns;
 		assns.do({ arg as;
 			this.register(as.key,false,false,false,false,as.value)
 		})
 	}
-	shift { arg ... assns; 
+	shift { arg ... assns;
 		assns.do({ arg as;
 			this.register(as.key,true,false,false,false,as.value)
 		})
 	}
-	control { arg ... assns; 
+	control { arg ... assns;
 		assns.do({ arg as;
 			this.register(as.key,false,false,true,false,as.value)
 		})
 	}
-	option { arg ... assns; 
+	option { arg ... assns;
 		assns.do({ arg as;
 			this.register(as.key,false,false,false,true,as.value)
 		})
@@ -67,10 +67,10 @@ UnicodeResponder {
 			})
 		});
 		deny = deny.add(KeyCodeResponder.commandModifier);
-	
+
 		this.pushForUnicode(unicode.asUnicode,require,deny,function,description);
 	}
-	
+
 	// you can concatenate responders
 	++ { arg that;
 		var new,keys;
@@ -84,11 +84,11 @@ UnicodeResponder {
 		});
 		^new
 	}
-	
-	
-	/** GLOBAL 
+
+
+	/** GLOBAL
 	  * installs itself in SCView.globalKeyDownAction
-	  */	
+	  */
 	*register { arg unicode,shift,caps,opt,cntl,function;
 		this.global.register(unicode.asUnicode,shift,caps,opt,cntl,function);
 	}
@@ -132,7 +132,7 @@ UnicodeResponder {
 
 	clear { dict = IdentityDictionary.new }
 	remove { this.clear }
-	
+
 	*tester {
 		this.clear;
 		Sheet({ arg l;
@@ -148,17 +148,17 @@ UnicodeResponder {
 							words = words + modass.key;
 							boos = boos + "true,";
 						},{
-							boos = boos + "false,";	
+							boos = boos + "false,";
 						});
 					});
-					
+
 					words.post; " ".post;
 					if(c.isPrint,{
 						c.postln;
 					},{
 						u.postln;
 					});
-					
+
 					("k.register(  " + u + " , " + boos + "{").postln;
 					"".postln;
 					"});".postln;
@@ -190,12 +190,12 @@ UnicodeResponder {
 	*value { arg view,char,modifiers,unicode,keycode;
 		^this.at(unicode).value(view, char,modifiers,unicode,keycode)
 	}
-	*global { 
+	*global {
 		^global ?? {
 			global = this.new;
 			SCView.globalKeyDownAction = global;
 			global
-		} 
+		}
 	}
 	guiClass { ^KeyCodeResponderGui }
 	report {

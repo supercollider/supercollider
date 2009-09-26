@@ -42,7 +42,7 @@ enum { // primitive errors
 	errException,
 
 	errPropertyNotFound = 6000,
-    
+
     errLastError
 };
 

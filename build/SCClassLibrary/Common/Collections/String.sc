@@ -1,10 +1,10 @@
 String[char] : RawArray {
 	classvar <>unixCmdActions;
-	
+
 	*initClass {
 		unixCmdActions = IdentityDictionary.new;
 	}
-	
+
 	*doUnixCmdAction {
 		arg res, pid;
 		unixCmdActions[pid].value(res, pid);
@@ -16,7 +16,7 @@ String[char] : RawArray {
 		_String_POpen
 		^this.primitiveFailed
 	}
-	
+
 	// runs a unix command and sends stdout to the post window
 	unixCmd {
 		arg action, postOutput = true;
@@ -31,47 +31,47 @@ String[char] : RawArray {
 	// Like unixCmd but gets the result into a string
 	unixCmdGetStdOut {
 		var pipe, lines, line;
-	
+
 		pipe = Pipe.new(this, "r");
 		lines = "";
 		line = pipe.getLine;
 		while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
 		pipe.close;
-		
+
 		^lines;
 	}
-	
-	asSymbol { 
-		_StringAsSymbol 
+
+	asSymbol {
+		_StringAsSymbol
 		^this.primitiveFailed
 	}
-	asInteger { 
+	asInteger {
 		_String_AsInteger
 		^this.primitiveFailed
 	}
-	asFloat { 
+	asFloat {
 		_String_AsFloat
 		^this.primitiveFailed
 	}
 	ascii {
 		^Array.fill(this.size, { |i| this[i].ascii })
 	}
-	
-	stripRTF { 
+
+	stripRTF {
 		_StripRtf
 		^this.primitiveFailed
 	}
-	
-	stripHTML { 
+
+	stripHTML {
 		_StripHtml
 		^this.primitiveFailed
 	}
-	
+
 	getSCDir {
 		_String_GetResourceDirPath
 		^this.primitiveFailed
 	}
-	
+
 	*scDir {
 		^"".getSCDir
 	}
@@ -84,12 +84,12 @@ String[char] : RawArray {
 	== { arg aString; ^this.compare(aString, true) == 0 }
 	!= { arg aString; ^this.compare(aString, true) != 0 }
 	hash { _StringHash }
-	
+
 	// no sense doing collect as per superclass collection
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; 
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber;
 		^aNumber.asString.perform(aSelector, this);
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex; 
+	performBinaryOpOnComplex { arg aSelector, aComplex;
 		^aComplex.asString.perform(aSelector, this);
 	}
 
@@ -97,12 +97,12 @@ String[char] : RawArray {
 	asString { ^this }
 	asCompileString { _String_AsCompileString; }
 	species { ^String }
-	
+
 	postln { _PostLine }
 	post { _PostString }
 	postcln { "// ".post; this.postln; }
 	postc { "// ".post; this.post; }
-	
+
 	postf { arg ... items;  ^this.prFormat( items.collect(_.asString) ).post }
 	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
@@ -111,20 +111,20 @@ String[char] : RawArray {
 	fformat { arg ... args;
 		var str, resArgs, val, func;
 		var suffixes, sig = false;
-		
+
 		this.do { |char|
 			if(sig) {
 				val = args.removeAt(0);
 				func = Post.formats[char];
-				if(func.isNil) { 
+				if(func.isNil) {
 					resArgs = resArgs.add(val);
-					str = str ++ char 
-				} { 
-					resArgs = resArgs.add(func.value(val)) 
+					str = str ++ char
+				} {
+					resArgs = resArgs.add(func.value(val))
 				};
 				sig = false;
-			} { 
-				str = str ++ char 
+			} {
+				str = str ++ char
 			};
 			if(char == $%) { sig = true };
 		};
@@ -136,7 +136,7 @@ String[char] : RawArray {
 			("\n\nFATAL ERROR: ").postln;
 			culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
 		});
-		Error(this).throw; 
+		Error(this).throw;
 	}
 	error { "ERROR:\n".post; this.postln; }
 	warn { "WARNING:\n".post; this.postln }
@@ -146,7 +146,7 @@ String[char] : RawArray {
 	catArgs { arg ... items; ^this.catList(items) }
 	scatArgs { arg ... items; ^this.scatList(items) }
 	ccatArgs { arg ... items; ^this.ccatList(items) }
-	catList { arg list; 
+	catList { arg list;
 		// concatenate this with a list as a string
 		var string = this.copy;
 		list.do({ arg item, i;
@@ -154,14 +154,14 @@ String[char] : RawArray {
 		});
 		^string
 	}
-	scatList { arg list; 
+	scatList { arg list;
 		var string = this.copy;
 		list.do({ arg item, i;
 			string = string prCat: " " ++ item;
 		});
 		^string
 	}
-	ccatList { arg list; 
+	ccatList { arg list;
 		var string = this.copy;
 		list.do({ arg item, i;
 			string = string prCat: ", " ++ item;
@@ -172,7 +172,7 @@ String[char] : RawArray {
 		var word="";
 		var array=[];
 		separator=separator.ascii;
-		
+
 		this.do({arg let,i;
 			if(let.ascii != separator ,{
 				word=word++let;
@@ -183,7 +183,7 @@ String[char] : RawArray {
 		});
 		^array.add(word);
 	}
-	
+
 	containsStringAt { arg index, string;
 		^compare( this[index..index + string.size-1], string, false) == 0
 	}
@@ -191,7 +191,7 @@ String[char] : RawArray {
 	icontainsStringAt { arg index, string;
 		^compare( this[index..index + string.size-1], string, true) == 0
 	}
-		
+
 
 	contains { arg string, offset = 0;
 		^this.find(string, false, offset).notNil
@@ -199,16 +199,16 @@ String[char] : RawArray {
 	containsi { arg string, offset = 0;
 		^this.find(string, true, offset).notNil
 	}
-	
+
 	findRegexp { arg regexp, offset = 0;
        _String_FindRegexp
        ^this.primitiveFailed
 	}
-	
+
 	findAllRegexp { arg string, offset = 0;
 		var indices = [], i=[];
-		while { 
-			i = this.findRegexp(string, offset); 
+		while {
+			i = this.findRegexp(string, offset);
 			i.notNil and: {i.size != 0}
 		}{
 			indices = indices.add(i);
@@ -216,7 +216,7 @@ String[char] : RawArray {
 		}
 		^indices
 	}
-		
+
 	find { arg string, ignoreCase = false, offset = 0;
 		_String_Find
 		^this.primitiveFailed
@@ -233,8 +233,8 @@ String[char] : RawArray {
 	}
 	findAll { arg string, ignoreCase = false, offset=0;
 		var indices, i=0;
-		while { 
-			i = this.find(string, ignoreCase, offset); 
+		while {
+			i = this.find(string, ignoreCase, offset);
 			i.notNil
 		}{
 			indices = indices.add(i);
@@ -242,64 +242,64 @@ String[char] : RawArray {
 		}
 		^indices
 	}
-	replace { arg find, replace; 
-		^super.replace(find, replace).join 
+	replace { arg find, replace;
+		^super.replace(find, replace).join
 	}
-	
+
 
 	escapeChar { arg charToEscape; // $"
 		^this.class.streamContents({ arg st;
 			this.do({ arg char;
-				if(char == charToEscape,{ 
-					st << $\\ 
+				if(char == charToEscape,{
+					st << $\\
 				});
 				st << char;
 			})
 		})
 	}
 	quote {
-		^"\"" ++ this ++ "\"" 
+		^"\"" ++ this ++ "\""
 	}
 	tr { arg from,to;
 		^this.collect({ arg char;
 			if(char == from,{to},{char})
 		})
 	}
-	
+
 	insert { arg index, string;
 		^this.keep(index) ++ string ++ this.drop(index)
 	}
-	
-	zeroPad { 
+
+	zeroPad {
 		^" " ++ this ++ " "
 	}
 
 	scramble {
 		^this.as(Array).scramble.as(String)
 	}
-	
+
 	rotate { |n|
 		^this.as(Array).rotate(n).as(String)
 	}
-	
+
 	compile { ^thisProcess.interpreter.compile(this); }
-	interpret { ^thisProcess.interpreter.interpret(this); } 
+	interpret { ^thisProcess.interpreter.interpret(this); }
 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
-	
+
 	*readNew { arg file;
 		^file.readAllString;
 	}
 	prCat { arg aString; _ArrayCat }
-	
+
 	printOn { arg stream;
 		stream.putAll(this);
 	}
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
-	
+
 	inspectorClass { ^StringInspector }
-	
+
 	/// unix
 
 	standardizePath {
@@ -322,7 +322,7 @@ String[char] : RawArray {
 			^this
 		})
 	}
-			
+
 	absolutePath {
 		var first, sep;
 		sep = thisProcess.platform.pathSeparator;
@@ -358,14 +358,14 @@ String[char] : RawArray {
 	include {
 		if(Quarks.isInstalled(this).not) {
 			Quarks.install(this);
-			"... the class library may have to be recompiled.".postln; 
+			"... the class library may have to be recompiled.".postln;
 			// maybe check later whether there are .sc files included.
 		}
 	}
 	exclude {
 		if(Quarks.isInstalled(this)) {
 			Quarks.uninstall(this);
-			"... the class library may have to be recompiled.".postln; 
+			"... the class library may have to be recompiled.".postln;
 		}
 	}
 	basename {
@@ -388,18 +388,18 @@ String[char] : RawArray {
 	// path concatenate
 	+/+ { arg path;
 		var pathSeparator = thisProcess.platform.pathSeparator;
-		
+
 		if (path.respondsTo(\fullPath)) {
 			^PathName(this +/+ path.fullPath)
 		};
-		
+
 		if (this.last == pathSeparator or: { path.first == pathSeparator }) {
 			^this ++ path
 		};
-		
+
 		^this ++ pathSeparator ++ path
 	}
-	
+
 	asRelativePath { |relativeTo|
 		^PathName(this).asRelativePath(relativeTo)
 	}
@@ -408,10 +408,10 @@ String[char] : RawArray {
 			// when String already knows how to make an absolute path
 		^this.absolutePath;  // was ^PathName(this).asAbsolutePath
 	}
-	
+
 	// runs a unix command and returns the result code.
 	systemCmd { _String_System ^this.primitiveFailed }
-	
+
 	gethostbyname { _GetHostByName ^this.primitiveFailed }
 
 	// gets value of environment variable
@@ -430,23 +430,23 @@ String[char] : RawArray {
 	}
 
 	/// code gen
-	codegen_UGenCtorArg { arg stream; 
-		stream << this.asCompileString; 
+	codegen_UGenCtorArg { arg stream;
+		stream << this.asCompileString;
 	}
 	ugenCodeString { arg ugenIndex, isDecl, inputNames=#[], inputStrings=#[];
 		_UGenCodeString
 		^this.primitiveFailed
 	}
-	
-	asSecs { |maxDays = 365| // assume a timeString of ddd:hh:mm:ss.sss. see asTimeString.
-		var time = 0, sign = 1, str = this; 
 
-		if (this.first == $-, { 
-			str = this.drop(1); 
-			sign = -1 
+	asSecs { |maxDays = 365| // assume a timeString of ddd:hh:mm:ss.sss. see asTimeString.
+		var time = 0, sign = 1, str = this;
+
+		if (this.first == $-, {
+			str = this.drop(1);
+			sign = -1
 		});
-		
-		str.split($:).reverseDo { |num, i| 
+
+		str.split($:).reverseDo { |num, i|
 			num = num.interpret;
 			if (num > [60, 60, 24, maxDays][i]) { ("number greater than allowed:" + this).warn; ^this };
 			if (num < 0) { ("negative numbers within slots not supported:" + this).warn; ^this };

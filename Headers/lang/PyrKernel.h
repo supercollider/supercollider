@@ -33,14 +33,14 @@ This file contains the definitions of the core objects that implement the class 
 
 enum { classIsIntrinsic = 1, classHasIndexableInstances = 2 };
 
-struct PyrClass : public PyrObjectHdr 
+struct PyrClass : public PyrObjectHdr
 {
 	PyrSlot name;
 	PyrSlot nextclass;
 	PyrSlot superclass;
 	PyrSlot subclasses;
 	PyrSlot methods;
-	
+
 	PyrSlot instVarNames;
 	PyrSlot classVarNames;
 	PyrSlot iprototype;		// instance prototype
@@ -48,10 +48,10 @@ struct PyrClass : public PyrObjectHdr
 
 	PyrSlot constNames;
 	PyrSlot constValues;	// const values
-	
+
 	PyrSlot instanceFormat;
 	PyrSlot instanceFlags;
-	PyrSlot classIndex;		
+	PyrSlot classIndex;
 	PyrSlot classFlags;
 	PyrSlot maxSubclassIndex; // used by isKindOf
 	PyrSlot filenameSym;
@@ -63,7 +63,7 @@ struct PyrClass : public PyrObjectHdr
 
 inline bool isKindOf(PyrObjectHdr *obj, struct PyrClass *testclass)
 {
-	int objClassIndex = obj->classptr->classIndex.ui;	
+	int objClassIndex = obj->classptr->classIndex.ui;
 	return objClassIndex >= testclass->classIndex.ui && objClassIndex <= testclass->maxSubclassIndex.ui;
 }
 
@@ -72,14 +72,14 @@ inline bool isKindOfSlot(PyrSlot *slot, struct PyrClass *testclass)
 	return IsObj(slot) && isKindOf(slot->uo, testclass);
 }
 
-/* 
+/*
 	operations on class:
 	numInstVars()
 	numClassVars()
-	
+
 */
 
-struct PyrFrame : public PyrObjectHdr 
+struct PyrFrame : public PyrObjectHdr
 {
 	PyrSlot method;
 	PyrSlot caller;
@@ -91,9 +91,9 @@ struct PyrFrame : public PyrObjectHdr
 
 #define FRAMESIZE 5
 
-struct PyrProcess : public PyrObjectHdr 
+struct PyrProcess : public PyrObjectHdr
 {
-		
+
 	PyrSlot classVars;
 	PyrSlot interpreter;
 	PyrSlot curThread, mainThread;
@@ -103,9 +103,9 @@ struct PyrProcess : public PyrObjectHdr
 
 enum { tInit, tStart, tReady, tRunning, tSleeping, tSuspended, tDone };
 
-struct PyrThread : public PyrObjectHdr 
+struct PyrThread : public PyrObjectHdr
 {
-		
+
 	PyrSlot state, func, stack, method, block, frame, ip, sp;
 	PyrSlot numpop, receiver, numArgsPushed;
 	PyrSlot parent, terminalValue;
@@ -127,7 +127,7 @@ struct PyrMethodRaw {
 	unsigned short specialIndex;
 	unsigned short methType;
 	unsigned short frameSize;
-	
+
 	unsigned char unused2;
 	unsigned char numargs;
 	unsigned char varargs;
@@ -136,17 +136,17 @@ struct PyrMethodRaw {
 	unsigned char needsHeapContext;
 	unsigned char popSize;
 	unsigned char posargs;
-	
+
 };
 
 
 #define METHRAW(obj) ((PyrMethodRaw*)&(((PyrBlock*)obj)->rawData1))
 
-struct PyrBlock : public PyrObjectHdr 
+struct PyrBlock : public PyrObjectHdr
 {
-		
-	PyrSlot rawData1;			
-	PyrSlot rawData2;			
+
+	PyrSlot rawData1;
+	PyrSlot rawData2;
 	PyrSlot code;				// byte codes, nil if inlined
 	PyrSlot selectors;			// method selectors, class names, closures table
 	PyrSlot constants;			// floating point constants table (to alleviate the literal table problem)
@@ -157,7 +157,7 @@ struct PyrBlock : public PyrObjectHdr
 	PyrSlot sourceCode;			// source code if it is a closed function.
 };
 
-struct PyrMethod : public PyrBlock 
+struct PyrMethod : public PyrBlock
 {
 	PyrSlot ownerclass;
 	PyrSlot name;
@@ -168,7 +168,7 @@ struct PyrMethod : public PyrBlock
 	//PyrSlot callMeter;
 };
 
-enum {	
+enum {
 	methNormal = 0,
 	methReturnSelf,
 	methReturnLiteral,
@@ -185,18 +185,18 @@ enum {
 	methBlock
 };
 
-struct PyrClosure : public PyrObjectHdr 
+struct PyrClosure : public PyrObjectHdr
 {
-	
+
 	PyrSlot block;
 	PyrSlot context;
 };
 
-struct PyrInterpreter : public PyrObjectHdr 
+struct PyrInterpreter : public PyrObjectHdr
 {
-		
+
 	PyrSlot cmdLine, context;
-	PyrSlot a, b, c, d, e, f, g, h, i, j; 
+	PyrSlot a, b, c, d, e, f, g, h, i, j;
 	PyrSlot k, l, m, n, o, p, q, r, s, t;
 	PyrSlot u, v, w, x, y, z;
 	PyrSlot codeDump, preProcessor;
@@ -217,7 +217,7 @@ enum {
 	svFOne,
 	svFTwo,
 	svInf,
-	
+
 	svNumSpecialValues
 };
 
@@ -225,9 +225,9 @@ extern double gSpecialValues[svNumSpecialValues];
 
 extern PyrMethod *gNullMethod; // used to fill row table
 
-PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size, 
+PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	bool fill, bool collect);
-	
+
 PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
 PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect);
 PyrString* newPyrStringN(class PyrGC *gc, int size, int flags, bool collect);

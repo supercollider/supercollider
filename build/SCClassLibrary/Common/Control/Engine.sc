@@ -3,7 +3,7 @@ NodeIDAllocator
 {
 	var <user, initTemp, temp, perm, mask, permFreed;
 	// support 32 users
-	
+
 	*new { arg user=0, initTemp = 1000;
 		if (user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
 		^super.newCopyArgs(user, initTemp).reset
@@ -39,7 +39,7 @@ NodeIDAllocator
 }
 
 
-PowerOfTwoBlock 
+PowerOfTwoBlock
 {
 	var <address, <size, <>next;
 	*new { arg address, size;
@@ -51,7 +51,7 @@ PowerOfTwoAllocator
 {
 	// THIS IS THE RECOMMENDED ALLOCATOR FOR BUSES AND BUFFERS
 	var size, array, freeLists, pos=0;
-	
+
 	*new { arg size, pos=0;
 		^super.newCopyArgs(size, Array.newClear(size), Array.newClear(32), pos)
 	}
@@ -59,9 +59,9 @@ PowerOfTwoAllocator
 		var sizeClass, node, address;
 		n = n.nextPowerOfTwo;
 		sizeClass = n.log2Ceil;
-		
+
 		node = freeLists.at(sizeClass);
-		if (node.notNil, { 
+		if (node.notNil, {
 			freeLists.put(sizeClass, node.next);
 			^node.address
 		});
@@ -77,7 +77,7 @@ PowerOfTwoAllocator
 		var node, sizeClass,next;
 
 		if((node = array.at(address)).notNil,{
-		
+
 			sizeClass = node.size.log2Ceil;
 			node.next = freeLists.at(sizeClass);
 			freeLists.put(sizeClass, node);
@@ -89,14 +89,14 @@ PowerOfTwoAllocator
 		^array.select({ arg b; b.notNil })
 	}
 }
-		
+
 LRUNumberAllocator
-{	
+{
 	// implements a least recently used ID allocator.
-	
+
 	var lo, hi;
 	var array, size, head=0, tail=0;
-	
+
 	*new { arg lo, hi;
 		^super.newCopyArgs(lo, hi).init
 	}
@@ -108,13 +108,13 @@ LRUNumberAllocator
 		tail=0;
 	}
 	free { arg id;
-		var nextIndex;		
+		var nextIndex;
 		nextIndex = (head+1) % size;
 		if ( nextIndex == tail, { ^nil }); // full
 		array.put(head, id);
 		head = nextIndex;
 	}
-	alloc { 
+	alloc {
 		var id;
 		if (head == tail, { ^nil }); // empty
 		id = array.at(tail);
@@ -126,7 +126,7 @@ LRUNumberAllocator
 StackNumberAllocator
 {
 	var lo, hi, freeList, next;
-	
+
 	*new { arg lo, hi;
 		^super.newCopyArgs(lo, hi).init
 	}
@@ -138,15 +138,15 @@ StackNumberAllocator
 		if (next < hi, { ^next = next + 1; });
 		^nil
 	}
-	free { arg inIndex; 
-		freeList = freeList.add(inIndex); 
+	free { arg inIndex;
+		freeList = freeList.add(inIndex);
 	}
 }
 
 RingNumberAllocator
 {
 	var lo, hi, next;
-	
+
 	*new { arg lo, hi;
 		^super.newCopyArgs(lo, hi).init
 	}
@@ -214,7 +214,7 @@ ContiguousBlockAllocator {
 			^this.prReserve(block.start, n, block).start
 		}, { ^nil });
 	}
-	
+
 	reserve { |address, size = 1, warn = true|
 		var	block, new;
 		((block = array[address] ?? { this.findNext(address) }).notNil and:
@@ -317,7 +317,7 @@ ContiguousBlockAllocator {
 		});
 		^nil
 	}
-	
+
 	prReserve { |address, size, availBlock, prevBlock|
 		var	new, leftover;
 		(availBlock.isNil and: { prevBlock.isNil }).if({
@@ -325,12 +325,12 @@ ContiguousBlockAllocator {
 		});
 		availBlock = availBlock ? prevBlock;
 		(availBlock.start < address).if({
-			#leftover, availBlock = this.prSplit(availBlock, 
+			#leftover, availBlock = this.prSplit(availBlock,
 				address - availBlock.start, false);
 		});
 		^this.prSplit(availBlock, size, true)[0];
 	}
-	
+
 	prSplit { |availBlock, n, used = true|
 		var	new, leftover;
 		#new, leftover = availBlock.split(n);

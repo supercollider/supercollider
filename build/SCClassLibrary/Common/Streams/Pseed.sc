@@ -8,7 +8,7 @@ Pseed : FilterPattern {
 		^super.new(pattern).randSeed_(randSeed)
 	}
 	storeArgs { ^[randSeed,pattern] }
-	
+
 	embedInStream { arg inval;
 		var seedStream;
 		var seed, thread;

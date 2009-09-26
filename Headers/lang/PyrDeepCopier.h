@@ -42,25 +42,25 @@ class PyrDeepCopier
 {
 public:
 	PyrDeepCopier(VMGlobals *inG)
-		: g(inG), objectArray(initialObjectArray), numObjects(0), 
+		: g(inG), objectArray(initialObjectArray), numObjects(0),
 			objectArrayCapacity( kDeepCopierObjectArrayInitialCapacity )
 		{
 		}
-	
+
 	~PyrDeepCopier()
 		{
 			if (objectArrayCapacity > kDeepCopierObjectArrayInitialCapacity) {
 				g->allocPool->Free(objectArray);
 			}
 		}
-			
+
 	long doDeepCopy(PyrSlot *objectSlot)
 		{
 			long err = errNone;
-				
+
 			try {
 				if (IsObj(objectSlot)) {
-					constructObjectArray(objectSlot->uo);				
+					constructObjectArray(objectSlot->uo);
 					for (int i=0; i<numObjects; ++i) {
 						fixSlots(objectArray[i]);
 					}
@@ -76,11 +76,11 @@ public:
 			}
 			return err;
 		}
-	
+
 private:
-			
+
 	void recurse(PyrObject *obj, int n)
-		{	
+		{
 			//post("->recurse %s %08X\n", obj->classptr->name.us->name, obj);
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
@@ -92,7 +92,7 @@ private:
 	void growObjectArray()
 		{
 			int32 newObjectArrayCapacity = objectArrayCapacity << 1;
-			
+
 			int32 newSize = newObjectArrayCapacity * sizeof(PyrObject*);
 			PyrObject** newArray = (PyrObject**)g->allocPool->Alloc(newSize);
 			memcpy(newArray, objectArray, numObjects * sizeof(PyrObject*));
@@ -102,15 +102,15 @@ private:
 			objectArrayCapacity = newObjectArrayCapacity;
 			objectArray = newArray;
 		}
-		
+
 	void putSelf(PyrObject *obj)
 		{
 			obj->SetMark();
 			obj->scratch1 = numObjects;
-			
+
 			// expand array if needed
 			if (numObjects >= objectArrayCapacity) growObjectArray();
-			
+
 			//post("putSelf %d %08X\n", numObjects, obj);
 			// add to array
 			objectArray[numObjects++] = obj;
@@ -120,16 +120,16 @@ private:
 		{
 			obj->SetMark();
 			obj->scratch1 = numObjects;
-			
+
 			// expand array if needed
 			if (numObjects+2 >= objectArrayCapacity) growObjectArray();
-			
+
 			// add a shallow copy to object array
 			PyrObject *copy = copyObject(g->gc, obj, false);
 			copy->ClearMark();
-			
+
 			//post("putCopy %d %08X\n", numObjects, copy);
-			
+
 			// add to array
 			objectArray[numObjects++] = copy;
 			objectArray[numObjects++] = obj;
@@ -164,12 +164,12 @@ private:
 			//post("<-constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
 		}
 
-	void fixObjSlot(PyrSlot* slot) 
+	void fixObjSlot(PyrSlot* slot)
 		{
 			//post("fixObjSlot %s %08X %d %08X\n", slot->uo->classptr->name.us->name, slot->uo, slot->uo->scratch1, objectArray[slot->uo->scratch1]);
 			slot->uo = objectArray[slot->uo->scratch1];
 		}
-	
+
 	void fixSlots(PyrObject *obj)
 		{
 			//post("fixSlots %s %08X %d\n", obj->classptr->name.us->name, obj, obj->IsMarked());
@@ -180,13 +180,13 @@ private:
 				}
 			}
 		}
-		
+
 	VMGlobals *g;
-		
+
 	PyrObject **objectArray;
 	int32 numObjects;
 	int32 objectArrayCapacity;
-	
+
 	PyrObject *initialObjectArray[kDeepCopierObjectArrayInitialCapacity];
 };
 

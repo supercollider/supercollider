@@ -1,7 +1,7 @@
 //third party FFT UGens
 
 //sick lincoln remembers complex analysis courses
-PV_ConformalMap : PV_ChainUGen 
+PV_ConformalMap : PV_ChainUGen
 {
 
 	*new { arg buffer, areal = 0.0, aimag = 0.0;
@@ -17,7 +17,7 @@ Convolution : UGen
 	}
 }
 
-//fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message 
+//fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message
 Convolution2 : UGen
 {
 	*ar { arg in, kernel, trigger = 0, framesize=2048,mul = 1.0, add = 0.0;
@@ -40,10 +40,10 @@ StereoConvolution2L : MultiOutUGen
 		^this.multiNew('audio', in, kernelL, kernelR, trigger, framesize, crossfade).madd(mul, add);
 	}
 	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ 
-			OutputProxy(rate, this, 0), 
-			OutputProxy(rate, this, 1) 
+		inputs = theInputs;
+		channels = [
+			OutputProxy(rate, this, 0),
+			OutputProxy(rate, this, 1)
 		];
 		^channels
 	}
@@ -83,11 +83,11 @@ RunningSum : UGen
 	*ar { arg in, numsamp=40;
 		^this.multiNew('audio', in, numsamp);
 	}
-	
+
 	*kr { arg in, numsamp=40;
 		^this.multiNew('control', in, numsamp);
 	}
-	
+
 	*rms { arg in, numsamp=40;
 		^(RunningSum.ar(in.squared,numsamp)*(numsamp.reciprocal)).sqrt;
 	}

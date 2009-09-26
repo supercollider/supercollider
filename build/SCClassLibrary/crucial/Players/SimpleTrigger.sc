@@ -10,6 +10,6 @@
 
 	synthArg { ^spec.minval }	rate { ^\control } 	addToSynthDef {  arg synthDef,name; 		synthDef.addTr(name,this.synthArg); 	} 	instrArgFromControl { arg control; ^control } 	makePatchOut { 		patchOut = UpdatingScalarPatchOut(this,enabled: false); 	} 	didStop {
 		super.didStop;
-		patchOut.free; 
+		patchOut.free;
 		patchOut = nil;
 	}		guiClass { ^SimpleTriggerGui }}

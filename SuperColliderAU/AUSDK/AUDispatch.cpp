@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -40,7 +40,7 @@
 */
 /*=============================================================================
 	AUDispatch.cpp
-	
+
 =============================================================================*/
 
 #include "AUBase.h"
@@ -80,7 +80,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 #if AU_DEBUG_DISPATCHER
 	INIT_DEBUG_DISPATCHER(This)
 #endif
-	
+
 	ComponentResult result = noErr;
 
 
@@ -109,12 +109,12 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			case kAudioUnitRenderSelect:
 				result = (This->AudioUnitAPIVersion() > 1);
 				break;
-				
+
 			default:
 				return ComponentBase::ComponentEntryDispatch(params, This);
 		}
 		break;
-		
+
 	case kAudioUnitInitializeSelect:
 	{
 		result = This->DoInitialize();
@@ -125,7 +125,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				#endif
 	}
 		break;
-		
+
 	case kAudioUnitUninitializeSelect:
 	{
 		This->DoCleanup();
@@ -151,7 +151,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			// always assume they're non-null
 			UInt32 dataSize;
 			Boolean writable;
-			
+
 			result = This->DispatchGetPropertyInfo(pinID, pinScope, pinElement, dataSize, writable);
 			if (poutDataSize != NULL)
 				*poutDataSize = dataSize;
@@ -160,11 +160,11 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 
 			#if AU_DEBUG_DISPATCHER
 				if (This->mDebugDispatcher)
-					This->mDebugDispatcher->GetPropertyInfo (nowTime, result, pinID, pinScope, pinElement, 
+					This->mDebugDispatcher->GetPropertyInfo (nowTime, result, pinID, pinScope, pinElement,
 																poutDataSize, poutWritable);
 			#endif
-		
-			
+
+
 		}
 		break;
 
@@ -180,7 +180,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			Boolean writable;
 			char *tempBuffer;
 			void *destBuffer;
-			
+
 			if (pioDataSize == NULL) {
 				debug_string("AudioUnitGetProperty: null size pointer");
 				result = paramErr;
@@ -189,12 +189,12 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			if (poutData == NULL) {
 				UInt32 dataSize;
 				Boolean writable;
-				
+
 				result = This->DispatchGetPropertyInfo(pinID, pinScope, pinElement, dataSize, writable);
 				*pioDataSize = dataSize;
 				goto finishGetProperty;
 			}
-			
+
 			clientBufferSize = *pioDataSize;
 			if (clientBufferSize == 0)
 			{
@@ -203,13 +203,13 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				result = paramErr;
 				goto finishGetProperty;
 			}
-			
-			result = This->DispatchGetPropertyInfo(pinID, pinScope, pinElement, 
+
+			result = This->DispatchGetPropertyInfo(pinID, pinScope, pinElement,
 													actualPropertySize, writable);
-			if (result) 
+			if (result)
 				goto finishGetProperty;
-			
-			if (clientBufferSize < actualPropertySize) 
+
+			if (clientBufferSize < actualPropertySize)
 			{
 				tempBuffer = new char[actualPropertySize];
 				destBuffer = tempBuffer;
@@ -217,11 +217,11 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				tempBuffer = NULL;
 				destBuffer = poutData;
 			}
-			
+
 			result = This->DispatchGetProperty(pinID, pinScope, pinElement, destBuffer);
-			
+
 			if (result == noErr) {
-				if (clientBufferSize < actualPropertySize) 
+				if (clientBufferSize < actualPropertySize)
 				{
 					memcpy(poutData, tempBuffer, clientBufferSize);
 					delete[] tempBuffer;
@@ -232,10 +232,10 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				*pioDataSize = 0;
 
 			finishGetProperty:
-				
+
 				#if AU_DEBUG_DISPATCHER
 					if (This->mDebugDispatcher)
-						This->mDebugDispatcher->GetProperty (nowTime, result, pinID, pinScope, pinElement, 
+						This->mDebugDispatcher->GetProperty (nowTime, result, pinID, pinScope, pinElement,
 																pioDataSize, poutData);
 				#else
 					;
@@ -243,7 +243,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 
 		}
 		break;
-		
+
 	case kAudioUnitSetPropertySelect:
 		{
 			PARAM(AudioUnitPropertyID, pinID, 0, 5);
@@ -251,7 +251,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			PARAM(AudioUnitElement, pinElement, 2, 5);
 			PARAM(const void *, pinData, 3, 5);
 			PARAM(UInt32, pinDataSize, 4, 5);
-			
+
 			if (pinData && pinDataSize)
 				result = This->DispatchSetProperty(pinID, pinScope, pinElement, pinData, pinDataSize);
 			else {
@@ -272,10 +272,10 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				}
 			}
 			finishSetProperty:
-				
+
 				#if AU_DEBUG_DISPATCHER
 					if (This->mDebugDispatcher)
-						This->mDebugDispatcher->SetProperty (nowTime, result, pinID, pinScope, pinElement, 
+						This->mDebugDispatcher->SetProperty (nowTime, result, pinID, pinScope, pinElement,
 														pinData, pinDataSize);
 				#else
 					;
@@ -283,7 +283,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 
 		}
 		break;
-		
+
 	case kAudioUnitAddPropertyListenerSelect:
 		{
 			PARAM(AudioUnitPropertyID, pinID, 0, 3);
@@ -309,9 +309,9 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 			result = This->RemovePropertyListener(pinID, pinProc, pinProcRefCon, true);
 		}
 		break;
-		
 
-		
+
+
 	case kAudioUnitAddRenderNotifySelect:
 		{
 			PARAM(ProcPtr, pinProc, 0, 2);
@@ -371,7 +371,7 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 				PARAM(UInt32, pinNumberFrames, 3, 5);
 				PARAM(AudioBufferList *, pioData, 4, 5);
 				AudioUnitRenderActionFlags tempFlags;
-				
+
 				if (pinTimeStamp == NULL || pioData == NULL)
 					result = paramErr;
 				else {
@@ -381,13 +381,13 @@ ComponentResult	AUBase::ComponentEntryDispatch(ComponentParameters *params, AUBa
 					}
 					result = This->DoRender(*pinActionFlags, *pinTimeStamp, pinOutputBusNumber, pinNumberFrames, *pioData);
 				}
-				
+
 				#if AU_DEBUG_DISPATCHER
 					if (This->mDebugDispatcher)
-						This->mDebugDispatcher->Render (nowTime, result, pinActionFlags, pinTimeStamp, 
+						This->mDebugDispatcher->Render (nowTime, result, pinActionFlags, pinTimeStamp,
 														pinOutputBusNumber, pinNumberFrames, pioData);
 				#endif
-			
+
 		}
 		break;
 
@@ -422,13 +422,13 @@ pascal ComponentResult AudioUnitBaseGetParameter(	AUBase *				This,
 													float					*outValue)
 {
 	ComponentResult result = noErr;
-	
+
 	try {
 		if (This == NULL || outValue == NULL) return paramErr;
 		result = This->GetParameter(inID, inScope, inElement, *outValue);
 	}
 	COMPONENT_CATCH
-	
+
 	return result;
 }
 
@@ -440,13 +440,13 @@ pascal ComponentResult AudioUnitBaseSetParameter(	AUBase * 				This,
 													UInt32					inBufferOffset)
 {
 	ComponentResult result = noErr;
-	
+
 	try {
 		if (This == NULL) return paramErr;
 		result = This->SetParameter(inID, inScope, inElement, inValue, inBufferOffset);
 	}
 	COMPONENT_CATCH
-	
+
 	return result;
 }
 
@@ -463,10 +463,10 @@ pascal ComponentResult AudioUnitBaseRender(			AUBase *				This,
 #if AU_DEBUG_DISPATCHER
 	INIT_DEBUG_DISPATCHER(This)
 #endif
-	
+
 	ComponentResult result = noErr;
 	AudioUnitRenderActionFlags tempFlags;
-	
+
 	try {
 		if (ioActionFlags == NULL) {
 			tempFlags = 0;
@@ -480,6 +480,6 @@ pascal ComponentResult AudioUnitBaseRender(			AUBase *				This,
 		if (This->mDebugDispatcher)
 			This->mDebugDispatcher->Render (nowTime, result, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
 	#endif
-	
+
 	return result;
 }

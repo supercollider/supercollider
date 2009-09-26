@@ -94,43 +94,43 @@ static __inline__ int32 CLZ(int32 arg)
 #endif
 
 // count trailing zeroes
-inline int32 CTZ(int32 x) 
+inline int32 CTZ(int32 x)
 {
 	return 32 - CLZ(~x & (x-1));
 }
 
 // count leading ones
-inline int32 CLO(int32 x) 
+inline int32 CLO(int32 x)
 {
 	return CLZ(~x);
 }
 
 // count trailing ones
-inline int32 CTO(int32 x) 
+inline int32 CTO(int32 x)
 {
 	return 32 - CLZ(x & (~x-1));
 }
 
-// number of bits required to represent x. 
-inline int32 NUMBITS(int32 x) 
+// number of bits required to represent x.
+inline int32 NUMBITS(int32 x)
 {
 	return 32 - CLZ(x);
 }
 
-// log2 of the next power of two greater than or equal to x. 
-inline int32 LOG2CEIL(int32 x) 
+// log2 of the next power of two greater than or equal to x.
+inline int32 LOG2CEIL(int32 x)
 {
 	return 32 - CLZ(x - 1);
 }
 
 // next power of two greater than or equal to x
-inline int32 NEXTPOWEROFTWO(int32 x) 
+inline int32 NEXTPOWEROFTWO(int32 x)
 {
 	return 1L << LOG2CEIL(x);
 }
 
 // is x a power of two
-inline bool ISPOWEROFTWO(int32 x) 
+inline bool ISPOWEROFTWO(int32 x)
 {
 	return (x & (x-1)) == 0;
 }
@@ -166,16 +166,16 @@ inline int32 MSBit(int32 x)
 }
 
 // count number of one bits
-inline uint32 ONES(uint32 x) 
+inline uint32 ONES(uint32 x)
 {
-	uint32 t; 
-	x = x - ((x >> 1) & 0x55555555); 
-	t = ((x >> 2) & 0x33333333); 
-	x = (x & 0x33333333) + t; 
-	x = (x + (x >> 4)) & 0x0F0F0F0F; 
-	x = x + (x << 8); 
-	x = x + (x << 16); 
-	return x >> 24; 
+	uint32 t;
+	x = x - ((x >> 1) & 0x55555555);
+	t = ((x >> 2) & 0x33333333);
+	x = (x & 0x33333333) + t;
+	x = (x + (x >> 4)) & 0x0F0F0F0F;
+	x = x + (x << 8);
+	x = x + (x << 16);
+	return x >> 24;
 }
 
 // count number of zero bits
@@ -201,7 +201,7 @@ inline uint32 RotateRight (uint32 x, uint32 s)
 	s = s & 31;
 	return (x << (32-s)) | (x >> s);
 }
-   
+
 inline uint32 RotateLeft (uint32 x, uint32 s)
 {
 	s = s & 31;

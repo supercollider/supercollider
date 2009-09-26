@@ -2,7 +2,7 @@
 // just a label with the name of the object
 
 StringGui : ObjectGui {
-	
+
 	writeName {}
 	gui { arg lay, bounds ... args;
 		var layout,string,font;
@@ -14,7 +14,7 @@ StringGui : ObjectGui {
 		},{
 			// floats, integers, symbols will show more clearly what they are
 			string = " "++model.asCompileString;
-		});		
+		});
 		if(string.size > 1024,{
 			string = string.copyRange(0,1024) ++ "...";
 		});

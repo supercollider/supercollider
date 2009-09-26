@@ -7,7 +7,7 @@ LinuxPlatform : UnixPlatform
 		if ( this.hasFeature( \emacs ) ) {
 				Document.implementationClass.startup;
 			};
-		
+
 		helpDir = this.systemAppSupportDir++"/Help";
 
 		// Server setup
@@ -37,6 +37,6 @@ LinuxPlatform : UnixPlatform
 	recompile{
 		if ( this.hasFeature( \emacs ) ) {
 			Emacs.evalLispExpression( "(sclang-start)" );
-		};		
+		};
 	}
 }

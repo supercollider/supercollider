@@ -1,13 +1,13 @@
 InBus {
-	
+
 	*ar { arg bus, numChannels=2, offset=0;
 		^this.getOutput(bus.asBus, 'audio', numChannels, offset);
 	}
-	
+
 	*kr { arg bus, numChannels=1, offset=0;
 		^this.getOutput(bus.asBus, 'control', numChannels, offset);
 	}
-	
+
 	*getOutput { arg bus, argRate, numChannels, offset=0;
 		var rate, n, out, startIndex, index;
 		rate = bus.rate;
@@ -19,7 +19,7 @@ InBus {
 			index = Array.fill(numChannels, { arg i; startIndex + (i % n) });
 			numChannels = 1;
 		};
-		
+
 		out = if(offset.isInteger) {
 					if(rate === 'audio')
 						{ InFeedback.ar(index, numChannels) }
@@ -32,67 +32,67 @@ InBus {
 		^if(argRate === rate) { out } { // if not the same rate, convert rates
 			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
-	
+
 	}
 
 }
 
-XIn { 
+XIn {
 	*ar { arg which, n;
 		^XFade2.ar( // use equal power crossfading for audio rate
-			In.ar(which.round(2), n), 
-			In.ar(which.trunc(2) + 1, n), 
+			In.ar(which.round(2), n),
+			In.ar(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
 		);
 	}
 	*kr { arg which, n;
 		^LinXFade2.kr( // use linear crossfading for control rate
-			In.kr(which.round(2), n), 
-			In.kr(which.trunc(2) + 1, n), 
+			In.kr(which.round(2), n),
+			In.kr(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
 		);
 	}
-	
+
 }
 
-XInFeedback { 
+XInFeedback {
 	*ar { arg which, n;
 		^XFade2.ar(
-			InFeedback.ar(which.round(2), n), 
-			InFeedback.ar(which.trunc(2) + 1, n), 
+			InFeedback.ar(which.round(2), n),
+			InFeedback.ar(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
 		);
 	}
 }
 
-SelectX { 
+SelectX {
 	*new1 { arg rate, which, array;
 		var selector = UGen.methodSelectorForRate(rate);
-		^XFade2.perform(selector, 
-			Select.perform(selector, which.round(2), array), 
-			Select.perform(selector, which.trunc(2) + 1, array), 
+		^XFade2.perform(selector,
+			Select.perform(selector, which.round(2), array),
+			Select.perform(selector, which.trunc(2) + 1, array),
 			(which * 2 - 1).fold2(1)
 		);
 	}
 	*ar { arg which, array, wrap=1;
-		^this.new1(\audio, which, array, wrap);	
+		^this.new1(\audio, which, array, wrap);
 	}
 	*kr { arg which, array, wrap=1;
-		^this.new1(\control, which, array, wrap);	
+		^this.new1(\control, which, array, wrap);
 	}
 }
 
 SelectXFocus { 	// does not wrap (yet).
 	*new { arg which, array, focus=1;
-		^Mix(array.collect({ arg in, i; 
+		^Mix(array.collect({ arg in, i;
 			(1 - ((which-i).abs * focus) ).max(0) * in;
 		}))
 	}
 	*ar { arg which, array, focus=1;
-		^this.new(which, array, focus);	
+		^this.new(which, array, focus);
 	}
 	*kr { arg which, array, focus=1;
-		^this.new(which, array, focus);	
+		^this.new(which, array, focus);
 	}
 }
 
@@ -104,25 +104,25 @@ SelectXFocus { 	// does not wrap (yet).
 Monitor {
 	var <ins, <outs, <amps = #[1.0], <vol=1;
 	var <group, synthIDs, synthAmps, <>fadeTime=0.02;
-	
-	
-	
-	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
+
+
+
+	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			target, multi=false, volume, fadeTime=0.02, addAction;
 		var server, inGroup, numChannels, bundle, divider;
-		
+
 		inGroup = target.asGroup;
 		server = inGroup.server;
-		
+
 		bundle = List.new;
 		this.playToBundle(
-			bundle, fromIndex, fromNumChannels, toIndex, 
+			bundle, fromIndex, fromNumChannels, toIndex,
 			toNumChannels, inGroup, multi, volume, fadeTime, addAction
-		); 
-		
+		);
+
 		server.listSendBundle(server.latency, bundle);
 	}
-	
+
 	stop { arg argFadeTime;
 		var oldGroup = group;
 		fadeTime = argFadeTime ? fadeTime;
@@ -132,64 +132,64 @@ Monitor {
 			oldGroup.release(fadeTime);
 			SystemClock.sched(fadeTime, { oldGroup.free })
 		};
-		if (group.notNil) { 
+		if (group.notNil) {
 			group.isPlaying = false;
 			group = nil;
 		};
 	}
-	
+
 	isPlaying { ^group.isPlaying }
 	numChannels { ^outs.size }
-	
+
 	// multichannel support
-	
+
 	playN { arg out, amp, in, vol, fadeTime, target, addAction;
 		var bundle = List.new;
 		var server, inGroup;
 		inGroup = target.asGroup;
 		server = inGroup.server;
-		
+
 		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction);
 		server.listSendBundle(server.latency, bundle);
-		
+
 	}
-	
+
 	// setting volume and output offset.
 	// lists are only flat lists for now.
-		
+
 	vol_ { arg val;
 		if(val == vol) {^this };
 		vol = val;
 		this.amps = amps;
 	}
-	
+
 	// first channel interface
-	
+
 	out_ { arg index;
 		var offset = index - outs[0];
 		this.outs = outs + offset
 	}
-	
+
 	out {
 		^outs !? { outs[0] }
 	}
-	
+
 	// multi channel interface
-	
-	outs_ { arg indices; 
-		if (outs.isNil) { 
-			"Monitor - initialising  outs: %\n".postf(indices); 
-			outs = indices; 
+
+	outs_ { arg indices;
+		if (outs.isNil) {
+			"Monitor - initialising  outs: %\n".postf(indices);
+			outs = indices;
 			^this
 		};
-		if (outs.collect(_.size) != indices.collect(_.size)) { 
-			"new outs do not match old outs shape:".warn; 
-			("old:" + outs).postln; 
+		if (outs.collect(_.size) != indices.collect(_.size)) {
+			"new outs do not match old outs shape:".warn;
+			("old:" + outs).postln;
 			("new:" + indices).postln;
 			" use playN to change topology!".postln;
 			^this;
 		};
-		
+
 		outs = indices;
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
@@ -197,55 +197,55 @@ Monitor {
 			)
 		}
 	}
-	
+
 	amps_ { arg values;
-		if (amps.isNil) { 
-			"Monitor - initialising  amps: %\n".postf(values); 
-			amps = values; 
+		if (amps.isNil) {
+			"Monitor - initialising  amps: %\n".postf(values);
+			amps = values;
 			^this
 		};
-		if (values.collect(_.size) != amps.collect(_.size)) { 
-			"new amps do not match old amps shape:".warn; 
-			("old:" + amps).postln; 
+		if (values.collect(_.size) != amps.collect(_.size)) {
+			"new amps do not match old amps shape:".warn;
+			("old:" + amps).postln;
 			("new:" + values).postln;
 			" use playN to change topology!".postln;
 			^this;
 		};
-		
+
 		synthAmps = values.flat * vol;
 		amps = values;
 		if (this.isPlaying) {
-			group.server.listSendBundle(group.server.latency, 
+			group.server.listSendBundle(group.server.latency,
 				[15, synthIDs, "vol", synthAmps].flop
 			);
 		};
 	}
-	
-	// bundling 
-	
+
+	// bundling
+
 	playNToBundle { arg bundle, argOuts=(outs ?? {(0..ins.size-1)}), argAmps=(amps), argIns=(ins),
-					argVol=(vol), argFadeTime=(fadeTime), inGroup, addAction, 					defName="system_link_audio_1"; 
-		
-		var triplets, server; 
+					argVol=(vol), argFadeTime=(fadeTime), inGroup, addAction, 					defName="system_link_audio_1";
+
+		var triplets, server;
 
 		outs = argOuts; ins = argIns; amps = argAmps; vol = argVol; fadeTime = argFadeTime;
-		
+
 
 		if (ins.size != outs.size)
 			{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
-			
+
 		triplets = [ins, outs, amps].flop;
-		
-		if(this.isPlaying) { 
-			this.stopToBundle(bundle) 
+
+		if(this.isPlaying) {
+			this.stopToBundle(bundle)
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
 		synthIDs = [];
 		synthAmps = [];
-		
+
 		server = group.server;
-		
+
 		triplets.do {|trip, i|
 			var in, out, amp;
 			#in, out, amp = trip;
@@ -255,9 +255,9 @@ Monitor {
 				var id = server.nextNodeID;
 				synthIDs = synthIDs.add(id);
 				synthAmps = synthAmps.add(amp[j]);
-				bundle.add([9, defName, 
+				bundle.add([9, defName,
 					id, 1, group.nodeID,
-					"out", item, 
+					"out", item,
 					"in", in,
 					"vol", amp.clipAt(j) * vol
 				]);
@@ -265,23 +265,23 @@ Monitor {
 		};
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
 	}
-	
+
 	// optimizes ranges of channels
-	
-	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels, 
+
+	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			inGroup, multi = false, volume, inFadeTime, addAction;
 		var server, numChannels, defname, chanRange, n;
-					
-		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) }; 
-		
+
+		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };
+
 		vol = volume ? vol;
 		fadeTime = inFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
-		
+
 		toNumChannels = toNumChannels ? fromNumChannels;
 		server = inGroup.server;
-		
-		if(this.isPlaying) { 
-			if(multi.not) { 
+
+		if(this.isPlaying) {
+			if(multi.not) {
 				this.stopToBundle(bundle);
 				outs = [];
 			}
@@ -289,9 +289,9 @@ Monitor {
 			this.newGroupToBundle(bundle, inGroup, addAction);
 			if (multi.not) { outs = [] }
 		};
-		
+
 		amps = [];
-		
+
 		numChannels = max(fromNumChannels, toNumChannels);
 		chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
 		defname = "system_link_audio_" ++ chanRange;
@@ -308,22 +308,22 @@ Monitor {
 		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
 	}
 
-	
+
 	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction;
 		var size;
 		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
-		ins = if(ins.notNil) 
+		ins = if(ins.notNil)
 				{ ins.wrap(0, bus.numChannels - 1).asArray }
-			 	{(0..(bus.numChannels - 1)) } 
+			 	{(0..(bus.numChannels - 1)) }
 			 	+ bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction: addAction)
 	}
-	
-		
+
+
 	newGroupToBundle { arg bundle, target, addAction=(\addToTail);
 				target = target.asGroup;
 				group = Group.basicNew(target.server);
@@ -332,15 +332,15 @@ Monitor {
 				NodeWatcher.register(group);
 	}
 
-	
+
 	stopToBundle { arg bundle; // maybe with fade later.
 		bundle.add([15, group.nodeID, "gate", 0]);
 		synthIDs = [];
 		synthAmps = [];
 	}
-	
-	hasSeriesOuts { 
+
+	hasSeriesOuts {
 		if (outs.isNil, { ^true });
 		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
-	} 
+	}
 }

@@ -32,7 +32,7 @@ float32 gSineWavetable[2*kSineSize];
 void SignalAsWavetable(float32* signal, float32* wavetable, long inSize)
 {
 	float32 val1, val2;
-	
+
 	float32* in = signal;
 	float32* out = wavetable - 1;
 	for (int i=0; i<inSize - 1; ++i) {
@@ -55,7 +55,7 @@ void WavetableAsSignal(float32* wavetable, float32* signal, long inSize)
 		float32 a = *++in;
 		float32 b = *++in;
 		*++out = a + b;
-	}	
+	}
 }
 
 
@@ -63,7 +63,7 @@ class SynthLibInit
 {
 public:
 	SynthLibInit();
-	
+
 	void FillTables();
 };
 

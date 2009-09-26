@@ -42,7 +42,7 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -50,51 +50,51 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			switch (b->utag) {
 				case tagInt :
-					a->ui = a->ui + b->ui; 
+					a->ui = a->ui + b->ui;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue :  
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
 					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj; 
+						a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj;
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui + b->uf; 
+					a->uf = a->ui + b->uf;
 					break;
 			}
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			// leave self in 'a'
 			break;
 		case tagObj :
 			if (isKindOf(a->uo, class_signal)) {
 				switch (b->utag) {
 					case tagInt :
-						a->uo = signal_add_xf(g, a->uo, b->ui); //a->utag = tagObj; 
+						a->uo = signal_add_xf(g, a->uo, b->ui); //a->utag = tagObj;
 						break;
-					case tagChar : case tagPtr : 
-					case tagNil : case tagFalse : case tagTrue : 
+					case tagChar : case tagPtr :
+					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
-					case tagSym : 
+					case tagSym :
 						a->us = b->us; a->utag = tagSym;
 						break;
-					case tagObj : 
+					case tagObj :
 						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_add_xx(g, a->uo, b->uo); //a->utag = tagObj; 
+							a->uo = signal_add_xx(g, a->uo, b->uo); //a->utag = tagObj;
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_add_xf(g, a->uo, b->uf); //a->utag = tagObj; 
+						a->uo = signal_add_xf(g, a->uo, b->uf); //a->utag = tagObj;
 						break;
 				}
 			} else {
@@ -104,12 +104,12 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 		default : // double
 			switch (b->utag) {
 				case tagInt :
-					a->uf = a->uf + b->ui; 
+					a->uf = a->uf + b->ui;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue : 
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
@@ -129,21 +129,21 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 	g->tailCall = 0;
 #endif
 	return errNone;
-	
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 int prMulNum(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -151,51 +151,51 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			switch (b->utag) {
 				case tagInt :
-					a->ui = a->ui * b->ui; //a->utag = tagInt; 
+					a->ui = a->ui * b->ui; //a->utag = tagInt;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue :  
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
 					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_mul_xf(g, b->uo, a->ui); a->utag = tagObj; 
+						a->uo = signal_mul_xf(g, b->uo, a->ui); a->utag = tagObj;
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui * b->uf; 
+					a->uf = a->ui * b->uf;
 					break;
 			}
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			//a->us = a->us; a->utag = tagSym;
 			break;
 		case tagObj :
 			if (isKindOf(a->uo, class_signal)) {
 				switch (b->utag) {
 					case tagInt :
-						a->uo = signal_mul_xf(g, a->uo, b->ui); //a->utag = tagObj; 
+						a->uo = signal_mul_xf(g, a->uo, b->ui); //a->utag = tagObj;
 						break;
-					case tagChar : case tagPtr : 
-					case tagNil : case tagFalse : case tagTrue : 
+					case tagChar : case tagPtr :
+					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
-					case tagSym : 
+					case tagSym :
 						a->us = b->us; a->utag = tagSym;
 						break;
-					case tagObj : 
+					case tagObj :
 						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_mul_xx(g, a->uo, b->uo); //a->utag = tagObj; 
+							a->uo = signal_mul_xx(g, a->uo, b->uo); //a->utag = tagObj;
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_mul_xf(g, a->uo, b->uf); //a->utag = tagObj; 
+						a->uo = signal_mul_xf(g, a->uo, b->uf); //a->utag = tagObj;
 						break;
 				}
 			} else {
@@ -205,12 +205,12 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 		default : // double
 			switch (b->utag) {
 				case tagInt :
-					a->uf = a->uf * b->ui; 
+					a->uf = a->uf * b->ui;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue : 
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
@@ -230,21 +230,21 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	g->tailCall = 0;
 #endif
 	return errNone;
-	
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 int prSubNum(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -252,51 +252,51 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			switch (b->utag) {
 				case tagInt :
-					a->ui = a->ui - b->ui; //a->utag = tagInt; 
+					a->ui = a->ui - b->ui; //a->utag = tagInt;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue : 
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
 					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_sub_fx(g, a->ui, b->uo); a->utag = tagObj; 
+						a->uo = signal_sub_fx(g, a->ui, b->uo); a->utag = tagObj;
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui - b->uf; 
+					a->uf = a->ui - b->uf;
 					break;
 			}
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			//a->us = a->us; a->utag = tagSym;
 			break;
 		case tagObj :
 			if (isKindOf(a->uo, class_signal)) {
 				switch (b->utag) {
 					case tagInt :
-						a->uo = signal_sub_xf(g, a->uo, b->ui); //a->utag = tagObj; 
+						a->uo = signal_sub_xf(g, a->uo, b->ui); //a->utag = tagObj;
 						break;
-					case tagChar : case tagPtr : 
-					case tagNil : case tagFalse : case tagTrue : 
+					case tagChar : case tagPtr :
+					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
-					case tagSym : 
+					case tagSym :
 						a->us = b->us; a->utag = tagSym;
 						break;
-					case tagObj : 
+					case tagObj :
 						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_sub_xx(g, a->uo, b->uo); //a->utag = tagObj; 
+							a->uo = signal_sub_xx(g, a->uo, b->uo); //a->utag = tagObj;
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_sub_xf(g, a->uo, b->uf); //a->utag = tagObj; 
+						a->uo = signal_sub_xf(g, a->uo, b->uf); //a->utag = tagObj;
 						break;
 				}
 			} else {
@@ -306,12 +306,12 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 		default : // double
 			switch (b->utag) {
 				case tagInt :
-					a->uf = a->uf - b->ui; 
+					a->uf = a->uf - b->ui;
 					break;
-				case tagChar : case tagPtr : 
-				case tagNil : case tagFalse : case tagTrue : 
+				case tagChar : case tagPtr :
+				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
-				case tagSym : 
+				case tagSym :
 					a->us = b->us; a->utag = tagSym;
 					break;
 				case tagObj :
@@ -331,43 +331,43 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 	g->tailCall = 0;
 #endif
 	return errNone;
-	
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 int prAddInt(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
 	switch (b->utag) {
 		case tagInt :
-			a->ui = a->ui + b->ui; //a->utag = tagInt; 
+			a->ui = a->ui + b->ui; //a->utag = tagInt;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
 			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj; 
+				a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj;
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->ui + b->uf; 
+			a->uf = a->ui + b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -375,15 +375,15 @@ int prAddInt(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 
@@ -392,7 +392,7 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -400,21 +400,21 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf + b->ui; break;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
 			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_add_xf(g, b->uo, a->uf); a->utag = tagObj; 
+				a->uo = signal_add_xf(g, b->uo, a->uf); a->utag = tagObj;
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->uf + b->uf; 
+			a->uf = a->uf + b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -422,44 +422,44 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 int prSubInt(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
 	switch (b->utag) {
 		case tagInt :
-			a->ui = a->ui - b->ui; //a->utag = tagInt; 
+			a->ui = a->ui - b->ui; //a->utag = tagInt;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
 			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_sub_xf(g, b->uo, a->ui); a->utag = tagObj; 
+				a->uo = signal_sub_xf(g, b->uo, a->ui); a->utag = tagObj;
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->ui - b->uf; 
+			a->uf = a->ui - b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -467,15 +467,15 @@ int prSubInt(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 
@@ -484,7 +484,7 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -492,10 +492,10 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf - b->ui; break;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
@@ -506,7 +506,7 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->uf - b->uf; 
+			a->uf = a->uf - b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -514,22 +514,22 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 int prMulInt(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -537,10 +537,10 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->ui = a->ui * b->ui; //a->utag = tagInt; break;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
@@ -551,7 +551,7 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->ui * b->uf; 
+			a->uf = a->ui * b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -559,15 +559,15 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 
@@ -576,7 +576,7 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
-		
+
 	a = g->sp - 1;
 	b = g->sp;
 
@@ -584,10 +584,10 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			a->uf = a->uf * b->ui; break;
 			break;
-		case tagChar : case tagPtr : 
-		case tagNil : case tagFalse : case tagTrue : 
+		case tagChar : case tagPtr :
+		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
-		case tagSym : 
+		case tagSym :
 			a->us = b->us; a->utag = tagSym;
 			break;
 		case tagObj :
@@ -598,7 +598,7 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default :
-			a->uf = a->uf * b->uf; 
+			a->uf = a->uf * b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -606,15 +606,15 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-	return errNone;		
-	
+	return errNone;
+
 	send_normal_2:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
-	
+
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
-	return errNone;	
+	return errNone;
 }
 
 
@@ -623,7 +623,7 @@ int prNthPrime(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int n, p;
-	
+
 	a = g->sp;
 	n = a->ui;
 	p = nthPrime(n);
@@ -632,7 +632,7 @@ int prNthPrime(VMGlobals *g, int numArgsPushed)
 	} else {
 		SetInt(a, p);
 	}
-	return errNone;	
+	return errNone;
 }
 
 int prPrevPrime(VMGlobals *g, int numArgsPushed);
@@ -640,7 +640,7 @@ int prPrevPrime(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int n, p, i;
-	
+
 	a = g->sp;
 	n = a->ui;
 	i = prevPrime(n);
@@ -650,7 +650,7 @@ int prPrevPrime(VMGlobals *g, int numArgsPushed)
 	} else {
 		SetInt(a, p);
 	}
-	return errNone;	
+	return errNone;
 }
 
 int prNextPrime(VMGlobals *g, int numArgsPushed);
@@ -658,7 +658,7 @@ int prNextPrime(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int n, p, i;
-	
+
 	a = g->sp;
 	n = a->ui;
 	i = nextPrime(n);
@@ -668,7 +668,7 @@ int prNextPrime(VMGlobals *g, int numArgsPushed)
 	} else {
 		SetInt(a, p);
 	}
-	return errNone;	
+	return errNone;
 }
 
 
@@ -677,7 +677,7 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int n, p, sqrtn, i;
-	
+
 	a = g->sp;
 	n = a->ui;
 	SetNil(a);
@@ -701,7 +701,7 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 			if (p >= sqrtn) { SetTrue(a); break; }
 		}
 	}
-	return errNone;	
+	return errNone;
 }
 
 int prIndexOfPrime(VMGlobals *g, int numArgsPushed);
@@ -709,7 +709,7 @@ int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int n, p;
-	
+
 	a = g->sp;
 	n = a->ui;
 	if (n <= 2) {
@@ -725,7 +725,7 @@ int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
 	} else {
 		SetNil(a);
 	}
-	return errNone;	
+	return errNone;
 }
 
 
@@ -744,7 +744,7 @@ int prHigh32Bits(VMGlobals *g, int numArgsPushed);
 int prHigh32Bits(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 #if BYTE_ORDER == BIG_ENDIAN
 	union { struct { uint32 hi, lo; } i; double f; } du;
 #else
@@ -760,7 +760,7 @@ int prLow32Bits(VMGlobals *g, int numArgsPushed);
 int prLow32Bits(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 #if BYTE_ORDER == BIG_ENDIAN
 	union { struct { uint32 hi, lo; } i; double f; } du;
 #else
@@ -778,14 +778,14 @@ int prFrom32Bits(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 	int err, word;
-	
+
 	err = slotIntVal(b, &word);
 	if (err) return err;
-	
-	union { float f; int32 i; } u;	
+
+	union { float f; int32 i; } u;
 	u.i = word;
 	SetFloat(a, u.f);
-	
+
 	return errNone;
 }
 
@@ -799,10 +799,10 @@ int prFrom64Bits(VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(b, &hi);
 	if (err) return err;
-	
+
 	err = slotIntVal(c, &lo);
 	if (err) return err;
-	
+
 #if BYTE_ORDER == BIG_ENDIAN
 	union { struct { uint32 hi, lo; } i; double f; } du;
 #else
@@ -811,7 +811,7 @@ int prFrom64Bits(VMGlobals *g, int numArgsPushed)
 	du.i.hi = hi;
 	du.i.lo = lo;
 	SetFloat(a, du.f);
-	
+
 	return errNone;
 }
 
@@ -820,11 +820,11 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	double lo, hi;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -846,11 +846,11 @@ int mathClipFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	double lo, hi;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -871,11 +871,11 @@ int mathClipSignal(struct VMGlobals *g, int numArgsPushed)
 	float lo, hi;
 	int err;
 	PyrObject *sig;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -898,11 +898,11 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -926,11 +926,11 @@ int mathWrapFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	double lo, hi;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -951,11 +951,11 @@ int mathWrapSignal(struct VMGlobals *g, int numArgsPushed)
 	float lo, hi;
 	int err;
 	PyrObject *sig;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -978,11 +978,11 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -1006,11 +1006,11 @@ int mathFoldFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	double lo, hi;
 	int err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -1031,11 +1031,11 @@ int mathFoldSignal(struct VMGlobals *g, int numArgsPushed)
 	float lo, hi;
 	int err;
 	PyrObject *sig;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (IsSym(b)) {
 		*a = *b;
 	} else if (IsSym(c)) {
@@ -1059,9 +1059,9 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+
 	int err, size;
-	
+
 	if (IsInt(a) && (IsInt(b) || IsNil(b)) && IsInt(c)) {
 		int first, second, last, step;
 		first = a->ui;
@@ -1077,7 +1077,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 			post("prSimpleNumberSeries: array size %i exceeds limit (%i)\n", size, INT_MAX_BY_PyrSlot);
 			return errFailed;
 		}
-	
+
 		PyrObject *obj = newPyrArray(g->gc, size, 0, true);
 		obj->size = size;
 		PyrSlot *slots = obj->slots;
@@ -1111,7 +1111,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 			if (first < last) second = first + 1.;
 			else second = first - 1.;
 		}
-		
+
 		step = second - first;
 		size = (int)floor((last - first) / step + 0.001) + 1;
 		if(size<1 || size > INT_MAX_BY_PyrSlot){
@@ -1141,25 +1141,25 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 
 /*
 
-	asFraction {|maxDenominator=100| 
+	asFraction {|maxDenominator=100|
 		var mediant, lower, upper, temp;
 		var n,d, k, k1;
 		if (this < 0) {
-			#n, d = this.neg.asFraction(maxDenominator); 
+			#n, d = this.neg.asFraction(maxDenominator);
 			^[n.neg, d]
 		};
 		if (this < 1.0) {
-			upper = [1.0, this.reciprocal.floor]; 
+			upper = [1.0, this.reciprocal.floor];
 			lower = [1.0, upper[1]+1.0];
 		}{
-			lower = [this.floor, 1.0]; 
+			lower = [this.floor, 1.0];
 			upper = [lower[0]+1.0, 1.0];
 		};
 		mediant = [lower[0] + upper[0], lower[1] + upper[1]];
 		loop {
 			mediant = [lower[0] + upper[0], lower[1] + upper[1]];
-			case 
-			{ (this * mediant[1]) > mediant[0] } 
+			case
+			{ (this * mediant[1]) > mediant[0] }
 			{
 				if (maxDenominator < mediant[1]) {^upper};
 				d = upper[0] - (this * upper[1]);
@@ -1171,13 +1171,13 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 				lower = [lower[0] + (k * upper[0]), lower[1] + (k * upper[1])];
 				upper = temp;
 			}
-			{ (this * mediant[1]) == mediant[0] } 
+			{ (this * mediant[1]) == mediant[0] }
 			{
 				if (maxDenominator >= mediant[1]) {^mediant};
 				if (lower[1] < upper[1]) {^lower};
 				^upper
 			}
-			{	
+			{
 				if (maxDenominator < mediant[1]) {^lower};
 				d = lower[0] - (this * lower[1]);
 				if (d == 0) {^lower};
@@ -1187,7 +1187,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 				temp = [(k1 * lower[0]) + upper[0], (k1 * lower[1]) + upper[1]];
 				upper = [(k * lower[0]) + upper[0], (k * lower[1]) + upper[1]];
 				lower = temp;
-			};				
+			};
 		}
 	}
 
@@ -1201,15 +1201,15 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 
 	double mediant_num, lower_num, upper_num, temp_num;
 	double mediant_den, lower_den, upper_den, temp_den;
-	double x, d; 
+	double x, d;
 	int k, k1;
 	int maxDenominator;
 	int err;
 	bool neg = false;
-	
+
 	err = slotDoubleVal(a, &x);
 	if (err) return err;
-	
+
 	err = slotIntVal(b, &maxDenominator);
 	if (err) return err;
 
@@ -1219,12 +1219,12 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	obj->size = 2;
 	PyrSlot *slots = obj->slots;
 	SetObject(a, obj);
-	
+
 	if (x < 0.0) {
 		x = -x;
 		neg = true;
 	}
-	
+
 	if (x < 1.0) {
 		upper_num = 1.0;
 		upper_den = floor(1./x);
@@ -1281,7 +1281,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 				SetInt(slots+1, (int)upper_den);
 				return errNone;
 			}
-		} else {	
+		} else {
 			d = lower_num - (x * lower_den);
 			if (maxDenominator < mediant_den || fabs(d) < 1e-5) {
 				if (neg) lower_num = -lower_num;
@@ -1310,7 +1310,7 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 void initMathPrimitives()
 {
 	int base, index;
-		
+
 	base = nextPrimitiveIndex();
 	index = 0;
 	definePrimitive(base, index++, "_AddInt", prAddInt, 2, 0);
@@ -1329,7 +1329,7 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_Low32Bits", prLow32Bits, 1, 0);
 	definePrimitive(base, index++, "_From32Bits", prFrom32Bits, 2, 0);
 	definePrimitive(base, index++, "_From64Bits", prFrom64Bits, 3, 0);
-	
+
 	definePrimitive(base, index++, "_ClipInt", mathClipInt, 3, 0);
 	definePrimitive(base, index++, "_ClipFloat", mathClipFloat, 3, 0);
 	definePrimitive(base, index++, "_ClipSignal", mathClipSignal, 3, 0);
@@ -1339,7 +1339,7 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_FoldInt", mathFoldInt, 3, 0);
 	definePrimitive(base, index++, "_FoldFloat", mathFoldFloat, 3, 0);
 	definePrimitive(base, index++, "_FoldSignal", mathFoldSignal, 3, 0);
-	
+
 	definePrimitive(base, index++, "_SimpleNumberSeries", prSimpleNumberSeries, 3, 0);
 	definePrimitive(base, index++, "_AsFraction", prAsFraction, 3, 0);
 }

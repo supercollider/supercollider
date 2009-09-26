@@ -8,14 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LiveCodingView : UIView <UITextViewDelegate> 
-{	
+@interface LiveCodingView : UIView <UITextViewDelegate>
+{
 	IBOutlet UITextField *textField;
 	IBOutlet UITextView *textView;
 	IBOutlet UIButton *doneButton;
 	IBOutlet UIButton *lineButton;
 	IBOutlet UIButton *blockButton;
-	
+
 	id target;
 	SEL selector;
 }

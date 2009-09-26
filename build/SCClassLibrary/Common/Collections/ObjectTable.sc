@@ -2,11 +2,11 @@
 TwoWayIdentityDictionary : Collection
 {
 	var idToObj, objToID;
-	
+
 	*new {
 		^super.new.init;
 	}
-	
+
 	add { arg anAssociation;
 		this.put(anAssociation.key, anAssociation.value);
 	}
@@ -14,25 +14,25 @@ TwoWayIdentityDictionary : Collection
 		idToObj.put(key, obj);
 		objToID.put(obj, key);
 	}
-	
+
 	remove { arg obj;
 		var key;
 		key = this.getID(obj);
 		idToObj.removeAt(key);
 		objToID.removeAt(obj);
 	}
-	
+
 	do { arg function;
 		^idToObj.do(function);
 	}
-	
+
 	at { arg id;
 		^idToObj.at(id);
 	}
 	getID { arg obj;
 		^objToID.at(obj);
 	}
-	
+
 	// PRIVATE
 	init {
 		idToObj = IdentityDictionary.new;
@@ -49,16 +49,16 @@ UniqueID {
 ObjectTable : TwoWayIdentityDictionary
 {
 	classvar <global;
-	
-	
+
+
 	*new {
 		^super.new;
 	}
-	
+
 	add { arg obj;
 		this.put(UniqueID.next, obj);
 	}
-	
+
 	*initClass {
 		global = this.new;
 	}
@@ -80,7 +80,7 @@ ObjectTable : TwoWayIdentityDictionary
 	}
 	*objPerform { arg id, selector ... args;
 		var obj;
-		obj = global.at(id); 
+		obj = global.at(id);
 		if (obj.notNil, {
 			obj.performList(selector, args);
 		});

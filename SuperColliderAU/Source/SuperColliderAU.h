@@ -1,16 +1,16 @@
 /*
 	SuperColliderAU Copyright (c) 2006 Gerard Roma.
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
@@ -66,52 +66,52 @@ public:
     Boolean haveSpecs;
 	SuperColliderAU(AudioUnit component);
     virtual ~SuperColliderAU ();
-	
-	
+
+
 	virtual	ComponentResult		GetParameterValueStrings(AudioUnitScope			inScope,
 														 AudioUnitParameterID	inParameterID,
 														 CFArrayRef *			outStrings);
-    
+
 	virtual	ComponentResult		GetParameterInfo(AudioUnitScope			inScope,
 												 AudioUnitParameterID	inParameterID,
 												 AudioUnitParameterInfo	&outParameterInfo);
-    
+
 	void initState();
 	void sendChangedParameters();
-    
+
 	virtual ComponentResult		GetPropertyInfo(AudioUnitPropertyID		inID,
 												AudioUnitScope			inScope,
 												AudioUnitElement		inElement,
 												UInt32 &				outDataSize,
 												Boolean	&				outWritable );
-	
+
 	virtual ComponentResult		GetProperty(AudioUnitPropertyID		inID,
 											AudioUnitScope			inScope,
 											AudioUnitElement 		inElement,
 											void *					outData);
-	
+
  	virtual	bool				SupportsTail () { return false; }
-	
+
 
 	virtual ComponentResult	Version() { return kSuperColliderAUVersion; }
-	
+
 	virtual ComponentResult		Initialize();
-	
-    
+
+
     virtual ComponentResult 	Render(AudioUnitRenderActionFlags &		ioActionFlags,
                                        const AudioTimeStamp &			inTimeStamp,
                                        UInt32							inNumberFrames);
-    
-    
-    ComponentResult				Reset(AudioUnitScope	inScope, 
+
+
+    ComponentResult				Reset(AudioUnitScope	inScope,
 									  AudioUnitElement  inElement);
-    
+
 	virtual OSStatus HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame);
 	virtual OSStatus HandleNoteOff(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) ;
 
-		
+
 private:
-        
+
     World* world;
 	SCProcess* superCollider;
 	Resources* resources;
@@ -125,15 +125,15 @@ private:
 	double beatsPerTick;
     Float64 previousBeat;
     int64 gOSCoffset;
-	
-	
+
+
     void syncOSCOffsetWithTimeOfDay();
 	double nextTickFrames(Float64 beat,Float64 tempo, UInt32 nFrames);
 	void resetBeats();
 	int64 getOscTime( const AudioTimeStamp & inTimeStamp);
-	
+
 	Boolean doNoteOn;
-	
+
 	typedef struct note{
 		long sampleTime;
 		short number;

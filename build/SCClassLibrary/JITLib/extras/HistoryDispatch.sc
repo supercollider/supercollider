@@ -1,9 +1,9 @@
 HistoryDispatch : EnvirDispatch {
-	
+
 	var <histories, <startTime;
 	var <>manual = false, <>alwaysReplace = true;
 	var <>virtualTime, <>action, <timepoints;
-	
+
 	*new {
 		^super.new.init
 	}
@@ -12,7 +12,7 @@ HistoryDispatch : EnvirDispatch {
 		startTime = Main.elapsedTime;
 		timepoints = [];
 	}
-	
+
 	dispatch { arg key, obj;
 		var delta = Main.elapsedTime - startTime;
 		var index;
@@ -42,14 +42,14 @@ HistoryDispatch : EnvirDispatch {
 		};
 		this.updateTimePoints;
 	}
-	
+
 	removeAtTime { arg key, time, updateTimePoints=true;
 		var index = this.findTimeIndex(key, time);
 		if(index.notNil and: { index != -1 }) {
 			2.do { histories[key].removeAt(index) };
 			if(updateTimePoints) { this.updateTimePoints };
 		};
-		
+
 	}
 	removeAllAtTime { arg time;
 		histories.keys.do { |key|
@@ -59,7 +59,7 @@ HistoryDispatch : EnvirDispatch {
 		this.updateTimePoints;
 		histories.postln;
 	}
-	
+
 	updateTimePoints {
 		var timeset;
 		timeset = IdentitySet.new;
@@ -70,7 +70,7 @@ HistoryDispatch : EnvirDispatch {
 		};
 		timepoints = timeset.asArray.sort;
 	}
-		
+
 	setTime { arg time;
 		var changed = false;
 		//"set time to %\n".postf(time);
@@ -80,7 +80,7 @@ HistoryDispatch : EnvirDispatch {
 		virtualTime = time;
 		^changed
 	}
-		
+
 	findObjectTimeIndex { arg key, obj;
 		var hist = histories[key];
 		if(hist.isNil) { ^nil };
@@ -89,7 +89,7 @@ HistoryDispatch : EnvirDispatch {
 		};
 		^nil
 	}
-	
+
 	findTimeIndex { arg key, time;
 		var hist = histories[key];
 		if(hist.isNil or: { hist.isEmpty }) { ^nil };
@@ -100,9 +100,9 @@ HistoryDispatch : EnvirDispatch {
 			}
 		};
 		^hist.size - 2
-		
+
 	}
-	
+
 	findExactTimeIndex { arg key, time;
 		var hist = histories[key];
 		if(hist.isNil) { ^nil };
@@ -112,7 +112,7 @@ HistoryDispatch : EnvirDispatch {
 		};
 		^nil
 	}
-	
+
 	getPairsForTime { arg time;
 		var res;
 		histories.keys.do { |key|
@@ -122,50 +122,50 @@ HistoryDispatch : EnvirDispatch {
 		};
 		^res
 	}
-	
+
 	getObjectForTime { arg key, time;
 		var index, timeIndex;
 		var hist = histories[key];
-		
+
 		if(hist.isNil) { ^false };
 		index = this.findObjectTimeIndex(key, envir.envir.at(key).source);
 		timeIndex = this.findTimeIndex(key, time);
 		// [index, timeIndex, hist[timeIndex + 1]].postln;
 		^if(timeIndex == -1) { nil } { hist[timeIndex + 1] }
 	}
-	
+
 	// printing and saving.
 	// using History format.
 	storyString {
 		var str, keys;
-		
+
 		str = "///////////////////////////////////////////////////\n";
 		str = str ++ format("// History, as it was on %.\n", History.dateString);
 		str = str ++ "///////////////////////////////////////////////////\n\n";
-		
+
 		keys = histories.keys.asArray.sort;
-		
+
 		timepoints.do {|t|
-			str = str ++ format("// - % \n", 
-					History.formatTime(t) 
+			str = str ++ format("// - % \n",
+					History.formatTime(t)
 			);
 			str = str ++ "(\n";
 			keys.do { |key|
 				var i = this.findExactTimeIndex(key, t);
 				i !? {
-					
-					str = str ++ format("~% = %;\n", key, 
+
+					str = str ++ format("~% = %;\n", key,
 						histories.at(key).at(i + 1).asCompileString
 					);
 				};
 			};
-			str = str ++ ");\n\n";			
+			str = str ++ ");\n\n";
 		};
 		^str
 	}
 	/*
 	// not yet implemented..
-	loadFromHistory { |path| 
+	loadFromHistory { |path|
 		var file, str, delim, times;
 		protect {
 			file = File(path.standardizePath, "r");
@@ -175,33 +175,33 @@ HistoryDispatch : EnvirDispatch {
 		};
 		str = str.stripRTF;
 		delim = str.findAll("// -").add(str.size - 1);
-		
+
 		str = str.clumps(delim.differentiate).drop(1).drop(-1);
-		times = str.collect { |x| 
+		times = str.collect { |x|
 			History.getTimeFromString(x);
 		};
 		^this.notYetImplemented(thisMethod);
 		// uups, this is not that easy. we need to parse out the proxy assignments.
 		// "~*=".matchRegexp(x) // etc..
-		
-			
-		
+
+
+
 	}
 	*/
-	
+
 	document { arg title="";	// platform dependent ...
-		var docTitle; 
-		if (thisProcess.platform.isKindOf(UGen)) { 
+		var docTitle;
+		if (thisProcess.platform.isKindOf(UGen)) {
 			docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
 			Document.new(docTitle, this.storyString)
 			.path_(docTitle); // don't lose title.
-		} { 
+		} {
 			this.storyString.newTextWindow("History_documented");
-		}	
+		}
 	}
-		
+
 	// returns whether a change happened
-	
+
 	prGotoTime { arg key, time;
 		var obj;
 		obj = this.getObjectForTime(key, time);

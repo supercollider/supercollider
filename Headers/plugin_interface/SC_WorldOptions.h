@@ -48,23 +48,23 @@ struct WorldOptions
 
 	int mNumSharedControls;
 	float *mSharedControls;
-	
+
 	bool mRealTime;
 	bool mMemoryLocking;
-	
+
 	const char *mNonRealTimeCmdFilename;
 	const char *mNonRealTimeInputFilename;
 	const char *mNonRealTimeOutputFilename;
 	const char *mNonRealTimeOutputHeaderFormat;
 	const char *mNonRealTimeOutputSampleFormat;
-	
+
 	uint32 mPreferredSampleRate;
 	uint32 mNumRGens;
-	
+
 	uint32 mPreferredHardwareBufferFrameSize;
-	
+
 	uint32 mLoadGraphDefs;
-	
+
 #ifdef SC_DARWIN
 	const char *mInputStreamsEnabled;
 	const char *mOutputStreamsEnabled;
@@ -72,23 +72,23 @@ struct WorldOptions
     CFStringRef mReplyPortName;
 #endif
 	const char *mInDeviceName;
-	
+
 	int mVerbosity;
-	
+
 	bool mRendezvous;
-	
+
 	const char *mUGensPluginPath;
-	
+
 	const char *mOutDeviceName;
-	
+
 	const char *mRestrictedPath;
 };
 
-const WorldOptions kDefaultWorldOptions = 
+const WorldOptions kDefaultWorldOptions =
 {
 	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0,
 #ifdef SC_WIN32
-	44100, 
+	44100,
 #else
 	0,
 #endif

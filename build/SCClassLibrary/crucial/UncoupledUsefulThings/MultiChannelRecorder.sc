@@ -1,9 +1,9 @@
 
 MultiChanRecorder {
-	
+
 	var <>limit = true, busses, monitor,<>path;
 	var recordBufs,recordNode,<>recHeaderFormat="aiff", <>recSampleFormat="int24";
-	
+
 	*new { arg busses;
 		^super.new.init(busses);
 	}
@@ -18,7 +18,7 @@ MultiChanRecorder {
 				if(busses.size > 1,{ chanNum = "_" ++ i; });
 				chanPath = path ++ chanNum ++ "." ++ recHeaderFormat;
 				chanPath.debug("Preparing:");
-				buf.writeMsg(chanPath, 
+				buf.writeMsg(chanPath,
 					recHeaderFormat, recSampleFormat, 0, 0, true);
 			});
 		});
@@ -29,21 +29,21 @@ MultiChanRecorder {
 					DiskOut.ar(b.bufnum, Limiter.ar(busses[i].ar,0.999) )
 				},{
 					DiskOut.ar(b.bufnum, busses[i].ar )
-				})					
+				})
 			});
 			// no audio out
 			0.0
 		});
 		// better : add a node responder watching for n_end
 		// then close the buffer and free
-		
+
 		// cmdPeriod support
 		CmdPeriod.add(this);
 	}
 	isPrepared { ^recordBufs.notNil }
 	record { arg atTime;
 		if(recordBufs.isNil,{ // if they be nil
-			"Please execute prepareForRecord before recording".warn; 
+			"Please execute prepareForRecord before recording".warn;
 		},{
 			if(recordNode.isPlaying.not,{
 				recordNode.play(0,atTime);
@@ -55,20 +55,20 @@ MultiChanRecorder {
 	}
 	isRecording { ^recordNode.isPlaying }
 	pauseRecording { arg atTime;
-		if(recordNode.notNil,{ 
-			recordNode.run(false,atTime); "Paused".inform 
+		if(recordNode.notNil,{
+			recordNode.run(false,atTime); "Paused".inform
 		},{
-			"Not Recording".warn 
+			"Not Recording".warn
 		});
 	}
-	
+
 	stop { //arg atTime;
-		if(recordNode.notNil,{ 
+		if(recordNode.notNil,{
 			recordNode.free;
 			recordNode = nil;
 			recordBufs.do({ |rb| rb.close(rb.freeMsg); });
-			recordBufs = nil; 
-			"Recording Stopped".inform }, 
+			recordBufs = nil;
+			"Recording Stopped".inform },
 		{ "Not Recording".warn });
 	}
 	// mix outs to main out if they aren't already playing there
@@ -86,7 +86,7 @@ MultiChanRecorder {
 	cmdPeriod {
 		if(recordNode.notNil) { recordNode.free; recordNode = nil; };
 		if(recordBufs.notNil) {
-			recordBufs.do({ |buf| buf.close(buf.freeMsg); }); 
+			recordBufs.do({ |buf| buf.close(buf.freeMsg); });
 			recordBufs = nil;
 		};
 		CmdPeriod.remove(this);

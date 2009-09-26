@@ -11,15 +11,15 @@ PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .play
 		new=super.new;
 		new.makeView(layout,minWidth,GUI.skin.buttonHeight);
 		new.view.action_({new.doAction});
-		new.path_(path);		
+		new.path_(path);
 		^new
 	}
 	path_ { arg p;
 		subject = p.asString;
 		this.initOneState(PathName(subject).fileName,nil,rgb(228,255,107));
 	}
-	
-	doAction { 
+
+	doAction {
 		if(player.isPlaying ? false,{
 			this.stop;
 		},{
@@ -29,9 +29,9 @@ PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .play
 	}
 	stop {
 		this.background_(rgb(228,255,107));
-		if(player.notNil,{player.stop });		
+		if(player.notNil,{player.stop });
 	}
-	play { 
+	play {
 		player = subject.loadDocument;
 		this.background_(rgb(255, 215, 0));
 		player.play(atTime:1);
@@ -43,7 +43,7 @@ PlayPathButton : SCButtonAdapter { // loads the object at loadDocument and .play
 
 // .plays anything that responds to .play
 PlayButton : PlayPathButton {
-	
+
 	play { subject.play }
 
 }
@@ -52,7 +52,7 @@ PlayButton : PlayPathButton {
 XPlayPathButton : PlayPathButton {
 
 	classvar last;
-	
+
 	doAction {
 		if(this.isPlaying.not,{
 			if(last.notNil, { last.stop });
@@ -75,7 +75,7 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 					// clicking on any XPlayButton will start that player
 
 	classvar spawn,prev;
- 
+
 	doAction {
 		var thing;
 		if(Synth.isPlaying,{
@@ -104,7 +104,7 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 
 }
 
-	doAction { 
+	doAction {
 		if(this.isPlaying,{
 			isPlaying = false;
 			this.background_(rgb(228,255,107));
@@ -114,7 +114,7 @@ XPlayButton : PlayButton { // plays exclusively one thing at any time.
 			this.play;
 		})
 	}
-	
+
 */
 
 

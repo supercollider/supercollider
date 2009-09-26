@@ -5,9 +5,9 @@ PrettyPrintStream : CollStream { // well prettier anyway
 
 	nl {
 		super.nl;
-		tabs.do({		this.tab; });	
+		tabs.do({		this.tab; });
 	}
-	
+
 	storeArgs { arg  args,itemsPerLine=1;
 		this << "(";
 		tabs = tabs + 1;
@@ -18,5 +18,5 @@ PrettyPrintStream : CollStream { // well prettier anyway
 		this << ")";
 	}
 	indent { arg way=1; tabs = tabs + way; }
-		
+
 }

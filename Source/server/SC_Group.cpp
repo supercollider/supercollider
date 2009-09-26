@@ -48,18 +48,18 @@ void GroupNodeDef_Init()
 }
 
 int Group_New(World *inWorld, int32 inID, Group** outGroup)
-{	
+{
 	Group *group;
 	int err = Node_New(inWorld, &gGroupNodeDef, inID, (Node**)&group);
 	if (err) return err;
-	
+
 	group->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
 	group->mNode.mIsGroup = true;
 	group->mHead = 0;
 	group->mTail = 0;
 	inWorld->mNumGroups++;
 	*outGroup = group;
-	
+
 	return kSCErr_None;
 }
 
@@ -70,7 +70,7 @@ void Group_Calc(Group *inGroup)
         Node *next = child->mNext;
 		(*child->mCalcFunc)(child);
 		child = next;
-	}			
+	}
 }
 
 void Group_CalcTrace(Group *inGroup)
@@ -82,7 +82,7 @@ void Group_CalcTrace(Group *inGroup)
 		scprintf("   %d %s\n", child->mID, (char*)child->mDef->mName);
 		(*child->mCalcFunc)(child);
 		child = next;
-	}			
+	}
 	inGroup->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
 }
 
@@ -108,10 +108,10 @@ void Group_DumpNodeTree(Group *inGroup)
 		}
 		(*child->mCalcFunc)(child);
 		child = next;
-	}			
+	}
 	tabCount--;
 }
-	
+
 void Group_DumpNodeTreeAndControls(Group *inGroup)
 {
 	static int tabCount = 0;
@@ -133,11 +133,11 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 				for(i = 0; i < tabCount; i ++) scprintf("   ");
 				char **names;
 				names = new char*[numControls];
-				
+
 				for(i = 0; i < numControls; i++){
 					names[i] = NULL;
 				}
-				
+
 				// check the number of named controls and stash their names at the correct index
 				GraphDef* def = (GraphDef*)(child->mDef);
 				int numNamedControls = def->mNumParamSpecs;
@@ -145,11 +145,11 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 					ParamSpec *paramSpec = def->mParamSpecs + i;
 					names[paramSpec->mIndex] = (char*)paramSpec->mName;
 				}
-				
+
 				// now print the names and values in index order, checking for mappings
 				for(i=0; i < numControls; i++){
 					float *ptr = childGraph->mControls + i;
-					
+
 					if(names[i]){
 						scprintf(" %s: ", names[i]);
 					} else {
@@ -176,7 +176,7 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 		scprintf("\n");
 		(*child->mCalcFunc)(child);
 		child = next;
-	}			
+	}
 	tabCount--;
 }
 
@@ -217,9 +217,9 @@ void Group_CountNodeTags(Group* inGroup, int* count)
 			Group_CountNodeTags((Group*)child, count);
 		} else { (*count)++; } // for the defname
 		child = next;
-	}	
+	}
 }
-	
+
 // count the children for this group (deep)
 void Group_CountNodeAndControlTags(Group* inGroup, int* count, int* controlAndDefCount)
 {
@@ -230,18 +230,18 @@ void Group_CountNodeAndControlTags(Group* inGroup, int* count, int* controlAndDe
 		if (child->mIsGroup) {
 			Group_CountNodeAndControlTags((Group*)child, count, controlAndDefCount);
 		} else {
-			//(*controlCount) += ((Graph*)child)->mNumControls + ((GraphDef*)(child->mDef))->mNumParamSpecs + 1; 
+			//(*controlCount) += ((Graph*)child)->mNumControls + ((GraphDef*)(child->mDef))->mNumParamSpecs + 1;
 			(*controlAndDefCount) += ((Graph*)child)->mNumControls * 2 + 2; // def, numControls, name or index and value for each
 		}
 		child = next;
-	}	
+	}
 }
 
 void Group_QueryTree(Group* inGroup, big_scpacket *packet)
 {
 	packet->addtag('i');
 	packet->addi(inGroup->mNode.mID);
-	
+
 	// count the children for this group, but not their children (shallow)
 	int count = 0;
 	Node *child = inGroup->mHead;
@@ -250,10 +250,10 @@ void Group_QueryTree(Group* inGroup, big_scpacket *packet)
 		count++;
 		child = next;
 	}
-	
+
 	packet->addtag('i');
 	packet->addi(count); // numChildren; for a Group >= 0
-	
+
 	// now iterate over the children
 	// id, numChildren, defname
 	child = inGroup->mHead;
@@ -270,14 +270,14 @@ void Group_QueryTree(Group* inGroup, big_scpacket *packet)
 			packet->adds((char*)child->mDef->mName);
 		}
 		child = next;
-	}	
+	}
 }
-	
+
 void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 {
 	packet->addtag('i');
 	packet->addi(inGroup->mNode.mID);
-	
+
 	// count the children for this group, but not their children (shallow)
 	int count = 0;
 	Node *child = inGroup->mHead;
@@ -286,10 +286,10 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 		count++;
 		child = next;
 	}
-	
+
 	packet->addtag('i');
 	packet->addi(count);
-	
+
 	// now iterate over the children
 	// id, numChildren, defname
 	child = inGroup->mHead;
@@ -304,19 +304,19 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 			packet->addi(child->mID);					// nodeID
 			packet->addi(-1);							// numChildren
 			packet->adds((char*)child->mDef->mName);	// defName
-			
+
 			Graph* childGraph = (Graph*)child;
 			int numControls = childGraph->mNumControls;
 			packet->addtag('i');
 			packet->addi(numControls);
-			
+
 			char **names;
 			names = new char*[numControls];
 			int i;
 			for(i = 0; i < numControls; i++){
 				names[i] = NULL;
 			}
-			
+
 			// check the number of named controls and stash their names
 			GraphDef* def = (GraphDef*)(child->mDef);
 			int numNamedControls = def->mNumParamSpecs;
@@ -324,11 +324,11 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 				ParamSpec *paramSpec = def->mParamSpecs + i;
 				names[paramSpec->mIndex] = (char*)paramSpec->mName;
 			}
-			
+
 			// now add the names and values in index order, checking for mappings
 			for(i=0; i < numControls; i++){
 				float *ptr = childGraph->mControls + i;
-				
+
 				if(names[i]){
 					packet->addtag('s');
 					packet->adds(names[i]);
@@ -352,7 +352,7 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 			}
 		}
 		child = next;
-	}	
+	}
 }
 
 
@@ -428,7 +428,7 @@ void Group_MapControl(Group *inGroup, uint32 inIndex, uint32 inBus)
 		Node *next = child->mNext;
 		Node_MapControl(child, inIndex, inBus);
 		child = next;
-	}			
+	}
 }
 
 void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
@@ -438,7 +438,7 @@ void Group_MapControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inInde
 		Node *next = child->mNext;
 		Node_MapControl(child, inHash, inName, inIndex, inBus);
 		child = next;
-	}			
+	}
 }
 
 void Group_MapAudioControl(Group *inGroup, uint32 inIndex, uint32 inBus)
@@ -448,7 +448,7 @@ void Group_MapAudioControl(Group *inGroup, uint32 inIndex, uint32 inBus)
 	Node *next = child->mNext;
 	Node_MapAudioControl(child, inIndex, inBus);
 	child = next;
-    }			
+    }
 }
 
 void Group_MapAudioControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
@@ -458,7 +458,7 @@ void Group_MapAudioControl(Group *inGroup, int32 inHash, int32 *inName, uint32 i
 	Node *next = child->mNext;
 	Node_MapAudioControl(child, inHash, inName, inIndex, inBus);
 	child = next;
-    }			
+    }
 }
 void Group_SetControl(Group *inGroup, uint32 inIndex, float inValue)
 {
@@ -467,7 +467,7 @@ void Group_SetControl(Group *inGroup, uint32 inIndex, float inValue)
 		Node *next = child->mNext;
 		Node_SetControl(child, inIndex, inValue);
 		child = next;
-	}			
+	}
 }
 
 void Group_SetControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inIndex, float inValue)
@@ -477,5 +477,5 @@ void Group_SetControl(Group *inGroup, int32 inHash, int32 *inName, uint32 inInde
 		Node *next = child->mNext;
 		Node_SetControl(child, inHash, inName, inIndex, inValue);
 		child = next;
-	}			
+	}
 }

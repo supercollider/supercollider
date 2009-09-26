@@ -7,9 +7,9 @@
 	position on the gui
 */
 Position  {
-	
+
 	var <current=0,<previous=0;
-	
+
 	value { ^current }
 	value_ { arg val;
 		previous = current;

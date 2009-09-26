@@ -48,7 +48,7 @@ struct UnitDef
 	size_t mAllocSize;
 	UnitCtorFunc mUnitCtorFunc;
 	UnitDtorFunc mUnitDtorFunc;
-	
+
 	HashTable<UnitCmd, Malloc>* mCmds;
 	uint32 mFlags;
 };

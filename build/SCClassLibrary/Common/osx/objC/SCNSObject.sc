@@ -1,40 +1,40 @@
 //SCNSClass {
 //	var <name;
-//	
+//
 //	*new{|name|
 //		^super.newCopyArgs
 //	}
-//	
+//
 //	asString{
 //		^name
 //	}
-//	
+//
 //	//todo implement objc functionality
-//	
-//	
+//
+//
 //}
 
 SCNSObjectAbstract {
 	var <dataptr=nil, <> className, < nsAction=nil, < nsDelegate=nil;
-	
+
 	*dumpPool {
 		_ObjC_DumpPool
 		^this.primitiveFailed;
 	}
-	
+
 	*freePool {
 		_ObjC_FreePool
 		^this.primitiveFailed;
 	}
-	
+
 	*new{|classname, initname, args, defer=false|
 		^super.new.init(classname.asString, initname, args, defer)
 	}
-	
+
 	*getClass{|classname| //return only the class id, the object is not allocated yet ...
 		^super.new.initClass(classname);
 	}
-	
+
 	invoke{|method, args, defer=false|
 		var result;
 		if(dataptr.isNil, {^nil;});
@@ -42,32 +42,32 @@ SCNSObjectAbstract {
 		result = this.prInvoke(method, args, defer);
 		^result.asNSReturn
 	}
-	
+
 	initClass{|name|
 		this.prGetClass(name)
 	}
-	
+
 	isSubclassOf {
 		|nsclassname|
 		_ObjC_IsSubclassOfNSClass
 		^this.primitiveFailed;
 	}
-	
+
 	release {
 		if(nsAction.notNil, {nsAction.release; nsAction=nil;});
 		if(nsDelegate.notNil, {nsDelegate.release; nsDelegate=nil;});
 		this.prDealloc;
 		dataptr = nil;
 	}
-	
+
 	isAllocated {
 		^dataptr.notNil
 	}
-	
+
 	isReleased {
-		^dataptr.isNil	
+		^dataptr.isNil
 	}
-	
+
 	initAction{|actionName = "doFloatAction:"|
 		var out;
 		out = CocoaAction.newClear;
@@ -84,43 +84,43 @@ SCNSObjectAbstract {
 		out.prSetClassName;
 		nsDelegate = out;
 		nsDelegate.object = this;
-		^out	
+		^out
 	}
 
 	sendMessage{|msgname, args|
 		this.prSendMsg(msgname, args)
 	}
-	
+
 	prSendMsg{|msgname, args|
 			_ObjC_SendMessage
 	}
-//private	
+//private
 	*newFromRawPointer{|ptr|
 		^super.new.initFromRawPointer(ptr)
 	}
-	
+
 	*newClear{
 		^super.new
 	}
-	
+
 	*newWith{| classname, initname,args|
 		^super.new.initWith( classname, initname,args)
 	}
-		
+
 	initWith{| cn, initname,args|
 		className = cn;
 		this.prAllocWith( cn, initname,args);
 	}
-		
+
 	initFromRawPointer{|ptr|
 		dataptr = ptr;
 		className = this.prGetClassName;
 	}
-	
+
 	prSetClassName{
 		className = this.prGetClassName;
 	}
-	
+
 	init{|cn, in, args, defer|
 		var result;
 	//	className = cn; // set upon return
@@ -129,22 +129,22 @@ SCNSObjectAbstract {
 			^result;
 		});
 	}
-	
+
 	prAllocInit { arg classname, initname,args;
 		_ObjC_AllocInit;
 		^this.primitiveFailed;
 	}
-	
+
 	prDealloc {
 		_ObjC_Dealloc;
-		^this.primitiveFailed;		
+		^this.primitiveFailed;
 	}
-	
+
 	prInvoke { arg initname,args, defer=true;
 		_ObjC_Invoke
-		^this.primitiveFailed;		
+		^this.primitiveFailed;
 	}
-	
+
 	prGetClassName{|it|
 		_ObjC_GetClassName
 //		^this.primitiveFailed;
@@ -156,23 +156,23 @@ SCNSObjectAbstract {
 	}
 	prGetClass{arg classname;
 		_ObjC_GetClass
-		^this.primitiveFailed;				
+		^this.primitiveFailed;
 	}
-	
+
 	/*
 	asPyrString {
 		^this.prAsPyrString;
 	}
 	*/
-		
+
 	//for NSControl:
 	prSetActionForControl{|control|
 		_ObjC_SetActionForControl
-	}			
+	}
 	prSetDelegate{|control|
 		_ObjC_SetDelegate
-	}	
-	
+	}
+
 //	sendMsg{|initname,args|
 //		^this.prSendMsg(className, initname, args, 0)
 //	}
@@ -181,14 +181,14 @@ SCNSObjectAbstract {
 	*panel{|path|
 		_LoadUserPanel
 	}
-	
+
 	asArray {arg arrayType;
 		var requestedLength;
 		requestedLength = this.invoke("length").asInteger;
 		if(this.isSubclassOf("NSData"), {
 			if(arrayType.isKindOf(String), {arrayType = arrayType.asSymbol});
 			if(arrayType.isKindOf(Symbol), {
-				arrayType = case 
+				arrayType = case
 					{ arrayType == \string } { String.newClear(requestedLength) }
 					{ arrayType == \int8   } { Int8Array.newClear(requestedLength) }
 					{ arrayType == \int16  } { Int16Array.newClear(requestedLength >> 1) }
@@ -200,19 +200,19 @@ SCNSObjectAbstract {
 			^nil;
 		});
 	}
-	
+
 	prAsArray {|type, len|
 		_ObjC_NSDataToSCArray
 		^this.primitiveFailed;
 	}
-	
+
 	/*
 	prAsPyrString {
 		_ObjC_NSStringToPyrString
 		^this.primitiveFailed;
 	}
 	*/
-	
+
 	registerNotification {
 		|aNotificationName, aFunc, obj=1|
 		if(nsDelegate.isNil, {
@@ -222,7 +222,7 @@ SCNSObjectAbstract {
 		if (obj.notNil and:{ obj == 1 }) { obj = this };
 		this.prRegisterNotification(aNotificationName, obj);
 	}
-	
+
 	prRegisterNotification {|aNotificationName, obj|
 		_ObjC_RegisterNotification
 	}
@@ -231,11 +231,11 @@ SCNSObjectAbstract {
 //this is usually noy created directly. call SCNSObject-initAction instead.
 CocoaAction : SCNSObjectAbstract{
 	var <>action, notificationActions=nil, delegateActions=nil, <>object;
-	
+
 	doAction{|it|
 		action.value(this, it);
 	}
-	
+
 	doNotificationAction {
 		|notif, nsNotification, obj|
 		var func;
@@ -244,7 +244,7 @@ CocoaAction : SCNSObjectAbstract{
 			func.value(notif, nsNotification, obj, this);
 		});
 	}
-	
+
 	doDelegateAction {
 		|method, arguments|
 		var result, func;
@@ -254,7 +254,7 @@ CocoaAction : SCNSObjectAbstract{
 			^result;
 		});
 	}
-	
+
 	addMethod {
 		|selectorName, returntype, objctypes, aFunc|
 		var types;
@@ -266,7 +266,7 @@ CocoaAction : SCNSObjectAbstract{
 			delegateActions.add(selectorName.asSymbol -> aFunc);
 		});
 	}
-	
+
 	prRegisterNotification {
 		|aNotName, aFunc|
 		if(aNotName.notNil, {
@@ -274,13 +274,13 @@ CocoaAction : SCNSObjectAbstract{
 			notificationActions.add(aNotName.asSymbol -> aFunc);
 		});
 	}
-	
+
 	praddMethod {
 		|selectorName, objctypesAsString|
 		_ObjC_DelegateAddSelector
 		^this.primitiveFailed;
 	}
-	
+
 	removeMethod {
 		_ObjC_DelegateRemoveSelector
 		^this.primitiveFailed;
@@ -293,44 +293,44 @@ SCNSObject : SCNSObjectAbstract{
 
 NSBundle : SCNSObject {
 	classvar <> all;
-	
+
 	*new{|path|
 		^super.newClear.loadBundle(path);
 	}
-	
+
 	allocPrincipalClass{
 		^SCNSObject.newFromRawPointer(this.prAllocPrincipalClass);
 	}
-	
+
 	allocClassNamed{|name, initname, args, defer=false|
 		var ptr;
 		ptr = this.prAllocClassNamed(name, initname, args, defer);
 		if(ptr.isNil){"could not alloc class: %".format(name).warn; ^nil};
 		^SCNSObject.newFromRawPointer(ptr);
 	}
-	
-	
+
+
 	//private
-	
+
 	loadBundle{|path|
 		this.prLoadBundle(path);
 		if(this.isAllocated){
 			all = all.add(this);
 		}
 	}
-	
+
 	prLoadBundle{|path|
 		_ObjC_LoadBundle
 	}
-		
+
 	prAllocPrincipalClass{
 		_ObjcBundleAllocPrincipalClass
 	}
-	
+
 	prAllocClassNamed{|name, initname, args, defer|
 		_ObjcBundleAllocClassNamed
 	}
-	
+
 }
 
 /* cocoa-bridge by Jan Trutzschler 2005 */

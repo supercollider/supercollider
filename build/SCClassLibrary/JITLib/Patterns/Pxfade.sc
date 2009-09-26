@@ -7,18 +7,18 @@ PfadeIn : FilterPattern {
 	embedInStream { arg inval;
 			var outval, elapsed=0, stream, c;
 			stream = pattern.asStream;
-			
-		
+
+
 			if(holdTime > 0.0) { Event.silent(holdTime, inval).yield };
 			loop {
 				outval = stream.next(inval);
 				if(outval.isNil) { ^nil.yield };
-				
+
 				elapsed = elapsed + outval.delta;
 				c = elapsed / fadeTime;
 				if(c >= 1.0) {
 					inval = outval.yield;
-					^stream.embedInStream(inval);				
+					^stream.embedInStream(inval);
 				} {
 					outval = outval.copy;
 					outval[\amp] = c.max(0) * outval[\amp];
@@ -41,7 +41,7 @@ PfadeOut : PfadeIn {
 		loop {
 			inval = stream.next(inval) ?? { ^cleanup.exit(inval) };
 			cleanup.update(inval);
-			
+
 			elapsed = elapsed + inval.delta;
 			if(elapsed.round(tolerance) <= holdTime) {
 				inval = inval.yield;
@@ -61,11 +61,11 @@ PfadeOut : PfadeIn {
 
 PfinQuant : FilterPattern {
 	var <>quant, <>clock;
-	
+
 	*new { arg pattern, quant, clock;
 		^super.new(pattern).quant_(quant).clock_(clock)
 	}
-	
+
 	embedInStream { arg inval;
 		var value, stream = pattern.asStream;
 		var referenceClock = clock ? thisThread.clock;

@@ -1,6 +1,6 @@
 
 // a Ref is a handle to a value. you can use it to return results by reference
-// example:   
+// example:
 //		x = Ref.new(nil);
 // 		z = obj.method(x); // method puts something in reference
 //		x.value.doSomething; // retrieve value
@@ -9,7 +9,7 @@
 //
 // A special syntax shortcut for Ref.new( expr ) is to use a backquote: `expr
 
-Ref : AbstractFunction 
+Ref : AbstractFunction
 {
 	var <>value;
 	*new { arg thing; ^super.new.value_(thing) }
@@ -37,10 +37,10 @@ Ref : AbstractFunction
 	}
 	at { | key | ^value.at(key) }
 	put  { | key, val | value.put(key, val) }
-	seq { | pat | value = pat.embedInStream(this) } 
+	seq { | pat | value = pat.embedInStream(this) }
 	asControlInput { ^value.asControlInput }
 
-	// Some UGens take Buffer data which 
+	// Some UGens take Buffer data which
 	// the user might want to specify simply as `[0.9, 0.1, 0.3]
 	asBufWithValues {
 		^LocalBuf.newFrom(value);

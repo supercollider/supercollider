@@ -105,7 +105,7 @@ struct scpacket {
 		if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
 		wrpos[len4 - 1] = 0;
 		int32 swaplen = len;
-		*wrpos++ = htonl(swaplen);	
+		*wrpos++ = htonl(swaplen);
 		memcpy(wrpos, src, (size_t)len);
 		wrpos += len4;
 	}
@@ -124,7 +124,7 @@ struct scpacket {
 	}
 	int size() { return (char*)wrpos - (char*)buf; }
 	char* data() { return (char*)buf; }
-	
+
 	void OpenBundle(int64 time)
 	{
 		inbundle++;
@@ -135,7 +135,7 @@ struct scpacket {
 	{
 		if (inbundle) inbundle--;
 	}
-	
+
 	void BeginMsg()
 	{
 		if (inbundle) {

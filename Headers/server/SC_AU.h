@@ -33,12 +33,12 @@
 
 class SC_AUAudioDriver : public SC_CoreAudioDriver
 {
-    
+
 protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
-    
+
 public:
     SC_AUAudioDriver(struct World *inWorld);
 	virtual ~SC_AUAudioDriver();

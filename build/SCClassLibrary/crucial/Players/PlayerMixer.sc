@@ -2,12 +2,12 @@
 PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 
 	var <>players;
-	
+
 	*new { arg players;
 		^super.new.players_(loadDocument(players) ? [])
 	}
 
-	
+
 	asSynthDef {
 		^SynthDef(this.defName,{ arg out=0;
 			var inputBuses;
@@ -57,7 +57,7 @@ PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 			);
 		});
 	}
-		
+
 	addPlayer { arg player;
 		var bundle;
 		players = players.add(player);
@@ -65,9 +65,9 @@ PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 			bundle = AbstractPlayer.bundleClass.new;
 			//start player
 			player.makePatchOut(this.group,true,nil,bundle);
-			
+
 			//TODO   prepareToBundle
-			
+
 			player.spawnToBundle(bundle);
 			this.respawnMixerToBundle(bundle);
 			bundle.send(this.server);
@@ -92,9 +92,9 @@ PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 			"PlayerMixer-putPlayer while playing not yet implemented.".warn;
 		});
 	}
-	
+
 	beatDuration {  ^players.maxItem({ arg pl; pl.beatDuration ? inf }).beatDuration }
-	
+
 	children { ^this.players }
 	storeArgs { ^[players] }
 	rate { ^\audio }
@@ -104,9 +104,9 @@ PlayerMixer : AbstractPlayer {  // will become a HasPatchIns
 }
 
 GroupedPlayerMixer : PlayerMixer {
-	
+
 	var groupings,groups;
-	
+
 	*new { arg ... players;
 		^super.new.gpminit(players)
 	}
@@ -116,7 +116,7 @@ GroupedPlayerMixer : PlayerMixer {
 	}
 
 	makeResourcesToBundle { arg bundle;
-		groups = groupings.collect({ |pls,i| 
+		groups = groupings.collect({ |pls,i|
 			var g;
 			g = Group.basicNew(this.server);
 			this.annotate(g,"group"+i);
@@ -133,7 +133,7 @@ GroupedPlayerMixer : PlayerMixer {
 			})
 		})
 	}
-	
+
 	freeResourcesToBundle { arg bundle;
 		groups.do(_.freeToBundle(bundle));
 		groups = nil;

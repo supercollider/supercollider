@@ -1,29 +1,29 @@
 
-//these extensions provide means to wrap Objects so that they 
+//these extensions provide means to wrap Objects so that they
 //make sense within the server bus system according to a node proxy.
 
 ////////////////////// graphs, functions, numericals and arrays //////////////////
 
-+Object { 
-	
-	//objects can define their own wrapper classes dependant on 
++Object {
+
+	//objects can define their own wrapper classes dependant on
 	//how they play, stop, build, etc. see SynthDefControl for example
 	//the original (wrapped) object can be reached by the .source message
 	//for objects that only create ugen graphs, define prepareForProxySynthDef(proxy)
-	
+
 	proxyControlClass {
 		^SynthDefControl
 	}
-	
+
 	makeProxyControl { arg channelOffset=0;
-		^this.proxyControlClass.new(this, channelOffset); 
+		^this.proxyControlClass.new(this, channelOffset);
 	}
-	
-	
+
+
 	//any preparations that have to be done to prepare the object
 	//implement 'prepareForProxySynthDef' to return a ugen func
-	
-	
+
+
 	//this method is called from within the Control
 	buildForProxy { arg proxy, channelOffset=0, index;
 		var argNames;
@@ -32,23 +32,23 @@
 			SystemSynthDefs.tempNamePrefix ++ proxy.generateUniqueName ++ index,
 			this.prepareForProxySynthDef(proxy),
 			proxy.nodeMap.ratesFor(argNames),
-			nil, 
-			true, 
+			nil,
+			true,
 			channelOffset,
 			proxy.numChannels,
 			proxy.rate
-		); 
+		);
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
-	
+
 	defaultArgs { ^nil }
 	argNames { ^nil }
-	
+
 	//support for unop / binop proxy
 	isNeutral { ^true }
 	initBus { ^true }
 	wakeUp {}
-	
+
 }
 
 
@@ -63,7 +63,7 @@
 }
 
 +SimpleNumber {
-	
+
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, 1);
 		^{ÊDC.multiNewList([proxy.rate] ++ this) };
@@ -76,7 +76,7 @@
 			"A synth is no valid source for a proxy.\n"
 			"For instance, ~out = { ... }.play would cause this and should be:\n"
 			"~out = { ... }; ~out.play; or (~out = { ... }).play;"
-		).throw; 
+		).throw;
 	}
 }
 
@@ -90,7 +90,7 @@
 +SequenceableCollection {
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
-		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) } 
+		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) }
 		// could use SynthDef.wrap, but needs type check for function.
 	}
 }
@@ -160,9 +160,9 @@
 	proxyControlClass { ^StreamControl }
 
 	buildForProxy {  arg proxy, channelOffset=0;
-		^PauseStream(this.endless.asStream 
+		^PauseStream(this.endless.asStream
 			<> (
-				nodeProxy: proxy, 
+				nodeProxy: proxy,
 				channelOffset: channelOffset,
 				server: { proxy.server },
 				out: { proxy.index },
@@ -175,15 +175,15 @@
 +EventPatternProxy {
 	proxyControlClass { ^PatternControl }
 
-	buildForProxy {  arg proxy, channelOffset=0; 
-		^this.endless.buildForProxy(proxy, channelOffset) 
+	buildForProxy {  arg proxy, channelOffset=0;
+		^this.endless.buildForProxy(proxy, channelOffset)
 	}
 }
 
 
 +Pattern {
 	proxyControlClass { ^PatternControl }
-	
+
 	buildForProxy { arg proxy, channelOffset=0;
 		var player = this.asEventStreamPlayer;
 		var event = player.event.buildForProxy(proxy, channelOffset);
@@ -195,7 +195,7 @@
 	proxyControlClass { ^StreamControl }
 	buildForProxy { arg proxy, channelOffset=0;
 		var ok, index, server, numChannels, rate, finish;
-		ok = if(proxy.isNeutral) { 
+		ok = if(proxy.isNeutral) {
 			rate = this.at(\rate) ? 'audio';
 			numChannels = this.at(\numChannels) ? NodeProxy.defaultNumAudio;
 			proxy.initBus(rate, numChannels);
@@ -204,7 +204,7 @@
 			numChannels = proxy.numChannels;
 			true
 		};
-		^if(ok) { 
+		^if(ok) {
 				index = proxy.index;
 				server = proxy.server;
 				this.use({
@@ -240,29 +240,29 @@
 
 +AbstractPlayControl {
 	makeProxyControl { ^this.deepCopy } //already wrapped, but needs to be copied
-	
+
 	/* these adverbial extendible interfaces are for supporting different role schemes.
 	it is called by Association, so ~out = \filter -> ... will call this. The first arg passed is 	the value of the association */
 
 	*initClass {
 		proxyControlClasses = (
-			filter: SynthDefControl, 
+			filter: SynthDefControl,
 			set: StreamControl,
 			stream: PatternControl,
 			setbus: StreamControl,
 			setsrc: StreamControl
 		);
-		
-		buildMethods = ( 		
-		
+
+		buildMethods = (
+
 		filter: #{ arg func, proxy, channelOffset=0, index;
 			var ok, ugen;
-			if(proxy.isNeutral) { 
+			if(proxy.isNeutral) {
 				ugen = func.value(Silent.ar);
 				ok = proxy.initBus(ugen.rate, ugen.numChannels);
 				if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 			};
-			
+
 			{ arg out;
 				var e;
 				e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
@@ -271,7 +271,7 @@
 				} {
 					XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
 			}.buildForProxy( proxy, channelOffset, index )
-		
+
 		},
 		set: #{ arg pattern, proxy, channelOffset=0, index;
 			var args;
@@ -306,31 +306,31 @@
 		},
 		filterIn: #{ arg func, proxy, channelOffset=0, index;
 			var ok, ugen;
-			if(proxy.isNeutral) { 
+			if(proxy.isNeutral) {
 				ugen = func.value(Silent.ar);
 				ok = proxy.initBus(ugen.rate, ugen.numChannels);
 				if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 			};
-			
+
 			{ arg out;
 				var in;
 				var egate = EnvGate.new;
 				var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
 				var dryamp = 1 - wetamp;
-				if(proxy.rate === 'audio') { 
+				if(proxy.rate === 'audio') {
 					in = In.ar(out, proxy.numChannels);
-					XOut.ar(out, egate, SynthDef.wrap(func, nil, 
+					XOut.ar(out, egate, SynthDef.wrap(func, nil,
 						[in * wetamp]) + (dryamp * in))
-				} { 
+				} {
 					in = In.kr(out, proxy.numChannels);
-					XOut.kr(out, egate, SynthDef.wrap(func, nil, 
+					XOut.kr(out, egate, SynthDef.wrap(func, nil,
 						[in * wetamp]) + (dryamp * in))
 				};
 			}.buildForProxy( proxy, channelOffset, index )
 		},
 
 		mix: #{ arg func, proxy, channelOffset=0, index;
-			
+
 			{ var e = EnvGate.new * Control.names(["mix"++(index ? 0)]).kr(1.0);
 				e * SynthDef.wrap(func);
 			}.buildForProxy( proxy, channelOffset, index )

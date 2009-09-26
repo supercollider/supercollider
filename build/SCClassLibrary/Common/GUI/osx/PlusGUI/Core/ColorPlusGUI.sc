@@ -1,4 +1,4 @@
-+ Color {	
++ Color {
 	setStroke {
 		_Color_SetStroke
 		^this.primitiveFailed

@@ -26,8 +26,8 @@ PyrObject represents the structure of all SC Objects.
 #ifndef _PYROBJECT_H_
 #define _PYROBJECT_H_
 
-#include "PyrSlot.h" 
-	
+#include "PyrSlot.h"
+
 /* special gc colors */
 enum {
 	obj_permanent		= 1,		// sent to gc->New as a flag
@@ -42,17 +42,17 @@ enum {
 };
 
 /* format types : */
-enum { 
+enum {
 	obj_notindexed,
-	obj_slot, 
-	obj_double, 
-	obj_float, 
-	obj_int32, 
-	obj_int16, 
-	obj_int8, 
+	obj_slot,
+	obj_double,
+	obj_float,
+	obj_int32,
+	obj_int16,
+	obj_int8,
 	obj_char,
 	obj_symbol,
-	
+
 	NUMOBJFORMATS
 };
 
@@ -62,7 +62,7 @@ enum {
 	prev, next : pointers in the GC treadmill
 	classptr : pointer to the object's class
 	size : number of slots or indexable elements.
-	
+
 	obj_format : what kind of data this object holds
 	obj_sizeclass : power of two size class of the object
 	obj_flags :
@@ -75,18 +75,18 @@ enum {
 
 struct PyrObjectHdr {
 	struct PyrObjectHdr *prev, *next;
-	struct PyrClass *classptr;		
-	int size;			
-	
-	unsigned char obj_format;	
+	struct PyrClass *classptr;
+	int size;
+
+	unsigned char obj_format;
 	unsigned char obj_sizeclass;
-	unsigned char obj_flags;	
-	unsigned char gc_color;			
+	unsigned char obj_flags;
+	unsigned char gc_color;
 
 	int scratch1;
 
 	int SizeClass() { return obj_sizeclass; }
-	
+
 	void SetMark() { obj_flags |= obj_marked; }
 	void ClearMark() { obj_flags &= ~obj_marked; }
 	bool IsMarked() { return ((obj_flags & obj_marked) != 0); } // BG2004-10-09 : the previous version did execute some hidden code in int -> bool conversion
@@ -97,42 +97,42 @@ struct PyrObject : public PyrObjectHdr {
 	PyrSlot slots[1];
 };
 
-struct PyrList : public PyrObjectHdr 
+struct PyrList : public PyrObjectHdr
 {
 	PyrSlot array;
 };
 
-struct PyrDoubleArray : public PyrObjectHdr 
+struct PyrDoubleArray : public PyrObjectHdr
 {
 	double d[1];
 };
 
-struct PyrFloatArray : public PyrObjectHdr 
+struct PyrFloatArray : public PyrObjectHdr
 {
 	float f[1];
 };
 
-struct PyrInt32Array : public PyrObjectHdr 
+struct PyrInt32Array : public PyrObjectHdr
 {
 	uint32 i[1];
 };
 
-struct PyrInt16Array : public PyrObjectHdr 
+struct PyrInt16Array : public PyrObjectHdr
 {
 	uint16 i[1];
 };
 
-struct PyrInt8Array : public PyrObjectHdr 
+struct PyrInt8Array : public PyrObjectHdr
 {
 	uint8 b[1];
 };
 
-struct PyrString : public PyrObjectHdr 
+struct PyrString : public PyrObjectHdr
 {
 	char s[1];
 };
 
-struct PyrSymbolArray : public PyrObjectHdr 
+struct PyrSymbolArray : public PyrObjectHdr
 {
 	PyrSymbol* symbols[1];
 };
@@ -267,13 +267,13 @@ void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index);
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
 
-inline int ARRAYMAXINDEXSIZE(PyrObjectHdr* obj) 
-{ 
-	return (1L << obj->obj_sizeclass); 
+inline int ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
+{
+	return (1L << obj->obj_sizeclass);
 }
 
-inline int MAXINDEXSIZE(PyrObjectHdr* obj) 
-{ 
+inline int MAXINDEXSIZE(PyrObjectHdr* obj)
+{
 	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
 }
 

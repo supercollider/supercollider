@@ -1,4 +1,4 @@
-// Since SC v3.2 dev, Document is an ABSTRACT class. Can't be instantiated directly. 
+// Since SC v3.2 dev, Document is an ABSTRACT class. Can't be instantiated directly.
 // Subclasses provide the editor-specific implementation, e.g. CocoaDocument for the standard Mac interface.
 // Subclasses also (in their SC code files) add a "implementationClass" method to Document to tell it to use them.
 
@@ -6,10 +6,10 @@ Document {
 
 	classvar <dir="", <wikiDir="", <allDocuments, >current;
 	classvar <>globalKeyDownAction, <> globalKeyUpAction, <>initAction;
-	
+
 	classvar <>autoRun = true;
 	classvar <>wikiBrowse = true;
-	
+
 	classvar <>implementationClass;
 	classvar <postColor;
 	classvar <theme, <themes;
@@ -17,18 +17,18 @@ Document {
 	//don't change the order of these vars:
 	var <dataptr, <>keyDownAction, <>keyUpAction, <>mouseUpAction;
 	var <>toFrontAction, <>endFrontAction, <>onClose, <>mouseDownAction;
-	
+
 	var <stringColor;
-	
+
 	var <envir, savedEnvir;
 	var <editable;
-	
-	
+
+
 	*startup {
 		var num, doc;
 		allDocuments = [];
 		num = this.numberOfOpen;
-		num.do { | i | 
+		num.do { | i |
 			doc = this.newFromIndex(i);
 		};
 		postColor = Color.black;
@@ -44,11 +44,11 @@ Document {
 			);
 		theme = themes.default;
 	}
-	
-	*open { | path, selectionStart=0, selectionLength=0, envir | 
+
+	*open { | path, selectionStart=0, selectionLength=0, envir |
 		var doc, env;
 		env = currentEnvironment;
-		if(this.current.notNil) { this.current.restoreCurrentEnvironment };		
+		if(this.current.notNil) { this.current.restoreCurrentEnvironment };
 		doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
 		if (doc.notNil) {
 			doc.envir_(envir)
@@ -57,11 +57,11 @@ Document {
 		};
 		^doc
 	}
-	
-	*new { | title="Untitled", string="", makeListener=false, envir | 
+
+	*new { | title="Untitled", string="", makeListener=false, envir |
 		var doc, env;
 		env = currentEnvironment;
-		if(this.current.notNil) { this.current.restoreCurrentEnvironment };		
+		if(this.current.notNil) { this.current.restoreCurrentEnvironment };
 		doc = Document.implementationClass.new(title, string, makeListener);
 		if (doc.notNil) {
 			doc.envir_(envir)
@@ -70,8 +70,8 @@ Document {
 		};
 		^doc
 	}
-	
-	*dir_ { | path | 
+
+	*dir_ { | path |
 		path = path.standardizePath;
 		if(path == "") { dir = path } {
 			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
@@ -79,8 +79,8 @@ Document {
 			}
 		}
 	}
-	
-	*wikiDir_ { | path |  
+
+	*wikiDir_ { | path |
 		path = path.standardizePath;
 		if(path == "") {wikiDir = path } {
 			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
@@ -88,8 +88,8 @@ Document {
 			}
 		}
 	}
-	
-	*standardizePath { | p | 
+
+	*standardizePath { | p |
 		var pathName;
 		pathName = PathName.fromOS9(p.standardizePath);
 		^if(pathName.isRelativePath) {
@@ -98,29 +98,29 @@ Document {
 			pathName.fullPath
 		}
 	}
-	*abrevPath { | path | 
+	*abrevPath { | path |
 		if(path.size < dir.size) { ^path };
 		if(path.copyRange(0,dir.size - 1) == dir) {
 			^path.copyRange(dir.size, path.size - 1)
 		};
 		^path
 	}
-	
+
 	*openDocuments {
 		^allDocuments
 	}
-	
+
 	*hasEditedDocuments {
-		allDocuments.do { | doc, i | 
+		allDocuments.do { | doc, i |
 			if(doc.isEdited) {
 				^true;
 			}
 		}
 		^false
 	}
-	
-	*closeAll { | leavePostWindowOpen = true | 
-		allDocuments.do { | doc, i | 
+
+	*closeAll { | leavePostWindowOpen = true |
+		allDocuments.do { | doc, i |
 			if(leavePostWindowOpen.not) {
 				doc.close;
 			} {
@@ -130,11 +130,11 @@ Document {
 			}
 		}
 	}
-	
-	*closeAllUnedited { | leavePostWindowOpen = true | 
+
+	*closeAllUnedited { | leavePostWindowOpen = true |
 		var listenerWindow;
-		allDocuments.do({ | doc, i | 
-			if(doc.isListener,{ 
+		allDocuments.do({ | doc, i |
+			if(doc.isListener,{
 				listenerWindow = doc;
 			},{
 				if(doc.isEdited.not, {
@@ -153,40 +153,40 @@ Document {
 		});
 		^current;
 	}
-	
+
 	*listener {
 		^allDocuments[this.implementationClass.prGetIndexOfListener];
 	}
 	isListener {
 		^allDocuments.indexOf(this) == this.class.prGetIndexOfListener
 	}
-	
+
 // document setup
-	
+
 	path {
 		^this.prGetFileName
 	}
 	path_ { |apath|
 		this.prSetFileName(apath);
 	}
-	dir { var path = this.path; ^path !? { path.dirname } }	
+	dir { var path = this.path; ^path !? { path.dirname } }
 	name {
 		^this.title
 	}
-	
+
 	name_ { |aname|
 		this.title_(aname)
 	}
-		
+
 	title {
 		^this.prGetTitle
 	}
-	
-	title_ { | argName | 
+
+	title_ { | argName |
 		this.prSetTitle(argName);
 	}
-	
-	background_ { | color | 
+
+	background_ { | color |
 		this.prSetBackgroundColor(color);
 	}
 	background {
@@ -195,89 +195,89 @@ Document {
 		this.prGetBackgroundColor(color);
 		^color;
 	}
-	
-	selectedBackground_ { | color | 
+
+	selectedBackground_ { | color |
 		this.prSetSelectedBackgroundColor(color);
 	}
-	
+
 	selectedBackground {
 		var color;
 		color = Color.new;
 		this.prGetSelectedBackgroundColor(color);
 		^color;
 	}
-	
-	*postColor_ { | col | 
+
+	*postColor_ { | col |
 		postColor = col;
 		^Document.implementationClass.postColor_(col);
 	}
-	
-	stringColor_ { | color, rangeStart = -1, rangeSize = 0 | 
+
+	stringColor_ { | color, rangeStart = -1, rangeSize = 0 |
 		stringColor = color;
 		this.setTextColor(color,rangeStart, rangeSize);
 	}
 	bounds {
 		^this.prGetBounds(Rect.new);
 	}
-	bounds_ { | argBounds | 
+	bounds_ { | argBounds |
 		^this.prSetBounds(argBounds);
 	}
-	
-// interaction:	
+
+// interaction:
 
 	close {
 		this.prclose
 	}
-	
+
 	front {
 		^this.subclassResponsibility
 	}
-	
+
 	unfocusedFront {
 		^this.subclassResponsibility
 	}
-	
+
 	alwaysOnTop_ { |boolean=true|
 		^this.subclassResponsibility
 	}
-	
+
 	alwaysOnTop {
 		^this.subclassResponsibility
 	}
-		
+
 	syntaxColorize {
 		^this.subclassResponsibility
 	}
-	
-	selectLine { | line | 
+
+	selectLine { | line |
 		this.prSelectLine(line);
 	}
-	
-	selectRange { | start=0, length=0 | 
+
+	selectRange { | start=0, length=0 |
 		^this.subclassResponsibility
 	}
-	
-	editable_ { | abool=true | 
+
+	editable_ { | abool=true |
 		editable = abool;
 		this.prIsEditable_(abool);
 	}
 	removeUndo {
 		^this.subclassResponsibility
 	}
-	
+
 	promptToSave_ { | bool |
 		^this.subclassResponsibility
 	}
-	
+
 	promptToSave {
 		^this.subclassResponsibility
-	}	
-	
+	}
+
 	underlineSelection {
 		^this.subclassResponsibility
 	}
-	
-	*setTheme { | themeName | 
+
+	*setTheme { | themeName |
 		theme = themes[themeName];
 		Document.implementationClass.prSetSyntaxColorTheme(
 			theme.textColor,
@@ -288,7 +288,7 @@ Document {
 			theme.numberColor
 		);
 	}
-	
+
 // state info
 	isEdited {
 		^this.subclassResponsibility
@@ -296,66 +296,66 @@ Document {
 	isFront {
 		^Document.current === this
 	}
-	
+
 	selectionStart {
 		^this.selectedRangeLocation
 	}
-	
+
 	selectionSize {
 		^this.selectedRangeSize
 	}
-	
-	string { | rangestart, rangesize = 1 | 
+
+	string { | rangestart, rangesize = 1 |
 		if(rangestart.isNil,{
 		^this.text;
 		});
 		^this.rangeText(rangestart, rangesize);
 	}
-	
-	string_ { | string, rangestart = -1, rangesize = 1 | 
+
+	string_ { | string, rangestart = -1, rangesize = 1 |
 		this.insertTextRange(string, rangestart, rangesize);
 	}
 	selectedString {
 		^this.selectedText
 	}
-	
-	
-	font_ { | font, rangestart = -1, rangesize=0 | 
+
+
+	font_ { | font, rangestart = -1, rangesize=0 |
 		this.setFont(font, rangestart, rangesize)
 	}
-		 
-	selectedString_ { | txt | 
+
+	selectedString_ { | txt |
 		this.prinsertText(txt)
 	}
-	
+
 	currentLine {
 		var start, end, str, max;
 		str = this.string;
 		max = str.size;
 		end = start = this.selectionStart;
-		while { 
+		while {
 			str[start] !== Char.nl and: { start >= 0 }
 		} { start = start - 1 };
-		while { 
+		while {
 			str[end] !== Char.nl and: { end < max }
 		} { end = end + 1 };
 		^str.copyRange(start + 1, end);
 	}
-	
-//actions:	
-	
+
+//actions:
+
 	didBecomeKey {
 		this.class.current = this;
 		this.saveCurrentEnvironment;
 		toFrontAction.value(this);
 	}
-	
+
 	didResignKey {
 		endFrontAction.value(this);
 		this.restoreCurrentEnvironment;
 	}
 
-	makeWikiPage { | wikiWord, extension=(".rtf"), directory | 
+	makeWikiPage { | wikiWord, extension=(".rtf"), directory |
 		var filename, file, doc, string, dirName;
 		directory = directory ? wikiDir;
 		filename = directory ++ wikiWord ++ extension;
@@ -366,12 +366,12 @@ Document {
 				"Write about " ++ wikiWord ++ " here.\n}";
 			file.write(string);
 			file.close;
-			
+
 			doc = this.class.open(filename);
 			doc.path = filename;
 			doc.selectRange(0,0x7FFFFFFF);
 			doc.onClose = {
-				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {  
+				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {
 					unixCmd("rm" + filename)
 				};
 			};
@@ -381,20 +381,20 @@ Document {
 			dirName = wikiWord.dirname;
 			if(dirName != ".") {
 				dirName = directory ++ dirName;
-				"created directory: % \n".postf(dirName); 
-				unixCmd("mkdir -p" + dirName); 
+				"created directory: % \n".postf(dirName);
+				unixCmd("mkdir -p" + dirName);
 			};
 		}
 	}
-	
+
 	openWikiPage {
 		var selectedText, filename, index, directory;
 		var extensions = #[".rtf", ".sc", ".scd", ".txt", "", ".rtfd", ".html"];
 		selectedText = this.selectedText;
 		index = this.selectionStart;
-		
+
 		this.selectRange(index, 0);
-		
+
 		// refer to local link with round parens
 		if(selectedText.first == $( /*)*/ and: {/*(*/ selectedText.last == $) }) {
 				selectedText = selectedText[1 .. selectedText.size-2];
@@ -402,9 +402,9 @@ Document {
 		} {
 				directory = wikiDir;
 		};
-		
+
 		case { selectedText[0] == $* }
-		{ 
+		{
 			// execute file
 			selectedText = selectedText.drop(1);
 			extensions.do { |ext|
@@ -429,7 +429,7 @@ Document {
 			// open help file
 			selectedText[1 .. selectedText.size-2].openHelpFile
 		}
-		{ selectedText.containsStringAt(0, "http://") 
+		{ selectedText.containsStringAt(0, "http://")
 			or: { selectedText.containsStringAt(0, "file://") } }
 		{
 			// open URL
@@ -441,7 +441,7 @@ Document {
 				pathMatch(directory ++ selectedText).collect({ |it|it.basename ++ "\n"}).join
 			)
 		}
-		
+
 		{
 			if(index + selectedText.size > this.text.size) { ^this };
 			extensions.do { |ext|
@@ -456,25 +456,25 @@ Document {
 			this.makeWikiPage(selectedText, nil, directory);
 		};
 	}
-		
-	mouseUp{ | x, y, modifiers, buttonNumber, clickCount, clickPos | 
-		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount);		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not } 
+
+	mouseUp{ | x, y, modifiers, buttonNumber, clickCount, clickPos |
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount);		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not }
 			and: { this.selectUnderlinedText(clickPos) } ) {
 			^this.openWikiPage
-		};		
+		};
 	}
-	
-	keyDown { | character, modifiers, unicode, keycode | 
+
+	keyDown { | character, modifiers, unicode, keycode |
 		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
 		keyDownAction.value(this,character, modifiers, unicode, keycode);
 	}
 
-	keyUp { | character, modifiers, unicode, keycode | 
+	keyUp { | character, modifiers, unicode, keycode |
 		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
 		keyUpAction.value(this,character, modifiers, unicode, keycode);
 	}
-		
-	== { | doc | 
+
+	== { | doc |
 		^if(this.path.isNil or: { doc.path.isNil }) { doc === this } {
 			this.path == doc.path
 		}
@@ -484,60 +484,60 @@ Document {
 
 // private implementation
 
-	prIsEditable_{ | editable=true | 
+	prIsEditable_{ | editable=true |
 		^this.subclassResponsibility
 	}
-	prSetTitle { | argName | 
+	prSetTitle { | argName |
 		^this.subclassResponsibility
 	}
 	prGetTitle {
 		^this.subclassResponsibility
-	}	
+	}
 	prGetFileName {
 		^this.subclassResponsibility
 	}
 	prSetFileName { | apath |
 		^this.subclassResponsibility
 	}
-	prGetBounds { | argBounds | 
+	prGetBounds { | argBounds |
 		^this.subclassResponsibility
 	}
 
-	prSetBounds { | argBounds | 
+	prSetBounds { | argBounds |
 		^this.subclassResponsibility
 	}
-	
+
 	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC|
 		^this.subclassResponsibility;
 	}
 
 	// if range is -1 apply to whole doc
-	setFont { | font, rangeStart= -1, rangeSize=100 | 
+	setFont { | font, rangeStart= -1, rangeSize=100 |
 		^this.subclassResponsibility
 	}
-	
-	setTextColor { | color,  rangeStart = -1, rangeSize = 0 | 
+
+	setTextColor { | color,  rangeStart = -1, rangeSize = 0 |
 		^this.subclassResponsibility
 	}
-	
+
 	text {
 		^this.subclassResponsibility
 	}
 	selectedText {
 		^this.subclassResponsibility
 	}
-	selectUnderlinedText { | clickPos | 
+	selectUnderlinedText { | clickPos |
 		^this.subclassResponsibility
 	}
-	
-	linkAtClickPos { | clickPos | 
+
+	linkAtClickPos { | clickPos |
 		^this.subclassResponsibility
 	}
-	
-	rangeText { | rangestart=0, rangesize=1 |  
+
+	rangeText { | rangestart=0, rangesize=1 |
 		^this.subclassResponsibility
 	}
-	
+
 	prclose {
 		^this.subclassResponsibility
 	}
@@ -548,11 +548,11 @@ Document {
 		allDocuments.remove(this);
 		dataptr = nil;
 	}
-	
-	prinsertText { | dataPtr, txt | 
+
+	prinsertText { | dataPtr, txt |
 		^this.subclassResponsibility
 	}
-	insertTextRange { | string, rangestart, rangesize | 
+	insertTextRange { | string, rangestart, rangesize |
 		^this.subclassResponsibility
 	}
 
@@ -567,9 +567,9 @@ Document {
 		};
 		current = this;
 		initAction.value(this);
-	
+
 	}
-	
+
 	//this is called after recompiling the lib
 	*prnumberOfOpen {
 		^this.subclassResponsibility
@@ -580,42 +580,42 @@ Document {
 		} { ^allDocuments.size };
 		^0
 	}
-	
-	*newFromIndex { | idx | 
+
+	*newFromIndex { | idx |
 		^super.new.initByIndex(idx)
 	}
-	initByIndex { | idx | 
+	initByIndex { | idx |
 		//allDocuments = allDocuments.add(this);
 		var doc;
 		doc = this.prinitByIndex(idx);
 		if(doc.isNil,{^nil});
 		this.prAdd;
 	}
-	prinitByIndex { | idx | 
+	prinitByIndex { | idx |
 		^this.subclassResponsibility
 	}
-	
+
 	//this is called from the menu: open, new
 	*prGetLast {
 		^Document.implementationClass.prBasicNew.initLast
 	}
-	
+
 	initLast {
 		^this.subclassResponsibility
 	}
-	
+
 	prGetLastIndex {
 		^this.subclassResponsibility
 	}
-	
+
 	// private open
-	initFromPath { | path, selectionStart, selectionLength | 
+	initFromPath { | path, selectionStart, selectionLength |
 		var stpath;
 	//	path = apath;
 		stpath = this.class.standardizePath(path);
 		this.propen(stpath, selectionStart, selectionLength);
-		if(dataptr.isNil,{ 
-			this.class.allDocuments.do{ |d| 
+		if(dataptr.isNil,{
+			this.class.allDocuments.do{ |d|
 					if(d.path == stpath.absolutePath){
 						^d
 					}
@@ -625,37 +625,37 @@ Document {
 		this.background_(Color.white);
 		^this.prAdd;
 	}
-	propen { | path, selectionStart=0, selectionLength=0 | 
+	propen { | path, selectionStart=0, selectionLength=0 |
 		^this.subclassResponsibility
 	}
-	
+
 	// private newTextWindow
-	initByString{ | argTitle, str, makeListener | 
-	
+	initByString{ | argTitle, str, makeListener |
+
 		this.prinitByString(argTitle, str, makeListener);
-		this.background_(Color.white);		
+		this.background_(Color.white);
 		if(dataptr.isNil,{^nil});
 		this.prAdd;
 		this.title = argTitle;
-	
+
 	}
-	prinitByString { | title, str, makeListener | 
+	prinitByString { | title, str, makeListener |
 		^this.subclassResponsibility
 	}
 
 	// other private
 	// if -1 whole doc
-	
-	prSetBackgroundColor { | color | 
+
+	prSetBackgroundColor { | color |
 		^this.subclassResponsibility
 	}
-	prGetBackgroundColor { | color | 
+	prGetBackgroundColor { | color |
 		^this.subclassResponsibility
 	}
-	prSetSelectedBackgroundColor { | color | 
+	prSetSelectedBackgroundColor { | color |
 		^this.subclassResponsibility;
 	}
-	prGetSelectedBackgroundColor { | color | 
+	prGetSelectedBackgroundColor { | color |
 		^this.subclassResponsibility;
 	}
 	selectedRangeLocation {
@@ -664,21 +664,21 @@ Document {
 	selectedRangeSize {
 		^this.subclassResponsibility
 	}
-	
-	prSelectLine { | line | 
+
+	prSelectLine { | line |
 		^this.subclassResponsibility
 	}
-	
+
 	*prGetIndexOfListener {
 		^this.subclassResponsibility
 	}
-	
-	
+
+
 	//---not yet implemented
 	// ~/Documents
 	// /Volumes
 	// Music/Patches
-	
+
 	//*reviewUnsavedDocumentsWithAlertTitle
 	//*saveAllDocuments
 	//*recentDocumentPaths
@@ -687,35 +687,35 @@ Document {
 	//print
 	//
 	//hasPath  was loaded
-	
-	
+
+
 // Environment handling  Document with its own envir must set and restore currentEnvironment on entry and exit.
 // Requires alteration of *open, *new, closed, didBecomeKey, and didResignKey
 
 	envir_ { | ev |
 		envir = ev;
 		if (this.class.current == this) {
-			if (savedEnvir.isNil) {	 
+			if (savedEnvir.isNil) {
 				this.saveCurrentEnvironment
 			}
 		}
-	}	
-	
+	}
+
 	restoreCurrentEnvironment {
 		if (envir.notNil) { currentEnvironment = savedEnvir };
 	}
-	
+
 	saveCurrentEnvironment {
-		if (envir.notNil) {  
-			savedEnvir = currentEnvironment; 
-			currentEnvironment = envir; 
+		if (envir.notNil) {
+			savedEnvir = currentEnvironment;
+			currentEnvironment = envir;
 		}
 	}
 
 	*prBasicNew {
 		^super.new
 	}
-		
+
 }
 
 

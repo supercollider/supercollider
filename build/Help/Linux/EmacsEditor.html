@@ -70,7 +70,7 @@ For a general reference to Emacs shortcut, check out this <A href="http://lpn.rn
 <tr><td>M-x revert-buffer RETURN</td><td>undo all changes since last save</td></tr>
 <tr><td>M-x recover-file RETURN</td><td>Recover text from an autosave-file</td></tr>
 <tr><td>M-x recover-session RETURN</td><td>Recover text from an autosave-files if you edited several files</td></tr>
- 
+
 
 <tr><td colspan="2" align="center"><strong>Editing</strong></td></tr>
 <tr><td>M-w</td><td>Copy</td></tr>
@@ -214,7 +214,7 @@ Normally w3m uses the arrow keys to jump between hyperlinks. For browsing SC hel
   (interactive)
   (scroll-up (/ (window-height) 2))
   )
-      
+
 (defun scroll-down-half ()
   "Scroll down half a page."
   (interactive)
@@ -242,11 +242,11 @@ For adding a shortcut (C-x C-r) to open a recent file add this code as well:
     (defun recentf-open-files-compl ()
       (interactive)
       (let* ((all-files recentf-list)
-        (tocpl (mapcar (function 
+        (tocpl (mapcar (function
            (lambda (x) (cons (file-name-nondirectory x) x))) all-files))
         (prompt (append '("File name: ") tocpl))
         (fname (completing-read (car prompt) (cdr prompt) nil nil)))
-        (find-file (cdr (assoc-ignore-representation fname tocpl))))) 
+        (find-file (cdr (assoc-ignore-representation fname tocpl)))))
 
     (global-set-key "\C-x\C-r" 'recentf-open-files-compl)
 </pre>

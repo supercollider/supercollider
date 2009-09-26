@@ -8,7 +8,7 @@ NodeControl {
 	}
 	value_ { arg aval;
 		node.set(index,aval)
-	}	
+	}
 	readFromBus { arg bus;
 		node.map(index,bus)
 	}
@@ -16,7 +16,7 @@ NodeControl {
 		node.map(index,-1)
 	}
 	setMsg { arg value; ^[15, node.nodeID,index, value] }
-	
+
 	server { ^node.server }
 	group { ^node.group }
 }

@@ -30,7 +30,7 @@ struct Rate
 	double mSampleDur;  // seconds per sample
 	double mBufDuration; // seconds per buffer
 	double mBufRate;	// buffers per second
-	double mSlopeFactor;  // 1. / NumSamples 
+	double mSlopeFactor;  // 1. / NumSamples
 	double mRadiansPerSample; // 2pi / SampleRate
 	int mBufLength;	// length of the buffer
 	// second order filter loops are often unrolled by 3

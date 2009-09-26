@@ -4,7 +4,7 @@
  *
  *  Created by jan truetzschler v. falkenstein on Wed Apr 16 2003.
  *  Copyright (c) 2003 sampleAndHold.org. All rights reserved.
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -55,11 +55,11 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 {
     //call action here;
     // post("text done");
-    pthread_mutex_lock (&gLangMutex); 
+    pthread_mutex_lock (&gLangMutex);
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
-	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class 
-        //set arguments: 
+	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class
+        //set arguments:
 	++g->sp;SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechdoneAction, 2);
 	if(speechStrings[(int) inRefCon] != NULL){
@@ -67,22 +67,22 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 		speechStrings[(int) inRefCon] = NULL;
 	}
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex); 
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen);
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen) {
     //post("word done");
-	pthread_mutex_lock (&gLangMutex); 
+	pthread_mutex_lock (&gLangMutex);
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
-	++g->sp; SetObject(g->sp, s_speech->u.classobj); 
-    //set arguments: 
+	++g->sp; SetObject(g->sp, s_speech->u.classobj);
+    //set arguments:
 	++g->sp; SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechwordAction, 2);
 
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex); 
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 int prInitSpeech(struct VMGlobals *g, int numArgsPushed);
@@ -94,7 +94,7 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
     int chan;
     slotIntVal(b, &chan);
 	if (chan < 0 || chan >= kMaxSpeechChannels) return errIndexOutOfRange;
-	
+
 	for (int i=0; i<chan; ++i) {
 		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);
         NewSpeechChannel( NULL, fCurSpeechChannel+i );
@@ -130,7 +130,7 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 
 	MEMFAIL(speechStrings[chan]);
 	slotStrVal(str, speechStrings[chan], str->uo->size+1);
-	
+
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
 	theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));
 	//should be freed only after the text was spoken!
@@ -243,7 +243,7 @@ int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
 	slotIntVal(b, &chan);
 	slotIntVal(c, &val);
 	StopSpeechAt(fCurSpeechChannel[chan], selector[val]);
-	if(speechStrings[chan] != NULL) {	
+	if(speechStrings[chan] != NULL) {
 		free(speechStrings[chan]);
 		speechStrings[chan] = NULL;
 	}
@@ -279,20 +279,20 @@ int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
 	if(speechStrings[chan] != NULL) SetTrue(out);
 	else SetFalse(out);
 	return errNone;
-	
+
 }
 
 void initSpeechPrimitives ()
 {
 	int base, index;
-        
+
 	base = nextPrimitiveIndex();
 	index = 0;
-	
+
 	s_speechwordAction = getsym("doWordAction");
 	s_speechdoneAction = getsym("doSpeechDoneAction");
 	s_speech = getsym("Speech");
-	
+
 	definePrimitive(base, index++, "_SpeakText", prSpeakText, 3, 0);
 	definePrimitive(base, index++, "_InitSpeech", prInitSpeech, 2, 0);
 	definePrimitive(base, index++, "_SetSpeechRate", prSetSpeechRate, 3, 0);
@@ -302,7 +302,7 @@ void initSpeechPrimitives ()
 	definePrimitive(base, index++, "_SetSpeechVolume", prSetSpeechVolume, 3, 0);
 	definePrimitive(base, index++, "_SetSpeechPause", prSetSpeechPause, 3, 0); //0 pause, 1 continue
 	definePrimitive(base, index++, "_SetSpeechStopAt", prSetSpeechStop, 3, 0); //0 kImmediate, 1 kEndOfWord, 2 kEndOfSentence
-	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0); 	
+	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0);
 	for(int i=0; i<kMaxSpeechChannels; ++i){
 		speechStrings[i] = NULL;
 		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);

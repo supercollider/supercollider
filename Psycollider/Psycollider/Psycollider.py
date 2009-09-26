@@ -1,6 +1,6 @@
 # File: Psycollider.py
 # Copyright (c) Benjamin Golinvaux
-# 
+#
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License as
 #  published by the Free Software Foundation; either version 2 of the
@@ -20,11 +20,11 @@
 # Benjamin Golinvaux
 # benjamin.golinvaux@euresys.com
 # messenger: bgolinvaux@hotmail.com
-# 
+#
 # currently maintained by:
 # Christopher Frauenberger - frauenberger@iem.at
-# John Glover - glover.john@gmail.com 
-# 
+# John Glover - glover.john@gmail.com
+#
 # Latest changes:
 # Jan 2008 (John)
 #   - SDI model
@@ -49,7 +49,7 @@ import wx
 import wx.stc as stc
 import wx.html as html
 import wx.richtext as richtext
-import os, string, keyword, sys, time 
+import os, string, keyword, sys, time
 
 if wx.Platform == '__WXMSW__':
   faces = { 'times': 'Times New Roman', 'mono' : 'Courier New', 'helv' : 'Arial', 'other': 'Comic Sans MS', 'size' : 10, 'size2': 8, }
@@ -57,7 +57,7 @@ if wx.Platform == '__WXMSW__':
 else:
   faces = { 'times': 'Times', 'mono' : 'Courier', 'helv' : 'Helvetica', 'other': 'new century schoolbook', 'size' : 10, 'size2': 8, }
   gAppHelpFolder = 'Help-windows'
-  
+
 gHelpFolder = 'Help'
 gUserExtensionFolder = os.path.join(os.path.expanduser("~"), "SuperCollider\\Extensions")
 
@@ -102,7 +102,7 @@ class PsycolliderWindow(wx.Frame):
     isModified = False              # whether or not window contents have been modified
     filePath = ""                   # path to file being displayed
     windowId = -99
-    
+
     def __init__(self, parent, id, title="", winStyle=wx.DEFAULT_FRAME_STYLE):
         self.title = title
         self.config = wx.GetApp().config
@@ -113,92 +113,92 @@ class PsycolliderWindow(wx.Frame):
         #sys.stdout.write("windowId in pythonland is ")
         #sys.stdout.write(str(windowId))
         #sys.stdout.write("\n")
-        
+
         self.config.SetPath("/WindowSettings")
         sizeX = self.config.ReadInt('DefaultSizeX', DEFAULT_SIZEX)
         sizeY = self.config.ReadInt('DefaultSizeY', DEFAULT_SIZEY)
-        self.SetSize(wx.Size(sizeX, sizeY))        
-        
+        self.SetSize(wx.Size(sizeX, sizeY))
+
         self.CreateMenuBar()
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
-        
+
     def OnCloseWindow(self, event):
         if not self.CanCloseWindow():
-            event.Veto()        
-            
+            event.Veto()
+
         wx.GetApp().fileHistory.RemoveMenu(self.fileMenu)
         wx.GetApp().ClosedWindow(self)
         self.Destroy()
-        
+
     def OnNewCodeWin(self, event):
         wx.GetApp().NewCodeWindow()
-        
+
     def OnHtmlToCode(self, event):
         wx.GetApp().HtmlToCode(self)
-        
+
     def OnOpenFile(self, event):
         wx.GetApp().OpenFile()
-        
+
     def OnSaveFile(self, event):
         self.SaveFile()
-        
+
     def OnSaveFileAs(self, event):
         self.SaveFileAs()
-        
+
     def OnStopServer(self, event):
         wx.GetApp().StopServer()
-        
+
     def OnRun(self, event):
         wx.GetApp().Run()
-        
+
     def OnStop(self, event):
         wx.GetApp().Stop()
-        
+
     def OnCompileLibrary(self, event):
         wx.GetApp().CompileLibrary()
-        
+
     def OnOpenClassDef(self, event):
         self.OpenClassDef()
-        
+
     def OnImpOf(self, event):
         self.ImpOf()
-        
+
     def OnRefsTo(self, event):
         self.RefsTo()
-        
+
     def OnEval(self, event):
         self.Eval()
-        
+
     def OnGoToHelpFile(self, event):
         wx.GetApp().GoToHelpFile(self.GetSelectedTextOrLine())
-        
+
     def OnClearPostWindow(self, event):
         wx.GetApp().ClearPostWindow()
-        
+
     def OnSetDefaultWindowSize(self, event):
         size = self.GetSize()
         wx.GetApp().SetDefaultWindowSize(size.x, size.y)
-        
+
     def OnClearRecentFileList(self, event):
         wx.GetApp().ClearRecentFileList()
-           
+
     # should be overwritten by inheriting classes
     def SaveFile(self):
         wx.MessageBox("Error: Saving not implemented for this type of window")
-        
+
     # should be overwritten by inheriting classes
     def SaveFileAs(self):
         wx.MessageBox("Error: Saving not implemented for this type of window")
-        
+
     def OpenClassDef(self):
-        wx.GetApp().OpenClassDef(self.GetSelectedTextOrLine())  
-        
+        wx.GetApp().OpenClassDef(self.GetSelectedTextOrLine())
+
     def ImpOf(self):
-        wx.GetApp().ImpOf(self.GetSelectedTextOrLine())  
-        
+        wx.GetApp().ImpOf(self.GetSelectedTextOrLine())
+
     def RefsTo(self):
-        wx.GetApp().RefsTo(self.GetSelectedTextOrLine())   
-    
+        wx.GetApp().RefsTo(self.GetSelectedTextOrLine())
+
     def Eval(self):
         wx.GetApp().Eval(self.GetSelectedTextOrLine())
         self.LineDown()
@@ -210,7 +210,7 @@ class PsycolliderWindow(wx.Frame):
     # should be overwritten by inheriting classes
     def GetSelectedTextOrLine(self):
         return ""
-        
+
     def CanCloseWindow(self):
         if self.isModified:
             if self.filePath == "":
@@ -234,8 +234,8 @@ class PsycolliderWindow(wx.Frame):
                 elif reply == wx.ID_CANCEL:
                     return False
         else:
-            return True    
-        
+            return True
+
     def CreateMenuBar(self):
         self.fileMenu = wx.Menu()
         self.langMenu = wx.Menu()
@@ -245,14 +245,14 @@ class PsycolliderWindow(wx.Frame):
         self.menubar.Append(self.langMenu, "&Lang")
         self.menubar.Append(self.optionsMenu, "&Options")
         self.SetMenuBar(self.menubar)
-    
+
         self.newCodeWin = wx.MenuItem(self.fileMenu, -1, '&New Code Window\tCtrl+N')
         self.htmlToCode = wx.MenuItem(self.fileMenu, -1, 'H&TML to Code\tCtrl+T')
         self.openFile = wx.MenuItem(self.fileMenu, -1, '&Open File\tCtrl+O')
         self.saveFile = wx.MenuItem(self.fileMenu, -1, '&Save File\tCtrl+S')
         self.saveFileAs = wx.MenuItem(self.fileMenu, -1, 'Save File &As\tCtrl+Shift+S')
         self.closeWindow = wx.MenuItem(self.fileMenu, -1, 'Close &Window...\tCtrl+W')
-        
+
         self.stopServer = wx.MenuItem(self.langMenu, -1, 'Stop Server')
         self.run = wx.MenuItem(self.langMenu, -1, 'Run\tAlt+R')
         self.stop = wx.MenuItem(self.langMenu, -1, '&Stop\tAlt+.')
@@ -263,11 +263,11 @@ class PsycolliderWindow(wx.Frame):
         self.eval = wx.MenuItem(self.langMenu, -1, '&Evaluate Selection\tCtrl+Enter')
         self.goToHelpFile = wx.MenuItem(self.langMenu, -1, '&Go To Help File\tF1')
         self.clearPostWindow = wx.MenuItem(self.langMenu, -1, '&Clear Post Window\tAlt+P')
-        
+
         self.setDefaultWindowSize = wx.MenuItem(self.optionsMenu, -1, '&Set This Window Size As Default')
         self.clearRecentFileList = wx.MenuItem(self.optionsMenu, -1, '&Clear Recent File List')
- 
-         
+
+
         self.fileMenu.AppendItem(self.newCodeWin)
         self.fileMenu.AppendItem(self.htmlToCode)
         self.fileMenu.AppendItem(self.openFile)
@@ -275,7 +275,7 @@ class PsycolliderWindow(wx.Frame):
         self.fileMenu.AppendItem(self.saveFileAs)
         self.fileMenu.AppendSeparator()
         self.fileMenu.AppendItem(self.closeWindow)
-        
+
         self.langMenu.AppendItem(self.stopServer)
         self.langMenu.AppendItem(self.run)
         self.langMenu.AppendItem(self.stop)
@@ -286,17 +286,17 @@ class PsycolliderWindow(wx.Frame):
         self.langMenu.AppendItem(self.eval)
         self.langMenu.AppendItem(self.goToHelpFile)
         self.langMenu.AppendItem(self.clearPostWindow)
-        
+
         self.optionsMenu.AppendItem(self.setDefaultWindowSize)
         self.optionsMenu.AppendItem(self.clearRecentFileList)
-        
+
         self.Bind(wx.EVT_MENU, self.OnNewCodeWin, id=self.newCodeWin.GetId())
         self.Bind(wx.EVT_MENU, self.OnHtmlToCode, id=self.htmlToCode.GetId())
         self.Bind(wx.EVT_MENU, self.OnOpenFile, id=self.openFile.GetId())
         self.Bind(wx.EVT_MENU, self.OnSaveFile, id=self.saveFile.GetId())
         self.Bind(wx.EVT_MENU, self.OnSaveFileAs, id=self.saveFileAs.GetId())
         self.Bind(wx.EVT_MENU, self.OnCloseWindow, id=self.closeWindow.GetId())
-        
+
         self.Bind(wx.EVT_MENU, self.OnStopServer, id=self.stopServer.GetId())
         self.Bind(wx.EVT_MENU, self.OnRun, id=self.run.GetId())
         self.Bind(wx.EVT_MENU, self.OnStop, id=self.stop.GetId())
@@ -307,14 +307,14 @@ class PsycolliderWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnEval, id=self.eval.GetId())
         self.Bind(wx.EVT_MENU, self.OnGoToHelpFile, id=self.goToHelpFile.GetId())
         self.Bind(wx.EVT_MENU, self.OnClearPostWindow, id=self.clearPostWindow.GetId())
-        
+
         self.Bind(wx.EVT_MENU, self.OnSetDefaultWindowSize, id=self.setDefaultWindowSize.GetId())
         self.Bind(wx.EVT_MENU, self.OnClearRecentFileList, id=self.clearRecentFileList.GetId())
-        
+
         wx.GetApp().fileHistory.UseMenu(self.fileMenu)
         wx.GetApp().fileHistory.AddFilesToThisMenu(self.fileMenu)
         self.Bind(wx.EVT_MENU_RANGE, wx.GetApp().doFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
-        
+
 
 # ---------------------------------------------------------------------
 # PsycolliderCodeSubWin - plain text window for code
@@ -327,7 +327,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Courier New")
         self.StyleSetFont(wx.stc.STC_STYLE_DEFAULT, font)
         self.SetModEventMask(wx.stc.STC_MOD_INSERTTEXT | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_PERFORMED_USER)
-        
+
         # bindings
         self.Bind(stc.EVT_STC_CHANGE, self.OnStcChange)
         self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
@@ -337,27 +337,27 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                                                     # to stop playback, which doesn't seem to work otherwise
                                                     # bug in wx?
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnDoubleClick)
-        
+
         self.CmdKeyAssign(ord('+'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
         self.CmdKeyAssign(ord('-'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
-    
+
         self.SetLexer(wx.stc.STC_LEX_CPP)             # yssr
         self.SetKeyWords(0, " ".join(SC3_KEYWORDS))   # yssr
-    
+
         self.SetProperty("fold", "1")
         self.SetProperty("tab.timmy.whinge.level", "1")
         self.SetMargins(1,0) # yssr
-        
+
         # set end-of-line character to LF
         self.SetEOLMode(wx.stc.STC_EOL_LF);
-    
+
         # some settings for appearance
         self.SetViewWhiteSpace(False)
         self.SetViewEOL(False)
         self.SetUseAntiAliasing(True)
         self.SetWrapMode(False)
         self.SetEdgeMode(stc.STC_EDGE_NONE)
-    
+
         # Setup a margin to hold fold markers
         self.SetMarginType(2, stc.STC_MARGIN_SYMBOL)
         self.SetMarginMask(2, stc.STC_MASK_FOLDERS)
@@ -372,7 +372,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEREND,     stc.STC_MARK_BOXPLUSCONNECTED,  "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_BOXMINUSCONNECTED, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,           "white", "#808080")
-    
+
         # Make some styles,  The lexer defines what each style is used for, we
         # just have to define what each style looks like.  This set is adapted from
         # Scintilla sample property files.
@@ -380,7 +380,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         # Global default styles for all languages
         #self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
         #self.StyleClearAll()  # Reset all to be like the default
-    
+
         # Global default styles for all languages
         self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
         self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
@@ -389,7 +389,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,    "fore:#000000,back:#FF3333,bold")
 
         # C++ styles
-        # Default 
+        # Default
         self.StyleSetSpec(stc.STC_C_DEFAULT, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
         # Comments
         self.StyleSetSpec(stc.STC_C_COMMENTLINE, "fore:#007F00,face:%(mono)s,size:%(size)d" % faces)
@@ -414,18 +414,18 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
     def OnChar(self, event):
         if event.GetKeyCode() == 0x2e and event.AltDown():
-            self.GetParent().OnStop(None) 
+            self.GetParent().OnStop(None)
         else:
             event.Skip()
-    
+
     def OnStcChange(self, event):
         self.GetParent().OnStcChange(event)
-    
+
     def OnKeyPressed(self, event):
         #if self.CallTipActive():
         #   self.CallTipCancel()
         key = event.GetKeyCode()
-    
+
         if key == 32 and event.ControlDown():
             pos = self.GetCurrentPos()
 
@@ -441,10 +441,10 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                 #st = " ".join(lst)
                 #print len(st)
                 #self.AutoCompShow(0, st)
-    
+
                 kw = keyword.kwlist[:]
                 #kw.append("zzzzzz?2")
-        
+
                 kw.sort()  # Python sorts are case sensitive
                 self.AutoCompSetIgnoreCase(False)  # so this needs to match
 
@@ -482,7 +482,7 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                 self.FoldAll()
             else:
                 lineClicked = self.LineFromPosition(evt.GetPosition())
-            
+
                 if self.GetFoldLevel(lineClicked) & stc.STC_FOLDLEVELHEADERFLAG:
                     if evt.GetShift():
                         self.SetFoldExpanded(lineClicked, True)
@@ -496,8 +496,8 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                             self.Expand(lineClicked, True, True, 100)
                     else:
                         self.ToggleFold(lineClicked)
-                        
-    def CheckForMatchingBraces(self):    
+
+    def CheckForMatchingBraces(self):
         braceAtCaret = -1
         braceOpposite = -1
         charAfter = None
@@ -522,26 +522,26 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
         if braceAtCaret >= 0:
             braceOpposite = self.BraceMatch(braceAtCaret)
-            
+
         return braceAtCaret, braceOpposite
 
     def FoldAll(self):
         lineCount = self.GetLineCount()
         expanding = True
-    
+
         # find out if we are folding or unfolding
         for lineNum in range(lineCount):
             if self.GetFoldLevel(lineNum) & stc.STC_FOLDLEVELHEADERFLAG:
                 expanding = not self.GetFoldExpanded(lineNum)
                 break;
-    
+
         lineNum = 0
-    
+
         while lineNum < lineCount:
             level = self.GetFoldLevel(lineNum)
             if level & stc.STC_FOLDLEVELHEADERFLAG and \
              (level & stc.STC_FOLDLEVELNUMBERMASK) == stc.STC_FOLDLEVELBASE:
-    
+
                 if expanding:
                     self.SetFoldExpanded(lineNum, True)
                     lineNum = self.Expand(lineNum, True)
@@ -549,17 +549,17 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                 else:
                     lastChild = self.GetLastChild(lineNum, -1)
                     self.SetFoldExpanded(lineNum, False)
-                    
+
                     if lastChild > lineNum:
                         self.HideLines(lineNum+1, lastChild)
-    
+
         lineNum = lineNum + 1
 
 
     def Expand(self, line, doExpand, force=False, visLevels=0, level=-1):
         lastChild = self.GetLastChild(line, level)
         line = line + 1
-    
+
         while line <= lastChild:
             if force:
                 if visLevels > 0:
@@ -569,19 +569,19 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
             else:
                 if doExpand:
                     self.ShowLines(line, line)
-            
+
             if level == -1:
                 level = self.GetFoldLevel(line)
-            
+
             if level & stc.STC_FOLDLEVELHEADERFLAG:
                 if force:
                     if visLevels > 1:
                         self.SetFoldExpanded(line, True)
                     else:
                         self.SetFoldExpanded(line, False)
-                
+
                     line = self.Expand(line, doExpand, force, visLevels-1)
-                
+
                 else:
                     if doExpand and self.GetFoldExpanded(line):
                         line = self.Expand(line, True, force, visLevels-1)
@@ -589,26 +589,26 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                         line = self.Expand(line, False, force, visLevels-1)
             else:
                 line = line + 1;
-        
+
         return line
-    
+
     def SetShowLineNumbers(self, value):
         if value:
             self.SetMarginType(2, stc.STC_MARGIN_NUMBER)
         else:
             self.SetMarginType(2, stc.STC_MARGIN_SYMBOL)
-     
+
     def GetTabSize(self):
         return self.GetTabWidth()
-        
+
     def SetTabSize(self, tabSize):
         self.SetTabWidth(tabSize)
-        
+
     def GetText(self):
         # append an extra space, as GetTextUTF8() seems to remove the last character, wx bug?
         self.AppendTextUTF8(" ")
         return self.GetTextUTF8()
-        
+
 
 # ---------------------------------------------------------------------
 # Code Window
@@ -622,50 +622,50 @@ class PsycolliderCodeWin(PsycolliderWindow):
         PsycolliderWindow.__init__(self, parent, id, title)
         self.fileMenu.Remove(self.htmlToCode.GetId())   # Remove unnecessary menu item
         self.codeSubWin = PsycolliderCodeSubWin(self)
-        
-        # line numbers 
+
+        # line numbers
         self.config.SetPath("/CodeWindowOptions")
         self.showLineNumbers.Check(self.config.ReadInt('ShowLineNumbers', self.SHOW_LINE_NUMBERS))
         self.codeSubWin.SetShowLineNumbers(self.showLineNumbers.IsChecked())
-        
+
         # tab size
         self.codeSubWin.SetTabSize(self.config.ReadInt('TabSize', self.TAB_SIZE))
-    
+
     def OnStcChange(self, event):
         if not self.isModified:
             self.SetTitle(self.GetTitle() + "*")
             self.isModified = True
-            
+
     def OnShowLineNumbers(self, event):
         for window in wx.GetApp().GetOpenWindows():
             if type(window) == PsycolliderCodeWin:
                 window.SetShowLineNumbers(self.showLineNumbers.IsChecked())
-        
+
         self.config.SetPath("/CodeWindowOptions")
         self.config.WriteInt('ShowLineNumbers', self.showLineNumbers.IsChecked())
-        
+
     def OnSetTabSize(self, event):
         newTabSize = -1
         getNewTabSize = wx.TextEntryDialog(self, 'Set tab size to:', 'Set Tab Size', str(self.TAB_SIZE))
         getNewTabSize.SetValue(str(self.codeSubWin.GetTabSize()))
-        
+
         if getNewTabSize.ShowModal() == wx.ID_OK:
             try:
                 newTabSize = int(getNewTabSize.GetValue())
                 if newTabSize <= 0:
                     raise
-                    
+
                 for window in wx.GetApp().GetOpenWindows():
                     if type(window) == PsycolliderCodeWin:
                         window.codeSubWin.SetTabSize(newTabSize)
-            
+
                 self.config.SetPath("/CodeWindowOptions")
                 self.config.WriteInt('TabSize', newTabSize)
-            
+
             except:
                 WriteInLogWindow("Invalid tab size, ignoring. Please enter a positive integer\n")
                 return
-                
+
         getNewTabSize.Destroy()
 
     def GetSelectedText(self):
@@ -673,17 +673,17 @@ class PsycolliderCodeWin(PsycolliderWindow):
 
     def GetCurLineAsString(self):
         return self.codeSubWin.GetCurLine()
-        
+
     def SetSubWinFocus(self):
         self.codeSubWin.SetFocus()
 
     def SelectRange(self,rangeStart,rangeSize):
         self.codeSubWin.SetSelection(rangeStart,rangeStart+rangeSize)
-    
+
     def SetShowLineNumbers(self, value):
         self.showLineNumbers.Check(value)
         self.codeSubWin.SetShowLineNumbers(value)
-        
+
     def SaveFile(self):
         if self.filePath == "":
             self.SaveFileAs()
@@ -692,13 +692,13 @@ class PsycolliderCodeWin(PsycolliderWindow):
                 file = open(self.filePath, "w")
                 content = self.codeSubWin.GetText()
                 file.write(content)
-                self.SetTitle(self.filePath) 
+                self.SetTitle(self.filePath)
                 self.isModified = False
                 file.close()
             except:
                 # Todo: better error handling? Just print error message for now
-                wx.MessageBox("Error: Could not save file " + self.filePath)        
-                
+                wx.MessageBox("Error: Could not save file " + self.filePath)
+
     def SaveFileAs(self):
         fileDlg = wx.FileDialog(self,style=wx.SAVE)
         if fileDlg.ShowModal() == wx.ID_OK:
@@ -711,21 +711,21 @@ class PsycolliderCodeWin(PsycolliderWindow):
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + self.filePath)
-                return None               
-            
-            self.SetTitle(self.filePath) 
+                return None
+
+            self.SetTitle(self.filePath)
             self.isModified = False
             wx.GetApp().AddFileToHistory(self.filePath)
-    
+
     def GetSelectedTextOrLine(self):
         """Returns selected text if any. If not, returns the current line"""
         selection = str(self.codeSubWin.GetSelectedTextUTF8())
-        
+
         if selection == "":
             # get current line, return if not at an open '(' bracket
             currentLine = self.codeSubWin.GetLineUTF8(self.codeSubWin.GetCurrentLine())
             selection = str(currentLine)
-            
+
             # see if the cursor is at a matched bracket
             x, y = self.codeSubWin.CheckForMatchingBraces()
             if x != -1 and y != -1:
@@ -734,15 +734,15 @@ class PsycolliderCodeWin(PsycolliderWindow):
                     if currentLine.strip().find('(') == 0:
                         # get all text up to and including the closing bracket
                         selection = str(self.codeSubWin.GetTextRangeUTF8(x, y+1))
-        
+
         return selection
 
     def LineDown(self):
         self.codeSubWin.LineDown()
-        
+
     def CreateMenuBar(self):
         PsycolliderWindow.CreateMenuBar(self)
-        
+
         self.showLineNumbers = wx.MenuItem(self.optionsMenu, -1, 'S&how Line Numbers', kind=wx.ITEM_CHECK)
         self.setTabSize = wx.MenuItem(self.optionsMenu, -1, 'S&et Tab Size')
         self.optionsMenu.AppendSeparator()
@@ -751,11 +751,11 @@ class PsycolliderCodeWin(PsycolliderWindow):
         self.Bind(wx.EVT_MENU, self.OnShowLineNumbers, id=self.showLineNumbers.GetId())
         self.Bind(wx.EVT_MENU, self.OnSetTabSize, id=self.setTabSize.GetId())
 
-        
+
 
 # ---------------------------------------------------------------------
-# HTML Sub Window 
-# 
+# HTML Sub Window
+#
 class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
     def __init__ (self,parent):
@@ -764,11 +764,11 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
     def OnChar(self, event):
         if event.GetKeyCode() == 0x2e and event.AltDown():
-            self.GetParent().OnStop(None) 
+            self.GetParent().OnStop(None)
         elif event.GetKeyCode() == wx.WXK_LEFT and event.AltDown():
-            self.HistoryBack() 
+            self.HistoryBack()
         elif event.GetKeyCode() == wx.WXK_RIGHT and event.AltDown():
-            self.HistoryForward() 
+            self.HistoryForward()
         else:
             event.Skip()
 
@@ -788,14 +788,14 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 class PsycolliderHTMLWin(PsycolliderWindow):
 
     def __init__ (self,parent,id,title,pos=wx.DefaultPosition,size=wx.DefaultSize):
-        PsycolliderWindow.__init__(self, parent, id, title)       
+        PsycolliderWindow.__init__(self, parent, id, title)
         self.fileMenu.Remove(self.saveFile.GetId())     # Remove unnecessary menu items
         self.fileMenu.Remove(self.saveFileAs.GetId())
         self.htmlSubWin = PsycolliderHTMLSubWin(self)
 
         # Add navigation menu to HTML windows
         self.navMenu = wx.Menu()
-        self.menubar.Append(self.navMenu, "&Navigation") 
+        self.menubar.Append(self.navMenu, "&Navigation")
         self.home = wx.MenuItem(self.navMenu, -1, '&Home')
         self.forward = wx.MenuItem(self.navMenu, -1, '&Forward\tAlt+Right')
         self.back = wx.MenuItem(self.navMenu, -1, '&Back\tAlt+Left')
@@ -816,24 +816,24 @@ class PsycolliderHTMLWin(PsycolliderWindow):
         posInText = self.htmlSubWin.GetInsertionPoint()
         (x,y) = self.htmlSubWin.PositionToXY(posInText)
         return self.htmlSubWin.SelectLine(y)
-        
+
     def GetSelectedTextOrLine(self):
         """Returns selected text"""
         return str(self.GetSelectedText())
 
     def SetSubWinFocus(self):
-        self.htmlSubWin.SetFocus() 
+        self.htmlSubWin.SetFocus()
 
-        
+
 # ---------------------------------------------------------------------
 # Psycollider Post Window
 class PsycolliderPostWindow(PsycolliderWindow):
     log = None          # The wx.TextCtrl object that displays post info
-    
+
     def __init__(self, parent, id, title):
         # init (no maximise button)
         PsycolliderWindow.__init__(self, parent, id, title, wx.MINIMIZE_BOX | wx.CLOSE_BOX |wx.RESIZE_BORDER | wx.SYSTEM_MENU | wx.CAPTION)
-      
+
         self.config.SetPath("/WindowSettings")
         sizeX = self.config.ReadInt('PostWindow-sizeX', DEFAULT_SIZEX)
         sizeY = self.config.ReadInt('PostWindow-sizeY', DEFAULT_SIZEY)
@@ -844,11 +844,11 @@ class PsycolliderPostWindow(PsycolliderWindow):
         if posX < 0:
             posX = DEFAULT_POSX
         if posY < 0:
-            posY = DEFAULT_POSY 
+            posY = DEFAULT_POSY
 
         self.SetSize(wx.Size(sizeX, sizeY))
         self.SetPosition(wx.Point(posX, posY))
-      
+
         self.fileMenu.Remove(self.htmlToCode.GetId())   # Remove unnecessary menu items
         self.langMenu.Remove(self.run.GetId())
         self.langMenu.Remove(self.stop.GetId())
@@ -856,16 +856,16 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.langMenu.Remove(self.impOf.GetId())
         self.langMenu.Remove(self.refsTo.GetId())
         self.langMenu.Remove(self.eval.GetId())
-      
+
         mainPanel = wx.Panel(self, -1)
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         mainPanel.SetSizer(mainSizer)
-        
+
         self.log = wx.TextCtrl(mainPanel, -1, style = wx.TE_MULTILINE | wx.TE_READONLY)
-        mainSizer.Add(self.log, proportion = 1, flag = wx.EXPAND)      
-        
+        mainSizer.Add(self.log, proportion = 1, flag = wx.EXPAND)
+
         self.Show(True)
-            
+
     def OnCloseWindow(self, event):
         dlg = wx.MessageDialog(self, "This will shut down SuperCollider, stop all servers and close all code windows.\n Do you want to quit?")
         reply = dlg.ShowModal()
@@ -884,7 +884,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
 	else:
 		# No need?  wx.MessageBox("Canceled");
 		pass
-        
+
     def SaveFile(self):
         if self.filePath == "":
             self.SaveFileAs()
@@ -897,7 +897,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + filePath)
-                
+
     def SaveFileAs(self):
         fileDlg = wx.FileDialog(self,style=wx.SAVE)
         if fileDlg.ShowModal() == wx.ID_OK:
@@ -910,8 +910,8 @@ class PsycolliderPostWindow(PsycolliderWindow):
             except:
                 # Todo: better error handling? Just print error message for now
                 wx.MessageBox("Error: Could not save file " + self.filePath)
- 
- 
+
+
 # ---------------------------------------------------------------------
 # Psycollider
 class Psycollider(wx.App):
@@ -919,23 +919,23 @@ class Psycollider(wx.App):
     openWindows = []                # List of all windows currently open
     config = None                   # Main wx.Config object, used by all windows
     fileHistory = None              # wx.FileHistory object
-    
+
     def OnInit(self):
-        self.config = wx.Config() 
+        self.config = wx.Config()
 
         # File history
         self.fileHistory = wx.FileHistory()
-        self.config.SetPath("/RecentFiles") 
+        self.config.SetPath("/RecentFiles")
         self.fileHistory.Load(self.config)
-        
+
         # Create post window
         self.theMainFrame = PsycolliderPostWindow(None, -1, "SuperCollider (Post Window)")
         self.theMainFrame.Show(True)
         self.SetTopWindow(self.theMainFrame)
-        
+
         # enable images for html
         wx.InitAllImageHandlers()
-        
+
         # Set the log sink function (writes to post window)
         # On windows, we can write directly to it, and using the PostText function
         # causes the post window to be updated slightly later which doesn't look too nice.
@@ -945,18 +945,18 @@ class Psycollider(wx.App):
             PySCLang.setSCLogSink(WriteInLogWindow)
         else:
             PySCLang.setSCLogSink(PostText)
-            
+
         PySCLang.setPyPrOpenWinTextFile(OpenTextFile)
-        
-        if not self.ChangeDirToSCClassLibraryFolder(): 
+
+        if not self.ChangeDirToSCClassLibraryFolder():
             return False
-            
-        PySCLang.start() 
-        
+
+        PySCLang.start()
+
         (addr, port) = self.GetServerAddressAndPort()
-        
+
         return True
-            
+
     def doFileHistory(self, event):
         """Open a file from file history"""
         fileNumber = event.GetId() - wx.ID_FILE1
@@ -965,10 +965,10 @@ class Psycollider(wx.App):
         if newWindow != None:
             self.openWindows.append(newWindow)
             self.AddFileToHistory(filename) # add it back to the history so it will be moved up the list
-       
+
     def GetServerAddressAndPort(self):
         return ("127.1.0.1", "57110")
-        
+
     def ChangeDirToSCClassLibraryFolder(self):
         # first, we check if the current working folder
         # contains an item called 'SCClassLibrary'
@@ -978,23 +978,23 @@ class Psycollider(wx.App):
         # if the cwd contains 'SCClassLibrary', we're done
         if 'SCClassLibrary' in listOfFolders:
             return True
-        
-        # uniqueName is what gets returned from config.Read(...) 
+
+        # uniqueName is what gets returned from config.Read(...)
         # if nothing was stored in the config yet
-        uniqueName = "{1FB0EC09-A883-4684-AD73-1D49A98A89DE}" 
+        uniqueName = "{1FB0EC09-A883-4684-AD73-1D49A98A89DE}"
         self.config.SetPath("/GeneralSettings")
         classLibPath = self.config.Read("SCClassLibraryPath", uniqueName)
         leafName = (os.path.split(classLibPath))[1]
 
         # if the folder stored in the config is actually an existing
-        # folder called 'SCClassLibrary', we change cwd to that 
+        # folder called 'SCClassLibrary', we change cwd to that
         # folder and we're done
         if os.path.isdir(classLibPath) and leafName == 'SCClassLibrary':
             classLibPath_split = os.path.split(classLibPath)
             classLibParentFolder = classLibPath_split[0]
             os.chdir(classLibParentFolder)
             return True
-          
+
         # if something was stored in the config, but does not exist
         # anymore or is not correct, let's warn the user
         if classLibPath != uniqueName:
@@ -1017,7 +1017,7 @@ class Psycollider(wx.App):
                     continueLookingForFolder = False
                     classLibFolderFound = True
 
-        # only if a valid SCClassLibrary folder was found, then 
+        # only if a valid SCClassLibrary folder was found, then
         # set the current folder as its parent
         if classLibFolderFound:
             self.config.Write("SCClassLibraryPath",classLibPath)
@@ -1027,27 +1027,27 @@ class Psycollider(wx.App):
             return True
         else:
             return False
-            
+
     def NewCodeWindow(self):
         window = PsycolliderCodeWin(self.theMainFrame, -1, "Untitled %d" % (len(self.openWindows)+1))
         self.openWindows.append(window)
         window.Show(True)
         window.SetSubWinFocus()
         return window
-        
+
     def NewHTMLWindow(self):
         window = PsycolliderHTMLWin(self.theMainFrame, -1, "HTML Window: %d" % (len(self.openWindows)+1))
         self.openWindows.append(window)
         window.Show(True)
         window.SetSubWinFocus()
         return window
-        
+
     def ClosedWindow(self, window):
         try:
             self.openWindows.remove(window)
         except:
             pass
-        
+
     def HtmlToCode(self, window):
         if type(window) == PsycolliderHTMLWin:
             text = window.htmlSubWin.ToText()
@@ -1058,16 +1058,16 @@ class Psycollider(wx.App):
             newWindow.Show(True)
             newWindow.SetSubWinFocus()
             return newWindow
-        
+
     def OpenFile(self, path=''):
         if path == '':
             fileDlg = wx.FileDialog(self.theMainFrame, style=wx.OPEN)
             if not fileDlg.ShowModal() == wx.ID_OK:
                 return
-                
+
             path = fileDlg.GetPath()
             self.AddFileToHistory(path)
-            
+
         try:
             file = open(path ,"r")
             textContent = file.read()
@@ -1075,24 +1075,24 @@ class Psycollider(wx.App):
         except:
             # Todo: better error handling? Just print error message for now
             wx.MessageBox("Psycollider Error: Could not open file " + path)
-            return None  
+            return None
 
         if textContent[0:5] == '{\\rtf':
             win = self.NewCodeWindow()
             win.codeSubWin.AddTextUTF8('Sorry, still no RTF support, wxRichTextControl does not yet support reading RTF files...')
             win.isModified = False
             return win
-            
+
         elif (textContent.find('<html') >= 0 or textContent.find('<HTML') >= 0):
             win = self.NewHTMLWindow()
             win.htmlSubWin.LoadPage(path)
             return win
-            
+
         else:
             # everything else is plain text code window
             win = self.NewCodeWindow()
             win.codeSubWin.AddTextUTF8(textContent)
-            win.filePath = path 
+            win.filePath = path
             win.SetTitle(path)
             win.isModified = 0
             return win
@@ -1106,19 +1106,19 @@ class Psycollider(wx.App):
         if PySCLang.compiledOK():
             PySCLang.setCmdLine('SwingOSC.default.sendMsg("/quit");')
             PySCLang.sendMain("interpretPrintCmdLine")
-        
+
     def Run(self):
         PySCLang.sendMain("run");
 
     def Stop(self):
         PySCLang.sendMain("stop");
-        
+
     def CompileLibrary(self):
         self.StopServer()
         self.StopSwingOSC()
         time.sleep(1)
         PySCLang.compileLibrary()
-        
+
     def OpenClassDef(self, text):
         PySCLang.setCmdLine(text)
         PySCLang.sendMain("openWinCodeFile")
@@ -1130,15 +1130,15 @@ class Psycollider(wx.App):
     def RefsTo(self, text):
         PySCLang.setCmdLine(text)
         PySCLang.sendMain("methodReferences")
-        
+
     def Eval(self, text):
         PySCLang.setCmdLine(text)
         PySCLang.sendMain("interpretPrintCmdLine")
-     
+
     def GoToHelpFile(self, sel=""):
         # TODO : test this : most help files don't open. remove trailing and leading spaces from sel, too, since wxTextCtrl is behaving strangely
         foundFilePath = ""
-        filePath = ""                                                                                                         
+        filePath = ""
         if   sel == "-" : sel = "subtraction"				# "subtraction.rtf"
         elif sel == "/" : sel = "division"					# "division.rtf"
         elif sel == "*" : sel = "multiplication"   			# from "*.rtf"
@@ -1148,16 +1148,16 @@ class Psycollider(wx.App):
         elif sel == ">" : sel = "greaterthan"          		# from ">.rtf"
         elif sel == ">=": sel = "greaterorequalthan" 		# from ">=.rtf"
         elif sel == "%" : sel = "modulo"					# from "%.rtf"
-        
+
         if sel != "":
             for helpFolder in [gHelpFolder, gUserExtensionFolder]:
                 for folderPath, foldersInPath, fileNamesInFolder in os.walk(helpFolder):
                     # don't visit CVS directories
                     if 'CVS' in foldersInPath:
-                        foldersInPath.remove('CVS')  
+                        foldersInPath.remove('CVS')
                     # don't visit .svn directories
                     if '.svn' in foldersInPath:
-                        foldersInPath.remove('.svn')  
+                        foldersInPath.remove('.svn')
                     for fileName in fileNamesInFolder:
                         filePath = os.path.join(folderPath, fileName)
                         if fileName == sel + ".help.html":
@@ -1174,14 +1174,14 @@ class Psycollider(wx.App):
                 # if file is found, let's break
                 if foundFilePath != "":
                   break
-              
-        if foundFilePath == "":     
+
+        if foundFilePath == "":
             foundFilePath = os.path.join(gHelpFolder,"Help.html")
         self.OpenFile(foundFilePath)
-    
+
     def ClearPostWindow(self):
         self.theMainFrame.log.Clear()
-        
+
     def SetDefaultWindowSize(self, sizeX, sizeY):
         self.config.SetPath("/WindowSettings")
         self.config.WriteInt('DefaultSizeX', sizeX)
@@ -1192,35 +1192,35 @@ class Psycollider(wx.App):
         numFiles = self.fileHistory.GetCount()
         for i in range(numFiles):
             self.fileHistory.RemoveFileFromHistory(0)   # remove the first file every time
-        
+
     def AddFileToHistory(self, path):
         self.fileHistory.AddFileToHistory(path)
-        
+
     def GetOpenWindows(self):
         return self.openWindows
-        
+
     def Shutdown(self):
         # Recent file list
         self.config.SetPath("/RecentFiles")
         self.fileHistory.Save(self.config)
         del self.fileHistory
-        
+
         # stop scsynth and swingosc
         self.StopServer()
         self.StopSwingOSC()
-        
-        
+
+
 # ---------------------------------------------------------------------
 # WriteInLogWindow
-def WriteInLogWindow(text):        
+def WriteInLogWindow(text):
     if wx.GetApp().theMainFrame == None:
         sys.stdout.write(text)
     else:
         wx.GetApp().theMainFrame.log.AppendText(text)
-    
+
 def PostText(text):
-    wx.CallAfter(WriteInLogWindow, text)  
-    
+    wx.CallAfter(WriteInLogWindow, text)
+
 # ---------------------------------------------------------------------
 def OpenTextFile(path, rangeStart, rangeSize):
     if wx.GetApp().theMainFrame == None:
@@ -1229,7 +1229,7 @@ def OpenTextFile(path, rangeStart, rangeSize):
         codeWin = wx.GetApp().OpenFile(path)
         #codeWin.SelectRange(rangeStart,rangeSize)
         return codeWin
-        
+
 # ---------------------------------------------------------------------
 # Main
 app = Psycollider(0)

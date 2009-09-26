@@ -25,14 +25,14 @@
 			^format("%.new(window,%)",this.class,this.bounds);
 		}
 	}
-	
+
 	setActionForConstructionString{
 		^true
 	}
 	modifiersForConstructionString{
 		^""
 	}
-	
+
 }
 
 +SCButton{

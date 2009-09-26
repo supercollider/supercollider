@@ -1,6 +1,6 @@
 UnixFILE : IOStream {
 	// abstract class. Use File or Pipe.
-	
+
 	classvar <openFiles;
 	var fileptr;
 	// this only supports file sizes < 2^31 for now
@@ -14,7 +14,7 @@ UnixFILE : IOStream {
 	isOpen {
 		^fileptr.notNil
 	}
-	
+
 	next { ^this.getChar }
 	nextN { arg n;
 		^String.fill(n, { this.next; });
@@ -22,7 +22,7 @@ UnixFILE : IOStream {
 	contents {
 		^this.readAllString;
 	}
-	
+
 	put { arg item; this.write(item); }
 	putAll { arg aCollection;
 		if (aCollection.isKindOf(RawArray), {
@@ -37,7 +37,7 @@ UnixFILE : IOStream {
 		^this.primitiveFailed
 	}
 
-	write { arg item; 
+	write { arg item;
 		/* writes any of the following items in big endian byte order:
 			a double float,
 			a 32 bit int,
@@ -47,10 +47,10 @@ UnixFILE : IOStream {
 				(i.e. Strings, Int8Arrays, Int16Arrays,
 				Signals, etc.)
 		*/
-		_FileWrite 
+		_FileWrite
 		^this.primitiveFailed;
 	}
-	read { arg buffer; 
+	read { arg buffer;
 		// reads big endian data
 		// buffer should be a RawArray.
 		// fills the buffer, or as much is available.
@@ -59,7 +59,7 @@ UnixFILE : IOStream {
 		^this.primitiveFailed;
 	}
 
-	writeLE { arg item; 
+	writeLE { arg item;
 		/* writes any of the following items in little endian byte order:
 			a double float,
 			a 32 bit int,
@@ -69,10 +69,10 @@ UnixFILE : IOStream {
 				(i.e. Strings, Int8Arrays, Int16Arrays,
 				Signals, etc.)
 		*/
-		_FileWriteLE 
+		_FileWriteLE
 		^this.primitiveFailed;
 	}
-	readLE { arg buffer; 
+	readLE { arg buffer;
 		// reads little endian data
 		// buffer should be a RawArray.
 		// fills the buffer, or as much is available.
@@ -80,19 +80,19 @@ UnixFILE : IOStream {
 		_FileReadRawLE;
 		^this.primitiveFailed;
 	}
-	
+
 	getLine { arg maxSize=1024;
 		var string;
 		string = String.newClear(maxSize);
 		^this.prGetLine(string);
 	}
 	prGetLine { arg argString;
-		// returns a string up to lesser of next newline 
+		// returns a string up to lesser of next newline
 		// or length-1 of the argument string
 		_FileReadLine;
 		^this.primitiveFailed;
 	}
-		
+
 	// for more fine grained control these read and write a single
 	// item of the specified type and size
 	getChar { _FileGetChar; ^this.primitiveFailed; }
@@ -105,7 +105,7 @@ UnixFILE : IOStream {
 	getInt32LE { _FileGetInt32LE; ^this.primitiveFailed; }
 	getFloatLE { _FileGetFloatLE; ^this.primitiveFailed; }
 	getDoubleLE { _FileGetDoubleLE; ^this.primitiveFailed; }
-	
+
 	putChar { arg aChar; _FilePutChar; ^this.primitiveFailed; }
 	putInt8 { arg anInteger; _FilePutInt8; ^this.primitiveFailed; }
 	putInt16 { arg anInteger; _FilePutInt16; ^this.primitiveFailed; }

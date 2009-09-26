@@ -194,7 +194,7 @@ typedef unsigned int uint32_t;
 
 /* Define the library suffix in a C syntax. */
 #define U_HAVE_LIB_SUFFIX 0
-#define U_LIB_SUFFIX_C_NAME 
+#define U_LIB_SUFFIX_C_NAME
 #define U_LIB_SUFFIX_C_NAME_STRING ""
 
 /*===========================================================================*/
@@ -226,7 +226,7 @@ typedef unsigned int uint32_t;
 #define U_TZSET         tzset
 #endif
 #if 0
-#define U_TIMEZONE      
+#define U_TIMEZONE
 #endif
 #if 1
 #define U_TZNAME        tzname
@@ -247,7 +247,7 @@ typedef unsigned int uint32_t;
 #ifdef U_CYGWIN
 #define U_IMPORT __declspec(dllimport)
 #else
-#define U_IMPORT 
+#define U_IMPORT
 #endif
 
 /*===========================================================================*/
@@ -258,7 +258,7 @@ typedef unsigned int uint32_t;
 #define U_INLINE inline
 #endif
 
-#define U_ALIGN_CODE(n) 
+#define U_ALIGN_CODE(n)
 
 /*===========================================================================*/
 /* Programs used by ICU code                                                 */

@@ -1,15 +1,15 @@
 
 IODesc {
 	var <>rate, <>numberOfChannels, <>startingChannel;
-	
+
 	*new { arg rate, numberOfChannels, startingChannel="?";
 		^super.newCopyArgs(rate, numberOfChannels, startingChannel)
 	}
-	
+
 	printOn { arg stream;
-		stream << rate.asString << " " << startingChannel.source 
+		stream << rate.asString << " " << startingChannel.source
 				<< " " << numberOfChannels << "\n"
-	}	
+	}
 }
 
 
@@ -17,9 +17,9 @@ SynthDesc {
 	classvar <>mdPlugin, <>populateMetadataFunc;
 
 	var <>name, <>controlNames;
-	var <>controls, <>inputs, <>outputs; 
+	var <>controls, <>inputs, <>outputs;
 	var <>metadata;
-	
+
 	var <>constants, <>def;
 	var <>msgFunc, <>hasGate = false, <>hasArrayArgs, <>hasVariants, <>canFreeSynth = false;
 	var <msgFuncKeepGate = false;
@@ -27,18 +27,18 @@ SynthDesc {
 	*initClass {
 		mdPlugin = AbstractMDPlugin;	// override in your startup file
 	}
-	
+
 	send { arg server, completionMsg;
 		def.send(server, completionMsg);
 	}
-	
+
 	printOn { arg stream;
 		stream << "SynthDesc '" << name << "' \nControls:\n";
 		controls.do {|control| control.printOn(stream); $\n.printOn(stream) };
 		inputs.do {|input| stream << "   I "; input.printOn(stream); $\n.printOn(stream) };
 		outputs.do {|output| stream << "   O "; output.printOn(stream); $\n.printOn(stream) };
 	}
-	
+
 	*read { arg path, keepDefs=false, dict;
 		dict = dict ?? { IdentityDictionary.new };
 		path.pathMatch.do { |filename|
@@ -75,32 +75,32 @@ SynthDesc {
 	}
 	readSynthDef { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
-		
+
 		protect {
-		
+
 		inputs = [];
 		outputs = [];
-		
+
 		name = stream.getPascalString;
-		
+
 		def = SynthDef.prNew(name);
 		UGen.buildSynthDef = def;
-		
+
 		numConstants = stream.getInt16;
 		constants = FloatArray.newClear(numConstants);
 		stream.read(constants);
-				
+
 		numControls = stream.getInt16;
 		def.controls = FloatArray.newClear(numControls);
 		stream.read(def.controls);
-		
-		controls = Array.fill(numControls) 
+
+		controls = Array.fill(numControls)
 			{ |i|
 				ControlName("?", i, '?', def.controls[i]);
 			};
-		
+
 		numControlNames = stream.getInt16;
-		numControlNames.do 
+		numControlNames.do
 			{
 				var controlName, controlIndex;
 				controlName = stream.getPascalString;
@@ -108,15 +108,15 @@ SynthDesc {
 				controls[controlIndex].name = controlName;
 				controlNames = controlNames.add(controlName);
 			};
-			
+
 		numUGens = stream.getInt16;
 		numUGens.do {
 			this.readUGenSpec(stream);
 		};
-		
+
 		def.controlNames = controls.select {|x| x.name.notNil };
 		hasArrayArgs = controls.any { |cn| cn.name == '?' };
-		
+
 		numVariants = stream.getInt16;
 		hasVariants = numVariants > 0;
 			// maybe later, read in variant names and values
@@ -130,22 +130,22 @@ SynthDesc {
 			constants = nil;
 		};
 		this.makeMsgFunc;
-		
+
 		} {
 			UGen.buildSynthDef = nil;
 		}
-		
+
 	}
-	
+
 	readUGenSpec { arg stream;
 		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
 		var inputSpecs, outputSpecs;
 		var bus;
 		var ugenInputs, ugen;
 		var control;
-		
+
 		ugenClass = stream.getPascalString.asSymbol;
-		if(ugenClass.asClass.isNil,{ 
+		if(ugenClass.asClass.isNil,{
 			Error("No UGen class found for" + ugenClass + "which was specified in synth def file: " + this.name ++ ".scsyndef").throw;
 		});
 		ugenClass = ugenClass.asClass;
@@ -157,19 +157,19 @@ SynthDesc {
 
 		inputSpecs = Int16Array.newClear(numInputs * 2);
 		outputSpecs = Int8Array.newClear(numOutputs);
-				
+
 		stream.read(inputSpecs);
 		stream.read(outputSpecs);
-				
+
 		ugenInputs = [];
 		forBy (0,inputSpecs.size-1,2) {|i|
 			var ugenIndex, outputIndex, input, ugen;
 			ugenIndex = inputSpecs[i];
 			outputIndex = inputSpecs[i+1];
-			input = if (ugenIndex < 0) 
-				{ 
-					constants[outputIndex] 
-				}{ 
+			input = if (ugenIndex < 0)
+				{
+					constants[outputIndex]
+				}{
 					ugen = def.children[ugenIndex];
 					if (ugen.isKindOf(MultiOutUGen)) {
 						ugen.channels[outputIndex]
@@ -183,7 +183,7 @@ SynthDesc {
 		rate = #[\scalar,\control,\audio][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
-		
+
 		if (ugenClass.isControlUGen) {
 			numOutputs.do { |i|
 				controls[i+specialIndex].rate = rate;
@@ -209,7 +209,7 @@ SynthDesc {
 			}}
 		};
 	}
-	
+
 	makeMsgFunc {
 		var	string, comma=false;
 		var	names = IdentitySet.new,
@@ -257,7 +257,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 							names = names + 1;
 						}
 					}{
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
+						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
 						if (comma) { stream << ", " } { comma = true };
 						stream << name2;
 						names = names + 1;
@@ -274,7 +274,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 				name = controlName.name;
 				if (name.asString != "?") {
 					if (msgFuncKeepGate or: { name != "gate" }) {
-						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name }; 
+						if (name[1] == $_) { name2 = name.drop(2) } { name2 = name };
 						stream << "\t" << name2 << " !? { x" << suffix
 							<< ".add('" << name << "').add(" << name2 << ") };\n";
 						names = names + 1;
@@ -296,9 +296,9 @@ Use of this synth in Patterns will not detect argument names automatically becau
 
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
-		var s,n,numDefs,size;	
+		var s,n,numDefs,size;
 		s = CollStream(int8Array);
-	
+
 		s.getInt32;
 		s.getInt32;
 		numDefs = s.getInt16;
@@ -308,7 +308,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		  s.getChar.asAscii
 		}).as(String)
 	}
-	
+
 	outputData {
 		var ugens = def.children;
 		var outs = ugens.select(_.writesToBus);
@@ -316,7 +316,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			(rate: outUgen.rate, numChannels: outUgen.numAudioChannels)
 		}
 	}
-	
+
 
 }
 
@@ -357,7 +357,7 @@ SynthDescLib {
 	}
 	*match { |key| ^global.match(key) }
 
-	send { 
+	send {
 		servers.do {|server|
 			synthDescs.do {|desc| desc.send(server.value) };
 		};
@@ -380,9 +380,9 @@ AbstractMDPlugin {
 	*clearMetadata { |path|
 		^thisProcess.platform.clearMetadata(path)
 	}
-	
+
 	*writeMetadata { |metadata, synthdef, path|
-		
+
 		this.clearMetadata(path);
 		path = this.applyExtension(path);
 		this.writeMetadataFile(metadata, synthdef, path);
@@ -425,7 +425,7 @@ TextArchiveMDPlugin : AbstractMDPlugin {
 	*writeMetadataFile { |metadata, synthdef, path|
 		metadata.writeArchive(path)
 	}
-	
+
 	*readMetadataFile { |path|
 		^Object.readArchive(path)
 	}

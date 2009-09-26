@@ -64,11 +64,11 @@ int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed);
 int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->ui = NEXTPOWEROFTWO(a->ui);
-	return errNone;	
+	return errNone;
 }
 
 int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed);
@@ -76,17 +76,17 @@ int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	SetBool(a, ISPOWEROFTWO(a->ui));
-	return errNone;	
+	return errNone;
 }
 
 int prBinaryGrayCode(VMGlobals *g, int numArgsPushed);
 int prBinaryGrayCode(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	a->ui = GRAYCODE(a->ui);
-	return errNone;	
+	return errNone;
 }
 
 int prSetBit(VMGlobals *g, int numArgsPushed);
@@ -95,7 +95,7 @@ int prSetBit(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+
 	int32 bit, mask;
 	int err = slotIntVal(b, &bit);
 	if (err) return err;
@@ -114,13 +114,13 @@ int prHammingDistance(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	int	aInt, bInt, count = 0, i, mask = 1;
 	int err = slotIntVal(b, &bInt);
 	if(err) return err;
 	err = slotIntVal(a, &aInt);
 	if(err) return err;
-	
+
 	for(i = 0; i < 32; i++) {
 		if((aInt & mask) != (bInt & mask)) count = count + 1;
 		mask = mask << 1;
@@ -134,7 +134,7 @@ void initBitPrimitives();
 void initBitPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
 
 	definePrimitive(base, index++, "_NextPowerOfTwo", prNextPowerOfTwo, 1, 0);
@@ -166,7 +166,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

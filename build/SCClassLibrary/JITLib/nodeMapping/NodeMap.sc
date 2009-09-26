@@ -3,38 +3,38 @@
 
 NodeMap {
 	var <>settings; // cache args:
-	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs, <>mapaArgs, <>mapanArgs; 
-	
-	
+	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs, <>mapaArgs, <>mapanArgs;
+
+
 	*new {
 		^super.new.clear
 	}
-	
+
 	settingClass {
 		^NodeMapSetting
 	}
-	
-	
+
+
 	clear {
 		settings = IdentityDictionary.new;
 		upToDate = false;
 	}
 
-	
+
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			this.get(args.at(i)).map(args.at(i+1));
 		});
 		upToDate = false;
 	}
-	
+
 	mapa { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			this.get(args.at(i)).mapa(args.at(i+1));
 		});
 		upToDate = false;
 	}
-	
+
 	unmap { arg ... keys;
 		keys.do { arg key;
 			var setting;
@@ -45,19 +45,19 @@ NodeMap {
 			};
 		};
 		upToDate = false;
-		
+
 	}
-	
+
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
 			this.get(args.at(i)).set(args.at(i+1));
 		});
 		upToDate = false;
 	}
-	
+
 	setn { arg ... args; this.set(*args)  }
-	
-	
+
+
 	unset { arg ... keys;
 		keys.do { arg key;
 			var setting;
@@ -69,60 +69,60 @@ NodeMap {
 		};
 		upToDate = false;
 	}
-	
+
 	mapn { arg ... args;
 		forBy(0, args.size-1, 3, { arg i;
 			this.get(args.at(i)).mapn(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
 	}
-	
+
 	mapan { arg ... args;
 		forBy(0, args.size-1, 3, { arg i;
 			this.get(args.at(i)).mapan(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
 	}
-	
+
 	send { arg server, nodeID, latency;
 		var bundle;
 		bundle = List.new;
 		this.addToBundle(bundle, nodeID);
 		server.listSendBundle(latency, bundle);
 	}
-	
+
 	sendToNode { arg node, latency;
 		node = node.asTarget;
 		this.send(node.server, node.nodeID, latency)
 	}
-	
-		
-	
+
+
+
 	get { arg key;
 		var setting;
 		setting = settings.at(key);
-		if(setting.isNil, { 
-			setting = this.settingClass.new(key); 
-			settings.put(key, setting) 
+		if(setting.isNil, {
+			setting = this.settingClass.new(key);
+			settings.put(key, setting)
 		});
 		^setting
 	}
-	
+
 	at { arg key;
 		^settings.at(key)
 	}
-	
+
 	settingKeys {
 		var res;
 		settings.do { arg item; if(item.isMapped.not) { res = res.add(item.key) } };
 		^res
 	}
-	mappingKeys { 
+	mappingKeys {
 		var res;
 		settings.do { arg item; if(item.isMapped) { res = res.add(item.key) } };
 		^res
 	}
-		
+
 	updateBundle {
 			if(upToDate.not) {
 				upToDate = true;
@@ -142,7 +142,7 @@ NodeMap {
 			if(mapaArgs.notNil) { bundle.add([60, target] ++ mapaArgs) };
 			if(mapanArgs.notNil) { bundle.add([61, target] ++ mapanArgs) };
 	}
-	
+
 	unsetArgsToBundle { arg bundle, target, keys;
 		var args;
 		if(settings.isEmpty) { ^this };
@@ -153,7 +153,7 @@ NodeMap {
 		};
 		if(args.notNil) { bundle.add([15, target.asNodeID] ++ args) };
 	}
-	
+
 	unmapArgsToBundle { arg bundle, target, keys;
 		var args;
 		if(settings.isEmpty) { ^this };
@@ -166,33 +166,33 @@ NodeMap {
 		};
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
 	}
-	
+
 	blend { arg another, frac;
 		var res = this.copy;
 		another.updateBundle;
-		another.setArgs.pairsDo { |key, x| 
+		another.setArgs.pairsDo { |key, x|
 			var s = settings[key], y;
 			s !? { y = s.getValue };
 			y !? { res.set(key, blend(y, x, frac)) }
 		};
 		^res
 	}
-	
-	
+
+
 	copy {
 		var res, nset;
 		res = this.class.new;
-		nset = res.settings; 
+		nset = res.settings;
 		settings.keysValuesDo({ arg key, val; nset.put(key, val.copy) });
 		^res
 	}
-	
+
 	printOn { arg stream;
 		stream << this.class.name << "(";
 		settings.printItemsOn(stream);
 		stream << ")"
 	}
-	
+
 
 }
 
@@ -201,20 +201,20 @@ ProxyNodeMap : NodeMap {
 
 		var <>parents, <>proxy;
 		var hasRates=false;
-		
+
 		clear {
 			super.clear;
 			parents = IdentityDictionary.new;
 		}
-		
+
 		settingClass {
 			^ProxyNodeMapSetting
 		}
-		
+
 		wakeUpParentsToBundle { arg bundle, checkedAlready;
 			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
 		}
-		
+
 		setRates { arg args;
 			forBy(0, args.size-1, 2, { arg i;
 				var key, rate, setting;
@@ -227,7 +227,7 @@ ProxyNodeMap : NodeMap {
 			});
 			hasRates = settings.any { arg item; item.rate.notNil };
 		}
-		
+
 		ratesFor { arg keys;
 			^if(hasRates) {
 				keys.collect({ arg key;
@@ -237,11 +237,11 @@ ProxyNodeMap : NodeMap {
 				})
 			} { nil }
 		}
-				
+
 		mapn { arg ... args;
 			this.map(args) // for now, avoid errors.
 		}
-		
+
 		map { arg ... args;
 			var playing;
 			playing = proxy.isPlaying;
@@ -255,7 +255,7 @@ ProxyNodeMap : NodeMap {
 			};
 			upToDate = false;
 		}
-		
+
 		mapEnvir { arg ... keys;
 			var args;
 			keys = keys ? settings.keys;
@@ -263,7 +263,7 @@ ProxyNodeMap : NodeMap {
 			keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
 			this.map(*args);
 		}
-		
+
 		unmap { arg ... keys;
 			var setting;
 			if(keys.at(0).isNil, { keys = this.mappingKeys });
@@ -277,7 +277,7 @@ ProxyNodeMap : NodeMap {
 			});
 			upToDate = false;
 		}
-			
+
 }
 
 

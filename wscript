@@ -24,12 +24,12 @@ def set_options(opt):
 def configure(conf):
     import Utils
     platform = Utils.detect_platform()
-    
+
     conf.env['IS_LINUX'] = platform == 'linux'
     conf.env['IS_WIN32'] = platform == 'win32'
     conf.env['IS_MACOSX'] = platform == 'darwin'
     conf.env['IS_FREEBSD'] = platform == 'freebsd'
-    
+
     if not conf.env['IS_LINUX']:
         Utils.pprint('RED', 'Sorry, waf builder currently does not work on %s platform!' % platform)
         sys.exit(1)
@@ -38,9 +38,9 @@ def configure(conf):
     conf.check_tool('compiler_cc')
     conf.check_tool('compiler_cxx')
     #conf.check_tool('misc')
-    
+
     conf.check_cfg(atleast_pkgconfig_version='0.0.0')
-    
+
     conf.check_cfg(package='sndfile', atleast_version='1.0.16',
         args='--cflags --libs', mandatory=True)
     conf.check_cfg(package='jack', atleast_version='0.100',
@@ -53,21 +53,21 @@ def configure(conf):
         args='--cflags --libs', mandatory=True)
     conf.check_cfg(package='fftw3f',
         args='--cflags --libs', mandatory=True)
-    
+
     conf.check_cc(header_name='cwiid.h', lib='cwiid', uselib_store='CWIID')
     conf.check_cc(header_name='linux/input.h')
     conf.check_cc(header_name='xmmintrin.h', ccflags=['-msse', '-mfpmath=sse'], define_name='HAVE_SSE')
-    
+
     if conf.env['HAVE_SSE']:
         conf.env.append_unique('CCFLAGS', ['-msse', '-mfpmath=sse'])
         conf.env.append_unique('CXXFLAGS', ['-msse', '-mfpmath=sse'])
         conf.define('SC_MEMORY_ALIGNMENT', 16)
     else:
         conf.define('SC_MEMORY_ALIGNMENT', 1)
-    
+
     #conf.env['LIBDIR'] = os.path.join(conf.env['PREFIX'], 'lib')
     #conf.env['DATADIR'] = os.path.join(conf.env['PREFIX'], 'share')
-    
+
     # global defines
     conf.define('HAVE_ALSA', 1)
     conf.define('HAVE_AVAHI', 1)
@@ -80,16 +80,16 @@ def configure(conf):
     conf.define('SC_USE_JACK_CLIENT_NEW', 1)
     conf.define('USE_RENDEZVOUS', 1)
     conf.define('USE_SC_TERMINAL_CLIENT', 1)
-    
+
     conf.define('SC_DATA_DIR', os.path.join(conf.env['DATADIR'], 'SuperCollider'))
     conf.define('SC_PLUGIN_DIR', os.path.join(conf.env['LIBDIR'], 'SuperCollider', 'plugins'))
     conf.define('SC_PLUGIN_EXT', '.so')
     conf.define('SC_PLUGIN_LOAD_SYM', 'load')
-    
+
     # other defines from SConstruct
     conf.env.append_unique('CCFLAGS', ['-Wno-unknown-pragmas'])
     conf.env.append_unique('CXXFLAGS', ['-Wno-unknown-pragmas', '-Wno-deprecated'])
-    
+
     # FIXME: ugly hack but SC3 does not use config.h now
     conf.env.append_value('CPPFLAGS', ['-include','default/waf_config.h'])
     conf.write_config_header('waf_config.h')
@@ -111,12 +111,12 @@ def build(bld):
     dtoa.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
     dtoa.source = 'Source/common/dtoa.c'
     dtoa.target = 'dtoa'
-    
+
     fftlib = bld.new_task_gen('cc')
     fftlib.includes = '#Headers/common'
     fftlib.source = 'Source/common/fftlib.c'
     fftlib.target = 'fftlib'
-    
+
     # libcommon
     libcommon = bld.new_task_gen('cxx', 'staticlib')
     libcommon.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
@@ -133,7 +133,7 @@ def build(bld):
     libcommon.add_objects = 'dtoa'
     libcommon.target = 'common'
     libcommon.install_path = None
-    
+
     # libscsynth
     libscsynth = bld.new_task_gen('cxx', 'shlib')
     # FIXME: AUDIOAPI -> top
@@ -170,9 +170,9 @@ def build(bld):
         'Source/server/SC_Jack.cpp',
     ] # libscsynth_source
     libscsynth.target = 'scsynth'
-    
+
     #uselib_local = 'my_static_lib',
-    
+
     scsynth = bld.new_task_gen('cxx', 'program')
     #scsynth.defines = sc3_defines
     scsynth.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
@@ -180,7 +180,7 @@ def build(bld):
     scsynth.target = 'scsynth'
     scsynth.uselib_local = 'scsynth' # FIXME
     #scsynth.uselib = ['JACK']
-    
+
     # libsclang
     libsclang = bld.new_task_gen('cxx', 'shlib')
     #libsclang.defines = sc3_defines
@@ -239,20 +239,20 @@ def build(bld):
         'Source/lang/LangPrimSource/SC_AlsaMIDI.cpp',
     ] # libsclang_source
     libsclang.add_objects = 'fftlib' # FIXME
-    
+
     # sclang
     sclang = bld.new_task_gen('cxx', 'program')
     sclang.includes = '#Headers/lang #Headers/plugin_interface #Headers/common'
     sclang.source = ['Source/lang/LangSource/cmdLineFuncs.cpp'] #+ common_sources
     sclang.target = 'sclang'
     sclang.uselib_local = 'sclang scsynth'
-    
+
     # plugins
     sccomplex = bld.new_task_gen('cxx')
     sccomplex.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
     sccomplex.source = 'Source/plugins/SCComplex.cpp'
     sccomplex.target = 'SCComplex'
-    
+
     stdugens = [
         'BinaryOpUGens',
         'ChaosUGens',
@@ -276,16 +276,16 @@ def build(bld):
     ] # ugens
     for name in stdugens:
         sc_plugin_gen(bld, name, source=os.path.join('Source', 'plugins', name + '.cpp'))
-    
+
     sc_plugin_gen(bld, 'FFTUgens', source=[
         'Source/plugins/FFTInterfaceTable.cpp',
         'Source/plugins/FFT_UGens.cpp',
-        'Source/plugins/PV_UGens.cpp', 
+        'Source/plugins/PV_UGens.cpp',
         'Source/plugins/PartitionedConvolution.cpp',
         'Source/common/SC_fftlib.cpp'], # XXX: special inline
         uselib='FFTW3F',
         add_objects='SCComplex')
-    
+
     sc_plugin_gen(bld, 'PVThirdParty', source=[
         'Source/plugins/Convolution.cpp',
         'Source/plugins/FFT2InterfaceTable.cpp',
@@ -294,11 +294,11 @@ def build(bld):
         'Source/common/SC_fftlib.cpp'], # XXX: special inline
         uselib='FFTW3F',
         add_objects='SCComplex')
-    
+
     sc_plugin_gen(bld, 'UnpackFFTUGens', source=[
         'Source/plugins/UnpackFFTUGens.cpp'],
         add_objects='SCComplex')
-    
+
     sc_plugin_gen(bld, 'MLUgens', source=[
         'Source/plugins/ML.cpp',
         'Source/plugins/Loudness.cpp',
@@ -310,24 +310,24 @@ def build(bld):
         'Source/plugins/BeatTrack2.cpp',
         'Source/plugins/ML_SpecStats.cpp'],
         add_objects='SCComplex')
-    
+
     sc_plugin_gen(bld, 'DiskIOUgens', source=[
         'Source/server/SC_SyncCondition.cpp',
         'Source/plugins/DiskIO_UGens.cpp'])
-    
+
     sc_plugin_gen(bld, 'MouseUGens',
         source=os.path.join('Source', 'plugins', 'MouseUGens.cpp'),
         uselib='XT')
     sc_plugin_gen(bld, 'KeyboardUGens',
         source=os.path.join('Source', 'plugins', 'KeyboardUGens.cpp'),
         uselib='XT')
-    
+
     # install headers
     bld.install_files('${PREFIX}/include/SuperCollider/common', 'Headers/common/*.h')
     bld.install_files('${PREFIX}/include/SuperCollider/lang', 'Headers/lang/*.h')
     bld.install_files('${PREFIX}/include/SuperCollider/plugin_interface', 'Headers/plugin_interface/*.h')
     bld.install_files('${PREFIX}/include/SuperCollider/server', 'Headers/server/*.h')
-    
+
     #bld.install_files('${PREFIX}/share/SuperCollider/',
     #    bld.path.ant_glob('build/SCClassLibrary/**/*.sc'),
     #    relative_trick=True)

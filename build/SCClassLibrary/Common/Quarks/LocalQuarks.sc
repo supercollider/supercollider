@@ -12,7 +12,7 @@
 LocalQuarks
 {
 	classvar >globalPath; // where the "Quarks.global" checkout is stored
-	
+
 	var <path;
 	var <parent; // the Quarks
 	var all; // contains nil, or all local quarks
@@ -34,7 +34,7 @@ LocalQuarks
 			// check through each quark in repos/directory
 			paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
 			quarks = paths.collect({ |p| Quark.fromFile(p, parent) });
-	
+
 			// check paths that do exist locally
 			all = quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })
 		};
@@ -56,19 +56,19 @@ LocalQuarks
 		^path ++ "/" ++ q.path;
 	}
 	openFolder { arg name, version;
-		if(name.isNil) { 
-			unixCmd("open" + path.escapeChar($ )) 
+		if(name.isNil) {
+			unixCmd("open" + path.escapeChar($ ))
 		} {
 			unixCmd("open" + this.findPath(name, version).escapeChar($ ))
 		}
 	}
-	
+
 	/// reread local quarks directory
 	reread {
 		all = nil;
 		this.quarks;
 	}
-	
+
 		// stupid path has to be escaped above???
 		// well sometimes you need the raw path...
 	simplePath {

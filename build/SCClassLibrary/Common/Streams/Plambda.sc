@@ -1,17 +1,17 @@
 Plambda : FilterPattern {
 	var <>scope;
-	
+
 	*new { arg pattern, scope;
 		^super.new(pattern).scope_(scope)
 	}
-	
+
 	embedInStream { arg inval;
 		var embedScope, stream, outval, parentScope;
-				
+
 		stream = pattern.asStream;
 		inval !? { parentScope = inval[\eventScope] };
 		embedScope = (scope.copy ? ()).parent_(parentScope);
-		
+
 		while {
 			inval = inval.copy ? ();
 			inval[\eventScope] = embedScope;
@@ -23,7 +23,7 @@ Plambda : FilterPattern {
 			outval[\eventScope] = outval[\eventScope].eventAt(\parent);
 			inval = outval.yield
 		};
-		
+
 		^inval
 	}
 	storeArgs {
@@ -37,7 +37,7 @@ Plet : Pattern {
 	*new { arg key, pattern, return;
 		^super.newCopyArgs(pattern, key, return)
 	}
-	
+
 	embedInStream { arg inval;
 		var str = pattern.asStream, val, sval, outval, scope;
 		var returnStr = return.asStream, returnVal;
@@ -48,18 +48,18 @@ Plet : Pattern {
 		} {
 			scope = inval[\eventScope];
 			if(scope.isNil) { Error("no scope defined in event").throw };
-			
+
 			// don't transmit scope
 			val = outval.copy;
 			if(val.eventAt(\eventScope).notNil) { val[\eventScope] = nil };
 			scope[key] = val;
-			
+
 			inval = (returnVal ? outval).yield;
 		}
 	}
-	
+
 	silent { return = Event.silent }
-	
+
 	storeArgs { ^[key, pattern] ++ return }
 
 }
@@ -67,11 +67,11 @@ Plet : Pattern {
 
 Pget : Pattern {
 	var <>key, <>default, <>repeats;
-	
+
 	*new { arg key, default, repeats = 1;
 		^super.newCopyArgs(key, default, repeats)
 	}
-	
+
 	embedInStream { arg inval;
 			var scope = inval[\eventScope], outval;
 			if(scope.isNil) { Error("no scope defined in event").throw };
@@ -82,7 +82,7 @@ Pget : Pattern {
 			};
 			^inval
 	}
-	
+
 	storeArgs {
 		var list = [key];
 		if(repeats != 1) { ^[key, default, repeats] };

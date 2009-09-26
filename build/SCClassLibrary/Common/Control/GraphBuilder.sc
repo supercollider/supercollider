@@ -1,6 +1,6 @@
 GraphBuilder {
 	//used to create an out ugen automatically and a fade envelope
-	
+
 	*wrapOut { arg name, func, rates, prependArgs, outClass=\Out, fadeTime;
 		^SynthDef.new(name, { arg i_out=0;
 			var result, rate, env;
@@ -27,7 +27,7 @@ GraphBuilder {
 
 
 		^EnvGen.kr(Env.new([startVal, 1, 0], #[1, 1], \lin, 1), gate, 1.0, 0.0, dt, 2)
-	
+
 	}
 
 
@@ -36,7 +36,7 @@ GraphBuilder {
 
 
 EnvGate {
-				
+
 		*new { arg i_level=1, gate, fadeTime, doneAction=2, curve='sin';
 			var synthGate = gate ?? { NamedControl.kr(\gate, 1.0) };
 			var synthFadeTime = fadeTime ?? { NamedControl.kr(\fadeTime, 0.02) };
@@ -52,8 +52,8 @@ EnvGate {
 
 /*EnvGate {
 		classvar currentControl, buildSynthDef;
-	
-				
+
+
 		*new { arg i_level=1, gate, fadeTime, doneAction=2, curve='sin';
 			var synthGate, synthFadeTime, startVal;
 				if(gate.isNil and: { fadeTime.isNil }) {
@@ -67,7 +67,7 @@ EnvGate {
 					synthGate, i_level, 0.0, synthFadeTime, doneAction
 				)
 		}
-		
+
 		// this allows several instances within a single synthdef
 		*currentControl {
 			if(this.hasCurrentControl.not) {
@@ -85,41 +85,41 @@ EnvGate {
 
 NamedControl {
 	classvar currentControls, buildSynthDef;
-	
+
 	var <name, <values, <lags, <rate, <fixedLag;
 	var <control;
-	
+
 	*ar { arg  name, values, lags;
 		^this.new(name, values, \audio, lags, false)
 	}
-	
+
 	*kr { arg  name, values, lags, fixedLag = false;
 		^this.new(name, values, \control, lags, fixedLag)
 	}
-	
+
 	*ir { arg  name, values, lags;
 		^this.new(name, values, \scalar, lags, false)
 	}
-	
+
 	*tr { arg  name, values, lags;
 		^this.new(name, values, \trigger, lags, false)
 	}
-	
+
 	*new { arg name, values, rate, lags, fixedLag = false;
 		var res;
-		
-		
+
+
 		this.initDict;
 		res = currentControls.at(name);
-		
-		
+
+
 		if(res.isNil) {
 			values = (values ? 0.0).asArray;
 			res = super.newCopyArgs(name, values, lags, rate, fixedLag).init;
 			currentControls.put(name, res);
 		} {
 			values = (values ? res.values).asArray;
-			if(res.values != values) { 
+			if(res.values != values) {
 				Error("NamedControl: cannot have more than one set of "
 						"default values in the same control.").throw;
 			};
@@ -127,9 +127,9 @@ NamedControl {
 				Error("NamedControl: cannot have  more than one set of "
 						"rates in the same control.").throw;
 			};
-			
+
 		};
-		
+
 		if(res.fixedLag and: lags.notNil) {
 			if( res.lags != lags ) {
 				Error("NamedControl: cannot have more than one set of "
@@ -138,22 +138,22 @@ NamedControl {
 				^res.control;
 			}
 		};
-		
+
 		^if(lags.notNil) {
 			res.control.lag(lags.asArray)
 		} {
 			res.control
 		}
 	}
-	
+
 	init {
 		var prefix, ctlName, ctl, selector;
-		
+
 		name !? {
 			name = name.asString;
 			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
 		};
-		
+
 		if(fixedLag && lags.notNil && prefix.isNil) {
 			buildSynthDef.addKr(name, values);
 			control = LagControl.kr(values.flat, lags);
@@ -161,14 +161,14 @@ NamedControl {
 			if(prefix == $a or: {rate === \audio}) {
 				buildSynthDef.addAr(name, values);
 				control = AudioControl.ar(values.flat);
-				
+
 			} {
 				if(prefix == $t or: {rate === \trigger}) {
 					buildSynthDef.addTr(name, values);
 					control = TrigControl.kr(values.flat);
 				} {
 					if(prefix == $i or: {rate === \scalar}) {
-						buildSynthDef.addIr(name, values); 
+						buildSynthDef.addIr(name, values);
 						control = Control.ir(values.flat);
 					} {
 						buildSynthDef.addKr(name, values);
@@ -177,16 +177,16 @@ NamedControl {
 				}
 			};
 		};
-		
+
 		control = control.asArray.reshapeLike(values).unbubble;
 	}
-	
+
 	*initDict {
 		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {
 			buildSynthDef = UGen.buildSynthDef;
 			currentControls = IdentityDictionary.new;
 		};
 	}
-	
+
 
 }

@@ -2,85 +2,85 @@
 BroadcastServer {
 	var	<>homeServer, <>addresses, >addr;
 	var	broadcast = true;
-	
+
 	*new { arg name, addr, options, clientID;
 		^super.new.init(name, addr, options, clientID)
 	}
-	
+
 	init { arg argName, argAddr, options, clientID;
 		homeServer = Server.new(argName.asSymbol, argAddr, options, clientID ? 0);
 		addr = argAddr;
 	}
-	
+
 	*for { arg homeServer, addresses; // local server is a router
 		^super.new.homeServer_(homeServer)
 			.addr_(homeServer.addr)
 			.addresses_(addresses)
 	}
-	
-	addrIndex { |ip| 
-		ip = ip.asSymbol; 
+
+	addrIndex { |ip|
+		ip = ip.asSymbol;
 		^addresses.detectIndex { |a| a.hostname.asSymbol == ip };
 	}
-	addAddr { |ip, port| 
-		var foundIndex = this.addrIndex(ip); 
-		if (foundIndex.isNil) { 
-			addresses = addresses.add(NetAddr(ip.asString, port)) 
+	addAddr { |ip, port|
+		var foundIndex = this.addrIndex(ip);
+		if (foundIndex.isNil) {
+			addresses = addresses.add(NetAddr(ip.asString, port))
 		};
 	}
-	
-	removeByIP { |ip| 
-		var foundIndex = this.addrIndex(ip); 
-		if (foundIndex.notNil) { 
+
+	removeByIP { |ip|
+		var foundIndex = this.addrIndex(ip);
+		if (foundIndex.notNil) {
 			addresses.removeAt(foundIndex).disconnect;
 		}
 	}
-	
+
 	// iterating
-	
+
 	at { arg index;
 		^addresses.clipAt(index)
 	}
-	
+
 	wrapAt { arg index;
 		^addresses.wrapAt(index)
 	}
-	
+
 	do { arg function;
 		^addresses.do(function)
 	}
-	
+
 	// message forwarding
-		
+
 	sendMsg { arg ... args;
-		if(broadcast) 
+		if(broadcast)
 			{ addresses.do({ arg addr; addr.sendMsg(*args) }) }
 			{ addr.sendMsg(*args) }
-	
+
 	}
 	sendBundle { arg time ... messages;
-		if(broadcast) 
+		if(broadcast)
 			{ addresses.do({ arg addr; addr.sendBundle(time, *messages); }) }
 			{ addr.sendBundle(time, *messages) }
 	}
 	sendRaw { arg rawArray;
-		if(broadcast) 
-			{ addresses.do({ arg addr; addr.sendRaw(rawArray) }) } 
+		if(broadcast)
+			{ addresses.do({ arg addr; addr.sendRaw(rawArray) }) }
 			{ addr.sendRaw(rawArray) }
 	}
-	
+
 	listSendMsg { arg msg;
-		if(broadcast) 
+		if(broadcast)
 			{ addresses.do({ arg addr; addr.sendMsg(*msg) }) }
 			{ addr.sendMsg(*msg) }
 	}
  	listSendBundle { arg time,bundle;
- 		if(broadcast) 
+ 		if(broadcast)
  			{ addresses.do({ arg addr; addr.sendBundle(time, *bundle) }) }
  			{ addr.sendBundle(time, *bundle) }
- 		
+
 	}
-	
+
 	openBundle { arg bundle;  // pass in a bundle that you want to continue adding to, or nil for a new bundle.
 		addr = BundleNetAddr.copyFrom(addr, bundle);
 		broadcast = false;
@@ -105,16 +105,16 @@ BroadcastServer {
 		}
 		^bundle
 	}
-	
+
 
 	options { ^homeServer.options }
-	
+
 	makeWindow { homeServer.makeWindow }
-	
-	boot { 
+
+	boot {
 		var bundle;
-		homeServer.waitForBoot { 
-			this.notify; 
+		homeServer.waitForBoot {
+			this.notify;
 			bundle = homeServer.makeBundle(false, { homeServer.initTree });
 			this.listSendBundle(nil, bundle);
 		}
@@ -122,14 +122,14 @@ BroadcastServer {
 
 	serverRunning { ^homeServer.serverRunning }
 	serverBooting { ^homeServer.serverBooting }
-	
+
 	status {
 		this.sendMsg("/status");
 	}
 	notify { arg flag=true;
 		this.sendMsg("/notify", flag.binaryValue);
 	}
-	
+
 	asTarget { ^homeServer.asTarget }
 
 	// use home server allocators
@@ -139,14 +139,14 @@ BroadcastServer {
 	controlBusAllocator { ^homeServer.controlBusAllocator }
 	audioBusAllocator { ^homeServer.audioBusAllocator }
 	bufferAllocator { ^homeServer.bufferAllocator }
-	
+
 	nextNodeID { ^homeServer.nodeAllocator.alloc }
 
 		// compatibility of other server messages
 	doesNotUnderstand { |selector ... args|
 		^homeServer.perform(selector, *args)
 	}
-	
+
 
 	// sync
 	sendMsgSync { arg condition ... args;
@@ -167,15 +167,15 @@ BroadcastServer {
 				if(count == 0) {
 					condition.test = true;
 					condition.signal;
-				};			
+				};
 			};
 			}).add;
-		
+
 			addr.sendBundle(nil, args);
 		};
 		condition.wait;
 	}
-	
+
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		var count;
 		if (condition.isNil) { condition = Condition.new };
@@ -203,7 +203,7 @@ BroadcastServer {
 		};
 		condition.wait;
 	}
-	
+
 
 }
 

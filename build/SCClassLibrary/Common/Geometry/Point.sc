@@ -1,7 +1,7 @@
 
 Point {
 	var <>x = 0, <>y = 0;
-	
+
 	*new { arg x=0, y=0;
 		^super.newCopyArgs(x, y);
 	}
@@ -10,50 +10,50 @@ Point {
 	}
 
 	set { arg argX=0, argY=0; x = argX; y = argY; }
-	
+
 	asPoint { ^this }
 	asComplex { ^Complex.new(x,y) }
 	asPolar { ^Polar.new(this.rho, this.theta) }
 	asRect { ^Rect.new(0,0,x,y) }
 	asArray { ^[this.x, this.y] }
-	
+
 	== { arg aPoint;
 		^aPoint respondsTo: #[\x, \y] and: { x == aPoint.x and: { y == aPoint.y } }
 	}
 	hash { ^ (x.hash << 1) bitXor: y.hash }
-		
-	+ { arg delta; 
+
+	+ { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
 		^(this.x + deltaPoint.x) @ (this.y + deltaPoint.y)
-	}	
-	- { arg delta; 
+	}
+	- { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
 		^(this.x - deltaPoint.x) @ (this.y - deltaPoint.y)
 	}
-		
-	* { arg scale; 
+
+	* { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^(this.x * scalePoint.x) @ (this.y * scalePoint.y)
 	}
-	/ { arg scale; 
+	/ { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^(this.x / scalePoint.x) @ (this.y / scalePoint.y)
 	}
-	div { arg scale; 
+	div { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^(this.x div: scalePoint.x) @ (this.y div: scalePoint.y)
 	}
-	translate { arg delta; 
+	translate { arg delta;
 		^(this.x + delta.x) @ (this.y + delta.y)
-	}	
-	scale { arg scale; 
+	}
+	scale { arg scale;
 		^(this.x * scale.x) @ (this.y * scale.y)
-	}	
+	}
 	rotate { arg angle; // in radians
 		var sinr, cosr;
 		sinr = angle.sin;
@@ -62,21 +62,21 @@ Point {
 	}
 
 	abs { ^x.abs @ y.abs }
-	
+
 	rho { ^hypot(x, y) }
 	theta { ^atan2(y, x) }
-	
+
 	dist { arg aPoint;
 		aPoint = aPoint.asPoint;
 		^hypot(x - aPoint.x, y - aPoint.y)
 	}
 	transpose { ^y @ x }
-	
-	round { arg quant; 
+
+	round { arg quant;
 		quant = quant.asPoint;
 		^x.round(quant.x) @ y.round(quant.y)
 	}
-	trunc { arg quant; 
+	trunc { arg quant;
 		quant = quant.asPoint;
 		^x.trunc(quant.x) @ y.trunc(quant.y)
 	}
@@ -86,7 +86,7 @@ Point {
 		thatPoint = that.asPoint;
 		^(this.x mod: thatPoint.x) @ (this.y mod: thatPoint.y)
 	}
-	
+
 	printOn { arg stream;
 		stream << this.class.name << "( " << x << ", " << y << " )";
 	}

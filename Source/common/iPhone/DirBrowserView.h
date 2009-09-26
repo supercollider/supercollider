@@ -11,7 +11,7 @@
 @class DirBrowserView;
 
 @interface FileTransferController : UIViewController
-{	
+{
 	DirBrowserView *browser;
 	NSNetService *service;
 	NSThread *thread;
@@ -34,11 +34,11 @@
 @interface DirBrowserViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
 	FileTransferController *fileController;
-	
+
 	NSArray *array;
 	NSString *root;
 	NSString *path;
-	
+
 	IBOutlet UITableView *table;
 	IBOutlet UINavigationItem *navItem;
 	IBOutlet UIBarButtonItem *upItem;

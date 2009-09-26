@@ -9,7 +9,7 @@ LIDInfo {
 			vendor,
 			product,
 			version,
-			
+
 		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
 		stream << ", " << physical << ", " << unique;
 		stream.put($));
@@ -35,12 +35,12 @@ LID {
 	var <>closeAction;
 	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", deviceList;
 	classvar < eventLoopIsRunning = true;
-	
+
 	*initClass {
 		all = [];
 		specs = IdentityDictionary.new;
 		eventTypes = [
-			// maps event type (index) to max code value		
+			// maps event type (index) to max code value
 			0x0001,		// EV_SYN
 			0x02ff,		// EV_KEY
 			0x000f,		// EV_REL
@@ -464,7 +464,7 @@ LID {
 		_LID_SetLedState
 		^this.primitiveFailed
 	}
-	prSetMscState { |evtCode, evtValue|	
+	prSetMscState { |evtCode, evtValue|
 		// set MSC value
 		_LID_SetMscState
 		^this.primitiveFailed

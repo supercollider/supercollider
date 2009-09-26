@@ -7,7 +7,7 @@ Mix {
 		});
 		^sum
 	}
-	// support this common idiom 
+	// support this common idiom
 	*fill { arg n, function;
 		var val, sum;
 		n.do({ arg i;

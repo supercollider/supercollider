@@ -128,7 +128,7 @@ inline void vscalarmul(float *dest, float scalar, float *b, int len)
 	float t[4] = {scalar, scalar, scalar, scalar};
 	float *s = t;
 	int tmp;
-	
+
     __asm__ __volatile__(
         "fmrx %[tmp], fpscr\n\t"
         "orr %[tmp], %[tmp], #(3 << 16)\n\t" /* set vector size to 4 */

@@ -144,13 +144,13 @@ void compileByteCodes(ByteCodes byteCodes)
 {
   Byte		*ptr;
   int i;
-  
+
   if (byteCodes == NULL) return;
-  
+
   //postfl("[%d]\n", byteCodes->ptr - byteCodes->bytes);
   for (i=0, ptr = byteCodes->bytes; ptr < byteCodes->ptr; ptr++, ++i) {
     compileByte(*ptr);
-    
+
 	//postfl("%02X ", *ptr);
 	//if ((i & 15) == 15) postfl("\n");
   }

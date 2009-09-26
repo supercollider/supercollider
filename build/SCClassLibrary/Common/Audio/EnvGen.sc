@@ -1,49 +1,49 @@
 
-Done : UGen {	
+Done : UGen {
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
-FreeSelf : UGen {	
+FreeSelf : UGen {
 	*kr { arg in;
 		this.multiNew('control', in);
 		^in
 	}
 }
 
-PauseSelf : UGen {	
+PauseSelf : UGen {
 	*kr { arg in;
 		this.multiNew('control', in);
 		^in
 	}
 }
 
-FreeSelfWhenDone : UGen {	
+FreeSelfWhenDone : UGen {
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
-PauseSelfWhenDone : UGen {	
+PauseSelfWhenDone : UGen {
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}
 }
 
-Pause : UGen {	
+Pause : UGen {
 	*kr { arg gate, id;
 		^this.multiNew('control', gate, id)
 	}
 }
 
-Free : UGen {	
+Free : UGen {
 	*kr { arg trig, id;
 		^this.multiNew('control', trig, id)
 	}
 }
 
-EnvGen : UGen { // envelope generator	
+EnvGen : UGen { // envelope generator
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		^this.multiNewList(['audio', gate, levelScale, levelBias, timeScale, doneAction, `envelope])
 	}
@@ -52,8 +52,8 @@ EnvGen : UGen { // envelope generator
 	}
 	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envelope;
 
-		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction] 
-			++ envelope.dereference.asArray); 
+		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
+			++ envelope.dereference.asArray);
 	}
  	init { arg theInputs;
  		// store the inputs as an array

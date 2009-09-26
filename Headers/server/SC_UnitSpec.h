@@ -25,7 +25,7 @@
 
 #include "SC_Unit.h"
 
-struct UnitSpec 
+struct UnitSpec
 {
 	struct UnitDef* mUnitDef;
 	int16 mCalcRate;

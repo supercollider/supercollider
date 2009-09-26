@@ -56,7 +56,7 @@ bool pyr_init_mem_pools(int runtime_space, int runtime_grow);
 void schedRun();
 void schedStop();
 bool compileLibrary();
-void runLibrary(struct PyrSymbol* selector); 
+void runLibrary(struct PyrSymbol* selector);
 struct VMGlobals* scGlobals();
 void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
 

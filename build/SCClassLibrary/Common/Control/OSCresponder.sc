@@ -1,15 +1,15 @@
 OSCresponder {
 	classvar <>all;
 	var <>addr, <>cmdName, <>action;
-	
+
 	*new { arg addr, cmdName, action;
 		^super.newCopyArgs(addr, cmdName.asSymbol, action);
 	}
-	
+
 	*initClass {
 		all = Set.new;
-	} 
-	
+	}
+
 	*respond { arg time, addr, msg;
 		var cmdName, hit = false;
 		#cmdName = msg;
@@ -20,8 +20,8 @@ OSCresponder {
 			};
 		};
 		^hit
-	}	
-	
+	}
+
 	*add { arg responder;
 		var old;
 		old = all.findMatch(responder);
@@ -36,7 +36,7 @@ OSCresponder {
 			item.addr == addr
 		});
 	}
-	
+
 	value { arg time, msg, addr;
 		action.value(time, this, msg, addr);
 	}
@@ -64,14 +64,14 @@ OSCresponder {
 
 OSCMultiResponder : OSCresponder {
 	var <>nodes;
-	
+
 	value { arg time, msg, addr;
 		var iterlist;
 		iterlist = nodes.copy;
 		iterlist.do({ arg node; node.value(time, msg, addr) });
 	}
 	isEmpty { ^nodes.size == 0 }
-	
+
 }
 
 
@@ -79,7 +79,7 @@ OSCresponderNode {
 	var <addr, <cmdName, <>action;
 	*new { arg addr, cmdName, action;
 		^super.newCopyArgs(addr, cmdName.asSymbol, action);
-		
+
 	}
 	//i.zannos fix
 	add {
@@ -95,7 +95,7 @@ OSCresponderNode {
 			found.nodes = found.nodes.add(this)
 		});
 	}
-	
+
 	removeWhenDone {
 		var func;
 		func = action;
@@ -104,18 +104,18 @@ OSCresponderNode {
 			this.remove;
 		}
 	}
-	
-	remove { 
+
+	remove {
 		var resp, alreadyThere;
 		resp = OSCMultiResponder(addr, cmdName);
 		alreadyThere = OSCresponder.all.findMatch(resp);
-		if(alreadyThere.notNil) 
-		{ 
+		if(alreadyThere.notNil)
+		{
 			alreadyThere.nodes.remove(this);
 			if(alreadyThere.isEmpty, { alreadyThere.remove });
-		}; 
+		};
 	}
-	
+
 	value { arg time, msg, addr;
 		action.value(time, this, msg, addr);
 	}

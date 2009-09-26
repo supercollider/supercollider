@@ -188,7 +188,7 @@ inline float32 taylorsin(float32 x)
 	// valid range from -pi/2 to +3pi/2
 	x = static_cast<float32>((float32)pi2 - std::abs(pi2 - x));
 	float32 x2 = x * x;
-  	return static_cast<float32>(x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
+  	return static_cast<float32>(x*(x2*(x2*(x2*(x2*(1.0/362880.0)
   			- (1.0/5040.0))
             + (1.0/120.0))
             - (1.0/6.0))
@@ -197,7 +197,7 @@ inline float32 taylorsin(float32 x)
 
 inline float32 sc_trunc(float32 x)
 {
-	// truncFloat is a number which causes a loss of precision of 
+	// truncFloat is a number which causes a loss of precision of
 	// the fractional part.
 	// NOTE: this will only work if the FPU is set to round downward.
 	// That is NOT the default rounding mode. SC sets it to this mode.
@@ -217,10 +217,10 @@ inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32
 	float32 x0 = x1 + 1.f;
 	float32 x2 = x1 - 1.f;
 	float32 x3 = x1 - 2.f;
-	
+
 	float32 x03 = x0 * x3 * 0.5f;
 	float32 x12 = x1 * x2 * 0.16666666666666667f;
-	
+
 	return x12 * (d * x0 - a * x3) + x03 * (b * x2 - c * x1);
 }
 
@@ -399,7 +399,7 @@ inline float64 taylorsin(float64 x)
 {
 	x = pi2 - std::abs(pi2 - x);
 	float64 x2 = x * x;
-  	return x*(x2*(x2*(x2*(x2*(1.0/362880.0) 
+  	return x*(x2*(x2*(x2*(x2*(1.0/362880.0)
   			- (1.0/5040.0))
             + (1.0/120.0))
             - (1.0/6.0))
@@ -408,7 +408,7 @@ inline float64 taylorsin(float64 x)
 
 inline float64 sc_trunc(float64 x)
 {
-	// truncDouble is a number which causes a loss of precision of 
+	// truncDouble is a number which causes a loss of precision of
 	// the fractional part.
 	// NOTE: this will only work if the FPU is set to round downward.
 	// That is NOT the default rounding mode. SC sets it to this mode.

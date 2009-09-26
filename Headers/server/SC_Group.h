@@ -26,7 +26,7 @@
 
 struct Group {
 	Node mNode;
-	
+
 	Node *mHead, *mTail;
 };
 typedef struct Group Group;

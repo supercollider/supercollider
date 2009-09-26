@@ -37,33 +37,33 @@ typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
 struct GraphDef
 {
 	NodeDef mNodeDef;
-	
+
 	uint32 mNumControls;
 	uint32 mNumAudioControls;
-	
+
 	uint32 mNumWires;
 	uint32 mNumConstants;
 	uint32 mNumUnitSpecs;
 	uint32 mNumWireBufs;
 	uint32 mNumCalcUnits;
-	
+
 	float32 *mInitialControlValues;
 	float32 *mConstants;
 
 	struct UnitSpec *mUnitSpecs;
-	
+
 	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
 	size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize;
-	
+
 	uint32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;
 	ParamSpecTable *mParamSpecTable;
-	
+
 	int mRefCount;
 	struct GraphDef* mNext;
 
 	struct GraphDef *mOriginal;
-	
+
 	uint32 mNumVariants;
 	struct GraphDef* mVariants;
 };

@@ -22,12 +22,12 @@
 #ifndef _PYRKERNELPROTO_H_
 #define _PYRKERNELPROTO_H_
 
-PyrClass* newClassObj(PyrClass *classObjSuperClass, 
-	PyrSymbol* className, PyrSymbol* superClassName, 
-	int numInstVars, int numClassVars, int numConsts, int numInstMethods, 
+PyrClass* newClassObj(PyrClass *classObjSuperClass,
+	PyrSymbol* className, PyrSymbol* superClassName,
+	int numInstVars, int numClassVars, int numConsts, int numInstMethods,
 	int instFormat, int instFlags);
-	
-void reallocClassObj(PyrClass* classobj, 
+
+void reallocClassObj(PyrClass* classobj,
 	int numInstVars, int numClassVars, int numConsts, int numMethods,
 	int instFormat, int instFlags);
 

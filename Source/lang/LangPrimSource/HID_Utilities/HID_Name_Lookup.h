@@ -2,7 +2,7 @@
 	File:		HID_Name_Lookup.h
 
 	Contains:	Definition of the HID device name lookup functions for the HID utilites.
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -63,7 +63,7 @@ extern "C" {
 
 #define kLogitech 				1133
 #define kWingManStrikeForce3D 	49797
-	
+
 #define kMacally 				8738
 #define kiShock 				16400
 #define kiShockIIFFB 			16416

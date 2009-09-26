@@ -5,7 +5,7 @@
 	numChannels will cause all players played within the socket to automatically adapt :
 		stereo mixed to mono,
 		mono expanded to stereo
-	
+
 */
 
 PlayerSocket : AbstractPlayerProxy {
@@ -39,7 +39,7 @@ PlayerSocket : AbstractPlayerProxy {
 			dee.name = this.name + "dee";
 			dum.name = this.name + "dum";
 		});
-		
+
 		// dee and dum are swapped on alternate spawns
 		// now playing:
 		envdSource = dee;
@@ -172,7 +172,7 @@ PlayerSocket : AbstractPlayerProxy {
 			}
 		)
 	}
-		
+
 	spawnToBundle { arg bundle;
 		if(source.notNil,{
 			this.setSourceToBundle(source,bundle);
@@ -250,7 +250,7 @@ PlayerSocket : AbstractPlayerProxy {
 	name {
 		^name ?? {this.class.name.asString}
 	}
-	
+
 	limit_ { |boo|
 		if(this.rate == \audio,{
 			dee.limit = boo;
@@ -277,8 +277,8 @@ PlayerEffectSocket : PlayerSocket {
 a pure control class
 
 ControlPlayerSocket : PlayerSocket {
-	
-	
+
+
 	*new { arg round=0.0;
 		^this.prNew(\control,1,round)
 	}

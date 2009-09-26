@@ -6,19 +6,19 @@ Pstep : Pattern {
 		^super.newCopyArgs(levels, durs, repeats).init
 	}
 	init { if (list.isKindOf(Collection)) { list = Pseq(list); } }
-	
+
 	embedInStream { arg inval;
 		var stream, val,dur;
-		thisThread.endBeat = thisThread.endBeat ? thisThread.beats; 
+		thisThread.endBeat = thisThread.endBeat ? thisThread.beats;
 		// endBeat > beats only if Pfindur ended something early
-		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;		
-		
+		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;
+
 		repeats.do { | i |
 			stream = Ptuple([list, durs]).asStream;
-			while (			
+			while (
 				{ #val, dur = stream.next(inval) ? [nil, nil];
 					val.notNil;
-				}, 
+				},
 				{
 				thisThread.endBeat = thisThread.endBeat + dur;
 					while(
@@ -31,7 +31,7 @@ Pstep : Pattern {
 	}
 	storeArgs {
 		^[list, durs, repeats]
-	}	
+	}
 }
 
 Pseg : Pstep {
@@ -73,16 +73,16 @@ Pseg : Pstep {
 				#val, dur, curve = streamVals;
 				evalArray[4] = val;
 				evalArray[7] = val;
-				
+
 				startTime = thisThread.endBeat;
 				thisThread.endBeat = thisThread.endBeat + evalArray[5];
 				if (val.isArray) {
 					arrayOfEvalArrays = evalArray.flop;
 					while(
 						{ thisThread.endBeat > curTime = thisThread.beats },
-						{ inval = yield(arrayOfEvalArrays.collect({ | a | 
-								a.envAt(curTime - startTime)}) 
-							) 
+						{ inval = yield(arrayOfEvalArrays.collect({ | a |
+								a.envAt(curTime - startTime)})
+							)
 						})
 				} {
 					while(
@@ -95,5 +95,5 @@ Pseg : Pstep {
 	}
 	storeArgs {
 		^[list, durs, curves, repeats]
-	}	
+	}
 }

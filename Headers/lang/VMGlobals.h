@@ -39,7 +39,7 @@ struct FifoMsg {
 	FifoMsg() : func(0), dataPtr(0) { dataWord[0] = dataWord[1] = 0; }
 	void Perform(struct VMGlobals* g);
 	void Free(struct VMGlobals* g);
-	
+
 	FifoMsgFunc func;
 	void* dataPtr;
 	long dataWord[2];
@@ -47,7 +47,7 @@ struct FifoMsg {
 
 struct VMGlobals {
 	VMGlobals();
-	
+
 	// global context
 	class AllocPool *allocPool;
 	struct PyrProcess *process;
@@ -83,7 +83,7 @@ inline void FifoMsg::Perform(struct VMGlobals* g)
 	{
 		(func)(g, this);
 	}
-	
+
 inline void FifoMsg::Free(struct VMGlobals* g)
 	{
 		g->allocPool->Free(dataPtr);

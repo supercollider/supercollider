@@ -1,6 +1,6 @@
 
 KeyCodeResponderGui : ObjectGui {
-	
+
 	guiBody { |f|
 		model.dict.keysValuesDo({ |k,v|
 			f.startRow;
@@ -20,7 +20,7 @@ KeyCodeResponderStackGui : KeyCodeResponderGui {
 }
 
 SimpleKDRUnitGui : KeyCodeResponderGui {
-	
+
 	guiBody { |f|
 		CXLabel(f, KeyCodeResponder.maskToString(model.requireMask));
 		(model.description  ? model.function).gui(f);

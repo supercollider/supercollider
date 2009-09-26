@@ -56,10 +56,10 @@ const int kMaxSndSelections = 64;
 const int kMaxSndChannels = 16;
 class SCSoundFileView : public SCView
 {
-public:	
-	SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCSoundFileView();
-	
+
 	virtual void draw(SCRect inDamage);
 	virtual void draw0(SCRect inDamage, CGContextRef cgc);
 	virtual void draw1(SCRect inDamage, CGContextRef cgc);
@@ -75,14 +75,14 @@ public:
 //	virtual void mouseOver(SCPoint where);
 	virtual int findSelection(int frame);
 	virtual void setBounds(SCRect inbounds);
-	
-	SCPoint pixelToUnits(SCPoint p, SCRect r) 
-            { 
+
+	SCPoint pixelToUnits(SCPoint p, SCRect r)
+            {
                 return SCMakePoint(
                     (p.x - r.x) * mZoom.x + mScroll.x,
                     (p.y - r.y) * mZoom.y + mScroll.y);
             }
-	SCPoint unitsToPixel(SCPoint u, SCRect r) 
+	SCPoint unitsToPixel(SCPoint u, SCRect r)
             {
                 return SCMakePoint(
                     (u.x - mScroll.x) * mInvZoom.x + r.x,
@@ -90,18 +90,18 @@ public:
             }
 
 protected:
-	
+
 	int mBufNum;
 	SNDFILE *mSndFile;
 	SndMinMaxBuf mSndMinMax;
-	SndBuf mSndBuf;	
+	SndBuf mSndBuf;
 	SCPoint mZoom, mInvZoom, mScroll;
 	int mStyle; // 0 = separate, 1 = overlay, 2 = x,y.
 	SCColor mWaveColors[kMaxSndChannels];
 	SCColor mGridColor;
 	bool mGridOn;
 	float mGridResolution;
- 	int mGridOffset;	
+ 	int mGridOffset;
 	SCPoint mAbsolutePosition;
 	bool mIsReadingSoundFile;
 	int mCurrentSelection;

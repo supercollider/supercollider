@@ -1,6 +1,6 @@
 Bag : Collection {
 	var <contents;
-	
+
 	*new { arg n=4;
 		^super.new.setDictionary(n)
 	}
@@ -27,7 +27,7 @@ Bag : Collection {
 			});
 		});
 	}
-	
+
 	// accessing
 	at { ^this.shouldNotImplement(thisMethod) }
 	atFail { ^this.shouldNotImplement(thisMethod) }
@@ -44,9 +44,9 @@ Bag : Collection {
 			array.at(index).isNil;			  // key is at even index.
 		});
 		// return the first non-nil key
-		^array.at(index); 
+		^array.at(index);
 	}
-	
+
 	wchoose {
 		var	items = Array(contents.size), counts = Array(contents.size);
 		contents.keysValuesDo({ |item, count|
@@ -55,7 +55,7 @@ Bag : Collection {
 		});
 		^items[counts.normalizeSum.windex]
 	}
-	
+
 	take {
 		var	result = this.choose;
 		this.remove(result);
@@ -66,7 +66,7 @@ Bag : Collection {
 	do { arg function;
 		var j = 0;
 		contents.associationsDo({ arg assn;
-			 assn.value.do({ 
+			 assn.value.do({
 			 	function.value(assn.key, j);
 			 	j = j + 1;
 			 })
@@ -78,7 +78,7 @@ Bag : Collection {
 			function.value(assn.key,assn.value,j);
 			 j = j + 1;
 		});
-	}	
+	}
 	itemCount { arg item;
 		^(contents.at(item) ? 0)
 	}

@@ -62,7 +62,7 @@ AbstractPlayer : AbstractFunction  {
 		if(status === \isPlaying,{ "already playing".debug });
 
 		bundle = AbstractPlayer.bundleClass.new;
-		if(status !== \readyForPlay,{ 
+		if(status !== \readyForPlay,{
 			this.prepareToBundle(group, bundle, false, bus)
 		});
 		this.spawnToBundle(bundle);
@@ -296,7 +296,7 @@ AbstractPlayer : AbstractFunction  {
 			// these will be the same thing
 			this.freeResourcesToBundle(bundle);
 			this.freePatchOutToBundle(bundle);
-			
+
 			status = \isFreeing;
 			bundle.addMessage(this,\didFree);
 		})
@@ -605,7 +605,7 @@ AbstractPlayer : AbstractFunction  {
 					thing.server ?? {"Bus has no server, cannot annotate".die},
 					thing.rate ?? {"Bus has no rate, cannot annotate".die},
 					thing.index ?? {"Bus has no index, cannot annotate".die},
-					note);//thing.asString + ":" + 
+					note);//thing.asString + ":" +
 			});
 		});
 	}

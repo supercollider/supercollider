@@ -32,36 +32,36 @@ An object archiving system for SuperCollider.
 
 int prAsArchive(struct VMGlobals *g, int numArgsPushed);
 int prAsArchive(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp;
 
 	PyrArchiver<char*> arch(g);
 
 	int err = arch.prepareToWriteArchive(a);
 	if (err) return err;
-	
+
 	int32 size = arch.calcArchiveSize();
-		
+
 	PyrInt8Array *obj = newPyrInt8Array(g->gc, size, 0, true);
 	obj->size = size;
 	arch.setStream((char*)obj->b);
 	err = arch.writeArchive();
-		
+
 	if (err == errNone) SetObject(a, obj);
 	else SetNil(a);
-	
+
 	return err;
 }
 
 int prUnarchive(struct VMGlobals *g, int numArgsPushed);
 int prUnarchive(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp;
 
 	if (!isKindOfSlot(a, class_int8array)) return errWrongType;
-	
+
 	PyrArchiver<char*> arch(g);
-	
+
 	arch.setStream((char*)a->uo->slots);
 	int err = arch.readArchive(a);
 	return err;
@@ -69,12 +69,12 @@ int prUnarchive(struct VMGlobals *g, int numArgsPushed)
 
 int prWriteArchive(struct VMGlobals *g, int numArgsPushed);
 int prWriteArchive(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	
+
 	char pathname[PATH_MAX];
 	memcpy(pathname, b->uos->s, b->uo->size);
 	pathname[b->uos->size] = 0;
@@ -103,14 +103,14 @@ int prReadArchive(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp;
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	
+
 	char pathname[PATH_MAX];
 	memcpy(pathname, b->uos->s, b->uo->size);
 	pathname[b->uos->size] = 0;
 
 	PyrArchiver<FILE*> arch(g);
 	FILE *file = fopen(pathname, "rb");
-	
+
 	int err;
 	if (file) {
 		arch.setStream(file);
@@ -127,13 +127,13 @@ void initArchiverPrimitives();
 void initArchiverPrimitives()
 {
 	int base, index;
-	
+
 	base = nextPrimitiveIndex();
 	index = 0;
 
-	definePrimitive(base, index++, "_AsArchive", prAsArchive, 1, 0);	
+	definePrimitive(base, index++, "_AsArchive", prAsArchive, 1, 0);
 	definePrimitive(base, index++, "_Unarchive", prUnarchive, 1, 0);
-	definePrimitive(base, index++, "_WriteArchive", prWriteArchive, 2, 0);	
+	definePrimitive(base, index++, "_WriteArchive", prWriteArchive, 2, 0);
 	definePrimitive(base, index++, "_ReadArchive", prReadArchive, 2, 0);
 }
 
@@ -154,7 +154,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

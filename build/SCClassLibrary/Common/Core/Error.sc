@@ -2,7 +2,7 @@
 Exception {
 	classvar <>handling = false;
 	classvar <>debug = false;
-	
+
 	var <>what, <>backtrace;
 
 	*new { arg what;
@@ -42,7 +42,7 @@ MethodError : Error {
 
 PrimitiveFailedError : MethodError {
 	var <>failedPrimitiveName;
-	
+
 	*new { arg receiver;
 		^super.new(Thread.primitiveErrorString, receiver)
 			.failedPrimitiveName_(thisThread.failedPrimitiveName)
@@ -69,8 +69,8 @@ ShouldNotImplementError : MethodError {
 		^super.new(nil, receiver).method_(method).class_(class)
 	}
 	errorString {
-		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name 
-			++ "' Message not valid for this subclass: " 
+		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
+			++ "' Message not valid for this subclass: "
 			++ class.name ++ "."
 	}
 }
@@ -109,8 +109,8 @@ OutOfContextReturnError : MethodError {
 		^super.new(nil, receiver).method_(method).result_(result)
 	}
 	errorString {
-		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name 
-			++ "' Out of context return of value: " ++ result 
+		^"ERROR: '" ++ method.ownerClass.name ++ "-" ++ method.name
+			++ "' Out of context return of value: " ++ result
 	}
 }
 
@@ -120,7 +120,7 @@ ImmutableError : MethodError {
 		^super.new(nil, receiver).value_(value)
 	}
 	errorString {
-		^"ERROR: Object is immutable: " ++ receiver 
+		^"ERROR: Object is immutable: " ++ receiver
 	}
 }
 
@@ -133,7 +133,7 @@ BinaryOpFailureError : DoesNotUnderstandError {
 DeprecatedError : Error {
 	var <>receiver;
 	var <>method, <>class, <>alternateMethod;
-	
+
 	*new { arg receiver, method, alternateMethod, class;
 		^super.new(nil, receiver).method_(method).alternateMethod_(alternateMethod).class_(class)
 	}
@@ -145,11 +145,11 @@ DeprecatedError : Error {
 		});
 		^string;
 	}
-	
+
 	reportError {
 		this.errorString.postln;
 	}
-	
+
 	throw {
 		Error.handling = true;
 		this.reportError;
@@ -160,7 +160,7 @@ DeprecatedError : Error {
 		} {
 			Error.handling = false;
 		};
-		
+
 	}
 }
 

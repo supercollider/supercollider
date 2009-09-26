@@ -1,11 +1,11 @@
 
 + Object {
-	
+
 	stopToBundle {}
 	freeToBundle {}
-	
+
 	rate { ^\noncontrol } // my bad. was \scalar, this should have been \noncontrol
-	
+
 	makePatchOut {}
 	patchOut { ^ObjectPatchOut(this) }
 	connectToPatchIn {}
@@ -20,20 +20,20 @@
 		this.prepareToBundle(group,bundle);
 		bundle.send(group.server)
 	}
-	
+
 	spawnToBundle {}
 	spawnOnToBundle {}
 	loadDefFileToBundle {}
-	
+
 	addToSynthDef {  arg instrSynthDef,name;
 		instrSynthDef.addInstrOnlyArg(name,this.synthArg);
 	}
-	
+
 	synthArg { ^this }
 	initForSynthDef {}
 	instrArgFromControl { arg control;
 		^this
-	}	
+	}
 }
 
 + Node {
@@ -125,7 +125,7 @@
 			if(thingSpec == this,{ ^true });
 			// if thingSpec is within my bounds
 			// TODO check if my minval is greater than my maxval
-			if(thingSpec.minval >= this.minval and: 
+			if(thingSpec.minval >= this.minval and:
 				{thingSpec.maxval <= this.maxval},{
 					^true
 			});

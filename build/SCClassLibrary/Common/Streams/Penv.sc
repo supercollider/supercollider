@@ -8,8 +8,8 @@ Penv : Env {
 		while
 			{ thisThread.beats < thisThread.endBeat }
 			{ inval = yield(this.at(thisThread.beats - startTime))};
-		^inval	
-	}	
-	
-	
+		^inval
+	}
+
+
 }

@@ -7,14 +7,14 @@
 		var startTime;
 		startTime = thisThread.endBeat ? thisThread.beats;
 		thisThread.endBeat = this.times.sum + startTime;
-		loop {	
+		loop {
 			inval = yield(this.at(thisThread.beats - startTime));
 			}
 	}
 	asStream {
 		^Routine({ arg inval; this.embedInStream(inval) })Ê
 	}
-	
+
 	asSignal { arg length = 400;
 		var duration, signal, ratio;
 		duration = times.sum;
@@ -23,8 +23,8 @@
 		length.do({ arg i; signal.add(this.at(i * ratio)) });
 		^signal;
 	}
-	
-	plot { arg size = 400, bounds, minval, maxval, parent; 
+
+	plot { arg size = 400, bounds, minval, maxval, parent;
 		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent); }
 
 }

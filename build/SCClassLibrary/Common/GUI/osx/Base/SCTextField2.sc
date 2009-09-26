@@ -40,26 +40,26 @@ a.stringColor_(Color.red)
 a.stringColor
 */
 SCTextField : SCStaticTextBase {
-	
+
 	*paletteExample { arg parent, bounds;
 //		^this.new(parent, bounds).initBackGround.value_("edit me");
 		^this.new(parent, bounds).value_("edit me");
 
 	}
-	
+
 	initBackGround {
 		super.init;
 		background = Color.white;
-		
+
 	}
-	
+
 	value {
 		^this.string
 	}
 	string{
 		^this.getProperty(\string);
 	}
-	
+
 	value_{|str|
 		^this.string_(str);
 	}
@@ -77,13 +77,13 @@ SCTextField : SCStaticTextBase {
 	properties {
 		^super.properties ++ #[\boxColor]
 	}
-	
+
 	// Dragging doesn't seem to be working here
-	defaultGetDrag { 
+	defaultGetDrag {
 		//"defaultGetDrag was called".postln;
 		^this.string
 	}
-	defaultCanReceiveDrag { 
+	defaultCanReceiveDrag {
 		//"defaultCanReceiveDrag was called".postln;
 		^currentDrag.respondsTo(\asString)
 	}
@@ -99,22 +99,22 @@ SCTextField : SCStaticTextBase {
 }
 
 SCNumberBox2 : SCTextField {
-	
-	//var <> keyString, 
+
+	//var <> keyString,
 	var <>step=1, <>scroll_step=1;
 	var <>typingColor, <>normalColor;
-	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true; 
+	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true;
 	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
 	//var mouseIncOrDeced = true;
-	
-	getScale { |modifiers| 
+
+	getScale { |modifiers|
 		^case
 			{ modifiers & 131072 == 131072 } { shift_scale }
 			{ modifiers & 262144 == 262144 } { ctrl_scale }
 			{ modifiers & 524288 == 524288 } { alt_scale }
 			{ 1 };
 	}
-	
+
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
@@ -135,24 +135,24 @@ SCNumberBox2 : SCTextField {
 //		clipLo = val;
 //		this.setProperty(\clipLo, val);
 //	}
-//	
+//
 //	clipHi_ {|val = inf|
 //		clipHi = val;
 //		this.setProperty(\clipHi, val);
 //	}
-	
+
 	increment {arg mul=1; this.valueAction = this.value + (step*mul); }
 	decrement {arg mul=1; this.valueAction = this.value - (step*mul); }
-	
+
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var zoom = this.getScale(modifiers);
-		
+
 		// standard chardown
 		if (unicode == 16rF700, { this.increment(zoom); ^this });
 		if (unicode == 16rF703, { this.increment(zoom); ^this });
 		if (unicode == 16rF701, { this.decrement(zoom); ^this });
 		if (unicode == 16rF702, { this.decrement(zoom); ^this });
-		
+
 //		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 //			if (keyString.notNil,{ // no error on repeated enter
 //				this.valueAction_(keyString.asFloat);
@@ -166,7 +166,7 @@ SCNumberBox2 : SCTextField {
 //			^this
 //		});
 //		if (char.isDecDigit || "+-.eE".includes(char), {
-//			if (keyString.isNil, { 
+//			if (keyString.isNil, {
 //				keyString = String.new;
 //				this.stringColor = typingColor;
 //			});
@@ -174,8 +174,8 @@ SCNumberBox2 : SCTextField {
 //			this.string = keyString;
 //			^this
 //		});
-		
-		
+
+
 
 		^nil		// bubble if it's an invalid key
 	}
@@ -186,7 +186,7 @@ SCNumberBox2 : SCTextField {
 //		this.stringColor = normalColor;
 //		object = val !? { val.clip(clipLo, clipHi) };
 //		this.string = object.asString;
-//	}	
+//	}
 //	valueAction_ { arg val;
 //		var prev;
 //		prev = object;
@@ -206,19 +206,19 @@ SCNumberBox2 : SCTextField {
 	properties {
 		^super.properties ++ #[\boxColor]
 	}
-	defaultGetDrag { 
+	defaultGetDrag {
 		^this.value;
 	}
 	defaultCanReceiveDrag {
 		^currentDrag.isNumber;
 	}
 	defaultReceiveDrag {
-		this.valueAction = currentDrag;	
+		this.valueAction = currentDrag;
 	}
 
 	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
 		hit = Point(x,y);
-		if (scroll == true, { inc = this.getScale(modifiers) });			
+		if (scroll == true, { inc = this.getScale(modifiers) });
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
@@ -233,31 +233,31 @@ SCNumberBox2 : SCTextField {
 			this.valueAction = (this.value + (inc * this.scroll_step * direction));
 			hit = Point(x, y);
 		});
-		mouseMoveAction.value(this, x, y, modifiers);	
+		mouseMoveAction.value(this, x, y, modifiers);
 	}
 	mouseUp{
-		
+
 		//if(mouseIncOrDeced, {this.value = this.value;mouseIncOrDeced = false});
 		inc=1
 	}
 
-	
+
 	value {
 		^this.getProperty(\value);
 	}
-	
+
 	value_ { arg val;
 		val = val !? { val.clip(clipLo, clipHi) };
 		this.setProperty(\value, val);
 	}
-	
+
 	valueAction_ { arg val;
 		var prev;
 		prev = this.value;
 		val = val !? { val.clip(clipLo, clipHi) };
 		if (val != prev, { this.value_(val); this.doAction });
 	}
-	
+
 	// validate range here
 	doAction {
 		var current;

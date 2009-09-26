@@ -16,8 +16,8 @@ QuarkDependency
 	*new { | name, version, repos |
 		^this.newCopyArgs(name, version, repos)
 	}
-	== { arg that; 
-		^that respondsTo: #[name, version] 
+	== { arg that;
+		^that respondsTo: #[name, version]
 			and: {(that.isKindOf(QuarkDependency))
 			and: {this.name  == that.name}
 			and: {this.version  == that.version}
@@ -38,9 +38,9 @@ Quark
 {
 	var <name, <summary, <version, <author, dependencies, <tags, <>path;
 	var <isLocal;// meaning that a local copy exists either because checked out or is local only
-	var <parent; // the Quarks, if available 
+	var <parent; // the Quarks, if available
 	var <info;
-	
+
 	*fromFile { | path, parent |
 		var string = { File.use(path, "r", _.readAllString) }.try;
 		if (string.isNil) {
@@ -74,7 +74,7 @@ Quark
 		info = blob;
 		tags = ();
 	}
-	
+
 	getName { | obj |
 		var name = obj.asString;
 		if (name.isEmpty) {
@@ -126,12 +126,12 @@ Quark
 		stream << "Quark: " << name;
 		if(version.notNil,{ stream << " [" << version << "]"; });
 	}
-	
+
 	longDesc {
 		var string;
 		string = name;
 		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
-		string = string 
+		string = string
 			++ "\n(by " ++ (author ? "anonymous") ++ ")"
 			++ "\n" ++ summary
 			++ "\n" ++ "Checked out: " ++ if(isLocal, "yes", "no");
@@ -160,7 +160,7 @@ Quark
 			deps.do({|dep|
 				quark = dep.asQuark(parent);
 				if(quark.notNil) {
-					deps = deps ++ quark.dependencies(recursive: true, 
+					deps = deps ++ quark.dependencies(recursive: true,
 						knownList: ([QuarkDependency(name, version)] ++ knownList));
 				};
 			});
@@ -179,7 +179,7 @@ QuarkView {
 	init { |parent, extent, aQuark, argIsInstalled|
 		var installBounds, descrBounds, authorBounds, infoBounds, sourceBounds,
 			pad = 5,checkoutBounds, remainder;
-		
+
 		//installBounds = Rect(0,0, extent.y, extent.y);
 		infoBounds = Rect(0,0, 25, extent.y);
 		sourceBounds = Rect(0, 0, 20, extent.y);
@@ -190,7 +190,7 @@ QuarkView {
 		authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
 		quark = aQuark;
 		isInstalled = argIsInstalled;
-		
+
 		installButton = GUI.button.new(parent, Rect(15,15,17,17));
 		this.updateButtonStates;
 
@@ -200,12 +200,12 @@ QuarkView {
 		infoButton = GUI.button.new(parent, infoBounds)
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 			.states_([["info"]]).action_{this.fullDescription};
-		
+
 		browseHelpButton = GUI.button.new(parent, infoBounds)
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
 			.states_([["help"]])
 			.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
-			
+
 		if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
 			srcButton = GUI.button.new(parent, sourceBounds)
 				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
@@ -231,7 +231,7 @@ QuarkView {
 			installButton.action = { arg butt;
 				toBeDeinstalled = butt.value>0;
 			};
-		
+
 		},{
 			// Quark is currently not installed
 			installButton.states = [

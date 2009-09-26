@@ -35,7 +35,7 @@ int prSymbolString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	
+
 	a = g->sp;
 	if (a->utag != tagSym) return errWrongType;
 	string = newPyrString(g->gc, a->us->name, 0, true);
@@ -49,7 +49,7 @@ int prSymbolIsPrefix(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	int length;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (!IsSym(a) || !IsSym(b)) return errWrongType;
@@ -70,7 +70,7 @@ int prSymbolClass(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrClass *classobj;
 	//char firstChar;
-	
+
 	a = g->sp;
 	if (a->us->flags & sym_Class) {
 	//firstChar = a->us->name[0];
@@ -91,7 +91,7 @@ int prSymbolIsSetter(struct VMGlobals *g, int numArgsPushed);
 int prSymbolIsSetter(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	if (a->us->flags & sym_Setter) {
 		SetTrue(a);
@@ -107,7 +107,7 @@ int prSymbolAsSetter(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	char str[256];
 	int len;
-	
+
 	a = g->sp;
 	if (!(a->us->flags & sym_Setter)) {
 		if ((a->us->flags & sym_Class) || (a->us->flags & sym_Primitive)) {
@@ -122,7 +122,7 @@ int prSymbolAsSetter(struct VMGlobals *g, int numArgsPushed)
 		len = strlen(str);
 		str[len] = '_';
 		str[len+1] = 0;
-		
+
 		//postfl("prSymbolAsSetter %s\n", str);
 		a->us = getsym(str);
 	}
@@ -134,7 +134,7 @@ int prSymbolAsGetter(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	char str[256];
-	
+
 	a = g->sp;
 	if ((a->us->flags & sym_Setter)) {
 		if ((a->us->flags & sym_Class) || (a->us->flags & sym_Primitive)) {
@@ -153,7 +153,7 @@ int prSymbolIsClassName(struct VMGlobals *g, int numArgsPushed);
 int prSymbolIsClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	if (a->us->flags & sym_Class) {
 		SetTrue(a);
@@ -167,7 +167,7 @@ int prSymbolIsMetaClassName(struct VMGlobals *g, int numArgsPushed);
 int prSymbolIsMetaClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	if (a->us->flags & sym_MetaClass) {
 		SetTrue(a);
@@ -184,7 +184,7 @@ int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed)
 
 	char *str = a->us->name;
 	SetInt(a, atoi(str));
-		
+
 	return errNone;
 }
 
@@ -194,7 +194,7 @@ int prSymbol_PrimitiveIndex(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 
 	SetInt(a, a->us->u.index);
-		
+
 	return errNone;
 }
 
@@ -204,7 +204,7 @@ int prSymbol_SpecialIndex(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 
 	SetInt(a, a->us->specialIndex);
-		
+
 	return errNone;
 }
 
@@ -216,7 +216,7 @@ int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed)
 
 	char *str = a->us->name;
 	SetFloat(a, atof(str));
-		
+
 	return errNone;
 }
 
@@ -225,21 +225,21 @@ void initSymbolPrimitives();
 void initSymbolPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
 
-	definePrimitive(base, index++, "_SymbolIsPrefix", prSymbolIsPrefix, 2, 0);	
-	//definePrimitive(base, index++, "_SymbolString", prSymbolString, 1, 0);	
-	definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);	
-	definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);	
-	definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);	
-	definePrimitive(base, index++, "_SymbolIsSetter", prSymbolIsSetter, 1, 0);	
-	definePrimitive(base, index++, "_SymbolAsSetter", prSymbolAsSetter, 1, 0);	
-	definePrimitive(base, index++, "_SymbolAsGetter", prSymbolAsGetter, 1, 0);	
-	definePrimitive(base, index++, "_Symbol_AsInteger", prSymbol_AsInteger, 1, 0);	
+	definePrimitive(base, index++, "_SymbolIsPrefix", prSymbolIsPrefix, 2, 0);
+	//definePrimitive(base, index++, "_SymbolString", prSymbolString, 1, 0);
+	definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);
+	definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);
+	definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);
+	definePrimitive(base, index++, "_SymbolIsSetter", prSymbolIsSetter, 1, 0);
+	definePrimitive(base, index++, "_SymbolAsSetter", prSymbolAsSetter, 1, 0);
+	definePrimitive(base, index++, "_SymbolAsGetter", prSymbolAsGetter, 1, 0);
+	definePrimitive(base, index++, "_Symbol_AsInteger", prSymbol_AsInteger, 1, 0);
 	definePrimitive(base, index++, "_Symbol_PrimitiveIndex", prSymbol_PrimitiveIndex, 1, 0);
 	definePrimitive(base, index++, "_Symbol_SpecialIndex", prSymbol_SpecialIndex, 1, 0);
-	definePrimitive(base, index++, "_Symbol_AsFloat", prSymbol_AsFloat, 1, 0);	
+	definePrimitive(base, index++, "_Symbol_AsFloat", prSymbol_AsFloat, 1, 0);
 
 }
 
@@ -260,7 +260,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

@@ -5,7 +5,7 @@ Clock {
 	// abstract class
 	*play { | task | this.sched(0, task) }
 	*seconds { ^thisThread.seconds }
-	
+
 	// tempo clock compatibility
 	*beats { ^thisThread.seconds }
 	*beats2secs { | beats | ^beats }
@@ -13,7 +13,7 @@ Clock {
 	*beats2bars { ^0 }
 	*bars2beats { ^0 }
 	*timeToNextBeat { ^0 }
-	*nextTimeOnGrid { | quant = 1, phase = 0| 
+	*nextTimeOnGrid { | quant = 1, phase = 0|
 		if (quant ==0) { ^this.beats + phase };
 		if (phase < 0) { phase = phase % quant };
 		^roundUp(this.beats - (phase % quant), quant) + phase;
@@ -33,7 +33,7 @@ SystemClock : Clock {
 		_SystemClock_SchedAbs
 		^this.primitiveFailed
 	}
-		
+
 }
 
 AppClock : Clock {
@@ -53,12 +53,12 @@ AppClock : Clock {
 		scheduler.seconds = Main.elapsedTime;
 		thisThread.clock = saveClock;
 	}
-	
+
 }
 
 Scheduler {
 	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
-	
+
 	*new { arg clock, drift = false;
 		^super.newCopyArgs(clock, drift).init;
 	}
@@ -77,7 +77,7 @@ Scheduler {
 
 	sched { | delta, item |
 		var fromTime;
-		if (delta.notNil, { 
+		if (delta.notNil, {
 			fromTime = if (drift, { Main.elapsedTime },{ seconds });
 			queue.put(fromTime + delta, item);
 		});
@@ -86,25 +86,25 @@ Scheduler {
 		if(queue.array.notNil,{
 			queue.array.pairsDo { | time, item | item.removedFromScheduler };
 		});
-		queue.clear 
+		queue.clear
 	}
 
 	isEmpty { ^queue.isEmpty }
-	
+
 	advance { | delta |
 		this.seconds = seconds + delta;
 	}
-	
+
 	seconds_ { | newSeconds  |
 		var delta, item;
-		while ({ 
-			seconds = queue.topPriority; 
+		while ({
+			seconds = queue.topPriority;
 			seconds.notNil and: { seconds <= newSeconds }
-		},{ 
+		},{
 			item = queue.pop;
 			delta = item.awake( beats, seconds, clock );
 			if (delta.isNumber, {
-				this.sched(delta, item); 
+				this.sched(delta, item);
 			});
 		});
 		seconds = newSeconds;
@@ -116,13 +116,13 @@ TempoClock : Clock {
 	classvar <all, <>default;
 
 	var <queue, ptr;
-	
+
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
 	var <baseBarBeat=0.0, <baseBar=0.0;
 	var <>permanent=false;
 
 /*
-You should only change the tempo 'now'. You can't set the tempo at some beat in the future or past, even though you might think so from the methods. 
+You should only change the tempo 'now'. You can't set the tempo at some beat in the future or past, even though you might think so from the methods.
 
 There are several ideas of now:
 	elapsed time, i.e. "real time"
@@ -138,17 +138,17 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*new { arg tempo, beats, seconds, queueSize=256;
 		^super.new.init(tempo, beats, seconds, queueSize)
 	}
-	
+
 	*initClass {
 		default = this.new.permanent_(true);
 		CmdPeriod.add(this);
-	}	
-	
+	}
+
 	*cmdPeriod {
 		all.do({ arg item; item.clear(false) });
 		all.do({ arg item; if (item.permanent.not, { item.stop })  })
-	}	
-	
+	}
+
 	init { arg tempo, beats, seconds, queueSize;
 		queue = Array.new(queueSize);
 		this.prStart(tempo, beats, seconds);
@@ -161,13 +161,13 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		all.take(this);
 		this.prStop;
 	}
-	
-	play { arg task, quant = 1; 
-		this.schedAbs(quant.nextTimeOnGrid(this), task) 
+
+	play { arg task, quant = 1;
+		this.schedAbs(quant.nextTimeOnGrid(this), task)
 	}
-	
+
 	playNextBar { arg task; this.schedAbs(this.nextBar, task) }
-	
+
 	tempo {
 		_TempoClock_Tempo
 		^this.primitiveFailed
@@ -210,15 +210,15 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.prClear;
 	}
 
-		
-	// for setting the tempo at the current logical time 
+
+	// for setting the tempo at the current logical time
 	// (even another TempoClock's logical time).
 	tempo_ { arg newTempo;
 		this.setTempoAtBeat(newTempo, this.beats);
 		this.changed(\tempo);  // this line is added
 	}
 	beatsPerBar_ { arg newBeatsPerBar;
-		if (thisThread.clock != this) { 
+		if (thisThread.clock != this) {
 			"should only change beatsPerBar within the scheduling thread.".error;
 			^this
 		};
@@ -230,31 +230,31 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.setTempoAtSec(newTempo, Main.elapsedTime);
 	}
 
-	beats2secs { arg beats; 
+	beats2secs { arg beats;
 		_TempoClock_BeatsToSecs
 		^this.primitiveFailed
 	}
-	secs2beats { arg secs; 
+	secs2beats { arg secs;
 		_TempoClock_SecsToBeats
 		^this.primitiveFailed
 	}
-	
-	prDump { 
+
+	prDump {
 		_TempoClock_Dump
 		^this.primitiveFailed
 	}
-	
+
 	nextTimeOnGrid { arg quant = 1, phase = 0;
 		if (quant == 0) { ^this.beats + phase };
 		if (quant < 0) { quant = beatsPerBar * quant.neg };
 		if (phase < 0) { phase = phase % quant };
 		^roundUp(this.beats - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
 	}
-	
+
 	timeToNextBeat { arg quant=1.0; // logical time to next beat
 		^quant.nextTimeOnGrid(this) - this.beats
 	}
-	
+
 	beats2bars { arg beats;
 		^(beats - baseBarBeat) * barsPerBeat + baseBar;
 	}
@@ -270,11 +270,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		if (beat.isNil) { beat = this.beats };
 		^this.bars2beats(this.beats2bars(beat).ceil);
 	}
-	beatInBar { 
+	beatInBar {
 		// return the beat of the bar, range is 0 to < t.beatsPerBar
-		^this.beats - this.bars2beats(this.bar) 
+		^this.beats - this.bars2beats(this.bar)
 	}
-		
+
 	// PRIVATE
 	prStart { arg tempo;
 		_TempoClock_New

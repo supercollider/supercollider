@@ -14,13 +14,13 @@
 		this.dump;
 		^nil
 	}
-	asDefName { 
+	asDefName {
 		^this.asSynthDef.name
 	}
 
 }
 
-	
+
 + String {
 	asDefName { ^this }
 }
@@ -29,10 +29,10 @@
 	asDefName { ^this.asString }
 }
 
-+ Function {	
++ Function {
 	/*
 		this is mainly for  {}.play and Synth({ })
-		
+
 		Synth({
 			SinOsc.ar
 		})
@@ -41,31 +41,31 @@
 			Out.ar(0,SinOsc.ar)
 		})
 
-		it inserts an Out only if it needs it		
+		it inserts an Out only if it needs it
 	*/
-	
+
 	asDefName { // won't work immediately for Synth.new
 		var def;
 		def = this.asSynthDef;
 		def.send(Server.default);
 		^def.name
 	}
-	
+
 	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime, name;
 		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asString },
 			this, rates, prependArgs, outClass, fadeTime
 		);
 	}
-	
+
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
-		if(server.serverRunning.not) { 
+		if(server.serverRunning.not) {
 			("server '" ++ server.name ++ "' not running.").warn; ^nil
 		};
 		def = this.asSynthDef(
-			fadeTime:fadeTime, 
+			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName
 		);
 		synth = Synth.basicNew(def.name, server);
@@ -91,6 +91,6 @@
 		};
 		^synth
 	}
-	
+
 }
 

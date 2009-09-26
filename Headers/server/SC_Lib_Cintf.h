@@ -59,7 +59,7 @@ enum {
 	cmd_d_freeAll = 8,
 
 	cmd_s_new = 9,
-	
+
 	cmd_n_trace = 10,
 	cmd_n_free = 11,
 	cmd_n_run = 12,
@@ -77,7 +77,7 @@ enum {
 	cmd_g_head = 22,
 	cmd_g_tail = 23,
 	cmd_g_freeAll = 24,
-	
+
 	cmd_c_set = 25,
 	cmd_c_setn = 26,
 	cmd_c_fill = 27,
@@ -93,7 +93,7 @@ enum {
 	cmd_b_setn = 36,
 	cmd_b_fill = 37,
 	cmd_b_gen = 38,
-	
+
 	cmd_dumpOSC = 39,
 
 	cmd_c_get = 40,
@@ -102,7 +102,7 @@ enum {
 	cmd_b_getn = 43,
 	cmd_s_get = 44,
 	cmd_s_getn = 45,
-	
+
 	cmd_n_query = 46,
 	cmd_b_query = 47,
 
@@ -113,23 +113,23 @@ enum {
 	cmd_clearSched = 51,
 
 	cmd_sync = 52,
-	
+
 	cmd_d_free = 53,
 
 	cmd_b_allocReadChannel = 54,
 	cmd_b_readChannel = 55,
-	
+
 	cmd_g_dumpTree = 56,
 	cmd_g_queryTree = 57,
-	
+
 	cmd_error = 58,
 
 	cmd_s_newargs = 59,
-    
+
 	cmd_n_mapa = 60,
 	cmd_n_mapan = 61,
 	cmd_n_order = 62,
-	
+
 	//NUMBER_OF_COMMANDS = 59
 	//NUMBER_OF_COMMANDS = 60
 	NUMBER_OF_COMMANDS = 63

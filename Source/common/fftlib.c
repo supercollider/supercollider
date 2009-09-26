@@ -77,7 +77,7 @@ long 	i1, ErrVal;
 ErrVal = 0;
 *fftMptr = (long)(log(fftN)/log(2.0) + 0.5);
 if ((*fftMptr >= 4) & (*fftMptr <= 20) & (int)(pow(2,*fftMptr)+.5) == fftN)
-	
+
 	for (i1 = 0; i1 <= fftN/4; i1++)
 		Utbl[i1] = cos( ( 3.1415926535897932384626433832795 * 2.0 * i1 ) /  fftN );
 else
@@ -191,7 +191,7 @@ for (stage = 0; stage < Ntbl[M-(M>>1)]*2; stage += Ntbl[M>>1]*2){
 			fly6i = *(fly1P+(2+1));
 			fly7r = *(fly1P+FlyOffsetB);
 			fly7i = *(fly1P+FlyOffsetBIm);
-			
+
 			t0r	= fly0r + fly1r;
 			t0i	= fly0i + fly1i;
 			fly1r = fly0r - fly1r;
@@ -284,7 +284,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0
@@ -314,7 +314,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-		
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
@@ -367,13 +367,13 @@ if ( (M-1-(stage * 3)) != 0 ){
 		/* 1 radix 4 stage */
 		IOP = ioptr;
 
-		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/	
-		U3i = U3r;	
+		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/
+		U3i = U3r;
 		fly0P = IOP;
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0	-	-	t0
@@ -403,52 +403,52 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-	
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
 			t0i = t0i + fly2i;
-	
+
 			fly7r = t1r - fly1i;
 			fly7i = t1i + fly1r;
 			t1r = t1r + fly1i;
 			t1i = t1i - fly1r;
-	
+
 			fly2r = fly4r - fly6r;
 			fly2i = fly4i - fly6i;
 			fly4r = fly4r + fly6r;
 			fly4i = fly4i + fly6i;
-	
+
 			fly1r = fly0r - fly3i;
 			fly1i = fly0i + fly3r;
 			fly0r = fly0r + fly3i;
 			fly0i = fly0i - fly3r;
-	
-	
+
+
 			fly6r = t0r - fly4r;
 			fly6i = t0i - fly4i;
 			t0r = t0r + fly4r;
 			t0i = t0i + fly4i;
-	
+
 			fly3r = fly5r - fly2i;
 			fly3i = fly5i + fly2r;
 			fly5r = fly5r + fly2i;
 			fly5i = fly5i - fly2r;
-	
+
 			fly4r = t1r - U3r * fly0r;
 			fly4r = fly4r - U3i * fly0i;
 			fly4i = t1i + U3i * fly0r;
 			fly4i = fly4i - U3r * fly0i;
 			t1r = scale * t1r - fly4r;
 			t1i = scale * t1i - fly4i;
-	
+
 			fly2r = fly7r + U3i * fly1r;
 			fly2r = fly2r - U3r * fly1i;
 			fly2i = fly7i + U3r * fly1r;
 			fly2i = fly2i + U3i * fly1i;
 			fly7r = scale * fly7r - fly2r;
 			fly7i = scale * fly7i - fly2i;
-	
+
 			*(fly0P + FlyOffsetA) = fly6r;
 			*(fly0P + FlyOffsetAIm) = fly6i;
 			*(fly0P) = t0r;
@@ -465,7 +465,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			*(fly3P + FlyOffsetAIm) = fly2i;
 			*(fly3P) = fly7r;
 			*(fly3P + 1) = fly7i;
-		
+
 			fly0P = (fly0P + FlyOffsetB);
 			fly1P = (fly1P + FlyOffsetB);
 			fly2P = (fly2P + FlyOffsetB);
@@ -504,7 +504,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3offset = (Ntbl[M]) / 8;
 
 		IOP = ioptr;
-	
+
 		U0r =  *U0rP,
 		U0i =  *U0iP;
 		U1r =  *U1rP,
@@ -514,7 +514,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3r =  *( U2rP + U3offset);
 		U3i =  *( U2iP - U3offset);
 	}
-	
+
 	fly0P = IOP;
 	fly1P = (IOP+Flyinc);
 	fly2P = (fly1P+Flyinc);
@@ -533,14 +533,14 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			f6	-	-	f6	-U1	-	f2	-U2a-	f2
 			f7	-U0	-	f3	-U1a-	f1	-U3a-	f5
 			*/
-		
+
 		fly0r = *(IOP);
 		fly0i = *(IOP+1);
 		fly1r = *(fly1P);
 		fly1i = *(fly1P+1);
 
 		for (LoopCnt = LoopN-1; LoopCnt > 0 ; LoopCnt--){
-	
+
 			fly2r = *(fly2P);
 			fly2i = *(fly2P + 1);
 			fly3r = *(fly3P);
@@ -560,28 +560,28 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			t1i = t1i - U0r * fly1i;
 			t0r = scale * fly0r - t1r;
 			t0i = scale * fly0i - t1i;
-	
+
 			fly1r = fly2r - U0r * fly3r;
 			fly1r = fly1r - U0i * fly3i;
 			fly1i = fly2i + U0i * fly3r;
 			fly1i = fly1i - U0r * fly3i;
 			fly2r = scale * fly2r - fly1r;
 			fly2i = scale * fly2i - fly1i;
-	
+
 			fly0r = fly4r - U0r * fly5r;
 			fly0r = fly0r - U0i * fly5i;
 			fly0i = fly4i + U0i * fly5r;
 			fly0i = fly0i - U0r * fly5i;
 			fly4r = scale * fly4r - fly0r;
 			fly4i = scale * fly4i - fly0i;
-	
+
 			fly3r = fly6r - U0r * fly7r;
 			fly3r = fly3r - U0i * fly7i;
 			fly3i = fly6i + U0i * fly7r;
 			fly3i = fly3i - U0r * fly7i;
 			fly6r = scale * fly6r - fly3r;
 			fly6i = scale * fly6i - fly3i;
-	
+
 
 			fly5r = t0r - U1r * fly2r;
 			fly5r = fly5r - U1i * fly2i;
@@ -739,7 +739,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		fly0i = scale * fly0i - fly1i;
 
 		U0i = *(U0iP = (U0iP - NsameU4));
-		U0r = *(U0rP = (U0rP + NsameU4));		
+		U0r = *(U0rP = (U0rP + NsameU4));
 		U1r = *(U1rP = (U1rP + NsameU2));
 		U1i = *(U1iP = (U1iP - NsameU2));
 		if(stage&1)
@@ -928,7 +928,7 @@ for (stage = 0; stage < Ntbl[M-(M>>1)]*2; stage += Ntbl[M>>1]*2){
 			fly6i = *(fly1P+(2+1));
 			fly7r = *(fly1P+FlyOffsetB);
 			fly7i = *(fly1P+FlyOffsetBIm);
-			
+
 			t0r   = fly0r + fly1r;
 			t0i   = fly0i + fly1i;
 			fly1r = fly0r - fly1r;
@@ -1021,7 +1021,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0
@@ -1051,7 +1051,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-		
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
@@ -1104,13 +1104,13 @@ if ( (M-1-(stage * 3)) != 0 ){
 		/* 1 radix 4 stage */
 		IOP = ioptr;
 
-		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/	
-		U3i = U3r;	
+		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/
+		U3i = U3r;
 		fly0P = IOP;
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0	-	-	t0
@@ -1140,51 +1140,51 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-	
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
 			t0i = t0i + fly2i;
-	
+
 			fly7r = t1r + fly1i;
 			fly7i = t1i - fly1r;
 			t1r = t1r - fly1i;
 			t1i = t1i + fly1r;
-	
+
 			fly2r = fly4r - fly6r;
 			fly2i = fly4i - fly6i;
 			fly4r = fly4r + fly6r;
 			fly4i = fly4i + fly6i;
-	
+
 			fly1r = fly0r + fly3i;
 			fly1i = fly0i - fly3r;
 			fly0r = fly0r - fly3i;
 			fly0i = fly0i + fly3r;
-	
+
 			fly6r = t0r - fly4r;
 			fly6i = t0i - fly4i;
 			t0r = t0r + fly4r;
 			t0i = t0i + fly4i;
-	
+
 			fly3r = fly5r + fly2i;
 			fly3i = fly5i - fly2r;
 			fly5r = fly5r - fly2i;
 			fly5i = fly5i + fly2r;
-	
+
 			fly4r = t1r - U3r * fly0r;
 			fly4r = fly4r + U3i * fly0i;
 			fly4i = t1i - U3i * fly0r;
 			fly4i = fly4i - U3r * fly0i;
 			t1r = scale * t1r - fly4r;
 			t1i = scale * t1i - fly4i;
-	
+
 			fly2r = fly7r + U3i * fly1r;
 			fly2r = fly2r + U3r * fly1i;
 			fly2i = fly7i - U3r * fly1r;
 			fly2i = fly2i + U3i * fly1i;
 			fly7r = scale * fly7r - fly2r;
 			fly7i = scale * fly7i - fly2i;
-	
+
 			*(fly0P + FlyOffsetA) = fly6r;
 			*(fly0P + FlyOffsetAIm) = fly6i;
 			*(fly0P) = t0r;
@@ -1201,7 +1201,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			*(fly3P + FlyOffsetAIm) = fly2i;
 			*(fly3P) = fly7r;
 			*(fly3P + 1) = fly7i;
-		
+
 			fly0P = (fly0P + FlyOffsetB);
 			fly1P = (fly1P + FlyOffsetB);
 			fly2P = (fly2P + FlyOffsetB);
@@ -1241,7 +1241,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3offset = (Ntbl[M]) / 8;
 
 		IOP = ioptr;
-	
+
 		U0r =  *U0rP,
 		U0i =  *U0iP;
 		U1r =  *U1rP,
@@ -1251,7 +1251,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3r =  *( U2rP + U3offset);
 		U3i =  *( U2iP - U3offset);
 	}
-	
+
 	fly0P = IOP;
 	fly1P = (IOP+Flyinc);
 	fly2P = (fly1P+Flyinc);
@@ -1270,14 +1270,14 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			f6	-	-	f6	-U1	-	f2	-U2a-	f2
 			f7	-U0	-	f3	-U1a-	f1	-U3a-	f5
 			*/
-		
+
 		fly0r = *(IOP);
 		fly0i = *(IOP+1);
 		fly1r = *(fly1P);
 		fly1i = *(fly1P+1);
 
 		for (LoopCnt = LoopN-1; LoopCnt > 0 ; LoopCnt--){
-	
+
 			fly2r = *(fly2P);
 			fly2i = *(fly2P + 1);
 			fly3r = *(fly3P);
@@ -1297,28 +1297,28 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			t1i = t1i - U0r * fly1i;
 			t0r = scale * fly0r - t1r;
 			t0i = scale * fly0i - t1i;
-	
+
 			fly1r = fly2r - U0r * fly3r;
 			fly1r = fly1r + U0i * fly3i;
 			fly1i = fly2i - U0i * fly3r;
 			fly1i = fly1i - U0r * fly3i;
 			fly2r = scale * fly2r - fly1r;
 			fly2i = scale * fly2i - fly1i;
-	
+
 			fly0r = fly4r - U0r * fly5r;
 			fly0r = fly0r + U0i * fly5i;
 			fly0i = fly4i - U0i * fly5r;
 			fly0i = fly0i - U0r * fly5i;
 			fly4r = scale * fly4r - fly0r;
 			fly4i = scale * fly4i - fly0i;
-	
+
 			fly3r = fly6r - U0r * fly7r;
 			fly3r = fly3r + U0i * fly7i;
 			fly3i = fly6i - U0i * fly7r;
 			fly3i = fly3i - U0r * fly7i;
 			fly6r = scale * fly6r - fly3r;
 			fly6i = scale * fly6i - fly3i;
-	
+
 
 			fly5r = t0r - U1r * fly2r;
 			fly5r = fly5r + U1i * fly2i;
@@ -1477,7 +1477,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		fly0i = scale * fly0i - fly1i;
 
 		U0i = *(U0iP = (U0iP - NsameU4));
-		U0r = *(U0rP = (U0rP + NsameU4));		
+		U0r = *(U0rP = (U0rP + NsameU4));
 		U1r = *(U1rP = (U1rP + NsameU2));
 		U1i = *(U1iP = (U1iP - NsameU2));
 		if(stage&1)
@@ -1676,7 +1676,7 @@ for (stage = 0; stage < Ntbl[M-(M>>1)]*2; stage += Ntbl[M>>1]*2){
 			fly6i = *(fly1P+(2+1));
 			fly7r = *(fly1P+FlyOffsetB);
 			fly7i = *(fly1P+FlyOffsetBIm);
-			
+
 			t0r	= fly0r + fly1r;
 			t0i	= fly0i + fly1i;
 			fly1r = fly0r - fly1r;
@@ -1771,7 +1771,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0
@@ -1801,7 +1801,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-		
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
@@ -1854,13 +1854,13 @@ if ( (M-1-(stage * 3)) != 0 ){
 		/* 1 radix 4 stage */
 		IOP = ioptr;
 
-		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/	
-		U3i = U3r;	
+		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/
+		U3i = U3r;
 		fly0P = IOP;
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0	-	-	t0
@@ -1890,51 +1890,51 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-	
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
 			t0i = t0i + fly2i;
-	
+
 			fly7r = t1r - fly1i;
 			fly7i = t1i + fly1r;
 			t1r = t1r + fly1i;
 			t1i = t1i - fly1r;
-	
+
 			fly2r = fly4r - fly6r;
 			fly2i = fly4i - fly6i;
 			fly4r = fly4r + fly6r;
 			fly4i = fly4i + fly6i;
-	
+
 			fly1r = fly0r - fly3i;
 			fly1i = fly0i + fly3r;
 			fly0r = fly0r + fly3i;
 			fly0i = fly0i - fly3r;
-	
+
 			fly6r = t0r - fly4r;
 			fly6i = t0i - fly4i;
 			t0r = t0r + fly4r;
 			t0i = t0i + fly4i;
-	
+
 			fly3r = fly5r - fly2i;
 			fly3i = fly5i + fly2r;
 			fly5r = fly5r + fly2i;
 			fly5i = fly5i - fly2r;
-	
+
 			fly4r = t1r - U3r * fly0r;
 			fly4r = fly4r - U3i * fly0i;
 			fly4i = t1i + U3i * fly0r;
 			fly4i = fly4i - U3r * fly0i;
 			t1r = scale * t1r - fly4r;
 			t1i = scale * t1i - fly4i;
-	
+
 			fly2r = fly7r + U3i * fly1r;
 			fly2r = fly2r - U3r * fly1i;
 			fly2i = fly7i + U3r * fly1r;
 			fly2i = fly2i + U3i * fly1i;
 			fly7r = scale * fly7r - fly2r;
 			fly7i = scale * fly7i - fly2i;
-	
+
 			*(fly0P + FlyOffsetA) = fly6r;
 			*(fly0P + FlyOffsetAIm) = fly6i;
 			*(fly0P) = t0r;
@@ -1951,14 +1951,14 @@ if ( (M-1-(stage * 3)) != 0 ){
 			*(fly3P + FlyOffsetAIm) = fly2i;
 			*(fly3P) = fly7r;
 			*(fly3P + 1) = fly7i;
-		
+
 			fly0P = (fly0P + FlyOffsetB);
 			fly1P = (fly1P + FlyOffsetB);
 			fly2P = (fly2P + FlyOffsetB);
 			fly3P = (fly3P + FlyOffsetB);
 
 		};
-		
+
 		NsameU4 >>= 2;
 		LoopN >>= 2;
 		NdiffU <<= 2;
@@ -1991,7 +1991,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3offset = (Ntbl[M+1]) / 8;	/* for RFFT */
 
 		IOP = ioptr;
-	
+
 		U0r =  *U0rP,
 		U0i =  *U0iP;
 		U1r =  *U1rP,
@@ -2001,7 +2001,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3r =  *( U2rP + U3offset);
 		U3i =  *( U2iP - U3offset);
 	}
-	
+
 	fly0P = IOP;
 	fly1P = (IOP+Flyinc);
 	fly2P = (fly1P+Flyinc);
@@ -2020,14 +2020,14 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			f6	-	-	f6	-U1	-	f2	-U2a-	f2
 			f7	-U0	-	f3	-U1a-	f1	-U3a-	f5
 			*/
-		
+
 		fly0r = *(IOP);
 		fly0i = *(IOP+1);
 		fly1r = *(fly1P);
 		fly1i = *(fly1P+1);
 
 		for (LoopCnt = LoopN-1; LoopCnt > 0 ; LoopCnt--){
-	
+
 			fly2r = *(fly2P);
 			fly2i = *(fly2P + 1);
 			fly3r = *(fly3P);
@@ -2047,28 +2047,28 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			t1i = t1i - U0r * fly1i;
 			t0r = scale * fly0r - t1r;
 			t0i = scale * fly0i - t1i;
-	
+
 			fly1r = fly2r - U0r * fly3r;
 			fly1r = fly1r - U0i * fly3i;
 			fly1i = fly2i + U0i * fly3r;
 			fly1i = fly1i - U0r * fly3i;
 			fly2r = scale * fly2r - fly1r;
 			fly2i = scale * fly2i - fly1i;
-	
+
 			fly0r = fly4r - U0r * fly5r;
 			fly0r = fly0r - U0i * fly5i;
 			fly0i = fly4i + U0i * fly5r;
 			fly0i = fly0i - U0r * fly5i;
 			fly4r = scale * fly4r - fly0r;
 			fly4i = scale * fly4i - fly0i;
-	
+
 			fly3r = fly6r - U0r * fly7r;
 			fly3r = fly3r - U0i * fly7i;
 			fly3i = fly6i + U0i * fly7r;
 			fly3i = fly3i - U0r * fly7i;
 			fly6r = scale * fly6r - fly3r;
 			fly6i = scale * fly6i - fly3i;
-	
+
 
 			fly5r = t0r - U1r * fly2r;
 			fly5r = fly5r - U1i * fly2i;
@@ -2228,7 +2228,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		fly0i = scale * fly0i - fly1i;
 
 		U0i = *(U0iP = (U0iP - NsameU4));
-		U0r = *(U0rP = (U0rP + NsameU4));		
+		U0r = *(U0rP = (U0rP + NsameU4));
 		U1r = *(U1rP = (U1rP + NsameU2));
 		U1i = *(U1iP = (U1iP - NsameU2));
 		if(stage&1)
@@ -2364,7 +2364,7 @@ U0iP = &Utbl[Ntbl[M-2]-1];
 
 U0r =  *U0rP,
 U0i =  *U0iP;
-	
+
 fly0P = (IOP + 2);
 fly1P = (IOP + (Ntbl[M-2]-1)*2);
 
@@ -2416,7 +2416,7 @@ for (diffUcnt = Ntbl[M-3]-1; diffUcnt > 0 ; diffUcnt--){
 	*(fly1P + FlyOffsetA) = fly3r;
 	*(fly1P + FlyOffsetAIm) = fly3i;
 
-	U0r = *(U0rP = (U0rP + 1));		
+	U0r = *(U0rP = (U0rP + 1));
 	U0i = *(U0iP = (U0iP - 1));
 
 	*(fly1P) = t0r;
@@ -2564,7 +2564,7 @@ U0iP = &Utbl[Ntbl[M-2]-1];
 
 U0r =  *U0rP,
 U0i =  *U0iP;
-	
+
 fly0P = (IOP + 2);
 fly1P = (IOP + (Ntbl[M-2]-1)*2);
 
@@ -2625,7 +2625,7 @@ for (diffUcnt = Ntbl[M-3]-1; diffUcnt > 0 ; diffUcnt--){
 	*(fly1P + FlyOffsetA) = fly1r;
 	*(fly1P + FlyOffsetAIm) = fly1i;
 
-	U0r = *(U0rP = (U0rP + 1));		
+	U0r = *(U0rP = (U0rP + 1));
 	U0i = *(U0iP = (U0iP - 1));
 
 	*(fly1P) = t0r;
@@ -2670,7 +2670,7 @@ for (stage = 0; stage < Ntbl[M-(M>>1)]*2; stage += Ntbl[M>>1]*2){
 			fly6i = *(fly1P+(2+1));
 			fly7r = *(fly1P+FlyOffsetB);
 			fly7i = *(fly1P+FlyOffsetBIm);
-			
+
 			t0r   = fly0r + fly1r;
 			t0i   = fly0i + fly1i;
 			fly1r = fly0r - fly1r;
@@ -2763,7 +2763,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0
@@ -2793,7 +2793,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-		
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
@@ -2846,13 +2846,13 @@ if ( (M-1-(stage * 3)) != 0 ){
 		/* 1 radix 4 stage */
 		IOP = ioptr;
 
-		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/	
-		U3i = U3r;	
+		U3r =  0.7071067811865475244008443621; /* sqrt(0.5);	*/
+		U3i = U3r;
 		fly0P = IOP;
 		fly1P = (IOP+Flyinc);
 		fly2P = (fly1P+Flyinc);
 		fly3P = (fly2P+Flyinc);
-		
+
 			/* Butterflys		*/
 			/*
 			t0	-	-	t0	-	-	t0
@@ -2882,51 +2882,51 @@ if ( (M-1-(stage * 3)) != 0 ){
 			fly6i = *(fly2P + FlyOffsetAIm);
 			fly3r = *(fly3P + FlyOffsetA);
 			fly3i = *(fly3P + FlyOffsetAIm);
-	
+
 			fly5r = t0r - fly2r;
 			fly5i = t0i - fly2i;
 			t0r = t0r + fly2r;
 			t0i = t0i + fly2i;
-	
+
 			fly7r = t1r + fly1i;
 			fly7i = t1i - fly1r;
 			t1r = t1r - fly1i;
 			t1i = t1i + fly1r;
-	
+
 			fly2r = fly4r - fly6r;
 			fly2i = fly4i - fly6i;
 			fly4r = fly4r + fly6r;
 			fly4i = fly4i + fly6i;
-	
+
 			fly1r = fly0r + fly3i;
 			fly1i = fly0i - fly3r;
 			fly0r = fly0r - fly3i;
 			fly0i = fly0i + fly3r;
-	
+
 			fly6r = t0r - fly4r;
 			fly6i = t0i - fly4i;
 			t0r = t0r + fly4r;
 			t0i = t0i + fly4i;
-	
+
 			fly3r = fly5r + fly2i;
 			fly3i = fly5i - fly2r;
 			fly5r = fly5r - fly2i;
 			fly5i = fly5i + fly2r;
-	
+
 			fly4r = t1r - U3r * fly0r;
 			fly4r = fly4r + U3i * fly0i;
 			fly4i = t1i - U3i * fly0r;
 			fly4i = fly4i - U3r * fly0i;
 			t1r = scale * t1r - fly4r;
 			t1i = scale * t1i - fly4i;
-	
+
 			fly2r = fly7r + U3i * fly1r;
 			fly2r = fly2r + U3r * fly1i;
 			fly2i = fly7i - U3r * fly1r;
 			fly2i = fly2i + U3i * fly1i;
 			fly7r = scale * fly7r - fly2r;
 			fly7i = scale * fly7i - fly2i;
-	
+
 			*(fly0P + FlyOffsetA) = fly6r;
 			*(fly0P + FlyOffsetAIm) = fly6i;
 			*(fly0P) = t0r;
@@ -2943,7 +2943,7 @@ if ( (M-1-(stage * 3)) != 0 ){
 			*(fly3P + FlyOffsetAIm) = fly2i;
 			*(fly3P) = fly7r;
 			*(fly3P + 1) = fly7i;
-		
+
 			fly0P = (fly0P + FlyOffsetB);
 			fly1P = (fly1P + FlyOffsetB);
 			fly2P = (fly2P + FlyOffsetB);
@@ -2983,7 +2983,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3offset = (Ntbl[M+1]) / 8;	/* for RIFFT */
 
 		IOP = ioptr;
-	
+
 		U0r =  *U0rP,
 		U0i =  *U0iP;
 		U1r =  *U1rP,
@@ -2993,7 +2993,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		U3r =  *( U2rP + U3offset);
 		U3i =  *( U2iP - U3offset);
 	}
-	
+
 	fly0P = IOP;
 	fly1P = (IOP+Flyinc);
 	fly2P = (fly1P+Flyinc);
@@ -3012,14 +3012,14 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			f6	-	-	f6	-U1	-	f2	-U2a-	f2
 			f7	-U0	-	f3	-U1a-	f1	-U3a-	f5
 			*/
-		
+
 		fly0r = *(IOP);
 		fly0i = *(IOP+1);
 		fly1r = *(fly1P);
 		fly1i = *(fly1P+1);
 
 		for (LoopCnt = LoopN-1; LoopCnt > 0 ; LoopCnt--){
-	
+
 			fly2r = *(fly2P);
 			fly2i = *(fly2P + 1);
 			fly3r = *(fly3P);
@@ -3039,28 +3039,28 @@ for (stage = stage<<1; stage > 0 ; stage--){
 			t1i = t1i - U0r * fly1i;
 			t0r = scale * fly0r - t1r;
 			t0i = scale * fly0i - t1i;
-	
+
 			fly1r = fly2r - U0r * fly3r;
 			fly1r = fly1r + U0i * fly3i;
 			fly1i = fly2i - U0i * fly3r;
 			fly1i = fly1i - U0r * fly3i;
 			fly2r = scale * fly2r - fly1r;
 			fly2i = scale * fly2i - fly1i;
-	
+
 			fly0r = fly4r - U0r * fly5r;
 			fly0r = fly0r + U0i * fly5i;
 			fly0i = fly4i - U0i * fly5r;
 			fly0i = fly0i - U0r * fly5i;
 			fly4r = scale * fly4r - fly0r;
 			fly4i = scale * fly4i - fly0i;
-	
+
 			fly3r = fly6r - U0r * fly7r;
 			fly3r = fly3r + U0i * fly7i;
 			fly3i = fly6i - U0i * fly7r;
 			fly3i = fly3i - U0r * fly7i;
 			fly6r = scale * fly6r - fly3r;
 			fly6i = scale * fly6i - fly3i;
-	
+
 
 			fly5r = t0r - U1r * fly2r;
 			fly5r = fly5r + U1i * fly2i;
@@ -3219,7 +3219,7 @@ for (stage = stage<<1; stage > 0 ; stage--){
 		fly0i = scale * fly0i - fly1i;
 
 		U0i = *(U0iP = (U0iP - NsameU4));
-		U0r = *(U0rP = (U0rP + NsameU4));		
+		U0r = *(U0rP = (U0rP + NsameU4));
 		U1r = *(U1rP = (U1rP + NsameU2));
 		U1i = *(U1iP = (U1iP - NsameU2));
 		if(stage&1)

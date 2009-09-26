@@ -1,8 +1,8 @@
 GeneralHID{
-	classvar <>all, <>verbose=false; 
+	classvar <>all, <>verbose=false;
 	classvar <scheme, <schemes;
 
-	*initClass { 
+	*initClass {
 		schemes	= IdentityDictionary.new;
 	}
 
@@ -31,11 +31,11 @@ GeneralHID{
 	}
 
 	*open { |dev| ^scheme.open(dev); }
-		
-		// maybe better define interface here instead, 
-		// rather than doesNotUnderstand. 
+
+		// maybe better define interface here instead,
+		// rather than doesNotUnderstand.
 	*doesNotUnderstand { arg selector ... args;
-		["GeneralHID forwarding to scheme:", selector, args].postln; 
+		["GeneralHID forwarding to scheme:", selector, args].postln;
 		^scheme.performList( selector, args );
 	}
 
@@ -63,12 +63,12 @@ GeneralHID{
 		^scheme;
 	}
 		// find a device by its info properties
-	*findBy { |vendorID, productID, locID, versionID| 
+	*findBy { |vendorID, productID, locID, versionID|
 		if ( locID.isKindOf( String ), { locID = locID.asSymbol } );
-		^this.deviceList.detect { |pair| 
+		^this.deviceList.detect { |pair|
 			var dev, info; #dev, info = pair;
-			(info.vendor == vendorID) 
-			and: { productID.isNil or: { info.product == productID } } 
+			(info.vendor == vendorID)
+			and: { productID.isNil or: { info.product == productID } }
 			and: { locID.isNil or: { info.physical == locID } }
 			and: { versionID.isNil or: { info.version == versionID } }
 		};
@@ -81,7 +81,7 @@ GeneralHIDInfo{
 	*new{arg  name="", bustype=0, vendor=0, product=0, version=0, physical=0, unique=0;
 		^super.newCopyArgs( name, bustype, vendor, product, version, physical, unique ).init;
 	}
-	
+
 	init{
 	}
 
@@ -160,7 +160,7 @@ GeneralHIDDevice{
 	findSpec{
 		^spec.find;
 	}
-	
+
 	setSpec{ |name|
 		spec.fromFile( name );
 	}
@@ -269,7 +269,7 @@ GeneralHIDSlot{
 			this.action_({});
 		});
 	}
-	
+
 	action_{ |actionFunc|
 		action = actionFunc;
 		devSlot.action = { |v| action.value(v); busAction.value(v); };
@@ -291,7 +291,7 @@ GeneralHIDSlot{
 		devSlot.action = { |v| action.value(v); busAction.value(v); };
 	}
 
-	freeBus{ 
+	freeBus{
 		busAction = {};
 		bus.free;
 	}

@@ -17,17 +17,17 @@ Compander : UGen {
 }
 
 
-// CompanderD passes the signal directly to the control input, 
-// but adds a delay to the process input so that the lag in the gain 
+// CompanderD passes the signal directly to the control input,
+// but adds a delay to the process input so that the lag in the gain
 // clamping will not lag the attacks in the input sound
 
 CompanderD : UGen {
 	*ar { arg in = 0.0, thresh = 0.5, slopeBelow = 1.0, slopeAbove = 1.0,
 		clampTime = 0.01, relaxTime = 0.01, mul = 1.0, add = 0.0;
-		
-		^Compander.ar(DelayN.ar(in, clampTime, clampTime), in, thresh, 
+
+		^Compander.ar(DelayN.ar(in, clampTime, clampTime), in, thresh,
 				slopeBelow, slopeAbove, clampTime, relaxTime).madd(mul, add)
-	}	
+	}
 }
 
 

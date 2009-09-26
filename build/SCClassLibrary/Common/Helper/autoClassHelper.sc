@@ -28,11 +28,11 @@ AutoClassHelper {
 	var shortDesc, longDesc, seeAlso, issues, instDesc, longInstDesc ;
 	var varDict ;
 	var doctype, head, preface, examples ;
-	
+
 	*new { arg undocumentedClass, path ;
-			^super.new.initClassHelper( undocumentedClass, path ) 
+			^super.new.initClassHelper( undocumentedClass, path )
 	}
-	
+
 	initClassHelper { arg aClass, aPath ;
 		class = aClass ;
 		parser = DocParser.new(class) ;
@@ -79,13 +79,13 @@ span.Apple-tab-span {white-space:pre}
 " ;
 			doctype = "
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
-" ;	
+" ;
 		path = aPath ;
 		if ( path.isNil, {
 			GUI.current.dialog.savePanel({ arg newPath ;
 				 path = newPath ; {this.makeHelp}.defer })
 			}, { this.makeHelp }) ;
-	
+
 	}
 
 	makeHelp {
@@ -101,7 +101,7 @@ span.Apple-tab-span {white-space:pre}
 				 head+
 				 "<body>\n"+
 				 preface +
-				 classMethodBlock + 
+				 classMethodBlock +
 				 getterSetter +
 				instanceMethodBlock +
 				// examples+
@@ -112,10 +112,10 @@ span.Apple-tab-span {white-space:pre}
 				.close ;
 		// and reopen thru class.openHelpFile
 		// open works if the path is a place where SC looks for Help files
-		class.openHelpFile 
+		class.openHelpFile
 	}
 
-	createPreface { 
+	createPreface {
 		var superclasses, parents = "" ;
 		this.createClassDocBlock ;
 		// here only for the special case of Object
@@ -140,7 +140,7 @@ span.Apple-tab-span {white-space:pre}
 			.replace("longDesc", longDesc)
 			.replace("issues", issues)
 			.replace("seeAlso", seeAlso)
-	
+
 	}
 
 	createClassMethodBlock {
@@ -148,11 +148,11 @@ span.Apple-tab-span {white-space:pre}
 		var classMethods = "
 <p class=\"p4\"><b>Creation / Class Methods</b></p>
 <p class=\"p5\"><br></p>
-" ;		
+" ;
 		var method, name, args, def, txt, ex, default ;
 		cmDict.keys.asArray.sort.do({ arg key ;
 			isEx = false ;
-			method = cmDict[key][0] ; 
+			method = cmDict[key][0] ;
 			name = method.name ;
 			methodTitle = "
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>name</b></p>
@@ -171,7 +171,7 @@ span.Apple-tab-span {white-space:pre}
 						{ 	isEx = true ;
 							def = line.split($:)[0] ;
 							txt = line.split($:)[1] ;
-							classMethods = classMethods + 
+							classMethods = classMethods +
 "
 <p class=\"p7\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></p>
 <p class=\"p9\"><span class=\"s4\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></span>// Example</p>
@@ -179,20 +179,20 @@ span.Apple-tab-span {white-space:pre}
 "
  					.replace("ex", txt)
 							}
-							
+
 					{ line.contains("desc:").not && isEx }
-						{ 	classMethods = classMethods + 
+						{ 	classMethods = classMethods +
 "<p class=\"p10\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span>ex</p>"
  					.replace("ex", line)
 							}
 
 					{ line.contains("desc:").not }
-						{ 	
+						{
 							def = line.split($:)[0] ;
 							default = this.getDefault(method, def) ;
 							txt = line.split($:)[1] ;
 							classMethods = classMethods +
-"	
+"
 <p class=\"p8\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><b>def </b>- txt. Default value is dfv.</p>
 " 							.replace("def", def)
 							.replace("txt", txt).replace("dfv", default);
@@ -201,7 +201,7 @@ span.Apple-tab-span {white-space:pre}
 			});
 		}) ;
 		^(classMethods+"<p class=\"p5\"><br></p>\n")
- 
+
 	}
 
 
@@ -209,7 +209,7 @@ span.Apple-tab-span {white-space:pre}
 		var name = method.argumentString.replace("this, ", "").split($,)
 			.collect({ arg i ; i.split($=)[0]}).asString ;
 			^"("++name[2..name.size-3]++")"
-		
+
 	}
 
 	getDefault { arg method, name ;
@@ -218,15 +218,15 @@ span.Apple-tab-span {white-space:pre}
 		var next ;
 		name = name.reject( { arg i; i.isAlphaNum.not } ) ;
 		pos = mString.find(name) ;
-		if ( pos.notNil, { 	
+		if ( pos.notNil, {
 			 next = mString[pos+name.size] ;
 				if (next == $=, { mString = mString[pos+name.size..].split($=)[1] ;
-								^mString = mString.split($,)[0] }, 
+								^mString = mString.split($,)[0] },
 							{^"nil"})
 			}, {^"nil"})
 	}
 
-	createInstanceMethodBlock { 
+	createInstanceMethodBlock {
 		var isEx, methodTitle ;
 		var instanceMethods = "<p class=\"p11\"><b>instDesc</b></p>
 <p class=\"p12\"><br></p>
@@ -239,7 +239,7 @@ span.Apple-tab-span {white-space:pre}
 		imDict.keys.asArray.sort.do({ arg key ;
 		 	isEx = false ;
 			method = imDict[key][0] ;
-			name = method.name ; 	
+			name = method.name ;
 			methodTitle = "<p class=\"p5\"><br></p>\n"+
 			"
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>name</b></p>
@@ -258,7 +258,7 @@ span.Apple-tab-span {white-space:pre}
 						{ 	isEx = true ;
 							def = line.split($:)[0] ;
 							txt = line.split($:)[1] ;
-							instanceMethods = instanceMethods + 
+							instanceMethods = instanceMethods +
 "
 <p class=\"p7\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></p>
 <p class=\"p9\"><span class=\"s4\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span></span>// Example</p>
@@ -268,25 +268,25 @@ span.Apple-tab-span {white-space:pre}
 							}
 
 					{ line.contains("desc:").not && isEx }
-						{ 	
-							instanceMethods = instanceMethods + 
+						{
+							instanceMethods = instanceMethods +
 "<p class=\"p10\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span>ex</p>"
  					.replace("ex", line)
 							}
-							
-							
+
+
 					{ line.contains("desc:").not }
 						{ 	def = line.split($:)[0] ;							default = this.getDefault(method, def) ;
 							txt = line.split($:)[1] ;
 							instanceMethods = instanceMethods +
-"	
+"
 <p class=\"p8\"><span class=\"Apple-tab-span\">	</span><span class=\"Apple-tab-span\">	</span><b>def </b>- txt. Default value is dfv.</p>
 " 							.replace("def", def).replace("txt", txt).replace("dfv", default);
 
 							}
 			});
 		}) ;
-		^(instanceMethods+"<p class=\"p5\"><br></p>\n") 
+		^(instanceMethods+"<p class=\"p5\"><br></p>\n")
 	}
 
 
@@ -300,7 +300,7 @@ span.Apple-tab-span {white-space:pre}
 				{ line.contains("seeAlso:") }
 					{ seeAlso = line.split($:)[1] ; }
 				{ line.contains("issues:") }
-					{ issues = line.split($:)[1] ; }	
+					{ issues = line.split($:)[1] ; }
 				{ line.contains("instDesc:") }
 					{ instDesc = line.split($:)[1] ; }
 				{ line.contains("longInstDesc:") }
@@ -309,12 +309,12 @@ span.Apple-tab-span {white-space:pre}
 				{ line.contains("longInstDesc:").not }
 					{ varDict.add( line.split($:)[0]
 						.select({|i| i.isAlphaNum })
-						.asSymbol 
-						-> line.split($:)[1] ); }	
+						.asSymbol
+						-> line.split($:)[1] ); }
 			}) ;
 	}
-	
-	
+
+
 	createGetterSetterBlock {
 		var getterSetterBlock = "
 <p class=\"p11\"><b>Accessing Instance and Class Variables</b></p>
@@ -326,7 +326,7 @@ span.Apple-tab-span {white-space:pre}
 		varDict.keys.do({ arg key ;
 			comment = varDict[key] ;
 			line = "" ;
-			line = if ( getters.includes(key), {  
+			line = if ( getters.includes(key), {
 "
 <p class=\"p6\"><b><span class=\"Apple-tab-span\">	</span>someVar</b></p>
 "				.replace("someVar", key.asString)

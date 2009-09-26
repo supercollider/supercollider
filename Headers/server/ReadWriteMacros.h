@@ -29,7 +29,7 @@
 inline int32 readInt8(FILE *file)
 {
 	int32 res = fgetc(file);
-	
+
 	return res;
 }
 
@@ -37,7 +37,7 @@ inline int32 readInt16_be(FILE *file)
 {
 	int32 c = fgetc(file);
 	int32 d = fgetc(file);
-	
+
 	int32 res = ((c & 255) << 8) | (d & 255);
 	return res;
 }
@@ -48,7 +48,7 @@ inline int32 readInt32_be(FILE *file)
 	int32 b = fgetc(file);
 	int32 c = fgetc(file);
 	int32 d = fgetc(file);
-	
+
 	int32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
 	return res;
 }
@@ -79,7 +79,7 @@ inline int32 readInt16_be(char *&buf)
 {
 	int32 c = readInt8(buf);
 	int32 d = readInt8(buf);
-	
+
 	int32 res = ((c & 255) << 8) | (d & 255);
 	return res;
 }
@@ -90,7 +90,7 @@ inline int32 readInt32_be(char *&buf)
 	int32 b = readInt8(buf);
 	int32 c = readInt8(buf);
 	int32 d = readInt8(buf);
-	
+
 	int32 res = ((a & 255) << 24) | ((b & 255) << 16) | ((c & 255) << 8) | (d & 255);
 	return res;
 }

@@ -31,14 +31,14 @@ A doubly linked list template.
 #include <assert.h>
 
 
-// A Link can be a node in a list or a list itself. 
+// A Link can be a node in a list or a list itself.
 
-template <class T> 
+template <class T>
 class Link
 {
 public:
 	Link() : mNext(this), mPrev(this) {}
-	
+
 	T* Prev() { return static_cast<T*>(mPrev); }
 	T* Next() { return static_cast<T*>(mNext); }
 
@@ -72,22 +72,22 @@ public:
 
 	T* Head() { return static_cast<T*>(mNext); }
 	T* Tail() { return static_cast<T*>(mPrev); }
-	
+
 	T* PopHead();
 	T* PopTail();
 	void PushHead(T* inBuf);
 	void PushTail(T* inBuf);
-	
+
 	bool ContainsBuf(T* inBuf);
 	bool IsEmpty() { return mNext == this; }
 	void BeEmpty() { mNext = mPrev = this; }
-	
+
 	void Cat(T* inLink);
-	
+
 	bool SanityCheck();
 	void DebugDump();
-	
-//private:	
+
+//private:
 // Codewarrior refuses to inline Next() in some places..
 	Link<T> *mNext, *mPrev;
 };
@@ -111,8 +111,8 @@ void MakeListEmpty(Link<T> *inLink, Alloc* inAlloc)
 template <class T>
 void Link<T>::PushHead(T* inLink)
 {
-	assert(SanityCheck());	
-	
+	assert(SanityCheck());
+
 	Link<T>* link = static_cast<Link<T>*>(inLink);
 	link->InsertAfter(static_cast<T*>(this));
 
@@ -124,9 +124,9 @@ T* Link<T>::PopHead()
 {
 	assert(SanityCheck());
 	if (IsEmpty()) return 0;
-	
+
 	Link<T>* link = mNext;
-	
+
 	link->Remove();
 
 	assert(SanityCheck());
@@ -136,8 +136,8 @@ T* Link<T>::PopHead()
 template <class T>
 void Link<T>::PushTail(T* inLink)
 {
-	assert(SanityCheck());	
-	
+	assert(SanityCheck());
+
 	Link<T>* link = static_cast<Link<T>*>(inLink);
 	link->InsertBefore(static_cast<T*>(this));
 
@@ -149,7 +149,7 @@ T* Link<T>::PopTail()
 {
 	assert(SanityCheck());
 	if (IsEmpty()) return 0;
-	
+
 	Link<T>* link = mPrev;
 	link->Remove();
 
@@ -161,9 +161,9 @@ template <class T>
 void Link<T>::Cat(T* inLink)
 {
 	assert(SanityCheck());
-	
+
 	Link<T>* link = static_cast<Link<T>*>(inLink);
-	
+
 	if (link->IsEmpty()) return;
 	if (IsEmpty()) {
 		mNext = link->mNext;
@@ -178,7 +178,7 @@ void Link<T>::Cat(T* inLink)
 	}
 	link->mPrev = link;
 	link->mNext = link;
-	
+
 	assert(SanityCheck());
 }
 
@@ -200,14 +200,14 @@ void Link<T>::DebugDump()
 	Link<T>* link = mNext;
 	while (link != this) {
 		//postbuf("Link-> %08X   next %08X   prev %08X\n",
-		//	link, link->mNext, link->mPrev); 
+		//	link, link->mNext, link->mPrev);
 		link = link->mNext;
 	}
 }
 
 template <class T>
 bool Link<T>::SanityCheck()
-{	
+{
 	Link<T>* link = mNext;
 	while (link != this) {
 		if (link->mPrev->mNext != link) {
@@ -217,7 +217,7 @@ bool Link<T>::SanityCheck()
 			throw std::runtime_error("Link: bad link ->,<-");
 		}
 		link = link->mNext;
-	}	
+	}
 	return true;
 }
 

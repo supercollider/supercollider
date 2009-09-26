@@ -3,12 +3,12 @@
 // still useful as shorthands
 
 PMOsc  {
-	
-	*ar { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0; 
+
+	*ar { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0;
 		^SinOsc.ar(carfreq, SinOsc.ar(modfreq, modphase, pmindex),mul,add)
 	}
-	
-	*kr { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0; 
+
+	*kr { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0;
 		^SinOsc.kr(carfreq, SinOsc.kr(modfreq, modphase, pmindex),mul,add)
 	}
 
@@ -40,14 +40,14 @@ MultiTap  {
 GrainTap {
 
 	// overlap determines density
-	*ar { arg bufnum, grainDur = 0.2, pchRatio = 1.0, 
+	*ar { arg bufnum, grainDur = 0.2, pchRatio = 1.0,
 			pchDispersion = 0.0, timeDispersion = 0.0, overlap = 2.0, mul = 1.0, add = 0.0;
 
 		var sampleRate;
 		sampleRate = BufSampleRate.kr(bufnum);
 		pchRatio = pchRatio * BufRateScale.kr(bufnum);
 
-		
+
 		^Mix.arFill( howMany ? ,{ arg i;
 			PlayBuf.ar(buf.numChannels,
 					bufnum,1.0,1.0,

@@ -45,7 +45,7 @@ public:
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
 #ifdef SC_DARWIN
-		// we don't really need a compare and swap, but this happens to call 
+		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
 #elif defined SC_WIN32 && !defined(__MINGW32__)
@@ -62,7 +62,7 @@ public:
 		long next = NextPos(mReadHead);
 		T out = mItems[next];
 #ifdef SC_DARWIN
-		// we don't really need a compare and swap, but this happens to call 
+		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mReadHead, next, &mReadHead);
 #elif defined SC_WIN32 && !defined(__MINGW32__)

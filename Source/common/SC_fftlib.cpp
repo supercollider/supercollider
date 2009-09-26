@@ -41,7 +41,7 @@ static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #define pi 3.1415926535898f
-#define twopi 6.28318530717952646f 
+#define twopi 6.28318530717952646f
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -52,7 +52,7 @@ float* scfft_create_fftwindow(int wintype, int log2n)
 	int size = 1 << log2n;
 	unsigned short i;
 	float *win = (float*)malloc(size * sizeof(float));
-	
+
 	double winc;
 	switch(wintype){
 		case WINDOW_SINE:
@@ -70,9 +70,9 @@ float* scfft_create_fftwindow(int wintype, int log2n)
 			}
 			break;
 	}
-	
+
 	return win;
-	
+
 }
 
 void scfft_global_init(){
@@ -123,19 +123,19 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 	f->indata  = indata;
 	f->outdata = outdata;
 	f->trbuf   = trbuf;
-	
+
 	// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
 	if (fullsize > SC_FFT_MAXSIZE){
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
 	}
-	
+
 	#if SC_FFT_FFTW
 		if(forward)
 			f->plan = fftwf_plan_dft_r2c_1d(fullsize, trbuf, (fftwf_complex*) trbuf, FFTW_ESTIMATE);
 		else
 			f->plan = fftwf_plan_dft_c2r_1d(fullsize, (fftwf_complex*) trbuf, outdata, FFTW_ESTIMATE);
 	#endif
-	
+
 	// The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here be 1...
 	if(forward){
 		#if SC_FFT_VDSP
@@ -146,15 +146,15 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 	}else{ // backward FFTW and VDSP factor
 		f->scalefac = 1.f / fullsize;
 	}
-	
+
 	memset(trbuf, 0, scfft_trbufsize(fullsize));
-	
+
 	return 0;
 }
 
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
 void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype){
-	
+
 	// Ensure we have enough space to do our calcs
 	if(log2_fullsize > largest_log2n){
 		largest_log2n = log2_fullsize;
@@ -164,12 +164,12 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 			splitBuf.imagp = (float*) realloc (splitBuf.imagp, newsize);
    		#endif
 	}
-	
+
 	// Ensure our window has been created
 	if((wintype != -1) && (fftWindow[wintype][log2_winsize] == 0)){
 		fftWindow[wintype][log2_winsize] = scfft_create_fftwindow(wintype, log2_winsize);
 	}
-	
+
 	// Ensure our FFT twiddle factors (or whatever) have been created
  	#if SC_FFT_VDSP
 		if(fftSetup[log2_fullsize] == 0)
@@ -234,15 +234,15 @@ void scfft_doifft(scfft *f){
 		trbuf[1] = 0.f;
 		trbuf[f->nfull] = f->indata[1];  // Nyquist goes all the way down to the end of the line...
 		trbuf[f->nfull+1] = 0.f;
-		
+
 		fftwf_execute(f->plan);
 		// NB the plan already includes copying data to f->outbuf
-		
+
 	#elif SC_FFT_VDSP
 		vDSP_ctoz((COMPLEX*) f->indata, 2, &splitBuf, 1, f->nfull >> 1);
 		vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
 		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
-	#endif		
+	#endif
 	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
 }
 

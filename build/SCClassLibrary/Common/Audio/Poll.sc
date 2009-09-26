@@ -19,7 +19,7 @@ Poll : UGen {
 		if(trig.isNumber) { trig = Impulse.multiNew(rate, trig, 0) };
 		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, label.size] ++ label);
 	}
-		
+
  	checkInputs { ^this.checkSameRateAsFirstInput }
 
  	init { arg theInputs;
@@ -27,7 +27,7 @@ Poll : UGen {
  		inputs = theInputs;
  	}
 }
-	
+
 /*
 s.boot;
 
@@ -39,7 +39,7 @@ o = OSCresponderNode(s.addr, '/tr', {arg time, resp, msg;
 	}).add
 
 {Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2, 1234)}.play(s);
-	
+
 o.remove;
 s.quit;
 */

@@ -73,7 +73,7 @@ int basicSize(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrObject *obj;
-	
+
 	a = g->sp;
 	if (a->utag != tagObj) {
 		SetInt(a, 0);
@@ -89,7 +89,7 @@ int basicMaxSize(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrObject *obj;
 	int maxsize;
-	
+
 	a = g->sp;
 	if (a->utag != tagObj) {
 		SetInt(a, 0);
@@ -106,17 +106,17 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c, tempi, tempj;
 	int i, j;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	if (b->utag != tagInt) return errIndexNotAnInteger;
 	if (c->utag != tagInt) return errIndexNotAnInteger;
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 	i = b->ui;
 	j = c->ui;
@@ -129,7 +129,7 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 	// in case it is partial scan obj
 	g->gc->GCWrite(obj, &tempi);
 	g->gc->GCWrite(obj, &tempj);
-	
+
 	return errNone;
 }
 
@@ -141,15 +141,15 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
-	
+
 	int err = slotIntVal(b, &index);
 	if (!err) {
 		if (index < 0 || index >= obj->size) {
@@ -185,17 +185,17 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 	int index, length, elemsize;
 	PyrObject *obj;
 	void *ptr;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	int err = slotIntVal(b, &index);
 	if (err) return errWrongType;
-	
+
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (index < 0 || index >= obj->size) return errIndexOutOfRange;
@@ -203,35 +203,35 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 		default :
 		case obj_slot :
 		case obj_double :
-			ptr = obj->slots + index;	
+			ptr = obj->slots + index;
 			a->uf = *(double*)ptr;
 			break;
 		case obj_float :
-			ptr = ((float*)(obj->slots)) + index;	
+			ptr = ((float*)(obj->slots)) + index;
 			a->uf = *(float*)ptr;
 			break;
 		case obj_int32 :
-			ptr = ((int32*)(obj->slots)) + index;	
+			ptr = ((int32*)(obj->slots)) + index;
 			a->ui = *(int32*)ptr;
 			a->utag = tagInt;
 			break;
 		case obj_int16 :
-			ptr = ((int16*)(obj->slots)) + index;	
+			ptr = ((int16*)(obj->slots)) + index;
 			a->ui = *(int16*)ptr;
 			a->utag = tagInt;
 			break;
 		case obj_int8 :
-			ptr = ((int8*)(obj->slots)) + index;	
+			ptr = ((int8*)(obj->slots)) + index;
 			a->ui = *(int8*)ptr;
 			a->utag = tagInt;
 			break;
 		case obj_symbol :
-			ptr = ((int*)(obj->slots)) + index;	
+			ptr = ((int*)(obj->slots)) + index;
 			a->ui = *(int*)ptr;
 			a->utag = tagSym;
 			break;
 		case obj_char :
-			ptr = ((unsigned char*)(obj->slots)) + index;	
+			ptr = ((unsigned char*)(obj->slots)) + index;
 			a->ui = *(unsigned char*)ptr;
 			a->utag = tagChar;
 			break;
@@ -248,7 +248,7 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 	obj->size -- ;
 	return errNone;
 }
- 
+
 
 int basicTakeAt(struct VMGlobals *g, int numArgsPushed);
 int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
@@ -256,17 +256,17 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int index, lastIndex;
 	PyrObject *obj;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	int err = slotIntVal(b, &index);
 	if (err) return errWrongType;
 
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	lastIndex = obj->size - 1;
@@ -274,7 +274,7 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 	switch (obj->obj_format) {
 		case obj_slot :
 		case obj_double : {
-			PyrSlot* ptr = obj->slots + index;	
+			PyrSlot* ptr = obj->slots + index;
 			PyrSlot* lastptr = obj->slots + lastIndex;
 			a->uf = *(double*)ptr;
 			*ptr = *lastptr;
@@ -282,41 +282,41 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 			g->gc->GCWrite(obj, ptr);
 		} break;
 		case obj_float : {
-			float* ptr = ((float*)(obj->slots)) + index;	
+			float* ptr = ((float*)(obj->slots)) + index;
 			float* lastptr = ((float*)(obj->slots)) + lastIndex;
 			a->uf = *(float*)ptr;
 			*ptr = *lastptr;
 		} break;
 		case obj_int32 : {
-			int32* ptr = ((int32*)(obj->slots)) + index;	
+			int32* ptr = ((int32*)(obj->slots)) + index;
 			int32* lastptr = ((int32*)(obj->slots)) + lastIndex;
 			a->ui = *(int32*)ptr;
 			a->utag = tagInt;
 			*ptr = *lastptr;
 		} break;
 		case obj_int16 : {
-			int16* ptr = ((int16*)(obj->slots)) + index;	
+			int16* ptr = ((int16*)(obj->slots)) + index;
 			int16* lastptr = ((int16*)(obj->slots)) + lastIndex;
 			a->ui = *(int16*)ptr;
 			a->utag = tagInt;
 			*ptr = *lastptr;
 		} break;
 		case obj_int8 : {
-			int8* ptr = ((int8*)(obj->slots)) + index;	
+			int8* ptr = ((int8*)(obj->slots)) + index;
 			int8* lastptr = ((int8*)(obj->slots)) + lastIndex;
 			a->ui = *(int8*)ptr;
 			a->utag = tagInt;
 			*ptr = *lastptr;
 		} break;
 		case obj_symbol : {
-			int32* ptr = ((int32*)(obj->slots)) + index;	
+			int32* ptr = ((int32*)(obj->slots)) + index;
 			int32* lastptr = ((int32*)(obj->slots)) + lastIndex;
 			a->ui = *(int32*)ptr;
 			a->utag = tagSym;
 			*ptr = *lastptr;
 		} break;
 		case obj_char : {
-			unsigned char* ptr = ((unsigned char*)(obj->slots)) + index;	
+			unsigned char* ptr = ((unsigned char*)(obj->slots)) + index;
 			unsigned char* lastptr = ((unsigned char*)(obj->slots)) + lastIndex;
 			a->ui = *(unsigned char*)ptr;
 			a->utag = tagChar;
@@ -334,14 +334,14 @@ int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
-	
+
 	if(obj->size==0) {SetNil(a); return errNone; }
-	
+
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
@@ -372,14 +372,14 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
-	
+
 	if(obj->size==0) {SetNil(a); return errNone; }
-	
+
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
@@ -410,14 +410,14 @@ int basicClipAt(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
-		
+
 	if(obj->size==0) {SetNil(a); return errNone; }
-	
+
 	int err = slotIntVal(b, &index);
 
 	if (!err) {
@@ -447,13 +447,13 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
@@ -483,13 +483,13 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
 
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
@@ -519,13 +519,13 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
@@ -555,13 +555,13 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (a->utag != tagObj) return errWrongType;
@@ -590,18 +590,18 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
-	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances)) 
+	if (!(obj->classptr->classFlags.ui & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
 	if (!isKindOfSlot(b, class_arrayed_collection)) return errWrongType;
 	if (!isKindOfSlot(c, class_arrayed_collection)) return errWrongType;
-	
+
 	PyrSlot *indices = b->uo->slots;
 	PyrSlot *values = c->uo->slots;
 	int size = b->uo->size;
@@ -616,7 +616,7 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 		err = putIndexedSlot(g, obj, values + valindex, index);
 		if (err) return err;
 	}
-	
+
 	return errNone;
 }
 
@@ -626,10 +626,10 @@ int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrObject *obj;
 	bool found = false;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	obj = a->uo;
 
 	int size = obj->size;
@@ -657,7 +657,7 @@ int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (!found) SetNil(a);
-	
+
 	return errNone;
 }
 
@@ -667,11 +667,11 @@ int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	PyrObject *obj;
 	bool found = false;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj = a->uo;
 
 	int size = obj->size;
@@ -700,7 +700,7 @@ int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (!found) SetNil(a);
-	
+
 	return errNone;
 }
 
@@ -709,10 +709,10 @@ int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrObject *obj;
 	bool found = false;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	obj = a->uo;
 
 	int size = obj->size;
@@ -737,7 +737,7 @@ int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (!found) SetNil(a);
-	
+
 	return errNone;
 }
 
@@ -745,22 +745,22 @@ int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
 int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c, *d, *e;
-	
+
 	a = g->sp - 4;
 	b = g->sp - 3;
 	c = g->sp - 2;
 	d = g->sp - 1;
 	e = g->sp;
-	
+
 	PyrObject *inobj = a->uo;
-	
+
 	int size = inobj->size;
-	
+
 	if (b->utag != tagInt && b->utag != tagNil) return errWrongType;
 	if (c->utag != tagInt && c->utag != tagNil) return errWrongType;
 	if (d->utag != tagInt && d->utag != tagNil) return errWrongType;
-	
-	int first  = b->utag == tagInt ? b->ui : 0;	
+
+	int first  = b->utag == tagInt ? b->ui : 0;
 	int last   = d->utag == tagInt ? d->ui : size - 1;
 	int second = c->utag == tagInt ? c->ui : (first < last ? b->ui + 1 : b->ui - 1);
 
@@ -768,9 +768,9 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 
 	first = sc_clip(first, 0, size-1);
 	last = sc_clip(last, 0, size-1);
-	
+
 	int err = errNone;
-	
+
 	if (step == 0) return errFailed;
 	if (step == 1) {
 		for (int i=first; i<=last; ++i) {
@@ -784,14 +784,14 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 		}
 	} else if (step > 0) {
 		int length = (last - first) / step + 1;
-				
+
 		for (int i=first, j=0; j<length; i+=step, ++j) {
 			err = putIndexedSlot(g, inobj, e, i);
 			if (err) return err;
 		}
 	} else if (step < 0) {
 		int length = (first - last) / -step + 1;
-				
+
 		for (int i=first, j=0; j<length; i+=step, ++j) {
 			err = putIndexedSlot(g, inobj, e, i);
 			if (err) return err;
@@ -809,10 +809,10 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	int maxelems, elemsize, format, tag, numbytes;
 	int err, ival;
 	double fval;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	array = a->uo;
 	if (array->obj_flags & obj_immutable) return errImmutableObject;
 	format = a->uo->obj_format;
@@ -884,17 +884,17 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 	int maxelems, elemsize, format, tag;
 	int err, ival, size, index, remain, numbytes;
 	double fval;
-	
+
 	a = g->sp - 2;	// array
 	b = g->sp - 1;	// index
 	c = g->sp;		// value
 	if (b->utag != tagInt) return errWrongType;
-	
+
 	array = a->uo;
 	if (array->obj_flags & obj_immutable) return errImmutableObject;
 	format = a->uo->obj_format;
 	tag = gFormatElemTag[format];
-	
+
 	size = array->size;
 	index = b->ui;
 	index = sc_clip(index, 0, size);
@@ -909,7 +909,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		array = g->gc->New(numbytes, 0, format, true);
 
 		array->classptr = oldarray->classptr;
-		
+
 		array->size = size+1;
 		a->uo = array;
 		slots1 = array->slots;
@@ -917,10 +917,10 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		if (index) {
 			memcpy(slots1, slots2, index * elemsize);
 		}
-		
+
 		switch (format) {
 			case obj_slot :
-				
+
 				slots1[index].ucopy = c->ucopy;
 				if (remain) memcpy(slots1 + index + 1, slots2 + index, remain * elemsize);
 				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
@@ -930,7 +930,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (err) return err;
 				((int32*)slots1)[index] = ival;
 				if (remain) {
-					memcpy((int*)slots1 + index + 1, (int*)slots2 + index, 
+					memcpy((int*)slots1 + index + 1, (int*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -939,7 +939,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (err) return err;
 				((int16*)slots1)[index] = ival;
 				if (remain) {
-					memcpy((short*)slots1 + index + 1, (short*)slots2 + index, 
+					memcpy((short*)slots1 + index + 1, (short*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -948,7 +948,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (err) return err;
 				((int8*)slots1)[index] = ival;
 				if (remain) {
-					memcpy((char*)slots1 + index + 1, (char*)slots2 + index, 
+					memcpy((char*)slots1 + index + 1, (char*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -956,7 +956,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (c->utag != tagChar) return errWrongType;
 				((char*)slots1)[index] = c->ui;
 				if (remain) {
-					memcpy((char*)slots1 + index + 1, (char*)slots2 + index, 
+					memcpy((char*)slots1 + index + 1, (char*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -964,7 +964,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (c->utag != tagSym) return errWrongType;
 				((int*)slots1)[index] = c->ui;
 				if (remain) {
-					memcpy((int*)slots1 + index + 1, (int*)slots2 + index, 
+					memcpy((int*)slots1 + index + 1, (int*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -973,7 +973,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (err) return err;
 				((float*)slots1)[index] = fval;
 				if (remain) {
-					memcpy((float*)slots1 + index + 1, (float*)slots2 + index, 
+					memcpy((float*)slots1 + index + 1, (float*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -982,7 +982,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				if (err) return err;
 				((double*)slots1)[index] = fval;
 				if (remain) {
-					memcpy((double*)slots1 + index + 1, (double*)slots2 + index, 
+					memcpy((double*)slots1 + index + 1, (double*)slots2 + index,
 						remain * elemsize);
 				}
 				break;
@@ -991,14 +991,14 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		array->size = size+1;
 		slots1 = array->slots;
 		switch (format) {
-			case obj_slot :				
+			case obj_slot :
 				if (remain) memmove(slots1 + index + 1, slots1 + index, remain * elemsize);
 				slots1[index].ucopy = c->ucopy;
 				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
 				break;
 			case obj_int32 :
 				if (remain) {
-					memmove((int*)slots1 + index + 1, (int*)slots1 + index, 
+					memmove((int*)slots1 + index + 1, (int*)slots1 + index,
 						remain * elemsize);
 				}
 				err = slotIntVal(c, &ival);
@@ -1007,7 +1007,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_int16 :
 				if (remain) {
-					memmove((short*)slots1 + index + 1, (short*)slots1 + index, 
+					memmove((short*)slots1 + index + 1, (short*)slots1 + index,
 						remain * elemsize);
 				}
 				err = slotIntVal(c, &ival);
@@ -1016,7 +1016,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_int8 :
 				if (remain) {
-					memmove((char*)slots1 + index + 1, (char*)slots1 + index, 
+					memmove((char*)slots1 + index + 1, (char*)slots1 + index,
 						remain * elemsize);
 				}
 				err = slotIntVal(c, &ival);
@@ -1025,7 +1025,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_char :
 				if (remain) {
-					memmove((char*)slots1 + index + 1, (char*)slots1 + index, 
+					memmove((char*)slots1 + index + 1, (char*)slots1 + index,
 						remain * elemsize);
 				}
 				if (c->utag != tagChar) return errWrongType;
@@ -1033,7 +1033,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_symbol :
 				if (remain) {
-					memmove((int*)slots1 + index + 1, (int*)slots1 + index, 
+					memmove((int*)slots1 + index + 1, (int*)slots1 + index,
 						remain * elemsize);
 				}
 				if (c->utag != tagSym) return errWrongType;
@@ -1041,7 +1041,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_float :
 				if (remain) {
-					memmove((float*)slots1 + index + 1, (float*)slots1 + index, 
+					memmove((float*)slots1 + index + 1, (float*)slots1 + index,
 						remain * elemsize);
 				}
 				err = slotDoubleVal(c, &fval);
@@ -1050,7 +1050,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_double :
 				if (remain) {
-					memmove((double*)slots1 + index + 1, (double*)slots1 + index, 
+					memmove((double*)slots1 + index + 1, (double*)slots1 + index,
 						remain * elemsize);
 				}
 				err = slotDoubleVal(c, &fval);
@@ -1072,11 +1072,11 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 	int format, tag;
 	int err, ival;
 	double fval;
-	
-	
+
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	array = a->uo;
 	format = a->uo->obj_format;
 	tag = gFormatElemTag[format];
@@ -1155,9 +1155,9 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 	int z;
 	int format;
 	PyrSymbol *sym;
-	
+
 	a = g->sp;
-	
+
 	array = a->uo;
 	if (array->obj_flags & obj_immutable) return errImmutableObject;
 	if (array->size > 0) {
@@ -1205,37 +1205,37 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 {
 	int numbytes, elemsize, format;
 	int err;
-	
+
 	PyrSlot *a = g->sp - 2; // array
 	PyrSlot *b = g->sp - 1; // size
     PyrSlot *c = g->sp;     // filler item
-	
-	
+
+
 	if (b->utag != tagInt) return errWrongType;
 	PyrObject* aobj = a->uo;
 	if (b->ui <= aobj->size) {
 		aobj->size = b->ui;
 		return errNone;
 	}
-    
+
     format = aobj->obj_format;
     if (b->ui > MAXINDEXSIZE(aobj)) {
         elemsize = gFormatElemSize[format];
 		numbytes = b->ui * elemsize;
-		
+
 		PyrObject *obj = g->gc->New(numbytes, 0, format, true);
 		obj->classptr = aobj->classptr;
 		obj->size = aobj->size;
 		memcpy(obj->slots, aobj->slots, aobj->size * elemsize);
 		a->uo = aobj = obj;
 	}
-	
+
 
 	int fillSize = b->ui - aobj->size;
 	int32 ival;
 	float fval;
 	double dval;
-	
+
 	PyrSlot *slots = aobj->slots;
 	switch (format) {
 		case obj_slot :
@@ -1294,10 +1294,10 @@ int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj;
 	int numbytes, elemsize, format;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagInt) return errWrongType;
 	if (b->ui <= 0) return errNone;
 	aobj = a->uo;
@@ -1307,13 +1307,13 @@ int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
 	format = aobj->obj_format;
 	elemsize = gFormatElemSize[format];
 	numbytes = ((aobj->size + b->ui) * elemsize);
-	
+
 	obj = g->gc->New(numbytes, 0, format, true);
 	obj->classptr = aobj->classptr;
 	obj->size = aobj->size;
 	memcpy(obj->slots, aobj->slots, aobj->size * elemsize);
 	a->uo = obj;
-	
+
 	return errNone;
 }
 
@@ -1323,10 +1323,10 @@ int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj;
 	int numbytes, elemsize, format;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagInt) return errWrongType;
 	if (b->ui <= 0) return errNone;
 	aobj = a->uo;
@@ -1337,21 +1337,21 @@ int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 		format = aobj->obj_format;
 		elemsize = gFormatElemSize[format];
 		numbytes = ((aobj->size + b->ui) * elemsize);
-	
+
 		obj = g->gc->New(numbytes, 0, format, true);
 		obj->classptr = aobj->classptr;
 		memcpy(obj->slots, aobj->slots, aobj->size * elemsize);
 	}
-	
+
 	if (obj->obj_format == obj_slot) {
 		nilSlots(obj->slots + aobj->size, b->ui);
 	} else {
-		memset((char*)(obj->slots) + aobj->size * gFormatElemSize[format], 
+		memset((char*)(obj->slots) + aobj->size * gFormatElemSize[format],
 			0, b->ui * gFormatElemSize[format]);
 	}
 	obj->size = aobj->size + b->ui;
 	a->uo = obj;
-		
+
 	return errNone;
 }
 
@@ -1362,10 +1362,10 @@ int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj, *aobj, *bobj;
 	int elemsize, size;
 	int numbytes, format;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagObj || a->uo->classptr != b->uo->classptr) return errWrongType;
 	aobj = a->uo;
 	bobj = b->uo;
@@ -1378,7 +1378,7 @@ int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 	obj->classptr = aobj->classptr;
 	obj->size = size;
 	memcpy(obj->slots, aobj->slots, aobj->size * elemsize);
-	memcpy((char*)obj->slots + aobj->size * elemsize, 
+	memcpy((char*)obj->slots + aobj->size * elemsize,
 		bobj->slots, bobj->size * elemsize);
 	SetObject(a, obj);
 
@@ -1393,10 +1393,10 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj, *aobj;
 	int elemsize, newindexedsize, newsizebytes, asize, bsize;
 	int format;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagObj || a->uo->classptr != b->uo->classptr) return errWrongType;
 	aobj = a->uo;
 	format = aobj->obj_format;
@@ -1418,7 +1418,7 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	obj->size = newindexedsize;
-	memcpy((char*)obj->slots + asize * elemsize, 
+	memcpy((char*)obj->slots + asize * elemsize,
 		b->uo->slots, bsize * elemsize);
 	return errNone;
 }
@@ -1431,16 +1431,16 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj, *aobj;
 	int err, elemsize, newindexedsize, newsizebytes, pos, asize, bsize;
 	int format;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;		// pos
-	
+
 	if (b->utag != tagObj || a->uo->classptr != b->uo->classptr) return errWrongType;
 	err = slotIntVal(c, &pos);
 	if (err) return errWrongType;
 	if (pos < 0 || pos > a->uo->size) return errIndexOutOfRange;
-	
+
 	aobj = a->uo;
 	format = aobj->obj_format;
 	elemsize = gFormatElemSize[format];
@@ -1462,7 +1462,7 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	obj->size = newindexedsize;
-	memcpy((char*)(obj->slots) + pos * elemsize, 
+	memcpy((char*)(obj->slots) + pos * elemsize,
 		b->uo->slots, bsize * elemsize);
 
 	return errNone;
@@ -1473,7 +1473,7 @@ int prArrayReverse(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slots1, *slots2;
 	PyrObject *obj1, *obj2;
 	int i, j, size;
-	
+
 	a = g->sp;
 	obj1 = a->uo;
 	size = obj1->size;
@@ -1493,7 +1493,7 @@ int prArrayScramble(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slots1, *slots2, temp;
 	PyrObject *obj1, *obj2;
 	int i, j, k, m, size;
-	
+
 	a = g->sp;
 	obj1 = a->uo;
 	size = obj1->size;
@@ -1520,11 +1520,11 @@ int prArrayRotate(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, n, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	size = obj1->size;
 	n = sc_mod((int)b->ui, (int)size);
@@ -1544,11 +1544,11 @@ int prArrayStutter(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots1, *slots2;
 	PyrObject *obj1, *obj2;
 	int i, j, k, m, n, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	n = b->ui;
 	m = obj1->size;
@@ -1571,9 +1571,9 @@ int prArrayMirror(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, k, size;
-	
+
 	a = g->sp;
-		
+
 	obj1 = a->uo;
 	slots = obj1->slots;
 	size = obj1->size * 2 - 1;
@@ -1595,9 +1595,9 @@ int prArrayMirror1(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, k, size;
-	
+
 	a = g->sp;
-		
+
 	obj1 = a->uo;
 	slots = obj1->slots;
 	size = obj1->size * 2 - 2;
@@ -1619,9 +1619,9 @@ int prArrayMirror2(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, k, size;
-	
+
 	a = g->sp;
-		
+
 	obj1 = a->uo;
 	slots = obj1->slots;
 	size = obj1->size * 2;
@@ -1644,11 +1644,11 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, m, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	size = b->ui;
 	if(obj1->size > 0) {
@@ -1676,11 +1676,11 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, m, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	size = b->ui;
 	if(obj1->size > 0) {
@@ -1708,11 +1708,11 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots, last;
 	PyrObject *obj1, *obj2;
 	int i, j, m, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	size = b->ui;
 	if(obj1->size > 0) {
@@ -1728,7 +1728,7 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 		    for (i=0,j=m; j<size; ++i,++j) {
 			    slots[j].ucopy = last.ucopy;
 		    }
-		} 
+		}
 	    } else {
 	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
 	    }
@@ -1741,11 +1741,11 @@ int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots1, *slots2, temp;
 	PyrObject *obj1, *obj2;
 	int i, j, m, z, size;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
-		
+
 	obj1 = a->uo;
 	size = obj1->size;
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
@@ -1770,12 +1770,12 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots1, *slots2, *slots3;
 	PyrObject *obj1, *obj2, *obj3;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
 	int maxSize = b->ui;
-	
+
 	obj1 = a->uo;
 	slots1 = obj1->slots;
 	int newSize = 1;
@@ -1786,7 +1786,7 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (newSize > maxSize) newSize = maxSize;
-	
+
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, newSize, false, true);
 	slots2 = obj2->slots;
 
@@ -1818,7 +1818,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
 	int i, j, k, n, m, numslots, x;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagInt) return errWrongType;
@@ -1968,13 +1968,13 @@ int prArraySlide(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c, *slots;
 	PyrObject *obj1, *obj2;
 	int h, i, j, k, n, m, numslots, numwin;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
 	if (b->utag != tagInt) return errWrongType;
 	if (c->utag != tagInt) return errWrongType;
-	
+
 	obj1 = a->uo;
 	slots = obj1->slots;
 	m = b->ui;
@@ -1997,19 +1997,19 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *slots, *slot;
 	PyrObject *obj1, *obj2, *obj3;
 	int i, j, k, n, m, numLists, len;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	obj1 = a->uo;
 	slots = obj1->slots;
 	numLists = obj1->size;
-	
+
 	if(b->utag == tagNil) {
 		for (j=0; j<numLists; ++j) {
 			slot = slots + j;
 			if(isKindOfSlot(slot, class_array))	{
 				len = slot->uo->size;
-				if(j==0 || n>len) { n = len; } 
+				if(j==0 || n>len) { n = len; }
 			} else {
 				return errFailed; // this primitive only handles Arrays.
 			}
@@ -2018,10 +2018,10 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 
 	} else if (b->utag == tagInt) {
 		n = b->ui;
-	} else { 
+	} else {
 		return errWrongType;
 	}
-	
+
 
 	n = sc_max(1, n);
 	if(obj1->size > 0) {
@@ -2046,7 +2046,7 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 	    }
 	} else {
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, true, true);
-	}	
+	}
 	obj2->size = n;
 	a->uo = obj2;
 	return errNone;
@@ -2057,7 +2057,7 @@ int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slot, *endptr;
 	PyrObject *obj;
 	int size;
-	
+
 	a = g->sp;
 	obj = a->uo;
 	size = obj->size;
@@ -2082,7 +2082,7 @@ int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj1, *obj2;
 	int i, size, err;
 	double w, sum, rsum;
-	
+
 	a = g->sp;
 	obj1 = a->uo;
 	size = obj1->size;
@@ -2113,9 +2113,9 @@ int prArrayWIndex(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 	int i, j, size, err;
 	double r, w, sum;
-		
+
 	a = g->sp;
-	
+
 	sum = 0.0;
 	r = g->rgen->frand();
 	obj = a->uo;
@@ -2158,52 +2158,52 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	PyrObject* env = a->uo;
 	PyrSlot* slots = env->slots;
-	
+
 		// Env:asArray always gives at least 8 array elements
 	if(env->size < 8) return errFailed;
-	
+
 	double time;
 	int err = slotDoubleVal(b, &time);
 	if (err) return err;
-	
+
 	double begLevel;
 	err = slotDoubleVal(slots + kEnv_initLevel, &begLevel);
 	if (err) return err;
-	
+
 	int numStages;
 	err = slotIntVal(slots + kEnv_numStages, &numStages);
 	if (err) return err;
-	
+
 	double begTime = 0.;
 	double endTime = 0.;
-	
+
 	for (int i=0; i<numStages; ++i) {
 		double dur, endLevel;
-		
+
 		slots += 4;
-		
+
 		err = slotDoubleVal(slots + 0, &endLevel);
 		if (err) return err;
 		err = slotDoubleVal(slots + 1, &dur);
 		if (err) return err;
-		
+
 		endTime += dur;
-		
+
 		//post("%d   %g   %g %g   %g   %g\n", i, time, begTime, endTime, dur, endLevel);
-		
+
 		if (time < endTime) {
 			int shape;
 			double curve;
-			
+
 			err = slotIntVal(slots + 2, &shape);
 			if (err) return err;
-			
+
 			double level;
 			double pos = (time - begTime) / dur;
-			
+
 			//post("    shape %d   pos %g\n", shape, pos);
 			switch (shape)
 			{
@@ -2224,14 +2224,14 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 				{
 					if (begLevel < endLevel)
 						level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
-					else 
+					else
 						level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos);
 					break;
 				}
 				case shape_Curve :
 					err = slotDoubleVal(slots + 3, &curve);
 					if (err) return err;
-					
+
 					if (fabs(curve) < 0.0001) {
 						level = pos * (endLevel - begLevel) + begLevel;
 					} else {
@@ -2260,13 +2260,13 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 			SetFloat(a, level);
 			return errNone;
 		}
-		
+
 		begTime = endTime;
 		begLevel = endLevel;
 	}
-	
+
 	SetFloat(a, begLevel);
-	
+
 	return errNone;
 }
 
@@ -2277,28 +2277,28 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 	int i, size, err;
 	double s, w;
-		
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	obj = a->uo;
-	
+
 	size = obj->size;
 	slots = obj->slots;
-	
+
 	err = slotDoubleVal(b, &s);
 	if (err) return err;
-	
+
 	for (i=0; i<size; ++i) {
 		err = getIndexedDouble(obj, i, &w);
 		if (err) return err;
-		
+
 		if (w > s) {
 			SetInt(a, i);
 			return errNone;
 		}
 	}
-	
+
 	a->utag = tagNil; a->ui = 0;
 	return errNone;
 }
@@ -2310,21 +2310,21 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c, *slots, *slots2, *slots3;
 	PyrObject *obj1, *obj2, *obj3;
 	int i, j, k, clump, numLists, size, size3, err;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	obj1 = a->uo;
 	slots = obj1->slots;
 	size = obj1->size;
-	
+
 	err = slotIntVal(b, &numLists);
 	if (err) return err;
-	
+
 	err = slotIntVal(c, &clump);
 	if (err) return err;
-	
+
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, numLists, false, true);
 	obj2->size = numLists;
 	slots2 = obj2->slots;
@@ -2332,7 +2332,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	size3 = size / numLists;
 	size3 = size3 - (size3 % clump);
 	if(size3 < 1) return errFailed;
-	
+
 	for(i=0; i<numLists; ++i) {
 		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, true);
 		obj3->size = size3;
@@ -2344,7 +2344,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 		}
 		SetObject(slots2 + i, obj3);
 	}
-	
+
 	a->uo = obj2;
 	return errNone;
 }
@@ -2353,7 +2353,7 @@ void initArrayPrimitives();
 void initArrayPrimitives()
 {
 	int base, index;
-	
+
 	base = nextPrimitiveIndex();
 	index = 0;
 
@@ -2372,19 +2372,19 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_BasicWrapPut", basicWrapPut, 3, 0);
 	definePrimitive(base, index++, "_BasicFoldPut", basicFoldPut, 3, 0);
 
-	definePrimitive(base, index++, "_ArrayExtend", prArrayExtend, 3, 0);	
-	definePrimitive(base, index++, "_ArrayGrow", prArrayGrow, 2, 0);	
-	definePrimitive(base, index++, "_ArrayGrowClear", prArrayGrowClear, 2, 0);	
+	definePrimitive(base, index++, "_ArrayExtend", prArrayExtend, 3, 0);
+	definePrimitive(base, index++, "_ArrayGrow", prArrayGrow, 2, 0);
+	definePrimitive(base, index++, "_ArrayGrowClear", prArrayGrowClear, 2, 0);
 	definePrimitive(base, index++, "_ArrayAdd", prArrayAdd, 2, 0);
 	definePrimitive(base, index++, "_ArrayInsert", prArrayInsert, 3, 0);
 	definePrimitive(base, index++, "_ArrayFill", prArrayFill, 2, 0);
 	definePrimitive(base, index++, "_ArrayPop", prArrayPop, 1, 0);
-	definePrimitive(base, index++, "_ArrayCat", prArrayCat, 2, 0);	
-	definePrimitive(base, index++, "_ArrayPutEach", prArrayPutEach, 3, 0);	
+	definePrimitive(base, index++, "_ArrayCat", prArrayCat, 2, 0);
+	definePrimitive(base, index++, "_ArrayPutEach", prArrayPutEach, 3, 0);
 	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);
 	definePrimitive(base, index++, "_ArrayPutSeries", prArrayPutSeries, 5, 0);
-	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);	
-	definePrimitive(base, index++, "_ArrayIndexOf", prArrayIndexOf, 2, 0);	
+	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);
+	definePrimitive(base, index++, "_ArrayIndexOf", prArrayIndexOf, 2, 0);
 
 	definePrimitive(base, index++, "_ArrayNormalizeSum", prArrayNormalizeSum, 1, 0);
 	definePrimitive(base, index++, "_ArrayWIndex", prArrayWIndex, 1, 0);
@@ -2405,7 +2405,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
 	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
 	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
-	
+
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
 	definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
@@ -2428,7 +2428,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

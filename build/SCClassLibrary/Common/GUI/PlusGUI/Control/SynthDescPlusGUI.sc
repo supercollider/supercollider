@@ -3,7 +3,7 @@
 	makeWindow{
 		this.makeGui;
 	}
-	
+
 	makeGui {
 		var w, s, startButton, sliders;
 		var id, cmdPeriodFunc;
@@ -11,31 +11,31 @@
 		var getSliderValues, gui;
 
 		s = Server.default;
-		
+
 		gui = GUI.current;
-				
+
 		usefulControls = controls.select {|controlName, i|
 			var ctlname;
 			ctlname = controlName.name.asString;
 			(ctlname != "?") && (msgFuncKeepGate or: { ctlname != "gate" })
 		};
-		
+
 		numControls = usefulControls.size;
 		sliders = Array.newClear(numControls);
-		
+
 		// make the window
 		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
 		w.view.decorator = FlowLayout(w.view.bounds);
-		
+
 		w.view.background = Color.rand(0.5, 1.0);
-		
+
 		// add a button to start and stop the sound.
 		startButton = gui.button.new(w, 75 @ 24);
 		startButton.states = [
 			["Start", Color.black, Color.green],
 			["Stop", Color.white, Color.red]
 		];
-		
+
 		getSliderValues = {
 			var envir;
 
@@ -52,8 +52,8 @@
 				msgFunc.valueEnvir
 			};
 		};
-		
-		
+
+
 		startButton.action = {|view|
 			if (view.value == 1) {
 				// start sound
@@ -78,12 +78,12 @@
 				id = nil;
 			};
 		};
-		
+
 		// create controls for all parameters
 		usefulControls.do {|controlName, i|
 			var ctlname, ctlname2, capname, spec;
 			ctlname = controlName.name;
-			capname = ctlname.copy; 
+			capname = ctlname.copy;
 			capname[0] = capname[0].toUpper;
 			w.view.decorator.nextLine;
 			ctlname = ctlname.asSymbol;
@@ -93,24 +93,24 @@
 				spec = ctlname.asSpec;
 			};
 			if (spec.notNil) {
-				sliders[i] = gui.ezSlider.new(w, 400 @ 24, capname, spec, 
-					{ |ez| 
+				sliders[i] = gui.ezSlider.new(w, 400 @ 24, capname, spec,
+					{ |ez|
 						if(id.notNil) { s.sendMsg("/n_set", id, ctlname, ez.value) }
 					}, controlName.defaultValue);
 			}{
 				spec = ControlSpec(-1e10,1e10);
-				sliders[i] = gui.ezNumber.new(w, 400 @ 24, capname, spec, 
+				sliders[i] = gui.ezNumber.new(w, 400 @ 24, capname, spec,
 					{ |ez|
 						if(id.notNil) { s.sendMsg("/n_set", id, ctlname, ez.value) }
 					}, controlName.defaultValue);
 			};
 		};
-			
-		
+
+
 		// set start button to zero upon a cmd-period
 		cmdPeriodFunc = { startButton.value = 0; };
 		CmdPeriod.add(cmdPeriodFunc);
-		
+
 		// stop the sound when window closes and remove cmdPeriodFunc.
 		w.onClose = {
 			if(id.notNil) {
@@ -118,7 +118,7 @@
 			};
 			CmdPeriod.remove(cmdPeriodFunc);
 		};
-		
+
 		w.front; // make window visible and front window.
 	}
 }

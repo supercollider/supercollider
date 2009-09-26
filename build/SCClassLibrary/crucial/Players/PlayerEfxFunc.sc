@@ -3,7 +3,7 @@
 PlayerEfxFunc : AbstractSinglePlayerEffect {
 
 	var <>effect,inputIndex,playerInputProxy;
-	
+
 	*new { arg player,effect,inputIndex=0;
 		^super.new(player).effect_(effect.loadDocument).peinit(inputIndex)
 	}
@@ -52,17 +52,17 @@ XFadePauseEfxFunc : XFadeEfxFunc { // pauses the effect when xfader is 0.0
 		dry = one.value;
 		wet = Pause.ar({ two.value(if(pre1 == 1.0,{ dry},{ dry * pre1.value })) },controller);
 		if(pre2 != 1.0,{ wet = wet * pre2.value });
-		wet = wet * (1.0 - controller);	
+		wet = wet * (1.0 - controller);
 		^Mix.ar([dry,wet])//XFader.ar(dry,wet,xfader.value)
 	}
 
 }
 
 DualSeriesEfx : HasPatchIns {
-	
+
 	var <input,<efx1,<efx2,<xfader1,<xfader2,<pre1,<pre2,<post;
 	var <xf1,<xf2;
-	
+
 	*new { arg input,efx1,efx2,xfader1,xfader2,pre1=1.0,pre2=1.0,post=1.0;
 		^super.new.deinit(this.load(input),this.load(efx1),this.load(efx2),
 				this.load(xfader1),this.load(xfader2),this.load(pre1),this.load(pre2),this.load(post))
@@ -122,7 +122,7 @@ DualSeriesEfx : HasPatchIns {
 	specAt { arg i; // using StreamSpec to avoid creating PlayerSpec just yet
 		^([\audio,StreamSpec.new,StreamSpec.new,\unipolar,\unipolar,\amp,\amp,\amp].at(i).asSpec)
 	}
-	
+
 	storeParamsOn { arg stream;
 		stream.storeArgs(this.enpath([input,efx1,efx2,xfader1,xfader2,pre1,pre2,post]))
 	}

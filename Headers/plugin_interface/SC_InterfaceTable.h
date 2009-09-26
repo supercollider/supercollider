@@ -33,19 +33,19 @@ struct World;
 typedef bool (*AsyncStageFn)(World *inWorld, void* cmdData);
 typedef void (*AsyncFreeFn)(World *inWorld, void* cmdData);
 
-struct InterfaceTable 
-{	
+struct InterfaceTable
+{
 	unsigned int mSineSize;
 	float32 *mSineWavetable;
 	float32 *mSine;
 	float32 *mCosecant;
-	
+
 	// call printf for debugging. should not use in finished code.
 	int (*fPrint)(const char *fmt, ...);
-	
+
 	// get a seed for a random number generator
 	int32 (*fRanSeed)();
-	
+
 	// define a unit def
 	bool (*fDefineUnit)(const char *inUnitClassName, size_t inAllocSize,
 			UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
@@ -55,55 +55,55 @@ struct InterfaceTable
 
 	// define a command for a unit generator  /u_cmd
 	bool (*fDefineUnitCmd)(const char *inUnitClassName, const char *inCmdName, UnitCmdFunc inFunc);
-	
+
 	// define a buf gen
 	bool (*fDefineBufGen)(const char *inName, BufGenFunc inFunc);
 
 	// clear all of the unit's outputs.
 	void (*fClearUnitOutputs)(Unit *inUnit, int inNumSamples);
-	
+
 	// non real time memory allocation
 	void* (*fNRTAlloc)(size_t inSize);
 	void* (*fNRTRealloc)(void *inPtr, size_t inSize);
 	void  (*fNRTFree)(void *inPtr);
-	
+
 	// real time memory allocation
 	void* (*fRTAlloc)(World *inWorld, size_t inSize);
 	void* (*fRTRealloc)(World *inWorld, void *inPtr, size_t inSize);
 	void  (*fRTFree)(World *inWorld, void *inPtr);
-	
+
 	// call to set a Node to run or not.
 	void (*fNodeRun)(struct Node* node, int run);
-	
+
 	// call to stop a Graph after the next buffer.
 	void (*fNodeEnd)(struct Node* graph);
-	
+
 	// send a trigger from a Node to clients
-	void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);	
-	
+	void (*fSendTrigger)(struct Node* inNode, int triggerID, float value);
+
 	// send a reply message from a Node to clients
 	void (*fSendNodeReply)(struct Node* inNode, int replyID, const char* cmdName, int numArgs, const float* values);
-	
+
 	// sending messages between real time and non real time levels.
 	bool (*fSendMsgFromRT)(World *inWorld, struct FifoMsg& inMsg);
 	bool (*fSendMsgToRT)(World *inWorld, struct FifoMsg& inMsg);
-	
+
 	// libsndfile support
 #ifdef NO_LIBSNDFILE
-	int (*fSndFileFormatInfoFromStrings)(void *info, 
+	int (*fSndFileFormatInfoFromStrings)(void *info,
 		const char *headerFormatString, const char *sampleFormatString);
 #else
-	int (*fSndFileFormatInfoFromStrings)(SF_INFO *info, 
+	int (*fSndFileFormatInfoFromStrings)(SF_INFO *info,
 		const char *headerFormatString, const char *sampleFormatString);
 #endif
 
 	// get nodes by id
 	struct Node* (*fGetNode)(World *inWorld, int inID);
 	struct Graph* (*fGetGraph)(World *inWorld, int inID);
-	
+
 	void (*fNRTLock)(World *inWorld);
 	void (*fNRTUnlock)(World *inWorld);
-	
+
 	bool mAltivecAvailable;
 
 	void (*fGroup_DeleteAll)(struct Group* group);
@@ -122,7 +122,7 @@ struct InterfaceTable
 			int completionMsgSize,
 			void* completionMsgData
 		);
-	
+
 
 	// fBufAlloc should only be called within a BufGenFunc
 	int (*fBufAlloc)(SndBuf *inBuf, int inChannels, int inFrames, double inSampleRate);

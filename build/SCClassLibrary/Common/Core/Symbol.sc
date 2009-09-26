@@ -3,20 +3,20 @@ Symbol {
 
 	// conversion
 	asSymbol { ^this }
-	asInteger { 
+	asInteger {
 		_Symbol_AsInteger
 		^this.primitiveFailed
 	}
-	asFloat { 
+	asFloat {
 		_Symbol_AsFloat
 		^this.primitiveFailed
 	}
 	ascii { ^this.asString.ascii }
-	
+
 	// the primitive fails to escape '
 	asCompileString { ^("'" ++ super.asString.escapeChar($') ++ "'") }
-	asClass { 
-		_SymbolClass 
+	asClass {
+		_SymbolClass
 		// if Symbol represents a class name then return the class, else return nil.
 	}
 	asSetter {
@@ -60,15 +60,15 @@ Symbol {
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.asString.openTextFile(selectionStart, selectionLength)
 	}
-	
+
 	// Environment support
-	// The compiler translates use of an Environment variable like ~myvar 
+	// The compiler translates use of an Environment variable like ~myvar
 	// to a call to one of these methods, for example:
 	// 			~myvar = 5;  translates to:  'myvar'.envirPut(5);
 	// the implementations have been replaced by primitives
-	envirGet { 
+	envirGet {
 		_Symbol_envirGet
-		^currentEnvironment.at(this) 
+		^currentEnvironment.at(this)
 	}
 	envirPut { arg aValue;
 		_Symbol_envirPut
@@ -79,21 +79,21 @@ Symbol {
 	blend { // Envelopes may call this on the curves inst var.
 		^this
 	}
-	
+
 	++ { arg aString; ^this.asString ++ aString }
-	
-	asBinOpString { 
+
+	asBinOpString {
 		var res;
 		res = this.asString;
 		^if(res[0].isAlphaNum) { res ++ ":" } { res }
 	}
-	
+
 	applyTo { arg firstArg ... args;
 		^firstArg.performList(this, args)
 	}
 
 	// support for math on symbols
-	
+
 	performBinaryOpOnSomething { ^this }
 
 	// unary ops
@@ -111,7 +111,7 @@ Symbol {
 	midiratio { ^this }
 	ratiomidi { ^this }
 	ampdb { ^this }
-	dbamp { ^this }	
+	dbamp { ^this }
 	octcps { ^this }
 	cpsoct { ^this }
 	log { ^this }
@@ -147,16 +147,16 @@ Symbol {
 	ramp { ^this }
 
 	// binary ops
-	+ { ^this }		
-	- { ^this } 
-	* { ^this } 
-	/ { ^this } 
+	+ { ^this }
+	- { ^this }
+	* { ^this }
+	/ { ^this }
 	mod { ^this }
-	min { ^this } 
+	min { ^this }
 	max { ^this }
 	bitAnd { ^this }
 	bitOr { ^this }
-	bitXor { ^this }	
+	bitXor { ^this }
 	bitHammingDistance { ^this }
 	hammingDistance { |that| ^this.asString.hammingDistance(that.asString) }
 	lcm { ^this }
@@ -164,7 +164,7 @@ Symbol {
 	round { ^this }
 	roundUp { ^this }
 	trunc { ^this }
-	atan2 { ^this }	
+	atan2 { ^this }
 	hypot { ^this }
 	hypotApx { ^this }
 	pow { ^this }
@@ -178,23 +178,23 @@ Symbol {
 	> { arg aNumber; _GT; ^this }
 	<= { arg aNumber; _LE; ^this }
 	>= { arg aNumber; _GE; ^this }
-	
+
 	degreeToKey { ^this }
-	
+
 	doNumberOp { ^this }
 	doComplexOp { ^this }
 	doSignalOp { ^this }
-	doListOp { arg aSelector, aList; 
-		aList.collect({ arg item; 
+	doListOp { arg aSelector, aList;
+		aList.collect({ arg item;
 			item.perform(aSelector, this)
-		}) 
+		})
 	}
 
-	primitiveIndex { 
+	primitiveIndex {
 		_Symbol_PrimitiveIndex
 		^this.primitiveFailed
 	}
-	specialIndex { 
+	specialIndex {
 		// used by BasicOpUGens to get an ID number for the operator
 		_Symbol_SpecialIndex
 		^this.primitiveFailed
@@ -206,22 +206,22 @@ Symbol {
 	storeOn { arg stream;
 		stream.putAll(this.asCompileString);
 	}
-	
+
 	// code gen
-	codegen_UGenCtorArg { arg stream; 
+	codegen_UGenCtorArg { arg stream;
 		this.asString.codegen_UGenCtorArg(stream);
 	}
 
 	archiveAsCompileString { ^true }
-		
+
 	kr { | val, lag |
 		^NamedControl.kr(this, val, lag)
 	}
-	
+
 	ir { | val |
 		^NamedControl.ir(this, val)
 	}
-	
+
 	tr { | val |
 		^NamedControl.tr(this, val)
 	}

@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -40,7 +40,7 @@
 */
 /*=============================================================================
 	AUMIDIBase.cpp
-	
+
 =============================================================================*/
 
 #include "AUMIDIBase.h"
@@ -62,18 +62,18 @@ enum
 	kMidiController_AllNotesOff			= 123
 };
 
-AUMIDIBase::AUMIDIBase(AUBase* inBase) 
-	: mAUBaseInstance (*inBase) 
+AUMIDIBase::AUMIDIBase(AUBase* inBase)
+	: mAUBaseInstance (*inBase)
 {
 #if CA_AUTO_MIDI_MAP
 	mMapManager = new CAAUMIDIMapManager();
 #endif
 }
 
-AUMIDIBase::~AUMIDIBase() 
+AUMIDIBase::~AUMIDIBase()
 {
 #if CA_AUTO_MIDI_MAP
-	if (mMapManager) 
+	if (mMapManager)
 		delete mMapManager;
 #endif
 }
@@ -89,7 +89,7 @@ ComponentResult		AUMIDIBase::DelegateGetPropertyInfo(AudioUnitPropertyID				inID
 	if (inElement != 0) return kAudioUnitErr_InvalidElement;
 
 	ComponentResult result = noErr;
-	
+
 	switch (inID) {
 	case kMusicDeviceProperty_MIDIXMLNames:
 		if (GetXMLNames(NULL) == noErr) {
@@ -98,29 +98,29 @@ ComponentResult		AUMIDIBase::DelegateGetPropertyInfo(AudioUnitPropertyID				inID
 		} else
 			result = kAudioUnitErr_InvalidProperty;
 		break;
-		
-#if CA_AUTO_MIDI_MAP				
+
+#if CA_AUTO_MIDI_MAP
 	case kAudioUnitProperty_AllParameterMIDIMappings:
 		outWritable = true;
 		outDataSize = sizeof (AUParameterMIDIMapping)*mMapManager->NumMaps();
 		result = noErr;
 		break;
-	
+
 	case kAudioUnitProperty_HotMapParameterMIDIMapping:
 		outWritable = true;
-		outDataSize = sizeof (AUParameterMIDIMapping); 
+		outDataSize = sizeof (AUParameterMIDIMapping);
 		result = noErr;
 		break;
-		
+
 	case kAudioUnitProperty_AddParameterMIDIMapping:
 		outWritable = true;
 		outDataSize = sizeof (AUParameterMIDIMapping);
 		result = noErr;
 		break;
-		
+
 	case kAudioUnitProperty_RemoveParameterMIDIMapping:
 		outWritable = true;
-		outDataSize = sizeof (AUParameterMIDIMapping); 
+		outDataSize = sizeof (AUParameterMIDIMapping);
 		result = noErr;
 		break;
 #endif
@@ -141,12 +141,12 @@ ComponentResult		AUMIDIBase::DelegateGetProperty(	AudioUnitPropertyID 			inID,
 	if (inElement != 0) return kAudioUnitErr_InvalidElement;
 
 	ComponentResult result;
-	
+
 	switch (inID) {
 	case kMusicDeviceProperty_MIDIXMLNames:
 		result = GetXMLNames((CFURLRef *)outData);
 		break;
-		
+
 #if CA_AUTO_MIDI_MAP
 	case kAudioUnitProperty_AllParameterMIDIMappings:{
 		AUParameterMIDIMapping*  maps =  (static_cast<AUParameterMIDIMapping*>(outData));
@@ -156,7 +156,7 @@ ComponentResult		AUMIDIBase::DelegateGetProperty(	AudioUnitPropertyID 			inID,
 		result = noErr;
 		break;
 	}
-		
+
 	case kAudioUnitProperty_HotMapParameterMIDIMapping:{
 		AUParameterMIDIMapping *  map =  (static_cast<AUParameterMIDIMapping*>(outData));
 		mMapManager->GetHotParameterMap (*map);
@@ -164,7 +164,7 @@ ComponentResult		AUMIDIBase::DelegateGetProperty(	AudioUnitPropertyID 			inID,
 		break;
 	}
 #endif
-	
+
 	default:
 		result = kAudioUnitErr_InvalidProperty;
 		break;
@@ -177,35 +177,35 @@ ComponentResult		AUMIDIBase::DelegateSetProperty(	AudioUnitPropertyID 			inID,
 														AudioUnitElement			 	inElement,
 														const void *					inData,
 														UInt32							inDataSize)
-{	
+{
 	if (inScope != kAudioUnitScope_Global) return kAudioUnitErr_InvalidScope;
 	if (inElement != 0) return kAudioUnitErr_InvalidElement;
 
 	OSStatus result;
-	
+
 	switch (inID) {
 #if CA_AUTO_MIDI_MAP
 		case kAudioUnitProperty_AddParameterMIDIMapping:{
 			AUParameterMIDIMapping * maps = (AUParameterMIDIMapping*)inData;
 			mMapManager->SortedInsertToParamaterMaps (maps, (inDataSize / sizeof(AUParameterMIDIMapping)), mAUBaseInstance);
-			mAUBaseInstance.PropertyChanged (kAudioUnitProperty_AllParameterMIDIMappings, kAudioUnitScope_Global, 0);	 
+			mAUBaseInstance.PropertyChanged (kAudioUnitProperty_AllParameterMIDIMappings, kAudioUnitScope_Global, 0);
 			result = noErr;
 			break;
 		}
-			
+
 		case kAudioUnitProperty_RemoveParameterMIDIMapping:{
 			AUParameterMIDIMapping * maps = (AUParameterMIDIMapping*)inData;
 			bool didChange;
 			mMapManager->SortedRemoveFromParameterMaps(maps, (inDataSize / sizeof(AUParameterMIDIMapping)), didChange);
 			if (didChange)
-				mAUBaseInstance.PropertyChanged (kAudioUnitProperty_AllParameterMIDIMappings, kAudioUnitScope_Global, 0);	 
+				mAUBaseInstance.PropertyChanged (kAudioUnitProperty_AllParameterMIDIMappings, kAudioUnitScope_Global, 0);
 			result = noErr;
 			break;
 		}
-					
+
 		case kAudioUnitProperty_HotMapParameterMIDIMapping:{
 			AUParameterMIDIMapping & map = *((AUParameterMIDIMapping*)inData);
-			mMapManager->SetHotMapping (map);			
+			mMapManager->SetHotMapping (map);
 			result = noErr;
 			break;
 		}
@@ -216,7 +216,7 @@ ComponentResult		AUMIDIBase::DelegateSetProperty(	AudioUnitPropertyID 			inID,
 			break;
 		}
 #endif
-		
+
 	default:
 		result = kAudioUnitErr_InvalidProperty;
 		break;
@@ -280,10 +280,10 @@ inline const Byte *	NextMIDIEvent(const Byte *event, const Byte *end)
 ComponentResult		AUMIDIBase::HandleMIDIPacketList(const MIDIPacketList *pktlist)
 {
 	if (!mAUBaseInstance.IsInitialized()) return kAudioUnitErr_Uninitialized;
-	
+
 	int nPackets = pktlist->numPackets;
 	const MIDIPacket *pkt = pktlist->packet;
-	
+
 	while (nPackets-- > 0) {
 		const Byte *event = pkt->data, *packetEnd = event + pkt->length;
 		long startFrame = (long)pkt->timeStamp;
@@ -308,20 +308,20 @@ ComponentResult		AUMIDIBase::HandleMIDIPacketList(const MIDIPacketList *pktlist)
 OSStatus 	AUMIDIBase::HandleMidiEvent(UInt8 status, UInt8 channel, UInt8 data1, UInt8 data2, UInt32 inStartFrame)
 {
 	if (!mAUBaseInstance.IsInitialized()) return kAudioUnitErr_Uninitialized;
-		
-#if CA_AUTO_MIDI_MAP	
-// you potentially have a choice to make here - if a param mapping matches, do you still want to process the 
+
+#if CA_AUTO_MIDI_MAP
+// you potentially have a choice to make here - if a param mapping matches, do you still want to process the
 // MIDI event or not. The default behaviour is to continue on with the MIDI event.
 	if (mMapManager->HandleHotMapping (status, channel, data1, mAUBaseInstance)) {
 		mAUBaseInstance.PropertyChanged (kAudioUnitProperty_HotMapParameterMIDIMapping, kAudioUnitScope_Global, 0);
 	}
 	else {
 		mMapManager->FindParameterMapEventMatch(status, channel, data1, data2, inStartFrame, mAUBaseInstance);
-	}	
-#endif	
-	
+	}
+#endif
+
 	OSStatus result = noErr;
-	
+
 	switch(status)
 	{
 		case kMidiMessage_NoteOn:
@@ -335,16 +335,16 @@ OSStatus 	AUMIDIBase::HandleMidiEvent(UInt8 status, UInt8 channel, UInt8 data1, 
 				result = HandleNoteOff(channel, data1, data2, inStartFrame);
 			}
 			break;
-			
+
 		case kMidiMessage_NoteOff:
 			result = HandleNoteOff(channel, data1, data2, inStartFrame);
 			break;
-		
+
 		default:
 			result = HandleNonNoteEvent (status, channel, data1, data2, inStartFrame);
 			break;
 	}
-	
+
 	return result;
 }
 
@@ -357,15 +357,15 @@ OSStatus	AUMIDIBase::HandleNonNoteEvent (UInt8 status, UInt8 channel, UInt8 data
 		case kMidiMessage_PitchWheel:
 			result = HandlePitchWheel(channel, data1, data2, inStartFrame);
 			break;
-			
+
 		case kMidiMessage_ProgramChange:
 			result = HandleProgramChange(channel, data1);
 			break;
-			
+
 		case kMidiMessage_ChannelPressure:
 			result = HandleChannelPressure(channel, data1, inStartFrame);
 			break;
-			
+
 		case kMidiMessage_ControlChange:
 		{
 			switch (data1) {
@@ -380,7 +380,7 @@ OSStatus	AUMIDIBase::HandleNonNoteEvent (UInt8 status, UInt8 channel, UInt8 data
 				case kMidiController_AllSoundOff:
 					result = HandleAllSoundOff(channel);
 					break;
-								
+
 				default:
 					result = HandleControlChange(channel, data1, data2, inStartFrame);
 					break;
@@ -394,7 +394,7 @@ OSStatus	AUMIDIBase::HandleNonNoteEvent (UInt8 status, UInt8 channel, UInt8 data
 	return result;
 }
 
-ComponentResult 	AUMIDIBase::SysEx (const UInt8 *	inData, 
+ComponentResult 	AUMIDIBase::SysEx (const UInt8 *	inData,
 										UInt32			inLength)
 {
 	if (!mAUBaseInstance.IsInitialized()) return kAudioUnitErr_Uninitialized;
@@ -427,7 +427,7 @@ ComponentResult		AUMIDIBase::ComponentEntryDispatch(	ComponentParameters *			par
 	if (This == NULL) return paramErr;
 
 	ComponentResult result;
-	
+
 	switch (params->what) {
 	case kMusicDeviceMIDIEventSelect:
 		{
@@ -450,7 +450,7 @@ ComponentResult		AUMIDIBase::ComponentEntryDispatch(	ComponentParameters *			par
 		result = badComponentSelector;
 		break;
 	}
-	
+
 	return result;
 }
 

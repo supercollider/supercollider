@@ -79,7 +79,7 @@ class SC_LibraryConfig
 public:
 	SC_LibraryConfig(void);
 	virtual ~SC_LibraryConfig();
-  
+
 	char **includedDirectories(void);
 	char **excludedDirectories(void);
 

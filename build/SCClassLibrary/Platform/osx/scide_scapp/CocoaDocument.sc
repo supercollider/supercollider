@@ -4,14 +4,14 @@ CocoaDocument : Document {
 	*initClass{
 		Document.implementationClass = CocoaDocument;
 	}
-	
-	*startup { 
+
+	*startup {
 		var post;
-		super.startup; 
-		fork({ 
-			0.2.wait; 
-			post = this.listener; 
-			if(post.notNil) { post.name_(" post ") } 
+		super.startup;
+		fork({
+			0.2.wait;
+			post = this.listener;
+			if(post.notNil) { post.name_(" post ") }
 		}, AppClock);
 		this.setTheme('default');
 	}
@@ -19,44 +19,44 @@ CocoaDocument : Document {
 	*new { arg title="Untitled", string="", makeListener=false;
 		^super.prBasicNew.initByString(title, string.asString, makeListener);
 	}
-	
+
 	*defaultFont_{|font|
 		CocoaDocument.prSetDefaultFont(font);
 		defaultFont = font;
 	}
-	
+
 	*prSetDefaultFont{|font|
 		_TextWindow_SetDefaultFont
 	}
-	
+
 	*prSetSyntaxColorTheme {|textC, classC, stringC, symbolC, commentC, numberC|
 		_TextWindow_SetSyntaxColorTheme
 	}
-	
+
 	front {
 		_TextWindow_ToFront
 	}
-	
+
 	unfocusedFront {
 		_TextWindow_UnfocusedFront
 	}
-	
+
 	alwaysOnTop_{|boolean=true|
 		_TextWindow_AlwaysOnTop
 	}
-	
+
 	alwaysOnTop{
 		_TextWindow_IsAlwaysOnTop
 	}
-		
+
 	syntaxColorize {
 		_TextWindow_SyntaxColorize
 	}
-	
+
 	selectRange {arg start=0, length=0;
 		_TextWindow_SelectRange
 	}
-	
+
 	editable_{arg abool=true;
 		editable = abool;
 		this.prIsEditable_(abool);
@@ -64,19 +64,19 @@ CocoaDocument : Document {
 	removeUndo{
 		_TextWindow_RemoveUndo
 	}
-	
+
 	promptToSave_{|bool|
 		_TextWindow_SetPromptToSave
 	}
-	
+
 	promptToSave{
 		_TextWindow_PromptToSave
-	}	
-	
+	}
+
 	underlineSelection{
 		_TextWindow_UnderlineSelection
 	}
-	
+
 	balanceParens { arg levels = 1;
 		var prev = this.selectionStart, next;
 		levels.do {
@@ -86,11 +86,11 @@ CocoaDocument : Document {
 			if(prev == next) { ^this };
 		}
 	}
-	
+
 	*postColor_{ arg color;
 		_PostWindow_SetTextColor
 	}
-	
+
 // state info
 	isEdited {
 		_TextWindow_IsEdited
@@ -108,7 +108,7 @@ CocoaDocument : Document {
 	}
 	prGetTitle {
 		_TextWindow_GetName
-	}	
+	}
 	prGetFileName {
 		_TextWindow_GetFileName
 		^this.primitiveFailed
@@ -136,11 +136,11 @@ CocoaDocument : Document {
 		^this.primitiveFailed
 
 	}
-	
+
 	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;
 		_TextWindow_SetTextColor
 	}
-	
+
 	text {
 		_TextWindow_Text
 	}
@@ -151,16 +151,16 @@ CocoaDocument : Document {
 		_TextWindow_SelectUnderlinedText
 		^false
 	}
-	
+
 	linkAtClickPos { arg clickPos;
 		_TextWindow_LinkAtClickPos
 		^false
 	}
-	
-	rangeText { arg rangestart=0, rangesize=1; 
+
+	rangeText { arg rangestart=0, rangesize=1;
 		_TextWindow_TextWithRange
 	}
-	
+
 	prclose {
 		_TextWindow_Close
 	}
@@ -215,12 +215,12 @@ CocoaDocument : Document {
 	selectedRangeSize {
 		_TextWindow_GetSelectedRangeLength
 	}
-	
+
 	prSelectLine { arg line;
 		_TextWindow_SelectLine;
 		^this.primitiveFailed
 	}
-	
+
 	*prGetIndexOfListener {
 		_TextWindow_GetIndexOfListener
 	}

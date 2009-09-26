@@ -3,7 +3,7 @@
 
 Phid : Pattern {
 	var <>element, <>locID, <>repeats;
-	
+
 	//element can be key or index
 	*new { arg element, locID=0, repeats=inf;
 		^super.newCopyArgs(element, locID, repeats)
@@ -12,7 +12,7 @@ Phid : Pattern {
 	embedInStream { arg event;
 		var all, device, spec, elements, deviceName, min, max;
 			all = HIDDeviceService.devices;
-			if(all.isNil, { 
+			if(all.isNil, {
 				HIDDeviceService.buildDeviceList;
 				all = HIDDeviceService.devices;
 			});
@@ -36,7 +36,7 @@ Phid : Pattern {
 						event = spec.unmap(device.value(element)).yield
 					});
 					^event;
-			})	
+			})
 	}
 }
 

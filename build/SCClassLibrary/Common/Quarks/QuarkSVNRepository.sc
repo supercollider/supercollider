@@ -9,7 +9,7 @@ QuarkSVNRepository
 {
 	classvar <>svnpath="/usr/local/bin/svn";
 	var <url, <local;
-	
+
 	*initClass {
 		var res;
 		svnpath = [svnpath, "/usr/local/bin/svn", "/usr/bin/svn", "/opt/local/bin/svn", "/sw/bin/svn"].detect({ |path|
@@ -23,7 +23,7 @@ QuarkSVNRepository
 			};
 		};
 	}
-	
+
 	*new { | url, local |
 		if(svnpath.isNil) {
 			Post
@@ -48,7 +48,7 @@ QuarkSVNRepository
 					res = ("svn st -q " ++ it ).unixCmdGetStdOut;
 					if ( res == "" ){
 						// no local modifications, so delete the folder
-						("rm -r " ++ it ).unixCmd; 
+						("rm -r " ++ it ).unixCmd;
 					}{
 						// local modifications, so copy the folder for backup
 						("mv" + it + it.drop(-1) ++ "_modified" ).unixCmd;
@@ -70,19 +70,19 @@ QuarkSVNRepository
 	// NOTE: despite the method name, this actually uses "svn up" rather than "svn co", to ensure the base checkout is the base for this subfolder.
 	// Therefore it can be used to update, equally well as to checkout, a quark.
 	checkout { | q, localRoot, sync = false |
-		
+
 		var subfolders, fullCheckout, pathSoFar, skeletonCheckout, args;
-		
+
 		skeletonCheckout = [];
 		fullCheckout     = [];
-		
+
 		q.asArray.do{ |oneq|
-			
+
 			subfolders = oneq.path.split($/);
-			
+
 			fullCheckout = fullCheckout ++ [oneq.path.escapeChar($ )];
 			subfolders.pop; // The final entry is the folder whose entire contents we want
-			
+
 			pathSoFar = ".";
 			skeletonCheckout = skeletonCheckout ++ subfolders.collect{ |element, index|
 				pathSoFar = pathSoFar ++ "/" ++ element
@@ -97,7 +97,7 @@ QuarkSVNRepository
 		} ++ ["update", fullCheckout.collect(_.asSymbol).as(OrderedIdentitySet).collectAs((_.asString), Array)];
 		this.svnMulti(localRoot, sync, *args);
 	}
-	
+
 	// check if the quarks directory is checked out yet
 	checkDir {
 		var dir;
@@ -124,21 +124,21 @@ QuarkSVNRepository
 		if (svnpath.isNil) {
 			"\n\tSince SVN not installed, you cannot checkout Quarks. ".postln.halt;
 		};
-		
+
 		// If there's no svn metadata then either there's nothing there at all or there's a non-svn thing in the way
 		if (  File.exists(local.path ++ "/.svn").not) {
 			if( File.exists(local.path).not ) {
 				// Main folder doesn't exist at all, simply check it out
-				this.svnMulti(".", forceSync, 
-					"checkout", ["--non-recursive", this.url, local.path.select{|c| (c != $\\)}.escapeChar($ )], 
+				this.svnMulti(".", forceSync,
+					"checkout", ["--non-recursive", this.url, local.path.select{|c| (c != $\\)}.escapeChar($ )],
 					// and then do the directory update:
 					"update", [local.path.select{|c| (c != $\\)}.escapeChar($ ) +/+ "DIRECTORY"]
 					);
 			}{
-				Post 
-				<< "\n\tCurrent Quarks are not SVN. Delete the directories \n\t\t " 
+				Post
+				<< "\n\tCurrent Quarks are not SVN. Delete the directories \n\t\t "
 				<< local.path << "\n\tand\n\t\t"
-				<< Platform.userExtensionDir << "/quarks\n" 
+				<< Platform.userExtensionDir << "/quarks\n"
 				<< "\tand recompile before checking out quarks";
 				nil.halt;
 			};
@@ -152,9 +152,9 @@ QuarkSVNRepository
 			this.checkoutDirectory; // ensures that the main folder exists
 			this.svn("update",local.path.escapeChar($ ));
 		}{
-			// The "checkout" method can do the updating of individual quarks for us 
+			// The "checkout" method can do the updating of individual quarks for us
 			this.checkout(local.quarks, local.path);
-		}; 
+		};
 	}
 	// load all specification quark objects from DIRECTORY
 	// they may or may not be locally checked out
@@ -172,7 +172,7 @@ QuarkSVNRepository
 		});
 		^matches.sort({ |a,b| a.version > b.version }).first
 	}
-	
+
 	// Can perform multiple svn commands in one call.
 	// Call it with [cmd, args, cmd, args] pairs - e.g. svnMulti(....   "co", ["--quiet", "/some/repo"], "up", ["~/my/repo"]).
 	// "forceSync" is whether or not to force to run in sync (on OSX we like to do it async to avoid certificate-pain)
@@ -189,7 +189,7 @@ QuarkSVNRepository
 		"".debug;
 		cmd.debug;
 		"".debug;
-		
+
 		if(forceSync.not and: {thisProcess.platform.name == \osx}){
 			// asynchronous but user-friendly execution - on OSX we
 			// run it in a terminal window to minimise the risk of people getting stuck without a certificate
@@ -218,7 +218,7 @@ QuarkSVNRepository
 	svnSync { | cmd ... args |
 		^this.svnMulti(".", true, cmd, args);
 	}
-		
+
 	// just post
 	svnp { |cmd ... args|
 		cmd = ("svn" + cmd + args.join(" "));

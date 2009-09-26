@@ -66,11 +66,11 @@ inline float64 OSCdouble(char* inData)
 	return slot.f;
 }
 
-struct sc_msg_iter 
+struct sc_msg_iter
 {
 	char *data, *rdpos, *endpos, *tags;
 	int size, count;
-	
+
 	sc_msg_iter();
 	sc_msg_iter(int inSize, char* inData);
 	void init(int inSize, char* inData);
@@ -83,7 +83,7 @@ struct sc_msg_iter
 	void getb(char* outData, size_t inSize);
 	void skipb();
 	int remain() { return endpos - rdpos; }
-        
+
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
 };
 

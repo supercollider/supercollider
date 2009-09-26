@@ -147,7 +147,7 @@ ServerErrorGui : ObjectGui {
 				nil.handleError(error);
 			};
 		});
-		
+
 		//layout.removeOnClose(this);
 	}
 

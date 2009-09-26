@@ -105,8 +105,8 @@
 
 class SCCocoaTextView : public SCView
 {
-public:	
-	SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCCocoaTextView();
 	virtual void makeFocus(bool focus);
 	virtual void setBounds(SCRect inBounds);
@@ -114,20 +114,20 @@ public:
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	virtual void keyUp(int character, int modifiers, unsigned short keycode);
-		
+
 	SCTextView* getTextView(){return mTextView;};
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual void setVisibleFromParent();
 	void setLoadLinkInView(bool flag){mLoadLinkInView = flag;};
 	bool getLoadLinkInView(){return mLoadLinkInView;};
-	
+
 	int open(NSString *path);
 	NSURL* getLastURL() {return mLastURL;};
 	bool linkAction(NSString *path);
-	
+
 	virtual NSView* focusResponder() { return mTextView; }
-	
+
 protected:
 	SCTextView *mTextView;
 	NSScrollView *mScrollView;
@@ -138,8 +138,8 @@ protected:
 
 class SCMovieView : public SCView
 {
-public:	
-	SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCMovieView();
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -152,14 +152,14 @@ protected:
 	/* QT */
 	TimeBase mTimeBase;
 	TimeRecord mTimeRecord;
-	Movie mMovie;	
+	Movie mMovie;
 };
 
 //class SCTextField : public SCStaticText
 class SCTextField : public SCView
 {
-public:	
-	SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCTextField();
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -181,14 +181,14 @@ protected:
 	SCTextFieldResponder *mTextField;
     SCColor mBoxColor;
 	//SCTextFieldResponder *mCocoaToLangAction;
-	
+
 	SCColor mStringColor;
 };
 
 class SCNumberBox2 : public SCTextField
 {
-public:	
-	SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCNumberBox2();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -204,8 +204,8 @@ public:
 
 class SCQuartzComposerView : public SCView
 {
-public:	
-	SCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+public:
+	SCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 	virtual ~SCQuartzComposerView();
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
@@ -214,15 +214,15 @@ public:
 	virtual int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type);
 	virtual void setVisibleFromParent();
 	virtual NSView* focusResponder() { return mQCView; }
-	
+
 protected:
 	QCView *mQCView;
 };
 
 class SCLevelIndicator : public SCView
 	{
-	public:	
-		SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds); 
+	public:
+		SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 		virtual ~SCLevelIndicator();
 		virtual void setBounds(SCRect inBounds);
 		void setImage();
@@ -233,7 +233,7 @@ class SCLevelIndicator : public SCView
 		void tabPrevFocus();
 		void tabNextFocus();
 		virtual NSView* focusResponder() { return mLevelIndicator; }
-		
+
 	protected:
 		SCNSLevelIndicator *mLevelIndicator;
 		NSImage *mImage;

@@ -25,12 +25,12 @@
 
 void *alloca(unsigned long size);
 
-void *alloca(unsigned long size) 
+void *alloca(unsigned long size)
 {
 	void *ptr;
 	// called only in yyparse in rare circumstance
 	// lifetime: kill after compile
-	ptr = (void*)pyr_pool_compile->Alloc(size);  
+	ptr = (void*)pyr_pool_compile->Alloc(size);
 	MEMFAIL(ptr);
 	return ptr;
 }

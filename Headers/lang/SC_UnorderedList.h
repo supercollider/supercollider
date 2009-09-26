@@ -23,30 +23,30 @@
 #define _SC_UnorderedList_
 
 template <class T, int kMaxItems>
-class SC_UnorderedList 
+class SC_UnorderedList
 {
     T* mList[kMaxItems];
     unsigned int mSize;
 public:
     SC_UnorderedList() : mSize(0) {}
-    
+
     unsigned int Size() const { return mSize; }
-    Synth* GetAt(unsigned int inIndex) 
+    Synth* GetAt(unsigned int inIndex)
     {
         if (inIndex >= mSize) return 0;
         return mList[inIndex];
     }
-    
-    void Add(T *inItem) 
+
+    void Add(T *inItem)
     {
         if (mSize < kMaxItems) {
-            mList[mSize] = inItem; 
+            mList[mSize] = inItem;
             SetListIndex(inItem, mSize++);
         }
     }
-    
-    void Remove(T *inItem) 
-    { 
+
+    void Remove(T *inItem)
+    {
         --mSize;
         unsigned int index = GetListIndex(inItem);
         if (index < mSize) {

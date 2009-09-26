@@ -24,7 +24,7 @@ CocoaGUI {
 	*doesNotUnderstand { arg selector ... args;
 		^extraClasses.perform( selector, *args );
 	}
-	
+
 	///////////////// Common -> GUI /////////////////
 
 	*freqScope { ^SCFreqScopeWindow }
@@ -66,29 +66,29 @@ CocoaGUI {
 	*ezListView { ^EZListView }
 	*ezPopUpMenu { ^EZPopUpMenu}
 	*ezNumber { ^EZNumber}
-	*ezRanger { ^EZRanger }		
+	*ezRanger { ^EZRanger }
 	*menuItem { ^CocoaMenuItem }
 	*levelIndicator { ^SCLevelIndicator }
-	
+
 	*knob { ^SCKnob }
 
 	*font { ^SCFont }
 	*pen { ^SCPen }
-			
+
 	///////////////// Common -> Audio /////////////////
 
 	*mouseX { ^MouseX }
 	*mouseY { ^MouseY }
 	*mouseButton { ^MouseButton }
 	*keyState { ^KeyState }
-			
+
 	///////////////// Common -> OSX /////////////////
 
 	*dialog { ^CocoaDialog }
 	*speech { ^Speech }
 
 	///////////////// extras /////////////////
-			
+
 //	checkBox: SCCheckBox,
 //	tabbedPane: SCTabbedPane
 

@@ -3,14 +3,14 @@
 // andreavalle
 
 DocParser {
-	
+
 	var <>targetClass ;
 	var <classMethodList, <instMethodList, <getters, <setters ;
 	var <file, <source ;
-	
-	
+
+
 	*new {  arg class ;
-		^super.new.initDocParser(class) ; 
+		^super.new.initDocParser(class) ;
 	}
 
 	initDocParser { arg aClass ;
@@ -24,43 +24,43 @@ DocParser {
 		instMethodList = targetClass.methods ;
 		instMethodList = instMethodList ? [] ;
 		setters = instMethodList.reject({ arg item ; item.name.asString.includes($_).not }) ;
-		getters = instMethodList.select({ arg item ; 
+		getters = instMethodList.select({ arg item ;
 			instVarNames.includes(item.name) }) ;
 		setters = setters ? [] ; getters = getters ? [] ;
-		instMethodList = instMethodList.reject({ arg item ; 
+		instMethodList = instMethodList.reject({ arg item ;
 			 getters.includes(item) || setters.includes(item) }) ;
 		^this
 	}
-	
+
 	createCmIndices {
 		var cmIndices = [] ;
-		classMethodList.do({ arg method ; 
+		classMethodList.do({ arg method ;
 			cmIndices = cmIndices.add(method.charPos)
 		}) ;
 		^cmIndices
 	}
-	
+
 	createImIndices {
 		var imIndices = [] ;
-		instMethodList.do({ arg method ; 
+		instMethodList.do({ arg method ;
 			imIndices = imIndices.add(method.charPos)
 		}) ;
 		^imIndices
 	}
-	
-	
+
+
 	createGetSetIndices {
 		var getSetIndices = [] ;
-		getters.do({ arg method ; 
+		getters.do({ arg method ;
 			getSetIndices = getSetIndices.add(method.charPos)
 		}) ;
-		setters.do({ arg method ; 
+		setters.do({ arg method ;
 			getSetIndices = getSetIndices.add(method.charPos)
 		}) ;
 		^getSetIndices = getSetIndices.sort ;
 
 	}
-	
+
 	getDocs {
 		var imIndices = this.createImIndices ;
 		var cmIndices = this.createCmIndices ;
@@ -68,7 +68,7 @@ DocParser {
 		var total ;
 		var imDict = IdentityDictionary.new ;
 		var cmDict = IdentityDictionary.new ;
-		var classDoc ; 
+		var classDoc ;
 		cmIndices = cmIndices.add(imIndices[0]) ;
 		imIndices =imIndices.add(source.size) ;
 		classMethodList.do({ arg method, i ;
@@ -82,30 +82,30 @@ DocParser {
 			)
 		}) ;
 		total = getSetIndices.addAll(cmIndices).addAll(imIndices).sort ;
-		classDoc = this.getClassDoc(total[0]) ;		
+		classDoc = this.getClassDoc(total[0]) ;
 		^[classDoc, cmDict, imDict]
 	}
-	
+
 	getMethodDoc { arg method, start, stop ;
  		var block = source[start..stop] ;
  		var begin = block.find("/*@") ;
  		var end ;
  		if (begin.notNil, {
- 			 end  = block.find("@*/") ; 
+ 			 end  = block.find("@*/") ;
  			 ^block[begin+3..end-1] ;
  		 }, {^""})
-		
+
 	}
 
 	getClassDoc { arg start ;
  		var begin = source.find("/*@") ;
  		var end ;
  		if (begin < start, {
- 			 end  = source.find("@*/") ; 
+ 			 end  = source.find("@*/") ;
  			 ^source[begin+3..end-1] ;
  		 }, {^""})
-		
-		
+
+
 	}
 
 }

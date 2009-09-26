@@ -28,7 +28,7 @@
 #include <string.h>
 
 template <class T>
-class SC_IOStream 
+class SC_IOStream
 {
 protected:
     T s;
@@ -38,32 +38,32 @@ public:
 
     void SetStream(T inStream) { s = inStream; }
     T GetStream() { return s; }
-    
+
     // core routines
     void readData(char *data, int size);
     uint8 readUInt8();
 
     void writeData(char *data, int size);
     void writeUInt8(uint8 inInt);
- 
+
     // built using core routines
     void writeInt8(int8 inInt)
     {
         writeUInt8((uint8)inInt);
     }
-    
+
     void writeInt16_be(int16 inInt)
     {
         writeUInt8((uint8)(inInt >> 8));
         writeUInt8(inInt);
     }
-    
+
     void writeInt16_le(int16 inInt)
     {
         writeUInt8((uint8)inInt);
         writeUInt8((uint8)(inInt >> 8));
     }
-    
+
     void writeInt32_be(int32 inInt)
     {
         writeUInt8((uint8)(inInt >> 24));
@@ -71,7 +71,7 @@ public:
         writeUInt8((uint8)(inInt >> 8));
         writeUInt8((uint8)inInt);
     }
-    
+
     void writeInt32_le(int32 inInt)
     {
         writeUInt8((uint8)inInt);
@@ -162,21 +162,21 @@ public:
     {
         return (int8)readUInt8();
     }
-    
+
     int16 readInt16_be()
     {
         uint8 a = readUInt8();
         uint8 b = readUInt8();
         return (int16)((a << 8) | b);
     }
-    
+
     int16 readInt16_le()
     {
         uint8 a = readUInt8();
         uint8 b = readUInt8();
         return (int16)((b << 8) | a);
     }
-    
+
     int32 readInt32_be()
     {
         uint8 a = readUInt8();
@@ -185,7 +185,7 @@ public:
         uint8 d = readUInt8();
         return (int32)((a << 24) | (b << 16) | (c << 8) | d);
     }
-    
+
     int32 readInt32_le()
     {
         uint8 a = readUInt8();
@@ -271,7 +271,7 @@ public:
         u.c[0] = readUInt8();
         return u.f;
     }
-    
+
     void readSymbol(char *outString)
     {
             int length = readUInt8();

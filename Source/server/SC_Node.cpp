@@ -43,13 +43,13 @@ int Node_New(World *inWorld, NodeDef *def, int32 inID, Node** outNode)
 			return kSCErr_ReservedNodeID;
 		}
 	}
-	
+
 	if (World_GetNode(inWorld, inID)) {
 		return kSCErr_DuplicateNodeID;
 	}
-	
+
 	Node* node = (Node*)World_Alloc(inWorld, def->mAllocSize);
-	
+
 	node->mWorld = inWorld;
 	node->mDef = def;
 	node->mParent = 0;
@@ -63,11 +63,11 @@ int Node_New(World *inWorld, NodeDef *def, int32 inID, Node** outNode)
 		World_Free(inWorld, node);
 		return kSCErr_TooManyNodes;
     }
-	
+
 	inWorld->hw->mRecentID = inID;
-	
+
 	*outNode = node;
-	
+
 	return kSCErr_None;
 }
 
@@ -82,16 +82,16 @@ void Node_Dtor(Node *inNode)
 }
 
 // remove a node from a group
-void Node_Remove(Node* s) 
+void Node_Remove(Node* s)
 {
     Group *group = s->mParent;
 
     if (s->mPrev) s->mPrev->mNext = s->mNext;
     else if (group) group->mHead = s->mNext;
-    
+
     if (s->mNext) s->mNext->mPrev = s->mPrev;
     else if (group) group->mTail = s->mPrev;
-    
+
     s->mPrev = s->mNext = 0;
     s->mParent = 0;
 }
@@ -106,50 +106,50 @@ void Node_Delete(Node* inNode)
 }
 
 // add a node after another one
-void Node_AddAfter(Node* s, Node *afterThisOne) 
+void Node_AddAfter(Node* s, Node *afterThisOne)
 {
 	if (!afterThisOne->mParent || s->mID == 0) return; // failed
 
 	s->mParent = afterThisOne->mParent;
 	s->mPrev = afterThisOne;
 	s->mNext = afterThisOne->mNext;
-	
+
 	if (afterThisOne->mNext) afterThisOne->mNext->mPrev = s;
 	else s->mParent->mTail = s;
 	afterThisOne->mNext = s;
 }
 
 // add a node before another one
-void Node_AddBefore(Node* s, Node *beforeThisOne) 
+void Node_AddBefore(Node* s, Node *beforeThisOne)
 {
 	if (!beforeThisOne->mParent || s->mID == 0) return; // failed
-	
+
 	s->mParent = beforeThisOne->mParent;
 	s->mPrev = beforeThisOne->mPrev;
 	s->mNext = beforeThisOne;
-	
+
 	if (beforeThisOne->mPrev) beforeThisOne->mPrev->mNext = s;
 	else s->mParent->mHead = s;
 	beforeThisOne->mPrev = s;
 }
 
-void Node_Replace(Node* s, Node *replaceThisOne) 
+void Node_Replace(Node* s, Node *replaceThisOne)
 {
 	//scprintf("->Node_Replace\n");
 	Group *group = replaceThisOne->mParent;
 	if (!group) return; // failed
 	if (s->mID == 0) return;
-	
+
 	s->mParent = group;
 	s->mPrev = replaceThisOne->mPrev;
 	s->mNext = replaceThisOne->mNext;
-	
+
 	if (s->mPrev) s->mPrev->mNext = s;
 	else group->mHead = s;
-	
+
 	if (s->mNext) s->mNext->mPrev = s;
 	else group->mTail = s;
-	
+
     replaceThisOne->mPrev = replaceThisOne->mNext = 0;
     replaceThisOne->mParent = 0;
 
@@ -298,7 +298,7 @@ void Node_SendReply(Node* inNode, int replyID, const char* cmdName, int numArgs,
 	void* mem = World_Alloc(world, cmdNameSize + numArgs*sizeof(float));
 	if (mem == 0)
 		return;
-	
+
 	NodeReplyMsg msg;
 	msg.mWorld = world;
 	msg.mNodeID = inNode->mID;
@@ -324,7 +324,7 @@ void Node_SendReply(Node* inNode, int replyID, const char* cmdName, float value)
 void Node_StateMsg(Node* inNode, int inState)
 {
 	if (inNode->mID < 0 && inState != kNode_Info) return; // no notification for negative IDs
-	
+
 	World *world = inNode->mWorld;
 	if (!world->mRealTime) return;
 
@@ -352,7 +352,7 @@ void Node_StateMsg(Node* inNode, int inState)
 
 void Unit_DoneAction(int doneAction, Unit *unit)
 {
-	switch (doneAction) 
+	switch (doneAction)
 	{
 		case 1 :
 			Node_SetRun(&unit->mParent->mNode, 0);
@@ -366,13 +366,13 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			Node* prev = unit->mParent->mNode.mPrev;
 			if (prev) Node_End(prev);
 		} break;
-		case 4 : 
+		case 4 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* next = unit->mParent->mNode.mNext;
 			if (next) Node_End(next);
 		} break;
-		case 5 : 
+		case 5 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* prev = unit->mParent->mNode.mPrev;
@@ -380,7 +380,7 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			if (prev && prev->mIsGroup) Group_DeleteAll((Group*)prev);
 			else Node_End(prev);
 		} break;
-		case 6 : 
+		case 6 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* next = unit->mParent->mNode.mNext;
@@ -388,16 +388,16 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			if (next->mIsGroup) Group_DeleteAll((Group*)next);
 			else Node_End(next);
 		} break;
-		case 7 : 
+		case 7 :
 		{
 			Node* node = &unit->mParent->mNode;
 			while (node) {
 				Node *prev = node->mPrev;
 				Node_End(node);
 				node = prev;
-			}				
+			}
 		} break;
-		case 8 : 
+		case 8 :
 		{
 			Node* node = &unit->mParent->mNode;
 			while (node) {
@@ -412,13 +412,13 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			Node* prev = unit->mParent->mNode.mPrev;
 			if (prev) Node_SetRun(prev, 0);
 		} break;
-		case 10 : 
+		case 10 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* next = unit->mParent->mNode.mNext;
 			if (next) Node_SetRun(next, 0);
 		} break;
-		case 11 : 
+		case 11 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* prev = unit->mParent->mNode.mPrev;
@@ -426,7 +426,7 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			if (prev->mIsGroup) Group_DeepFreeGraphs((Group*)prev);
 			else Node_End(prev);
 		} break;
-		case 12 : 
+		case 12 :
 		{
 			Node_End(&unit->mParent->mNode);
 			Node* next = unit->mParent->mNode.mNext;
@@ -434,7 +434,7 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 			if (next->mIsGroup) Group_DeepFreeGraphs((Group*)next);
 			else Node_End(next);
 		} break;
-		case 13 : 
+		case 13 :
 		{
 			Node* node = unit->mParent->mNode.mParent->mHead;
 			while (node) {
@@ -443,7 +443,7 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 				node = next;
 			}
 		} break;
-		case 14 : 
+		case 14 :
 			Node_End(&unit->mParent->mNode.mParent->mNode);
 			break;
 	}

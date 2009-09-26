@@ -34,7 +34,7 @@
 - (void)windowWillClose:(NSNotification *)aNotification;
 - (void)setSCObject: (struct PyrObject*)inObject;
 - (struct PyrObject*) getSCObject;
-    
+
 - (IBAction) panelAction: (id) sender;
 
 @end

@@ -29,7 +29,7 @@
 
 ////////////////////////////////////////////////////////////////////////
 
-// replacement for calloc. 
+// replacement for calloc.
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
 void* zalloc(size_t n, size_t size);
 

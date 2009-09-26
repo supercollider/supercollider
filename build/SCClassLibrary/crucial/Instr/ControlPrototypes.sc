@@ -1,16 +1,16 @@
 
 ControlPrototypes {
-	
+
 	classvar <registery;
-	
+
 	*initClass {
 		registery=IdentityDictionary.new;
 	}
-	
+
 	*define { arg ... assns;
 		registery.addAll(assns);
 	}
-	
+
 	*at { arg key,spec; // returns a list of possibles
 		^registery.at(key).value(key,spec) // could/should be a function to create list of possibles
 	}
@@ -28,7 +28,7 @@ ControlPrototypes {
 	*firstAt { arg argName,spec;
 		var func,proto;
 		func=registery.at(argName);
-		^if(func.notNil,{ 
+		^if(func.notNil,{
 			proto=func.value(argName,spec).first;
 			// could wipe out any data we set for it
 			//proto.tryPerform('spec_',spec);
@@ -38,11 +38,11 @@ ControlPrototypes {
 			nil
 		})
 	}
-	
+
 	*chooseAt { arg argName,spec;
 		var func;
 		func=registery.at(argName);
-		^if(func.notNil,{ 
+		^if(func.notNil,{
 			func.value(argName,spec).choose
 			//proto.tryPerform('spec_',spec);
 			//proto.tryPerform('value_',spec.default);
@@ -60,7 +60,7 @@ ControlPrototypes {
 					// by the class of the spec
 					?? {this.chooseAt(spec.class,spec)}
 					?? {spec.defaultControl}
-				)	
+				)
 	}
 	*listForSpec { arg argName,spec;
 		var try,class,specname;
@@ -72,7 +72,7 @@ ControlPrototypes {
 			try = this.at(specname,spec);
 			if(try.notNil, { ^try });
 		});
-		
+
 		class = spec.class;
 
 		while({

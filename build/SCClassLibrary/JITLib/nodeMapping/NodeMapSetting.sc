@@ -1,10 +1,10 @@
 NodeMapSetting {
 	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false, <>mappedRate;
-	
+
 	*new { arg key, value, busNumChannels;
 		^super.newCopyArgs(key, value, busNumChannels)
 	}
-	
+
 	map { arg index;
 		value = index;
 		isMultiChannel = false;
@@ -33,7 +33,7 @@ NodeMapSetting {
 	getValue { // unmapped, single channel only
 		^if(this.isMapped.not and: { this.isMultiChannel.not }) { value } { nil }
 	}
-		
+
 	updateNodeMap { arg nodeMap;
 		if(isMapped) {
 			if(this.isNeutral) { nodeMap.upToDate = false; ^this }; // ignore setting
@@ -45,7 +45,7 @@ NodeMapSetting {
 					nodeMap.mapnArgs = nodeMap.mapnArgs.addAll([key, this.index, busNumChannels])
 				}
 			}{
-				if(mappedRate === \audio) {	
+				if(mappedRate === \audio) {
 					nodeMap.mapaArgs = nodeMap.mapaArgs.addAll([key, this.index]);
 				} {
 					nodeMap.mapArgs = nodeMap.mapArgs.addAll([key, this.index]);
@@ -61,16 +61,16 @@ NodeMapSetting {
 			};
 		}
 	}
-	
+
 	copy {
 		^this.class.new(key, value, busNumChannels)
 	}
-	
+
 	isEmpty { ^value.isNil }
 	index { ^value }
 	isNeutral { ^false }
 	updateBusNumChannels {}
-	
+
 	storeArgs { ^[value, busNumChannels] }
 
 	printOn { arg stream;
@@ -81,7 +81,7 @@ NodeMapSetting {
 
 ProxyNodeMapSetting : NodeMapSetting {
 	var <>rate; // rate is the synthDef "rate" arg, value is a proxy !
-	
+
 	index { ^value.index }
 	isEmpty {
 		^value.isNil and: { rate.isNil }
@@ -101,12 +101,12 @@ ProxyNodeMapSetting : NodeMapSetting {
 		isMapped = true;
 		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
 	}
-	
+
 	isNeutral { ^value.isNeutral }
 	storeArgs { ^[value, busNumChannels, rate] }
-	updateBusNumChannels { 
-		if(isMultiChannel and: { busNumChannels.isNil }) { 
-			busNumChannels = value.numChannels; 
+	updateBusNumChannels {
+		if(isMultiChannel and: { busNumChannels.isNil }) {
+			busNumChannels = value.numChannels;
 		};
 	}
 

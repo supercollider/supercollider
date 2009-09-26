@@ -152,7 +152,7 @@
 ;; font-lock support
 ;; =====================================================================
 
-(defvar sclang-font-lock-keyword-list 
+(defvar sclang-font-lock-keyword-list
   '(
     "arg"
     "classvar"
@@ -494,7 +494,7 @@ Returns the column to indent to."
 (defun sclang-make-document ()
   (sclang-perform-command-no-result 'documentNew sclang-document-id)
   (sclang-document-update-properties t))
-  
+
 (defun sclang-close-document (buffer)
   (with-sclang-document
    buffer

@@ -1,6 +1,6 @@
 
 HasSubject : AbstractPlayer {
-	
+
 	var <>subject;
 
 	*new { arg subject=0.0;
@@ -9,26 +9,26 @@ HasSubject : AbstractPlayer {
 	storeArgs { ^[subject] }
 
 	ar { ^subject.ar }
-	
+
 	children { ^this.inputs }
 	inputs { ^[subject] }
-	
+
 	numChannels { ^subject.tryPerform(\numChannels) ? 1 }
 	guiClass { ^HasSubjectGui }
 }
 
-AbstractPlayerEffect : HasSubject { 
+AbstractPlayerEffect : HasSubject {
 	// has two groups so the subject and effect can both respawn at will
 
 	var <subjectGroup,<effectGroup;
-	
+
 	makeResourcesToBundle { arg bundle;
 		//move to children make patch out ?
 		subjectGroup = Group.basicNew;
 		this.annotate(subjectGroup,"subjectGroup");
 		effectGroup = Group.basicNew;
 		this.annotate(effectGroup,"effectGroup");
-	
+
 		NodeWatcher.register(subjectGroup);
 		NodeWatcher.register(effectGroup);
 
@@ -42,7 +42,7 @@ AbstractPlayerEffect : HasSubject {
 		effectGroup.freeToBundle(bundle);
 		subjectGroup = effectGroup = nil;
 	}
-	
+
 	spawnToBundle { arg bundle;
 		this.children.do({ arg child;
 			child.spawnToBundle(bundle);
@@ -57,7 +57,7 @@ AbstractPlayerEffect : HasSubject {
 	}
 	preparePlayer { arg player,bus;
 		//if(this.bus != bus,{ "Buses are different !".warn; });
-		^player.prepareForPlay(subjectGroup,true,bus);	
+		^player.prepareForPlay(subjectGroup,true,bus);
 	}
 }
 

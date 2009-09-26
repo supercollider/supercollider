@@ -2,7 +2,7 @@
 	File:		Error Handler.c
 
 	Contains:	Implementation of the HID utility error handlers for the HID Utilities
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -51,7 +51,7 @@
 	#ifdef kVerboseErrors
 		#include <Carbon/Carbon.h>
 	#endif
-#endif // not kBuildingLibrary 
+#endif // not kBuildingLibrary
 
 #include <stdio.h>
 
@@ -73,8 +73,8 @@
 void HIDReportErrorNum (char * strError, long numError)
 {
 	char errMsgCStr [256];
-	
-	sprintf (errMsgCStr, "%s #%ld (0x%lx)", strError, numError, numError); 
+
+	sprintf (errMsgCStr, "%s #%ld (0x%lx)", strError, numError, numError);
 
 	// out as debug string
 #ifdef kVerboseErrors
@@ -92,7 +92,7 @@ void HIDReportError (char * strError)
 {
 	char errMsgCStr [256];
 
-	sprintf (errMsgCStr, "%s", strError); 
+	sprintf (errMsgCStr, "%s", strError);
 
 	// out as debug string
 #ifdef kVerboseErrors

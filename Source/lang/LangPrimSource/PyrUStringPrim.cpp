@@ -4,7 +4,7 @@
 	http://www.audiosynth.com
 
 	Primitives for regular expression search by Florian Schmidt, adapted to ICU by Jan Trutzschler
-	
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -57,7 +57,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2; // source string
 	PyrSlot *b = g->sp - 1; // pattern
 	PyrSlot *c = g->sp;     // offset
-		
+
 	if (!isKindOfSlot(b, class_string) || (c->utag != tagInt)) return errWrongType;
 //	post("prString_FindRegexp\n");
 	int maxfind = MAXREGEXFIND;
@@ -77,10 +77,10 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	UErrorCode status = (UErrorCode)0;
 	UChar *regexStr;
 	UChar *ustring;
-	
+
 	regexStr =  (UChar*)malloc((patternsize)*sizeof(UChar));
 	u_charsToUChars (pattern, regexStr, patternsize);
-	
+
 	ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
 	u_charsToUChars (string+offset, ustring, stringsize-offset);
 
@@ -90,10 +90,10 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	SCRegExRegion * what;
 	int indx = 0;
 	int size = 0;
-		
+
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
 	if(U_FAILURE(status)) goto nilout;
-	
+
 	 if(!U_FAILURE(status)) {
 		uregex_setText(expression, ustring, -1, &status);
 		what =  (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
@@ -122,7 +122,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				if(U_FAILURE(status)) goto nilout;
 			}
 		}
-		
+
 		PyrObject *result_array = newPyrArray(g->gc, size, 0, true);
 		result_array->size = 0;
 
@@ -138,7 +138,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				else
 				{
 					result_array->size++;
-	
+
 					int match_start =  what[i].start;
 					int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
@@ -150,11 +150,11 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 					PyrObject *array = newPyrArray(g->gc, 2, 0, true);
 					array->size = 2;
 					SetInt(array->slots, match_start + offset);
-	
+
 					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
 					SetObject(array->slots+1, matched_string);
 					g->gc->GCWrite(matched_string, array->slots + 1);
-	
+
 					SetObject(result_array->slots + i, array);
 					g->gc->GCWrite(array, result_array->slots + i);
 				}
@@ -167,12 +167,12 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		 free(what);
 		 free(pattern);
 		 free(regexStr);
-		 free(ustring);	
+		 free(ustring);
 		 free(string);
 		SetObject(a, result_array);
 		g->gc->GCWrite(result_array,a);
 		//uregex_close(expression);
-		return errNone;	
+		return errNone;
 	}
 
 		nilout:
@@ -190,7 +190,7 @@ void initUStringPrimitives()
 {
 	int base, index = 0;
 	base = nextPrimitiveIndex();
-	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);	
+	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 }
 
 #else // !SC_DARWIN

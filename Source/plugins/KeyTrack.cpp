@@ -2,36 +2,36 @@
 	SuperCollider real time audio synthesis system
  Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
- 
+
 //Nick Collins 20 Feb 2006
 //revision of algorithm 22 Nov 2007
 
-//Key tracker using weights of FFT bins. 
+//Key tracker using weights of FFT bins.
 
 #include "ML.h"
 #include "FFT_UGens.h"
 
 //hard coded FFT size
-#define N 4096  
-#define NOVER2 2048 
+#define N 4096
+#define NOVER2 2048
 
-//CONVERT TO m_frameperiod to cope with different sampling rates? 
-#define FRAMEPERIOD 0.046439909297052	
+//CONVERT TO m_frameperiod to cope with different sampling rates?
+#define FRAMEPERIOD 0.046439909297052
 
 //weighting parameters
 
@@ -62,53 +62,53 @@ void KeyTrack_calculatekey(KeyTrack *, uint32);
 void KeyTrack_Ctor(KeyTrack* unit) {
 	int j;
 
-	unit->m_srate = unit->mWorld->mFullRate.mSampleRate; 
-	
+	unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
+
 	//if sample rate is 88200 or 96000, assume taking double size FFT to start with
-	if(unit->m_srate > (44100.0*1.5)) unit->m_srate = unit->m_srate*0.5; 
-	
-	if(((int)(unit->m_srate+0.01))==44100) 
+	if(unit->m_srate > (44100.0*1.5)) unit->m_srate = unit->m_srate*0.5;
+
+	if(((int)(unit->m_srate+0.01))==44100)
 	{
 	unit->m_weights = g_weights44100;
 	unit->m_bins = g_bins44100;
-	unit->m_frameperiod = 0.046439909297052; 
-	} 
-	else  //else 48000; potentially dangerous if it isn't! Fortunately, shouldn't write any data to unknown memory 
+	unit->m_frameperiod = 0.046439909297052;
+	}
+	else  //else 48000; potentially dangerous if it isn't! Fortunately, shouldn't write any data to unknown memory
 	{
 	unit->m_weights = g_weights48000;
 	unit->m_bins = g_bins48000;
-	unit->m_frameperiod = 0.042666666666667; 
+	unit->m_frameperiod = 0.042666666666667;
 	}
-	
+
 	//only need space for half!
 	unit->m_FFTBuf = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
-	
-	//zero chroma 
+
+	//zero chroma
 	for(j=0;j<12;++j) {
 		unit->m_chroma[j]=0.0;
 	}
-	
+
 	for(j=0;j<24;++j) {
 		unit->m_key[j]=0.0;
 		unit->m_histogram[j]=0.0;
 	}
-	
-	
+
+
 	//for(j=0;j<60;++j) {
 //		unit->m_leaknote[j]=0.0;
 //	}
-	
+
 //	for(j=0;j<360;++j) {
 //		unit->m_prevphase[j]=0.0;
 //	}
-	
+
 	//triggers
 	//unit->m_triggerid=(int)ZIN0(1);
-	
+
 	unit->m_currentKey=0;
-	
+
 	//unit->m_frame=0;
-	
+
 	unit->mCalcFunc = (UnitCalcFunc)&KeyTrack_next;
 }
 
@@ -116,8 +116,8 @@ void KeyTrack_Ctor(KeyTrack* unit) {
 
 void KeyTrack_Dtor(KeyTrack *unit)
 {
-	
-	RTFree(unit->mWorld, unit->m_FFTBuf);	
+
+	RTFree(unit->mWorld, unit->m_FFTBuf);
 }
 
 
@@ -125,26 +125,26 @@ void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 {
 
 	//int numSamples = unit->mWorld->mFullRate.mBufLength;
-	
+
 	//float *output = ZOUT(0);
-	
-	float fbufnum = ZIN0(0)+0.001; 
+
+	float fbufnum = ZIN0(0)+0.001;
 
 	//next FFT bufffer ready, update
 	//assuming at this point that buffer precalculated for any resampling
 	if (fbufnum>(-0.01)) {  // && ( ZIN0(3)<0.5)
-	
+
 		//unit->m_frame= unit->m_frame+1;
-		KeyTrack_calculatekey(unit, (uint32)fbufnum); 
+		KeyTrack_calculatekey(unit, (uint32)fbufnum);
 
 	}
-	
-	//always output current best key	
+
+	//always output current best key
 	float outval= unit->m_currentKey;
-	
+
 	//control rate output
 	ZOUT0(0)=outval;
-	
+
 }
 
 
@@ -154,175 +154,175 @@ void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 
 //calculation function once FFT data ready
 void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
-	
+
 	int i,j;
 
-	World *world = unit->mWorld; 
-	if (ibufnum >= world->mNumSndBufs) ibufnum = 0; 
-	SndBuf *buf = world->mSndBufs + ibufnum; 
+	World *world = unit->mWorld;
+	if (ibufnum >= world->mNumSndBufs) ibufnum = 0;
+	SndBuf *buf = world->mSndBufs + ibufnum;
 	int numbins = buf->samples - 2 >> 1;
-	
+
 	//assumed in this representation
 	SCComplexBuf *p = ToComplexApx(buf);
-	
+
 	float * data= buf->data;
 
 	//memcpy(unit->m_FFTBuf, data, NOVER2);
-	
+
 	//to hold powers
-	float * fftbuf= unit->m_FFTBuf; 
-	
-	//get powers for bins 
+	float * fftbuf= unit->m_FFTBuf;
+
+	//get powers for bins
 	//don't need to calculate past half Nyquist, because no indices involved of harmonics above 10000 Hz or so (see index data at top of file)
 	for (i=0; i<NOVER2; i+=2) {
-		//i>>1 is i/2 
-		fftbuf[i>>1] = ((data[i] * data[i]) + (data[i+1] * data[i+1])); 
+		//i>>1 is i/2
+		fftbuf[i>>1] = ((data[i] * data[i]) + (data[i+1] * data[i+1]));
 	}
-		
 
-	float * chroma= unit->m_chroma; 
-	
+
+	float * chroma= unit->m_chroma;
+
 	float sum;
 	int indexbase, index;
-	
+
 	//experimental; added leaky integration on each note; also, only add to sum if harmonic, ie not a transient
-	
-	float * weights = unit->m_weights; 
-	int * bins = unit->m_bins; 
-	
+
+	float * weights = unit->m_weights;
+	int * bins = unit->m_bins;
+
 	float chromaleak= ZIN0(2);
-	
-	//zero for new round (should add leaky integrator here! 
+
+	//zero for new round (should add leaky integrator here!
 	for (i=0;i<12;++i)
-	chroma[i] *= chromaleak; 
-	
+	chroma[i] *= chromaleak;
+
 	for (i=0;i<60;++i) {
-	int chromaindex = (i+9)%12; //starts at A1 up to G#6 
-	
+	int chromaindex = (i+9)%12; //starts at A1 up to G#6
+
 		sum=0.0;
-		
+
 		indexbase= 12*i; //6 partials, 2 of each
-		
+
 		//transient sum, setting up last values too
-		
+
 		float phasesum=0.0;
-		
+
 		for(j=0;j<12;++j) { //12 if 144 data points
-			
+
 			index=indexbase+j;
-			
+
 			//experimental transient detection code, not reliable
-			//int binindex= unit->m_bins[index]-1; 
-			//SCPolar binnow= p->bin[binindex].ToPolarApx();  
-			//float phaseadvance= (binindex+1)*(TWOPI*0.5); //k * (512/44100) * (44100/1024) //convert bin number to frequency 
+			//int binindex= unit->m_bins[index]-1;
+			//SCPolar binnow= p->bin[binindex].ToPolarApx();
+			//float phaseadvance= (binindex+1)*(TWOPI*0.5); //k * (512/44100) * (44100/1024) //convert bin number to frequency
 			//float power= binnow.mag * binnow.mag; //(p->bin[binindex].real)*(p->bin[binindex].real) + (p->bin[binindex].imag)*(p->bin[binindex].imag); //(p->bin[binindex].mag);
 			//power *= power;
-			
-			//int phaseindex= indexbase+j; 
+
+			//int phaseindex= indexbase+j;
 			//float phasenow= binnow.phase; //0.0; //(p->bin[binindex].phase);
 			//float prevphase = fmod(unit->m_prevphase[index]+phaseadvance,TWOPI);
-			//float a,b,tmp; 
-			//a=phasenow; b=prevphase; 
-			//b=phasenow; a=prevphase; 
-			
-			//if(b<a) {b= b+TWOPI;} 
-			
-			//float phasechange = sc_min(b-a,a+TWOPI-b); //more complicated, need mod 2pi and to know lower and upper  
-			//phasesum+= phasechange; 
+			//float a,b,tmp;
+			//a=phasenow; b=prevphase;
+			//b=phasenow; a=prevphase;
+
+			//if(b<a) {b= b+TWOPI;}
+
+			//float phasechange = sc_min(b-a,a+TWOPI-b); //more complicated, need mod 2pi and to know lower and upper
+			//phasesum+= phasechange;
 			//unit->m_prevphase[index]= phasenow;
-			
+
 			//((p->bin[index-1].mag) * (p->bin[index-1].mag))
-			
+
 			//printf("comparison %f %f \n",fftbuf[g_bins2[index]], power);
-			//sum+= (unit->m_weights[index])* power; 
-			
+			//sum+= (unit->m_weights[index])* power;
+
 			sum+= (weights[index])* (fftbuf[bins[index]]);
 		}
-		
+
 
 		//transient test here too?
-		//if(phasesum>(5*PI)){sum=0.0;} 
-		
-		//if((i>5) && (i<15)) 
+		//if(phasesum>(5*PI)){sum=0.0;}
+
+		//if((i>5) && (i<15))
 		//printf("test phasesum %f \n", phasesum);
-		//unit->m_leaknote[i] = (0.8*unit->m_leaknote[i]) + sum;  
-		
+		//unit->m_leaknote[i] = (0.8*unit->m_leaknote[i]) + sum;
+
 		chroma[chromaindex]+= sum; //unit->m_leaknote[i]; //sum;
-		
+
 	}
-	
-	float* key = unit->m_key; 
-	
+
+	float* key = unit->m_key;
+
 	//major
 	for (i=0;i<12;++i) {
-		
+
 		sum=0.0;
 		for (j=0;j<7;++j) {
 			indexbase=g_major[j];
-			
+
 			index=(i+indexbase)%12;
 			//sum+=(chroma[index]*g_kkmajor[indexbase]);
-			
+
 			sum+=(chroma[index]*g_diatonicmajor[indexbase]);
-			
+
 		}
-		
+
 		key[i]=sum; //10*log10(sum+1);
 	}
-	
+
 	//minor
 	for (i=0;i<12;++i) {
-		
+
 		sum=0.0;
 		for (j=0;j<7;++j) {
 			indexbase=g_minor[j];
-			
+
 			index=(i+indexbase)%12;
 			//sum+=(chroma[index]*g_kkminor[indexbase]);
-			
+
 			sum+=(chroma[index]*g_diatonicminor[indexbase]);
 
 		}
-		
-		key[12+i]=sum; 
+
+		key[12+i]=sum;
 	}
-	
-	float keyleak= ZIN0(1); //fade parameter to 0.01 for histogram in seconds, convert to FFT frames 
-	
+
+	float keyleak= ZIN0(1); //fade parameter to 0.01 for histogram in seconds, convert to FFT frames
+
 	//keyleak in seconds, convert to drop time in FFT hop frames (FRAMEPERIOD)
 	keyleak= sc_max(0.001,keyleak/unit->m_frameperiod); //FRAMEPERIOD;
-	
+
 	//now number of frames, actual leak param is decay exponent to reach 0.01 in x seconds, ie 0.01 = leakparam ** (x/ffthopsize)
 	//0.01 is -40dB
 	keyleak= pow(0.01,(1.0/keyleak));
-	
-	float * histogram= unit->m_histogram; 
-	
+
+	float * histogram= unit->m_histogram;
+
 	int bestkey=0;
 	float bestscore=0.0;
-	
+
 	for (i=0;i<24;++i) {
-		histogram[i]= (keyleak*histogram[i])+key[i]; 
-		
+		histogram[i]= (keyleak*histogram[i])+key[i];
+
 		if(histogram[i]>bestscore) {
 			bestscore=histogram[i];
 			bestkey=i;
 		}
-		
+
 	//printf("%f ",histogram[i]);
-		
+
 	}
-	
+
 	//should find secondbest and only swap if win by a margin
-	
+
 	//printf(" best %d \n\n",bestkey);
 	//what is winning currently? find max in histogram
 	unit->m_currentKey=bestkey;
-	
+
 	//about 5 times per second
 	//if((unit->m_triggerid) && ((unit->m_frame%2==0))) SendTrigger(&unit->mParent->mNode, unit->m_triggerid, bestkey);
-	
-}	
+
+}
 
 
 

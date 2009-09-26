@@ -8,11 +8,11 @@ WiiMoteGUI {
 	// subwindows:
 	var <rm, <nc, <cl;
 
-	*new { |wiimote, w| 
+	*new { |wiimote, w|
 		^super.new.w_(w).wiimote_(wiimote).init;
 	}
-	
-	init { 
+
+	init {
 		var f, xsize, ysize;
 		var ncview, rmview, clview;
 		counter = counter + 1;
@@ -21,12 +21,12 @@ WiiMoteGUI {
 		xsize = 210;
 		ysize = 105+130+10;
 		//		ysize = (10+1) * 34 + 2;
-	
+
 
 		//		labelColor = Color.white.alpha_(0.4);
-		w = w ?? { 
+		w = w ?? {
 			w = GUI.window.new("WiiMote Control", Rect(xposScreen, yposScreen, xsize + 10, ysize)).front;
-			//w.view.background_(Color.black); 
+			//w.view.background_(Color.black);
 			w.view.decorator = FlowLayout(Rect(4, 4, w.bounds.width, w.bounds.height), 2@2, 2@2);
 			w;
 		};
@@ -41,7 +41,7 @@ WiiMoteGUI {
 
 		GUI.staticText.new(w, Rect(0, 0, xsize - 2, 20)).string_("WiiMote" + wiimote.id + wiimote.address )
 			.align_(0);
-		//.background_(labelColor); 
+		//.background_(labelColor);
 
 		rmview = GUI.compositeView.new( w, Rect( 5, 30, 205, 130 ));
 		rm = WiiRemoteGUI.new( rmview, wiimote, 0 ); //30 );
@@ -54,8 +54,8 @@ WiiMoteGUI {
 
 	}
 
-	updateVals { 
-		{ 
+	updateVals {
+		{
 			rm.updateVals;
 			if ( wiimote.ext_type == 1, {
 				nc.updateVals;
@@ -110,7 +110,7 @@ WiiRemoteGUI{
 			buttons[i] = GUI.staticText.new( w, Rect( xpos, ypos, size, 20 ) ).string_( it ).background_(onColor).align_( 0 );
 			xpos = xpos + size + 5;
 		};
-		
+
 		xpos = 5;
 		ypos = ypos + 25;
 
@@ -120,7 +120,7 @@ WiiRemoteGUI{
 		buttons[8] = GUI.staticText.new( w, Rect( xpos, ypos+50, 20, 20 ) ).string_( "v" ).background_(onColor).align_( 0 );
 		xpos = xpos + 25;
 		buttons[10] = GUI.staticText.new( w, Rect( xpos, ypos+25, 20, 20 ) ).string_( "->" ).background_(onColor).align_( 0 );
-		
+
 		xpos = xpos + 25;
 
 		sliders = wiimote.remote_motion.collect{ |it,i|
@@ -151,7 +151,7 @@ WiiRemoteGUI{
 		wiimote.remote_motion.do{ |it,i| sliders[i].value = it };
 		//sliders[3].value = wiimote.remote_motion[3]/3;
 		sliders[4].value = wiimote.battery;
-		wiimote.remote_buttons.do{ |it,i| 
+		wiimote.remote_buttons.do{ |it,i|
 			if ( it == 1 ,
 				{
 					buttons[i].background = onColor;
@@ -185,7 +185,7 @@ WiiNunchukGUI{
 			buttons[i] = GUI.staticText.new( w, Rect( xpos, ypos, 20, 20 ) ).string_( it ).background_(onColor).align_( 0 );
 			ypos = ypos + 25;
 		};
-		
+
 		xpos = xpos + 25;
 		ypos = ypos - 50;
 
@@ -201,7 +201,7 @@ WiiNunchukGUI{
 	updateVals{
 		//rumble.value = wiimote.rumble;
 		wiimote.nunchuk_motion.do{ |it,i| sliders[i].value = it };
-		wiimote.nunchuk_buttons.do{ |it,i| 
+		wiimote.nunchuk_buttons.do{ |it,i|
 			if ( it == 1 ,
 				{
 					buttons[i].background = onColor;
@@ -210,7 +210,7 @@ WiiNunchukGUI{
 				});
 		};
 		slider2d.setXY( wiimote.nunchuk_stick[0], wiimote.nunchuk_stick[1] );
-		
+
 	}
 }
 

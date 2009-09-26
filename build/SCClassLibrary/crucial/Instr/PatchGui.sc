@@ -1,8 +1,8 @@
 
 PatchGui : AbstractPlayerGui {
-	
-	writeName { arg layout; 
-		//color it based on whether it has a .path 
+
+	writeName { arg layout;
+		//color it based on whether it has a .path
 						// (was loaded from disk)
 		this.prWriteName(layout,model.class.asString);
 		if(model.path.notNil,{
@@ -17,7 +17,7 @@ PatchGui : AbstractPlayerGui {
 		maxHeight = bounds.height - 20 - (model.args.size * 15) / model.args.size;
 
 		this.instrGui(layout);
-		
+
 		font = GUI.font.new("Helvetica",10);
 		//vl = SCVLayoutView(layout.startRow,layout.decorator.indentedRemaining);
 		vl = layout;
@@ -31,7 +31,7 @@ PatchGui : AbstractPlayerGui {
 				.background_(Color( 0.47843137254902, 0.72941176470588, 0.50196078431373 ))
 				.font_(font)
 				.align_(\left)
-				.canReceiveDragHandler_({  
+				.canReceiveDragHandler_({
 					model.instr.specs.at(i).canAccept(GUI.view.currentDrag);
 				})
 				.object_(" " ++ model.instr.argNames.at(i))
@@ -66,7 +66,7 @@ PatchGui : AbstractPlayerGui {
 		})
 	}
 }
- 
+
 InstrSpawnerGui : PatchGui {
 	guiBody { arg layout;
 		super.guiBody(layout);

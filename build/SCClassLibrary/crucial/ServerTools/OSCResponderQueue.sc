@@ -4,15 +4,15 @@
 TO BE DEPRECIATED
 ancient history
 
-		OSCresponder.queue([ 
+		OSCresponder.queue([
 			[ { server.serverRunning.not },{ server.boot }, '/done'],
 			[ { server.audioRunning.not },{ server.start }, '/on'],
 			[ { loaded.at(plid).isNil },{ server.load(plid) }, '/done' ],
 			[ true ,{ this.sendPlayMsg } ]
 		]);
-		
+
 		// each step is
-		[ 
+		[
 			{ server.serverRunning.not }, // whether to do this step at all
 			{ server.boot }, 			// the step itself
 			'/done',					// notification to wait for from server
@@ -22,10 +22,10 @@ ancient history
 		],
 
 	this could be used to start up multiple servers.
-	probably a way to do this with Routine so that 
+	probably a way to do this with Routine so that
 		each step would .yield
 	todo:  add *clear	to cancel all future steps
-*/	
+*/
 OSCResponderQueue {
 	var <>queue;
 	classvar all;
@@ -55,10 +55,10 @@ OSCResponderQueue {
 	*waitFor { arg action,cmd='/done',server;
 		var resp;
 		[action,cmd,server].postln;
-		resp = OSCresponder((server ?? {Server.default}).addr, cmd, 
-				{ arg time, resp, msg; 
-					("osc responder recieved:" ++ cmd.asString).postln; 
-					action.value(time, resp, msg); 
+		resp = OSCresponder((server ?? {Server.default}).addr, cmd,
+				{ arg time, resp, msg;
+					("osc responder recieved:" ++ cmd.asString).postln;
+					action.value(time, resp, msg);
 					//[time, resp, msg].postln;
 					OSCresponder.remove(resp);
 				 });

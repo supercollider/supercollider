@@ -24,8 +24,8 @@
 #include "SC_BoundsMacros.h"
 #include <cmath>
 
-inline float sc_mod(float in, float hi) 
-{ 
+inline float sc_mod(float in, float hi)
+{
 	// avoid the divide if possible
 	const float lo = (float)0.;
 	if (in >= hi) {
@@ -35,13 +35,13 @@ inline float sc_mod(float in, float hi)
 		in += hi;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - hi*std::floor(in/hi); 
+	return in - hi*std::floor(in/hi);
 }
 
-inline double sc_mod(double in, double hi) 
-{ 
+inline double sc_mod(double in, double hi)
+{
 	// avoid the divide if possible
 	const double lo = (double)0.;
 	if (in >= hi) {
@@ -51,12 +51,12 @@ inline double sc_mod(double in, double hi)
 		in += hi;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - hi*std::floor(in/hi); 
+	return in - hi*std::floor(in/hi);
 }
 
-inline float sc_wrap(float in, float lo, float hi) 
+inline float sc_wrap(float in, float lo, float hi)
 {
 	float range;
 	// avoid the divide if possible
@@ -69,12 +69,12 @@ inline float sc_wrap(float in, float lo, float hi)
 		in += range;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - range * std::floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range);
 }
 
-inline double sc_wrap(double in, double lo, double hi) 
+inline double sc_wrap(double in, double lo, double hi)
 {
 	double range;
 	// avoid the divide if possible
@@ -87,12 +87,12 @@ inline double sc_wrap(double in, double lo, double hi)
 		in += range;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - range * std::floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range);
 }
 
-inline double sc_wrap(double in, double lo, double hi, double range) 
+inline double sc_wrap(double in, double lo, double hi, double range)
 {
 	// avoid the divide if possible
 	if (in >= hi) {
@@ -102,12 +102,12 @@ inline double sc_wrap(double in, double lo, double hi, double range)
 		in += range;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - range * std::floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range);
 }
 
-inline double sc_wrap(float in, float lo, float hi, float range) 
+inline double sc_wrap(float in, float lo, float hi, float range)
 {
 	// avoid the divide if possible
 	if (in >= hi) {
@@ -117,16 +117,16 @@ inline double sc_wrap(float in, float lo, float hi, float range)
 		in += range;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	return in - range * std::floor((in - lo)/range); 
+	return in - range * std::floor((in - lo)/range);
 }
 
-inline float sc_fold(float in, float lo, float hi) 
+inline float sc_fold(float in, float lo, float hi)
 {
 	float x, c, range, range2;
 	x = in - lo;
-	
+
 	// avoid the divide if possible
 	if (in >= hi) {
 		in = hi + hi - in;
@@ -135,7 +135,7 @@ inline float sc_fold(float in, float lo, float hi)
 		in = lo + lo - in;
 		if (in < hi) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
 	// ok do the divide
 	range = hi - lo;
@@ -145,11 +145,11 @@ inline float sc_fold(float in, float lo, float hi)
 	return c + lo;
 }
 
-inline double sc_fold(double in, double lo, double hi) 
+inline double sc_fold(double in, double lo, double hi)
 {
 	double x, c, range, range2;
 	x = in - lo;
-	
+
 	// avoid the divide if possible
 	if (in >= hi) {
 		in = hi + hi - in;
@@ -158,7 +158,7 @@ inline double sc_fold(double in, double lo, double hi)
 		in = lo + lo - in;
 		if (in < hi) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
 	// ok do the divide
 	range = hi - lo;
@@ -168,11 +168,11 @@ inline double sc_fold(double in, double lo, double hi)
 	return c + lo;
 }
 
-inline double sc_fold(float in, float lo, float hi, float range, float range2) 
+inline double sc_fold(float in, float lo, float hi, float range, float range2)
 {
 	float x, c;
 	x = in - lo;
-	
+
 	// avoid the divide if possible
 	if (in >= hi) {
 		in = hi + hi - in;
@@ -181,7 +181,7 @@ inline double sc_fold(float in, float lo, float hi, float range, float range2)
 		in = lo + lo - in;
 		if (in < hi) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
 	// ok do the divide
 	c = x - range2 * std::floor(x / range2);
@@ -189,11 +189,11 @@ inline double sc_fold(float in, float lo, float hi, float range, float range2)
 	return c + lo;
 }
 
-inline double sc_fold(double in, double lo, double hi, double range, double range2) 
+inline double sc_fold(double in, double lo, double hi, double range, double range2)
 {
 	double x, c;
 	x = in - lo;
-	
+
 	// avoid the divide if possible
 	if (in >= hi) {
 		in = hi + hi - in;
@@ -202,7 +202,7 @@ inline double sc_fold(double in, double lo, double hi, double range, double rang
 		in = lo + lo - in;
 		if (in < hi) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
 	// ok do the divide
 	c = x - range2 * std::floor(x / range2);
@@ -309,24 +309,24 @@ const double kDSQRT2M1 = sqrt(2.) - 1.;
 inline float sc_hypotx(float x, float y)
 {
 	float minxy;
-	
+
 	x = std::abs(x);
 	y = std::abs(y);
-	
+
 	minxy = sc_min(x,y);
-	
+
 	return x + y - kFSQRT2M1 * minxy;
 }
 
 inline double sc_hypotx(double x, double y)
 {
 	double minxy;
-	
+
 	x = std::abs(x);
 	y = std::abs(y);
-	
+
 	minxy = sc_min(x,y);
-	
+
 	return x + y - kDSQRT2M1 * minxy;
 }
 
@@ -335,7 +335,7 @@ inline double sc_hypotx(double x, double y)
 #endif //SC_WIN32
 
 
-inline int sc_div(int a, int b) 
+inline int sc_div(int a, int b)
 {
 	int c;
 	if (b) {
@@ -346,7 +346,7 @@ inline int sc_div(int a, int b)
 }
 
 /*
-inline int sc_mod(int a, int b) 
+inline int sc_mod(int a, int b)
 {
 	long c;
 	c = a % b;
@@ -355,8 +355,8 @@ inline int sc_mod(int a, int b)
 }
 */
 
-inline int sc_mod(int in, int hi) 
-{ 
+inline int sc_mod(int in, int hi)
+{
 	// avoid the divide if possible
 	const int lo = 0;
 	if (in >= hi) {
@@ -366,16 +366,16 @@ inline int sc_mod(int in, int hi)
 		in += hi;
 		if (in >= lo) return in;
 	} else return in;
-	
+
 	if (hi == lo) return lo;
-	
+
 	int c;
 	c = in % hi;
 	if (c<0) c += hi;
 	return c;
 }
 
-inline int sc_wrap(int in, int lo, int hi) 
+inline int sc_wrap(int in, int lo, int hi)
 {
 	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
@@ -390,13 +390,13 @@ inline int sc_wrap2(int a, int b)
 	return sc_wrap(a, -b, b);
 }
 
-inline int sc_fold(int in, int lo, int hi) 
+inline int sc_fold(int in, int lo, int hi)
 {
 	int b = hi - lo;
 	int b2 = b+b;
 	int c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
-	return c + lo;	
+	return c + lo;
 }
 
 inline int sc_fold2(int a, int b)
@@ -409,7 +409,7 @@ inline int sc_excess(int a, int b)
 	return a - sc_clip(a, -b, b);
 }
 
-inline int sc_gcd(int u, int v) 
+inline int sc_gcd(int u, int v)
 {
 	int t;
 	u = sc_abs(u);
@@ -422,7 +422,7 @@ inline int sc_gcd(int u, int v)
 	return v;
 }
 
-inline int sc_lcm(int u, int v) 
+inline int sc_lcm(int u, int v)
 {
 	return (u * v)/sc_gcd(u,v);
 }
@@ -479,7 +479,7 @@ inline int sc_trunc(int x, int quant)
 
 #if 0
 
-inline long sc_div(long a, long b) 
+inline long sc_div(long a, long b)
 {
 	int c;
 	if (b) {
@@ -495,7 +495,7 @@ inline long sc_clip2(long a, long b)
 	return sc_clip(a, -b, b);
 }
 
-inline long sc_wrap(long in, long lo, long hi) 
+inline long sc_wrap(long in, long lo, long hi)
 {
 	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
@@ -505,13 +505,13 @@ inline long sc_wrap2(long a, long b)
 	return sc_wrap(a, -b, b);
 }
 
-inline long sc_fold(long in, long lo, long hi) 
+inline long sc_fold(long in, long lo, long hi)
 {
 	long b = hi - lo;
 	int b2 = b+b;
 	long c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
-	return c + lo;	
+	return c + lo;
 }
 
 inline long sc_fold2(long a, long b)
@@ -549,7 +549,7 @@ inline long sc_unsignedRightShift(long a, long b)
 	return (unsigned long)a >> b;
 }
 
-inline long sc_gcd(long u, long v) 
+inline long sc_gcd(long u, long v)
 {
 	long t;
 	u = sc_abs(u);
@@ -562,7 +562,7 @@ inline long sc_gcd(long u, long v)
 	return v;
 }
 
-inline long sc_lcm(long u, long v) 
+inline long sc_lcm(long u, long v)
 {
 	return (u * v)/sc_gcd(u,v);
 }

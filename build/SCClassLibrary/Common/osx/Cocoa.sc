@@ -4,19 +4,19 @@ CocoaDialog {
 	*initClass {
 		UI.registerForReset({ this.clear });
 	}
-	
+
 	*getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
 		if(result.notNil,{
 			"A CocoaDialog is already in progress.  do: [CocoaDialog.clear]".warn;
 			^nil
 		});
-		
+
 		//result = Array.new(maxSize);
 		ok = okFunc;
 		cancel = cancelFunc;
 		this.prGetPathsDialog(allowsMultiple);
 	}
-	
+
 	*prGetPathsDialog { arg allowsMultiple;
 		_Cocoa_GetPathsDialog
 		^this.primitiveFailed
@@ -35,7 +35,7 @@ CocoaDialog {
 		_Cocoa_SavePanel
 		^this.primitiveFailed
 	}
-			
+
 	*ok {
 		var res;
 		res = result;
@@ -64,7 +64,7 @@ Cocoa {
 	*getPathsInDirectory { arg directoryPath,extension,maxItems=1000;
 		^this.prGetPathsInDirectory(directoryPath,extension,Array.new(maxItems));
 		//throws an index out of range if more than maxItems items are in the directory
-		
+
 		//extension matching not yet implemented
 	}
 	*prGetPathsInDirectory { arg dir,ext,arr;

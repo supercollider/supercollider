@@ -1,14 +1,14 @@
 /*
  * File: PYSCLang_Module_GUIStuff.cpp
  * Project : Psycollider
- * 
+ *
  * by:
  * Benjamin Golinvaux
  * benjamin.golinvaux@euresys.com
  * messenger: bgolinvaux@hotmail.com
- * 
+ *
  * currently maintained by:
- * Christopher Frauenberger 
+ * Christopher Frauenberger
  * frauenberger@iem.at
  *
  *  This program is free software; you can redistribute it and/or
@@ -47,31 +47,31 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed);
 int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
 {
 
-  if (!g->canCallOS) 
+  if (!g->canCallOS)
     return errCantCallOS;
 
   PyrSlot *d = g->sp - 3;
 	PyrSlot *a = g->sp - 2; // path
 	PyrSlot *b = g->sp - 1; // rangeStart
 	PyrSlot *c = g->sp;     // rangeSize
-	
+
   int rangeStart, rangeSize;
 
   // retrieve path
-  if (!(isKindOfSlot(a, class_string))) 
+  if (!(isKindOfSlot(a, class_string)))
     return errWrongType;
 	PyrString* string = a->uos;
-  if(string->size == 0) 
+  if(string->size == 0)
     return errFailed;
 
 
   // start char in sel range
   int err = slotIntVal(b, &rangeStart);
-  if (err) 
+  if (err)
     return err;
   // sel range size
   err = slotIntVal(c, &rangeSize);
-  if (err) 
+  if (err)
     return err;
 
   if( PySCLang_Module::PyPrOpenWinTextFile_s != NULL) {
@@ -105,7 +105,7 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
     return errFailed;
   }
   //NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
-        
+
 	//  SetInt(a, result---->window->Id);
 	return errNone;
 }
@@ -116,8 +116,8 @@ void initGUIPrimitives()
 
 	base = nextPrimitiveIndex();
 	index = 0;
-	
-	definePrimitive(base, index++, "_OpenWinTextFile", prOpenWinTextFile, 3, 0);	
+
+	definePrimitive(base, index++, "_OpenWinTextFile", prOpenWinTextFile, 3, 0);
 }
 
 

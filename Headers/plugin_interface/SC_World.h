@@ -28,12 +28,12 @@
 #include "SC_RGen.h"
 #include "SC_Lock.h"
 
-struct World 
+struct World
 {
 	// a pointer to private implementation, not available to plug-ins.
 	struct HiddenWorld *hw;
-	
-	// a pointer to the table of function pointers that implement the plug-ins' 
+
+	// a pointer to the table of function pointers that implement the plug-ins'
 	// interface to the server.
 	struct InterfaceTable *ft;
 
@@ -41,58 +41,58 @@ struct World
 	double mSampleRate;
 	int mBufLength;
 	int mBufCounter;
-	
+
 	uint32 mNumAudioBusChannels;
 	uint32 mNumControlBusChannels;
 	uint32 mNumInputs;
 	uint32 mNumOutputs;
-	
+
 	// vector of samples for all audio busses
 	float *mAudioBus;
-	
+
 	// vector of samples for all control busses
 	float *mControlBus;
-	
+
 	// these tell if a buss has been written to during a control period
-	// if the value is equal to mBufCounter then the buss has been touched 
+	// if the value is equal to mBufCounter then the buss has been touched
 	// this control period.
 	int32 *mAudioBusTouched;
 	int32 *mControlBusTouched;
-	
+
 	uint32 mNumSndBufs;
 	SndBuf *mSndBufs;
 	SndBuf *mSndBufsNonRealTimeMirror;
 	SndBufUpdates *mSndBufUpdates;
-	
+
 	struct Group *mTopGroup;
 
 	Rate mFullRate, mBufRate;
-	
+
 	uint32 mNumRGens;
 	RGen *mRGen;
 
 	uint32 mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.
-	
+
 	SC_Lock* mNRTLock;
-	
+
 	uint32 mNumSharedControls;
-	float *mSharedControls;	
-	
+	float *mSharedControls;
+
 	bool mRealTime;
 	bool mRunning;
 	int mDumpOSC;
 
 	SC_Lock* mDriverLock;
-	
+
 	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
-	
+
 	int mVerbosity;
 	int mErrorNotification;
 	int mLocalErrorNotification;
-	
+
 	bool mRendezvous; // Allow user to disable Rendezvous
-	
+
 	const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
 };
 

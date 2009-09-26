@@ -1,6 +1,6 @@
 SCWindow {
 	classvar <>allWindows, <currentFullScreen, <>initAction;
-	
+
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
 	var <>drawHook;
@@ -10,7 +10,7 @@ SCWindow {
 	var <> toFrontAction, <> endFrontAction;
 	var <editable=false, <>constructionView;
 	var <currentSheet; // current modal sheet attached to this window, if it exists
-	
+
 	*initClass {
 		UI.registerForShutdown({ this.closeAll });
 	}
@@ -34,21 +34,21 @@ SCWindow {
 
 	asView { ^view }
 	add { arg aView; view.add(aView) }
-	
-	addFlowLayout { |margin, gap| 
+
+	addFlowLayout { |margin, gap|
 		view.relativeOrigin.if
 			{view.decorator_( FlowLayout( view.bounds.moveTo(0,0), margin, gap ) )}
 			{view.decorator_( FlowLayout( view.bounds, margin, gap ) )};
 		^this.view.decorator;
 		 }
-	
+
 	*closeAll {
 		var list;
 		list = allWindows.copy;
 		allWindows = Array.new(8);
 		list.do({ arg window; window.close; });
 	}
-		
+
 	close {
 		if (isClosed) { ^this };
 		this.prClose;
@@ -60,9 +60,9 @@ SCWindow {
 		view.prClose;
 		allWindows.remove(this);
 	}
-	
+
 	addToOnClose { | function | onClose = onClose.addFunc(function) }
-	
+
 	removeFromOnClose { | function | onClose = onClose.removeFunc(function) }
 
 	fullScreen {
@@ -74,7 +74,7 @@ SCWindow {
 		this.prEndFullScreen;
 		currentFullScreen = nil;
 	}
-	
+
 	prFullScreen {
 		_SCWindow_BeginFullScreen
 		^this.primitiveFailed
@@ -88,32 +88,32 @@ SCWindow {
 		^this.primitiveFailed
 	}
 	acceptsMouseOver_{arg bool;
-		acceptsMouseOver = bool;	
+		acceptsMouseOver = bool;
 		this.prSetAcceptMouseOver(bool);
-	}	
+	}
 	front {
 		_SCWindow_ToFront
 		^this.primitiveFailed
 	}
-	
+
 	alwaysOnTop_{|bool=true|
 		alwaysOnTop = bool;
-		this.prSetAlwaysOnTop(bool);	
+		this.prSetAlwaysOnTop(bool);
 	}
-	
+
 	prSetAlwaysOnTop{|boolean=true|
-		_SCWindow_AlwaysOnTop	
+		_SCWindow_AlwaysOnTop
 	}
-	
+
 	acceptsClickThrough_{|boolean=true|
 		acceptsClickThrough = boolean;
-		this.prSetAcceptsClickThrough(boolean);	
+		this.prSetAcceptsClickThrough(boolean);
 	}
-	
+
 	prSetAcceptsClickThrough{|boolean=true|
-		_SCWindow_AcceptsClickThrough	
+		_SCWindow_AcceptsClickThrough
 	}
-	
+
 	refresh {
 		_SCWindow_Refresh
 		^this.primitiveFailed
@@ -126,7 +126,7 @@ SCWindow {
 		_SCWindow_SetAlpha
 		^this.primitiveFailed
 	}
-	
+
 	name_ { arg argName;
 		name = argName;
 		this.prSetName(argName);
@@ -157,18 +157,18 @@ SCWindow {
 		^this.prGetScreenBounds(Rect.new);
 	}
 	play { arg function;
-		AppClock.play({ 
+		AppClock.play({
 			if (dataptr.notNil, {
 				function.value;
 			});
 		});
-		
+
 	}
-	
+
 	findByID { arg id;
 		^view.findByID(id)
 	}
-			
+
 	// PRIVATE
 	// primitives
 	prInit { arg argName, argBounds, resizable, border, scroll, view, appmodal = false;
@@ -193,7 +193,7 @@ SCWindow {
 	}
 	prSetAcceptMouseOver{arg bool;
 		_SCWindow_SetAcceptMouseOver
-		^this.primitiveFailed		
+		^this.primitiveFailed
 	}
 	*prGetScreenBounds { arg argBounds;
 		_SCWindow_GetScreenBounds
@@ -202,7 +202,7 @@ SCWindow {
 	callDrawHook {
 		drawHook.value(this);
 	}
-	
+
 	didBecomeKey {
 		toFrontAction.value(this);
 	}
@@ -210,7 +210,7 @@ SCWindow {
 	didResignKey {
 		endFrontAction.value(this);
 	}
-	
+
 	toggleEditMode{
 		var panel;
 		editable = editable.not;
@@ -219,7 +219,7 @@ SCWindow {
 			this.refresh;
 		}{
 			SCIBToolboxWindow.front.removeWindow(this);
-		}	
+		}
 	}
 	setCurrentSheet {|sheet| currentSheet = sheet;}
 	/*
@@ -232,33 +232,33 @@ SCWindow {
 				Document("window construction code", win.asConstructionCompileString);
 				};
 		w.view.decorator.nextLine;
-//		c = [SCSlider, SCRangeSlider, SC2DSlider, SCPopUpMenu, SCButton, 
+//		c = [SCSlider, SCRangeSlider, SC2DSlider, SCPopUpMenu, SCButton,
 //			SCNumberBox, SCMultiSliderView,
 //			SCStaticText, SCDragSource, SCDragSink, SCDragBoth,
 //		];
-		c = SCView.allSubclasses.reject{|it| 
-			(it.superclasses.indexOf(SCContainerView).notNil 
-			or: (it.name === 'SCContainerView') 
-			or: (it.name ==='SCStaticTextBase') 
-			or: (it.name === 'SCSliderBase') 
+		c = SCView.allSubclasses.reject{|it|
+			(it.superclasses.indexOf(SCContainerView).notNil
+			or: (it.name === 'SCContainerView')
+			or: (it.name ==='SCStaticTextBase')
+			or: (it.name === 'SCSliderBase')
 			or: (it.name === 'SCControlView'))
-		};	
-				
+		};
+
 		c.do({ arg item;
 			var n;
 			n = SCDragSource(w, Rect(0, 0, 140, 24));
 			n.object = item;
-			
+
 			try{
 				item.paletteExample(w, Rect(0,0,140,24));
 			}{
 				"no paletteExample found".warn;
 			};
 			w.view.decorator.nextLine;
-	
+
 		});
 		win.onClose_{
-			Document("window construction code", win.asConstructionCompileString); 
+			Document("window construction code", win.asConstructionCompileString);
 			w.close
 			};
 		^w
@@ -266,7 +266,7 @@ SCWindow {
 	*/
 
 	storeArgs{^[name, this.bounds]}
-	storeModifiersOn{|stream| 
+	storeModifiersOn{|stream|
 		stream << ".front;";
 	}
 }

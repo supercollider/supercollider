@@ -63,7 +63,7 @@ build requirements
 
    http://www.fftw.org/
 
-   fast FFT transform library (for frequency-domain analysis, 
+   fast FFT transform library (for frequency-domain analysis,
                                         phase-vocoder effects)
 
 ------------------------------------------------------------------------
@@ -96,13 +96,13 @@ build requirements (optional features)
 
    for sclang's linux input device (LID) interface
 
- o for scel: the Emacs interface see the README in the directory 
+ o for scel: the Emacs interface see the README in the directory
    `editors/scel'
 
- o for sced: the gedit interface see the README in the directory 
+ o for sced: the gedit interface see the README in the directory
    `editors/sced'
 
- o for scvim: the vim interface see the README in the directory 
+ o for scvim: the vim interface see the README in the directory
    `editors/scvim'
 
 
@@ -135,7 +135,7 @@ gives an overview of scons options.
    $ scons -h
 
 lists package specific options variables and their default values.
-(Note: some options allow to disable the dependencies on fftw and on 
+(Note: some options allow to disable the dependencies on fftw and on
 libsndfile, but those dependencies should be considered compulsory for
 most standard setups since they provide much core sc functionality.)
 
@@ -169,20 +169,20 @@ g++-multilib, ia32-libs, libc6-dev-i386 and lib32asound2-dev).
 Building a Debian package
 ------------------------------------------------------------------------
 
-In our SVN we have debian packaging rules. These were designed on Ubuntu 
-but we believe they should work on most common debian systems - please 
+In our SVN we have debian packaging rules. These were designed on Ubuntu
+but we believe they should work on most common debian systems - please
 let us know if you have any issues with this way of building:
 
   cd SuperCollider3    # (or wherever your SC source is)
   svn co https://supercollider.svn.sourceforge.net/svnroot/supercollider/packages/ubuntu/ debian
   debuild
 
-Eventually, some .deb packages will be put in the parent folder, and can 
+Eventually, some .deb packages will be put in the parent folder, and can
 then be installed just like any other Debian package. For example:
 
   dpkg -i ../supercollider*.deb
 
-(Note: the packages supercollider-scel*.deb, supercollider-scvim*.deb, 
+(Note: the packages supercollider-scel*.deb, supercollider-scvim*.deb,
 supercollider-sced*.deb, represent the different editor integrations:
 emacs, vim, gedit. You might not want to install all of those, but
 choose your preferred editor.)

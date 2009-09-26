@@ -38,12 +38,12 @@ aka.wiiremote Version History
 1.0B3 : 2006.12.20
 
 - data acquisition is improved.
-- unusual vibration sound is resolved. 
+- unusual vibration sound is resolved.
 
 
 1.0B2 : 2006.12.15
 
-- connection/disconnection is improved. 
+- connection/disconnection is improved.
 - IR sensor is supported.
 - status report is supported
 - help patch is rewritten.
@@ -51,4 +51,4 @@ aka.wiiremote Version History
 
 1.0B1 : 2006.12.12
 
-- first release 
+- first release
