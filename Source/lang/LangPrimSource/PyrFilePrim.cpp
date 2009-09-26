@@ -62,18 +62,18 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	char filename[PATH_MAX];
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (b->utag != tagObj || !isKindOf(b->uo, class_string))
-		return errWrongType; 
+		return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
-	
+
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
-	
+
 	int err = unlink(filename);
-	SetBool(a, err == 0); 
+	SetBool(a, err == 0);
 
 	return errNone;
 }
@@ -86,23 +86,23 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	char mode[12];
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
 	if (c->utag != tagObj || !isKindOf(c->uo, class_string)
 		|| b->utag != tagObj || !isKindOf(b->uo, class_string))
-		return errWrongType; 
+		return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
 	if (c->uo->size > 11) return errFailed;
 	pfile = (PyrFile*)a->uo;
-	
+
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
-	
+
 	memcpy(mode, c->uos->s, c->uo->size);
 	mode[c->uos->size] = 0;
-	
+
 #ifdef SC_WIN32
   win32_ReplaceCharInString(filename,PATH_MAX,'/','\\');
   if(strcmp(mode,"w") == 0)
@@ -117,7 +117,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		SetTrue(a);
 	} else {
 #ifdef SC_WIN32
-		// check if directory exisits 
+		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
 		if (sc_DirectoryExists(filename)) {
@@ -141,7 +141,7 @@ int prFileClose(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
@@ -171,7 +171,7 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 	FILE *file;
 	fpos_t pos;
 	int length;
-	
+
 	a = g->sp;
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
@@ -196,7 +196,7 @@ int prFileLength(struct VMGlobals *g, int numArgsPushed)
 	FILE *file;
 	fpos_t pos;
 	size_t length;
-	
+
 	a = g->sp;
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
@@ -205,7 +205,7 @@ int prFileLength(struct VMGlobals *g, int numArgsPushed)
 	if (fgetpos(file, &pos)) return errFailed;
 	if (filelen(file, &length)) return errFailed;
 	if (fsetpos(file, &pos)) return errFailed;
-	
+
 	SetInt(a, length);
 	return errNone;
 }
@@ -218,7 +218,7 @@ int prFileSeek(struct VMGlobals *g, int numArgsPushed)
 	size_t offset;
 	int origin;
 	static int originTable[3] = { SEEK_SET, SEEK_CUR, SEEK_END };
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
@@ -234,7 +234,7 @@ int prFileSeek(struct VMGlobals *g, int numArgsPushed)
 	if (fseek(file, offset, origin)) return errFailed;
 	return errNone;
 }
-	
+
 
 int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 {
@@ -243,7 +243,7 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 	FILE *file;
 	PyrObject *obj;
 	char chr;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	pfile = (PyrFile*)a->uo;
@@ -268,11 +268,11 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 		case tagTrue :
 		case tagPtr :
 			return errWrongType;
-		case tagObj : 
-		{	
-			// writes the indexable part of any non obj_slot format object 
+		case tagObj :
+		{
+			// writes the indexable part of any non obj_slot format object
 			obj = b->uo;
-			if (!isKindOf(obj, class_rawarray) 
+			if (!isKindOf(obj, class_rawarray)
 				|| isKindOf(obj, class_symbolarray)) return errWrongType;
 			if (obj->size) {
 				ptr = obj->slots;
@@ -346,7 +346,7 @@ int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
 	FILE *file;
 	PyrObject *obj;
 	char chr;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	pfile = (PyrFile*)a->uo;
@@ -371,11 +371,11 @@ int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
 		case tagTrue :
 		case tagPtr :
 			return errWrongType;
-		case tagObj : 
-		{	
-			// writes the indexable part of any non obj_slot format object 
+		case tagObj :
+		{
+			// writes the indexable part of any non obj_slot format object
 			obj = b->uo;
-			if (!isKindOf(obj, class_rawarray) 
+			if (!isKindOf(obj, class_rawarray)
 				|| isKindOf(obj, class_symbolarray)) return errWrongType;
 			if (obj->size) {
 				ptr = obj->slots;
@@ -446,14 +446,14 @@ int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b; // receiver(a File), string
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	char* result = fgets(b->uos->s, MAXINDEXSIZE(b->uo) - 1, file);
 	if (!result) {
 		SetNil(a);
@@ -470,18 +470,18 @@ int prFilePutInt32(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-        
+
         int val;
         int err = slotIntVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt32_be(val);
 
@@ -493,10 +493,10 @@ int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -504,11 +504,11 @@ int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
         int val;
         int err = slotIntVal(b, &val);
         if (err) return err;
-	
-	
+
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt16_be(val);
-	
+
 	return errNone;
 }
 
@@ -518,18 +518,18 @@ int prFilePutInt32LE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-        
+
         int val;
         int err = slotIntVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt32_le(val);
 
@@ -541,10 +541,10 @@ int prFilePutInt16LE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -552,11 +552,11 @@ int prFilePutInt16LE(struct VMGlobals *g, int numArgsPushed)
         int val;
         int err = slotIntVal(b, &val);
         if (err) return err;
-	
-	
+
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt16_le(val);
-	
+
 	return errNone;
 }
 
@@ -565,10 +565,10 @@ int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -576,8 +576,8 @@ int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
         int val;
         int err = slotIntVal(b, &val);
         if (err) return err;
-	
-	
+
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt8(val);
 
@@ -590,15 +590,15 @@ int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
 	PyrFile *pfile;
 	FILE *file;
 	char z;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
 	if (b->utag != tagChar) return errWrongType;
-	
+
 	z = b->ui;
 
 	SC_IOStream<FILE*> scio(file);
@@ -612,10 +612,10 @@ int prFilePutFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) {
@@ -626,7 +626,7 @@ int prFilePutFloat(struct VMGlobals *g, int numArgsPushed)
         float val;
         int err = slotFloatVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeFloat_be(val);
 
@@ -638,10 +638,10 @@ int prFilePutDouble(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -650,7 +650,7 @@ int prFilePutDouble(struct VMGlobals *g, int numArgsPushed)
         double val;
         int err = slotDoubleVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeDouble_be(val);
 
@@ -663,10 +663,10 @@ int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) {
@@ -677,7 +677,7 @@ int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
         float val;
         int err = slotFloatVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeFloat_le(val);
 
@@ -689,10 +689,10 @@ int prFilePutDoubleLE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -701,7 +701,7 @@ int prFilePutDoubleLE(struct VMGlobals *g, int numArgsPushed)
         double val;
         int err = slotDoubleVal(b, &val);
         if (err) return err;
-	
+
 	SC_IOStream<FILE*> scio(file);
 	scio.writeDouble_le(val);
 
@@ -714,7 +714,7 @@ int prFilePutString(struct VMGlobals *g, int numArgsPushed)
 	PyrFile *pfile;
 	FILE *file;
 	PyrString *string;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	pfile = (PyrFile*)a->uo;
@@ -734,13 +734,13 @@ int prFileGetDouble(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -754,13 +754,13 @@ int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -775,13 +775,13 @@ int prFileGetDoubleLE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -795,13 +795,13 @@ int prFileGetFloatLE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -816,13 +816,13 @@ int prFileGetChar(struct VMGlobals *g, int numArgsPushed)
 	PyrFile *pfile;
 	FILE *file;
 	char z;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	int count = fread(&z, sizeof(char), 1, file);
 	if (count==0) SetNil(a);
 	else SetChar(a, z);
@@ -835,13 +835,13 @@ int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
 	PyrFile *pfile;
 	FILE *file;
 	char z;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	int count = fread(&z, sizeof(char), 1, file);
 	if (count==0) SetNil(a);
 	else SetInt(a, z);
@@ -853,13 +853,13 @@ int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -873,14 +873,14 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
-	if (file == NULL) 
+	if (file == NULL)
     return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -895,13 +895,13 @@ int prFileGetInt16LE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -915,13 +915,13 @@ int prFileGetInt32LE(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
-	
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	if (feof(file)) SetNil(a);
 	else {
 		SC_IOStream<FILE*> scio(file);
@@ -934,22 +934,22 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	PyrSlot* a = g->sp - 1;
 	PyrSlot* b = g->sp;
-        
-        if (!isKindOfSlot(b, class_rawarray) 
+
+        if (!isKindOfSlot(b, class_rawarray)
             || isKindOfSlot(b, class_symbolarray)) return errWrongType;
-        
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	int elemSize = gFormatElemSize[b->uo->obj_format];
 	int numElems = b->uo->size;
 	numElems = fread(b->uos->s, elemSize, numElems, file);
 	b->uo->size = numElems;
-	
+
 #if BYTE_ORDER != BIG_ENDIAN
 	switch (elemSize) {
 		case 1:
@@ -973,7 +973,7 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 				char temp = ptr[0];
 				ptr[0] = ptr[3];
 				ptr[3] = temp;
-				
+
 				temp = ptr[1];
 				ptr[1] = ptr[2];
 				ptr[2] = temp;
@@ -988,15 +988,15 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 				char temp = ptr[0];
 				ptr[0] = ptr[7];
 				ptr[7] = temp;
-				
+
 				temp = ptr[1];
 				ptr[1] = ptr[6];
 				ptr[6] = temp;
-				
+
 				temp = ptr[2];
 				ptr[2] = ptr[5];
 				ptr[5] = temp;
-				
+
 				temp = ptr[3];
 				ptr[3] = ptr[4];
 				ptr[4] = temp;
@@ -1015,22 +1015,22 @@ int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	PyrSlot* a = g->sp - 1;
 	PyrSlot* b = g->sp;
-        
-        if (!isKindOfSlot(b, class_rawarray) 
+
+        if (!isKindOfSlot(b, class_rawarray)
             || isKindOfSlot(b, class_symbolarray)) return errWrongType;
-        
+
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	
+
 	int elemSize = gFormatElemSize[b->uo->obj_format];
 	int numElems = b->uo->size;
 	numElems = fread(b->uos->s, elemSize, numElems, file);
 	b->uo->size = numElems;
-	
+
 #if BYTE_ORDER == BIG_ENDIAN
 	switch (elemSize) {
 		case 1:
@@ -1054,7 +1054,7 @@ int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
 				char temp = ptr[0];
 				ptr[0] = ptr[3];
 				ptr[3] = temp;
-				
+
 				temp = ptr[1];
 				ptr[1] = ptr[2];
 				ptr[2] = temp;
@@ -1069,15 +1069,15 @@ int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
 				char temp = ptr[0];
 				ptr[0] = ptr[7];
 				ptr[7] = temp;
-				
+
 				temp = ptr[1];
 				ptr[1] = ptr[6];
 				ptr[6] = temp;
-				
+
 				temp = ptr[2];
 				ptr[2] = ptr[5];
 				ptr[5] = temp;
-				
+
 				temp = ptr[3];
 				ptr[3] = ptr[4];
 				ptr[4] = temp;
@@ -1096,12 +1096,12 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot* a = g->sp - 1; // File
 	PyrSlot* string = g->sp;
-        
+
     if (!isKindOfSlot(string, class_string))  return errWrongType;
 
     getcwd(string->uos->s,255);
     string->uos->size = strlen(string->uos->s);
-    
+
 	return errNone;
 }
 
@@ -1114,24 +1114,24 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	char mode[12];
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
 
 	if (c->utag != tagObj || !isKindOf(c->uo, class_string)
 		|| b->utag != tagObj || !isKindOf(b->uo, class_string))
-		return errWrongType; 
+		return errWrongType;
 	if (c->uo->size > 11) return errFailed;
 	pfile = (PyrFile*)a->uo;
-	
+
         char *commandLine = (char*)malloc(b->uo->size + 1);
 	memcpy(commandLine, b->uos->s, b->uo->size);
 	commandLine[b->uos->size] = 0;
-	
+
 	memcpy(mode, c->uos->s, c->uo->size);
 	mode[c->uos->size] = 0;
-	
+
 	file = popen(commandLine, mode);
         free(commandLine);
 	if (file) {
@@ -1149,7 +1149,7 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	
+
 	a = g->sp;
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
@@ -1161,7 +1161,7 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	return errNone;
 }
-#endif 
+#endif
 
 ////////
 
@@ -1212,7 +1212,7 @@ int sampleFormatToString(struct SF_INFO *info, const char **string)
 int headerFormatToString(struct SF_INFO *info, const char **string);
 int headerFormatToString(struct SF_INFO *info, const char **string){
 	switch (info->format & SF_FORMAT_TYPEMASK)
-	{	
+	{
 		case SF_FORMAT_WAV :
 				*string = "WAV";
 				break;
@@ -1224,7 +1224,7 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 				break ;
 		case SF_FORMAT_IRCAM :
 				*string = "IRCAM";
-				break ;				
+				break ;
 		case SF_FORMAT_RAW :
 				*string = "raw";
 				break ;
@@ -1281,8 +1281,8 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 
 				break ;
 */
-		default : 
-			*string = " ";		
+		default :
+			*string = " ";
 		break ;
 		}
 return errNone;
@@ -1306,20 +1306,20 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	SF_INFO info;
 	const char *headerstr;
 	const char *sampleformatstr;
-		
+
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (!isKindOfSlot(b, class_string)) return errWrongType; 
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
-	
+
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
-	
+
 	info.format = 0;
 	file = sf_open(filename, SFM_READ, &info);
 
-	        
+
 	if (file) {
 		SetPtr(a->uo->slots + 0, file);
 		sndfileFormatInfoToStrings(&info, &headerstr, &sampleformatstr);
@@ -1343,12 +1343,12 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 
 int sampleFormatFromString(const char* name);
 int sampleFormatFromString(const char* name)
-{		
+{
 	if (!name) return SF_FORMAT_PCM_16;
 
 	size_t len = strlen(name);
 	if (len < 1) return 0;
-	
+
 	if (name[0] == 'u') {
 		if (len < 5) return 0;
 		if (name[4] == '8') return SF_FORMAT_PCM_U8; // uint8
@@ -1412,10 +1412,10 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 {
 	int headerFormat = headerFormatFromString(headerFormatString);
 	if (!headerFormat) return errWrongType;
-	
+
 	int sampleFormat = sampleFormatFromString(sampleFormatString);
 	if (!sampleFormat) return errWrongType;
-	
+
 	info->format = (unsigned int)(headerFormat | sampleFormat);
 	return errNone;
 }
@@ -1431,24 +1431,24 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *headerSlot;
 	PyrSlot *formatSlot;
 	int error;
-        
-		
+
+
 	a = g->sp - 1;
 	b = g->sp;
 
 	headerSlot = (a->uo->slots + 1);
 	formatSlot = (a->uo->slots + 2);
-	
-	
-	if (!isKindOfSlot(headerSlot, class_string)) return errWrongType; 
-	if (!isKindOfSlot(formatSlot, class_string)) return errWrongType; 
-	
-	if (!isKindOfSlot(b, class_string)) return errWrongType; 
+
+
+	if (!isKindOfSlot(headerSlot, class_string)) return errWrongType;
+	if (!isKindOfSlot(formatSlot, class_string)) return errWrongType;
+
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
-	
+
 	memcpy(filename, b->uos->s, b->uo->size);
 	filename[b->uos->size] = 0;
-		
+
 #ifdef SC_WIN32
   char* headerFormat = (char *)malloc(headerSlot->uos->size);
 #else
@@ -1456,7 +1456,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 #endif
   memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
 	headerFormat[headerSlot->uos->size] = 0;
-	
+
 #ifdef SC_WIN32
   char* sampleFormat = (char *)malloc(formatSlot->uos->size);
 #else
@@ -1487,7 +1487,7 @@ int prSFClose(struct VMGlobals *g, int numArgsPushed);
 int prSFClose(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-        
+
 	a = g->sp;
 
         SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
@@ -1495,7 +1495,7 @@ int prSFClose(struct VMGlobals *g, int numArgsPushed)
             sf_close(file);
             SetNil(a->uo->slots + 0);
         }
-        
+
 	return errNone;
 }
 
@@ -1503,26 +1503,26 @@ int prSFRead(struct VMGlobals *g, int numArgsPushed);
 int prSFRead(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
- 
+
         a = g->sp - 1;
 	b = g->sp;
-       
+
         SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
-        
+
         if (!isKindOfSlot(b, class_rawarray)) return errWrongType;
-        
+
         switch (b->uo->obj_format) {
             case obj_int16 :
-                b->uo->size = sf_read_short(file, (short*)b->uob->b, b->uo->size); 
+                b->uo->size = sf_read_short(file, (short*)b->uob->b, b->uo->size);
                 break;
             case obj_int32 :
-                b->uo->size = sf_read_int(file, (int*)b->uob->b, b->uo->size); 
+                b->uo->size = sf_read_int(file, (int*)b->uob->b, b->uo->size);
                 break;
             case obj_float :
-                b->uo->size = sf_read_float(file, (float*)b->uob->b, b->uo->size); 
+                b->uo->size = sf_read_float(file, (float*)b->uob->b, b->uo->size);
                 break;
             case obj_double :
-                b->uo->size = sf_read_double(file, (double*)b->uob->b, b->uo->size); 
+                b->uo->size = sf_read_double(file, (double*)b->uob->b, b->uo->size);
                 break;
             default:
                 error("sample format not supported.\n");
@@ -1536,26 +1536,26 @@ int prSFWrite(struct VMGlobals *g, int numArgsPushed);
 int prSFWrite(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
- 
+
         a = g->sp - 1;
 	b = g->sp;
-       
+
         SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
-        
+
         if (!isKindOfSlot(b, class_rawarray)) return errWrongType;
-        
+
         switch (b->uo->obj_format) {
             case obj_int16 :
-                sf_write_short(file, (short*)b->uob->b, b->uo->size); 
+                sf_write_short(file, (short*)b->uob->b, b->uo->size);
                 break;
             case obj_int32 :
-                sf_write_int(file, (int*)b->uob->b, b->uo->size); 
+                sf_write_int(file, (int*)b->uob->b, b->uo->size);
                 break;
             case obj_float :
-                sf_write_float(file, (float*)b->uob->b, b->uo->size); 
+                sf_write_float(file, (float*)b->uob->b, b->uo->size);
                 break;
             case obj_double :
-                sf_write_double(file, (double*)b->uob->b, b->uo->size); 
+                sf_write_double(file, (double*)b->uob->b, b->uo->size);
                 break;
             default:
                 error("sample format not supported.\n");
@@ -1569,21 +1569,21 @@ int prSFSeek(struct VMGlobals *g, int numArgsPushed);
 int prSFSeek(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
- 
+
         a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-       
+
         SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
 
         int origin, offset;
         int err = slotIntVal(b, &offset);
         if (err) return err;
-        
+
         err = slotIntVal(c, &origin);
         if (err) return err;
-        
-        sf_seek(file, offset, origin); 
+
+        sf_seek(file, offset, origin);
 
 	return errNone;
 }
@@ -1595,7 +1595,7 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	a = g->sp;
 	SNDFILE *file = (SNDFILE*)a->uo->slots[0].ui;
-	if(file){				
+	if(file){
 				static	char	strbuffer [(1 << 16)] ;
 				sf_command (file, SFC_GET_LOG_INFO, strbuffer, (1 << 16)) ;
 				PyrString *pstring = newPyrString(g->gc, strbuffer, 0, true);
@@ -1621,7 +1621,7 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+
 	PyrSlot *dirPathSlot = a->uo->slots + 0;
 	int err, index;
 	err = slotIntVal(c, &index);
@@ -1629,11 +1629,11 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 		SetNil(a);
 		return err;
 	}
-	
+
 	char name[256], fullPathName[256];
 	int nameLength, creationDate, modificationDate, isDirectory, isVisible, sizeIfFile;
 	int dirPathLength = dirPathSlot->uo->size;
-	
+
 	err = dir_Lookup(dirPathSlot->uos->s, dirPathLength, index+1,
 		name, &nameLength, &creationDate, &modificationDate, &isDirectory, &isVisible, &sizeIfFile);
 	if (err == 1) {
@@ -1645,35 +1645,35 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 		SetNil(a);
 		return errFailed;
 	}
-	
+
 	if (dirPathLength + nameLength + 1 > 255) {
 		error("Full path name too long.\n");
 		SetNil(a);
 		return errFailed;
 	}
-	
+
 	PyrSlot *entryName = b->uo->slots + 0;
 	PyrSlot *entryPath = b->uo->slots + 1;
 	PyrSlot *entryIsDir = b->uo->slots + 2;
 	PyrSlot *entryIsVisible = b->uo->slots + 3;
-	
+
 	PyrString *nameString = newPyrString(g->gc, name, 0, true);
 	SetObject(entryName, nameString);
 	g->gc->GCWrite(b->uo, (PyrObject*)nameString);
-	
+
 	memcpy(fullPathName, dirPathSlot->uos->s, dirPathLength);
 	fullPathName[dirPathLength] = DELIMITOR;
 	strcpy(fullPathName + dirPathLength + 1, name);
-	
+
 	PyrString *pathString = newPyrString(g->gc, fullPathName, 0, true);
 	SetObject(entryPath, pathString);
 	g->gc->GCWrite(b->uo, (PyrObject*)pathString);
-	
+
 	if (isDirectory) { SetTrue(entryIsDir); } else { SetFalse(entryIsDir); }
 	if (isVisible) { SetTrue(entryIsVisible); } else { SetFalse(entryIsVisible); }
-	
+
 	a->ucopy = b->ucopy;
-	
+
 	return errNone;
 }
 
@@ -1683,12 +1683,12 @@ void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
 int prFile_GetFile(struct VMGlobals *g, int numArgsPushed);
 int prFile_GetFile(struct VMGlobals *g, int numArgsPushed)
 {
-	
+
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	NavDialogOptions options;
-	
+
 	int err = NavGetDefaultDialogOptions(&options);
 	if (err) return errFailed;
 
@@ -1698,23 +1698,23 @@ int prFile_GetFile(struct VMGlobals *g, int numArgsPushed)
 	options.dialogOptionFlags |= kNavSelectDefaultLocation;
 	options.dialogOptionFlags &= ~kNavAllowPreviews;
 	options.dialogOptionFlags &= ~kNavAllowMultipleFiles;
-	
+
 	if (isKindOfSlot(b, class_string)) {
 		pstringFromPyrString((PyrString*)b->uo, options.message, 256);
 	}
 
 	NavReplyRecord reply;
 	err = NavGetFile(0, &reply, &options, 0, 0, 0, 0, 0);
-	
+
 	if (err == noErr && reply.validRecord) {
 		AEKeyword keyword;
 		DescType actualType;
 		Size actualSize;
 		FSSpec fsspec;
-		
+
 		err = AEGetNthPtr(&reply.selection, 1, typeFSS, &keyword, &actualType,
 							&fsspec, sizeof(FSSpec), &actualSize);
-					 
+
 		if (err == noErr) {
 			Str255 pathname;
 			GetFullPathname(&fsspec, pathname);
@@ -1736,13 +1736,13 @@ int prFile_GetFile(struct VMGlobals *g, int numArgsPushed)
 int prFile_PutFile(struct VMGlobals *g, int numArgsPushed);
 int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
 {
-	
+
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	
+
 	NavDialogOptions options;
-	
+
 	int err = NavGetDefaultDialogOptions(&options);
 	if (err) return errFailed;
 
@@ -1752,11 +1752,11 @@ int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
 	options.dialogOptionFlags |= kNavSelectDefaultLocation;
 	options.dialogOptionFlags &= ~kNavAllowPreviews;
 	options.dialogOptionFlags &= ~kNavAllowMultipleFiles;
-	
+
 	if (isKindOfSlot(b, class_string)) {
 		pstringFromPyrString((PyrString*)b->uo, options.message, 256);
 	}
-	
+
 	if (isKindOfSlot(c, class_string)) {
 		pstringFromPyrString((PyrString*)c->uo, options.savedFileName, 256);
 	} else {
@@ -1765,13 +1765,13 @@ int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
 
 	NavReplyRecord reply;
 	err = NavPutFile(0, &reply, &options, 0, 'TEXT', 'SCjm', 0);
-	
+
 	if (err == noErr && reply.validRecord) {
 		AEKeyword keyword;
 		DescType actualType;
 		Size actualSize;
 		FSSpec fsspec;
-		
+
 		err = AEGetNthPtr(&reply.selection, 1, typeFSS, &keyword, &actualType,
 							&fsspec, sizeof(FSSpec), &actualSize);
 
@@ -1781,7 +1781,7 @@ int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
 			p2cstr(pathname);
 			PyrString *string = newPyrString(g->gc, (char*)pathname, 0, true);
 			SetObject(a, string);
-			
+
 			err = NavCompleteSave(&reply, kNavTranslateInPlace);
 		} else {
 			SetNil(a);
@@ -1800,64 +1800,64 @@ int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
 void initFilePrimitives()
 {
 	int base, index;
-	
+
 	base = nextPrimitiveIndex();
 	index = 0;
 
-	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);	
-	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);	
-	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);	
-	definePrimitive(base, index++, "_SFWrite", prSFWrite, 2, 0);	
-	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);	
-	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);	
-	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);	
-        
+	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);
+	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);
+	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);
+	definePrimitive(base, index++, "_SFWrite", prSFWrite, 2, 0);
+	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);
+	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);
+	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
+
 #ifndef SC_WIN32
-  definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);	
-	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);	
+  definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
+	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);
 #endif
-	
-	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);	
+
+	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
-	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);	
-	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);	
-	definePrimitive(base, index++, "_FileSeek", prFileSeek, 3, 0);	
-	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);	
-	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);	
-	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);	
-	definePrimitive(base, index++, "_FileWriteLE", prFileWriteLE, 2, 0);	
-	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);	
-	definePrimitive(base, index++, "_File_getcwd", prFileGetcwd, 2, 0);	
+	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
+	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);
+	definePrimitive(base, index++, "_FileSeek", prFileSeek, 3, 0);
+	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);
+	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);
+	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);
+	definePrimitive(base, index++, "_FileWriteLE", prFileWriteLE, 2, 0);
+	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);
+	definePrimitive(base, index++, "_File_getcwd", prFileGetcwd, 2, 0);
 
-	definePrimitive(base, index++, "_FilePutChar", prFilePutChar, 2, 0);	
-	definePrimitive(base, index++, "_FilePutInt8", prFilePutInt8, 2, 0);	
-	definePrimitive(base, index++, "_FilePutInt16", prFilePutInt16, 2, 0);	
-	definePrimitive(base, index++, "_FilePutInt32", prFilePutInt32, 2, 0);	
-	definePrimitive(base, index++, "_FilePutFloat", prFilePutFloat, 2, 0);	
-	definePrimitive(base, index++, "_FilePutDouble", prFilePutDouble, 2, 0);	
-	definePrimitive(base, index++, "_FilePutInt16LE", prFilePutInt16LE, 2, 0);	
-	definePrimitive(base, index++, "_FilePutInt32LE", prFilePutInt32LE, 2, 0);	
-	definePrimitive(base, index++, "_FilePutFloatLE", prFilePutFloatLE, 2, 0);	
-	definePrimitive(base, index++, "_FilePutDoubleLE", prFilePutDoubleLE, 2, 0);	
+	definePrimitive(base, index++, "_FilePutChar", prFilePutChar, 2, 0);
+	definePrimitive(base, index++, "_FilePutInt8", prFilePutInt8, 2, 0);
+	definePrimitive(base, index++, "_FilePutInt16", prFilePutInt16, 2, 0);
+	definePrimitive(base, index++, "_FilePutInt32", prFilePutInt32, 2, 0);
+	definePrimitive(base, index++, "_FilePutFloat", prFilePutFloat, 2, 0);
+	definePrimitive(base, index++, "_FilePutDouble", prFilePutDouble, 2, 0);
+	definePrimitive(base, index++, "_FilePutInt16LE", prFilePutInt16LE, 2, 0);
+	definePrimitive(base, index++, "_FilePutInt32LE", prFilePutInt32LE, 2, 0);
+	definePrimitive(base, index++, "_FilePutFloatLE", prFilePutFloatLE, 2, 0);
+	definePrimitive(base, index++, "_FilePutDoubleLE", prFilePutDoubleLE, 2, 0);
 
-	definePrimitive(base, index++, "_FileGetChar", prFileGetChar, 1, 0);	
-	definePrimitive(base, index++, "_FileGetInt8", prFileGetInt8, 1, 0);	
-	definePrimitive(base, index++, "_FileGetInt16", prFileGetInt16, 1, 0);	
-	definePrimitive(base, index++, "_FileGetInt32", prFileGetInt32, 1, 0);	
-	definePrimitive(base, index++, "_FileGetFloat", prFileGetFloat, 1, 0);	
-	definePrimitive(base, index++, "_FileGetDouble", prFileGetDouble, 1, 0);	
-	definePrimitive(base, index++, "_FileGetInt16LE", prFileGetInt16LE, 1, 0);	
-	definePrimitive(base, index++, "_FileGetInt32LE", prFileGetInt32LE, 1, 0);	
-	definePrimitive(base, index++, "_FileGetFloatLE", prFileGetFloatLE, 1, 0);	
-	definePrimitive(base, index++, "_FileGetDoubleLE", prFileGetDoubleLE, 1, 0);	
+	definePrimitive(base, index++, "_FileGetChar", prFileGetChar, 1, 0);
+	definePrimitive(base, index++, "_FileGetInt8", prFileGetInt8, 1, 0);
+	definePrimitive(base, index++, "_FileGetInt16", prFileGetInt16, 1, 0);
+	definePrimitive(base, index++, "_FileGetInt32", prFileGetInt32, 1, 0);
+	definePrimitive(base, index++, "_FileGetFloat", prFileGetFloat, 1, 0);
+	definePrimitive(base, index++, "_FileGetDouble", prFileGetDouble, 1, 0);
+	definePrimitive(base, index++, "_FileGetInt16LE", prFileGetInt16LE, 1, 0);
+	definePrimitive(base, index++, "_FileGetInt32LE", prFileGetInt32LE, 1, 0);
+	definePrimitive(base, index++, "_FileGetFloatLE", prFileGetFloatLE, 1, 0);
+	definePrimitive(base, index++, "_FileGetDoubleLE", prFileGetDoubleLE, 1, 0);
 
-	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);	
-	
-	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);	
-	definePrimitive(base, index++, "_FileReadRawLE", prFileReadRawLE, 2, 0);	
+	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);
+
+	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);
+	definePrimitive(base, index++, "_FileReadRawLE", prFileReadRawLE, 2, 0);
 
 #ifdef NOCLASSIC
-	definePrimitive(base, index++, "_Directory_At", prDirectory_At, 3, 0);	
+	definePrimitive(base, index++, "_Directory_At", prDirectory_At, 3, 0);
 	definePrimitive(base, index++, "_File_GetFile", prFile_GetFile, 2, 0);
 	definePrimitive(base, index++, "_File_PutFile", prFile_PutFile, 3, 0);
 #endif

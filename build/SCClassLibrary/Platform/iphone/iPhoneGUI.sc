@@ -24,7 +24,7 @@ IPhoneGUI {
 	*doesNotUnderstand { arg selector ... args;
 		^extraClasses.perform( selector, *args );
 	}
-	
+
 	///////////////// Common -> GUI /////////////////
 /*
 	*freqScope { ^SCFreqScopeWindow }
@@ -68,13 +68,13 @@ IPhoneGUI {
 	*ezListView { ^EZListView }
 	*ezPopUpMenu { ^EZPopUpMenu}
 	*ezNumber { ^EZNumber}
-	*ezRanger { ^EZRanger }		
+	*ezRanger { ^EZRanger }
 	*menuItem { ^CocoaMenuItem }
-	
+
 	*knob { ^SCKnob }
 
 	*pen { ^SCPen }
-*/			
+*/
 	///////////////// Common -> Audio /////////////////
 
 /*
@@ -82,7 +82,7 @@ IPhoneGUI {
 	*mouseY { ^MouseY }
 	*mouseButton { ^MouseButton }
 	*keyState { ^KeyState }
-*/			
+*/
 	///////////////// Common -> OSX /////////////////
 
 /*
@@ -90,7 +90,7 @@ IPhoneGUI {
 	*speech { ^Speech }
 */
 	///////////////// extras /////////////////
-			
+
 //	checkBox: SCCheckBox,
 //	tabbedPane: SCTabbedPane
 

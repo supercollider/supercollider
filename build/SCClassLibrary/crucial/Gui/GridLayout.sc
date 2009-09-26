@@ -32,7 +32,7 @@ GridLayout {
 		ra = this.getRect(pointA.x,pointA.y);
 		rb = this.getRect(pointB.x,pointB.y);
 		^ra.union(rb)
-	}		
+	}
 	getBounds { | quadrantA,quadrantB| // [0,0], [1,1]
 		var ra,rb;
 		ra = this.getRect(*quadrantA);
@@ -65,10 +65,10 @@ GridLayout {
 
 		grids = numCols.collect({ |ci|
 					numRows.collect({ |ri|
-						GUI.button.new(c, 
+						GUI.button.new(c,
 							Rect( ci * colWidth , ri * rowHeight, colWidth,rowHeight))
 						.states_([[ri.asString ++ ":"++ci.asString,Color.black,Color.white]])
-						.action_({ |butt|  
+						.action_({ |butt|
 							if(lastPoint.isNil,{
 								lastPoint = ci@ri;
 							},{
@@ -80,6 +80,6 @@ GridLayout {
 				});
 		w.front;
 	}
-	
+
 }
 

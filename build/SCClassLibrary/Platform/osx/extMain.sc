@@ -5,7 +5,7 @@
 	applicationStart {
 		ApplicationStart.run;
 	}
-	
+
 	preferences {
 		this.platform.preferencesAction.value(this)
 	}

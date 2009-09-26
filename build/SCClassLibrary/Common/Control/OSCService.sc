@@ -1,7 +1,7 @@
 OSCService {
 	var <name, <hostname, <port, <protocol;
 
-// the way OSCServers should be created	
+// the way OSCServers should be created
 	*knownServices {
 		var services, numberOfKnownServices;
 		numberOfKnownServices = this.numberOfKnownServices;
@@ -12,10 +12,10 @@ OSCService {
 			this.prInitOSCService(service, index);
 			services.add(service);
 		});
-		
-		^services;		
+
+		^services;
 	}
-	
+
 	*knownAddresses { arg applicationType="SuperCollider", protocol=\udp;
 		var addr;
 		this.knownServices.do { arg item;
@@ -27,11 +27,11 @@ OSCService {
 		^addr
 	}
 
-// accessors	
+// accessors
 	*numberOfKnownServices {
 		_NumOSCServices
 	}
-	
+
 	netAddr {
 		^NetAddr.new(hostname, port);
 	}
@@ -40,8 +40,8 @@ OSCService {
 	*prInitOSCService { arg server, index;
 		_InitOSCService
 	}
-	
-	printOn { arg stream; 
+
+	printOn { arg stream;
 		stream << this.class.name << "(" <<* [name, hostname, port, protocol ? \unknown]  <<")"
 	}
 }

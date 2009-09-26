@@ -40,7 +40,7 @@ extern "C" {
 
 #define PI 3.1415926535898f
 #define MINUSPI -3.1415926535898f
-#define TWOPI 6.28318530717952646f 
+#define TWOPI 6.28318530717952646f
 #define INV_TWOPI 0.1591549430919f
 
 #define ods_abs(a)  ((a)<0? -(a) : (a))
@@ -61,7 +61,7 @@ extern "C" {
 enum onsetsds_fft_types {
 	ODS_FFT_SC3_COMPLEX,	  ///< SuperCollider, cartesian co-ords ("SCComplexBuf") - NB it's more efficient to provide polar data from SC
 	ODS_FFT_SC3_POLAR,	  ///< SuperCollider, polar co-ords ("SCPolarBuf")
-	ODS_FFT_FFTW3_HC, ///< FFTW <a href="http://www.fftw.org/fftw3_doc/The-Halfcomplex_002dformat-DFT.html">"halfcomplex"</a> format 
+	ODS_FFT_FFTW3_HC, ///< FFTW <a href="http://www.fftw.org/fftw3_doc/The-Halfcomplex_002dformat-DFT.html">"halfcomplex"</a> format
 	ODS_FFT_FFTW3_R2C   ///< FFTW regular format, typically produced using <a href="http://www.fftw.org/fftw3_doc/One_002dDimensional-DFTs-of-Real-Data.html#One_002dDimensional-DFTs-of-Real-Data">real-to-complex</a> transform
 };
 
@@ -102,14 +102,14 @@ typedef struct OdsPolarBuf {
 typedef struct OnsetsDS {
 	/// "data" is a pointer to the memory that must be EXTERNALLY allocated.
 	/// Other pointers will point to locations within this memory.
-	float  *data, 
+	float  *data,
 		   *psp,     ///< Peak Spectral Profile - size is numbins+2, data is stored in order dc through to nyquist
 		   *odfvals, // odfvals[0] will be the current val, odfvals[1] prev, etc
 		   *sortbuf, // Used to calculate the median
 		   *other; // Typically stores data about the previous frame
 	OdsPolarBuf*  curr; // Current FFT frame, as polar
-	
-	float 
+
+	float
 		srate, ///< The sampling rate of the input audio. Set by onsetsds_init()
 		// Adaptive whitening params
 		relaxtime, ///< Do NOT set this directly. Use onsetsds_setrelax() which will also update relaxcoef.
@@ -128,13 +128,13 @@ typedef struct OnsetsDS {
 		/// Values between 0 and 1 are expected, but outside this range may
 		/// sometimes be appropriate too.
 		thresh;
-	
+
 	int odftype,    ///< Choose from #onsetsds_odf_types
 	    whtype,     ///< Choose from #onsetsds_wh_types
 	    fftformat;  ///< Choose from #onsetsds_fft_types
 	bool whiten,  ///< Whether to apply whitening - onsetsds_init() decides this on your behalf
 		 detected,///< Output val - true if onset detected in curr frame
-		 /** 
+		 /**
 		 NOT YET USED: Whether to convert magnitudes to log domain before processing. This is done as follows:
 		 Magnitudes below a log-lower-limit threshold (ODS_LOG_LOWER_LIMIT) are pushed up to that threshold (to avoid log(0) infinity problems),
 		 then the log is taken. The values are re-scaled to a similar range as the linear-domain values (assumed to lie
@@ -143,9 +143,9 @@ typedef struct OnsetsDS {
 		 logmags,
 		 med_odd; ///< Whether median span is odd or not (used internally)
 
-	unsigned int 
+	unsigned int
 		/// Number of frames used in median calculation
-		medspan, 
+		medspan,
 		/// Size of enforced gap between detections, measured in FFT frames.
 		mingap, gapleft;
 	size_t fftsize, numbins; // numbins is the count not including DC/nyq
@@ -159,12 +159,12 @@ typedef struct OnsetsDS {
 /**
  * \defgroup MainUserFuncs Main user functions
  */
- //@{ 
+ //@{
 
 /**
-* Determine how many bytes of memory must be allocated (e.g. using malloc) to 
-* accompany the OnsetsDS struct, operating using the specified settings (used to 
-* store part-processed FFT data etc). The user must 
+* Determine how many bytes of memory must be allocated (e.g. using malloc) to
+* accompany the OnsetsDS struct, operating using the specified settings (used to
+* store part-processed FFT data etc). The user must
 * call this, and then allocate the memory, BEFORE calling onsetsds_init().
 * @param odftype Which onset detection function (ODF) you'll be using, chosen from #onsetsds_odf_types
 * @param fftsize Size of FFT: 512 is recommended.
@@ -173,14 +173,14 @@ typedef struct OnsetsDS {
 size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan);
 
 /**
-* Initialise the OnsetsDS struct and its associated memory, ready to detect 
-* onsets using the specified settings. Must be called before any call to 
+* Initialise the OnsetsDS struct and its associated memory, ready to detect
+* onsets using the specified settings. Must be called before any call to
 * onsetsds_process().
 *
 * Note: you can change the onset detection function type in mid-operation
-* by calling onsetsds_init() again, but because memory will be reset this 
-* will behave as if starting from scratch (rather than being aware of the past 
-* few frames of sound). Do not attempt to change the 
+* by calling onsetsds_init() again, but because memory will be reset this
+* will behave as if starting from scratch (rather than being aware of the past
+* few frames of sound). Do not attempt to change the
 * onset detection function in a more hacky way (e.g. fiddling with the struct)
 * because memory is set up differently for each of the different ODFs.
 * @param ods An instance of the OnsetsDS struct
@@ -191,15 +191,15 @@ size_t onsetsds_memneeded (int odftype, size_t fftsize, unsigned int medspan);
 * @param medspan The number of past frames that will be used for median calculation during triggering
 * @param srate The sampling rate of the input audio
 */
-void onsetsds_init(OnsetsDS* ods, float* odsdata, int fftformat, 
+void onsetsds_init(OnsetsDS* ods, float* odsdata, int fftformat,
                            int odftype, size_t fftsize, unsigned int medspan, float srate);
 
 /**
-* Process a single FFT data frame in the audio signal. Note that processing 
-* assumes that each call to onsetsds_process() is on a subsequent frame in 
+* Process a single FFT data frame in the audio signal. Note that processing
+* assumes that each call to onsetsds_process() is on a subsequent frame in
 * the same audio stream - to handle multiple streams you must use separate
 * OnsetsDS structs and memory!
-* 
+*
 * This function's main purpose is to call some of the library's other functions,
 * in the expected sequence.
 */
@@ -214,9 +214,9 @@ bool   onsetsds_process(OnsetsDS* ods, float* fftbuf);
 /**
  * \defgroup LessCommonFuncs Other useful functions
  */
- //@{ 
+ //@{
 /**
-* Set the "memory coefficient" indirectly via the time for the 
+* Set the "memory coefficient" indirectly via the time for the
 * memory to decay by 60 dB.
 * @param ods The OnsetsDS
 * @param time The time in seconds
@@ -232,7 +232,7 @@ void onsetsds_setrelax(OnsetsDS* ods, float time, size_t hopsize);
 /**
  * \defgroup OtherFuncs Other functions, not typically called by users
  */
- //@{ 
+ //@{
 /**
 * Load the current frame of FFT data into the OnsetsDS struct.
 *
@@ -248,7 +248,7 @@ void onsetsds_loadframe(OnsetsDS* ods, float* fftbuf);
 void onsetsds_whiten(OnsetsDS* ods);
 
 /**
-* Calculate the Onset Detection Function (includes scaling ODF outputs to 
+* Calculate the Onset Detection Function (includes scaling ODF outputs to
 * similar range)
 *
 * Not typically called directly by users since onsetsds_process() calls this.
@@ -257,7 +257,7 @@ void onsetsds_odf(OnsetsDS* ods);
 
 /**
 * Detects salient peaks in Onset Detection Function by removing the median,
-* then thresholding. Afterwards, the member ods.detected will indicate whether 
+* then thresholding. Afterwards, the member ods.detected will indicate whether
 * or not an onset was detected.
 *
 * Not typically called directly by users since onsetsds_process() calls this.

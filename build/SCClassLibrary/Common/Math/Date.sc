@@ -1,13 +1,13 @@
 
 Date {
-	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6, 
+	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6,
 		<>rawSeconds=0, <>bootSeconds=0;
-	
+
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
 	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds, bootSeconds;
-		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek, 
+		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
 				rawSeconds, bootSeconds);
 	}
 	storeArgs {
@@ -25,11 +25,11 @@ Date {
 		// return a value suitable for seeding a random number generator.
 		_TimeSeed
 	}
-	
+
 	// strings for time stamping things like filenames.
 	dayStamp {
 		var s;
-		s = (((year % 100) * 100 + month) * 100 + day 
+		s = (((year % 100) * 100 + month) * 100 + day
 				+ 1000000).asString;
 		s.removeAt(0); // get rid of the leading '1' char that was put there to force leading zeroes.
 		^s

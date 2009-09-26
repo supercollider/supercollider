@@ -1,7 +1,7 @@
 
 Pfpar : ListPattern {
 	initStreams { arg priorityQ;
-		list.do({ arg pattern, i; 
+		list.do({ arg pattern, i;
 			priorityQ.put(0.0, pattern.asStream);
 		});
 	}
@@ -11,24 +11,24 @@ Pfpar : ListPattern {
 		var assn;
 		var priorityQ = PriorityQueue.new;
 		cleanup ?? { cleanup = EventStreamCleanup.new };
-	
+
 		repeats.value.do({ arg j;
 			var outval, stream, nexttime, now = 0.0;
 
 			this.initStreams(priorityQ);
-			
+
 			// if first event not at time zero
 			if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }, {
 				outval = inval.copy;
-				outval.put(\freq, \rest);					
+				outval.put(\freq, \rest);
 				outval.put(\delta, nexttime);
-				
-				inval = outval.yield; 
-				now = nexttime;	
+
+				inval = outval.yield;
+				now = nexttime;
 			});
-			
+
 			//inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
-			
+
 			while({
 				priorityQ.notEmpty
 			},{
@@ -36,46 +36,46 @@ Pfpar : ListPattern {
 				outval = stream.next(inval);
 				if (outval.isNil, {
 					priorityQ.clear;
-					^cleanup.exit(inval); 
-				},{			
+					^cleanup.exit(inval);
+				},{
 					cleanup.update(outval);
 					// requeue stream
 					priorityQ.put(now + outval.delta, stream);
 					nexttime = priorityQ.topPriority;
 					outval.put(\delta, nexttime - now);
-					
+
 					inval = outval.yield;
 					// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
-					now = nexttime;	
-				});	
+					now = nexttime;
+				});
 			});
 		});
 		^inval;
 	}
-	
-}	
+
+}
 
 Pproto  : Pattern {
-	
+
 	var <>makeFunction, <>pattern, <>cleanupFunc;
-	
+
 	*new { | makeFunction, pattern, cleanupFunc|
 		^super.newCopyArgs( makeFunction, pattern, cleanupFunc)
 	}
-	storeArgs { ^[makeFunction,pattern,cleanupFunc] }	
+	storeArgs { ^[makeFunction,pattern,cleanupFunc] }
 	embedInStream { | event |
-		var stream,  ev, evType;			
+		var stream,  ev, evType;
 		var cleanup, cleanupList, eventCleanupFunc;
 		var proto;							// temporary proto event used in allocation
 		var makeRoutine;						// routine wrapper for function that makes protoEvent
 		var protoEvent;						// protoEvent created by function
-		
+
 // Step 1: generate resources from function
 		proto = (
 			delta: 0, 						// events occur simultaneously
 			finish: { ev = currentEnvironment} 	// get copy of event object actually played
-		);									
-		protoEvent = ();						
+		);
+		protoEvent = ();
 		makeRoutine = Routine({ protoEvent.make (makeFunction) });
 
 		while {
@@ -85,13 +85,13 @@ Pproto  : Pattern {
 			ev.proto = nil;
 			cleanupList = cleanupList.add(ev)
 		};
-		
+
 		cleanup = EventStreamCleanup.new;
-		eventCleanupFunc = { | flag |	
+		eventCleanupFunc = { | flag |
 			cleanupList.do { | ev |
 				EventTypesWithCleanup.cleanup(ev, flag)
 			}
-		}; 		
+		};
 		cleanupFunc = eventCleanupFunc ?? { { | flag | eventCleanupFunc.value(proto, flag) } };
 		cleanup.addFunction(event, cleanupFunc);
 

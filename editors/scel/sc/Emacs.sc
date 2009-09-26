@@ -46,7 +46,7 @@ EmacsInterface {
 
 			dt = {
 				result = IdentitySet.new;
-				
+
 				Class.allClasses.do { | class |
 					if (class.isMetaClass.not) {
 						result.add(class.name);
@@ -55,7 +55,7 @@ EmacsInterface {
 						result.add(method.name);
 					};
 				};
-				
+
 				File.use(fileName, "w", { | file |
 					result.collectAs(_.asString, Array).storeLispOn(file);
 				});
@@ -83,7 +83,7 @@ EmacsInterface {
 		})
 		.put(\classDefinitions, { | name |
 			var result, class, files;
-			
+
 			result = SortedList(8, this.makeSubListSorter(0, '<'));
 
 			if ((class = name.asSymbol.asClass).notNil) {
@@ -105,12 +105,12 @@ EmacsInterface {
 					}
 				}
 			};
-		
+
 			name -> result
 		})
 		.put(\methodDefinitions, { | name |
 			var result, symbol, getter, setter;
-		
+
 			result = SortedList(8, this.makeSubListSorter(0, '<'));
 			symbol = name.asSymbol;
 
@@ -125,7 +125,7 @@ EmacsInterface {
 					}
 				}
 			};
-		
+
 			name -> result
 		})
 		.put(\methodReferences, { | name |
@@ -167,7 +167,7 @@ EmacsInterface {
 					args = method.argNames.copyToEnd(1);
 					varArgs = method.varArgs;
 					lastIndex = args.lastIndex;
-					
+
 					args.do({ | name, i |
 						var default;
 						if (varArgs and: { i == lastIndex }) {

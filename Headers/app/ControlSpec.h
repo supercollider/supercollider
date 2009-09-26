@@ -23,11 +23,11 @@ struct ControlSpec {
     float minval, maxval, initial;
     int numticks;
     bool constrained;
-    
+
     ControlSpec();
 };
 
-inline ControlSpec() 
+inline ControlSpec()
     : minval(0.), maxval(1.), initial(0.), numticks(11), constrained(false)
 {
 }

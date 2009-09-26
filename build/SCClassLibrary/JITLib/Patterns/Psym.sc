@@ -1,16 +1,16 @@
 Psym : FilterPattern {
 	var <>dict;
-	
+
 	*new { arg pattern, dict;
 		^super.new(pattern).dict_(dict)
 	}
 	storeArgs { ^[pattern,dict] }
-	
+
 	lookupClass { ^Pdef }
 	lookUp { arg key;
 		^(dict ?? { this.lookupClass.all }).at(key) ?? { this.lookupClass.default }
 	}
-	
+
 	embedInStream { arg inval;
 		var str, outval, pat;
 		str = pattern.asStream;
@@ -18,14 +18,14 @@ Psym : FilterPattern {
 			outval = str.next(inval);
 			outval.notNil
 		} {
-			
+
 			pat = this.getPattern(outval);
 			inval = pat.embedInStream(inval);
 		};
 		^inval
-	
+
 	}
-	
+
 	getPattern { arg key;
 		^if(key.isSequenceableCollection) {
 			this.lookupClass.parallelise(
@@ -37,9 +37,9 @@ Psym : FilterPattern {
 			this.lookUp(key.asSymbol)
 		};
 	}
-	
-	
-	
+
+
+
 }
 
 Pnsym : Psym {
@@ -49,7 +49,7 @@ Pnsym : Psym {
 
 Ptsym : Psym {
 	var <>quant, <>dur, <>tolerance;
-	
+
 	*new { arg pattern, dict, quant, dur, tolerance = 0.001;
 		^super.newCopyArgs(pattern, dict, quant, dur, tolerance)
 	}
@@ -59,7 +59,7 @@ Ptsym : Psym {
 		str = pattern.asStream;
 		quantStr = quant.asStream;
 		durStr = dur.asStream;
-		
+
 		while {
 			outval = str.next(inval);
 			quantVal = quantStr.next(inval) ? quantVal;
@@ -70,7 +70,7 @@ Ptsym : Psym {
 			inval = pat.embedInStream(inval);
 		};
 		^inval
-	
+
 	}
 }
 
@@ -94,7 +94,7 @@ Pnsym1 : Pnsym {
 			inval = outval.yield
 		};
 		^inval
-	
+
 	}
 }
 
@@ -104,7 +104,7 @@ Psym1 : Psym {
 		str = pattern.asStream;
 		streams = IdentityDictionary.new;
 		cleanup ?? { cleanup = EventStreamCleanup.new };
-		
+
 		while {
 			which = str.next(inval);
 			which.notNil
@@ -117,11 +117,11 @@ Psym1 : Psym {
 			};
 			outval = currentStream.next(inval);
 			if(outval.isNil) { ^cleanup.exit(inval) };
-			
+
 			cleanup.update(outval);
 			inval = outval.yield
 		};
-		
+
 		^cleanup.exit(inval);
 	}
 }

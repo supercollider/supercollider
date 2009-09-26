@@ -2,7 +2,7 @@
   SuperCollider real time audio synthesis system
   Copyright (c) 2002 James McCartney. All rights reserved.
   http://www.audiosynth.com
-  
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or

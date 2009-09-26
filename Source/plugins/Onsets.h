@@ -2,9 +2,9 @@
 	Onset detector for SuperCollider
     Copyright (c) 2007 Dan Stowell. All rights reserved.
 	http://onsetsds.sourceforge.net
-	
+
 	Now part of:
-	
+
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
@@ -31,7 +31,7 @@ struct Onsets : Unit
 	float outval;
 	float *m_odsdata;
 	OnsetsDS *m_ods;
-	
+
 	bool m_needsinit;
 };
 

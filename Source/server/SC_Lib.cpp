@@ -50,7 +50,7 @@ void SendDoneWithIntValue(ReplyAddress *inReply, const char *inCommandName, int 
 	packet.addtag('s');
 	packet.adds(inCommandName);
 	packet.addtag('i');
-	packet.addi(value);	
+	packet.addi(value);
 	SendReply(inReply, packet.data(), packet.size());
 };
 
@@ -136,7 +136,7 @@ SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFu
 	SC_LibCmd *cmd = new SC_LibCmd(inFunc);
 	cmd->SetName(path);
 	gCmdLib->Add(cmd);
-	
+
 	// support OSC commands without the leading slash
 	SC_LibCmd *cmd2 = new SC_LibCmd(inFunc);
 	cmd2->SetName(inPath);

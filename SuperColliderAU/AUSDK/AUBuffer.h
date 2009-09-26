@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -75,7 +75,7 @@ class AUBufferList {
 	};
 public:
 	/*! @ctor AUBufferList */
-	AUBufferList() : mPtrState(kPtrsInvalid), mExternalMemory(false), mPtrs(NULL), mMemory(NULL), 
+	AUBufferList() : mPtrState(kPtrsInvalid), mExternalMemory(false), mPtrs(NULL), mMemory(NULL),
 		mAllocatedStreams(0), mAllocatedFrames(0), mAllocatedBytes(0) { }
 	/*! @dtor ~AUBufferList */
 	~AUBufferList();
@@ -93,7 +93,7 @@ public:
 							memcpy(mPtrs, &abl, (char *)&abl.mBuffers[abl.mNumberBuffers] - (char *)&abl);
 							return *mPtrs;
 						}
-	
+
 	/*! @method SetBuffer */
 	void				SetBuffer(UInt32 index, const AudioBuffer &ab) {
 							if (mPtrState == kPtrsInvalid || index >= mPtrs->mNumberBuffers)
@@ -118,7 +118,7 @@ public:
 								COMPONENT_THROW(-1);
 							memcpy(&abl, mPtrs, (char *)&abl.mBuffers[abl.mNumberBuffers] - (char *)&abl);
 						}
-	
+
 	/*! @method CopyBufferContentsTo */
 	void				CopyBufferContentsTo(AudioBufferList &abl) const {
 							if (mPtrState == kPtrsInvalid)
@@ -134,12 +134,12 @@ public:
 								destbuf->mDataByteSize = srcbuf->mDataByteSize;
 							}
 						}
-	
+
 	/*! @method Allocate */
 	void				Allocate(const CAStreamBasicDescription &format, UInt32 nFrames);
 	/*! @method Deallocate */
 	void				Deallocate();
-	
+
 	/*! @method UseExternalBuffer */
 	void				UseExternalBuffer(const CAStreamBasicDescription &format, const AudioUnitExternalBuffer &buf);
 
@@ -157,7 +157,7 @@ public:
 
 	/*! @method GetAllocatedFrames */
 	UInt32				GetAllocatedFrames() const { return mAllocatedFrames; }
-	
+
 private:
 	/*! @ctor AUBufferList */
 	AUBufferList(AUBufferList &) { }	// prohibit copy constructor
@@ -184,34 +184,34 @@ private:
 template <class T>
 class TAUBuffer {
 public:
-	enum { 
+	enum {
 		kAlignInterval = 0x10,
 		kAlignMask = kAlignInterval - 1
 	};
-	
+
 	/*! @ctor TAUBuffer.0 */
 	TAUBuffer() :	mMemObject(NULL), mAlignedBuffer(NULL), mBufferSizeBytes(0)
 	{
 	}
-	
+
 	/*! @ctor TAUBuffer.1 */
 	TAUBuffer(UInt32 numElems, UInt32 numChannels) :	mMemObject(NULL), mAlignedBuffer(NULL),
 														mBufferSizeBytes(0)
 	{
 		Allocate(numElems, numChannels);
 	}
-	
+
 	/*! @dtor ~TAUBuffer */
 	~TAUBuffer()
 	{
 		Deallocate();
 	}
-		
+
 	/*! @method Allocate */
 	void	Allocate(UInt32 numElems)			// can also re-allocate
 	{
 		UInt32 reqSize = numElems * sizeof(T);
-		
+
 		if (mMemObject != NULL && reqSize == mBufferSizeBytes)
 			return;	// already allocated
 
@@ -230,28 +230,28 @@ public:
 	{
 		if (mMemObject == NULL) return;			// so this method has no effect if we're using
 												// an external buffer
-		
+
 		free(mMemObject);
 		mMemObject = NULL;
 		mAlignedBuffer = NULL;
 		mBufferSizeBytes = 0;
 	}
-	
+
 	/*! @method AllocateClear */
 	void	AllocateClear(UInt32 numElems)		// can also re-allocate
 	{
 		Allocate(numElems);
 		Clear();
 	}
-	
+
 	/*! @method Clear */
 	void	Clear()
 	{
 		memset(mAlignedBuffer, 0, mBufferSizeBytes);
 	}
-	
+
 	// accessors
-	
+
 	/*! @method operator T *()@ */
 	operator T *()				{ return mAlignedBuffer; }
 

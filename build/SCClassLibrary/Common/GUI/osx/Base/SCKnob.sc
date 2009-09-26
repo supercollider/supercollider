@@ -3,7 +3,7 @@
 //	fix key modidiers bug by Stephan Wittwer 08/2006 - thanks!
 //	Knob updates only on value changes - 10/2006
 //	GUI.cocoa changes - 04/2007
-//	
+//
 //	03.10.2008 - new implementation:
 //		- Knob now is a subclass of SCViewHolder
 //		- Relative origin
@@ -21,14 +21,14 @@ SCKnob : SCUserView {
 	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
 
 	*viewClass { ^SCUserView }
-	
+
 	*initClass {
 		var version;
-		
+
 		defaultMode='round';
 
 		StartUp.add({
-			
+
 			GUI.skins.default.put('knob', (
 				default: (
 					scale:	Color.black.alpha_(0.3),
@@ -38,25 +38,25 @@ SCKnob : SCUserView {
 					defaultMode: 'round'
 				)
 			));
-			
+
 		});
 	}
 
 	init { arg argParent, argBounds;
-	
+
 		argBounds = this.calcConsts(argBounds);
-		
+
 		super.init(argParent, argBounds);
-		
+
 		value = 0.0;
 		keystep = 0.01;
 		step = 0.01;
 		mode = defaultMode;
-		
+
 		skin = GUI.skins.default.knob.default;
 
 		this.oldMethodsCompat(skin);
-		
+
 		this.receiveDragHandler = { this.valueAction_(SCView.currentDrag); };
 		this.beginDragAction = { value.asFloat; };
 		this.canReceiveDragHandler = { SCView.currentDrag.isNumber };
@@ -77,7 +77,7 @@ SCKnob : SCUserView {
 //		if (relativeOrigin.not) {
 //			center = center + (this.bounds.left @ this.bounds.top);
 //		};
-				
+
 		^rect
 	}
 
@@ -92,27 +92,27 @@ SCKnob : SCUserView {
 		color[2].set;
 		SCPen.addAnnularWedge(
 			center,
-			aw8, 
-			widthDiv2, 	
-			0.25pi, 
+			aw8,
+			widthDiv2,
+			0.25pi,
 			-1.5pi
 		);
 		SCPen.perform(\fill);
 
 		if (centered.not, {
-			startAngle = 0.75pi; 
+			startAngle = 0.75pi;
 			arcAngle = 1.5pi * value;
 		}, {
-			startAngle = -0.5pi; 
+			startAngle = -0.5pi;
 			arcAngle = 1.5pi * (value - 0.5);
 		});
 
 		color[1].set;
 		SCPen.addAnnularWedge(
-			center, 
-			aw12, 
-			widthDiv2, 	
-			startAngle, 
+			center,
+			aw12,
+			widthDiv2,
+			startAngle,
 			arcAngle
 		);
 		SCPen.perform(\fill);
@@ -129,19 +129,19 @@ SCKnob : SCUserView {
 	}
 
 	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
-		
+
 		hit =  x @ y;
-		
+
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);
-		
+
 		this.mouseMove(x, y, modifiers);
 
 	}
-		
+
 	mouseMove { arg x, y, modifiers;
 		var mp, pt, angle, inc = 0;
-		
-		
+
+
 		if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
 			case
 				{ (mode == \vert) || (modifiers & 262144 == 262144) } { // Control
@@ -191,10 +191,10 @@ SCKnob : SCUserView {
 				}
 		};
 
-		mouseMoveAction.value(this, x, y, modifiers);	
-	}	
+		mouseMoveAction.value(this, x, y, modifiers);
+	}
 
-	getScale { |modifiers| 
+	getScale { |modifiers|
 		^case
 			{ modifiers & 131072 == 131072 } { shift_scale }
 			{ modifiers & 262144 == 262144 } { ctrl_scale }
@@ -204,7 +204,7 @@ SCKnob : SCUserView {
 
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
 		var zoom = this.getScale(modifiers);
-		
+
 		// standard keydown
 		if (char == $r, { this.valueAction = 1.0.rand; ^this });
 		if (char == $n, { this.valueAction = 0.0; ^this });
@@ -239,7 +239,7 @@ SCKnob : SCUserView {
 		centered = bool;
 		this.refresh;
 	}
-	
+
 	skin_ { arg newskin;
 		if ( newskin.notNil ) {
 			skin = newskin;
@@ -259,9 +259,9 @@ SCKnob : SCUserView {
 		];
 		defaultMode = skin.defaultMode;
 	}
-	
+
 	*paletteExample{arg parent, bounds;
-		^this.new(parent, bounds.asRect.height@bounds.asRect.height);	
+		^this.new(parent, bounds.asRect.height@bounds.asRect.height);
 	}
-	
+
 }

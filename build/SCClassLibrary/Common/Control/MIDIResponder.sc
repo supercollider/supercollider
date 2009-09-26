@@ -27,11 +27,11 @@ MIDIResponder {
 	remove {
 		this.class.remove(this)
 	}
-	*removeAll { 
+	*removeAll {
 		if(this == MIDIResponder,{
 			this.allSubclasses.do({ |responderClass| responderClass.removeAll })
 		},{
-			this.init 
+			this.init
 		})
 	}
 }
@@ -71,7 +71,7 @@ NoteOnResponder : MIDIResponder {
 					this.matchEvent_(MIDIEvent(nil,src,chan,nil,nil));
 					oneShot.remove;
 				},nil,nil,nil,nil,true,true)
-	}	
+	}
 }
 
 NoteOffResponder : NoteOnResponder {
@@ -145,11 +145,11 @@ CCResponder : MIDIResponder {
 					oneShot.remove;
 				},nil,nil,nil,nil,true,true)
 	}
-	
+
 	matchEvent_ { |midiEvent|
 			// if ctlnum changes from non-number to number, or vice versa,
 			// this responder is going to move between ccr and ccnumr
-		if(matchEvent.notNil and: 
+		if(matchEvent.notNil and:
 				{ matchEvent.ctlnum.isNumber !== midiEvent.ctlnum.isNumber })
 		{
 			this.remove;

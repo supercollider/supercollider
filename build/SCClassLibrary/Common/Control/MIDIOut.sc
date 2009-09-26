@@ -15,13 +15,13 @@ MIDIClient {
 	classvar <initialized=false;
 	*init { arg inports, outports; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
-		
+
 		this.prInitClient;
 		this.list;
 		if(inports.isNil,{inports = sources.size});
 		if(outports.isNil,{outports = destinations.size});
 //			this.disposeClient;
-		
+
 		this.prInit(inports,outports);
 		initialized = true;
 		// might ask for 1 and get 2 if your device has it
@@ -82,7 +82,7 @@ MIDIClient {
 
 MIDIEvent {
 	var <>status, <>port, <>chan, <>b, <>c, <>thread;
-	
+
 	*new { arg status, port, chan, b, c, thread;
 		^super.newCopyArgs(status, port, chan, b, c, thread)
 	}
@@ -110,18 +110,18 @@ MIDIEvent {
 
 MIDIIn {
 	var <>port;
-	classvar <>action, 
-	<> noteOn, <> noteOff, <> polytouch, 
-	<> control, <> program, 
-	<> touch, <> bend, 
-	<> sysex, sysexPacket, <> sysrt, <> smpte, <> invalid;	
-	
-	classvar 
-	<> noteOnList, <> noteOffList, <> polyList, 
-	<> controlList, <> programList, 
+	classvar <>action,
+	<> noteOn, <> noteOff, <> polytouch,
+	<> control, <> program,
+	<> touch, <> bend,
+	<> sysex, sysexPacket, <> sysrt, <> smpte, <> invalid;
+
+	classvar
+	<> noteOnList, <> noteOffList, <> polyList,
+	<> controlList, <> programList,
 	<> touchList, <> bendList;
-	
-	
+
+
 	*waitNoteOn { arg port, chan, note, veloc;
 		var event;
 		event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
@@ -171,7 +171,7 @@ MIDIIn {
 		nil.yield; // pause the thread.
 		^event
 	}
-	
+
 	*doAction { arg src, status, a, b, c;
 		action.value(src, status, a, b, c);
 	}
@@ -203,7 +203,7 @@ MIDIIn {
 		bend.value(src, chan, val);
 		this.prDispatchEvent(bendList, \bend, src, chan, val);
 	}
-	
+
 	*doSysexAction { arg src,  packet;
 		sysexPacket = sysexPacket ++ packet;
 		if (packet.last == -9, {
@@ -214,11 +214,11 @@ MIDIIn {
 	*doInvalidSysexAction { arg src, packet;
 		invalid.value(src, packet);
 	}
-	
+
 	*doSysrtAction { arg src, index, val;
 		sysrt.value(src, index, val);
 	}
-	
+
 	*doSMPTEaction { arg src, frameRate, timecode;
 		smpte.value(src, frameRate, timecode);
 	}
@@ -239,14 +239,14 @@ MIDIIn {
 			if(device >= 0, {
 				if ( device > MIDIClient.sources.size,{ // on linux the uid's are very large numbers
 					source = MIDIClient.sources.detect{ |it| it.uid == device };
-					if(source.isNil,{ 
+					if(source.isNil,{
 						("MIDI device with uid"+device+ "not found").warn;
 					},{
 						uid = source.uid;
 					})
 				},{
 					source = MIDIClient.sources.at(device);
-					if(source.isNil,{ 
+					if(source.isNil,{
 						"MIDIClient failed to init".warn;
 					},{
 						uid = MIDIClient.sources.at(device).uid;
@@ -264,19 +264,19 @@ MIDIIn {
 		var uid, source;
 		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
 		if(device.isNumber, {
-			if(device.isPositive, { 
+			if(device.isPositive, {
 				if ( device > MIDIClient.sources.size,
-					{ 
+					{
 						source = MIDIClient.sources.select{ |it| it.uid == device }.first;
-						if(source.isNil,{ 
+						if(source.isNil,{
 							("MIDI device with uid"+device+ "not found").warn;
 						},{
 							uid = source.uid;
 						})
 					},
-					{ 
+					{
 						source = MIDIClient.sources.at(device);
-						if(source.isNil,{ 
+						if(source.isNil,{
 							"MIDIClient failed to init".warn;
 						},{
 							uid = MIDIClient.sources.at(device).uid;
@@ -289,21 +289,21 @@ MIDIIn {
 		this.disconnectByUID(inport,uid);
 	}
 	*connectByUID {arg inport, uid;
-		_ConnectMIDIIn		
+		_ConnectMIDIIn
 	}
 	*disconnectByUID {arg inport, uid;
-		_DisconnectMIDIIn		
+		_DisconnectMIDIIn
 	}
-	
+
 	*new { arg port;
 		^super.new.port_(port)
 	}
-	
+
 	*prDispatchEvent { arg eventList, status, port, chan, b, c;
 		var selectedEvents;
 		eventList ?? {^this};
 		eventList.takeThese {| event |
-			if (event.match(port, chan, b, c)) 
+			if (event.match(port, chan, b, c))
 			{
 				selectedEvents = selectedEvents.add(event);
 				true
@@ -316,10 +316,10 @@ MIDIIn {
 		}
 	}
 }
-	
+
 MIDIOut {
 	var <>port, <>uid, <>latency=0.2;
-	
+
 	*new { arg port, uid;
 		if(thisProcess.platform.name != \linux) {
 			^super.newCopyArgs(port, uid ?? { MIDIClient.destinations[port].uid });
@@ -330,7 +330,7 @@ MIDIOut {
 	*newByName { arg deviceName,portName,dieIfNotFound=true;
 		var endPoint,index;
 		endPoint = MIDIClient.destinations.detect({ |ep,epi|
-			index = epi; 
+			index = epi;
 			ep.device == deviceName and: {ep.name == portName}
 		});
 		if(endPoint.isNil,{
@@ -345,11 +345,11 @@ MIDIOut {
 	*findPort { arg deviceName,portName;
 		^MIDIClient.destinations.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
-		
+
 	write { arg len, hiStatus, loStatus, a=0, b=0;
 		this.send(port, uid, len, hiStatus, loStatus, a, b, latency);
 	}
-	
+
 	noteOn { arg chan, note=60, veloc=64;
 		this.write(3, 16r90, chan.asInteger, note.asInteger, veloc.asInteger);
 	}
@@ -390,8 +390,8 @@ MIDIOut {
 	}
 	songSelect { arg song;
 		this.write(3, 16rF0, 16r03, song.asInteger);
-	}	
-	midiClock { 
+	}
+	midiClock {
 		this.write(1, 16rF0, 16r08);
 	}
 	start {
@@ -410,11 +410,11 @@ MIDIOut {
 	sysex { arg packet;
 		^this.prSysex( uid, packet );
 	}
-	
+
 	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
-		_SendMIDIOut		
+		_SendMIDIOut
 	}
-	
+
 	prSysex { arg uid, packet;
 		_SendSysex
 		^this.primitiveFailed;

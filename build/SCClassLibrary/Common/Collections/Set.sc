@@ -1,6 +1,6 @@
 Set : Collection {
 	var <>array, <size=0;
-	
+
 	*new { arg n=2; ^super.new.initSet(max(n,2)*2) }
 	species { ^this.class }
 	copy { ^this.shallowCopy.array_( array.copy ) }
@@ -15,14 +15,14 @@ Set : Collection {
 			})
 		})
 	}
-	
+
 	clear { array.fill; size=0 }
 	makeEmpty { this.clear; }
-	
-	includes { arg item; 
+
+	includes { arg item;
 		^array.at(this.scanFor(item)).notNil;
 	}
-	findMatch { arg item; 
+	findMatch { arg item;
 		// return an item that matches a given item
 		^array.at(this.scanFor(item));
 	}
@@ -53,8 +53,8 @@ Set : Collection {
 		var index = 0, val;
 		while({
 			(index < array.size) and: { (val = array.at(index)).isNil }
-		},{ 
-			index = index + 1 
+		},{
+			index = index + 1
 		});
 		if (index < array.size, {
 			this.remove(val);
@@ -104,13 +104,13 @@ Set : Collection {
 		^result;
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
-	
+
 	& { arg that; ^this.sect(that) }
 	| { arg that; ^this.union(that) }
 	- { arg that; ^this.difference(that) }
 	-- { arg that; ^this.symmetricDifference(that) }
-	
-		
+
+
 	// PRIVATE IMPLEMENTATION
 	initSet { arg n; array = Array.newClear(n); size = 0; }
 	putCheck { arg index, item;
@@ -138,10 +138,10 @@ Set : Collection {
 		var start = obj.hash % array.size;
 		var end = array.size;
 		var i = start;
-		
+
 		while ({ i < end }, {
 			elem = array.at(i);
-			
+
 			if ( elem.isNil or: { elem == obj }, { ^i });
 			i = i + 1;
 		});
@@ -156,12 +156,12 @@ Set : Collection {
 		array.postln;
 		^-1
 	}
-	
-	fixCollisionsFrom { arg index; 
+
+	fixCollisionsFrom { arg index;
 		var newIndex, element;
 		var oldIndex = index;
 		var lastKeyIndex = array.size - 1;
-		
+
 		while ({
 			if (oldIndex == lastKeyIndex, { oldIndex = 0 }, { oldIndex = oldIndex + 1 });
 			(element = this.keyAt(oldIndex)).notNil
@@ -171,7 +171,7 @@ Set : Collection {
 		})
 	}
 	keyAt { arg index; ^array.at(index) }
-	
+
 }
 
 IdentitySet : Set {
@@ -179,7 +179,7 @@ IdentitySet : Set {
 		^array.atIdentityHash(argKey)
 	/*
 		var i, start, end, elem;
-		
+
 		start = obj.identityHash % array.size;
 		end = array.size;
 		i = start;
@@ -203,16 +203,16 @@ IdentitySet : Set {
 
 OrderedIdentitySet : IdentitySet {
 	var items;
-	
+
 	do { arg function;
 		items.do(function)
 	}
-	
+
 	clear {
 		super.clear;
 		items = nil;
 	}
-	
+
 	remove { arg item;
 		super.remove(item);
 		items.remove(item);
@@ -220,9 +220,9 @@ OrderedIdentitySet : IdentitySet {
 	sort { arg func;
 		items.sort(func)
 	}
-	
+
 	// private
-	
+
 	putCheck { arg index, item;
 		super.putCheck(index, item);
 		items = items.add(item);

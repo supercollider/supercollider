@@ -1,6 +1,6 @@
 PriorityQueue {
 	var <array;
-	
+
 	put { arg time, item;
 		_PriorityQueueAdd
 		^this.primitiveFailed;

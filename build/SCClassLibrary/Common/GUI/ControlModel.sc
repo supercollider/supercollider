@@ -41,14 +41,14 @@ Spec {
 ControlSpec : Spec {
 	var <minval, <maxval, <>warp, <>step, <>default, <>units;
 	var <clipLo, <clipHi;
-	
+
 	*new { arg minval=0.0, maxval=1.0, warp='lin', step=0.0, default, units;
-		^super.newCopyArgs(minval, maxval, warp, step, 
+		^super.newCopyArgs(minval, maxval, warp, step,
 				default ? minval, units ? ""
 			).init
 	}
 	storeArgs { ^[minval,maxval,warp.asSpecifier,step,default,units] }
-	init { 
+	init {
 		warp = warp.asWarp(this);
 		if(minval < maxval,{
 			clipLo = minval;
@@ -56,7 +56,7 @@ ControlSpec : Spec {
 		}, {
 			clipLo = maxval;
 			clipHi = minval;
-		});	
+		});
 	}
 	minval_ { arg v;
 		minval = v;
@@ -79,27 +79,27 @@ ControlSpec : Spec {
 		// maps a value from spec range to [0..1]
 		^warp.unmap(value.round(step).clip(clipLo, clipHi));
 	}
-	
-	guessNumberStep { 
+
+	guessNumberStep {
 			// first pass, good for linear warp
-		var temp, numStep = this.range * 0.01;  
-		
+		var temp, numStep = this.range * 0.01;
+
 			// for exponential warps, guess  again (hopefully educated)
-		if (warp.asSpecifier == \exp) { 
-			temp = [minval, maxval].abs.minItem; 
+		if (warp.asSpecifier == \exp) {
+			temp = [minval, maxval].abs.minItem;
 			^numStep = min(temp, numStep) * 0.1;
 		};
 			// others could go here.
 
 		^numStep
 	}
-	
+
 	*initClass {
 		Class.initClassTree(Warp);
 		specs = specs.addAll([
 			// set up some ControlSpecs for common mappings
 			// you can add your own after the fact.
-			
+
 			\unipolar -> ControlSpec(0, 1),
 			\bipolar -> ControlSpec(-1, 1, default: 0),
 
@@ -116,16 +116,16 @@ ControlSpec : Spec {
 			\midi -> ControlSpec(0, 127, default: 64),
 			\midinote -> ControlSpec(0, 127, default: 60),
 			\midivelocity -> ControlSpec(1, 127, default: 64),
-			
+
 			\db -> ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"),
 			\amp -> ControlSpec(0, 1, \amp, 0, 0),
 			\boostcut -> ControlSpec(-20, 20, units: " dB",default: 0),
-			
+
 			\pan -> ControlSpec(-1, 1, default: 0),
 			\detune -> ControlSpec(-20, 20, default: 0, units: " Hz"),
 			\rate -> ControlSpec(0.125, 8, \exp, 0, 1),
 			\beats -> ControlSpec(0, 20, units: " Hz"),
-			
+
 			\delay -> ControlSpec(0.0001, 1, \exp, 0, 0.3, units: " secs")
 		]);
 	}
@@ -204,7 +204,7 @@ CurveWarp : Warp {
 	*new { arg spec, curve = -2;
 		// prevent math blow up
 		if (abs(curve) < 0.001, { ^LinearWarp(spec) });
-		
+
 		^super.new(spec.asSpec).init(curve);
 	}
 	init { arg argCurve;

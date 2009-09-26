@@ -93,7 +93,7 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError);
 #ifdef SC_DARWIN
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
 {
-	u_int32_t size;	
+	u_int32_t size;
 	char *sect = getsectdatafromheader(mhp, segname, sectname, &size);
 	if(!sect) return;
 
@@ -129,7 +129,7 @@ extern void DynNoise_Load(InterfaceTable *table);
 extern void iPhone_Load(InterfaceTable *table);
 
 void initialize_library(const char *uGensPluginPath)
-{	
+{
 	gCmdLib     = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
 	gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
 	gBufGenLib  = new HashTable<BufGen, Malloc>(&gMalloc, 512, true);
@@ -159,7 +159,7 @@ void initialize_library(const char *uGensPluginPath)
 	DynNoise_Load(&gInterfaceTable);
 #if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
 	iPhone_Load(&gInterfaceTable);
-#endif	
+#endif
 	return;
 #endif
 
@@ -172,7 +172,7 @@ void initialize_library(const char *uGensPluginPath)
 			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 		}
 	}
-	
+
 	if(loadUGensExtDirs) {
 #ifdef SC_PLUGIN_DIR
 		// load globally installed plugins
@@ -190,14 +190,14 @@ void initialize_library(const char *uGensPluginPath)
 			PlugIn_LoadDir(pluginDir, true);
 		}
 	}
-	
+
 	// get extension directories
 	char extensionDir[MAXPATHLEN];
 	if (!sc_IsStandAlone() && loadUGensExtDirs) {
 		// load system extension plugins
 		sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
 		PlugIn_LoadDir(extensionDir, false);
-		
+
 		// load user extension plugins
 		sc_GetUserExtensionDirectory(extensionDir, MAXPATHLEN);
 		PlugIn_LoadDir(extensionDir, false);
@@ -236,12 +236,12 @@ void initialize_library(const char *uGensPluginPath)
 			read_section(hdr, slide, "__DATA", "__nl_symbol_ptr");
 			read_section(hdr, slide, "__DATA", "__dyld");
 			read_section(hdr, slide, "__DATA", "__const");
-			read_section(hdr, slide, "__DATA", "__mod_init_func");															
+			read_section(hdr, slide, "__DATA", "__mod_init_func");
 			read_section(hdr, slide, "__DATA", "__bss");
 			read_section(hdr, slide, "__DATA", "__common");
 
 			read_section(hdr, slide, "__IMPORT", "__jump_table");
-			read_section(hdr, slide, "__IMPORT", "__pointers");			
+			read_section(hdr, slide, "__IMPORT", "__pointers");
 		}
 	}
 #endif
@@ -259,7 +259,7 @@ bool PlugIn_Load(const char *filename)
         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                 0, lastErr , 0, (char*)&s, 1, 0 );
         scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
-        LocalFree( s );     
+        LocalFree( s );
 		return false;
 	}
 
@@ -273,39 +273,39 @@ bool PlugIn_Load(const char *filename)
 
 		FreeLibrary(hinstance);
 		return false;
-	}	
+	}
 
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-	(*loadFunc)(&gInterfaceTable);		
+	(*loadFunc)(&gInterfaceTable);
 
     // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
-    
+
 	return true;
 
 #else
 
 	void* handle = dlopen(filename, RTLD_NOW);
-	
+
 	if (!handle) {
 		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
 		dlclose(handle);
 		return false;
 	}
-	
+
 	void *ptr;
-	
+
 	ptr = dlsym(handle, SC_PLUGIN_LOAD_SYM);
 	if (!ptr) {
 		scprintf("*** ERROR: dlsym %s err '%s'\n", SC_PLUGIN_LOAD_SYM, dlerror());
 		dlclose(handle);
 		return false;
-	}		
-	
+	}
+
 	LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-	(*loadFunc)(&gInterfaceTable);		
+	(*loadFunc)(&gInterfaceTable);
 
 	return true;
-    
+
 #endif
 }
 
@@ -320,16 +320,16 @@ bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		}
 		return false;
 	}
-	
+
 	int firstCharOffset = strlen(dirname)+1;
-	
+
 	for (;;) {
 		char diritem[MAXPATHLEN];
 		bool skipItem = true;
 		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
 		if (!validItem) break;
 		if (skipItem || (*(diritem+firstCharOffset) == '.')) continue;  // skip files+folders whose first char is a dot
-		
+
         if (sc_DirectoryExists(diritem)) {
 			success = PlugIn_LoadDir(diritem, reportError);
         } else {

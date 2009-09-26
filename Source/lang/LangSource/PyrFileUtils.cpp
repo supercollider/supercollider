@@ -54,8 +54,8 @@ long setTypeCreator(unsigned char *filename, long type, long creator)
 	long err, bytespersamp;
 	int sampleSize, numchannels;
 	FInfo finfo;
-	
-	
+
+
 	HGetVol(NULL, &saveVol, &saveDir);
 	HSetVol(NULL, gHomeVol, gHomeDir);
 	err = FSMakeFSSpec(gHomeVol, 0L, filename, &fsspec);
@@ -78,7 +78,7 @@ long setTypeCreator(unsigned char *filename, long type, long creator)
 int sampleFormatFromSymbol(PyrSymbol *inSymbol, int inHeaderFormat)
 {
 	bool isRIFF = inHeaderFormat == RIFF_sound_file;
-	
+
 	char *name = inSymbol->name;
 	if (name[0] == 'i') {
 		if (name[3] == '8') return isRIFF ? snd_8_unsigned : snd_8_linear;
@@ -112,7 +112,7 @@ int headerFormatFromSymbol(PyrSymbol *inSymbol)
 	if (strcmp(name, "RAW")==0) return raw_sound_file;
 	if (strcmp(name, "vorbis")==0) return vorbis_sound_file;
 	if (strcmp(name, "FLAC")==0) return flac_sound_file;
-	//if (strcmp(name, "BICSF")==0) return BICSF_sound_file;	
+	//if (strcmp(name, "BICSF")==0) return BICSF_sound_file;
 	return unsupported_sound_file;
 }
 

@@ -30,7 +30,7 @@
 #include <string.h>
 
 template<class T, class Allocator>
-class HashTable 
+class HashTable
 {
 	Allocator *mPool;
 	int32 mNumItems, mMaxItems, mTableSize, mHashMask;
@@ -39,7 +39,7 @@ class HashTable
 
 public:
 
-	HashTable(Allocator *inPool, int32 inMaxItems, bool inCanResize = true) 
+	HashTable(Allocator *inPool, int32 inMaxItems, bool inCanResize = true)
 		: mPool(inPool)
 	{
 		mNumItems = 0;
@@ -49,15 +49,15 @@ public:
 		mHashMask = mTableSize - 1;
 		mCanResize = inCanResize;
 	}
-	
+
 	~HashTable() {
 		mPool->Free(mItems);
 	}
-	
+
 	int32 TableSize() const { return mTableSize; }
 	int32 MaxItems() const { return mMaxItems; }
 	int32 NumItems() const { return mNumItems; }
-	
+
 	T** AllocTable(int inTableSize)
 	{
 		size_t size = inTableSize * sizeof(T*);
@@ -67,7 +67,7 @@ public:
 		}
 		return items;
 	}
-	
+
 	void MakeEmpty()
 	{
 		for (int i=0; i<mTableSize; ++i) {
@@ -75,7 +75,7 @@ public:
 		}
 		mNumItems = 0;
 	}
-	
+
 	void Resize()
 	{
 		int32 newSize = sc_max(mTableSize << 1, 32);
@@ -103,38 +103,38 @@ public:
 			if (!mCanResize) return false;
 			Resize();
 		}
-		
+
 		//printf("GetHash(inItem) %d\n", GetHash(inItem));
 		//printf("GetKey(inItem) %s\n", GetKey(inItem));
 		int32 index = IndexFor(GetHash(inItem), (int32*)GetKey(inItem));
 		//printf("index %d\n", index);
-		
+
 		T *item = mItems[index];
 		if (item) return item == inItem;
-		
+
 		mItems[index] = inItem;
 		mNumItems++;
-		return true;	
+		return true;
 	}
-	
+
 	bool Remove(T* inItem)
 	{
 		int32 index = IndexFor(GetHash(inItem), (int32*)GetKey(inItem));
 		if (mItems[index] != inItem) return false;
 		mItems[index] = 0;
-		
+
 		FixCollisionsFrom(index);
 		mNumItems--;
 		return true;
 	}
-	
+
 	bool RemoveKey(int32* inKey)
 	{
 		T* item = Get(inKey);
 		if (!item) return false;
 		return Remove(item);
 	}
-        
+
 	int32 IndexFor(int32 inHashID, int32* inKey) const
 	{
 		int index = inHashID & mHashMask;
@@ -158,20 +158,20 @@ public:
 		//printf("index %d\n", index);
 		return mItems[index];
 	}
-	
+
 	bool Includes(T* inItem) const
 	{
 		return Get(GetHash(inItem), GetKey(inItem)) == inItem;
 	}
-	
+
 	T* AtIndex(int32 inIndex) const
 	{
 		return mItems[inIndex];
 	}
 
-private:	
+private:
 	void FixCollisionsFrom(int32 inIndex)
-	{		
+	{
 		int oldIndex = inIndex;
 		for (;;) {
 			oldIndex = (oldIndex + 1) & mHashMask;
@@ -188,7 +188,7 @@ private:
 
 
 template<class T, class Allocator>
-class IntHashTable 
+class IntHashTable
 {
 	Allocator *mPool;
 	int32 mNumItems, mMaxItems, mTableSize, mHashMask;
@@ -197,7 +197,7 @@ class IntHashTable
 
 public:
 
-	IntHashTable(Allocator *inPool, int32 inMaxItems, bool inCanResize = true) 
+	IntHashTable(Allocator *inPool, int32 inMaxItems, bool inCanResize = true)
 		: mPool(inPool)
 	{
 		mNumItems = 0;
@@ -207,15 +207,15 @@ public:
 		mHashMask = mTableSize - 1;
 		mCanResize = inCanResize;
 	}
-	
+
 	~IntHashTable() {
 		mPool->Free(mItems);
 	}
-	
+
 	int32 TableSize() const { return mTableSize; }
 	int32 MaxItems() const { return mMaxItems; }
 	int32 NumItems() const { return mNumItems; }
-	
+
 	T** AllocTable(int inTableSize)
 	{
 		size_t size = inTableSize * sizeof(T*);
@@ -225,7 +225,7 @@ public:
 		}
 		return items;
 	}
-	
+
 	void Resize()
 	{
 		int32 newSize = sc_max(mTableSize << 1, 32);
@@ -251,39 +251,39 @@ public:
 			if (!mCanResize) return false;
 			Resize();
 		}
-		
+
 		//printf("GetHash(inItem) %d\n", GetHash(inItem));
 		//printf("GetKey(inItem) %d\n", GetKey(inItem));
 		int32 index = IndexFor(GetHash(inItem), GetKey(inItem));
 		//printf("index %d\n", index);
-		
+
 		T *item = mItems[index];
 		if (item) return item == inItem;
-		
+
 		mItems[index] = inItem;
 		mNumItems++;
-		return true;	
+		return true;
 	}
-	
+
 	bool Remove(T* inItem)
 	{
 		int32 index = IndexFor(GetHash(inItem), GetKey(inItem));
 		//printf("rmv index %d hash %d key %d\n", index, GetHash(inItem), GetKey(inItem));
 		if (mItems[index] != inItem) return false;
 		mItems[index] = 0;
-		
+
 		FixCollisionsFrom(index);
 		mNumItems--;
 		return true;
 	}
-	
+
 	bool RemoveKey(int32 inKey)
 	{
 		T* item = Get(inKey);
 		if (!item) return false;
 		return Remove(item);
 	}
-        
+
 	int32 IndexFor(int32 inHashID, int32 inKey) const
 	{
 		int index = inHashID & mHashMask;
@@ -307,18 +307,18 @@ public:
         //printf("Get index %d  hash %d  key %d\n", index, inHashID, inKey);
 		return mItems[index];
 	}
-	
+
 	bool Includes(T* inItem) const
 	{
 		return Get(GetHash(inItem), GetKey(inItem)) == inItem;
 	}
-	
+
 	T* AtIndex(int32 inIndex) const
 	{
 		return mItems[inIndex];
 	}
 
-	void Dump() 
+	void Dump()
 	{
 		for (int i=0; i<mTableSize; ++i) {
 			T* item = mItems[i];
@@ -327,10 +327,10 @@ public:
 			}
 		}
 	}
-	
-private:	
+
+private:
 	void FixCollisionsFrom(int32 inIndex)
-	{		
+	{
 		//printf("FixCollisionsFrom %d\n", inIndex);
 		int oldIndex = inIndex;
 		for (;;) {
@@ -347,7 +347,7 @@ private:
 	}
 };
 
-struct Malloc 
+struct Malloc
 {
 	void Free(void* ptr) { free(ptr); }
 	void* Alloc(size_t size) { return malloc(size); }

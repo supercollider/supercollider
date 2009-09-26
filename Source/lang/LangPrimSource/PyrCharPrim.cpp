@@ -32,11 +32,11 @@ int prToLower(struct VMGlobals *g, int numArgsPushed);
 int prToLower(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->uc = tolower(a->uc);
-	
+
 	return errNone;
 }
 
@@ -44,11 +44,11 @@ int prToUpper(struct VMGlobals *g, int numArgsPushed);
 int prToUpper(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->uc = toupper(a->uc);
-	
+
 	return errNone;
 }
 
@@ -56,12 +56,12 @@ int prIsAlpha(struct VMGlobals *g, int numArgsPushed);
 int prIsAlpha(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (isalpha(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -69,12 +69,12 @@ int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed);
 int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (isalnum(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -82,12 +82,12 @@ int prIsControl(struct VMGlobals *g, int numArgsPushed);
 int prIsControl(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (iscntrl(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -95,12 +95,12 @@ int prIsDigit(struct VMGlobals *g, int numArgsPushed);
 int prIsDigit(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (isdigit(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -108,12 +108,12 @@ int prIsPrint(struct VMGlobals *g, int numArgsPushed);
 int prIsPrint(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (isprint(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -121,12 +121,12 @@ int prIsPunct(struct VMGlobals *g, int numArgsPushed);
 int prIsPunct(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (ispunct(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -134,12 +134,12 @@ int prIsSpace(struct VMGlobals *g, int numArgsPushed);
 int prIsSpace(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	if (isspace(a->uc)) { SetTrue(a); }
 	else { SetFalse(a); }
-	
+
 	return errNone;
 }
 
@@ -147,11 +147,11 @@ int prAsciiValue(struct VMGlobals *g, int numArgsPushed);
 int prAsciiValue(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->utag = tagInt;
-	
+
 	return errNone;
 }
 
@@ -160,9 +160,9 @@ int prDigitValue(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	char c;
-	
+
 	a = g->sp;
-	
+
 	c = a->uc;
 	if (c >= '0' && c <= '9') {
 		a->utag = tagInt;
@@ -176,7 +176,7 @@ int prDigitValue(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		return errFailed;
 	}
-	
+
 	return errNone;
 }
 
@@ -185,11 +185,11 @@ int prAsAscii(struct VMGlobals *g, int numArgsPushed);
 int prAsAscii(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	a->utag = tagChar;
 	a->ui = a->ui & 255;
-	
+
 	return errNone;
 }
 
@@ -198,9 +198,9 @@ int prAsDigit(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	int c;
-	
+
 	a = g->sp;
-	
+
 	c = a->ui;
 	if (c >= 0 && c <= 9) {
 		a->utag = tagChar;
@@ -211,7 +211,7 @@ int prAsDigit(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		return errFailed;
 	}
-	
+
 	return errNone;
 }
 
@@ -219,22 +219,22 @@ void initCharPrimitives();
 void initCharPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
 
-	definePrimitive(base, index++, "_AsciiValue", prAsciiValue, 1, 0);	
-	definePrimitive(base, index++, "_DigitValue", prDigitValue, 1, 0);	
-	definePrimitive(base, index++, "_AsAscii", prAsAscii, 1, 0);	
-	definePrimitive(base, index++, "_AsDigit", prAsDigit, 1, 0);	
-	definePrimitive(base, index++, "_ToLower", prToLower, 1, 0);	
-	definePrimitive(base, index++, "_ToUpper", prToUpper, 1, 0);	
-	definePrimitive(base, index++, "_IsAlpha", prIsAlpha, 1, 0);	
-	definePrimitive(base, index++, "_IsAlphaNum", prIsAlphaNum, 1, 0);	
-	definePrimitive(base, index++, "_IsPrint", prIsPrint, 1, 0);	
-	definePrimitive(base, index++, "_IsPunct", prIsPunct, 1, 0);	
-	definePrimitive(base, index++, "_IsControl", prIsControl, 1, 0);	
-	definePrimitive(base, index++, "_IsSpace", prIsSpace, 1, 0);	
-	definePrimitive(base, index++, "_IsDecDigit", prIsDigit, 1, 0);	
+	definePrimitive(base, index++, "_AsciiValue", prAsciiValue, 1, 0);
+	definePrimitive(base, index++, "_DigitValue", prDigitValue, 1, 0);
+	definePrimitive(base, index++, "_AsAscii", prAsAscii, 1, 0);
+	definePrimitive(base, index++, "_AsDigit", prAsDigit, 1, 0);
+	definePrimitive(base, index++, "_ToLower", prToLower, 1, 0);
+	definePrimitive(base, index++, "_ToUpper", prToUpper, 1, 0);
+	definePrimitive(base, index++, "_IsAlpha", prIsAlpha, 1, 0);
+	definePrimitive(base, index++, "_IsAlphaNum", prIsAlphaNum, 1, 0);
+	definePrimitive(base, index++, "_IsPrint", prIsPrint, 1, 0);
+	definePrimitive(base, index++, "_IsPunct", prIsPunct, 1, 0);
+	definePrimitive(base, index++, "_IsControl", prIsControl, 1, 0);
+	definePrimitive(base, index++, "_IsSpace", prIsSpace, 1, 0);
+	definePrimitive(base, index++, "_IsDecDigit", prIsDigit, 1, 0);
 
 }
 
@@ -257,7 +257,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

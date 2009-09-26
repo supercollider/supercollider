@@ -40,7 +40,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 #elif !SC_FFT_FFTW && SC_DARWIN
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 1
-#else        
+#else
 //#elif SC_FFT_FFTW
 	#define SC_FFT_FFTW 1
 	#define SC_FFT_VDSP 0
@@ -87,7 +87,7 @@ void scfft_global_init();
 // The return value is given in bytes.
 size_t scfft_trbufsize(unsigned int fullsize);
 
-// To initialise a specific FFT, ensure your input and output buffers exist, then 
+// To initialise a specific FFT, ensure your input and output buffers exist, then
 // allocate memory for the transform buffer and the scfft struct, then call this function.
 // Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
 int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wintype, float *indata, float *outdata, float *trbuf, bool forward);
@@ -97,7 +97,7 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype);
 
 // these do the main jobs.
-// Note: you DON"T need to call the windowing function yourself, it'll be applied by the _dofft and _doifft funcs. 
+// Note: you DON"T need to call the windowing function yourself, it'll be applied by the _dofft and _doifft funcs.
 void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize, unsigned short log2_winsize, short wintype, float scalefac);
 // These two will take data from indata, use trbuf to process it, and put their results in outdata.
 void scfft_dofft(scfft *f);

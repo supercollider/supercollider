@@ -1,23 +1,23 @@
 Integer : SimpleNumber {
-	isInteger { ^true }	
-	
+	isInteger { ^true }
+
 	hash { ^this.asFloat.hash }
-		
+
 	+ { arg aNumber, adverb; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
 	- { arg aNumber, adverb; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
 	* { arg aNumber, adverb; _MulInt; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
-	
+
 	clip { arg lo, hi; _ClipInt; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapInt; ^this.primitiveFailed }
 	fold { arg lo, hi; _FoldInt; ^this.primitiveFailed }
 
 	even { ^(this & 1) == 0 }
 	odd { ^(this & 1) == 1 }
-	
-	xrand { arg exclude=0; 
+
+	xrand { arg exclude=0;
 		^(exclude + (this - 1).rand + 1) % this;
 	}
-	xrand2 { arg exclude=0; 
+	xrand2 { arg exclude=0;
 		var res;
 		res = (2 * this).rand - this;
 		if (res == exclude, { ^this },{ ^res });
@@ -25,10 +25,10 @@ Integer : SimpleNumber {
 	degreeToKey { arg scale, stepsPerOctave = 12;
 		^scale.performDegreeToKey(this, stepsPerOctave)
 	}
-	
+
 	// iteration
 	do { arg function;
-		// iterates function from 0 to this-1 
+		// iterates function from 0 to this-1
 		// special byte codes inserted by compiler for this method
 		var i = 0;
 		while ({ i < this }, { function.value(i, i); i = i + 1; });
@@ -41,13 +41,13 @@ Integer : SimpleNumber {
 		this.do {|i| res.add(function.value(i)) }
 		^res;
 	}
-	
+
 	collect { arg function;
 		^this.collectAs(function, Array)
 	}
 
 	reverseDo { arg function;
-		// iterates function from 0 to this-1 
+		// iterates function from 0 to this-1
 		// special byte codes inserted by compiler for this method
 		var i=0, j=0;
 		i = this - 1;
@@ -71,7 +71,7 @@ Integer : SimpleNumber {
 	to { arg hi, step=1;
 		^Interval.new(this, hi, step)
 	}
-		
+
 	// conversions to Char
 	asAscii {
 		// must be 0 <= this <= 255
@@ -88,7 +88,7 @@ Integer : SimpleNumber {
 		var array;
 		array = Array.new(numDigits);
 		numDigits.do({ arg i;
-			array.addFirst(this >> i & 1) 
+			array.addFirst(this >> i & 1)
 		});
 		^array
 	}
@@ -102,7 +102,7 @@ Integer : SimpleNumber {
 		}
 		^array
 	}
-	
+
 	nextPowerOfTwo { _NextPowerOfTwo }
 	isPowerOfTwo { _IsPowerOfTwo }
 	leadingZeroes { _CLZ }
@@ -116,7 +116,7 @@ Integer : SimpleNumber {
 	prevPrime { _PrevPrime }
 	nextPrime { _NextPrime }
 	indexOfPrime { _IndexOfPrime }
-	
+
 	isPrime {
 		_IsPrime
 		/*
@@ -133,7 +133,7 @@ Integer : SimpleNumber {
 		^nil
 		*/
 	}
-	
+
 	// exit the program and return the result code to unix shell
 	exit { _Exit }
 
@@ -176,14 +176,14 @@ Integer : SimpleNumber {
 	}
 
 	archiveAsCompileString { ^true }
-	
+
 	geom { arg start, grow;
 		^Array.geom(this, start, grow);
 	}
 	fib { arg a=0.0, b=1.0;
 		^Array.fib(this, a, b);
 	}
-	
+
 	factors {
 		var num, array, prime;
 		if(this <= 1) { ^[] }; // no prime factors exist below the first prime
@@ -207,8 +207,8 @@ Integer : SimpleNumber {
 		^array
 	}
 
-	pidRunning { _PidRunning; ^this.primitiveFailed }	
-	
+	pidRunning { _PidRunning; ^this.primitiveFailed }
+
 	factorial {
 		var	product = 1;
 		if(this <= 1) { ^1 } {
@@ -216,13 +216,13 @@ Integer : SimpleNumber {
 			^product
 		}
 	}
-	
+
 		// support for modifiers keys
 	isCaps { ^this & 65536 == 65536}
 	isShift { ^this & 131072 == 131072 }
 	isCtrl { ^this & 262144 == 262144 }
 	isAlt { ^this & 524288 == 524288 }
-	isCmd { ^this & 1048576 == 1048576 } 
+	isCmd { ^this & 1048576 == 1048576 }
 	isNumPad { ^this & 2097152 == 2097152 }
 	isHelp { ^this & 4194304 == 4194304 }
 	isFun { ^this & 8388608 == 8388608 }

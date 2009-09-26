@@ -54,7 +54,7 @@ WiiMote {
 	classvar all;
 	classvar < eventLoopIsRunning = false;
 //	classvar < updateDataTask, <updateTask;
-	
+
 	*initClass {
 		all = [];
 	}
@@ -185,7 +185,7 @@ WiiMote {
 	getExpansion{
 		^this.prGetExpansion;
 		}*/
-	
+
 	enable{ |onoff|
 		this.prEnable( onoff );
 		//		this.update;
@@ -246,9 +246,9 @@ WiiMote {
 		"To discover the Wii, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
 		//		"discovering WIIs: this may take some time".postln;
 		//		all = Array.fill( maxdevices, {|i| WiiMote.new(i) } );
-		//		Routine({ 
+		//		Routine({
 		//			0.5.wait;
-		this.prDiscover( newid, all ); 
+		this.prDiscover( newid, all );
 		//			0.5.wait;
 		//			all.do{ |it| if ( it.isOpen.not, { it.close } ) };
 		//		}).play;
@@ -257,7 +257,7 @@ WiiMote {
 
 	*stop{
 		this.prStop;
-		eventLoopIsRunning = false;	
+		eventLoopIsRunning = false;
 	}
 
 	// PRIVATE
@@ -304,7 +304,7 @@ WiiMote {
 		//		all = alldevices;
 		^this.primitiveFailed
 	}
-	prOpen { 
+	prOpen {
 		_Wii_Open;
 		^this.primitiveFailed
 	}
@@ -417,7 +417,7 @@ WiiMote {
 		// buttonData are bits that decode to separate buttons (do in Primitive)
 		nunchuk_buttons = nunchukButtons;
 		nunchuk_motion = [ nunAccX, nunAccY, nunAccZ, 0 ];
-		nunchuk_stick = [ nunJoyX, nunJoyY ];		
+		nunchuk_stick = [ nunJoyX, nunJoyY ];
 
 		[ \nax, \nay, \naz, \nsx, \nsy, \nbZ, \nbC ].do{ |key|
 			actionSpec.at( key ).value( spec.at(key).value );
@@ -453,7 +453,7 @@ WiiMote {
 		}
 	}
 
-	prHandleEvent { 
+	prHandleEvent {
 		| buttonData, posX, posY, angle, tracking, accX, accY, accZ, orientation, extType, eButtonData, eData1, eData2, eData3, eData4, eData5, eData6, batteryLevel |
 		battery = batteryLevel;
 		remote_buttons = buttonData;

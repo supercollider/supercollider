@@ -43,17 +43,17 @@ public:
 private:
 	friend int32 GetHash(const SC_NamedObj *inObj);
 	friend const int32* GetKey(const SC_NamedObj *inObj);
-	
+
 	int32 mName[kSCNameLen];
 	int32 mHash;
 };
 
-inline int32 GetHash(const SC_NamedObj *inObj) 
+inline int32 GetHash(const SC_NamedObj *inObj)
 {
 	return inObj->mHash;
 }
 
-inline const int32 *GetKey(const SC_NamedObj *inObj) 
+inline const int32 *GetKey(const SC_NamedObj *inObj)
 {
 	return inObj->mName;
 }

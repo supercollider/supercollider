@@ -11,7 +11,7 @@ HasSubjectGui : AbstractPlayerGui {
 
 
 PlayerEffectGui : HasSubjectGui {
-	
+
 	guiBody { arg layout;
 		model.subject.gui(layout);
 		model.effect.gui(layout.startRow);

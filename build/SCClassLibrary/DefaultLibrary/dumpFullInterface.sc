@@ -1,9 +1,9 @@
 + Class {
-	
+
 	dumpFullInterface {
-		
+
 		("\nFull Interface for " ++ this.name).postln;
-		
+
 		// post the superclasses
 		("\nSuperclasses: " ++ this.superclasses).postln;
 
@@ -13,17 +13,17 @@
 		// Class methods
 		this.class.dumpAllMethods;
 	}
-	
-	dumpAllMethods {	
+
+	dumpAllMethods {
 		var methodlist, superclasses, prependString, superPrependString, name;
 		methodlist = IdentitySet[];
-		if(this.isMetaClass, 
+		if(this.isMetaClass,
 			{	prependString = "\nClass Methods for ";
 				superPrependString = "\nClass Methods inherited from ";
 				name = this.asString.copyToEnd(5);
 				superclasses = name.asSymbol.asClass.superclasses;
-			}, 
-			{	prependString = "\nInstance Methods for "; 
+			},
+			{	prependString = "\nInstance Methods for ";
 				superPrependString = "\nInstance Methods inherited from ";
 				name = this.name;
 				superclasses =  this.superclasses;
@@ -50,12 +50,12 @@
 		});
 		// Methods for superclasses
 		superclasses.do({ arg superclass, superobject, supername;
-			if(this.isMetaClass, 
-				{	
-					superobject = superclass.class; 
-				}, 
+			if(this.isMetaClass,
 				{
-					superobject = superclass; 
+					superobject = superclass.class;
+				},
+				{
+					superobject = superclass;
 				}
 			);
 			supername = superobject.asString;
@@ -81,27 +81,27 @@
 					" )\n".post;
 				});
 			});
-		
+
 		});
 		// include methods for Class
-		
+
 		if(this.isMetaClass, {"\nMethods inherited from Class\n".postln; Class.dumpInterface; });
 
 	}
-	
+
 	dumpMethodList {
 		var	mList, sc;
-		
+
 		mList = IdentityDictionary.new;		// repository for methods
 		this.collectMethods(mList);			// get them
-		
+
 		sc = this;	// to print superclass chain
 		{ sc != Object }.while({
 			(sc.name ++ " : ").post;
 			sc = sc.superclass;
 		});
 		"Object".postln;
-		
+
 		mList.asSortedArray.do({ |pair|
 			(pair[0] ++ " <" ++ pair[1].ownerClass.name ++ "-"
 				++ pair[0] ++ ">").post;
@@ -129,12 +129,12 @@
 			superclass.asClass.collectMethods(list);  // go up a level
 		});
 	}
-	
+
 	helpFileForMethod {
-		arg methodSymbol; 
+		arg methodSymbol;
 		this.findRespondingMethodFor(methodSymbol).ownerClass.openHelpFile;
 	}
-	
+
 		// show all subclasses of this class sorted in alpha order (not tree order)
 	dumpSubclassList {
 		var list, listCollector;
@@ -153,5 +153,5 @@
 		});
 		("\n" ++ list.size.asString ++ " classes listed.").postln;
 	}
-	
+
 }

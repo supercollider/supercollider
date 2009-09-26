@@ -23,14 +23,14 @@
 
 #include <limits>
 
-template <class Event, class TimeType, int N> 
+template <class Event, class TimeType, int N>
 class PriorityQueueT
 {
 public:
 	PriorityQueueT() {
 		Empty();
 	}
-	
+
 	bool Add(Event& inEvent)
 		{
 			if (mSize >= N) return false;
@@ -58,7 +58,7 @@ public:
 	void Flush() { Perform(std::numeric_limits<TimeType>::max()); }
 	void Empty() { mSize = 0; SetEmptyTime(); }
 	void SetEmptyTime() { mEvents[0].mTime = std::numeric_limits<TimeType>::max(); }
-	
+
 	Event Remove()
 		{
 			Event event = mEvents[0];
@@ -81,7 +81,7 @@ public:
 			}
 			return event;
 		}
-		
+
 private:
 	long mSize;
 	Event mEvents[N];

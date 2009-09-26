@@ -67,7 +67,7 @@ inline int32 Hash(const char *inKey, int32 *outLength)
     return hash;
 }
 
-// hash function for an array of char 
+// hash function for an array of char
 inline int32 Hash(const char *inKey, int32 inLength)
 {
     // the one-at-a-time hash.

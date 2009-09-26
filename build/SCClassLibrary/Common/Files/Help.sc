@@ -1,6 +1,6 @@
 /*
-Help.tree and Help.gui - a scheme to allow UGens, no wait I mean ALL classes, 
-to be "self-classified" and provide a pleasant-ish browsing interface. No wait, 
+Help.tree and Help.gui - a scheme to allow UGens, no wait I mean ALL classes,
+to be "self-classified" and provide a pleasant-ish browsing interface. No wait,
 let's put all help docs into the tree too! Yeah!
 
 By Dan Stowell, 2007
@@ -19,13 +19,13 @@ Class.browse
 Help {
 	classvar <global, categoriesSkipThese;
 	classvar <filterUserDirEntries, <>cachePath;
-	
+
 	var	tree, fileslist, <root;
 
 	*initClass {
 		var	dir;
 		cachePath = Platform.userAppSupportDir +/+ "SC_helptree.cache.txt";
-		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen, 
+		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen,
 						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
 			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
 		if(\SCImageFilter.asClass.notNil) {
@@ -49,7 +49,7 @@ Help {
 			^super.new.init(root)
 		}
 	}
-	
+
 	init { |rootdir|
 		root = rootdir !? { rootdir.absolutePath };
 		if(root.isNil or: { root.size == 0 }) {
@@ -58,7 +58,7 @@ Help {
 			this.tree(false, false, false, root, false);
 		}
 	}
-	
+
 	tree { |sysext=true, userext=true, allowCached=true, root, writeCache=true|
 		var classes, node, subc, helpRootLen;
 		var helpExtensions = ['html', 'htm', 'scd', 'rtf', 'rtfd'];
@@ -71,7 +71,7 @@ Help {
 		};
 		if(tree.isNil, { "Help files scanned in % seconds".format({
 			// Building the tree
-			
+
 			// Help file paths - will be used for categorising, if categories is nil or if not a class's helpfile.
 			// Otherwise they'll be stored for quick access to helpfile.
 			fileslist = IdentityDictionary.new;
@@ -86,7 +86,7 @@ Help {
 			if ( userext ,{
 				helpDirs = helpDirs.add( Platform.userExtensionDir );
 			});
-			
+
 			// Now check each class's ".categories" response
 			classes = Object.allSubclasses.difference(categoriesSkipThese).reject({|c| c.asString.beginsWith("Meta_")});
 			if(root.notNil) {
@@ -95,10 +95,10 @@ Help {
 			};
 			tree = Dictionary.new(8);
 			classes.do({|class| this.addCatsToTree(class, fileslist)});
-			
-			// Now add the remaining ones to the tree - they're everything except the classes which 
+
+			// Now add the remaining ones to the tree - they're everything except the classes which
 			//      have declared their own categorisation(s).
-			
+
 			helpDirs.do{ |helpDir|
 				this.addDirTree( helpDir,tree );
 			};
@@ -110,7 +110,7 @@ Help {
 					var sclang_completion_dict, dictfile;
 					// Also piggyback on the tree struct to write out an auto-completion dictionary:
 					sclang_completion_dict = SortedList.new;
-					this.do{|key, value| 
+					this.do{|key, value|
 						if("0123456789".includes(key[0]).not and:{key.includes($ ).not}){
 							sclang_completion_dict.add(key);
 						}
@@ -125,7 +125,7 @@ Help {
 		}.bench(false)).postln});
 		^tree;
 	}
-	
+
 	findKeysForValue{|val|
 		var func, node, keyPath;
 		keyPath =[];
@@ -138,7 +138,7 @@ Help {
 		func = {|dict, depth = 0|
 			node = dict.findKeyForValue(val);
 			node.isNil.if({
-				dict.keysValuesDo({|key, item| 
+				dict.keysValuesDo({|key, item|
 					item.isKindOf(Dictionary).if({
 						keyPath = keyPath.copyFromStart(depth - 1).add(key);
 						func.value(item, depth + 1)
@@ -167,7 +167,7 @@ Help {
 					"Not ignoring: %".format(pathname.fullPath).postln;
 				};
 				if( pathname.fullPath.contains("3vs2").not
-					and: { pathname.fullPath.contains("help-scripts").not } 
+					and: { pathname.fullPath.contains("help-scripts").not }
 					, {
 						subfileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
 						fileslist[pathname.fileNameWithoutDoubleExtension.asSymbol] = pathname.fullPath;
@@ -197,7 +197,7 @@ Help {
 							subc = [ "UserExtensions" ] ++ subc;
 							// check for common superfluous names that may confuse the categorisation;
 							filterUserDirEntries.do{ |spath|
-								subc = subc.reject{ |it| 
+								subc = subc.reject{ |it|
 									it == spath;
 								};
 							};
@@ -216,7 +216,7 @@ Help {
 								// but it isn't right to change helpRootLen
 							// check for common superfluous names that may confuse the categorisation;
 							filterUserDirEntries.do{ |spath|
-								subc = subc.reject{ |it| 
+								subc = subc.reject{ |it|
 									it == spath;
 								};
 							};
@@ -240,7 +240,7 @@ Help {
 			if ( thisHelpExt.size > 0 , {
 				subc = subc[..subc.size-2];
 			});
-			
+
 			subc = subc.collect({|i| "[["++i++"]]"});
 			node = tree;
 			// Crawl up the tree, creating hierarchy as needed
@@ -254,7 +254,7 @@ Help {
 			node[classsym.asClass ? classsym] = path;
 		});
 	}
-	
+
 	rebuildTree {
 		this.forgetTree;
 		if(root.isNil) {
@@ -267,7 +267,7 @@ Help {
 	forgetTree {
 		tree = nil;
 	}
-	
+
 	dumpTree { |node, prefix=""|
 		node = node ?? {this.tree};
 		node.keysValuesDo({ |key, val|
@@ -279,10 +279,10 @@ Help {
 			});
 		});
 	}
-	
+
 	addCatsToTree { |class, fileslist|
 		var subc, node;
-		
+
 		if(class.categories.isNil.not, {
 			class.categories.do({|cat|
 				subc = cat.split($>).collect({|i| "[["++i++"]]"});
@@ -297,11 +297,11 @@ Help {
 				// "node" should now be the tiniest branch
 				node[class] = fileslist[class.asSymbol] ? "";
 			});
-			
+
 			// Class has been added to list so we're OK
 			fileslist.removeAt(class.asSymbol);
 		}); // end if
-		
+
 	}
 
 	writeTextArchive{ |path|
@@ -372,16 +372,16 @@ Help {
 	}
 
 gui { |sysext=true,userext=true, allowCached=true|
-	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey; 
+	var classes, win, lists, listviews, numcols=7, selecteditem, node, newlist, curkey;
 	var selectednodes, scrollView, compView, textView, keys;
 	var classButt, browseButt, bwdButt, fwdButt;
 	var isClass, history = [], historyIdx = 0, fBwdFwd, fHistoryDo, fHistoryMove;
 	var screenBounds, bounds, textViewBounds, results, resultsview, statictextloc;
 	var searchField, helpguikeyacts, fSelectTreePath, inPathSelect = false, fUpdateWinTitle, fLoadError;
-	
+
 	// Call to ensure the tree has been built
 	this.tree( sysext, userext, allowCached );
-	
+
 	// Now for a GUI
 	screenBounds = Window.screenBounds;
 	bounds = Rect(128, 264, 1040, 564);
@@ -399,22 +399,22 @@ gui { |sysext=true,userext=true, allowCached=true|
 		.autohidesScrollers_(false)
 		.resize_(5)
 		.canFocus_(true);
-		
+
 	if(GUI.current.id == \swing, { textView.editable_( false ).canFocus_( true ) });
-		
+
 	textView.bounds = textView.bounds; // hack to fix origin on first load
 
 	// hidden at first, this will receive search results when the search field is activated
 	resultsview = ScrollView(win, textViewBounds)
 				.resize_(5)
 				.visible_(false);
-	
+
 	// updates the history arrow buttons
 	fBwdFwd = {
 		bwdButt.enabled = historyIdx > 0;
 		fwdButt.enabled = historyIdx < (history.size -	1);
 	};
-	
+
 	fLoadError = { |error|
 		error.reportError;
 		"\n\nA discrepancy was found in the help tree.".postln;
@@ -427,7 +427,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 			"Please report the above error dump on the sc-users mailing list.".postln;
 		};
 	};
-	
+
 	// cuts the redo history, adds and performs a new text open action
 	fHistoryDo = { arg selector, argum;
 		history		= history.copyFromStart( historyIdx ).add([ selector, argum ]);
@@ -435,7 +435,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 		try({ textView.perform( selector, argum ) }, fLoadError);
 		fBwdFwd.value;
 	};
-	
+
 	// moves relatively in the history, and performs text open action
 	fHistoryMove = { arg incr; var entry;
 		historyIdx	= historyIdx + incr;
@@ -443,11 +443,11 @@ gui { |sysext=true,userext=true, allowCached=true|
 		try({ textView.perform( entry[ 0 ], entry[ 1 ]) }, fLoadError);
 		fBwdFwd.value;
 	};
-	
+
 	// keep this check for compatibility with old versions of swingOSC
 	if( textView.respondsTo( \linkAction ), {
 		textView
-			.linkAction_({ arg view, url, descr; 
+			.linkAction_({ arg view, url, descr;
 				var path;
 				if( url.notEmpty, {
 					//fHistoryDo.value( \open, url );
@@ -460,18 +460,18 @@ gui { |sysext=true,userext=true, allowCached=true|
 					if(keys.size > 0, {
 						fSelectTreePath.value(keys.drop(-1), keys.last.asString);
 					});
-				}, { 
+				}, {
 					if( descr.beginsWith( "SC://" ), {
 						fHistoryDo.value( \open, descr );
 					});
 				});
 			});
 	});
-	
+
 	lists = Array.newClear(numcols);
 	lists[0] = tree.keys(Array).collect(_.asString).sort;
 	selectednodes = Array.newClear(numcols);
-	
+
 	// SCListView
 	listviews = (0..numcols-1).collect({ arg index; var view;
 		view = ListView( compView, Rect( 5 + (index * 200), 4, 190, /* 504 */ bounds.height - 60 ));
@@ -484,10 +484,10 @@ gui { |sysext=true,userext=true, allowCached=true|
 		.action_({ arg lv; var lv2;
 			if( lv.value.notNil, {
 				// We've clicked on a category or on a class
-						
-				if((lv.items.size != 0), { 
+
+				if((lv.items.size != 0), {
 					lv2 = if( index < (listviews.size - 1), { listviews[ index + 1 ]});
-					
+
 					selecteditem = lists[index][lv.value];
 					if( lv2.notNil, {
 						// Clear the GUI for the subsequent panels
@@ -499,12 +499,12 @@ gui { |sysext=true,userext=true, allowCached=true|
 					node = try { if(index==0, tree, {selectednodes[index-1]})[selecteditem] };
 					curkey = selecteditem;
 					selectednodes[index] = node;
-					
+
 					if(node.isNil, {
 						// We have a "leaf" (class or helpdoc), since no keys found
-						
+
 						if( (index + 1 < lists.size), { lists[index+1] = #[] });
-						
+
 						if(inPathSelect.not, {
 						{
 							// Note: the "isClosed" check is to prevent errors caused by event triggering while user closing window
@@ -522,12 +522,12 @@ gui { |sysext=true,userext=true, allowCached=true|
 						// The "selectednodes" entry for the leaf, is the path to the helpfile (or "")
 						selectednodes[index] = try { if(index==0, {tree}, {selectednodes[index-1]})
 									[curkey.asSymbol.asClass ? curkey.asSymbol]};
-						
+
 						fUpdateWinTitle.value;
 					}, {
 						// We have a category on our hands
 						if( lv2.notNil, {
-							lists[ index + 1 ] = node.keys(Array).collect(_.asString).sort({|a,b| 
+							lists[ index + 1 ] = node.keys(Array).collect(_.asString).sort({|a,b|
 									// the outcomes:
 									// a and b both start with open-bracket:
 									//	test result should be a < b
@@ -541,9 +541,9 @@ gui { |sysext=true,userext=true, allowCached=true|
 							});
 							lv2.items = lists[index+1];
 						});
-						
+
 					});
-					
+
 					if( (index + 1) < listviews.size, {
 						listviews[index+1].value = if( listviews[index+1].respondsTo( \allowsDeselection ).not, 1 );
 						listviews[index+1].valueAction_( 0 );
@@ -553,9 +553,9 @@ gui { |sysext=true,userext=true, allowCached=true|
 			});
 		});
 	});
-	
+
 	listviews[0].items = lists[0];
-	
+
 	// Add keyboard navigation between columns
 	listviews.do({ |lv, index| // SCView
 		lv.keyDownAction_({|view,char,modifiers,unicode,keycode|
@@ -564,7 +564,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 			switch(unicode,
 			// cursor left
 			63234, { if(index > 0, { lv2 = listviews[ index - 1 ]; lv2.focus; nowFocused = lv2 })
-			}, 
+			},
 			// cursor right
 			63235, { if( index < (listviews.size - 1) and: { listviews[ index + 1 ].items.notNil }, {
 						lv2 = listviews[ index + 1 ];
@@ -582,7 +582,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 				});
 			},
 			//default:
-			{ 
+			{
 				// Returning nil is supposed to be sufficient to trigger the default action,
 				// but on my SC this doesn't happen.
 				view.defaultKeyDownAction(char,modifiers,unicode);
@@ -598,7 +598,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 					{
 					10.do({|i| { scrollView.visibleOrigin_(
 									Point(((lv.bounds.left - lv.bounds.width)+((10+i)*10)-5), 0))
-								}.defer; 
+								}.defer;
 						0.02.wait;
 					});
 					}.fork;
@@ -606,14 +606,14 @@ gui { |sysext=true,userext=true, allowCached=true|
 			});
 			}.defer(0.01); // defer because .action above needs to register the new index
 
-			if(clickCount == 2, {	
+			if(clickCount == 2, {
 				if(lv.value.notNil and: { try { if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]] }.isNil}, {
 					{ selecteditem.openHelpFile }.defer;
 				});
 			});
 		});
 	});
-	
+
 	// Add ability to programmatically select an item in a tree
 	fSelectTreePath = { | catpath, leaf |
 		var foundIndex;
@@ -644,12 +644,12 @@ gui { |sysext=true,userext=true, allowCached=true|
 			win.front;
 		}.play(AppClock);
 	};
-	
+
 	fUpdateWinTitle = {
 		win.name_(
 			(["Help browser"] ++ listviews.collect{|lv| lv.value !? {lv.items[lv.value]} }.reject(_.isNil)).join(" > ") );
 	};
-	
+
 	Platform.case(\windows, {
             // TEMPORARY WORKAROUND:
             // At present, opening text windows from GUI code can cause crashes on Psycollider
@@ -662,7 +662,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 		classButt = Button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
 			.states_([["Open Class File", Color.black, Color.clear]])
 			.resize_(7)
-			.action_({ 
+			.action_({
 				if(selecteditem.asSymbol.asClass.notNil, {
 					{selecteditem.asSymbol.asClass.openCodeFile }.defer;
 				});
@@ -671,7 +671,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 	browseButt = Button.new( win, Rect( 233, /* 534 */ bounds.height - 30, 110, 20 ))
 		.states_([["Browse Class", Color.black, Color.clear]])
 		.resize_(7)
-		.action_({ 
+		.action_({
 			if(selecteditem.asSymbol.asClass.notNil, {
 				{selecteditem.asSymbol.asClass.browse }.defer;
 			});
@@ -693,17 +693,17 @@ gui { |sysext=true,userext=true, allowCached=true|
 			});
 		});
 	fBwdFwd.value;
-	
+
 	// textfield for searching:
 	statictextloc = Rect(10, 10, textViewBounds.width-20, 200);
 	StaticText.new(win, Rect(435, bounds.height-35, 100 /* bounds.width-435 */, 35))
 		.align_(\right).resize_(7).string_("Search help files:");
 	searchField = TextField.new(win, Rect(535, bounds.height-35, bounds.width-535-35, 35).insetBy(8))
-		.resize_(8).action_({|widget| 
-			
+		.resize_(8).action_({|widget|
+
 			if(widget.value != ""){
 				// Let's search!
-				// hide the textView, show the resultsview, do a query 
+				// hide the textView, show the resultsview, do a query
 				textView.visible = false;
 				resultsview.visible = true;
 				resultsview.removeAll;
@@ -719,20 +719,20 @@ gui { |sysext=true,userext=true, allowCached=true|
 					.action_({ searchField.valueAction_("") })
 					.focus();
 				results.do{|res, index|
-					res.drawRow(resultsview, Rect(0, index*30 + 30, textViewBounds.width, 30), 
+					res.drawRow(resultsview, Rect(0, index*30 + 30, textViewBounds.width, 30),
 						// Add an action that uses the gui itself:
 						{ fSelectTreePath.(res.catpath, res.docname) }
 						);
 				};
-				
+
 			}{
 				// Empty query string, go back to textView
 				textView.visible = true;
 				resultsview.visible = false;
 			};
-			
+
 		});
-	
+
 	// Handle some "global" (for the Help gui) key actions
 	helpguikeyacts = {|view, char, modifiers, unicode, keycode|
 		if((modifiers & (262144 | 1048576)) != 0){ // cmd or control key is pressed
@@ -751,12 +751,12 @@ gui { |sysext=true,userext=true, allowCached=true|
 		};
 	};
 	win.view.addAction(helpguikeyacts, \keyUpAction);
-	
+
 	win.onClose_{
 		// This is done to prevent Cmd+W winclose from trying to do things in vanishing textviews!
 		fHistoryDo = {};
 	};
-	
+
 	win.front;
 	listviews[0].focus;
 	if(listviews[0].items.detect({ |item| item == "Help" }).notNil) {
@@ -766,7 +766,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 		selecteditem = listviews[0].items.first;
 		fSelectTreePath.([], selecteditem);
 	}
-} 
+}
 // end gui
 
 	all {
@@ -782,14 +782,14 @@ gui { |sysext=true,userext=true, allowCached=true|
 			PathName.new( it ).foldersWithoutSVN.do{ |folderPn|
 				str << folderPn.fullPath << Char.nl;
 				folderPn.helpFilesDo { |filePn|
-					str << Char.tab << 
+					str << Char.tab <<
 					filePn.fileNameWithoutExtension  << Char.nl;
 				};
 			}
 		};
 		doc.string = str.collection;
 	}
-	
+
 	// Iterates the tree, finding the help-doc paths and calling action.value(docname, path)
 	do { |action|
 		this.pr_do(action, this.tree, []);
@@ -803,17 +803,17 @@ gui { |sysext=true,userext=true, allowCached=true|
 			}
 		}
 	}
-	
+
 	searchGUI {
 		this.deprecated(thisMethod, Meta_Help.findRespondingMethodFor(\gui));
 		^this.gui
 	}
-	
+
 	// Returns an array of hits as HelpSearchResult instances
 	search { |query, ignoreCase=true|
 		var results = List.new, file, ext, docstr, pos;
 		this.do{ |docname, path, catpath|
-			if(path != ""){	
+			if(path != ""){
 				if(docname.find(query, ignoreCase).notNil){
 					results.add(HelpSearchResult(docname, path, 100 / (docname.size - query.size + 1), "", catpath.deepCopy));
 				}{
@@ -848,7 +848,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 			}
 		};
 		results = results.sort;
-		
+
 		^results
 	}
 	// This iterates the Help.tree to find the file. Can be used instead of platform-specific approaches
@@ -897,7 +897,7 @@ HelpSearchResult {
 	*new{|docname, path, goodness, context, catpath|
 		^this.newCopyArgs(docname, path, goodness, context, catpath);
 	}
-	
+
 	asString {
 		^ "HelpSearchResult(%, %, %, %)".format(docname, path.basename, goodness, this.contextTrimmed)
 	}
@@ -905,21 +905,21 @@ HelpSearchResult {
 	<= { |that|
 		^ this.goodness >= that.goodness
 	}
-	
+
 	contextTrimmed {
 		^context.tr($\n, $ ).tr($\t, $ )
 	}
-	
+
 	drawRow { |parent, bounds, action|
 		// SCButton
 		Button.new(parent, bounds.copy.setExtent(bounds.width * 0.3, bounds.height).insetBy(5, 5))
 				.states_([[docname]]).action_(action ? { path.openHTMLFile });
-		
+
 		StaticText.new(parent, bounds.copy.setExtent(bounds.width * 0.7, bounds.height)
 										.moveBy(bounds.width * 0.3, 0)
 										.insetBy(5, 5))
 				.string_(this.contextTrimmed);
-		
+
 	}
 }
 
@@ -934,7 +934,7 @@ HelpSearchResult {
 // Extension libs (which won't automatically get allocated, since their help won't be in the main
 //   help tree) SHOULD override this to specify where best to fit.
 //   (Note: *Please* use the "Libraries" and/or "UGens" main classifications, those are the best
-//   places for users to find extensions docs. Don't add new "root" help categories, that's 
+//   places for users to find extensions docs. Don't add new "root" help categories, that's
 //   not good for GUI usability.)
 //
 // Each categorisation should be a string using ">" marks to separate categories from subcategories.

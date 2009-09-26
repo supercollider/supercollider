@@ -21,11 +21,11 @@ typedef struct {
 } IRData;
 
 typedef struct {
-	unsigned char accX_zero, accY_zero, accZ_zero, accX_1g, accY_1g, accZ_1g; 
+	unsigned char accX_zero, accY_zero, accZ_zero, accX_1g, accY_1g, accZ_1g;
 } WiiAccCalibData;
 
 typedef struct {
-	unsigned char x_min, x_max, x_center, y_min, y_max, y_center; 
+	unsigned char x_min, x_max, x_center, y_min, y_max, y_center;
 } WiiJoyStickCalibData;
 
 typedef UInt16 WiiButtonType;
@@ -41,10 +41,10 @@ enum {
 	WiiRemoteDownButton,
 	WiiRemoteLeftButton,
 	WiiRemoteRightButton,
-	
+
 	WiiNunchukZButton,
 	WiiNunchukCButton,
-	
+
 	WiiClassicControllerXButton,
 	WiiClassicControllerYButton,
 	WiiClassicControllerAButton,
@@ -91,31 +91,31 @@ typedef struct _WiiRemoteRec
 	IOBluetoothDeviceRef		device;
 	IOBluetoothL2CAPChannelRef	ichan;
 	IOBluetoothL2CAPChannelRef	cchan;
-	
+
 	CFStringRef		address;
 
 	unsigned char	accX;
 	unsigned char	accY;
 	unsigned char	accZ;
 	unsigned short	buttonData;
-	
+
 	float			lowZ;
 	float			lowX;
 	int				orientation;
 	int				leftPoint; // is point 0 or 1 on the left. -1 when not tracking.
-	
+
 	float			posX;
 	float			posY;
 	float			angle;
 	Boolean			tracking;
-	
+
 	WiiExpansionPortType expType;
 	WiiAccCalibData	wiiCalibData, nunchukCalibData;
 	WiiJoyStickCalibData nunchukJoyStickCalibData;
 	WiiIRModeType	wiiIRMode;
 	IRData			irData[4];
 	double			batteryLevel;
-	
+
 	Boolean			readingRegister;
 	Boolean			isMotionSensorEnabled;
 	Boolean			isIRSensorEnabled;
@@ -126,11 +126,11 @@ typedef struct _WiiRemoteRec
 	Boolean			isLED2Illuminated;
 	Boolean			isLED3Illuminated;
 	Boolean			isLED4Illuminated;
-	
+
 	Boolean			isExpansionPortAttached;
 
 	IOBluetoothUserNotificationRef	disconnectNotification;
-	
+
 	//nunchuk
 	unsigned char	nStickX;
 	unsigned char	nStickY;
@@ -138,11 +138,11 @@ typedef struct _WiiRemoteRec
 	unsigned char	nAccY;
 	unsigned char	nAccZ;
 	unsigned char	nButtonData;
-	
+
 	float			nLowZ;
 	float			nLowX;
 	int				nOrientation;
-	
+
 	//classic controller
 	unsigned short	cButtonData;
 	unsigned char	cStickX1;

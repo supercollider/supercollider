@@ -17,4 +17,4 @@
 +Integer {
 	asTarget { ^Group.basicNew(Server.default, this) }
 	asNodeID { ^this }
-}		
+}

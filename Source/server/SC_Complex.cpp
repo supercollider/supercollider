@@ -58,7 +58,7 @@ Complex Polar::ToComplex()
 float fhypotx(float real, float imag);
 float fhypotx(float real, float imag)
 {
-	
+
 	int32 index;
 	float absreal = fabs(real);
 	float absimag = fabs(imag);

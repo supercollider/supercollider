@@ -10,13 +10,13 @@ Quant {
 	*default_ { |quant| default = quant.asQuant }
 
 	*new { |quant = 0, phase, timingOffset| ^super.newCopyArgs(quant, phase, timingOffset) }
-	
+
 	nextTimeOnGrid { | clock |
 		^clock.nextTimeOnGrid(quant, (phase ? 0) - (timingOffset ? 0));
 	}
 
 	asQuant { ^this.copy }
-	
+
 	printOn { |stream|
 		stream << "Quant(" << quant;
 		if(phase.notNil) { stream << ", " << phase };
@@ -29,7 +29,7 @@ Quant {
 		};
 		stream << ")"
 	}
-	
+
 	storeArgs { ^[quant, phase, timingOffset] }
 }
 

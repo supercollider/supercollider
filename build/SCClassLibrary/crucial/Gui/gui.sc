@@ -30,7 +30,7 @@
 	*publicInstVars {
 		^this.instVarNames.select({ |ivar| this.findRespondingMethodFor(ivar).notNil })
 	}
-	
+
 	// Insp
 	insp { arg  ... args;
 		Insp(this,args);
@@ -39,7 +39,7 @@
 	ginsp { arg  ... args;
 		Insp(this,args,true);
 	}
-	
+
 	debug { arg caller;
 		// by using this rather than just postln
 		// you can command-shift-y on debug and find every one you left

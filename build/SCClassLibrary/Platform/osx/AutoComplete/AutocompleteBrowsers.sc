@@ -24,7 +24,7 @@ AutoCompMethodBrowser {
 	*exclude { |selectorArray|
 		methodExclusions = methodExclusions ++ selectorArray.collect({ |sel| sel.asSymbol });
 	}
-	
+
 	*new { arg start, size, doc;
 			// may only open a browser if there isn't one open already
 		(w.isNil and: { this.newCondition(start, size, doc) }).if({
@@ -40,14 +40,14 @@ AutoCompMethodBrowser {
 		selector = doc.string(start, size).asSymbol;
 		^Document.allowAutoComp and: { methodExclusions.includes(selector).not }
 	}
-	
+
 	*init { arg argStart, argSize, argDoc;
 		var	displaySel, temp, initString;
 		skipThis = dropMeta = false;
 		selector = argDoc.string(argStart, argSize);
 			// if no string, abort
 		(selector.size == 0).if({ ^nil });
-			// if it's part of a class name, 
+			// if it's part of a class name,
 		(selector[0] >= $A and: { selector[0] <= $Z }).if({
 			AutoCompClassBrowser.classExclusions.includes(selector.asSymbol.asClass).not.if({
 					// identify classes containing that string
@@ -92,7 +92,7 @@ AutoCompMethodBrowser {
 			^nil
 		});
 	}
-	
+
 	*free { |finished = false|
 		var	string;
 			// if window is nil, isclosed should be true
@@ -119,7 +119,7 @@ AutoCompMethodBrowser {
 			// garbage; also, w = nil allows next browser to succeed
 		w = masterList = reducedList = nil;
 	}
-	
+
 	*finish {
 		var	selectStart, selectSize, str;
 			// select the right text in the doc and replace with method template
@@ -132,7 +132,7 @@ AutoCompMethodBrowser {
 		});
 		this.free(true);
 	}
-	
+
 	*finalSelection { |str|
 		var  openParen, closeParen;
 		(openParen = str.detectIndex({ |ch| ch.ascii == 40 })).isNil.if({
@@ -142,7 +142,7 @@ AutoCompMethodBrowser {
 			^[openParen + 1 + start, closeParen-openParen-1]
 		});
 	}
-	
+
 	*finishString { |meth|
 		^dropMeta.if({ meth[0].name.asString.copyRange(5, 2000) },
 				{ meth[1].name })
@@ -154,13 +154,13 @@ AutoCompMethodBrowser {
 			this.listItem(meth);
 		});
 	}
-	
+
 	*listItem { arg meth;
 		^dropMeta.if({ meth[0].name.asString.copyRange(5, 2000) },
 				{ meth[0].name })
 			++ "-" ++ meth[1].name ++ meth[1].argList(skipThis)
 	}
-	
+
 	*restrictList {
 		var	str, nametemp, keep;
 		str = textField.string;
@@ -194,14 +194,14 @@ AutoCompMethodBrowser {
 			listView = gui.listView.new(w, Rect(5, 75, wWidth - 10, wHeight - 80))
 				.resize_(5)
 				.keyDownAction_({ |listV, char, modifiers, keycode|
-					case 
+					case
 						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63232) }
 							{ listView.value = (listView.value - 1) % reducedList.size }
 						{ (modifiers bitAnd: 10485760 > 0) and: (keycode == 63233) }
 							{ listView.value = (listView.value + 1) % reducedList.size }					{ char.ascii == 13 } { GUI.use( gui, {this.finish })}
 						{ char.ascii == 27 } { this.free }
 				});
-	
+
 			textField.keyDownAction_({ |txt, char, modifiers, unicode|
 				case
 					{ (modifiers bitAnd: 10485760 > 0) and: (unicode == 63232) }
@@ -259,7 +259,7 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 		this.restrictList;
 		overwriteOnCancel = false;
 	}
-	
+
 	*getMethods { arg class;
 		var	list, existsFlag;
 		list = List.new;
@@ -281,17 +281,17 @@ AutoCompClassBrowser : AutoCompMethodBrowser {
 		});
 		^list
 	}
-	
+
 	*finishString { |meth|
 		var strtemp;
 		strtemp = savedClass.name ++ "." ++ meth.name ++ meth.argList;
 		^strtemp.copyRange(5, strtemp.size-1);
 	}
-	
+
 	*listItem { arg meth;
 		^meth.name ++ meth.argList
 	}
-	
+
 }
 
 // need to think about this some more
@@ -304,7 +304,7 @@ AutoCompClassSearch : AutoCompClassBrowser {
 //			userEditedString = false;
 
 	*newCondition { ^Document.allowAutoComp }	// no restrictions on when a window will be opened
-	
+
 	*init { arg argStart, argSize, argDoc;
 		selector = argDoc.string(argStart, argSize);
 		reducedList = masterList = Class.allClasses.reject({ |cl|
@@ -319,9 +319,9 @@ AutoCompClassSearch : AutoCompClassBrowser {
 //		userEditedString = false;
 		this.restrictList;
 	}
-	
+
 	*free { super.free(true) }
-	
+
 	*finish {
 			// I need to test whether the method chosen is in a superclass of the class
 			// selected here -- see finishString
@@ -354,8 +354,8 @@ AutoCompClassSearch : AutoCompClassBrowser {
 			});
 		this.free(true);
 	}
-	
-	*finishString { 
+
+	*finishString {
 		var meth, classname;
 		meth = classBrowser.currentMethod;
 		if(meth.ownerClass.isMetaClass) {
@@ -373,7 +373,7 @@ AutoCompClassSearch : AutoCompClassBrowser {
 			^meth.name ++ meth.argList
 		};
 	}
-	
+
 	*listItem { |cl|
 		^cl.name.asString
 	}

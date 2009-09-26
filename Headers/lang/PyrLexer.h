@@ -45,7 +45,7 @@ typedef struct classdep {
 
 extern PyrSymbol *gCompilingFileSym;
 
-ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName, 
+ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName,
 	PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 bool parseOneClass(PyrSymbol *fileSym);
 void initPassOne();

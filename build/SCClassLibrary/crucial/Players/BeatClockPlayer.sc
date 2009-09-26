@@ -1,9 +1,9 @@
 
-BeatClockPlayer : KrPlayer { 
-	
+BeatClockPlayer : KrPlayer {
+
 	var <>tempoFactor,<>tempoBase,tempoBus;
 	var <>mul;
-	
+
 	*new { arg tempoFactor=2.0,mul=1.0,tempoBase;
 		^super.new.tempoFactor_(tempoFactor).tempoBase_(tempoBase ? Tempo.default).mul_(mul)
 	}
@@ -18,8 +18,8 @@ BeatClockPlayer : KrPlayer {
 		})
 	}
 	//never bothers to free the bus
-		
-	asSynthDef { 
+
+	asSynthDef {
 		//unique by tempoFactor
 		^SynthDef(this.defName,{ arg i_tempoIndex=0,out = 0;
 			Out.kr(out,Impulse.kr(In.kr(i_tempoIndex) * (tempoFactor.value * 0.25),mul: mul.value))

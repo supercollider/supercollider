@@ -231,7 +231,7 @@ EmacsButton : EmacsWidget {
 				[\let, [[\widget, [\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]]],
 					[\states, [\quote, states]]],
 					['widget-put', \widget, ':states', \states],
-					['widget-value-set', \widget, [\nth, value, \states]]] 
+					['widget-value-set', \widget, [\nth, value, \states]]]
 			).asLispString) */
 	}
 	initStates {|argStates|states=argStates}

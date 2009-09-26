@@ -6,7 +6,7 @@
  *  Illposed Software
  *
  */
- 
+
 /*
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
@@ -32,7 +32,7 @@
 
 typedef enum {
 	kSCRendezvous_UDP,
-	kSCRendezvous_TCP	
+	kSCRendezvous_TCP
 } SCRendezvousProtocol;
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum);

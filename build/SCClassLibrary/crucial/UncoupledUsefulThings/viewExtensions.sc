@@ -22,7 +22,7 @@
 			// yes
 			// pretend I just consumed nothing
 			this.didUseAllocated(consumed.resizeTo(0,0));
-			
+
 			// goto the next line
 			this.decorator.nextLine; // don't put a StartRow in there, the decorator should auto-flow on resize
 			// take everything
@@ -118,7 +118,7 @@
 		var	b = view.bounds;
 		^this.moveBy(b.left.neg, b.top.neg)
 	}
-	
+
 		// "this" is a Rect with coordinates relative to the view
 	setOriginAbsolute { |view|
 		var	b;

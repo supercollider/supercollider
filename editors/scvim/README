@@ -17,7 +17,7 @@ OPTIONAL:
 - links (for alternative help file formatting, see bin/scvim_make_help)
 
   * it is best to use your distro's unhtml package but in case your distro
-    doesn't have it, I've placed a version here: 
+    doesn't have it, I've placed a version here:
     http://www.x37v.info/scvim/files/
 ________________________________________________________________________________
 
@@ -32,13 +32,13 @@ scons install-user
 sudo scons install-system
 
 optional (but recommended):
-scons build-help 
+scons build-help
 
 install-user will install the scvim vim files in ~/.vim and create the cache
 dir [for inline docs, syntax highlighting updates, etc] at ~/.scvim
 install-system will install the 'executable' files in PREFIX/bin, a system-wide
-configuration file in PREFIX/share/scvim/ and the SCVim class file into 
-PREFIX/share/SuperCollider/Extensions/scvim 
+configuration file in PREFIX/share/scvim/ and the SCVim class file into
+PREFIX/share/SuperCollider/Extensions/scvim
 
 Then, make sure the SCVim class is sourced in your library [see step 4 below].
 
@@ -54,12 +54,12 @@ system-wide rc file
 install-system is made up of:
 	install-bin [installs the files that are located in bin/]
 	install-rc [installs the systemwide scvimrc in PREFIX/share/scvim/
-	install-classes 
+	install-classes
 		[installs the SCVim supercollider class file in PREFIX/share/SuperCollider/Extensions/scvim/]
 
 install-user is made up of:
 	install-vimfiles [installs the vimfiles (syntax/* ftplugin/* indent/* in VIMFILE_DIR]
-	install-doc 
+	install-doc
 		[installs the SCVim.scd file into CACHE_DIR/doc/, creates CACHE_DIR if it doesn't exist]
 
 build-help
@@ -72,7 +72,7 @@ Manual Install:
    sudo cp bin/* /usr/local/bin/
 
 2) copy the folders ftplugin/ syntax/ indent/ somewhere in your vim runtimepath
-   *the runtimepath differs depending on your distribution.  
+   *the runtimepath differs depending on your distribution.
     type :help runtimepath in vim for more info
 
    to install for just one user the easiest place to put it is in ~/.vim
@@ -89,7 +89,7 @@ Manual Install:
     (on linux, typically /usr/local/share/SuperCollider/Extensions)
    ie do this:
    cp -r scclasses /usr/local/share/SuperCollider/Extensions/scvim
-   
+
    Make sure that this folder is sourced in your .sclang.cfg file.
    +/usr/local/share/SuperCollider/Extensions/scvim
    * You can put the scvim directory somewhere else if you please, just make
@@ -112,23 +112,23 @@ OPTIONAL EXTRA INSTALLATION STEPS:
 
 * I put this in my ~/.sclang.sc so that each time I start sclang I have updated
     Object completion and highlighting, as well as Object Definition Lookup:
-    //set up the scvim stuff 
+    //set up the scvim stuff
     SCVim.updateCaches;
   You'll probably want to execute this at least once after an install of
   supercollider to get the most up-to-date Object info
 
-* sclang's working directory defaults to /tmp when using scvim. If you want to 
-    set it to something else you can set the bash environment variable 
+* sclang's working directory defaults to /tmp when using scvim. If you want to
+    set it to something else you can set the bash environment variable
     SCLANG_RUNDIR
 
-* I've put the colorscheme that I use in the "extra" folder.  This makes 
-    strings, symbols and chars variations on the same color but all look 
+* I've put the colorscheme that I use in the "extra" folder.  This makes
+    strings, symbols and chars variations on the same color but all look
     different.  Feel free to use/modify it to your liking.
 ________________________________________________________________________________
 
 USAGE:
 
-defaults (most work in both command and insert mode): 
+defaults (most work in both command and insert mode):
 
 :SClangStart starts/restarts the interpreter in an xterm
   (if you want to recompile the supercollider library just type :SClangStart and you'll
@@ -155,13 +155,13 @@ ________________________________________________________________________________
 
 HELP DOCS:
 
-scvim uses preprocessed versions of the help files (converted to plain-text), 
+scvim uses preprocessed versions of the help files (converted to plain-text),
 and to update these help files from the main files you can run the following
 line in sclang:
 
   SCVim.updateHelpCache;
 
-This actually calls a Ruby script called scvim_make_help, so can be used 
+This actually calls a Ruby script called scvim_make_help, so can be used
 outside SC if desired. You can do something like:
 
   ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help
@@ -183,17 +183,17 @@ TROUBLE SHOOTING:
 If you get errors about _FileWrite (like the error printed below) when you run
 SCVim.updateHelpCache or SCVim.updateCaches it is likely that you don't have
 write permissions for your scvim_cache_dir.
-This directory is normally: ~/.scvim/ 
+This directory is normally: ~/.scvim/
 You can verify that by executing: SCVIM.scvim_cache_dir
 Most often the solution is to do this: sudo chown -R <yourusername> ~/.scvim/
 
-ERROR: Primitive '_FileWrite' failed. 
-Failed. 
-RECEIVER: 
-Instance of File { (B7837DD0, gc=40, fmt=00, flg=00, set=01) 
- instance variables [1] 
- fileptr : nil 
-}  
+ERROR: Primitive '_FileWrite' failed.
+Failed.
+RECEIVER:
+Instance of File { (B7837DD0, gc=40, fmt=00, flg=00, set=01)
+ instance variables [1]
+ fileptr : nil
+}
 ________________________________________________________________________________
 
 THANKS:

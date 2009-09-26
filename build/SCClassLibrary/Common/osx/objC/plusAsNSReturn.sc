@@ -1,5 +1,5 @@
 + Object {
-	
+
 	asNSReturn{
 		^this
 	}

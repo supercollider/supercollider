@@ -16,11 +16,11 @@ MXHID {
 		this.initUsageMap;
 		all = IdentityDictionary.new;
 	}
-	
+
 	*all{
 		^all.copy;
 	}
-	
+
 	*id { ^\osx_hid }
 
 	*put { arg key, object;
@@ -34,7 +34,7 @@ MXHID {
 	/// ----------------- functions ---------------
 
 	*buildDeviceList{
-		HIDDeviceService.buildDeviceList(nil,nil); 
+		HIDDeviceService.buildDeviceList(nil,nil);
 		//deviceList = HIDDeviceServer.deviceList;
 		deviceList = HIDDeviceService.devices.collect{ |dev,i|
 			[ dev, this.getInfo( dev ) ]
@@ -42,7 +42,7 @@ MXHID {
 		^deviceList;
 	}
 
-	*postDevices { 
+	*postDevices {
 		deviceList.do{ |dev,i|
 			[ i, dev[0], dev[1].asString ].postcs;
 		}
@@ -53,7 +53,7 @@ MXHID {
 			});*/
 	}
 
-	*postDevicesAndProperties { 
+	*postDevicesAndProperties {
 		deviceList.do{ |dev,i|
 			[ i, dev[0], dev[1].asString ].postcs;
 			dev[0].elements.do({arg ele;
@@ -98,7 +98,7 @@ MXHID {
 	*stopEventLoop{
 		HIDDeviceService.stopEventLoop;
 	}
-	
+
 	*eventLoopIsRunning{
 		^HIDDeviceService.eventLoopIsRunning;
 	}
@@ -106,14 +106,14 @@ MXHID {
 	*open { arg dev;
 		^super.new.init( dev );
 	}
-	
+
 	*initAction{
 		HIDDeviceService.action_({arg productID, vendorID, locID, cookie, val;
 		//	[productID, vendorID, locID, cookie, val].postln;
 		//	if (debug) {("debug"+[productID, vendorID, locID, cookie, val]).postln;};
-			try { 
+			try {
 				all.at( locID ).slots.at( cookie ).value_(val);
-			} { 
+			} {
 				// fall thru to next action here...
 				if (debug) {("fall thru"+[productID, vendorID, locID, cookie, val]).postln;}
 			}
@@ -123,7 +123,7 @@ MXHID {
 	init{ |dev|
 		dev = dev[0];
 		if ( dev.isKindOf( HIDDevice ),
-				{ 
+				{
 					device = dev;
 					device.queueDevice;
 					slots = IdentityDictionary.new;
@@ -146,7 +146,7 @@ MXHID {
 		);
 		^info;
 	}
-	
+
 	getSlots{
 		var mySlots = IdentityDictionary.new;
 		var devElements = device.elements;
@@ -190,7 +190,7 @@ MXHID {
 			}
 		);
 	}
-	
+
 	info{
 		if ( device.notNil,
 			{
@@ -205,9 +205,9 @@ MXHID {
 
 	ungrab{ // not implemented on osx
 	}
-	
+
 	*initUsageMap{
-	
+
 	// the usageMap maps the usagePage and usageType to the different slot types we are using
 	// this map is not yet complete, due to time limitations. Please write to the sc-user list
 	// if you use a device not on one of the defined pages, or when stuff is missing
@@ -221,40 +221,40 @@ MXHID {
 		usageMap.at( 0x01 ).put( { |v| ( v >= 0x81 and: ( v <= 0x93 ) ); }, 0x0001 );
 		usageMap.at( 0x01 ).put( { |v| ( v >= 0xA0 and: ( v <= 0xA8 ) ); }, 0x0001 );
 		usageMap.at( 0x01 ).put( { |v| ( v >= 0xB0 and: ( v <= 0xB7 ) ); }, 0x0001 );
-		
+
 		usageMap.put( 0x02, Dictionary.new ); // Simulations Controls
 		// feel free to fill in
 		usageMap.put( 0x03, Dictionary.new ); // VR Controls
 		// feel free to fill in
 		usageMap.put( 0x04, Dictionary.new ); // Sport Controls
 		// feel free to fill in
-		
+
 		usageMap.put( 0x05, Dictionary.new ); // Game Controls
 		usageMap.at( 0x05 ).put( { |v| ( v >= 0x20 and: ( v <= 0x29 ) ); }, 0x0003 );
 		usageMap.at( 0x05 ).put( { |v| ( v >= 0x2A and: ( v <= 0x31 ) ); }, 0x0001 );
 		usageMap.at( 0x05 ).put( { |v| ( v >= 0x33 and: ( v <= 0x35 ) ); }, 0x0001 ); // ?? could be wrong, as they are select type
-		
+
 		usageMap.put( 0x06, Dictionary.new ); // Generic Device Controls
 		// feel free to fill in
-		
+
 		usageMap.put( 0x07, Dictionary.new ); // Keyboard / Keypad
 		usageMap.at( 0x07 ).put( { |v| ( v >= 0x01 and: ( v <= 0xA4 ) ); }, 0x0001 );
 		usageMap.at( 0x07 ).put( { |v| ( v >= 0xB0 and: ( v <= 0xDD ) ); }, 0x0001 );
 		usageMap.at( 0x07 ).put( { |v| ( v >= 0xE0 and: ( v <= 0xE7 ) ); }, 0x0001 );
-		
-		usageMap.put( 0x08, Dictionary.new ); // LED 
+
+		usageMap.put( 0x08, Dictionary.new ); // LED
 		usageMap.at( 0x08 ).put( { |v| ( v >= 0x01 and: ( v <= 0x39 ) ); }, 0x0011 );
 		usageMap.at( 0x08 ).put( { |v| ( v >= 0x4B and: ( v <= 0x4D ) ); }, 0x0011 );
-		
+
 		usageMap.put( 0x09, Dictionary.new ); // Button
 		usageMap.at( 0x09 ).put( { |v| ( v >= 0x01 and: ( v <= 0xFFFF ) ); }, 0x0001 );
-		
+
 		usageMap.put( 0x0A, Dictionary.new ); // Ordinal Page
 		// feel free to fill in
-		
+
 		usageMap.put( 0x0B, Dictionary.new ); // Telephony Page
 		// feel free to fill in
-		
+
 		usageMap.put( 0x0C, Dictionary.new ); // Consumer
 		// feel free to fill in
 
@@ -266,19 +266,19 @@ MXHID {
 		usageMap.at( 0x0D ).put( 0x3C, 0x0001 );
 		usageMap.at( 0x0D ).put( { |v| ( v >= 0x3D and: ( v <= 0x41 ) ); }, 0x0003 );
 		usageMap.at( 0x0D ).put( { |v| ( v >= 0x42 and: ( v <= 0x46 ) ); }, 0x0001 );
-				
+
 		usageMap.put( 0x0F, Dictionary.new ); // Physical Interface Device (Force Feedback)
 		// feel free to fill in
-		
+
 		usageMap.put( 0x10, Dictionary.new );	// Unicode
 		// feel free to fill in
-		
+
 		usageMap.put( 0x14, Dictionary.new ); // Alphanumeric
 		// feel free to fill in
-		
+
 		usageMap.put( 0x40, Dictionary.new ); // Medical instrument
 		// feel free to fill in
-		
+
 	}
 }
 
@@ -287,7 +287,7 @@ MXHIDSlot {
 	var <device, <type, <code, <cookie, value=0,  <>action;
 	var <spec;
 	classvar slotTypeMap;
-	
+
 	*initClass {
 		slotTypeMap = IdentityDictionary.new.addAll([
 			0x0001 -> MXHIDKeySlot,
@@ -322,7 +322,7 @@ MXHIDSlot {
 MXHIDKeySlot : MXHIDSlot {
 	initSpec {
 		super.initSpec;
-		//FIXME: 
+		//FIXME:
 		value = device.valueByCookie(cookie);
 	}
 }

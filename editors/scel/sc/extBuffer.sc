@@ -9,16 +9,16 @@
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var dumping=false, startDump, stopDump, stillRunning;
-		
+
 		if (emacsbuf.notNil, { ^emacsbuf.front });
-		
+
 		if(w.isNil,{
 			w = emacsbuf = EmacsBuffer("*" ++ name.asString ++ " server*");
 		});
-		
+
 		if(isLocal,{
 			booter = EmacsButton(w, ["Boot","Quit"]);
-			booter.action = { arg value; 
+			booter.action = { arg value;
 				if(value == 1, {
 					booting.value;
 					this.boot;
@@ -28,14 +28,14 @@
 				});
 			};
 			booter.value=serverRunning.binaryValue;
-			
+
 			killer = EmacsButton(w, ["K"], { Server.killAll });
 			killer.enabled = false;
 		});
-		
+
 		active = EmacsText(w, this.name.asString, 12, \center);
 		//		active.background = Color.black;
-		if(serverRunning,running,stopped);		
+		if(serverRunning,running,stopped);
 
 		makeDefault = EmacsButton(w, ["-> default"], {
 			thisProcess.interpreter.s = this;
@@ -43,7 +43,7 @@
 		});
 
 		w.newline;
-		
+
 		recorder = EmacsButton(w, ["prepare rec","record >","stop []"], {
 			if (recorder.value == 1) {
 				this.prepareForRecord;
@@ -51,16 +51,16 @@
 				if (recorder.value == 2) { this.record } { this.stopRecording };
 			};
 		});
-			
+
 		recorder.enabled = false;
-		
+
 		stillRunning = {
 			SystemClock.sched(0.2, { this.stopAliveThread });
 		};
 		w.defineKey("n", { this.queryAllNodes })
 		 .defineKey(" ", { if(serverRunning.not) { this.boot } })
 		 .defineKey("d", {
-			 startDump = { 
+			 startDump = {
 				 this.dumpOSC(1);
 				 this.stopAliveThread;
 				 dumping = true;
@@ -74,7 +74,7 @@
 			 };
 			 if(dumping, stopDump, startDump)
 		 });
-		
+
 		if (isLocal, {
 			running = {
 				//				active.stringColor_(Color.red);
@@ -93,12 +93,12 @@
 				//				active.stringColor_(Color.yellow(0.9));
 				//booter.setProperty(\value,0);
 			};
-			
+
 			w.onClose = {
 				emacsbuf = nil;
 				ctlr.remove;
 			};
-		},{	
+		},{
 			running = {
 				//				active.background = Color.red;
 				recorder.enabled = true;
@@ -117,18 +117,18 @@
 			};
 		});
 		if(serverRunning,running,stopped);
-			
+
 		w.newline;
 
-		countsViews = 
+		countsViews =
 		#[
-			"Avg CPU: ", "Peak CPU: ", 
+			"Avg CPU: ", "Peak CPU: ",
 			"UGens: ", "Synths: ", "Groups: ", "SynthDefs: "
 		].collect({ arg name, i;
 			var label,numView, pctView;
 			label = EmacsText(w, name, 12, \right);
-		
-			if (i < 2, { 
+
+			if (i < 2, {
 				numView = EmacsText(w, "?", 5, \right);
 				pctView = EmacsText(w, "%");
 			},{
@@ -137,7 +137,7 @@
 			if (i == 1) { w.newline };
 			numView
 		});
-		
+
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })
 			.put(\counts,{
@@ -150,7 +150,7 @@
 			})
 			.put(\cmdPeriod,{
 				recorder.value=0;
-			});	
+			});
 		w.gotoBob;
 		w.front;
 		this.startAliveThread;
@@ -166,18 +166,18 @@
 		var getSliderValues;
 
 		s = Server.default;
-				
+
 		usefulControls = controls.select {|controlName, i|
 			var ctlname;
 			ctlname = controlName.name;
 			(ctlname != "?") && (ctlname != "gate")
 		};
-		
+
 		numControls = usefulControls.size;
 		sliders = Array.newClear(numControls);
-		
+
 		id = s.nextNodeID; // generate a note id.
-		
+
 		// make the window
 		w = EmacsBuffer("*SynthDesc"+name++"*");
 		// add a button to start and stop the sound.
@@ -196,7 +196,7 @@
 				msgFunc.valueEnvir
 			};
 		};
-		
+
 		startButton.action = {|value|
 				if (value == 1) {
 					// start sound
@@ -211,22 +211,22 @@
 					};
 				};
 		};
-		
+
 		// create controls for all parameters
 		usefulControls.do {|controlName, i|
 			var ctlname, ctlname2, capname, spec;
 			ctlname = controlName.name;
-			capname = ctlname.copy; 
+			capname = ctlname.copy;
 			capname[0] = capname[0].toUpper;
 			spec = ctlname.asSymbol.asSpec;
 			sliders[i] = EmacsNumber(w, capname, spec?ControlSpec(-1e8,1e8),
 				{|ez| s.sendMsg("/n_set", id, ctlname, ez); }, controlName.defaultValue);
 		};
-			
+
 		// set start button to zero upon a cmd-period
 		cmdPeriodFunc = { startButton.value = 0; };
 		CmdPeriod.add(cmdPeriodFunc);
-		
+
 		// stop the sound when window closes and remove cmdPeriodFunc.
 		w.onClose = {
 			s.sendMsg("/n_free", id);

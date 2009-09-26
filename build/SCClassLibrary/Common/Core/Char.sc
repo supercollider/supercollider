@@ -11,7 +11,7 @@ Char : Magnitude {
 	// to create a Char use the Integer methods asAscii or asDigit
 
 	hash { _ObjectHash; ^this.primitiveFailed }
-	
+
 	ascii {
 		// returns the ascii value of a character as an Integer
 		_AsciiValue
@@ -32,7 +32,7 @@ Char : Magnitude {
 	toLower {
 		_ToLower
 	}
-	
+
 	// tests return Boolean:
 	isAlpha {
 		// is an alphabetic character
@@ -58,7 +58,7 @@ Char : Magnitude {
 		_IsSpace
 		// is white space
 	}
-	isVowel {	
+	isVowel {
 		^"AEIOU".includes(this.toUpper);
 	}
 	isDecDigit {
@@ -84,7 +84,7 @@ Char : Magnitude {
 		^this.ascii < aChar.ascii
 	}
 	== { arg aChar;  ^aChar respondsTo: \ascii and: { this.ascii == aChar.ascii } }
-	
+
 	++ { |that| ^this.asString ++ that }
 
 	*bullet { ^165.asAscii }

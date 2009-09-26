@@ -10,11 +10,11 @@
 // Name -->no ar/kr/ir methods: sorry, you have to complete as required
 //
 // Accepts as args the class name (for classes and ugens) or a string describing a topic
-// Generates an html and then open it in with openHelpFile 
-//  
+// Generates an html and then open it in with openHelpFile
+//
 // Usage: Helper(undocumentedObject, path)
-// where if path.isNil, it prompts for a path where to save as  
-// 
+// where if path.isNil, it prompts for a path where to save as
+//
 Helper(Helper, "Help/Helper.html")
 // ok
 Helper(Helper)
@@ -31,7 +31,7 @@ Helper("On_Helper")
 // but I don't see a way to propose to GUI save dialog a fileName, so in that case you would have
 // to specify it the same.
 // Document was indeed more flexible
-// 
+//
 // or with an Help extension:
 //
 // + Help {
@@ -41,16 +41,16 @@ Helper("On_Helper")
 //
 //	}
 //
-// } 
-// Help.makeHelp(MyClass) 
-// e.g. 
+// }
+// Help.makeHelp(MyClass)
+// e.g.
 Help.makeHelp(Helper)
-// 
-// Help.makeHelp(MyUGen) 
-// e.g. 
+//
+// Help.makeHelp(MyUGen)
+// e.g.
 Help.makeHelp(SinOsc)
 //
-// Help.makeHelp("MyClass") 
+// Help.makeHelp("MyClass")
 // e.g. Help.makeHelp("Helper's corner")
 //
 // Escapes make the sources totally unreadable...
@@ -59,13 +59,13 @@ Help.makeHelp(SinOsc)
 
 
 Helper {
-	
+
 	*new { arg undocumentedObject, path ;
-			^super.new.initHelper( undocumentedObject, path ) 
+			^super.new.initHelper( undocumentedObject, path )
 	}
 
 	initHelper { arg undocumentedObject, path ;
-		case 
+		case
 			{ undocumentedObject.class == Meta_Object }
 				{ ^ClassHelper.new( undocumentedObject, path )  }
 			{ undocumentedObject.class == String }
@@ -73,7 +73,7 @@ Helper {
 			{ undocumentedObject.superclasses.includes(UGen).not }
 				{ ^ClassHelper.new( undocumentedObject, path ) }
 			{ undocumentedObject.superclasses.includes(UGen) }
-			  	{ ^UGenHelper.new( undocumentedObject, path ) } 
+			  	{ ^UGenHelper.new( undocumentedObject, path ) }
 		}
 }
 

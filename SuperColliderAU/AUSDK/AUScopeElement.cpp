@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -40,7 +40,7 @@
 */
 /*=============================================================================
 	AUScopeElement.cpp
-	
+
 =============================================================================*/
 
 #include "AUScopeElement.h"
@@ -61,7 +61,7 @@
 //
 void	AUElement::UseIndexedParameters(int inNumberOfParameters)
 {
-	mIndexedParameters.resize (inNumberOfParameters);	
+	mIndexedParameters.resize (inNumberOfParameters);
 	mUseIndexedParameters = true;
 }
 
@@ -73,12 +73,12 @@ void	AUElement::UseIndexedParameters(int inNumberOfParameters)
 inline ParameterMapEvent&	AUElement::GetParamEvent(AudioUnitParameterID paramID)
 {
 	ParameterMapEvent *event;
-	
+
 	if(mUseIndexedParameters)
 	{
 		if(paramID >= mIndexedParameters.size() )
 			COMPONENT_THROW(kAudioUnitErr_InvalidParameter);
-		
+
 		event = &mIndexedParameters[paramID];
 	}
 	else
@@ -86,10 +86,10 @@ inline ParameterMapEvent&	AUElement::GetParamEvent(AudioUnitParameterID paramID)
 		ParameterMap::iterator i = mParameters.find(paramID);
 		if (i == mParameters.end())
 			COMPONENT_THROW(kAudioUnitErr_InvalidParameter);
-			
+
 		event = &(*i).second;
 	}
-	
+
 	return *event;
 }
 
@@ -100,7 +100,7 @@ inline ParameterMapEvent&	AUElement::GetParamEvent(AudioUnitParameterID paramID)
 AudioUnitParameterValue		AUElement::GetParameter(AudioUnitParameterID paramID)
 {
 	ParameterMapEvent &event = GetParamEvent(paramID);
-	
+
 	return event.GetValue();
 }
 
@@ -114,7 +114,7 @@ void			AUElement::GetRampSliceStartEnd(	AudioUnitParameterID		paramID,
 
 {
 	ParameterMapEvent &event = GetParamEvent(paramID);
-		
+
 	// works even if the value is constant (immediate parameter value)
 	event.GetRampSliceStartEnd(outStartValue, outEndValue, outValuePerFrameDelta );
 }
@@ -131,11 +131,11 @@ void			AUElement::SetParameter(AudioUnitParameterID paramID, AudioUnitParameterV
 	else
 	{
 		ParameterMap::iterator i = mParameters.find(paramID);
-	
+
 		if (i == mParameters.end())
 		{
 			// create new entry in map for the paramID (only happens first time)
-			ParameterMapEvent event(inValue);		
+			ParameterMapEvent event(inValue);
 			mParameters[paramID] = event;
 		}
 		else
@@ -162,7 +162,7 @@ void			AUElement::SetScheduledEvent(	AudioUnitParameterID 			paramID,
 	else
 	{
 		ParameterMap::iterator i = mParameters.find(paramID);
-	
+
 		if (i == mParameters.end())
 		{
 			// create new entry in map for the paramID (only happens first time)
@@ -173,7 +173,7 @@ void			AUElement::SetScheduledEvent(	AudioUnitParameterID 			paramID,
 		{
 			// paramID already exists in map so simply change its value
 			ParameterMapEvent &event = (*i).second;
-			
+
 			event.SetScheduledEvent(inEvent, inSliceOffsetInBuffer, inSliceDurationFrames );
 		}
 	}
@@ -207,7 +207,7 @@ void			AUElement::SaveState(CFMutableDataRef data)
 		UInt32 nparams = mIndexedParameters.size();
 		UInt32 theData = CFSwapInt32HostToBig(nparams);
 		CFDataAppendBytes(data, (UInt8 *)&theData, sizeof(nparams));
-	
+
 		for (UInt32 i = 0; i < nparams; i++)
 		{
 			struct {
@@ -215,12 +215,12 @@ void			AUElement::SaveState(CFMutableDataRef data)
 				//CFSwappedFloat32	value; crashes gcc3 PFE
 				UInt32				value;	// really a big-endian float
 			} entry;
-			
+
 			entry.paramID = CFSwapInt32HostToBig(i);
-	
+
 			AudioUnitParameterValue v = mIndexedParameters[i].GetValue();
 			entry.value = CFSwapInt32HostToBig(*(UInt32 *)&v );
-	
+
 			CFDataAppendBytes(data, (UInt8 *)&entry, sizeof(entry));
 		}
 	}
@@ -228,19 +228,19 @@ void			AUElement::SaveState(CFMutableDataRef data)
 	{
 		UInt32 nparams = CFSwapInt32HostToBig(mParameters.size());
 		CFDataAppendBytes(data, (UInt8 *)&nparams, sizeof(nparams));
-	
+
 		for (ParameterMap::iterator i = mParameters.begin(); i != mParameters.end(); ++i) {
 			struct {
 				UInt32				paramID;
 				//CFSwappedFloat32	value; crashes gcc3 PFE
 				UInt32				value;	// really a big-endian float
 			} entry;
-			
+
 			entry.paramID = CFSwapInt32HostToBig((*i).first);
-	
+
 			AudioUnitParameterValue v = (*i).second.GetValue();
 			entry.value = CFSwapInt32HostToBig(*(UInt32 *)&v );
-	
+
 			CFDataAppendBytes(data, (UInt8 *)&entry, sizeof(entry));
 		}
 	}
@@ -254,20 +254,20 @@ const UInt8 *	AUElement::RestoreState(const UInt8 *state)
 	const UInt8 *p = state;
 	UInt32 nparams = CFSwapInt32BigToHost(*(UInt32 *)p);
 	p += sizeof(UInt32);
-	
+
 	for (UInt32 i = 0; i < nparams; ++i) {
 		struct {
 			AudioUnitParameterID		paramID;
 			AudioUnitParameterValue		value;
 		} entry;
-		
+
 		entry.paramID = CFSwapInt32BigToHost(*(UInt32 *)p);
 		p += sizeof(UInt32);
 		FloatInt32 temp;
 		temp.i = CFSwapInt32BigToHost(*(UInt32 *)p);
 		entry.value = temp.f;
 		p += sizeof(AudioUnitParameterValue);
-		
+
 		SetParameter(entry.paramID, entry.value);
 	}
 	return p;
@@ -275,10 +275,10 @@ const UInt8 *	AUElement::RestoreState(const UInt8 *state)
 
 //_____________________________________________________________________________
 //
-void	AUElement::SetName (CFStringRef inName) 
-{ 
+void	AUElement::SetName (CFStringRef inName)
+{
 	if (mElementName) CFRelease (mElementName);
-	mElementName = inName; 
+	mElementName = inName;
 	if (mElementName) CFRetain (mElementName);
 }
 
@@ -309,7 +309,7 @@ void			AUIOElement::AllocateBuffer(UInt32 inFramesToAllocate)
 	if (GetAudioUnit()->IsInitialized())
 	{
 		UInt32 framesToAllocate = inFramesToAllocate > 0 ? inFramesToAllocate : GetAudioUnit()->GetMaxFramesPerSlice();
-		
+
 		mIOBuffer.Allocate(mStreamFormat, NeedsBufferSpace() ? framesToAllocate : 0);
 	}
 }
@@ -326,19 +326,19 @@ void			AUIOElement::DeallocateBuffer()
 //		AudioChannelLayout support
 
 // outLayoutTagsPtr WILL be NULL if called to find out how many
-// layouts that Audio Unit will report 
+// layouts that Audio Unit will report
 // return 0 (ie. NO channel layouts) if the AU doesn't require channel layout knowledge
 UInt32		AUIOElement::GetChannelLayoutTags (AudioChannelLayoutTag		*outLayoutTagsPtr)
 {
 	return 0;
 }
-		
-// As the AudioChannelLayout can be a variable length structure 
+
+// As the AudioChannelLayout can be a variable length structure
 // (though in most cases it won't be!!!)
 // the AU should return the address of the current ACM in use (in outMapPtr) AND if it is writable
 // The size of the ACM is returned by the method
 // If the AU doesn't require an AudioChannelLayout, then just return 0.
-UInt32		AUIOElement::GetAudioChannelLayout (AudioChannelLayout		*outMapPtr, 
+UInt32		AUIOElement::GetAudioChannelLayout (AudioChannelLayout		*outMapPtr,
 											Boolean				&outWritable)
 {
 	return 0;
@@ -443,7 +443,7 @@ bool	AUScope::RestoreElementNames (CFDictionaryRef& inNameDict)
 	//first we have to see if we have enough elements and if not create them
 	bool didAddElements = false;
 	unsigned int maxElNum = 0;
-	
+
 	int dictSize = CFDictionaryGetCount(inNameDict);
 	CFStringRef * keys = (CFStringRef*)malloc (dictSize * sizeof (CFStringRef));
 	CFDictionaryGetKeysAndValues (inNameDict, reinterpret_cast<const void**>(keys), NULL);
@@ -455,12 +455,12 @@ bool	AUScope::RestoreElementNames (CFDictionaryRef& inNameDict)
 		if (UInt32(intKey) > maxElNum)
 			maxElNum = intKey;
 	}
-	
+
 	if (maxElNum >= GetNumberOfElements()) {
 		SetNumberOfElements (maxElNum+1);
 		didAddElements = true;
 	}
-		
+
 		// OK, now we have the number of elements that we need - lets restate their names
 	for (int i = 0; i < dictSize; i++)
 	{
@@ -471,7 +471,7 @@ bool	AUScope::RestoreElementNames (CFDictionaryRef& inNameDict)
 		GetElement (intKey)->SetName (elName);
 	}
 	free (keys);
-	
+
 	return didAddElements;
 }
 

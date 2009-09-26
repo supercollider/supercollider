@@ -52,11 +52,11 @@ GLID{
 			});*/
 	}
 
-	*postDevicesAndProperties { 
+	*postDevicesAndProperties {
 		LID.deviceList.do({arg dev;
 			"".postln;
 			if ( dev[1].isKindOf( LIDInfo ), {
-				
+
 				[ dev[1].vendor, dev[1].asString, dev[0]].postcs;
 				//[dev[0], dev[1].name, dev[1].product, dev[1].vendor, dev[1].version].postcs;
 				dev[2].keysValuesDo{ |key,slotgroup,i|
@@ -73,7 +73,7 @@ GLID{
 			},{
 				dev.postcs;
 			});
-		});	
+		});
 	}
 
 	*startEventLoop{ |rate|
@@ -120,7 +120,7 @@ GLID{
 		//		mydev = dev[0];
 		//mydev.postln;
 		if ( dev[1].isKindOf( LIDInfo ) or: dev[1].isKindOf( GeneralHIDInfo ),
-				{ 
+				{
 					device = LID.new( dev[0] );
 					^GeneralHIDDevice.new( this );
 				},{

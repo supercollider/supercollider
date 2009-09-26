@@ -6,11 +6,11 @@ GeneralHIDDeviceGUI{
 	var rellabels, relsliders;
 
 	var <bkeys,<akeys,<rkeys;
-	
+
 	*new{ |device|
 		^super.new.init(device);
 	}
-	
+
 	init{ |dev|
 		device = dev;
 		win = GUI.window.new( device.info.name, Rect( 0, 0, 400, 400 ));

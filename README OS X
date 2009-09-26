@@ -2,8 +2,8 @@
 Introduction
 ------------------------------------------------------------------------
 
-This is the Mac OS X version of James McCartney's SuperCollider 
-synthesis engine (scsynth) and programming language (sclang). 
+This is the Mac OS X version of James McCartney's SuperCollider
+synthesis engine (scsynth) and programming language (sclang).
 Supercollider's main homepage is at:
 
    http://supercollider.sourceforge.net/
@@ -31,7 +31,7 @@ The easy way:
 	./package.sh
 
 Your build will be placed in a directory named "SuperCollider".
-	
+
 If you run into problems building the most likely cause is that you are
 not running the correct version of the Xcode tools. You must be running
 2.4.1 or above!
@@ -46,10 +46,10 @@ Building within Xcode:
 	 - the UGens and plugins
 
 	Language
-	 - the OS X application with text editor, language interpreter, 
+	 - the OS X application with text editor, language interpreter,
 	   event scheduling etc.
 
-The package.sh script does several maintenance tasks (fixing creator 
+The package.sh script does several maintenance tasks (fixing creator
 codes, exporting from svn, etc) and creates a ready-to-distribute zip of
 SuperCollider.
 
@@ -69,20 +69,20 @@ universal binary. This UB contains ppc, i386 and x86_64 archs.
 Building - 64-bit scsynth and plugins
 ------------------------------------------------------------------------
 
-You will need to do the following to build a 64-bit scsynth and plugins. 
+You will need to do the following to build a 64-bit scsynth and plugins.
 Open the XCode projects for Synth and Plugins
-Double-click each target, and change the 
+Double-click each target, and change the
 	Architectures setting to 'Standard (32-bit/64-bit Universal)
 	Base-SDK to 10.5
 	(optional and recommended): Compiler to GCC 4.2 (if available)
-	
+
 This definitely works in Mac OS 10.6, probably 10.5, and these builds will NOT support 10.4
 
 ------------------------------------------------------------------------
 Building - 10.6
 ------------------------------------------------------------------------
 
-XCode in 10.6 uses the GCC 4.2 compiler by default, and this compiler will NOT work with the 10.4 SDK (the default SDK). You will need to either set your build SDK to 10.5 or 10.6 inside each XCode project, or inspect (double-click) each target and set GCC 4.0 as your compiler. 
+XCode in 10.6 uses the GCC 4.2 compiler by default, and this compiler will NOT work with the 10.4 SDK (the default SDK). You will need to either set your build SDK to 10.5 or 10.6 inside each XCode project, or inspect (double-click) each target and set GCC 4.0 as your compiler.
 
 ------------------------------------------------------------------------
 Outro

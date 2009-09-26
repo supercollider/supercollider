@@ -19,7 +19,7 @@
 */
 
 // some basic physical modeling ugens - julian rohrhuber 1/04
-// these are very simple implementations with cartoonification aspects. 
+// these are very simple implementations with cartoonification aspects.
 
 
 #include "SC_PlugIn.h"
@@ -87,7 +87,7 @@ void Spring_Ctor(Spring *unit)
 	unit->m_vel = 0.f;
 	unit->m_pos = 0.f;
 	Spring_next(unit, 1);
-	
+
 }
 
 // in, spring, damping
@@ -104,15 +104,15 @@ void Spring_next(Spring *unit, int inNumSamples)
 	float rc = SAMPLERATE;
 	spring = spring * c;
 	LOOP(inNumSamples,
-		float force = ZXP(in) * c - pos * spring; 
+		float force = ZXP(in) * c - pos * spring;
 		vel = (force + vel) * damping;
 		pos += vel;
 		ZXP(out) = force * rc;
 	);
-	
+
 	unit->m_pos = pos;
 	unit->m_vel = vel;
-	
+
 }
 
 
@@ -126,7 +126,7 @@ void Friction_Ctor(Friction *unit)
 	unit->m_pos = 0.f;
 	unit->m_state = 0;
 	Friction_next(unit, 1);
-	
+
 }
 
 // in, spring, damping
@@ -146,7 +146,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
-	
+
 	LOOP(inNumSamples,
 		int32 index = (int32)ZXP(in);
 		index = sc_clip(index, 0, maxindex);
@@ -155,7 +155,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 
 }
 ...
-	
+
 	float *out = ZOUT(0); 			// out force
 	float *in = ZIN(0); 			// in displacement
 	float spring = ZIN0(1);			// spring constant
@@ -176,11 +176,11 @@ void Index_next_a(Index *unit, int inNumSamples)
 		}
 		ZXP(out) = force * rc;
 	);
-	
+
 	unit->m_pos = pos;
 	unit->m_vel = vel;
 	unit->m_state = state;
-	
+
 }
 
 #define GET_TABLE \
@@ -214,7 +214,7 @@ void Ball_Ctor(Ball *unit)
 	unit->m_pos = ZIN0(0);
 	unit->m_prev = ZIN0(0);
 	Ball_next(unit, 1);
-	
+
 }
 
 
@@ -226,7 +226,7 @@ void Ball_next(Ball *unit, int inNumSamples)
 	float g_in = ZIN0(1); 			// gravity
 	float damping = 1 - ZIN0(2);	// damping
 	float k = ZIN0(3);				// friction
-	
+
 	float pos = unit->m_pos;
 	float vel = unit->m_vel;
 	float prev_floor = unit->m_prev;
@@ -234,16 +234,16 @@ void Ball_next(Ball *unit, int inNumSamples)
 	float maxvel = c * 1000.f;
 	float minvel = 0.f - maxvel;
 	float inter = c * 1000.f;
-	RGen& rgen = *unit->mParent->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;
 	float g = c * g_in;
 #ifdef _MSC_VER
 	k *= g_in; // stickyness proportional to gravity
 #else //#ifdef _MSC_VER
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
 #endif //#ifdef _MSC_VER
-	
+
 	LOOP(inNumSamples,
-		
+
 		float floor = ZXP(in);
 		float floorvel;
 		float dither;
@@ -252,23 +252,23 @@ void Ball_next(Ball *unit, int inNumSamples)
 		float dist = pos - floor;
 		floorvel = floor - prev_floor;
 		floorvel = sc_clip(floorvel, minvel, maxvel);
-		float vel_diff = floorvel - vel; 
+		float vel_diff = floorvel - vel;
 		if(sc_abs(dist) < k) { // sticky friction: maybe vel dependant?
-				
-				if(sc_abs(dist) < (k*0.005)) { 
+
+				if(sc_abs(dist) < (k*0.005)) {
 					vel = 0.f;
 					pos = floor + g;
 				} else {
 					vel = vel_diff * inter + vel;
 					pos = (floor - pos) * inter + pos;
 				}
-				
+
 		} else if(dist <= 0.f) {
-					
+
 					pos = floor - dist;
 					vel = vel_diff;
 					vel *= damping;
-					
+
 					dither = rgen.frand() * 0.00005f * g_in; // dither to reduce jitter
 					//if(sc_abs(dist) < 0.000001) { vel += dither; }
 					vel += dither;
@@ -276,11 +276,11 @@ void Ball_next(Ball *unit, int inNumSamples)
 		prev_floor = floor;
 		ZXP(out) = pos;
 	);
-	
+
 	unit->m_pos = pos;
 	unit->m_vel = vel;
 	unit->m_prev = prev_floor;
-	
+
 }
 
 
@@ -297,7 +297,7 @@ void TBall_Ctor(TBall *unit)
 	unit->m_pos = ZIN0(0);
 	unit->m_prev = ZIN0(0);
 	TBall_next(unit, 1);
-	
+
 }
 
 void TBall_next(TBall *unit, int inNumSamples)
@@ -308,7 +308,7 @@ void TBall_next(TBall *unit, int inNumSamples)
 	float g_in = ZIN0(1); 		// gravity
 	float damping = 1 - ZIN0(2);// damping
 	float k = ZIN0(3); 			// friction
-	
+
 	double pos = unit->m_pos;
 	float vel = unit->m_vel;
 	double prev_floor = unit->m_prev;
@@ -316,16 +316,16 @@ void TBall_next(TBall *unit, int inNumSamples)
 	float maxvel = c * 1000.f;
 	float minvel = 0.f - maxvel;
 	float inter = c * 10000.f;
-	RGen& rgen = *unit->mParent->mRGen;	
+	RGen& rgen = *unit->mParent->mRGen;
 	float g = c * g_in;
 #ifdef _MSC_VER
 	k *= g_in; // stickyness proportional to gravity
 #else //#ifdef _MSC_VER
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
 #endif //#ifdef _MSC_VER
-	
+
 	LOOP(inNumSamples,
-		
+
 		double floor = ZXP(in);
 		float floorvel;
 		float outval = 0.f;
@@ -337,7 +337,7 @@ void TBall_next(TBall *unit, int inNumSamples)
 		floorvel = sc_clip(floorvel, minvel, maxvel);
 		float vel_diff = floorvel - vel;
 		if(sc_abs(dist) < k) { // sticky friction: vel dependant?
-					if(sc_abs(dist) < (k*0.005)) { 
+					if(sc_abs(dist) < (k*0.005)) {
 					vel = 0.f;
 					pos = floor + g;
 				} else {
@@ -352,16 +352,16 @@ void TBall_next(TBall *unit, int inNumSamples)
 					dither = rgen.frand() * 0.001f * g_in; // dither to reduce sampling jitter
 					//if(sc_abs(dist) < 0.003) { vel += dither; }
 					vel += dither;
-					
+
 		}
 		prev_floor = floor;
 		ZXP(out) = outval;
 	);
-	
+
 	unit->m_pos = pos;
 	unit->m_vel = vel;
 	unit->m_prev = prev_floor;
-	
+
 }
 
 
@@ -373,7 +373,7 @@ PluginLoad(PhysicalModeling)
 {
 	ft = inTable;
 
-	
+
 	DefineSimpleUnit(Spring);
 //	DefineSimpleUnit(Friction);
 	DefineSimpleUnit(Ball);

@@ -30,13 +30,13 @@
 
 #include <string.h>
 
-struct SCComplexBuf 
+struct SCComplexBuf
 {
 	float dc, nyq;
 	SCComplex bin[1];
 };
 
-struct SCPolarBuf 
+struct SCPolarBuf
 {
 	float dc, nyq;
 	SCPolar bin[1];
@@ -74,7 +74,7 @@ struct PV_Unit : Unit
 		buf = world->mSndBufs + ibufnum; \
 	} \
 	int numbins = buf->samples - 2 >> 1; \
-	
+
 
 // for operation on two input buffers, result goes in first one.
 #define PV_GET_BUF2 \
@@ -116,7 +116,7 @@ struct PV_Unit : Unit
 	if (!unit->m_tempbuf) { \
 		unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float)); \
 		unit->m_numbins = numbins; \
-	} else if (numbins != unit->m_numbins) return; 
+	} else if (numbins != unit->m_numbins) return;
 
 
 

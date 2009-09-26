@@ -39,13 +39,13 @@ struct PyrSymbol {
 		struct PyrClass *classobj;	// pointer to class with this name.
 		char *source; // source code for sym_Filename; used only during compilation.
 	} u;
-	struct classdep *classdep;	
+	struct classdep *classdep;
 };
 
-enum { 
-	sym_Selector = 1, 
-	sym_Class = 2, 
-	sym_Compiled = 4, 
+enum {
+	sym_Selector = 1,
+	sym_Class = 2,
+	sym_Compiled = 4,
 	sym_Called = 8,
 	sym_Primitive = 16,
 	sym_Setter = 32,

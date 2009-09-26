@@ -349,7 +349,7 @@ Patch : HasPatchIns  {
 			defName = synthDef.name;
 			// the synthDef has now evaluated and can know the number of channels
 			// but if it returned an Out.ar then it does not know
-			// so we will have to trust the Instr outSpec 
+			// so we will have to trust the Instr outSpec
 			if(synthDef.numChannels.notNil,{
 				numChannels = synthDef.numChannels;
 			});
@@ -530,7 +530,7 @@ Patch : HasPatchIns  {
 
 	printOn { arg s;
 		var n;
-		s << this.class.name << "(" <<< instr.dotNotation << ")"; 
+		s << this.class.name << "(" <<< instr.dotNotation << ")";
 		if((n = this.name).notNil,{
 			s << "{"++n++"}";
 		});

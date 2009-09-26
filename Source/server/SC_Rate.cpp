@@ -28,7 +28,7 @@ void Rate_Init(Rate *inRate, double inSampleRate, int inBufLength)
 	inRate->mSampleRate = inSampleRate;
 	inRate->mSampleDur = 1. / inRate->mSampleRate;
 	inRate->mRadiansPerSample = twopi / inRate->mSampleRate;
-	
+
 	inRate->mBufLength = inBufLength;
 	inRate->mBufDuration = inRate->mBufLength / inRate->mSampleRate;
 	inRate->mBufRate = 1. / inRate->mBufDuration;

@@ -2,7 +2,7 @@
 	File:		HID_Queue_Utilities.c
 
 	Contains:	Implementation of the HID queue functions for the HID utilites.
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -115,14 +115,14 @@ static unsigned char hid_IsDeviceQueueEmpty (pRecDevice pDevice)
 				if ((*(IOHIDQueueInterface**) pDevice->queue)->hasElement (pDevice->queue, pElement->cookie))
 					return false;
 				pElement = HIDGetNextDeviceElement (pElement, kHIDElementTypeIO);
-			} 
+			}
 		}
 		else
 			HIDREPORTERROR ("hid_IsDeviceQueueEmpty - no queue.");
 	}
 	else
 		HIDREPORTERROR ("hid_IsDeviceQueueEmpty - Invalid device.");
-	return true;   
+	return true;
 }
 
 // ---------------------------------
@@ -274,7 +274,7 @@ unsigned long  HIDQueueDevice (pRecDevice pDevice)
 		result = (*(IOHIDQueueInterface**) pDevice->queue)->start (pDevice->queue);
 		if (kIOReturnSuccess != result)
 			HIDREPORTERRORNUM ("HIDQueueDevice - Failed to start queue.", result);
-		
+
 	}
 	else
 		HIDREPORTERROR ("HIDQueueDevice - Invalid device.");
@@ -411,7 +411,7 @@ unsigned long HIDReleaseAllDeviceQueues (void)
 unsigned long HIDCloseReleaseInterface (pRecDevice pDevice)
 {
 	IOReturn result = kIOReturnSuccess;
-	
+
 	if (HIDIsValidDevice(pDevice) && (NULL != pDevice->interface))
 	{
 		// close the interface
@@ -427,9 +427,9 @@ unsigned long HIDCloseReleaseInterface (pRecDevice pDevice)
 		if (kIOReturnSuccess != result)
 			HIDREPORTERRORNUM ("HIDCloseReleaseInterface - Failed to release interface.", result);
 		pDevice->interface = NULL;
-	}	
+	}
 	return result;
-}      
+}
 
 // ---------------------------------
 // Get the next event in the queue for a device
@@ -510,9 +510,9 @@ try_getElementValue:
 
     // record min and max for auto scale and auto ...
     if (hidEvent.value < pElement->calMin)
-        pElement->calMin = hidEvent.value; 
+        pElement->calMin = hidEvent.value;
     if (hidEvent.value > pElement->calMax)
-        pElement->calMax = hidEvent.value; 
+        pElement->calMax = hidEvent.value;
 
     // auto user scale
     return hidEvent.value;
@@ -541,7 +541,7 @@ long HIDSetElementValue (pRecDevice pDevice, pRecElement pElement,void* pIOHIDEv
 	}
 	else
 		HIDREPORTERROR ("HIDSetElementValue - invalid device and/or element.");
-	
+
     return result;
 }
 

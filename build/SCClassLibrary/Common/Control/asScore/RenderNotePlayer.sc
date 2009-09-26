@@ -1,13 +1,13 @@
 //RenderNotePlayer : NotePlayer {
 //	var <>maxTime, <>score, <time=0;
-//	
-//	*new { arg maxTime = 60; 
-//		^super.newCopyArgs(maxTime, Score.new) 
+//
+//	*new { arg maxTime = 60;
+//		^super.newCopyArgs(maxTime, Score.new)
 //	}
-//	
+//
 //	playOneEvent { arg desc, lag, msgArgs;
 //		var server, id, bundle, noteOffTime;
-//		
+//
 //		server = ~server;
 //		id = server.nextNodeID;
 //		bundle = [time + lag, [9, desc.name, id, ~addAction, ~group] ++ msgArgs];
@@ -20,7 +20,7 @@
 //		};
 //		time = time + ~dur;
 //	}
-//	
+//
 //	read { arg stream;
 //		var val;
 //		while {
@@ -31,5 +31,5 @@
 //		};
 //
 //	}
-//	
+//
 //}

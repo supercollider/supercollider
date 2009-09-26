@@ -47,16 +47,16 @@ enum {
 	pn_DynListNode,
 	pn_LitListNode,
 	pn_LitDictNode,
-	
+
 	pn_StaticVarListNode,
 	pn_InstVarListNode,
 	pn_PoolVarListNode,
 	pn_ArgListNode,
 	pn_SlotDefNode,
-	
+
 	/* selectors */
 	pn_LiteralNode,
-	
+
 	/* code */
 	pn_PushLitNode,
 	pn_PushNameNode,
@@ -69,10 +69,10 @@ enum {
 	pn_MultiAssignVarListNode,
 	pn_SetterNode,
 	pn_CurryArgNode,
-	
+
 	pn_ReturnNode,
 	pn_BlockReturnNode,
-	
+
 	pn_NumTypes
 };
 
@@ -101,7 +101,7 @@ struct PyrSlotNode : public PyrParseNode {
 	PyrSlotNode() : PyrParseNode(pn_SlotNode) {}
 	PyrSlotNode(int classno) : PyrParseNode(classno) {}
 	virtual ~PyrSlotNode() {}
-	
+
 	virtual void compile(PyrSlot *result);
 	virtual void compileLiteral(PyrSlot *result);
 	virtual void compilePushLit(PyrSlot *result);
@@ -157,7 +157,7 @@ struct PyrMethodNode : public PyrParseNode {
 	virtual ~PyrMethodNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
-	
+
 	struct PyrSlotNode* mMethodName;
 	struct PyrSlotNode* mPrimitiveName;
 	struct PyrArgListNode *mArglist;
@@ -174,7 +174,7 @@ struct PyrVarListNode : public PyrParseNode {
 	virtual void dump(int level);
 
 	struct PyrVarDefNode *mVarDefs;
-	int mFlags; 
+	int mFlags;
 } ;
 
 struct PyrVarDefNode : public PyrParseNode {
@@ -184,7 +184,7 @@ struct PyrVarDefNode : public PyrParseNode {
 	virtual void compileArg(PyrSlot *result);
 	virtual void dump(int level);
 	bool hasExpr(PyrSlot *result);
-	
+
 	struct PyrSlotNode* mVarName;
 	PyrParseNode* mDefVal;
 	int mFlags;
@@ -205,7 +205,7 @@ struct PyrCallNodeBase : public PyrParseNode {
 struct PyrCallNodeBase2 : public PyrCallNodeBase {
 	PyrCallNodeBase2(int classno) : PyrCallNodeBase(classno) {}
 	virtual ~PyrCallNodeBase2() {}
-	
+
 	struct PyrSlotNode* mSelector;
 	struct PyrParseNode *mArglist;
 	struct PyrParseNode *mKeyarglist;
@@ -245,7 +245,7 @@ struct PyrSetterNode : public PyrCallNodeBase {
 	struct PyrParseNode *mExpr2;
 	int mFlags; // is a var def ?
 } ;
-	
+
 struct PyrDynListNode : public PyrCallNodeBase {
 	PyrDynListNode() : PyrCallNodeBase(pn_DynListNode) {}
 	virtual ~PyrDynListNode() {}
@@ -257,7 +257,7 @@ struct PyrDynListNode : public PyrCallNodeBase {
 	struct PyrParseNode *mClassname;
 	struct PyrParseNode *mElems;
 } ;
-		
+
 struct PyrDynDictNode : public PyrCallNodeBase {
 	PyrDynDictNode() : PyrCallNodeBase(pn_DynDictNode) {}
 	virtual ~PyrDynDictNode() {}
@@ -318,7 +318,7 @@ struct PyrAssignNode : public PyrParseNode {
 	struct PyrParseNode *mExpr;
 	bool mDrop; // allow drop
 } ;
-	
+
 struct PyrMultiAssignNode : public PyrParseNode {
 	PyrMultiAssignNode() : PyrParseNode(pn_MultiAssignNode) {}
 	virtual ~PyrMultiAssignNode() {}
@@ -339,7 +339,7 @@ struct PyrMultiAssignVarListNode : public PyrParseNode {
 	struct PyrSlotNode *mVarNames;
 	struct PyrSlotNode *mRest;
 } ;
-	
+
 struct PyrBlockNode : public PyrParseNode {
 	PyrBlockNode() : PyrParseNode(pn_BlockNode) {}
 	virtual ~PyrBlockNode() {}
@@ -362,7 +362,7 @@ struct PyrArgListNode : public PyrParseNode {
 	struct PyrVarDefNode *mVarDefs;
 	struct PyrSlotNode *mRest;
 } ;
-	
+
 struct PyrLitListNode : public PyrParseNode {
 	PyrLitListNode() : PyrParseNode(pn_LitListNode) {}
 	virtual ~PyrLitListNode() {}
@@ -372,7 +372,7 @@ struct PyrLitListNode : public PyrParseNode {
 	struct PyrParseNode *mClassname;
 	struct PyrParseNode *mElems;
 } ;
-	
+
 struct PyrLitDictNode : public PyrParseNode {
 	PyrLitDictNode() : PyrParseNode(pn_LitDictNode) {}
 	virtual ~PyrLitDictNode() {}
@@ -381,7 +381,7 @@ struct PyrLitDictNode : public PyrParseNode {
 
 	struct PyrParseNode *mElems;
 } ;
-	
+
 extern PyrParseNode* gRootParseNode;
 extern int gParserResult;
 extern bool gIsTailCodeBranch;
@@ -397,7 +397,7 @@ class SetTailBranch
 {
 	bool mSave;
 public:
-	SetTailBranch(bool inValue) { 
+	SetTailBranch(bool inValue) {
 		mSave = gIsTailCodeBranch;
 		gIsTailCodeBranch = inValue;
 	}
@@ -410,7 +410,7 @@ class SetTailIsMethodReturn
 {
 	bool mSave;
 public:
-	SetTailIsMethodReturn(bool inValue) { 
+	SetTailIsMethodReturn(bool inValue) {
 		mSave = gTailIsMethodReturn;
 		gTailIsMethodReturn = inValue;
 	}
@@ -451,16 +451,16 @@ PyrLiteralNode* newPyrLiteralNode(PyrSlotNode* literalSlot, PyrParseNode* litera
 PyrReturnNode* newPyrReturnNode(PyrParseNode* expr);
 PyrBlockReturnNode* newPyrBlockReturnNode();
 PyrAssignNode* newPyrAssignNode(PyrSlotNode* varName, PyrParseNode* expr, int flags);
-PyrSetterNode* newPyrSetterNode(PyrSlotNode* varName, 
+PyrSetterNode* newPyrSetterNode(PyrSlotNode* varName,
 	PyrParseNode* expr1, PyrParseNode* expr2);
-PyrMultiAssignNode* newPyrMultiAssignNode(PyrMultiAssignVarListNode* varList, 
+PyrMultiAssignNode* newPyrMultiAssignNode(PyrMultiAssignVarListNode* varList,
 	PyrParseNode* expr, int flags);
 PyrPushNameNode* newPyrPushNameNode(PyrSlotNode *slotNode);
 PyrDynDictNode* newPyrDynDictNode(PyrParseNode *elems);
 PyrDynListNode* newPyrDynListNode(PyrParseNode *classname, PyrParseNode *elems);
 PyrLitListNode* newPyrLitListNode(PyrParseNode *classname, PyrParseNode *elems);
 PyrLitDictNode* newPyrLitDictNode(PyrParseNode *elems);
-PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, 
+PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames,
 	PyrSlotNode* rest);
 PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, PyrParseNode *body, bool isTopLevel);
 
@@ -479,10 +479,10 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 int nodeListLength(PyrParseNode *node);
 bool isSuperObjNode(PyrParseNode *node);
 bool isThisObjNode(PyrParseNode *node);
-int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func, 
+int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 		bool isSuper, PyrSymbol *selector, int *selType);
 int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot);
-bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name, 
+bool findVarName(PyrBlock* func, PyrClass **classobj, PyrSymbol *name,
 	int *varType, int *level, int *index, PyrBlock** tempfunc);
 void countClassVarDefs(PyrClassNode* node, int *numClassMethods, int *numInstMethods);
 void compileNodeList(PyrParseNode *node, bool onTailBranch);
@@ -547,7 +547,7 @@ extern PyrClass *gCompilingClass;
 extern PyrMethod *gCompilingMethod;
 extern PyrBlock *gCompilingBlock;
 
-/* 
+/*
 	compiling
 	"inlining" of special arithmetic opcodes.
 	inlining of IF, WHILE, AND, OR

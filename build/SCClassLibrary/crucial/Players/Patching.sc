@@ -164,7 +164,7 @@ ControlPatchOut : PatchOut { // you are returned from a .kr play
 			// nil : speakers
 			// integer : that out
 			// server : private on that server
-			
+
 			// temp hack until the \scalar problem is corrected
 			if(source.isKindOf(IrNumberEditor).not,{
 				bus = bus.asBus(this.rate,source.numChannels,this.server);

@@ -30,7 +30,7 @@ struct NodeDef
 {
 	int32 mName[kSCNameLen];
 	int32 mHash;
-	
+
 	size_t mAllocSize;
 };
 typedef struct NodeDef NodeDef;

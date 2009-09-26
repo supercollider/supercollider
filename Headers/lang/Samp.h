@@ -20,7 +20,7 @@
 
 /*
 
-Samp is a typedef for the output sample type. 
+Samp is a typedef for the output sample type.
 Should be defined to be either float or double.
 
 */

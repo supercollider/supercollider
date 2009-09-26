@@ -54,22 +54,22 @@ struct AdvancingAllocPoolChunk {
 	char mSpace[16];
 };
 
-class AdvancingAllocPool 
+class AdvancingAllocPool
 {
 public:
 	AdvancingAllocPool();
 	~AdvancingAllocPool() { FreeAll(); }
 
 	void Init(AllocPool *inAllocPool, size_t initSize, size_t growSize, size_t tooBigSize);
-		
+
 	void *Alloc(size_t inBytes);
 	void FreeAll();
-	
+
 	bool SanityCheck();
-	
+
 private:
 	void AddChunk(size_t inSize);
-	
+
 	AllocPool* mAllocPool;
 	size_t mInitSize;
 	size_t mGrowSize;

@@ -12,10 +12,10 @@ FreeVerb2 : MultiOutUGen {
 	}
 
 	init { arg ... theInputs;
-		inputs = theInputs;		
-		channels = [ 
-			OutputProxy(rate, this, 0), 
-			OutputProxy(rate, this, 1) 
+		inputs = theInputs;
+		channels = [
+			OutputProxy(rate, this, 0),
+			OutputProxy(rate, this, 1)
 		];
 		^channels
 	}

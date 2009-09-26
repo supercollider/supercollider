@@ -13,22 +13,22 @@
 + SimpleNumber {
 	// rgb() still will not work in variable declarations in classes
 	// because rgb is no longer a literal
-	
+
 	// move them to init methods
-	
+
 	rgb { arg green,blue;
 		^Color(this / 255.0,green / 255.0, blue / 255.0)
 	}
-	
+
 }
 
 + Synth {
-	
+
 	*stop {
 		RootNode.new.freeAll;
 	}
 	*play { arg func;
-		Server.default.doWhenBooted({		
+		Server.default.doWhenBooted({
 			func.play;
 		})
 	}
@@ -54,12 +54,12 @@
 			file.close;
 		});
 	}
-	
+
 }
 
 
 // The following interface in an optimized version of asControlInput that
-// flattens arrayed values and marks the outermost array of a value with $[ and $] 
+// flattens arrayed values and marks the outermost array of a value with $[ and $]
 // These Chars are turning into typetags ([ and ]) in the OSC message to mark that array
 // Inner arrays are flattened (they are not meaningful in the server context)
 // This makes it possible to write Synth("test", [0, [[100,200,300], [0.1,0.2,0.3], [10,20,30]] ])
@@ -78,7 +78,7 @@
 		this.do { | e | array = e.asOSCArgEmbeddedArray(array) };
 		^array
 	}
-	
+
 	asOSCArgEmbeddedArray { | array|
 		array = array.add($[);
 		this.do{ | e | array = e.asOSCArgEmbeddedArray(array) };
@@ -86,9 +86,9 @@
 		^array;
 	}
 
-}		
+}
 
-+Env { 
++Env {
 
 	asControlInput { ^this.asArray }
 	asOSCArgEmbeddedArray { | array| ^this.asArray.asOSCArgEmbeddedArray(array) }
@@ -104,7 +104,7 @@
 		str = str ++ String.fill(size - str.size, Char.space);
 		^str;
 	}
-	
+
 	postff { | size = 8 |
 		this.asStringff(size).post
 	}
@@ -121,7 +121,7 @@
 +AbstractFunction {
 
 	eq { arg function, adverb; ^this.composeBinaryOp('==', function, adverb) }
-//	
+//
 	ne { arg function, adverb; ^this.composeBinaryOp('!=', function, adverb) }
 
 }

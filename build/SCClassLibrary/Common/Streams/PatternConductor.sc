@@ -1,13 +1,13 @@
 /*
 	PatternConductor provides interactive control of patterns. When a Conductor
-is stopped it flushes its queue, immediately ending any notes left hanging by 
+is stopped it flushes its queue, immediately ending any notes left hanging by
 the pattern.
 
 */
 
 PatternConductor  {
 
-	var <>patterns, <>event, <>quant, <>eventStreamPlayers; 
+	var <>patterns, <>event, <>quant, <>eventStreamPlayers;
 	var <>clock, <tempo, <>defaultPauseTempo, <>defaultStopTempo;
 	*new { |patterns, event, quant|
 		^super.new
@@ -15,9 +15,9 @@ PatternConductor  {
 			.event_(event ? Event.default)
 			.quant_(quant ? 0).tempo_(1).defaultPauseTempo_(1e-8).defaultStopTempo_(1e+8);
 	}
-	
-	play { 
-		
+
+	play {
+
 		Routine.run({ this.prPlay }, 64, TempoClock.default, quant)
 	}
 
@@ -41,9 +41,9 @@ PatternConductor  {
 		eventStreamPlayers = nil;
 		CmdPeriod.remove(this);
 	}
-	
-	tempo_ { | temp | 
-		tempo = temp; 
+
+	tempo_ { | temp |
+		tempo = temp;
 		if (clock.notNil) { clock.tempo_(tempo) };
 	}
 	cmdPeriod { clock = nil }

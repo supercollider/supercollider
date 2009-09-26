@@ -1,12 +1,12 @@
 Dictionary : Set {
-		
+
 	*new { arg n=8; ^super.new(n*2) }
 	*newFrom { arg aCollection;
 		var newCollection = this.new(aCollection.size);
 		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
 		^newCollection
 	}
-	
+
 	// accessing
 	at { arg key;
 		^array.at(this.scanFor(key) + 1)
@@ -37,10 +37,10 @@ Dictionary : Set {
 			if (array.size < (size * 4), { this.grow });
 		});
 	}
-	putAll { arg ... dictionaries; 
-		dictionaries.do {|dict| 
-			dict.keysValuesDo { arg key, value; 
-				this.put(key, value) 
+	putAll { arg ... dictionaries;
+		dictionaries.do {|dict|
+			dict.keysValuesDo { arg key, value;
+				this.put(key, value)
 			}
 		}
 	}
@@ -50,13 +50,13 @@ Dictionary : Set {
 	getPairs { arg args;
 		var result;
 		args = args ?? { this.keys };
-		args.do { |key| 
-			var val = this.at(key); 
-			val !? { result = result.add(key).add(val) } 
+		args.do { |key|
+			var val = this.at(key);
+			val !? { result = result.add(key).add(val) }
 		};
 		^result
 	}
-	
+
 	associationAt { arg key;
 		var index = this.scanFor(key);
 		if (index >= 0, {
@@ -68,7 +68,7 @@ Dictionary : Set {
 	associationAtFail { arg argKey, function;
 		var index = this.scanFor(argKey);
 		var key = array.at(index);
-		if ( key.isNil, { ^function.value }, { 
+		if ( key.isNil, { ^function.value }, {
 			^Association.new(key, array.at(index+1)) });
 	}
 	keys { arg species(Set);
@@ -81,16 +81,16 @@ Dictionary : Set {
 		this.do({ arg value; list.add(value) });
 		^list
 	}
-	
+
 	// testing
-	includes { arg item1; 
+	includes { arg item1;
 		this.do({ arg item2; if (item1 == item2, {^true}) });
 		^false
 	}
 	includesKey { arg key;
 		^this.at( key ).notNil;
 	}
-	
+
 	// removing
 	removeAt { arg key;
 		var val;
@@ -103,7 +103,7 @@ Dictionary : Set {
 		size = size - 1;
 		this.fixCollisionsFrom(index);
 		^val
-	}	
+	}
 	removeAtFail { arg key, function;
 		var val;
 		var index = this.scanFor(key);
@@ -115,11 +115,11 @@ Dictionary : Set {
 		size = size - 1;
 		this.fixCollisionsFrom(index);
 		^val
-	}	
-		
+	}
+
 	remove { ^this.shouldNotImplement(thisMethod) }
 	removeFail { ^this.shouldNotImplement(thisMethod) }
-	
+
 	// enumerating
 	keysValuesDo { arg function;
 		this.keysValuesArrayDo(array, function);
@@ -160,11 +160,11 @@ Dictionary : Set {
 	}
 	reject { arg function;
 		var res = this.class.new(this.size);
-		this.keysValuesDo { arg key, elem; if(function.value(elem, key).not) 
+		this.keysValuesDo { arg key, elem; if(function.value(elem, key).not)
 			{ res.put(key, elem) } }
 		^res;
 	}
-	
+
 	invert {
 		var dict = this.class.new(this.size);
 		this.keysValuesDo {|key, val|
@@ -185,7 +185,7 @@ Dictionary : Set {
 	sortedKeysValuesDo { arg function, sortFunc;
 		var keys = this.keys(Array);
 		keys.sort(sortFunc);
-		
+
 		keys.do { arg key, i;
 			function.value(key, this[key], i);
 		};
@@ -200,7 +200,7 @@ Dictionary : Set {
 		});
 		// return the value for the first non Nil key we find.
 		// the value is at the odd index.
-		^array.at(index + 1); 
+		^array.at(index + 1);
 	}
 	order { arg func;
 		var assoc;
@@ -212,14 +212,14 @@ Dictionary : Set {
 	}
 	powerset {
 		var keys = this.keys.asArray.powerset;
-		^keys.collect { | list | 
+		^keys.collect { | list |
 			var dict = this.class.new;
 			list.do { |key| dict.put(key, this[key]) };
 			dict
 		}
 	}
 
-	
+
 	// Pattern support
 	transformEvent { arg event;
 		^event.putAll(this);
@@ -227,7 +227,7 @@ Dictionary : Set {
 	embedInStream { arg event;
 		^yield(event !? { event.copy.putAll(this) })
 	}
-	
+
 	asSortedArray {
 		var array;
 		this.keysValuesDo({ arg key, value; array = array.add([key,value]); });
@@ -239,12 +239,12 @@ Dictionary : Set {
 		this.keysValuesDo { |key, val| array.add(key); array.add(val) };
 		^array
 	}
-	
+
 	// PRIVATE IMPLEMENTATION
 	keysValuesArrayDo { arg argArray, function;
 		// special byte codes inserted by compiler for this method
 		var i=0, j=0, key, val;
-		var arraySize = argArray.size;			
+		var arraySize = argArray.size;
 		while ({ i < arraySize },{
 			key = argArray.at(i);
 			if (key.notNil, {
@@ -259,14 +259,14 @@ Dictionary : Set {
 		var index;
 		var oldElements = array;
 		array = Array.newClear(array.size * 2);
-		this.keysValuesArrayDo(oldElements, 
+		this.keysValuesArrayDo(oldElements,
 		{ arg key, val;
 			index = this.scanFor(key);
 			array.put(index, key);
 			array.put(index+1, val);
 		});
 	}
-	fixCollisionsFrom { arg index; 
+	fixCollisionsFrom { arg index;
 		var newIndex, key;
 
 		var oldIndex = index;
@@ -276,13 +276,13 @@ Dictionary : Set {
 			(key = array.at(oldIndex)).notNil
 		},{
 			newIndex = this.scanFor(key);
-			if ( oldIndex != newIndex, { 
+			if ( oldIndex != newIndex, {
 				array.swap(oldIndex, newIndex);
-				array.swap(oldIndex+1, newIndex+1) 
+				array.swap(oldIndex+1, newIndex+1)
 			})
 		})
 	}
-	scanFor { arg argKey;		
+	scanFor { arg argKey;
 		var maxHash = array.size div: 2;
 		var start = (argKey.hash % maxHash) * 2;
 		var end = array.size-1;
@@ -298,7 +298,7 @@ Dictionary : Set {
 		});
 		^-2
 	}
-	
+
 	storeItemsOn { arg stream, itemsPerLine = 5;
 		var itemsPerLinem1 = itemsPerLine - 1;
 		var last = this.size - 1;
@@ -324,15 +324,15 @@ Dictionary : Set {
 IdentityDictionary : Dictionary {
 	var <>proto; // inheritance of properties
 	var <>parent; // inheritance of properties
-	
-	var <>know = false; 
+
+	var <>know = false;
 	// if know is set to true then not understood messages will look in the dictionary
 	// for that selector and send the value message to them.
-	
-	*new { arg n=8, proto, parent, know=false; 
+
+	*new { arg n=8, proto, parent, know=false;
 		^super.new(n).proto_(proto).parent_(parent).know_(know)
 	}
-	
+
 	at { arg key;
 		_IdentDict_At
 		^this.primitiveFailed
@@ -369,7 +369,7 @@ IdentityDictionary : Dictionary {
 		^prev
 		*/
 	}
-	
+
 	includesKey { arg key;
 		^this.at( key ).notNil;
 	}
@@ -387,12 +387,12 @@ IdentityDictionary : Dictionary {
 	doesNotUnderstand { arg selector ... args;
 		var func;
 		if (know) {
-						
+
 			func = this[selector];
 			if (func.notNil) {
 				^func.functionPerformList(\value, this, args);
 			};
-			
+
 			if (selector.isSetter) {
 				selector = selector.asGetter;
 				if(this.respondsTo(selector)) {
@@ -409,7 +409,7 @@ IdentityDictionary : Dictionary {
 		};
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
-	
+
 	// not the fastest way, but the simplest
 	writeAsPlist { arg path;
 		this.as(Dictionary).writeAsPlist(path);
@@ -421,7 +421,7 @@ IdentityDictionary : Dictionary {
 		// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
 		//	parameter: value, parameter: value, etc.)
 		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
-	
+
 	nextTimeOnGrid { |clock|
 		if(this[\nextTimeOnGrid].notNil) {
 			^this[\nextTimeOnGrid].value(this, clock)

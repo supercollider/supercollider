@@ -13,7 +13,7 @@ private:
 	static bool haveCheckedBundleStatus;
 	static char dirPath[PATH_MAX];
 
-	static void SC_StandAloneInfoInit();		
+	static void SC_StandAloneInfoInit();
 public:
 	static bool IsStandAlone();
 	static void GetResourceDir(char* pathBuf, int length);

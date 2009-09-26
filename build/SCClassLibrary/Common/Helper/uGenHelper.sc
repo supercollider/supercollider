@@ -10,14 +10,14 @@
 
 
 UGenHelper {
-	
+
 	var <>class, <>path ;
 	classvar doctype, head, preface, examples, parents ;
-	
+
 	*new { arg class, path ;
-			^super.new.initUGenHelper( class, path ) 
+			^super.new.initUGenHelper( class, path )
 	}
-	
+
 	initUGenHelper { arg aClass, aPath ;
 		class = aClass ;
 		path = aPath ;
@@ -27,7 +27,7 @@ UGenHelper {
 				 path = newPath ; {this.makeHelp}.defer })
 			}, { this.makeHelp }) ;
 	}
-	
+
 	createText {
 		head = "
 <head>
@@ -58,7 +58,7 @@ span.Apple-tab-span {white-space:pre}
 "			.replace("SomeUGen", class.name.asString) ;
 			doctype = "
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
-" ;	
+" ;
 		examples = "
 <p class=\"p4\">// what this example does</p>
 <p class=\"p5\">x = { <span class=\"s3\">SomeUGen</span>.ar(<span class=\"s3\">XLine</span>.kr(2000, 200), 0, 0.5) }.play;</p>
@@ -71,7 +71,7 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p5\">}).play;<span class=\"Apple-converted-space\"></span></p>
 <p class=\"p5\">)</p>
 <p class=\"p5\">x.free;</p>
-"			.replace("SomeUGen", class.name.asString) ; 
+"			.replace("SomeUGen", class.name.asString) ;
 	}
 
 
@@ -87,14 +87,14 @@ span.Apple-tab-span {white-space:pre}
 				 head+
 				 "<body>\n"+
 				 preface+
-				 classMethodBlock + 
+				 classMethodBlock +
 				 examples+
 				 "</body>"+
 				 "</html>")
 				.close ;
 		// and reopen thru class.openHelpFile
 		// open works if the path is a place where SC looks for Help files
-		class.openHelpFile 
+		class.openHelpFile
 	}
 
 	createClassMethodBlock {
@@ -115,12 +115,12 @@ span.Apple-tab-span {white-space:pre}
 		// but not for the ones not implementing *r methods
 		// in that case a default generic string is returned
 		// The aim being to generate a template, not such a bad solution
-		while { 
+		while {
 			( uGenParentMethods.includes(\ar) or:
 			uGenParentMethods.includes(\kr) or:
 			uGenParentMethods.includes(\ir)).not
-		 } 
-			{ uGen = uGenParent ; 
+		 }
+			{ uGen = uGenParent ;
 				// returns a "warning" but styled message
 				// if *r methods are not found
 				if (uGenParent == nil, {
@@ -128,7 +128,7 @@ span.Apple-tab-span {white-space:pre}
 				class.name.asString+
 				"-->no ar/kr/ir methods: sorry, you have to complete as required"+
 				explanation+"</p></b>"
-				} );	
+				} );
 			uGenParent = uGenParent.superclass ;
 			 uGenParentMethods = uGenParent.class.methods.collect(_.name) ;
 			 if ( uGenParentMethods == nil, { uGenParentMethods = [] }) ;
@@ -137,32 +137,32 @@ span.Apple-tab-span {white-space:pre}
 		arMethod = uGenParent.class.findMethod(\ar) ;
 		krMethod = uGenParent.class.findMethod(\kr) ;
 		irMethod = uGenParent.class.findMethod(\ir) ;
- 		
+
  		defaults = arMethod ;
  		if ( defaults.isNil, { defaults = krMethod }) ;
  		if ( defaults.isNil, { defaults = irMethod }) ;
  		defaults = defaults.argumentString ;
  		defaults = defaults.split($,) ;
-		arArgs = arMethod.argNames ; 
-		krArgs = krMethod.argNames ; 
-		irArgs = irMethod.argNames ; 		
-		case 
-		{ arArgs.size == 1 }{ 		
+		arArgs = arMethod.argNames ;
+		krArgs = krMethod.argNames ;
+		irArgs = irMethod.argNames ;
+		case
+		{ arArgs.size == 1 }{
 		arBlock = "
 <p class=\"p1\"><b>SomeUGen.ar".replace("SomeUGen", class.name.asString) }
- 
+
 		{ arArgs.notNil} {
 		 arBlock = "
 <p class=\"p1\"><b>SomeUGen.ar(".replace("SomeUGen", class.name.asString) ;
-		arArgs = arArgs[1..] ; 
-		arArgs.do({ arg anArg ; 
+		arArgs = arArgs[1..] ;
+		arArgs.do({ arg anArg ;
 			arBlock = arBlock++anArg.asString++", "
 		}) ;
-		arBlock = arBlock[..arBlock.size-3]+")</b></p>" ; 
+		arBlock = arBlock[..arBlock.size-3]+")</b></p>" ;
 		} ;
-		
-		case 
-		{ krArgs.size == 1 }{ 		
+
+		case
+		{ krArgs.size == 1 }{
 		krBlock = "
 <p class=\"p1\"><b>SomeUGen.kr".replace("SomeUGen", class.name.asString) }
 
@@ -170,31 +170,31 @@ span.Apple-tab-span {white-space:pre}
 		krBlock = "
 <p class=\"p1\"><b>SomeUGen.kr(".replace("SomeUGen", class.name.asString) ;
 		krArgs = krArgs[1..] ;
-		krArgs.do({ arg anArg ; 
+		krArgs.do({ arg anArg ;
 			krBlock = krBlock++anArg.asString++", "
 		}) ;
-		krBlock = krBlock[..krBlock.size-3]+")</b></p>" ; 
+		krBlock = krBlock[..krBlock.size-3]+")</b></p>" ;
 		} ;
 
-		case 
-		{ irArgs.size == 1 }{ 		
+		case
+		{ irArgs.size == 1 }{
 		irBlock = "
 <p class=\"p1\"><b>SomeUGen.ir".replace("SomeUGen", class.name.asString) ;}
-		
+
 		{irArgs.notNil} {
 		irBlock = "
 <p class=\"p1\"><b>SomeUGen.ir(".replace("SomeUGen", class.name.asString) ;
 		irArgs = irArgs[1..] ;
-		irArgs.do({ arg anArg ; 
+		irArgs.do({ arg anArg ;
 			irBlock = irBlock++anArg.asString++", "
 		}) ;
-		irBlock = irBlock[..irBlock.size-3]+")</b></p>" ; 
+		irBlock = irBlock[..irBlock.size-3]+")</b></p>" ;
 		} ;
 		par = if (arArgs.notNil, { arArgs }, { if (krArgs.notNil, { krArgs }, { irArgs } ) }) ;
 		//par = if ( par.size == 1, { [] }, { par }) ;
 		// all those replacements are tricky, indeed
 		// could be implemented much better, probably
-		par.do({ arg anArg, index ; 
+		par.do({ arg anArg, index ;
 			default = defaults[index+1].asString ;
 			default = if ( default.split($=).size == 1, { "nil" }, {
 				 default.split($=)[1] });
@@ -202,7 +202,7 @@ span.Apple-tab-span {white-space:pre}
 "
 <p class=\"p1\"><b>arg1</b> - explanation of arg1. Default value is defaultValue.</p>
 "				.replace("arg1", anArg.asString)
-				.replace("defaultValue", default) ; 
+				.replace("defaultValue", default) ;
 
 		}) ;
 		explanation = explanation +
@@ -211,11 +211,11 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p1\"><b>See also:</b> <a href=\"../UGens/Oscillators/SinOsc.html\"><span class=\"s2\">SinOsc</span></a> [other related UGens...]</p>
 <p class=\"p2\"><br></p>
 <p class=\"p3\"><br></p>
-" ;		
+" ;
 		total = arBlock+krBlock+irBlock+explanation ;
 		^total
 	}
 
-	
+
 }
 //"

@@ -43,7 +43,7 @@
  */
 
 /**
- * Return the ICU data directory. 
+ * Return the ICU data directory.
  * The data directory is where common format ICU data files (.dat files)
  *   are loaded from.  Note that normal use of the built-in ICU
  *   facilities does not require loading of an external data file;
@@ -59,13 +59,13 @@
  *
  * @return the data directory, or an empty string ("") if no data directory has
  *         been specified.
- *   
+ *
  * @stable ICU 2.0
  */
 U_STABLE const char* U_EXPORT2 u_getDataDirectory(void);
 
-/** 
- * Set the ICU data directory. 
+/**
+ * Set the ICU data directory.
  * The data directory is where common format ICU data files (.dat files)
  *   are loaded from.  Note that normal use of the built-in ICU
  *   facilities does not require loading of an external data file;
@@ -90,7 +90,7 @@ U_STABLE void U_EXPORT2 u_setDataDirectory(const char *directory);
  * Return the default codepage for this platform and locale.
  * This function can call setlocale() on Unix platforms. Please read the
  * platform documentation on setlocale() before calling this function.
- * @return the default codepage for this platform 
+ * @return the default codepage for this platform
  * @internal
  */
 U_INTERNAL const char*  U_EXPORT2 uprv_getDefaultCodepage(void);
@@ -98,7 +98,7 @@ U_INTERNAL const char*  U_EXPORT2 uprv_getDefaultCodepage(void);
 /**
  * Please use uloc_getDefault() instead.
  * Return the default locale ID string by querying ths system, or
- *     zero if one cannot be found. 
+ *     zero if one cannot be found.
  * This function can call setlocale() on Unix platforms. Please read the
  * platform documentation on setlocale() before calling this function.
  * @return the default locale ID string

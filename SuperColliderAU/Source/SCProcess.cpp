@@ -1,16 +1,16 @@
 /*
 	SuperColliderAU Copyright (c) 2006 Gerard Roma.
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
@@ -43,14 +43,14 @@ int SCProcess::findNextFreeUdpPort(int startNum){
 		scprintf("failed to create udp socket\n");
 		return -1;
 	}
-    
+
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
 	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	mBindSockAddr.sin_port = htons(port);
 	const int on = 1;
 	setsockopt( server_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-    
+
 	while (bind(server_socket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0) {
 		if(--numberOfTries <0 || (errno != EADDRINUSE)) {
 			scprintf("unable to bind udp socket\n");
@@ -65,11 +65,11 @@ int SCProcess::findNextFreeUdpPort(int startNum){
 
 
 void SCProcess::startUp(WorldOptions options, CFStringRef pluginsPath,  CFStringRef synthdefsPath,  int preferredPort){
-    
+
     pthread_t scThread;
-    char stringBuffer[PATH_MAX] ; 
+    char stringBuffer[PATH_MAX] ;
 	OSCMessages messages;
-    
+
     CFStringGetCString(pluginsPath, stringBuffer, sizeof(stringBuffer), kCFStringEncodingUTF8);
     setenv("SC_PLUGIN_PATH", stringBuffer, 1);
     CFStringGetCString(synthdefsPath, stringBuffer, sizeof(stringBuffer), kCFStringEncodingUTF8);
@@ -80,7 +80,7 @@ void SCProcess::startUp(WorldOptions options, CFStringRef pluginsPath,  CFString
     if (world) {
         if (this->portNum >= 0) World_OpenUDP(world, this->portNum);
         pthread_create (&scThread, NULL, scThreadFunc, (void*)world);
-    }	
+    }
     if (world->mRunning){
         small_scpacket packet = messages.initTreeMessage();
         World_SendPacket(world, 16, (char*)packet.buf, null_reply_func);
@@ -105,7 +105,7 @@ void SCProcess::sendParamChangeMessage(CFStringRef name, float value){
         World_SendPacket(world, messageSize, (char*)packet.buf, null_reply_func);
     }
 }
-    
+
 void SCProcess::sendTick(int64 oscTime, int bus){
     OSCMessages messages;
     small_scpacket packet = messages.sendTickMessage(oscTime, bus);
@@ -127,7 +127,7 @@ void SCProcess::run(const AudioBufferList* in, AudioBufferList* out,  UInt32 inF
         driver->Callback(in, out, &inTimeStamp, inFramesToProcess, sampleRate, oscTime );
     }
 }
-    
+
 void SCProcess::quit(){
     OSCMessages messages;
     if (world && world->mRunning){

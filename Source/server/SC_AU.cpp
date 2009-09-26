@@ -47,7 +47,7 @@ bool SC_AUAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
     // params are set into the wolrd options at AU initialize
 	if(!mPreferredSampleRate && !mPreferredHardwareBufferFrameSize) return false;
 	*outSampleRate = mPreferredSampleRate;
-	*outNumSamples = mPreferredHardwareBufferFrameSize;  
+	*outNumSamples = mPreferredHardwareBufferFrameSize;
     return true;
 }
 
@@ -63,7 +63,7 @@ bool SC_AUAudioDriver::DriverStop()
 
 
 void SC_AUAudioDriver::Callback(const AudioBufferList* in, AudioBufferList* out, AudioTimeStamp* inTimeStamp, UInt32 inFramesToProcess, Float64 sampleRate, int64 oscTime){
-    this->mNumSamplesPerCallback = inFramesToProcess;	  
+    this->mNumSamplesPerCallback = inFramesToProcess;
 	this->mOSCincrement = (int64)(this->mOSCincrementNumerator / sampleRate);
     this->Run(in, out, oscTime);
 }

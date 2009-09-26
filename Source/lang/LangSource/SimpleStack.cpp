@@ -25,7 +25,7 @@
 #include "SimpleStack.h"
 #include "InitAlloc.h"
 
-void initLongStack(LongStack *self) 
+void initLongStack(LongStack *self)
 {
 	//dbg("initLongStack");
 	self->maxsize = 0;
@@ -33,7 +33,7 @@ void initLongStack(LongStack *self)
 	self->num = 0;
 }
 
-void freeLongStack(LongStack *self) 
+void freeLongStack(LongStack *self)
 {
 	//dbg("freeLongStack");
 	self->maxsize = 0;
@@ -44,13 +44,13 @@ void freeLongStack(LongStack *self)
 	}
 }
 
-void growLongStack(LongStack *self) 
+void growLongStack(LongStack *self)
 {
 	if (self->maxsize) {
 		long *oldstak;
 		self->maxsize += self->maxsize >> 1; // grow by 50%
 		oldstak = self->stak;
-	// pyrmalloc: 
+	// pyrmalloc:
 	// lifetime: kill after compile.
 		self->stak = (long*)pyr_pool_compile->Alloc(self->maxsize * sizeof(long));
 		MEMFAIL(self->stak);
@@ -83,7 +83,7 @@ popls(LongStack *self) {
 	}
 }
 
-int emptyls(LongStack *self) 
+int emptyls(LongStack *self)
 {
 	return self->num <= 0;
 }

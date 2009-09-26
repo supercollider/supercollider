@@ -1,6 +1,6 @@
 Model {
 	var <>dependants;
-	
+
 	changed { arg what ... moreArgs;
 		dependants.do({ arg item;
 			item.update(this, what, *moreArgs);
@@ -25,7 +25,7 @@ Model {
 SimpleController {
 	var model, actions;
 	// responds to updates of a model
-	
+
 	*new { arg model;
 		^super.newCopyArgs(model).init
 	}
@@ -62,14 +62,14 @@ TestDependant {
 NotificationCenter {
 
 	classvar registrations;
-	
+
 	//			who		\didSomething
 	*notify { arg object, message, args;
 		registrations.at(object,message).copy.do({ arg function;
 			function.valueArray(args)
 		})
 	}
-	
+
 	// 			who		\didSomething
 	*register { arg object,message,listener,action;
 		var nr;
@@ -94,7 +94,7 @@ NotificationCenter {
 	*registerOneShot {  arg object,message,listener,action;
 		registrations.put(object,message,listener,
 			{
-				action.value; 
+				action.value;
 				this.unregister(object,message,listener)
 			})
 	}
@@ -113,9 +113,9 @@ NotificationCenter {
 }
 
 NotificationRegistration {
-	
+
 	var <>object,<>message,<>listener;
-	
+
 	*new { arg o,m,l;
 		^super.new.object_(o).message_(m).listener_(l)
 	}

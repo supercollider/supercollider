@@ -1,19 +1,19 @@
 PySCLang - a python module for SuperCollider Lang
 Project : Psycollider
- 
+
 by:
 Benjamin Golinvaux
 benjamin.golinvaux@euresys.com
 messenger: bgolinvaux@hotmail.com
 
 currently maintained by:
-Christopher Frauenberger 
+Christopher Frauenberger
 frauenberger@iem.at
 
 -------------------------------------------------------------------------------
 
-PySCLang is a python module that implements the SuperCollider lang and makes it 
-scriptable from python. 
+PySCLang is a python module that implements the SuperCollider lang and makes it
+scriptable from python.
 
 Functions available from python:
 
@@ -23,24 +23,24 @@ sendMain(string)
 	run - runs something (defined in the library, does nothing if you didint override it)
 	stop - stops the lang
 	openWinCodeFile - opens any code window
-	methodTemplates - 
+	methodTemplates -
 	methodReferences - finds references to the method selected
-	
+
 compileLibrary()
 	compiles the library
-	
+
 setCmdLine(string)
 	sets the current command line to any string that contains usually sc3 code
-	
+
 start()
 	start the module
 
 setSCLogSink(window)
 	set where the module should post to
-	
+
 compiledOK
 	returns a bool whether the library was compiled correctly
-	
+
 Rtf2Ascii
 	ugly conversion...
 

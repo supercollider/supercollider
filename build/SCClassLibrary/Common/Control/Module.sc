@@ -2,7 +2,7 @@
 
 Module {
 	var server, name, id, values, presets, presetIndex, <isOn = false;
-	
+
 	*new { arg server, name, id;
 		^super.newCopyArgs(server, name, id).init
 	}
@@ -18,7 +18,7 @@ Module {
 	recall {
 		if (presetIndex < presets.size, {
 			values = presets.at(presetIndex).copy;
-			// set gui elems and synth controls		
+			// set gui elems and synth controls
 		});
 	}
 	save {
@@ -36,11 +36,11 @@ Module {
 		isOn = true;
 		msg = ["/s_new", name, id, 0];
 		values.keysValuesDo({ arg key, value; msg = msg.addAll([key, value]); });
-		server.addr.sendBundle(nil, msg); 
+		server.addr.sendBundle(nil, msg);
 	}
 	stop {
 		isOn = false;
-		server.sendMsg("/n_set", id, \gate, 0); 
+		server.sendMsg("/n_set", id, \gate, 0);
 	}
 }
 

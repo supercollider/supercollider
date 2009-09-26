@@ -22,20 +22,20 @@ Pmeanrand : Pattern {
 
 Pbeta : Pattern {
 	var <>lo, <>hi, <>prob1, <>prob2, <>length;
-	
+
 	*new{ arg lo = 0.0, hi = 1.0, prob1 = 1, prob2 = 1, length = inf;
 		^super.newCopyArgs(lo, hi, prob1, prob2, length);
 	}
-	
+
 	storeArgs { ^[lo, hi, prob1, prob2, length] }
-	
+
 	embedInStream { arg inval;
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var prob1Str = prob1.asStream;
 		var prob2Str = prob2.asStream;
 		var loVal, hiVal;
-		
+
 		length.do({
 			var sum = 2, temp, rprob1, rprob2;
 			rprob1 = prob1Str.next(inval);
@@ -46,13 +46,13 @@ Pbeta : Pattern {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			if(loVal.isNil or: { hiVal.isNil }) { ^inval };
-			
+
 			while ({
 				temp = 1.0.rand ** rprob1;
-				sum = temp + (1.0.rand ** rprob2);					sum > 1;	
+				sum = temp + (1.0.rand ** rprob2);					sum > 1;
 				});
 			inval = (((temp/sum) * (hiVal - loVal)) + loVal).yield;
-			
+
 		});
 		^inval;
 	}
@@ -60,13 +60,13 @@ Pbeta : Pattern {
 
 Pcauchy : Pattern {
 	var <>mean, <>spread, <>length;
-	
+
 	*new{arg mean = 0.0, spread = 1.0, length = inf;
 		^super.newCopyArgs(mean, spread, length);
 	}
-	
+
 	storeArgs{ ^[mean, spread, length] }
-	
+
 	embedInStream { arg inval;
 		var meanStr = mean.asStream;
 		var spreadStr = spread.asStream;
@@ -88,13 +88,13 @@ Pcauchy : Pattern {
 
 Pgauss : Pattern {
 	var <>mean, <>dev, <>length;
-	
+
 	*new{ arg mean = 0.0, dev = 1, length = inf;
 		^super.newCopyArgs(mean, dev, length);
 	}
-	
+
 	storeArgs{ ^[mean, dev, length] }
-	
+
 	embedInStream{arg inval;
 		var meanStr = mean.asStream;
 		var devStr = dev.asStream;
@@ -135,7 +135,7 @@ Ppoisson : Pattern {
 		^inval;
 	}
 }
-	
+
 Pexprand : Pwhite {
 	*new { arg lo=0.0001, hi=1.0, length=inf;
 		^super.newCopyArgs(lo, hi, length)

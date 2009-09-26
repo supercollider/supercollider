@@ -190,7 +190,7 @@ int SC_LID::open(const char* path)
 		error("LID (1): %s\n", strerror(errno));
 		return errFailed;
 	}
-		
+
 	memset(m_eventTypeCaps, 0, sizeof(m_eventTypeCaps));
 	if (ioctl(m_fd, EVIOCGBIT(0, EV_MAX), m_eventTypeCaps) == -1) {
 		error("LID (2): %s\n", strerror(errno));
@@ -616,7 +616,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	if (!isKindOfSlot(args+1, s_inputDeviceInfoClass->u.classobj))
 		return errWrongType;
 	PyrObject* infoObj = args[1].uo;
-	
+
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;
 
@@ -629,7 +629,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	char nameUniq[128];
 	err = dev->getInfo(&info, namePhys, sizeof( namePhys ), nameUniq, sizeof( nameUniq ) );
 	if (err) return err;
-	
+
 	SetSymbol(infoObj->slots+0, getsym(name));
 	SetInt(infoObj->slots+1, info.bustype);
 	SetInt(infoObj->slots+2, info.vendor);
@@ -637,7 +637,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	SetInt(infoObj->slots+4, info.version);
 	SetSymbol(infoObj->slots+5, getsym(namePhys));
 	SetSymbol(infoObj->slots+6, getsym(nameUniq));
-	
+
 	args[0].ucopy = args[1].ucopy;
 
 	return errNone;
@@ -654,7 +654,7 @@ int prLID_GetKeyState(VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(args+1, &evtCode);
 	if (err) return err;
-	
+
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;
 
@@ -678,20 +678,20 @@ int prLID_GetAbsInfo(VMGlobals *g, int numArgsPushed)
 	if (!isKindOfSlot(args+2, s_absInfoClass->u.classobj))
 		return errWrongType;
 	PyrObject* infoObj = args[2].uo;
-	
+
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;
 
 	struct input_absinfo info;
 	err = dev->getAbsInfo(evtCode, &info);
 	if (err) return err;
-	
+
 	SetInt(infoObj->slots+0, info.value);
 	SetInt(infoObj->slots+1, info.minimum);
 	SetInt(infoObj->slots+2, info.maximum);
 	SetInt(infoObj->slots+3, info.fuzz);
 	SetInt(infoObj->slots+4, info.flat);
-	
+
 	args[0].ucopy = args[2].ucopy;
 
 	return errNone;
@@ -813,7 +813,7 @@ void SC_LIDInit()
 	index = 0;
 
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
-	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);	
+	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 }
 #endif // HAVE_LID
 

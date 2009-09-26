@@ -8,19 +8,19 @@ OSCNode {
 
 	// a not-very-secure password for access to the compiler
 	// setting password to a Symbol opens SC to potential hacking
-	classvar <>password; 
+	classvar <>password;
 
 	var <name, <>children, <>function, <>value, <port;
-	
+
 	*new { arg name, function, children, value;
 		^super.newCopyArgs(name, children, function ? { arg node, x; x }, value);
 	}
 	*tree { arg children, argName, argValue;
-		children = children.collect({ arg subtree; 
+		children = children.collect({ arg subtree;
 			var name, thing, value;
 			#name, thing, value = subtree;
 			if (thing.isArray, {
-				this.tree(thing, name, value); 
+				this.tree(thing, name, value);
 			},{
 				OSCNode(name, thing, nil, value);
 			});
@@ -38,7 +38,7 @@ OSCNode {
 		children = nil;
 	}
 	name_ { arg theName; name = theName.asSymbol; }
-	
+
 	// these are for send and reply on the same machine.
 	send { arg oscAddress ... args;
 		_OSCNode_Send
@@ -48,18 +48,18 @@ OSCNode {
 		_OSCNode_Send
 		^this.primitiveFailed;
 	}
-		
+
 	*initClass {
 		// Build the default behaviour for all input ports.
-		// You might want to comment some or all of this out for installations 
+		// You might want to comment some or all of this out for installations
 		// so you can't be hacked..
 		sc = this.tree([
 			[\interpreter, [
 				// Warning: the 'run' method makes SC vulnerable executing any
 				// code sent to it over the net. If you don't want to worry about it
 				// then never set the password and you'll be safe.
-				[\run, { arg node, msgPassword, string; 
-					if (password.isKindOf(Symbol) and: { password === msgPassword }, 
+				[\run, { arg node, msgPassword, string;
+					if (password.isKindOf(Symbol) and: { password === msgPassword },
 					{
 						string.interpret; // a powerful tool for both Good and Evil...
 					})
@@ -70,31 +70,31 @@ OSCNode {
 				[\clearAll, { thisProcess.interpreter.clearAll; }],
 				[\executeFile, { arg node, pathname; thisProcess.interpreter.executeFile(pathname); }]
 			]],
-			
+
 			[\library, [
 				[\choose, { arg node, names; Library.prLibMenuChoose(names); }],
-				[\perform, { arg node, names, selector ... args; 
+				[\perform, { arg node, names, selector ... args;
 					var obj;
-					obj = Library.at(names); 
+					obj = Library.at(names);
 					if (obj.notNil, {
 						obj.performList(selector, args);
 					});
 				}]
 			]],
-			
+
 			[\obj, [
-				[\perform, { arg node, id, selector ... args; 
+				[\perform, { arg node, id, selector ... args;
 					var obj;
-					obj = ObjectTable.at(id); 
+					obj = ObjectTable.at(id);
 					if (obj.notNil, {
 						obj.performList(selector, args);
 					});
 				}],
-				
+
 				// a function cannot be sent via the OSC, so 'put' only works using
-				// inter-VM-messaging on the same machine. 
+				// inter-VM-messaging on the same machine.
 				[\put, { arg node, id, function; ObjectTable.put(id, function.value); }],
-				
+
 				[\remove, { arg node, id; ObjectTable.remove(id); }]
 			]],
 			[\sound, [
@@ -104,35 +104,35 @@ OSCNode {
 			]],
 			[\mixer, [
 				[\stop, { arg node, channel;
-					MixerPlayer.forInput(channel, { arg input; 
+					MixerPlayer.forInput(channel, { arg input;
 						input.killBox.value = 0;
-						input.killBox.doAction; 
+						input.killBox.doAction;
 					});
 				}],
 				[\copy, { arg node, channel;
-					MixerPlayer.forInput(channel, { arg input; 
-						input.copyBtn.doAction; 
+					MixerPlayer.forInput(channel, { arg input;
+						input.copyBtn.doAction;
 					});
 				}],
 				[\volume, { arg node, channel, volume = 0.0;
-					MixerPlayer.forInput(channel, { arg input; 
-						input.volumeSlider.value = volume; 
+					MixerPlayer.forInput(channel, { arg input;
+						input.volumeSlider.value = volume;
 					});
 				}],
 				[\close, { arg node;
 					MixerPlayer.mixer.notNil.if({
-						MixerPlayer.mixer.close; 
+						MixerPlayer.mixer.close;
 					});
 				}]
 			]],
-			[\ping, { arg node; node.port.reply("/sc/postln", "I'm listening") }], 
-			[\run, { thisProcess.run }], 
+			[\ping, { arg node; node.port.reply("/sc/postln", "I'm listening") }],
+			[\run, { thisProcess.run }],
 			[\stop, { Synth.stop }],
 			[\post, { arg node ... args; args.do({ arg item; item.post; " ".post; }); "\n".post; }],
 			[\postln, { arg node ... args; args.do({ arg item; item.postln; });}]
 		]);
 	}
-	
+
 	// PRIVATE
 	call { arg rcvPort ... args;
 		port = rcvPort;
@@ -148,7 +148,7 @@ OSCNode {
 OSCPort {
 	classvar <openPorts; // keep track of all open ports
 	var <portID, udpPort, <>oscNode;
-	
+
 	*closeAll {
 		if (openPorts.notNil, {
 			openPorts.copy.do({ arg port; port.close; });
@@ -172,7 +172,7 @@ OSCPort {
 
 OSCInPort : OSCPort {
 	// UDP port for incoming OSC messages
-	
+
 	*new { arg portID, oscNode;
 		^super.new.init(portID, oscNode)
 	}
@@ -180,7 +180,7 @@ OSCInPort : OSCPort {
 		_OSCInPort_Reply
 		^this.primitiveFailed;
 	}
-	
+
 	// PRIVATE
 	init { arg argPortID, argOSCNode;
 		portID = argPortID;
@@ -198,11 +198,11 @@ OSCInPort : OSCPort {
 OSCOutPort : OSCPort {
 	// UDP port for outgoing OSC messages
 	var <hostname;
-	
+
 	*new { arg portID, hostname, oscNode;
 		^super.new.init(portID, hostname, oscNode)
 	}
-	
+
 	send { arg oscAddress ... args;
 		_OSCOutPort_Send
 		^this.primitiveFailed;
@@ -215,11 +215,11 @@ OSCOutPort : OSCPort {
 		_OSCOutPort_SendRaw
 		^this.primitiveFailed;
 	}
-	
+
 	sendArray { arg array;
 		this.performList(\send, array);
 	}
-	
+
 	// PRIVATE
 	init { arg argPortID, argHostname, argOSCNode;
 		portID = argPortID;

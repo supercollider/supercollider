@@ -11,7 +11,7 @@
 					cuid = device;
 				},{
 					dest = MIDIClient.destinations.at(device);
-					if(dest.isNil,{ 
+					if(dest.isNil,{
 						"MIDIClient failed to init".warn;
 					},{
 						cuid = MIDIClient.destinations.at(device).uid;
@@ -39,14 +39,14 @@
 			if(device >= 0, {
 				if ( device > MIDIClient.destinations.size, {
 					dest = MIDIClient.destinations.select{ |it| it.uid == device }.first;
-					if(dest.isNil,{ 
+					if(dest.isNil,{
 						("MIDI device with uid"+device+ "not found").warn;
 					},{
 						uid = dest.uid;
 					})
 				},{
 					dest = MIDIClient.destinations.at(device);
-					if(dest.isNil,{ 
+					if(dest.isNil,{
 						"MIDIClient failed to init".warn;
 					},{
 						uid = MIDIClient.destinations.at(device).uid;
@@ -64,10 +64,10 @@
 		var uid,dest;
 		if(device.isKindOf(MIDIEndPoint), {uid = device.uid});
 		if(device.isNumber, {
-			if(device.isPositive, { 
+			if(device.isPositive, {
 				if ( device > MIDIClient.destinations.size, {
 					dest = MIDIClient.destinations.select{ |it| it.uid == device }.first;
-					if(dest.isNil,{ 
+					if(dest.isNil,{
 						("MIDI device with uid"+device+ "not found").warn;
 					},{
 						uid = dest.uid;
@@ -82,7 +82,7 @@
 		this.disconnectByUID(outport,uid);
 	}
 	*connectByUID {arg outport, uid;
-		_ConnectMIDIOut		
+		_ConnectMIDIOut
 	}
 	*disconnectByUID {arg outport, uid;
 		_DisconnectMIDIOut

@@ -150,7 +150,7 @@
 #include "PredefinedSymbols.h"
 #include "SimpleStack.h"
 
-void *alloca(unsigned long size); 
+void *alloca(unsigned long size);
 void bcopy(void *src, void *dst, size_t size) ;
 int yyparse();
 extern bool compilingCmdLine;
@@ -1945,7 +1945,7 @@ yyparse ()
 #endif
 #endif
 {
-  
+
   int yystate;
   int yyn;
   int yyresult;
@@ -2221,23 +2221,23 @@ yyreduce:
 
   case 9:
 #line 59 "lang11d"
-    { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrSlotNode*)(yyvsp[(2) - (6)]), 
-					(PyrVarListNode*)(yyvsp[(4) - (6)]), (PyrMethodNode*)(yyvsp[(5) - (6)]), 0); 
+    { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrSlotNode*)(yyvsp[(2) - (6)]),
+					(PyrVarListNode*)(yyvsp[(4) - (6)]), (PyrMethodNode*)(yyvsp[(5) - (6)]), 0);
 				;}
     break;
 
   case 10:
 #line 63 "lang11d"
-    { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (9)]), (PyrSlotNode*)(yyvsp[(5) - (9)]), 
-					(PyrVarListNode*)(yyvsp[(7) - (9)]), (PyrMethodNode*)(yyvsp[(8) - (9)]), 
-					(PyrSlotNode*)(yyvsp[(3) - (9)])); 
+    { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (9)]), (PyrSlotNode*)(yyvsp[(5) - (9)]),
+					(PyrVarListNode*)(yyvsp[(7) - (9)]), (PyrMethodNode*)(yyvsp[(8) - (9)]),
+					(PyrSlotNode*)(yyvsp[(3) - (9)]));
 				;}
     break;
 
   case 11:
 #line 70 "lang11d"
-    { 
-					(yyval) = (long)newPyrClassExtNode((PyrSlotNode*)(yyvsp[(2) - (5)]), (PyrMethodNode*)(yyvsp[(4) - (5)])); 
+    {
+					(yyval) = (long)newPyrClassExtNode((PyrSlotNode*)(yyvsp[(2) - (5)]), (PyrMethodNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
@@ -2293,25 +2293,25 @@ yyreduce:
 
   case 23:
 #line 103 "lang11d"
-    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]), 
+    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]),
 					(PyrArgListNode*)(yyvsp[(3) - (7)]), (PyrVarListNode*)(yyvsp[(4) - (7)]), (PyrParseNode*)(yyvsp[(6) - (7)]), 0); ;}
     break;
 
   case 24:
 #line 106 "lang11d"
-    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]), 
+    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]),
 					(PyrArgListNode*)(yyvsp[(4) - (8)]), (PyrVarListNode*)(yyvsp[(5) - (8)]), (PyrParseNode*)(yyvsp[(7) - (8)]), 1); ;}
     break;
 
   case 25:
 #line 109 "lang11d"
-    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]), 
+    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]),
 					(PyrArgListNode*)(yyvsp[(3) - (7)]), (PyrVarListNode*)(yyvsp[(4) - (7)]), (PyrParseNode*)(yyvsp[(6) - (7)]), 0); ;}
     break;
 
   case 26:
 #line 112 "lang11d"
-    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]), 
+    { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]),
 					(PyrArgListNode*)(yyvsp[(4) - (8)]), (PyrVarListNode*)(yyvsp[(5) - (8)]), (PyrParseNode*)(yyvsp[(7) - (8)]), 1); ;}
     break;
 
@@ -2372,8 +2372,8 @@ yyreduce:
 
   case 47:
 #line 165 "lang11d"
-    { 
-					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); 
+    {
+					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]));
 				;}
     break;
 
@@ -2384,45 +2384,45 @@ yyreduce:
 
   case 52:
 #line 179 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]), 0, 0); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]), 0, 0);
 			;}
     break;
 
   case 53:
 #line 183 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), 0, 0); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), 0, 0);
 			;}
     break;
 
   case 54:
 #line 187 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (4)]), NULL, NULL, (PyrParseNode*)(yyvsp[(4) - (4)])); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (4)]), NULL, NULL, (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
   case 55:
 #line 191 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(3) - (6)]), 
-						(PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)])); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(3) - (6)]),
+						(PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 56:
 #line 196 "lang11d"
     {
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (6)]), NULL, NULL, (PyrParseNode*)(yyvsp[(6) - (6)])); 
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (6)]), NULL, NULL, (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 57:
 #line 200 "lang11d"
     {
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrParseNode*)(yyvsp[(5) - (8)]), 
-						(PyrParseNode*)(yyvsp[(6) - (8)]), (PyrParseNode*)(yyvsp[(8) - (8)])); 
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrParseNode*)(yyvsp[(5) - (8)]),
+						(PyrParseNode*)(yyvsp[(6) - (8)]), (PyrParseNode*)(yyvsp[(8) - (8)]));
 			;}
     break;
 
@@ -2432,7 +2432,7 @@ yyreduce:
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(3) - (5)]))) {
 					((PyrPushNameNode*)(yyvsp[(3) - (5)]))->mSlot.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
@@ -2443,7 +2443,7 @@ yyreduce:
 				args = linkAfterHead(
 					(PyrParseNode*)(yyvsp[(3) - (5)]),
 					newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (5)]), NULL));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(4) - (5)]), 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(4) - (5)]), 0);
 			;}
     break;
 
@@ -2453,13 +2453,13 @@ yyreduce:
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_performList);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkAfterHead(
 					(PyrParseNode*)(yyvsp[(5) - (7)]),
 					newPyrPushLitNode((PyrSlotNode*)(yyvsp[(2) - (7)]), NULL));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(6) - (7)]), 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(6) - (7)]), 0);
 			;}
     break;
 
@@ -2470,59 +2470,59 @@ yyreduce:
 
   case 61:
 #line 238 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (2)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, (PyrParseNode*)(yyvsp[(2) - (2)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, (PyrParseNode*)(yyvsp[(2) - (2)]));
 			;}
     break;
 
   case 62:
 #line 249 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (4)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, NULL, (PyrParseNode*)(yyvsp[(4) - (4)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, NULL, (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
   case 63:
 #line 260 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(3) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(3) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)]));
 			;}
     break;
 
   case 64:
 #line 271 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (6)])), 
+					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (6)])),
 					(PyrParseNode*)(yyvsp[(3) - (6)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
@@ -2532,7 +2532,7 @@ yyreduce:
 				PyrSlotNode *selectornode, *selectornode2;
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
-				
+
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (5)]))) {
 					((PyrPushNameNode*)(yyvsp[(1) - (5)]))->mSlot.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
@@ -2546,55 +2546,55 @@ yyreduce:
 					(PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (5)])),
 					newPyrPushLitNode(selectornode2, NULL));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(3) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (5)]), 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (5)]), 0);
 			;}
     break;
 
   case 66:
 #line 305 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
-				
+
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (5)]), NULL, (PyrParseNode*)(yyvsp[(5) - (5)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (5)]), NULL, (PyrParseNode*)(yyvsp[(5) - (5)]));
 			;}
     break;
 
   case 67:
 #line 314 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
-				
+
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 68:
 #line 323 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (7)]), (PyrParseNode*)(yyvsp[(1) - (7)]), 
-					(PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)])); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (7)]), (PyrParseNode*)(yyvsp[(1) - (7)]),
+					(PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)]));
 			;}
     break;
 
   case 69:
 #line 328 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (7)]), 
+					(PyrParseNode*)(yyvsp[(1) - (7)]),
 					(PyrParseNode*)(yyvsp[(4) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)])); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)]));
 			;}
     break;
 
@@ -2604,7 +2604,7 @@ yyreduce:
 				PyrSlotNode *selectornode;
 				PyrSlot slot, slot2;
 				PyrParseNode* args;
-				
+
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (6)]))) {
 					((PyrPushNameNode*)(yyvsp[(1) - (6)]))->mSlot.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
@@ -2617,33 +2617,33 @@ yyreduce:
 					(PyrParseNode*)(yyvsp[(1) - (6)]),
 					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(4) - (6)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (6)]), 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(5) - (6)]), 0);
 			;}
     break;
 
   case 71:
 #line 361 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (6)]), (PyrParseNode*)(yyvsp[(1) - (6)]), NULL, (PyrParseNode*)(yyvsp[(6) - (6)])); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (6)]), (PyrParseNode*)(yyvsp[(1) - (6)]), NULL, (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 72:
 #line 365 "lang11d"
-    { 
+    {
 				PyrParseNode* args;
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (8)]), (PyrParseNode*)(yyvsp[(5) - (8)]));
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (8)]), args, (PyrParseNode*)(yyvsp[(6) - (8)]), (PyrParseNode*)(yyvsp[(8) - (8)])); 
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (8)]), args, (PyrParseNode*)(yyvsp[(6) - (8)]), (PyrParseNode*)(yyvsp[(8) - (8)]));
 			;}
     break;
 
   case 73:
 #line 371 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (7)]))) {
 					((PyrPushNameNode*)(yyvsp[(1) - (7)]))->mSlot.us = s_this;
 					SetSymbol(&slot, s_superPerformList);
@@ -2654,14 +2654,14 @@ yyreduce:
 
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (7)]), newPyrPushLitNode((PyrSlotNode*)(yyvsp[(3) - (7)]), NULL));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(6) - (7)]), 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)(yyvsp[(6) - (7)]), 0);
 			;}
     break;
 
   case 74:
 #line 389 "lang11d"
-    { 
-				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(1) - (4)]), 0, (PyrParseNode*)(yyvsp[(4) - (4)])); 
+    {
+				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(1) - (4)]), 0, (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
@@ -2676,10 +2676,10 @@ yyreduce:
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("r"));
 				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
-				
+
 				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(0, 0, (PyrParseNode*)(yyvsp[(6) - (7)]), false);
 				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
-				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)blocklit, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)blocklit, 0, 0);
 			;}
     break;
 
@@ -2697,19 +2697,19 @@ yyreduce:
 
   case 79:
 #line 411 "lang11d"
-    { 
+    {
 					// innermost part
-					int action = popls(&generatorStack); 
+					int action = popls(&generatorStack);
 					PyrParseNode* expr = (PyrParseNode*)popls(&generatorStack);
-					
-					switch (action) 
+
+					switch (action)
 					{
 						case 1 :
 						{
 							PyrSlot slot;
 							SetSymbol(&slot, getsym("yield"));
 							PyrSlotNode* selectornode = newPyrSlotNode(&slot);
-					
+
 							(yyval) = (long)newPyrCallNode(selectornode, expr, 0, 0);
 						} break;
 						case 2 :
@@ -2727,7 +2727,7 @@ yyreduce:
 
   case 81:
 #line 437 "lang11d"
-    { 
+    {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(3) - (4)]);
 				if (exprseq->mClassno == pn_CallNode) {
@@ -2740,10 +2740,10 @@ yyreduce:
 						PyrArgListNode* args = newPyrArgListNode(var, NULL);
 						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)(yyvsp[(4) - (4)]), false);
 						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
-						
+
 						callnode->mArglist = linkNextNode(callnode->mArglist, blocklit);
-						(yyval) = (long)callnode; 
-						
+						(yyval) = (long)callnode;
+
 					} else goto notoptimized1;
 				} else {
 					notoptimized1:
@@ -2755,16 +2755,16 @@ yyreduce:
 					PyrArgListNode* args = newPyrArgListNode(var, NULL);
 					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)(yyvsp[(4) - (4)]), false);
 					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
-					
+
 					PyrParseNode* args2 = linkNextNode(exprseq, blocklit);
-					(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0); 
+					(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0);
 				}
 			;}
     break;
 
   case 82:
 #line 471 "lang11d"
-    { 
+    {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(4) - (5)]);
 				if (exprseq->mClassno == pn_CallNode) {
@@ -2779,10 +2779,10 @@ yyreduce:
 						PyrArgListNode* args = newPyrArgListNode(vars, NULL);
 						PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)(yyvsp[(5) - (5)]), false);
 						PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
-						
+
 						callnode->mArglist = linkNextNode(callnode->mArglist, blocklit);
-						(yyval) = (long)callnode; 
-						
+						(yyval) = (long)callnode;
+
 					} else goto notoptimized2;
 				} else {
 					notoptimized2:
@@ -2796,16 +2796,16 @@ yyreduce:
 					PyrArgListNode* args = newPyrArgListNode(vars, NULL);
 					PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)(yyvsp[(5) - (5)]), false);
 					PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
-					
+
 					PyrParseNode* args2 = linkNextNode(exprseq, blocklit);
-					(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0); 
+					(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0);
 				}
 			;}
     break;
 
   case 83:
 #line 509 "lang11d"
-    { 
+    {
 				PyrSlot slot;
 				SetSymbol(&slot, s_value);
 				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
@@ -2815,8 +2815,8 @@ yyreduce:
 				PyrParseNode *block = (PyrParseNode*)newPyrBlockNode(args, 0, (PyrParseNode*)(yyvsp[(5) - (5)]), false);
 				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 				PyrParseNode* args2 = (PyrParseNode*)linkNextNode(blocklit, (PyrParseNode*)(yyvsp[(4) - (5)]));
-				
-				(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0); 
+
+				(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0);
 			;}
     break;
 
@@ -2830,14 +2830,14 @@ yyreduce:
 				PyrParseNode *blocklit = (PyrParseNode*)newPyrPushLitNode(NULL, block);
 				PyrParseNode* args2 = (PyrParseNode*)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), blocklit);
 
-				(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args2, 0, 0);
 			;}
     break;
 
   case 85:
 #line 534 "lang11d"
-    { 
-				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)])); 
+    {
+				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
@@ -2847,15 +2847,15 @@ yyreduce:
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("alwaysYield"));
 				PyrSlotNode* selectornode1 = newPyrSlotNode(&slot);
-				
+
 				SetSymbol(&slot, getsym("if"));
 				PyrSlotNode* selectornode2 = newPyrSlotNode(&slot);
-				
+
 				SetNil(&slot);
 				PyrParseNode *pushnil = (PyrParseNode*)newPyrPushLitNode(newPyrSlotNode(&slot), NULL);
-				
-				PyrParseNode *yieldNil = (PyrParseNode*)newPyrCallNode(selectornode1, pushnil, 0, 0); 
-				
+
+				PyrParseNode *yieldNil = (PyrParseNode*)newPyrCallNode(selectornode1, pushnil, 0, 0);
+
 				PyrParseNode *block1 = (PyrParseNode*)newPyrBlockNode(0, 0, yieldNil, false);
 				PyrParseNode *blocklit1 = (PyrParseNode*)newPyrPushLitNode(NULL, block1);
 				PyrParseNode *block2 = (PyrParseNode*)newPyrBlockNode(0, 0, (PyrParseNode*)(yyvsp[(4) - (4)]), false);
@@ -2863,29 +2863,29 @@ yyreduce:
 				PyrParseNode* args2 = (PyrParseNode*)linkNextNode((PyrParseNode*)(yyvsp[(3) - (4)]), blocklit2);
 				PyrParseNode* args3 = (PyrParseNode*)linkNextNode(args2, blocklit1);
 
-				(yyval) = (long)newPyrCallNode(selectornode2, args3, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode2, args3, 0, 0);
 			;}
     break;
 
   case 93:
 #line 569 "lang11d"
-    { 
-				PyrParseNode* node = (PyrParseNode*)(yyvsp[(2) - (3)]); 
+    {
+				PyrParseNode* node = (PyrParseNode*)(yyvsp[(2) - (3)]);
 				node->mParens = 1;
-				(yyval) = (yyvsp[(2) - (3)]); 
+				(yyval) = (yyvsp[(2) - (3)]);
 			;}
     break;
 
   case 94:
 #line 575 "lang11d"
-    { 
+    {
 				PyrParseNode* argnode;
 				PyrSlotNode* selectornode;
 				PyrSlot slot;
 				argnode = (PyrParseNode*)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(2) - (2)]), NULL);
 				SetSymbol(&slot, s_envirGet);
 				selectornode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(selectornode, argnode, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, argnode, 0, 0);
 			;}
     break;
 
@@ -2916,23 +2916,23 @@ yyreduce:
 
   case 100:
 #line 595 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_at);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (4)]), 
+					(PyrParseNode*)(yyvsp[(1) - (4)]),
 					(PyrParseNode*)(yyvsp[(3) - (4)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 102:
 #line 611 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -2947,7 +2947,7 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (5)]), (PyrParseNode*)(yyvsp[(3) - (5)]));
@@ -2956,13 +2956,13 @@ yyreduce:
 					args = linkNextNode(args, nilnode1);
 				}
 				args = linkNextNode(args, nilnode2);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 103:
 #line 638 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -2971,19 +2971,19 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (5)]), nilnode1);
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(4) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 104:
 #line 656 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
@@ -2995,7 +2995,7 @@ yyreduce:
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (6)]));
 					compileErrors++;
 				}
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(3) - (6)]));
@@ -3005,13 +3005,13 @@ yyreduce:
 					args = linkNextNode(args, nilnode1);
 				}
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (6)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 105:
 #line 683 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -3026,7 +3026,7 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (7)]), (PyrParseNode*)(yyvsp[(3) - (7)]));
@@ -3036,13 +3036,13 @@ yyreduce:
 				}
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(7) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 106:
 #line 711 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -3051,20 +3051,20 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (7)]), nilnode1);
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(4) - (7)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(7) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 107:
 #line 730 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
@@ -3076,7 +3076,7 @@ yyreduce:
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (8)]));
 					compileErrors++;
 				}
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (8)]), (PyrParseNode*)(yyvsp[(3) - (8)]));
@@ -3087,28 +3087,28 @@ yyreduce:
 				}
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (8)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(8) - (8)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 108:
 #line 758 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-				
+
 				int arglen = nodeListLength((PyrParseNode*)(yyvsp[(4) - (6)]));
 				if (arglen > 2) {
 					error("ArrayedCollection subrange has too many arguments.\n");
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (6)]));
 					compileErrors++;
 				}
-				
+
 				SetNil(&nilSlot);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(4) - (6)]));
@@ -3117,13 +3117,13 @@ yyreduce:
 					args = linkNextNode(args, nilnode1);
 				}
 				args = linkNextNode(args, nilnode2);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 109:
 #line 785 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -3132,31 +3132,31 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (6)]), nilnode1);
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (6)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 110:
 #line 803 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-				
+
 				int arglen = nodeListLength((PyrParseNode*)(yyvsp[(4) - (7)]));
 				if (arglen > 2) {
 					error("ArrayedCollection subrange has too many arguments.\n");
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (7)]));
 					compileErrors++;
 				}
-				
+
 				SetSymbol(&selectorSlot, s_copyseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (7)]), (PyrParseNode*)(yyvsp[(4) - (7)]));
@@ -3166,28 +3166,28 @@ yyreduce:
 					args = linkNextNode(args, nilnode1);
 				}
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(6) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 111:
 #line 828 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-				
+
 				int arglen = nodeListLength((PyrParseNode*)(yyvsp[(4) - (8)]));
 				if (arglen > 2) {
 					error("ArrayedCollection subrange has too many arguments.\n");
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (8)]));
 					compileErrors++;
 				}
-				
+
 				SetNil(&nilSlot);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (8)]), (PyrParseNode*)(yyvsp[(4) - (8)]));
@@ -3197,13 +3197,13 @@ yyreduce:
 				}
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(8) - (8)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 112:
 #line 856 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -3212,32 +3212,32 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode1 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (8)]), nilnode1);
 				args = linkNextNode(args, nilnode2);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (8)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(8) - (8)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 113:
 #line 875 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
 				PyrSlot selectorSlot, nilSlot;
 				PyrParseNode* args;
-				
+
 				int arglen = nodeListLength((PyrParseNode*)(yyvsp[(4) - (9)]));
 				if (arglen > 2) {
 					error("ArrayedCollection subrange has too many arguments.\n");
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(3) - (9)]));
 					compileErrors++;
 				}
-				
+
 				SetSymbol(&selectorSlot, s_putseries);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (9)]), (PyrParseNode*)(yyvsp[(4) - (9)]));
@@ -3248,7 +3248,7 @@ yyreduce:
 				}
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(6) - (9)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(9) - (9)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
@@ -3264,18 +3264,18 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), nilnode);
 				args = linkNextNode(args, nilnode2);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 115:
 #line 922 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
 				PyrSlot selectorSlot, nilSlot, zeroSlot;
@@ -3285,18 +3285,18 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				zeronode = newPyrPushLitNode(newPyrSlotNode(&zeroSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode(zeronode, nilnode);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(2) - (2)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 116:
 #line 941 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
 				PyrSlot selectorSlot, nilSlot;
@@ -3304,35 +3304,35 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), nilnode);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(3) - (3)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 117:
 #line 958 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (5)]), 
+					(PyrParseNode*)(yyvsp[(1) - (5)]),
 					(PyrParseNode*)(yyvsp[(3) - (5)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 118:
 #line 972 "lang11d"
-    { 
+    {
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot, nilSlot;
@@ -3341,20 +3341,20 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, s_series);
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (4)]), 
+					(PyrParseNode*)(yyvsp[(1) - (4)]),
 					(PyrParseNode*)(yyvsp[(3) - (4)]));
 				args = linkNextNode(args, nilnode);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 119:
 #line 993 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
 				PyrSlot selectorSlot, nilSlot, zeroSlot;
@@ -3364,18 +3364,18 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				zeronode = newPyrPushLitNode(newPyrSlotNode(&zeroSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode(zeronode, nilnode);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(2) - (2)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 120:
 #line 1012 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *nilnode2;
 				PyrSlot selectorSlot, nilSlot;
@@ -3384,18 +3384,18 @@ yyreduce:
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
 				nilnode2 = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), nilnode);
 				args = linkNextNode(args, nilnode2);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 121:
 #line 1030 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
 				PyrSlot selectorSlot, nilSlot;
@@ -3403,18 +3403,18 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), nilnode);
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(3) - (3)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 122:
 #line 1047 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
 				PyrSlot selectorSlot, nilSlot;
@@ -3422,29 +3422,29 @@ yyreduce:
 
 				SetNil(&nilSlot);
 				nilnode = newPyrPushLitNode(newPyrSlotNode(&nilSlot), NULL);
-				
+
 				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)]));
 				args = linkNextNode(args, nilnode);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 123:
 #line 1063 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&selectorSlot, getsym("seriesIter"));
 				selectornode = newPyrSlotNode(&selectorSlot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (5)]), 
+					(PyrParseNode*)(yyvsp[(1) - (5)]),
 					(PyrParseNode*)(yyvsp[(3) - (5)]));
 				args = linkNextNode(args, (PyrParseNode*)(yyvsp[(5) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
@@ -3455,17 +3455,17 @@ yyreduce:
 
   case 128:
 #line 1083 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_at);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (5)]), 
+					(PyrParseNode*)(yyvsp[(1) - (5)]),
 					(PyrParseNode*)(yyvsp[(4) - (5)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
@@ -3475,35 +3475,35 @@ yyreduce:
 				PyrParseNode *node, *args;
 				PyrSlotNode *slotnode;
 				PyrSlot slot;
-				
+
 				SetSymbol(&slot, s_ref);
 				slotnode = newPyrSlotNode(&slot);
 				node = (PyrParseNode*)newPyrPushNameNode(slotnode);
 				args = linkNextNode(node, (PyrParseNode*)(yyvsp[(2) - (2)]));
 				SetSymbol(&slot, s_new);
 				slotnode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(slotnode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(slotnode, args, 0, 0);
 			;}
     break;
 
   case 130:
 #line 1110 "lang11d"
-    { 
-				(yyval) = (long)newPyrBinopCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]), 
-						(PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)])); 
+    {
+				(yyval) = (long)newPyrBinopCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]),
+						(PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)]));
 			;}
     break;
 
   case 131:
 #line 1115 "lang11d"
-    { 
-				(yyval) = (long)newPyrAssignNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]), 0); 
+    {
+				(yyval) = (long)newPyrAssignNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]), 0);
 			;}
     break;
 
   case 132:
 #line 1119 "lang11d"
-    { 
+    {
 				PyrParseNode *argnode, *args;
 				PyrSlotNode* selectornode;
 				PyrSlot slot;
@@ -3511,70 +3511,70 @@ yyreduce:
 				args = linkNextNode(argnode, (PyrParseNode*)(yyvsp[(4) - (4)]));
 				SetSymbol(&slot, s_envirPut);
 				selectornode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 133:
 #line 1130 "lang11d"
-    { 
-				(yyval) = (long)newPyrSetterNode((PyrSlotNode*)(yyvsp[(3) - (5)]), 
-						(PyrParseNode*)(yyvsp[(1) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)])); 
+    {
+				(yyval) = (long)newPyrSetterNode((PyrSlotNode*)(yyvsp[(3) - (5)]),
+						(PyrParseNode*)(yyvsp[(1) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)]));
 			;}
     break;
 
   case 134:
 #line 1135 "lang11d"
-    { 
+    {
 				if ((yyvsp[(4) - (7)]) != 0) {
 					error("Setter method called with keyword arguments.\n");
 					nodePostErrorLine((PyrParseNode*)(yyvsp[(4) - (7)]));
 					compileErrors++;
 				}
-				(yyval) = (long)newPyrSetterNode((PyrSlotNode*)(yyvsp[(1) - (7)]), 
-						(PyrParseNode*)(yyvsp[(3) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)])); 
+				(yyval) = (long)newPyrSetterNode((PyrSlotNode*)(yyvsp[(1) - (7)]),
+						(PyrParseNode*)(yyvsp[(3) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)]));
 			;}
     break;
 
   case 135:
 #line 1145 "lang11d"
-    { 
-				(yyval) = (long)newPyrMultiAssignNode((PyrMultiAssignVarListNode*)(yyvsp[(2) - (4)]), 
-					(PyrParseNode*)(yyvsp[(4) - (4)]), 0); 
+    {
+				(yyval) = (long)newPyrMultiAssignNode((PyrMultiAssignVarListNode*)(yyvsp[(2) - (4)]),
+					(PyrParseNode*)(yyvsp[(4) - (4)]), 0);
 			;}
     break;
 
   case 136:
 #line 1150 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_put);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (6)]), 
+					(PyrParseNode*)(yyvsp[(1) - (6)]),
 					(PyrParseNode*)(yyvsp[(3) - (6)]));
 				args = linkNextNode( args, (PyrParseNode*)(yyvsp[(6) - (6)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
   case 137:
 #line 1164 "lang11d"
-    { 
+    {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 				PyrParseNode* args;
-				
+
 				SetSymbol(&slot, s_put);
 				selectornode = newPyrSlotNode(&slot);
 				args = linkNextNode(
-					(PyrParseNode*)(yyvsp[(1) - (7)]), 
+					(PyrParseNode*)(yyvsp[(1) - (7)]),
 					(PyrParseNode*)(yyvsp[(4) - (7)]));
 				args = linkNextNode( args, (PyrParseNode*)(yyvsp[(7) - (7)]));
-				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0); 
+				(yyval) = (long)newPyrCallNode(selectornode, args, 0, 0);
 			;}
     break;
 
@@ -3600,8 +3600,8 @@ yyreduce:
 
   case 143:
 #line 1187 "lang11d"
-    { 
-				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); 
+    {
+				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]));
 			;}
     break;
 
@@ -3624,7 +3624,7 @@ yyreduce:
 #line 1204 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
-					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)])); 
+					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
 				;}
     break;
 
@@ -3638,8 +3638,8 @@ yyreduce:
     {
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(3) - (4)]), NULL);
-					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)(yyvsp[(4) - (4)])); 
-					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (4)]), elems); 
+					elems = (PyrParseNode*)linkNextNode(key, (PyrParseNode*)(yyvsp[(4) - (4)]));
+					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (4)]), elems);
 				;}
     break;
 
@@ -3647,8 +3647,8 @@ yyreduce:
 #line 1218 "lang11d"
     {
 					PyrParseNode* elems;
-					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)(yyvsp[(3) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)])); 
-					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (5)]), elems); 
+					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)(yyvsp[(3) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)]));
+					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (5)]), elems);
 				;}
     break;
 
@@ -3869,13 +3869,13 @@ yyreduce:
 
   case 199:
 #line 1305 "lang11d"
-    { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]), 
+    { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]),
 					(PyrParseNode*)(yyvsp[(4) - (5)]), false); ;}
     break;
 
   case 200:
 #line 1308 "lang11d"
-    { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]), 
+    { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]),
 					(PyrParseNode*)(yyvsp[(4) - (5)]), true); ;}
     break;
 
@@ -3907,28 +3907,28 @@ yyreduce:
   case 207:
 #line 1328 "lang11d"
     {
-					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL); 
+					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL);
 				;}
     break;
 
   case 208:
 #line 1332 "lang11d"
-    { 
-					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)])); 
+    {
+					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
   case 209:
 #line 1336 "lang11d"
     {
-					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL); 
+					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL);
 				;}
     break;
 
   case 210:
 #line 1340 "lang11d"
-    { 
-					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)])); 
+    {
+					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
@@ -3965,7 +3965,7 @@ yyreduce:
   case 220:
 #line 1368 "lang11d"
     {
-					PyrParseNode* node = (PyrParseNode*)(yyvsp[(4) - (5)]); 
+					PyrParseNode* node = (PyrParseNode*)(yyvsp[(4) - (5)]);
 					node->mParens = 1;
 					(yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (5)]), node, 0);
 				;}
@@ -3993,10 +3993,10 @@ yyreduce:
 
   case 227:
 #line 1389 "lang11d"
-    { 
-									PyrParseNode* node = (PyrParseNode*)(yyvsp[(3) - (4)]); 
+    {
+									PyrParseNode* node = (PyrParseNode*)(yyvsp[(3) - (4)]);
 									node->mParens = 1;
-									(yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (4)]), node, 0); 
+									(yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (4)]), node, 0);
 								;}
     break;
 
@@ -4009,7 +4009,7 @@ yyreduce:
 #line 1399 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
-					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)])); 
+					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
 				;}
     break;
 
@@ -4057,7 +4057,7 @@ yyreduce:
 #line 1436 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
-					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)])); 
+					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
 				;}
     break;
 
@@ -4139,8 +4139,8 @@ yyreduce:
   case 261:
 #line 1490 "lang11d"
     {
-				PyrSlotNode *node; 
-				node = (PyrSlotNode*)zzval; 
+				PyrSlotNode *node;
+				node = (PyrSlotNode*)zzval;
 				node->mSlot.ui = -node->mSlot.ui;
 				(yyval) = zzval;
 			;}
@@ -4154,8 +4154,8 @@ yyreduce:
   case 263:
 #line 1500 "lang11d"
     {
-				PyrSlotNode *node; 
-				node = (PyrSlotNode*)zzval; 
+				PyrSlotNode *node;
+				node = (PyrSlotNode*)zzval;
 				node->mSlot.uf = -node->mSlot.uf;
 				(yyval) = zzval;
 			;}
@@ -4169,7 +4169,7 @@ yyreduce:
   case 265:
 #line 1510 "lang11d"
     {
-					PyrSlotNode *node; 
+					PyrSlotNode *node;
 					double intval, fracval;
 					node = (PyrSlotNode*)zzval;
 					intval = floor(node->mSlot.uf + 0.5);
@@ -4187,7 +4187,7 @@ yyreduce:
   case 269:
 #line 1526 "lang11d"
     {
-				PyrSlotNode *node; 
+				PyrSlotNode *node;
 				node = (PyrSlotNode*)(yyvsp[(1) - (2)]);
 				node->mSlot.uf *= pi;
 			;}
@@ -4196,7 +4196,7 @@ yyreduce:
   case 270:
 #line 1532 "lang11d"
     {
-				PyrSlotNode *node; 
+				PyrSlotNode *node;
 				double ival;
 				node = (PyrSlotNode*)(yyvsp[(1) - (2)]);
 				ival = node->mSlot.ui;
@@ -4207,8 +4207,8 @@ yyreduce:
   case 271:
 #line 1540 "lang11d"
     {
-				PyrSlotNode *node; 
-				node = (PyrSlotNode*)zzval; 
+				PyrSlotNode *node;
+				node = (PyrSlotNode*)zzval;
 				node->mSlot.uf = pi;
 				(yyval) = zzval;
 			;}
@@ -4217,8 +4217,8 @@ yyreduce:
   case 272:
 #line 1547 "lang11d"
     {
-				PyrSlotNode *node; 
-				node = (PyrSlotNode*)zzval; 
+				PyrSlotNode *node;
+				node = (PyrSlotNode*)zzval;
 				node->mSlot.uf = -pi;
 				(yyval) = zzval;
 			;}

@@ -3,25 +3,25 @@ Spawner : Pattern {
 	var <>priorityQ;
 	var <>now;
 	var <>event;
-	
+
 	*new { | func, stackSize=64 |
 		^super.new.init( func, stackSize)
 	}
-	
+
 	suspend { | stream |
 		var index = priorityQ.array.indexOf(stream);
-		if (index.notNil) { 
+		if (index.notNil) {
 			priorityQ.array.put(index, nil );
 			^stream
 		 } {
 		 	^nil
 		 };
 	}
-	
+
 	suspendAll {
 		priorityQ.clear
 	}
-	
+
 	init { | func, stackSize |
 		priorityQ = PriorityQueue.new;
 		genStream = Routine({func.value(this) }, stackSize);
@@ -34,52 +34,52 @@ Spawner : Pattern {
 		priorityQ.put(now, stream);
 		^stream;
 	}
-	
+
 	seq { | pat |
 		pat.embedInStream(event)
 	}
-	
+
 	wait { | dur |
 		Event.silent(dur, event).yield
 	}
-		
+
 	embedInStream { | inevent, cleanup|
-	
+
 		var outevent, stream, nexttime;
 		event = inevent;					// gives genStream access to the event
 		cleanup ?? { EventStreamCleanup.new };
-		
+
 		while({
 			priorityQ.notEmpty
 		},{
 			stream = priorityQ.pop;
 			outevent = stream.next(event);
-								
+
 			if (outevent.isNil, {
 				nexttime = priorityQ.topPriority;
 //				if (nexttime.notNil && (genStream != stream), {
 				if (nexttime.notNil, {
 					// that child stream ended, so rest until next one
 //					outevent = event.copy;
-//					outevent.put(\freq, \rest);					
+//					outevent.put(\freq, \rest);
 //					outevent.put(\delta, nexttime - now);
 					outevent = Event.silent(nexttime - now, event);
 					event = outevent.yield;
-					now = nexttime;	
+					now = nexttime;
 				},{
 					priorityQ.clear;
-					cleanup.exit(event); 
-				});		
-			},{			
+					cleanup.exit(event);
+				});
+			},{
 				cleanup.update(outevent);
 				// requeue stream
 				priorityQ.put(now + outevent.delta, stream);
 				nexttime = priorityQ.topPriority;
 				outevent.put(\delta, nexttime - now);
-				
+
 				event = outevent.yield;
-				now = nexttime;	
-			});	
+				now = nexttime;
+			});
 		});
 		^event;
 	}
@@ -88,15 +88,15 @@ Spawner : Pattern {
 
 Pspawner : Proutine {
 
-	asStream { 
+	asStream {
 		^Routine({ | ev | this.embedInStream(ev) })
 	}
 	embedInStream { | inevent, cleanup |
-	
+
 		^Spawner(routineFunc).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new });
-			
+
 	}
-	
+
 }
 
 Pspawn : FilterPattern {
@@ -106,7 +106,7 @@ Pspawn : FilterPattern {
 		^super.new(pattern)
 			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default/*.put(\type, \spawn)*/ });
 	}
-	
+
 	embedInStream { |inevent, cleanup|
 		^Spawner({ |sp|
 			var	event, stream = pattern.asStream,
@@ -140,7 +140,7 @@ Pspawn : FilterPattern {
 }
 
 /*
-(	
+(
 	Pseq([
 		Pspawner({ | sp |
 			sp.postln;
@@ -151,7 +151,7 @@ Pspawn : FilterPattern {
 			"bye".postln;
 			sp.suspendAll;
 		}),
-		
+
 		Pspawner({ | sp |
 			sp.postln;
 			sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.2, ctranspose: -12]) );
@@ -160,15 +160,15 @@ Pspawn : FilterPattern {
 			"bye".postln;
 			sp.suspendAll
 		}),
-	
+
 	]).play
-	
+
 	a = Spawner({ |sp | 100.do{ sp.wait(1) } });
 	a.play;
 	b = a.par(Pbind(*[degree: Pwhite(0, 10), dur: 0.2]));
 	a.suspend(b)
 	a.par(b)
-	
+
 	Pspawner({ | sp |
 		5.do {
 			sp.par(Pbind(*[
@@ -177,7 +177,7 @@ Pspawn : FilterPattern {
 			]) );
 			sp.wait(1);
 			sp.clear;
-		}		
+		}
 	}).play
 
 )

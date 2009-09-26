@@ -1,5 +1,5 @@
 /*
-This file defines Group and Synth event types similar to the Group and Synth classes. 
+This file defines Group and Synth event types similar to the Group and Synth classes.
 They follow the conventions of patterns, using integers (0,1,2,3) for addActions and
 integer nodeID's as targets.
 
@@ -18,8 +18,8 @@ Caution, Event-play returns a time value, so an expression of the form
 
 will assign the default duration of 1 to the variable a, not the group event!
 
-The interface to these events is a hybrid of the Pattern and Node control interfaces consisting of 
-	play, stop, pause, resume 
+The interface to these events is a hybrid of the Pattern and Node control interfaces consisting of
+	play, stop, pause, resume
 	release, set, map, before, after, headOf, tailOf
 
 event[\id] can be an array. In this case, a set of nodes corresponding to each element of the array will be created and the order of the id's will be the order of the nodes running on the server.  (In other word, the nodes are created in reverse order when event[\addAction] is 0 or 2.
@@ -38,15 +38,15 @@ Here is a simple example of its use:
 	b = (type:\Synth, freq: [500,510], group: [2,3]);           // make a Synth event
 	b.play;
 	c = b.split;
-	
+
 	b.set(\freq,[1000,1200])
-	
+
 	c[0].set(\freq,700);
 	c[1].set(\freq,400);
-	
+
 	h[0].release;
 	h[1].release;
-	
+
 	g.stop;
 )
 */
@@ -57,22 +57,22 @@ Here is a simple example of its use:
 		if (id.asArray.first < (if(server.notNil) { server.options.initialNodeID } { 1000 })) { ^id};
 		^nil
 	}
-	
+
 	asEventStreamPlayer {}
-	
+
 	sendOSC { | msg |
 		if (this[\isPlaying]) {
 			this[\server].sendBundle( this[\latency],  *(msg.flop) )
 		}
 	}
-	set { | ... args | 
-//		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray)); 
-		args = ([15, this[\id]] ++ args).flop.asOSCArgBundle; 
+	set { | ... args |
+//		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray));
+		args = ([15, this[\id]] ++ args).flop.asOSCArgBundle;
 		if (this[\isPlaying]) {
 			this[\server].sendBundle( this[\latency],  *args )
 		}
 	}
-		
+
 	stop { this.use { ~stop.value }  }
 	pause { this.use { ~pause.value }  }
 	resume { this.use { ~resume.value }  }
@@ -85,24 +85,24 @@ Here is a simple example of its use:
 		this.parent = Event.parentEvents[\groupEvent];
 	}
 
-	split { | key = \id | 
+	split { | key = \id |
 		var event;
 		if (this[\isPlaying] == true) {
-			^this[key].asArray.collect { |keyVal| 
-				event = this.copy.put(key, keyVal); 
+			^this[key].asArray.collect { |keyVal|
+				event = this.copy.put(key, keyVal);
 				NodeWatcher.register(event);
 				event;
 			}
 		} {
-			^this[key].asArray.collect { |keyVal| 
-				this.copy.put(key, keyVal) 
-			} 
+			^this[key].asArray.collect { |keyVal|
+				this.copy.put(key, keyVal)
+			}
 		}
 	}
 	nodeID { ^(this[\id].asArray[0]) }
-	
+
 	asGroup {
-		var type = this[\type]; 
+		var type = this[\type];
 		if(type == \Group) { ^this };
 		^this[\group].asGroup
 	}

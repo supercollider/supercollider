@@ -22,7 +22,7 @@ Editor {
 	freePatchOutToBundle { arg bundle;
 		bundle.addFunction({ patchOut.free; patchOut = nil; })
 	}
-	
+
 	synthArg { ^this.poll }
 	instrArgFromControl { arg control;
 		^control
@@ -91,7 +91,7 @@ NumberEditor : Editor {
 		^value
 	}
 	rate { ^spec.rate } // probably scalar
-	
+
 	copy { ^this.class.new(value,spec) }
 	guiClass { ^NumberEditorGui }
 

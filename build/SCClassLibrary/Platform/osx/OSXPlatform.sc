@@ -16,7 +16,7 @@ OSXPlatform : UnixPlatform
 		var filename = "startup.rtf";
 		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
 	}
-	
+
 	startup {
 		if(Platform.ideName == "scapp"){
 			Document.implementationClass.startup;
@@ -35,13 +35,13 @@ OSXPlatform : UnixPlatform
 			CocoaMenuItem.clearCustomItems;
 		};
 	}
-	
+
 		// only osx uses Cocoa guis
 	defaultGUIScheme { ^\cocoa }
 	defaultHIDScheme { ^\osx_hid }
-	
+
 	recompile { _Recompile }
-	
+
 	escapeWindow {
 		var currentAppModal, currentFullScreen;
 		currentAppModal = SCModalWindow.current;
@@ -54,12 +54,12 @@ OSXPlatform : UnixPlatform
 				window.close;
 				"An instance of SCModalSheet was aborted".warn;
 			});
-			
+
 		});
 		currentFullScreen = SCWindow.currentFullScreen;
 		currentFullScreen.notNil.if({currentFullScreen.endFullScreen; currentFullScreen.close});
 	}
-	
+
 	exitFullScreen {
 		var currentFullScreen;
 		currentFullScreen = SCWindow.currentFullScreen;

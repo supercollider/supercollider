@@ -1,14 +1,14 @@
 /*
  * File: PYSCLang_Module.cpp
  * Project : Psycollider
- * 
+ *
  * by:
  * Benjamin Golinvaux
  * benjamin.golinvaux@euresys.com
  * messenger: bgolinvaux@hotmail.com
- * 
+ *
  * currently maintained by:
- * Christopher Frauenberger 
+ * Christopher Frauenberger
  * frauenberger@iem.at
  *
  *  This program is free software; you can redistribute it and/or
@@ -93,7 +93,7 @@ void PySCLang_Module::appClock() {
 		pthread_mutex_lock(&gLangMutex);
 		if (compiledOK) runLibrary(getsym("tick"));
 		pthread_mutex_unlock(&gLangMutex);
-	
+
 #ifdef SC_WIN32
 		Sleep(20);      // Sleep (windows) takes a time in milliseconds
 #else
@@ -114,7 +114,7 @@ void PySCLang_Module::appClock() {
     add_varargs_method("setSCLogSink", &PySCLang_Module::setSCLogSink, "setSCLogSink");
     add_varargs_method("compiledOK", &PySCLang_Module::compiledOK__, "compiledOK");
     add_varargs_method("setPyPrOpenWinTextFile", &PySCLang_Module::setPyPrOpenWinTextFile, "setPyPrOpenWinTextFile callable with (path,startRange,rangeSize)");
-    
+
     initialize( "<documentation for the PySCLang_Module forthcoming>" );
   }
 
@@ -123,7 +123,7 @@ void PySCLang_Module::appClock() {
 // symbol required for the debug version
 extern "C" {
   void initPySCLang_d() {
-    initPySCLang(); 
+    initPySCLang();
   }
 }
 
@@ -167,7 +167,7 @@ Py::Object PySCLang_Module::setCmdLine(const Py::Tuple &a)
   Py::String pystr(a[0]);
   const char* text = ::PyString_AsString(pystr.ptr());
   int length = strlen(text);
-	
+
   if (!compiledOK) {
 	PyErr_SetString(PyExc_RuntimeError,"PySCLang: The library has not been compiled successfully");
 	return Py::Object(Py::Null());
@@ -176,11 +176,11 @@ Py::Object PySCLang_Module::setCmdLine(const Py::Tuple &a)
 
   if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
-		
+
 			int textlen = length;
 		PyrString* strobj = newPyrStringN(g->gc, textlen, 0, true);
 		memcpy(strobj->s, (char*)text, textlen);
-	
+
 		SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
 		g->gc->GCWrite(g->process->interpreter.uo, strobj);
 	}
@@ -194,7 +194,7 @@ Py::Object PySCLang_Module::compiledOK__(const Py::Tuple &a)
     PyErr_SetString(PyExc_IndexError,"requires 0 args");
     return Py::Object(Py::Null());
   }
-  if( compiledOK ) 
+  if( compiledOK )
     return Py::Int(1);
   else
     return Py::Int(0);
@@ -214,7 +214,7 @@ Py::Object PySCLang_Module::start(const Py::Tuple &a)
   	// appClock timer
 	pthread_t t;
 	pthread_create(&t, NULL, &appClockTimer, (void *)this);
-	
+
 	// deferred task timer still missing... (cf, 16 May 2006)
 
 //!!!

@@ -2,7 +2,7 @@
 	File:		HID_Queue_Utilities.h
 
 	Contains:	Definition of the HID queue functions for the HID utilites.
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved

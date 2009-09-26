@@ -99,12 +99,12 @@ g_fmt(register char *b, double x)
 		}
 		for(; decpt > 0; decpt--)
 			*b++ = '0';
-			
+
 		if (!hasDot) { // added by James McCartney
 			*b++ = '.';
 			*b++ = '0';
 		}
-		
+
 		*b = 0;
 		}
  done0:

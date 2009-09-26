@@ -2,14 +2,14 @@
 // fft uses a local buffer for holding the buffered audio.
 // wintypes are defined in the C++ source. 0 is default, Welch; 1 is Hann; -1 is rect.
 
-FFT : PV_ChainUGen 
+FFT : PV_ChainUGen
 {
 	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1, winsize=0|
 		^this.multiNew('control', buffer, in, hop, wintype, active, winsize)
 	}
-}	
+}
 
-IFFT : UGen 
+IFFT : UGen
 {
 	*new { | buffer, wintype = 0, winsize=0|
 		^this.ar(buffer, wintype, winsize)
@@ -23,7 +23,7 @@ IFFT : UGen
 		^this.multiNew('control', buffer, wintype, winsize)
 	}
 
-}	
+}
 PV_MagAbove : PV_ChainUGen
 {
 	*new { arg buffer, threshold = 0.0;
@@ -42,7 +42,7 @@ PV_MagSmear : PV_ChainUGen
 	}
 }
 
-PV_BinShift : PV_ChainUGen 
+PV_BinShift : PV_ChainUGen
 {
 
 	*new { arg buffer, stretch = 1.0, shift = 0.0;
@@ -51,7 +51,7 @@ PV_BinShift : PV_ChainUGen
 }
 PV_MagShift : PV_BinShift {}
 
-PV_MagSquared : PV_ChainUGen 
+PV_MagSquared : PV_ChainUGen
 {
 	*new { arg buffer;
 		^this.multiNew('control', buffer)
@@ -63,12 +63,12 @@ PV_PhaseShift90 : PV_MagSquared {}
 PV_PhaseShift270 : PV_MagSquared {}
 PV_Conj : PV_MagSquared {}
 
-PV_PhaseShift : PV_ChainUGen 
+PV_PhaseShift : PV_ChainUGen
 {
 	*new { arg buffer, shift;
 		^this.multiNew('control', buffer, shift)
 	}
-}	
+}
 
 PV_BrickWall : PV_ChainUGen
 {
@@ -77,7 +77,7 @@ PV_BrickWall : PV_ChainUGen
 	}
 }
 
-PV_BinWipe : PV_ChainUGen 
+PV_BinWipe : PV_ChainUGen
 {
 	*new { arg bufferA, bufferB, wipe = 0.0;
 		^this.multiNew('control', bufferA, bufferB, wipe)
@@ -106,14 +106,14 @@ PV_MagDiv : PV_ChainUGen
 	}
 }
 
-PV_RandComb : PV_ChainUGen 
+PV_RandComb : PV_ChainUGen
 {
 	*new { arg buffer, wipe = 0.0, trig = 0.0;
 		^this.multiNew('control', buffer, wipe, trig)
 	}
 }
 
-PV_RectComb : PV_ChainUGen 
+PV_RectComb : PV_ChainUGen
 {
 	*new { arg buffer, numTeeth = 0.0, phase = 0.0, width = 0.5;
 		^this.multiNew('control', buffer, numTeeth, phase, width)
@@ -121,14 +121,14 @@ PV_RectComb : PV_ChainUGen
 }
 
 
-PV_RectComb2 : PV_ChainUGen 
+PV_RectComb2 : PV_ChainUGen
 {
 	*new { arg bufferA, bufferB, numTeeth = 0.0, phase = 0.0, width = 0.5;
 		^this.multiNew('control', bufferA, bufferB, numTeeth, phase, width)
 	}
 }
 
-PV_RandWipe : PV_ChainUGen 
+PV_RandWipe : PV_ChainUGen
 {
 	*new { arg bufferA, bufferB, wipe = 0.0, trig = 0.0;
 		^this.multiNew('control', bufferA, bufferB, wipe, trig)
@@ -156,22 +156,22 @@ PV_BinScramble : PV_ChainUGen
 	}
 }
 
-FFTTrigger : PV_ChainUGen 
+FFTTrigger : PV_ChainUGen
 {
 	*new { | buffer, hop = 0.5, polar = 0.0|
 		^this.multiNew('control', buffer, hop, polar)
 	}
-}	
+}
 
 
 ////////////////////////////////////////////////////
 /*
-PV_OscBank : PV_ChainUGen 
+PV_OscBank : PV_ChainUGen
 {
 	*new { arg buffer, scale;
 		^this.multiNew('control', buffer)
 	}
-}	
+}
 
 PV_Scope : PV_ChainUGen {}
 

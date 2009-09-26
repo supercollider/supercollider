@@ -85,7 +85,7 @@ EffectSpec : AudioSpec {
 
 
 TrigSpec : ControlSpec {
-	
+
 	defaultControl { ^BeatClockPlayer.new(4.0) }
 	*initClass {
 		specs.addAll(
@@ -128,19 +128,19 @@ NoLagControlSpec : ControlSpec {
 			];
 		)
 	}
-	defaultControl { arg val; 
-		^KrNumberEditor.new(this.constrain(val ? this.default),this).lag_(nil) 
+	defaultControl { arg val;
+		^KrNumberEditor.new(this.constrain(val ? this.default),this).lag_(nil)
 	}
 
 }
 
-StaticSpec : NoLagControlSpec { 
+StaticSpec : NoLagControlSpec {
 	// also a scalar spec, but better to inherit ControlSpec
 
 	canKr { ^false }
 	rate { ^\noncontrol } // builds the constant into the synthDef
 	defaultControl { arg val;
-		^NumberEditor.new(this.constrain(val ? this.default),this) 
+		^NumberEditor.new(this.constrain(val ? this.default),this)
 	}
 }
 
@@ -153,7 +153,7 @@ StaticIntegerSpec : StaticSpec {
 		^this.new(similar.minval, similar.maxval,similar.default, similar.units)
 	}
 
-	init { 
+	init {
 		warp = warp.asWarp(this);
 		if(minval < maxval,{
 			clipLo = minval.asInteger;
@@ -162,7 +162,7 @@ StaticIntegerSpec : StaticSpec {
 			clipLo = maxval.asInteger;
 			clipHi = minval.asInteger;
 		});
-	}	
+	}
 	defaultControl { arg val;
 		^IntegerEditor(this.constrain(val ? this.default),this)
 	}
@@ -198,9 +198,9 @@ NonControlSpec : Spec {
 EnvSpec : NonControlSpec {
 
 	var <>prototype;
-	
-	// use a level spec ?	
-	
+
+	// use a level spec ?
+
 	*new { arg prototype;
 		^super.new.prototype_(prototype ?? {Env.asr})
 	}
@@ -209,7 +209,7 @@ EnvSpec : NonControlSpec {
 		^EnvEditor.new(prototype.copy)
 	}
 	default { ^prototype.copy }
-	
+
 	*initClass {
 		specs.addAll(
 			[ // from the common forms.
@@ -225,10 +225,10 @@ EnvSpec : NonControlSpec {
 				\fenv -> this.new(Env.new([ 0, 1, 0.2, 0 ], [ 0.04, 0.4, 0.3 ], [ -6.31, 1.1, -2 ], nil, nil)),
 				\rqenv -> this.new(  Env.new([ 0.194444, 0.0810185, 0.0648148, 0.444444 ], [ 0.01, 0.111111, 0.0833333 ], [ -0.583333, 3.33333, 1.66667 ], nil, nil)),
 				\envpercshort -> this.new(Env.new([ 0, 1, 1, 0.444444, 0 ], [ 0.166667, 1, 0.805556, 0.777778 ], [ -7.16667, -2, 2, -2 ], nil, nil))
-				
+
 			]
 		)
-	}	
+	}
 	canAccept { arg thing;
 		^thing.isKindOf(Env) or: {thing.isKindOf(EnvEditor)}
 	}
@@ -237,7 +237,7 @@ EnvSpec : NonControlSpec {
 BufferProxySpec : NonControlSpec {
 
 	var <>numFrames=44100,<>numChannels=1,<>sampleRate=44100.0;
-	
+
 	*new { arg numFrames=44100,numChannels=1,sampleRate=44100.0;
 		^super.new.numFrames_(numFrames).numChannels_(numChannels).sampleRate_(sampleRate)
 	}
@@ -255,8 +255,8 @@ BufferProxySpec : NonControlSpec {
 	//defaultControl { ^prototype.deepCopy } // this caused a deepCopy crash !?
 	defaultControl { ^BufferProxy(numFrames,numChannels,sampleRate) }
 	default { ^this.defaultControl }
-	canAccept { arg thing; 
-		^thing.isKindOf(BufferProxy) 
+	canAccept { arg thing;
+		^thing.isKindOf(BufferProxy)
 			and: {thing.numChannels == numChannels}
 			and: {thing.sampleRate == sampleRate}
 			and: {thing.numFrames >= numFrames}
@@ -264,11 +264,11 @@ BufferProxySpec : NonControlSpec {
 }
 
 BusSpec : NonControlSpec {
-	/* this is not for i_bus inputs but rather for specifying that you need a Bus object 
-	for kr or ir bus indices use 
+	/* this is not for i_bus inputs but rather for specifying that you need a Bus object
+	for kr or ir bus indices use
 		a ControlSpec(0, 4096, 'linear', 1, 0, "Bus")
 		or ScalarSpec(0,4096,'linear',1,0,"Bus")
-	*/ 
+	*/
 	var <>rate,<>numChannels,<>private;
 	*new { |rate,numChannels,private|
 		^super.new.rate_(rate).numChannels_(numChannels).private_(private)
@@ -281,7 +281,7 @@ SampleSpec : NonControlSpec {
 		specs.addAll(
 		 [
 			\sample -> this.new,
-			\arrayBuffer -> this.new			
+			\arrayBuffer -> this.new
 			];
 		)
 	}
@@ -359,7 +359,7 @@ StreamSpec : HasItemSpec {
 	rate { ^\stream }
 	defaultControl {  arg val;
 		^itemSpec.defaultControl(val)
-		//^IrNumberEditor(val ? itemSpec.default, itemSpec) 
+		//^IrNumberEditor(val ? itemSpec.default, itemSpec)
 	}
 	minval { ^itemSpec.minval }
 	maxval { ^itemSpec.maxval }
@@ -392,7 +392,7 @@ InstrNameSpec : HasItemSpec {
 }
 
 // for generic object input to a Patch
- 
+
 ObjectSpec : Spec {
 	var  <>defaultControl;
 

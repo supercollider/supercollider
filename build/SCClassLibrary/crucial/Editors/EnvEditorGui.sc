@@ -3,24 +3,24 @@ EnvEditorGui : ObjectGui {
 
 
 	var ev,timeScale=1.0,levelScale = 1.0;
-	
+
 	writeName {}
 	guiBody { arg layout;
-		
+
 		var curves,levels,times,temp=0.0;
-		
+
 		ev = GUI.envelopeView.new(layout,layout.layRight(100,40))
 			.thumbSize_(5);
 		ev.drawLines = true;
 		ev.selectionColor = Color.red;
 		ev.drawRects = true;
-		
+
 		times = [0.0];
 		model.env.times.do({ arg delta;
 			times = times.add(temp = temp + delta);
 		});
 		levels = model.env.levels;
-		
+
 		timeScale = times.maxItem * 1.5;
 		levelScale = levels.maxItem * 1.5;
 		ev.value_([times / timeScale,levels / levelScale]);//("initial setting"));
@@ -51,7 +51,7 @@ EnvEditorGui : ObjectGui {
 		ActionButton(layout,"#",{
 			model.env.asCompileString.postln;
 		});
-		
+
 		CXLabel(layout,"curve:");
 		// curves
 		curves = model.env.curves;
@@ -72,11 +72,11 @@ EnvEditorGui : ObjectGui {
 		// loop node
 		//CXLabel(layout,"loop");
 		//CXLabel(layout,model.env.loopNode);
-		
+
 		//release node
 		CXLabel(layout,"releaseNode:");
 		CXLabel(layout,model.env.releaseNode);
-		
+
 		// the envelope itself
 		//model.env.gui(layout);
 	}

@@ -3,7 +3,7 @@
 KeyCodeResponder {
 
        classvar global;
- 
+
        const <normalModifier       = 0;
        const <capsModifier         = 0x00010000;
        const <shiftModifier        = 0x00020000;
@@ -14,32 +14,32 @@ KeyCodeResponder {
 
 /* 	classvar <>normalModifier=0,<>shiftModifier=0x00020000,<>controlModifier=0x00040000,
                <>optionModifier=0x00080000,<>functionKeyModifier=0x00800000,<>capsModifier=0x00010000;
-*/	
+*/
 	var <>dict;
-	
+
 	// keycode -> { }, keycode -> { }, ...
-	
-	normal { arg ... asses; 
+
+	normal { arg ... asses;
 		asses.do({ arg as;
 			this.register(as.key,false,false,false,false,as.value)
 		})
 	}
-	shift { arg ... asses; 
+	shift { arg ... asses;
 		asses.do({ arg as;
 			this.register(as.key,true,false,false,false,as.value)
 		})
 	}
-	control { arg ... asses; 
+	control { arg ... asses;
 		asses.do({ arg as;
 			this.register(as.key,false,false,false,true,as.value)
 		})
 	}
-	option { arg ... asses; 
+	option { arg ... asses;
 		asses.do({ arg as;
 			this.register(as.key,false,false,true,false,as.value)
 		})
 	}
-	
+
 	// true, false or nil
 	register { arg keycode,shift,caps,opt,cntl,function,description;
 		var require=0,deny=0;
@@ -75,7 +75,7 @@ KeyCodeResponder {
 		});
 		deny = deny.add(commandModifier);
 		this.pushForKeycode(keycode,require,deny,function,description);
-	}	
+	}
 
 	// true, false or nil
 	*register { arg keycode,shift,caps,opt,cntl,function;
@@ -96,7 +96,7 @@ KeyCodeResponder {
 	*resetKeycode { arg keycode;
 		this.at(keycode).reset
 	}
-		
+
 	*tester {
 		this.clear;
 		Sheet({ arg l;
@@ -112,17 +112,17 @@ KeyCodeResponder {
 							words = words + modass.key;
 							boos = boos + "true,";
 						},{
-							boos = boos + "false,";	
+							boos = boos + "false,";
 						});
 					});
-					
+
 					words.post; " ".post;
 					if(c.isPrint,{
 						c.postln;
 					},{
 						k.postln;
 					});
-					
+
 					("k.register(  " + k + " , " + boos + "{").postln;
 					"".postln;
 					"});".postln;
@@ -134,8 +134,8 @@ KeyCodeResponder {
 	++ { arg that;
 		var new,keys;
 		if(that.isNil,{ ^this });
-		if(that.class !== this.class,{ 
-			this.die("Can't concatenate KeyCode and Unicode responder classes:", this.class, that.class) 
+		if(that.class !== this.class,{
+			this.die("Can't concatenate KeyCode and Unicode responder classes:", this.class, that.class)
 		});
 
 		// that overides this
@@ -146,7 +146,7 @@ KeyCodeResponder {
 		});
 		^new
 	}
-	
+
 	*new { ^super.new.clear }
 
 	/** PRIVATE **/
@@ -157,7 +157,7 @@ KeyCodeResponder {
 		sets.do({ arg set;
 			this.performList(\registerKeycode,set)
 		})
-	}	
+	}
 	registerKeycode { arg modifier,keycode,function;
 		var kdr;
 		kdr = dict.at(keycode);
@@ -172,7 +172,7 @@ KeyCodeResponder {
 			this.performList(\registerKeycode,set)
 		})
 	}
-	
+
 
 
 	/** the actual responder **/
@@ -182,13 +182,13 @@ KeyCodeResponder {
 	*value { arg view,keycode,modifier,unicode;
 		^this.at(unicode).value(unicode,modifier)
 	}
-	
-	*global { 
+
+	*global {
 		^global ?? {
 				global = this.new;
 				SCView.globalKeyDownAction = global;
 				global
-		} 
+		}
 	}
 
 	*at { arg  address;  ^this.global.at(address) }
@@ -218,7 +218,7 @@ KeyCodeResponder {
 				words = words + modass.key;
 				//boos = boos + "true,";
 			},{
-				//boos = boos + "false,";	
+				//boos = boos + "false,";
 			});
 		});
 		^words
@@ -239,9 +239,9 @@ KeyCodeResponderStack {
 
 	// only needs to parse the modifier
 	// but passes ascii, code and modifer to the function
-	
+
 	var <>stack;
-	
+
 	*new {	^super.new.reset }
 	addMaskTester { arg requireMask,denyMask,function,description;
 		this.addKDR( KDRMaskTester(requireMask,denyMask,function,description) );
@@ -257,7 +257,7 @@ KeyCodeResponderStack {
 		},{
 			stack = stack.add(newGuy);
 		});
-	}	
+	}
 	reset { stack = [] }
 	value { arg view, char,modifier,unicode,keycode;
 		var result;
@@ -285,12 +285,12 @@ KeyCodeResponderStack {
 	}
 }
 
-SimpleKDRUnit { 
+SimpleKDRUnit {
 	// matches if the modifier combo (or single) is present,
 	// but does NOT FAIL if others are also present
 
 	 var <>requireMask,<>function,<>description;
-	 
+
 	*new { arg modifier,function,description;
 		^super.newCopyArgs(modifier,function,description)
 	}
@@ -305,13 +305,13 @@ SimpleKDRUnit {
 		Post << KeyCodeResponder.maskToString(requireMask);
 		if(description.notNil,{ Post << " : " << description; });
 	}
-	
+
 }
 
 
 // test multiple modifiers deny and require
 KDRMaskTester : SimpleKDRUnit {
-	
+
 	var <>denyMask;
 
 	*new { arg requireMask,denyMask,function,description;
@@ -324,7 +324,7 @@ KDRMaskTester : SimpleKDRUnit {
 //		[modifier & requireMask, requireMask].debug("require");
 //		[denyMask & modifier].debug("deny");
 		if((modifier & requireMask) == requireMask // all required bits set
-			and: 
+			and:
 		{  (denyMask & modifier) == 0 } // no denied bits present
 		,{
 			^function.value(view, char,modifier,unicode,keycode);

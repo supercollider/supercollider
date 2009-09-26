@@ -1,41 +1,41 @@
 Array[slot] : ArrayedCollection {
-	
-	*with { arg ... args; 
+
+	*with { arg ... args;
 		// return an array of the arguments given
 		// cool! the interpreter does it for me..
-		^args 
+		^args
 	}
-	reverse { 
-		_ArrayReverse 
-		^this.primitiveFailed 
+	reverse {
+		_ArrayReverse
+		^this.primitiveFailed
 	}
-	scramble { 
-		_ArrayScramble 
-		^this.primitiveFailed 
+	scramble {
+		_ArrayScramble
+		^this.primitiveFailed
 	}
-	mirror { 
-		_ArrayMirror 
-		^this.primitiveFailed 
+	mirror {
+		_ArrayMirror
+		^this.primitiveFailed
 	}
-	mirror1 { 
-		_ArrayMirror1 
-		^this.primitiveFailed 
+	mirror1 {
+		_ArrayMirror1
+		^this.primitiveFailed
 	}
-	mirror2 { 
-		_ArrayMirror2 
-		^this.primitiveFailed 
+	mirror2 {
+		_ArrayMirror2
+		^this.primitiveFailed
 	}
 	stutter { arg n=2;
-		_ArrayStutter 
-		^this.primitiveFailed 
+		_ArrayStutter
+		^this.primitiveFailed
 	}
 	rotate { arg n=1;
-		_ArrayRotate 
-		^this.primitiveFailed 
+		_ArrayRotate
+		^this.primitiveFailed
 	}
 	pyramid { arg patternType=1; // an integer from 1-10
-		_ArrayPyramid 
-		^this.primitiveFailed 
+		_ArrayPyramid
+		^this.primitiveFailed
 	}
 	pyramidg { arg patternType=1;
 		var list = [];
@@ -86,7 +86,7 @@ Array[slot] : ArrayedCollection {
 			for (lastIndex-1,0) {|i| list = list.add(this[0..i]) };
 			^list
 		};
-	}		
+	}
 	sputter { arg probability=0.25, maxlen = 100;
 		var i=0;
 		var list = Array.new;
@@ -98,51 +98,51 @@ Array[slot] : ArrayedCollection {
 		};
 		^list
 	}
-				
+
 	lace { arg length;
 		_ArrayLace
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	permute { arg nthPermutation;
 		_ArrayPermute
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	allTuples { arg maxTuples = 16384;
 		_ArrayAllTuples
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	wrapExtend { arg length;
-		_ArrayExtendWrap 
-		^this.primitiveFailed 
+		_ArrayExtendWrap
+		^this.primitiveFailed
 	}
 	foldExtend { arg length;
 		_ArrayExtendFold
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	clipExtend { arg length;
 		_ArrayExtendLast
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	slide { arg windowLength=3, stepSize=1;
-		_ArraySlide 
-		^this.primitiveFailed 
+		_ArraySlide
+		^this.primitiveFailed
 	}
 	containsSeqColl {
-		_ArrayContainsSeqColl 
-		^this.primitiveFailed 
+		_ArrayContainsSeqColl
+		^this.primitiveFailed
 	}
-	
+
 	//************** inconsistent argnames, see SequenceableColllection unlace!
 	unlace { arg clumpSize=2, numChan=1, clip=false;
-		^if(clip) { 
+		^if(clip) {
 			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
-		} { 
-			super.unlace(clumpSize, numChan) 
+		} {
+			super.unlace(clumpSize, numChan)
 		}
 	}
 	prUnlace { arg clumpSize=2, numChan=1;
 		_ArrayUnlace
-		^this.primitiveFailed; 
+		^this.primitiveFailed;
 	}
 	interlace { arg clumpSize=1;
 		//_ArrayInterlace
@@ -151,24 +151,24 @@ Array[slot] : ArrayedCollection {
 	}
 	deinterlace { arg clumpSize=2, numChan=1;
 		//_ArrayUnlace
-		//^this.primitiveFailed; 
+		//^this.primitiveFailed;
 		Error("deinterlace was replaced by unlace\n").throw
 	}
-	
+
 	// multiChannelExpand and flop do the same thing.
 	flop {
-		_ArrayMultiChannelExpand 
-		^super.flop 
+		_ArrayMultiChannelExpand
+		^super.flop
 	}
 	multiChannelExpand {
-		_ArrayMultiChannelExpand 
-		^super.flop 
+		_ArrayMultiChannelExpand
+		^super.flop
 	}
 	envirPairs {
 		// given an array of symbols, this returns an array of pairs of symbol, value
 		// from the current environment
 		var result;
-		this.do {|name| 
+		this.do {|name|
 			var value = name.envirGet;
 			value !? { result = result.add(name).add(value); };
 		};
@@ -180,23 +180,23 @@ Array[slot] : ArrayedCollection {
 		var remain = this.drop(n.neg);
 		^if (n<0) { remain ++ fill } { fill ++ remain }
 	}
-	
-	powerset { 
-		var arrSize = this.size; 
+
+	powerset {
+		var arrSize = this.size;
 		var powersize = (2 ** arrSize).asInteger;
 		var powersOf2 = ({ |i| 2 ** i }).dup(arrSize);
-			
-		^Array.fill(powersize, { |i| 
+
+		^Array.fill(powersize, { |i|
 			var elemArr = Array.new;
-			powersOf2.do { |mod, j| 
-				if (i div: mod % 2 != 0) { 
-					elemArr = elemArr.add(this[j]) 
+			powersOf2.do { |mod, j|
+				if (i div: mod % 2 != 0) {
+					elemArr = elemArr.add(this[j])
 				};
 			};
 			elemArr;
-		}); 
+		});
 	}
-	
+
 	// UGen support:
 	source {
 		// returns the source UGen from an Array of OutputProxy(s)
@@ -212,8 +212,8 @@ Array[slot] : ArrayedCollection {
 
 	isValidUGenInput { ^true }
 	numChannels { ^this.size }
-	
-	// multichannel UGen-poll	
+
+	// multichannel UGen-poll
 	poll { arg trig = 10, label, trigid = -1;
 		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
 		^Poll(trig, this, label, trigid)
@@ -222,39 +222,39 @@ Array[slot] : ArrayedCollection {
 		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
 		^Dpoll(this, label, run, trigid)
 	}
-	
+
 	envAt { arg time;
 		_ArrayEnvAt
 		^this.primitiveFailed
 	}
-	
+
 //	// 2D array support
 //	*newClear2D { arg rows=1, cols=1;
 //		^super.fill(rows, { Array.newClear(cols) });
 //	}
-//	*new2D { arg rows=1, cols=1; 
+//	*new2D { arg rows=1, cols=1;
 //		^this.newClear2D(rows, cols);
 //	}
 //	at2D { arg row, col; ^this.at(row).at(col) }
 //	put2D { arg row, col, val; ^this.at(row).put(col, val) }
-//	fill2D { arg val; 
-//		this.do({ arg row; 
-//			row.size.do({ arg i; 
-//				row.put(i, val) 
-//			}) 
-//		}) 
+//	fill2D { arg val;
+//		this.do({ arg row;
+//			row.size.do({ arg i;
+//				row.put(i, val)
+//			})
+//		})
 //	}
-	
-	
+
+
 	// IdentitySet support
 	atIdentityHash { arg argKey;
 		_Array_AtIdentityHash
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	// IdentityDictionary support
 	atIdentityHashInPairs { arg argKey;
 		_Array_AtIdentityHashInPairs
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 
 	asSpec { ^ControlSpec( *this ) }
@@ -263,7 +263,7 @@ Array[slot] : ArrayedCollection {
 	fork { arg join (this.size), clock, quant=0.0, stackSize=64;
 		var count = 0;
 		var cond = Condition({ count >= join });
-		this.do({ arg func; 
+		this.do({ arg func;
 			Routine({ arg time;
 				func.value(time);
 				count = count + 1;
@@ -272,18 +272,18 @@ Array[slot] : ArrayedCollection {
 		});
 		cond.wait;
 	}
-	
+
 	// UGen support
 	madd { arg mul = 1.0, add = 0.0;
 		^MulAdd(this, mul, add);
-	}	
-	
-	// OSC 
+	}
+
+	// OSC
 	asRawOSC {
 		_Array_OSCBytes
 		^this.primitiveFailed;
 	}
-	
+
 	printOn { arg stream;
 		if (stream.atLimit, { ^this });
 		stream << "[ " ;

@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -40,14 +40,14 @@
 */
 /*=============================================================================
 	AUEffectBase.cpp
-	
+
 =============================================================================*/
 
 #include "AUEffectBase.h"
 
-/* 
+/*
 	This class does not deal as well as it should with N-M effects...
-	
+
 	The problem areas are (if the channels don't match):
 		ProcessInPlace if the channels don't match - there will be problems if InputChan != OutputChan
 		Bypass - its just passing the buffers through when not processing them
@@ -79,7 +79,7 @@ void AUEffectBase::Cleanup()
 {
 	for (KernelList::iterator it = mKernelList.begin(); it != mKernelList.end(); ++it)
 		delete *it;
-		
+
 	mKernelList.clear();
 }
 
@@ -106,7 +106,7 @@ ComponentResult AUEffectBase::Initialize()
             if ((configNumInputs < 0) && (configNumOutputs < 0))
             {
 					// unit accepts any number of channels on input and output
-                if (((configNumInputs == -1) && (configNumOutputs == -2)) 
+                if (((configNumInputs == -1) && (configNumOutputs == -2))
 					|| ((configNumInputs == -2) && (configNumOutputs == -1)))
                 {
 				    foundMatch = true;
@@ -122,7 +122,7 @@ ComponentResult AUEffectBase::Initialize()
             }
             else
             {
-					// the -1 case on either scope is saying that the unit doesn't care about the 
+					// the -1 case on either scope is saying that the unit doesn't care about the
 					// number of channels on that scope
                 bool inputMatch = (auNumInputs == configNumInputs) || (configNumInputs == -1);
                 bool outputMatch = (auNumOutputs == configNumOutputs) || (configNumOutputs == -1);
@@ -156,7 +156,7 @@ ComponentResult		AUEffectBase::Reset(		AudioUnitScope 		inScope,
 		if (kernel != NULL)
 			kernel->Reset();
 	}
-	
+
 	return noErr;
 }
 
@@ -213,10 +213,10 @@ ComponentResult		AUEffectBase::SetProperty(		AudioUnitPropertyID inID,
 			{
 				if (inDataSize < sizeof(UInt32))
 					return kAudioUnitErr_InvalidPropertyValue;
-					
+
 				bool tempNewSetting = *((UInt32*)inData) != 0;
 					// we're changing the state of bypass
-				if (tempNewSetting != IsBypassEffect()) 
+				if (tempNewSetting != IsBypassEffect())
 				{
 					if (!tempNewSetting && IsBypassEffect() && IsInitialized()) // turning bypass off and we're initialized
 						Reset(0, 0);
@@ -231,12 +231,12 @@ ComponentResult		AUEffectBase::SetProperty(		AudioUnitPropertyID inID,
 	}
 	return AUBase::SetProperty (inID, inScope, inElement, inData, inDataSize);
 }
- 
+
 
 void	AUEffectBase::MaintainKernels()
 {
 	UInt32 nChannels = GetNumberOfChannels();
-	
+
 	if (mKernelList.size() < nChannels) {
 		mKernelList.reserve(nChannels);
 		for (UInt32 i = mKernelList.size(); i < nChannels; ++i)
@@ -270,7 +270,7 @@ ComponentResult		AUEffectBase::ChangeStreamFormat(	AudioUnitScope				inScope,
 {
 	ComponentResult result = AUBase::ChangeStreamFormat(inScope, inElement, inPrevFormat, inNewFormat);
 	if (result == noErr)
-	{	
+	{
 		// for the moment this only dependency we know about
 		// where a parameter's range may change is with the sample rate
 		// and effects are only publishing parameters in the global scope!
@@ -295,19 +295,19 @@ ComponentResult	AUEffectBase::ProcessScheduledSlice(	void				*inUserData,
 														UInt32				inTotalBufferFrames )
 {
 	ScheduledProcessParams	&sliceParams = *((ScheduledProcessParams*)inUserData);
-	
+
 	AudioUnitRenderActionFlags 	&actionFlags = *sliceParams.actionFlags;
 	AudioBufferList 			&inputBufferList = *sliceParams.inputBufferList;
 	AudioBufferList 			&outputBufferList = *sliceParams.outputBufferList;
-	
+
 		// fix the size of the buffer we're operating on before we render this slice of time
 	for(unsigned int i = 0; i < inputBufferList.mNumberBuffers; i++ ) {
-		inputBufferList.mBuffers[i].mDataByteSize = 
+		inputBufferList.mBuffers[i].mDataByteSize =
 			(inputBufferList.mBuffers[i].mNumberChannels * inSliceFramesToProcess * sizeof(AudioSampleType));
 	}
 
 	for(unsigned int i = 0; i < outputBufferList.mNumberBuffers; i++ ) {
-		outputBufferList.mBuffers[i].mDataByteSize = 
+		outputBufferList.mBuffers[i].mDataByteSize =
 			(outputBufferList.mBuffers[i].mNumberChannels * inSliceFramesToProcess * sizeof(AudioSampleType));
 	}
 		// process the buffer
@@ -315,15 +315,15 @@ ComponentResult	AUEffectBase::ProcessScheduledSlice(	void				*inUserData,
 
 		// we just partially processed the buffers, so increment the data pointers to the next part of the buffer to process
 	for(unsigned int i = 0; i < inputBufferList.mNumberBuffers; i++ ) {
-		inputBufferList.mBuffers[i].mData = 
+		inputBufferList.mBuffers[i].mData =
 			(AudioSampleType *)inputBufferList.mBuffers[i].mData + inputBufferList.mBuffers[i].mNumberChannels * inSliceFramesToProcess;
 	}
-	
+
 	for(unsigned int i = 0; i < outputBufferList.mNumberBuffers; i++ ) {
-		outputBufferList.mBuffers[i].mData = 
+		outputBufferList.mBuffers[i].mData =
 			(AudioSampleType *)outputBufferList.mBuffers[i].mData + outputBufferList.mBuffers[i].mNumberChannels * inSliceFramesToProcess;
 	}
-	
+
 	return result;
 }
 
@@ -342,7 +342,7 @@ ComponentResult 	AUEffectBase::Render(	AudioUnitRenderActionFlags &ioActionFlags
 
 	AUInputElement *theInput = GetInput(0);
 	result = theInput->PullInput(ioActionFlags, inTimeStamp, 0 /* element */, nFrames);
-	
+
 	if (result == noErr)
 	{
 		if(ProcessesInPlace() )
@@ -353,7 +353,7 @@ ComponentResult 	AUEffectBase::Render(	AudioUnitRenderActionFlags &ioActionFlags
 		if (ShouldBypassEffect())
 		{
 			// leave silence bit alone
-			
+
 			if(!ProcessesInPlace() )
 			{
 				theInput->CopyBufferContentsTo (theOutput->GetBufferList());
@@ -369,45 +369,45 @@ ComponentResult 	AUEffectBase::Render(	AudioUnitRenderActionFlags &ioActionFlags
 			else
 			{
 				// deal with scheduled parameters...
-				
+
 				AudioBufferList &inputBufferList = theInput->GetBufferList();
 				AudioBufferList &outputBufferList = theOutput->GetBufferList();
-				
+
 				ScheduledProcessParams processParams;
 				processParams.actionFlags = &ioActionFlags;
 				processParams.inputBufferList = &inputBufferList;
 				processParams.outputBufferList = &outputBufferList;
-	
+
 				// divide up the buffer into slices according to scheduled params then
 				// do the DSP for each slice (ProcessScheduledSlice() called for each slice)
 				result = ProcessForScheduledParams(	mParamList,
 													nFrames,
 													&processParams );
-	
-				
+
+
 				// fixup the buffer pointers to how they were before we started
 				for(unsigned int i = 0; i < inputBufferList.mNumberBuffers; i++ ) {
-					inputBufferList.mBuffers[i].mData = 
+					inputBufferList.mBuffers[i].mData =
 						(AudioSampleType *)inputBufferList.mBuffers[i].mData - inputBufferList.mBuffers[i].mNumberChannels * nFrames;
-					inputBufferList.mBuffers[i].mDataByteSize = 
+					inputBufferList.mBuffers[i].mDataByteSize =
 						(inputBufferList.mBuffers[i].mNumberChannels * nFrames * sizeof(AudioSampleType));
 				}
-				
+
 				for(unsigned int i = 0; i < outputBufferList.mNumberBuffers; i++ ) {
-					outputBufferList.mBuffers[i].mData = 
+					outputBufferList.mBuffers[i].mData =
 						(AudioSampleType *)outputBufferList.mBuffers[i].mData - outputBufferList.mBuffers[i].mNumberChannels * nFrames;
-					outputBufferList.mBuffers[i].mDataByteSize = 
+					outputBufferList.mBuffers[i].mDataByteSize =
 						(outputBufferList.mBuffers[i].mNumberChannels * nFrames * sizeof(AudioSampleType));
 				}
 			}
 		}
-	
+
 		if ( (ioActionFlags & kAudioUnitRenderAction_OutputIsSilence) && !ProcessesInPlace() )
 		{
 			AUBufferList::ZeroBuffer(theOutput->GetBufferList() );
 		}
 	}
-	
+
 	return result;
 }
 
@@ -421,56 +421,56 @@ OSStatus	AUEffectBase::ProcessBufferLists(
 
 	bool silentInput = IsInputSilent (ioActionFlags, inFramesToProcess);
 	ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
-	
-	
+
+
 	// call the kernels to handle either interleaved or deinterleaved
 	if (inBuffer.mNumberBuffers == 1) {
 		// interleaved (or mono)
 		int channel = 0;
-				
+
 		for (KernelList::iterator it = mKernelList.begin(); it != mKernelList.end(); ++it, ++channel) {
 			AUKernelBase *kernel = *it;
-			
+
 			if (kernel != NULL) {
 				ioSilence = silentInput;
-				
+
 				// process each interleaved channel individually
 				kernel->Process(
-					(const AudioSampleType *)inBuffer.mBuffers[0].mData + channel, 
+					(const AudioSampleType *)inBuffer.mBuffers[0].mData + channel,
 					(AudioSampleType *)outBuffer.mBuffers[0].mData + channel,
 					inFramesToProcess,
 					inBuffer.mBuffers[0].mNumberChannels,
 					ioSilence);
-					
+
 				if (!ioSilence)
 					ioActionFlags &= ~kAudioUnitRenderAction_OutputIsSilence;
 			}
 		}
 	} else {
-		// deinterleaved		
+		// deinterleaved
 		const AudioBuffer *srcBuffer = inBuffer.mBuffers;
 		AudioBuffer *destBuffer = outBuffer.mBuffers;
-		
-		for (KernelList::iterator it = mKernelList.begin(); it != mKernelList.end(); 
+
+		for (KernelList::iterator it = mKernelList.begin(); it != mKernelList.end();
 		++it, ++srcBuffer, ++destBuffer) {
 			AUKernelBase *kernel = *it;
-			
+
 			if (kernel != NULL) {
 				ioSilence = silentInput;
-				
+
 				kernel->Process(
-					(const AudioSampleType *)srcBuffer->mData, 
-					(AudioSampleType *)destBuffer->mData, 
+					(const AudioSampleType *)srcBuffer->mData,
+					(AudioSampleType *)destBuffer->mData,
 					inFramesToProcess,
 					1,
 					ioSilence);
-					
+
 				if (!ioSilence)
 					ioActionFlags &= ~kAudioUnitRenderAction_OutputIsSilence;
 			}
 		}
 	}
-	
+
 	return noErr;
 }
 

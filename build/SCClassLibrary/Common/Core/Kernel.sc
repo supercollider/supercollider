@@ -1,6 +1,6 @@
-// you must not make any change at all to the order or number of 
-// instance variables in these classes! 
-// You should also not muck with the contents of the instance 
+// you must not make any change at all to the order or number of
+// instance variables in these classes!
+// You should also not muck with the contents of the instance
 // variables unless you are sure you know what you are doing.
 // You may add methods.
 
@@ -12,27 +12,27 @@ Class {
 	var instanceFormat, instanceFlags;
 	var <classIndex, classFlags, <maxSubclassIndex;
 	var <filenameSymbol, <charPos, <classVarIndex;
-	
+
 	classvar <>classesInited;
-	
+
 	// Every class has a metaclass which has 'Meta_' prepended to the name.
 	// Though there is a class Meta_Class which is the class of Class, the
-	// class of Meta_Class is Class. It is a loop, but a different one 
+	// class of Meta_Class is Class. It is a loop, but a different one
 	// than the structure in Smalltalk.
-	
-	superclass { 
+
+	superclass {
 		// superclass is stored as a symbol to allow forward reference during compilation
 		^superclass.asClass
 	}
 	asClass { ^this }
 	isMetaClass { ^this.class === Class }
 
-	initClass {   } 
-	
-		
+	initClass {   }
+
+
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
 	*initClassTree { arg aClass;
-		var implementsInitClass; 
+		var implementsInitClass;
 		// sometimes you need a class to be inited before another class
 		// start the process: Class.initClassTree(Object)
 		if(classesInited.isNil, { classesInited = IdentitySet.new });
@@ -41,7 +41,7 @@ Class {
 					aClass.initClass;
 			});
 
-			classesInited.add(aClass);			
+			classesInited.add(aClass);
 			if(aClass.subclasses.notNil,{
 				aClass.subclasses.do({ arg class; this.initClassTree(class); });
 			});
@@ -49,7 +49,7 @@ Class {
 	}
 
 	*allClasses { _AllClasses }
-	
+
 	findMethod { arg methodName;
 		if ( methods.notNil, {
 			^methods.detect({ arg method; method.name == methodName });
@@ -70,7 +70,7 @@ Class {
 		meth = this.findMethod(methodName);
 		if (meth.notNil, { meth.dumpByteCodes },{ Post << methodName << " not found.\n"; });
 	}
-	
+
 	dumpClassSubtree { _DumpClassSubtree }
 	dumpInterface {
 		// show all methods and their arguments defined for this class
@@ -92,7 +92,7 @@ Class {
 			" )\n".post;
 		});
 	}
-	
+
 	asString {
 		^name.asString
 	}
@@ -103,8 +103,8 @@ Class {
 		stream << name;
 	}
 	archiveAsCompileString { ^true }
-	
-	hasHelpFile { 
+
+	hasHelpFile {
 		//should cache this in Library or classvar
 		//can't add instance variables to Class
 		^this.name.asString.findHelpFile.notNil
@@ -112,14 +112,14 @@ Class {
 	helpFilePath {
 		^this.name.asString.findHelpFile
 	}
-	openHelpFile { 
+	openHelpFile {
 		this.name.asString.openHelpFile
 	}
-	
+
 	shallowCopy { ^this }
 	//listInstances { _ListInstancesOf }
 	//traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
-	
+
 	openCodeFile {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
 	}
@@ -130,13 +130,13 @@ Class {
 		^thisProcess.instVarAt(0).copyRange(start, end)
 	}
 	inspectorClass { ^ClassInspector }
-	findReferences { arg aSymbol, references; 
-		methods.do({ arg meth; 
+	findReferences { arg aSymbol, references;
+		methods.do({ arg meth;
 			references = meth.findReferences(aSymbol, references)
 		});
 		^references
 	}
-	*findAllReferences { arg aSymbol; 
+	*findAllReferences { arg aSymbol;
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
 		var references;
 		Class.allClasses.do({ arg class;
@@ -153,12 +153,12 @@ Class {
 	superclasses {
 		var list, class;
 		class = this;
-		while ({ class = class.superclass; class.notNil },{ 
-			list = list.add(class) 
+		while ({ class = class.superclass; class.notNil },{
+			list = list.add(class)
 		});
 		^list
 	}
-		
+
 }
 
 Process {
@@ -166,16 +166,16 @@ Process {
 	var classVars, <interpreter;
 	var curThread, mainThread;
 	var schedulerQueue;
-	
-	startup {	
+
+	startup {
 		var time;
-		
+
 		Class.initClassTree(AppClock); // AppClock first in case of error
 		time = this.class.elapsedTime;
 		Class.initClassTree(Object);
 		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").inform;
 		Class.classesInited = nil;
-		
+
 		topEnvironment = Environment.new;
 		currentEnvironment = topEnvironment;
 		Archive.read;
@@ -183,7 +183,7 @@ Process {
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
 		// but make sure to call this superclass method.
-		
+
 		// the AppClock is not started until after this method is complete
 	}
 	run {
@@ -270,7 +270,7 @@ Process {
 		// this constructs the method templates when cmd-Y is pressed in the Lang menu.
 		var name, out, found = 0, namestring;
 		out = CollStream.new;
-		
+
 		if (interpreter.cmdLine.isEmpty){
 			Post << "\nNo implementations of ''.\n";
 			^this
@@ -310,8 +310,8 @@ Process {
 				});
 			});
 		});
-		case 
-		{ found == 0 } 
+		case
+		{ found == 0 }
 		{
 			Post << "\nNo implementations of '" << name << "'.\n";
 		}
@@ -324,7 +324,7 @@ Process {
 			out.collection.newTextWindow(name.asString);
 		};
 	}
-	
+
 	interpretCmdLine {
 		// interpret some text from the command line
 		interpreter.interpretCmdLine;
@@ -337,14 +337,14 @@ Process {
 
 	showHelp {
 		interpreter.cmdLine.openHelpFile
-	}	
+	}
 
 	argv { ^[] }
 
 	shallowCopy { ^this }
-	
+
 	*elapsedTime { _ElapsedTime }
-	
+
 	storeOn { arg stream;
 		stream << "thisProcess";
 	}
@@ -359,27 +359,27 @@ FunctionDef {
 	// a FunctionDef is defined by a code within curly braces {}
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
-	
+
 	dumpByteCodes { _DumpByteCodes }
-	
+
 	numArgs { _FunDef_NumArgs }		// return number of arguments to the function
 	numVars { _FunDef_NumVars }		// return number of variables in the function
 	varArgs { _FunDef_VarArgs }		// return boolean whether function has ellipsis argument
 
 	shallowCopy { ^this }
-	
-	asFunction { 
+
+	asFunction {
 		// this is only legal for closed functions.
-		_FunctionDefAsFunction 
-		^this.primitiveFailed 
+		_FunctionDefAsFunction
+		^this.primitiveFailed
 	}
-	
+
 	dumpContexts {
 		_FunctionDefDumpContexts
 	}
 	inspectorClass { ^FunctionDefInspector }
-	
-	findReferences { arg aSymbol, references; 
+
+	findReferences { arg aSymbol, references;
 		var lits;
 		lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
@@ -393,11 +393,11 @@ FunctionDef {
 		^references
 	}
 	storeOn { arg stream;
-		stream << "nil" 
+		stream << "nil"
 	}
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
-	
+
 	argumentString { arg withDefaultValues=true;
 		var res, last;
 		if(argNames.isNil) { ^nil };
@@ -406,21 +406,21 @@ FunctionDef {
 		argNames.do { |name, i|
 			var value;
 			res = res ++ name;
-			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) { 
+			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) {
 				res = res ++ " = " ++ value.asCompileString
 			};
 			if(i != last) { res = res ++ ", " };
 		}
 		^res
 	}
-	
+
 	makeEnvirFromArgs {
 		var argNames, argVals;
 		argNames = this.argNames;
 		argVals = this.prototypeFrame;
 		^().putPairs([argNames, argVals].flop.flat)
 	}
-	
+
 }
 
 Method : FunctionDef {
@@ -430,7 +430,7 @@ Method : FunctionDef {
 	openCodeFile {
 		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
 	}
-	hasHelpFile { 
+	hasHelpFile {
 		//should cache this in Library or classvar
 		//can't add instance variables to Class
 		^this.name.asString.findHelpFile.notNil
@@ -448,11 +448,11 @@ Method : FunctionDef {
 
 Frame {
 	// frames contain the local variables, context and continuation of a function or method invocation.
-	// since some Frames are deleted instead of garbage collected, it is too 
+	// since some Frames are deleted instead of garbage collected, it is too
 	// dangerous to allow access to them. Dangling pointers could result.
 	shallowCopy { ^this }
 	inspectorClass { ^FrameInspector }
-	
+
 	storeOn { arg stream; stream << "nil"; }
 	archiveAsCompileString { ^true }
 	checkCanArchive { "cannot archive Frames".warn }
@@ -471,17 +471,17 @@ DebugFrame {
 }
 
 RawPointer {
-	// class used to hold raw pointers from the 
-	// host environment. 
+	// class used to hold raw pointers from the
+	// host environment.
 }
 
-Interpreter {	
+Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
-	
+
 	var <>cmdLine; // place holder for text executed from a worksheet
 	var context; // faked interpreter context frame. Don't mess with it.
-	
+
 	// a-z are predefined variables for use by the interactive context.
 	// They are read+write so that programmatic methods can
 	// get and alter the values that the interpreter has access to.
@@ -490,13 +490,13 @@ Interpreter {
 	var <>u, <>v, <>w, <>x, <>y, <>z;
 
 	var <>codeDump, <>preProcessor;
-	
+
 	*new { ^this.shouldNotImplement(thisMethod) }
-	
+
 	interpretCmdLine {
 		^this.compile(cmdLine).value;
 	}
-	
+
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc = Document.current;
 		"\n".post;
@@ -510,7 +510,7 @@ Interpreter {
 		codeDump.value(code, res, func, this);
 		res.postln;
 	}
-	
+
 	interpret { arg string ... args;
 		// compile, evaluate
 		cmdLine = string;
@@ -529,12 +529,12 @@ Interpreter {
 		// This method is not implemented in SCPlay.
 		^nil
 	}
-	
+
 	clearAll {
-		a = b = c = d = e = f = g = h = i = j = k = l = m = 
+		a = b = c = d = e = f = g = h = i = j = k = l = m =
 		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
 	}
-	
+
 	executeFile { arg pathName ... args;
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
 		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil };
@@ -543,13 +543,13 @@ Interpreter {
 			{ thisProcess.nowExecutingPath = saveExecutingPath };
 		^result
 	}
-	
+
 	compileFile { arg pathName;
 		var file, text;
 		file = File.new(pathName, "r");
-		if (file.isNil, { 
+		if (file.isNil, {
 			error("file open failed\n");
-			^nil 
+			^nil
 		});
 		text = file.readAllString;
 		file.close;
@@ -559,14 +559,14 @@ Interpreter {
 		});
 		^this.compile(text)
 	}
-		
+
 	// PRIVATE
-	functionCompileContext { 
-		// compiler uses this method as a fake context in which to compile 
+	functionCompileContext {
+		// compiler uses this method as a fake context in which to compile
 		// the user's function.
 		// Do not edit this method!
-		
-		{}	// this forces the compiler to generate a heap allocated frame rather than 
+
+		{}	// this forces the compiler to generate a heap allocated frame rather than
 			// a frame on the stack
 	}
 	shallowCopy { ^this }

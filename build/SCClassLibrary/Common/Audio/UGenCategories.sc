@@ -5,7 +5,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + AbstractIn      { *categories { ^ #["UGens>InOut"] } }
 + AbstractOut     { *categories { ^ #["UGens>InOut"] } }
 + AmpComp         { *categories { ^ #["UGens>Analysis>Amplitude"] } }
-+ AmpCompA        { *categories { ^ #["UGens>Analysis>Amplitude"] } } 
++ AmpCompA        { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + Amplitude       { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + AudioIn         { *categories { ^ #["UGens>InOut"] } }
 + Ball            { *categories { ^ #["UGens>Filters>Nonlinear"] } }
@@ -64,7 +64,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + FreeVerb2       { *categories { ^ #["UGens>Reverbs"] } }
 + FreqShift       { *categories { ^ #["UGens>Filters>Nonlinear", "UGens>Filters>Pitch"] } }
 + FSinOsc         { *categories { ^ #["UGens>Generators>Deterministic"] } }
-+ Gendy1          { *categories { ^ #["UGens>Generators>Stochastic"] } }        
++ Gendy1          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Gendy2          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + Gendy3          { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + GrainBuf        { *categories { ^ #["UGens>Buffer", "UGens>Generators>Granular"] } }
@@ -76,7 +76,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Hilbert         { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + HilbertFIR      { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + IEnvGen         { *categories { ^ #["UGens>Envelopes"] } }
-+ IFFT            { *categories { ^ #["UGens>FFT"] } } 
++ IFFT            { *categories { ^ #["UGens>FFT"] } }
 + Impulse         { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Index           { *categories { ^ #["UGens>Buffer"] } }
 + IndexL          { *categories { ^ #["UGens>Generators>Deterministic"] } }
@@ -97,7 +97,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + LFSaw           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Line            { *categories { ^ #["UGens>Envelopes"] } }
 + Linen           { *categories { ^ #["UGens>Envelopes"] } }
-+ LinExp          { *categories { ^ #["UGens>Maths"] } } 
++ LinExp          { *categories { ^ #["UGens>Maths"] } }
 + LinLin          { *categories { ^ #["UGens>Maths"] } }
 + LinRand         { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
 + Logistic        { *categories { ^ #["UGens>Generators>Chaotic"] } }
@@ -149,7 +149,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PV_MagMul       { *categories { ^ #["UGens>FFT"] } }
 + PV_MagSmear     { *categories { ^ #["UGens>FFT"] } }
 + PV_MagSquared   { *categories { ^ #["UGens>FFT"] } }
-+ PV_PhaseShift   { *categories { ^ #["UGens>FFT"] } } 
++ PV_PhaseShift   { *categories { ^ #["UGens>FFT"] } }
 + PV_RandComb     { *categories { ^ #["UGens>FFT"] } }
 + PV_RandWipe     { *categories { ^ #["UGens>FFT"] } }
 + PV_RectComb     { *categories { ^ #["UGens>FFT"] } }

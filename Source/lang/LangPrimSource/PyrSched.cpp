@@ -44,11 +44,11 @@ typedef __int32 int32_t;
 
 void runAwakeMessage(VMGlobals *g);
 
-bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task) 
+bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 {
 	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
 	PyrSlot *pme, *pmom;
-	
+
 #if SANITYCHECK
 	gcSanity(g->gc);
 #endif
@@ -80,7 +80,7 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 }
 
 
-bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task) 
+bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	if (heap->size) {
 		*schedtime = heap->slots[0].uf;
@@ -90,7 +90,7 @@ bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 }
 
 
-bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task) 
+bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	PyrSlot *pmom, *pme, *pend;
 	short mom,me,size;	/* parent and sibling in the heap, not in the task hierarchy */
@@ -116,7 +116,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 		tasktemp = pmom[1].uf;
 		for (;pme < pend;) { /* demote heap */
 			if (pme+2 < pend && pme[0].uf > pme[2].uf) {
-				me += 2; pme += 2; 
+				me += 2; pme += 2;
 			}
 			if (timetemp > pme[0].uf) {
 				pmom[0].ucopy = pme[0].ucopy;
@@ -134,7 +134,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 		if (isPartialScanObj) {
 			gc->GCWriteBlack(pmom+1);
 		}
-		
+
 		//dumpheap(heap);
 	//dumpheap(heap);
 	//post("<-getheap true\n");
@@ -145,7 +145,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 	}
 }
 
-void offsetheap(VMGlobals *g, PyrObject *heap, double offset) 
+void offsetheap(VMGlobals *g, PyrObject *heap, double offset)
 {
 	long i;
 	for (i=0; i<heap->size; i+=2) {
@@ -162,7 +162,7 @@ void dumpheap(PyrObject *heap)
 	post("SCHED QUEUE (%d)\n", heap->size);
 	for (i=0; i<heap->size; i+=2) {
 		post("%3d %9.2f %08X\n", i>>1, heap->slots[i].uf, heap->slots[i+1].ui);
-		if (heap->slots[i].uf < mintime) 
+		if (heap->slots[i].uf < mintime)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
 }
@@ -172,11 +172,11 @@ void dumpheap(PyrObject *heap)
 bool gRunSched = false;
 pthread_t gSchedThread;
 pthread_t gResyncThread;
-pthread_cond_t gSchedCond; 
+pthread_cond_t gSchedCond;
 pthread_mutex_t gLangMutex;
 
 #ifdef SC_DARWIN
-int64 gHostOSCoffset = 0; 
+int64 gHostOSCoffset = 0;
 int64 gHostStartNanos = 0;
 #endif
 
@@ -276,17 +276,17 @@ int64 OSCTime()
 #ifdef SC_DARWIN
 void syncOSCOffsetWithTimeOfDay()
 {
-	// generate a value gHostOSCoffset such that  
-	// (gHostOSCoffset + systemTimeInOSCunits) 
+	// generate a value gHostOSCoffset such that
+	// (gHostOSCoffset + systemTimeInOSCunits)
 	// is equal to gettimeofday time in OSCunits.
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
-	struct timeval tv;	
-	
+	struct timeval tv;
+
 	int64 systemTimeBefore, systemTimeAfter, diff;
 	int64 minDiff = 0x7fffFFFFffffFFFFLL;
-	
+
 	// take best of several tries
 	const int numberOfTries = 8;
 	int64 newOffset = gHostOSCoffset;
@@ -294,19 +294,19 @@ void syncOSCOffsetWithTimeOfDay()
 		systemTimeBefore = AudioGetCurrentHostTime();
 		gettimeofday(&tv, 0);
 		systemTimeAfter = AudioGetCurrentHostTime();
-		
+
 		diff = systemTimeAfter - systemTimeBefore;
 		if (diff < minDiff) {
 			minDiff = diff;
 			// assume that gettimeofday happens halfway between AudioGetCurrentHostTime calls
 			int64 systemTimeBetween = systemTimeBefore + diff/2;
-			int64 systemTimeInOSCunits = (int64)((double)AudioConvertHostTimeToNanos(systemTimeBetween) * kNanosToOSC); 
-			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32) 
+			int64 systemTimeInOSCunits = (int64)((double)AudioConvertHostTimeToNanos(systemTimeBetween) * kNanosToOSC);
+			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
                                             + (int64)(tv.tv_usec * kMicrosToOSC);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
 		}
 	}
-	
+
 	gHostOSCoffset = newOffset;
 	//postfl("gHostOSCoffset %016llX\n", gHostOSCoffset);
 }
@@ -397,12 +397,12 @@ void* schedRunFunc(void* arg);
 void* schedRunFunc(void* arg)
 {
 	pthread_mutex_lock (&gLangMutex);
-	
-	
+
+
 	VMGlobals *g = gMainVMGlobals;
 	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
 	//dumpObject(inQueue);
-		
+
 	gRunSched = true;
 	while (true) {
 		//postfl("wait until there is something in scheduler\n");
@@ -413,7 +413,7 @@ void* schedRunFunc(void* arg)
 			if (!gRunSched) goto leave;
 		}
 		//postfl("wait until an event is ready\n");
-		
+
 		// wait until an event is ready
 		double elapsed;
 		do {
@@ -427,17 +427,17 @@ void* schedRunFunc(void* arg)
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		} while (inQueue->size > 0);
-		
+
 		//postfl("perform all events that are ready %d %.9f\n", inQueue->size, elapsed);
-		
+
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
 		while (inQueue->size && elapsed >= inQueue->slots->uf) {
 			double schedtime, delta;
 			PyrSlot task;
-			
+
 			//postfl("while %.6f >= %.6f\n", elapsed, inQueue->slots->uf);
-						
+
 			getheap(g, inQueue, &schedtime, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
@@ -448,7 +448,7 @@ void* schedRunFunc(void* arg)
 			(++g->sp)->uf = schedtime;
 			(++g->sp)->uf = schedtime;
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
-			
+
 			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
@@ -587,20 +587,20 @@ void schedRun()
 #ifdef SC_DARWIN
         int policy;
         struct sched_param param;
-        
+
         //pthread_t thread = pthread_self ();
         pthread_getschedparam (gSchedThread, &policy, &param);
         //post("param.sched_priority %d\n", param.sched_priority);
-        
+
         policy = SCHED_RR;         // round-robin, AKA real-time scheduling
-        
+
         int machprio;
         boolean_t timeshare;
         GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
         //post("mach priority %d   timeshare %d\n", machprio, timeshare);
-        
+
         // what priority should gSchedThread use?
-        
+
         RescheduleStdThread(pthread_mach_thread_np(gSchedThread), 62, false);
 
         GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
@@ -610,7 +610,7 @@ void schedRun()
         //pthread_setschedparam (gSchedThread, policy, &param);
 
         pthread_getschedparam (gSchedThread, &policy, &param);
-        
+
 		//post("param.sched_priority %d\n", param.sched_priority);
 #endif // SC_DARWIN
 
@@ -621,7 +621,7 @@ void schedRun()
 
 
 
-/* 
+/*
 
 unscheduled events:
 	startup,
@@ -632,13 +632,13 @@ all these happen in the main thread.
 
 */
 
-/* 
+/*
 new clock:
 	create
 	destroy
 	wake up at time x.
 	unschedule
-	awake 
+	awake
 		reschedules.
 */
 
@@ -646,14 +646,14 @@ new clock:
 class TempoClock
 {
 public:
-	TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj, 
+	TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 				double inTempo, double inBaseBeats, double inBaseSeconds);
 	~TempoClock() {}
 	void StopReq();
 	void Stop();
 
 	void* Run();
-	
+
 	void Add(double inBeats, PyrSlot* inTask);
 	void SetTempoAtBeat(double inTempo, double inBeats);
 	void SetTempoAtTime(double inTempo, double inSeconds);
@@ -663,17 +663,17 @@ public:
 	//void Flush();
 	double GetTempo() const { return mTempo; }
 	double GetBeatDur() const { return mBeatDur; }
-	double BeatsToSecs(double beats) const 
+	double BeatsToSecs(double beats) const
 		{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
-	double SecsToBeats(double secs) const 
+	double SecsToBeats(double secs) const
 		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
 	void Dump();
-	
+
 //protected:
 	VMGlobals* g;
 	PyrObject* mTempoClockObj;
 	PyrObject* mQueue;
-	
+
 	double mTempo; // beats per second
 	double mBeatDur; // 1/tempo
 	double mBeats; // beats
@@ -681,11 +681,11 @@ public:
 	double mBaseBeats;
 	volatile bool mRun;
 	pthread_t mThread;
-	pthread_cond_t mCondition; 
+	pthread_cond_t mCondition;
 	TempoClock *mPrev, *mNext;
-	
+
 	static TempoClock *sAll;
-	
+
 };
 
 TempoClock *TempoClock::sAll = 0;
@@ -723,14 +723,14 @@ void TempoClock_stopAll(void)
 	TempoClock::sAll = 0;
 }
 
-TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj, 
+TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 							double inTempo, double inBaseBeats, double inBaseSeconds)
 	: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
 	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
 {
 	if (sAll) sAll->mPrev = this;
 	sAll = this;
-	
+
 	mQueue = mTempoClockObj->slots[0].uo;
 	pthread_cond_init (&mCondition, NULL);
 
@@ -778,12 +778,12 @@ void TempoClock::Stop()
 	//printf("Stop mRun %d\n", mRun);
 	if (mRun) {
 		mRun = false;
-		
+
 		// unlink
 		if (mPrev) mPrev->mNext = mNext;
 		else sAll = mNext;
 		if (mNext) mNext->mPrev = mPrev;
-		
+
 		//printf("Stop pthread_cond_signal\n");
 		pthread_cond_signal (&mCondition);
 		//printf("Stop pthread_mutex_unlock\n");
@@ -845,7 +845,7 @@ void* TempoClock::Run()
 			if (!mRun) goto leave;
 		}
 		//printf("wait until an event is ready\n");
-		
+
 		// wait until an event is ready
 		double elapsedBeats;
 		do {
@@ -863,15 +863,15 @@ void* TempoClock::Run()
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
 		} while (mQueue->size > 0);
 		//printf("perform all events that are ready %d %.9f\n", mQueue->size, elapsedBeats);
-		
+
 		// perform all events that are ready
 		//printf("perform all events that are ready\n");
 		while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
 			double delta;
 			PyrSlot task;
-			
+
 			//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
-						
+
 			getheap(g, mQueue, &mBeats, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
@@ -882,7 +882,7 @@ void* TempoClock::Run()
 			(++g->sp)->uf = mBeats;
 			(++g->sp)->uf = BeatsToSecs(mBeats);
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
-			
+
 			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
@@ -904,16 +904,16 @@ void TempoClock::Flush()
 	while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
 		double delta;
 		PyrSlot task;
-		
+
 		//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
-					
+
 		getheap(g, mQueue, &mBeats, &task);
 
 		(++g->sp)->ucopy = task.ucopy;
 		(++g->sp)->uf = mBeats;
 		(++g->sp)->uf = BeatsToSecs(mBeats);
 		++g->sp;	SetObject(g->sp, mTempoClockObj);
-		
+
 		runAwakeMessage(g);
 		long err = slotDoubleVal(&g->result, &delta);
 		if (!err) {
@@ -994,10 +994,10 @@ int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
 	if (!clock) return errNone;	// not running
-	
+
 	SetNil(a->uo->slots + 1);
 	clock->StopReq();
-	
+
 	return errNone;
 }
 
@@ -1031,7 +1031,7 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-	
+
 	SetFloat(a, clock->mTempo);
 
 	return errNone;
@@ -1046,7 +1046,7 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-	
+
 	SetFloat(a, clock->mBeatDur);
 
 	return errNone;
@@ -1061,7 +1061,7 @@ int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-	
+
 	SetFloat(a, clock->ElapsedBeats());
 
 	return errNone;
@@ -1072,20 +1072,20 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	double beats, seconds;
-	
+
 	if (SlotEq(&g->thread->clock, a)) {
 		int err = slotDoubleVal(&g->thread->beats, &beats);
-		if (err) return errWrongType; 
+		if (err) return errWrongType;
 	} else {
 		TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
 		if (!clock) {
 			error("clock is not running.\n");
 			return errFailed;
 		}
-		
+
 		int err = slotDoubleVal(&g->thread->seconds, &seconds);
-		if (err) return errWrongType; 
-		
+		if (err) return errWrongType;
+
 		beats = clock->SecsToBeats(seconds);
 	}
 	SetFloat(a, beats);
@@ -1106,7 +1106,7 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-	
+
 	if (!SlotEq(&g->thread->clock, a)) {
 		beats = clock->ElapsedBeats();
 		//post("shouldn't call TempoClock-sched from a different clock. Use schedAbs.\n");
@@ -1115,11 +1115,11 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 		err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errNone; // return nil OK, just don't schedule
 	}
-	
+
 	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
-	
+
 	clock->Add(beats, c);
 
 	return errNone;
@@ -1195,10 +1195,10 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	if (err) return errFailed;
 
 	err = slotDoubleVal(c, &beat);
-	if (err) return errFailed; 
+	if (err) return errFailed;
 
 	err = slotDoubleVal(d, &secs);
-	if (err) return errFailed; 
+	if (err) return errFailed;
 
 	clock->SetAll(tempo, beat, secs);
 
@@ -1332,28 +1332,28 @@ int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 void initSchedPrimitives()
 {
 	int base, index=0;
-		
-	base = nextPrimitiveIndex();
-	
-	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);	
-	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_Dump", prTempoClock_Dump, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_Sched", prTempoClock_Sched, 3, 0);	
-	definePrimitive(base, index++, "_TempoClock_SchedAbs", prTempoClock_SchedAbs, 3, 0);	
-	definePrimitive(base, index++, "_TempoClock_Tempo", prTempoClock_Tempo, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);	
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);	
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);	
-	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);	
-	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);	
-	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);	
 
-	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);	
-	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);	
-	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);	
-	
-	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);	
+	base = nextPrimitiveIndex();
+
+	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);
+	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_Dump", prTempoClock_Dump, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_Sched", prTempoClock_Sched, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_SchedAbs", prTempoClock_SchedAbs, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_Tempo", prTempoClock_Tempo, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
+	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);
+	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);
+
+	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
+	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
+	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
+
+	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
 }

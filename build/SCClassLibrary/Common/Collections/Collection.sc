@@ -1,4 +1,4 @@
-Collection { 
+Collection {
 	*newFrom { | aCollection |
 		var newCollection = this.new(aCollection.size);
 		aCollection.do {| item | newCollection.add(item) };
@@ -19,10 +19,10 @@ Collection {
 			obj.add(function.value(i));
 		};
 		^obj
-	}	
+	}
 
 	@ { | index | ^this[index] }
-	
+
 	== { | aCollection |
 		if (aCollection.class != this.class) { ^false };
 		if (this.size != aCollection.size) { ^false };
@@ -32,30 +32,30 @@ Collection {
 		};
 		^true
 	}
-	hash { 
+	hash {
 		var hash = this.class.hash;
 		this.do { | item |
 			hash = hash bitXor: item.hash;
 		};
 		^hash
 	}
-	
+
 	species { ^Array }
 	do { ^this.subclassResponsibility(thisMethod) }
-	iter { 
+	iter {
 		^r { this.do {|item| item.yield } }
 	}
-	size { 
+	size {
 		// this is the slow way. Most collections have a faster way.
 		var tally = 0;
 		this.do { tally = tally + 1 };
 		^tally
 	}
-	
+
 	isEmpty { ^this.size == 0 }
 	notEmpty { ^this.size > 0 }
 	asCollection { ^this }
-	
+
 	add { ^this.subclassResponsibility(thisMethod) }
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
 	remove { ^this.subclassResponsibility(thisMethod) }
@@ -77,14 +77,14 @@ Collection {
 	atAll { arg keys;
 		^keys.collect {|index| this[index] }
 	}
-	putEach { arg keys, values; 
+	putEach { arg keys, values;
 		// works for ArrayedCollections and Dictionaries
 		keys = keys.asArray;
 		values = values.asArray;
 		keys.do { |key, i| this[key] = values.wrapAt(i) } ;
 	}
-		
-	includes { | item1 | 
+
+	includes { | item1 |
 		this.do {|item2| if (item1 === item2) {^true} };
 		^false
 	}
@@ -94,12 +94,12 @@ Collection {
 	}
 	includesAll { | aCollection |
 		aCollection.do { | item | if (this.includes(item).not) {^false} };
-		^true 
+		^true
 	}
 	matchItem { | item |
 		^this.includes(item)
 	}
-	
+
 	collect { | function |
 		^this.collectAs(function, this.species);
 	}
@@ -121,8 +121,8 @@ Collection {
 	}
 	rejectAs { | function, class |
 		var res = class.new(this.size);
-		this.do {|elem, i| 
-			if (function.value(elem, i).not) {res.add(elem)} 
+		this.do {|elem, i|
+			if (function.value(elem, i).not) {res.add(elem)}
 		}
 		^res;
 	}
@@ -154,30 +154,30 @@ Collection {
 	}
 	lastForWhich { | function |
 		var prev;
-		this.do {|elem, i| 
-			if (function.value(elem, i)) { 
+		this.do {|elem, i|
+			if (function.value(elem, i)) {
 				prev = elem;
 			}{
 				^prev
-			} 
+			}
 		};
 		^prev
 	}
 	lastIndexForWhich { | function |
 		var prev;
-		this.do {|elem, i| 
-			if (function.value(elem, i)) { 
+		this.do {|elem, i|
+			if (function.value(elem, i)) {
 				prev = i;
 			}{
 				^prev
-			} 
+			}
 		};
 		^prev
 	}
 
 	inject { | thisValue, function |
 		var nextValue = thisValue;
-		this.do { | item, i | 
+		this.do { | item, i |
 			nextValue = function.value(nextValue, item, i);
 		};
 		^nextValue
@@ -227,38 +227,38 @@ Collection {
 	}
 	sumabs {  // sum of the absolute values - used to convert Mikael Laursen's rhythm lists.
 		var sum = 0;
-		this.do { | elem | 
+		this.do { | elem |
 			if (elem.isSequenceableCollection) { elem = elem[0] };
-			sum = sum + elem.abs; 
+			sum = sum + elem.abs;
 		}
 		^sum;
 	}
-	
+
 	maxItem { | function |
 		var maxValue, maxElement;
 		if (function.isNil) { // optimized version if no function
-			this.do { | elem | 
+			this.do { | elem |
 				if (maxElement.isNil) {
-					maxElement = elem; 
+					maxElement = elem;
 				}{
 					if (elem > maxElement) {
-						maxElement = elem; 
+						maxElement = elem;
 					}
-				}		
+				}
 			}
 			^maxElement;
 		}{
 			this.do {|elem, i| var val;
 				if (maxValue.isNil) {
 					maxValue = function.value(elem, i);
-					maxElement = elem; 
-				}{ 
+					maxElement = elem;
+				}{
 					val = function.value(elem, i);
 					if (val > maxValue) {
 						maxValue = val;
-						maxElement = elem; 
+						maxElement = elem;
 					}
-				}		
+				}
 			}
 			^maxElement;
 		}
@@ -266,129 +266,129 @@ Collection {
 	minItem { | function |
 		var minValue, minElement;
 		if (function.isNil) { // optimized version if no function
-			this.do {|elem, i| 
+			this.do {|elem, i|
 				if (minElement.isNil) {
-					minElement = elem; 
+					minElement = elem;
 				}{
 					if (elem < minElement) {
-						minElement = elem; 
+						minElement = elem;
 					}
-				}	
+				}
 			};
 			^minElement;
 		}{
 			this.do {|elem, i| var val;
 				if (minValue.isNil) {
 					minValue = function.value(elem, i);
-					minElement = elem; 
-				}{ 
+					minElement = elem;
+				}{
 					val = function.value(elem, i);
 					if (val < minValue) {
 						minValue = val;
-						minElement = elem; 
+						minElement = elem;
 					}
-				}	
+				}
 			}
 			^minElement;
 		}
 	}
-	
+
 	maxIndex { | function |
 		var maxValue, maxIndex;
 		if (function.isNil) { // optimized version if no function
-			this.do { | elem, index | 
+			this.do { | elem, index |
 				if (maxValue.isNil) {
-					maxValue = elem; 
-					maxIndex = index; 
+					maxValue = elem;
+					maxIndex = index;
 				}{
 					if (elem > maxValue) {
-						maxValue = elem; 
-						maxIndex = index; 
+						maxValue = elem;
+						maxIndex = index;
 					}
-				}		
+				}
 			}
 			^maxIndex;
 		}{
 			this.do {|elem, i| var val;
 				if (maxValue.isNil) {
 					maxValue = function.value(elem, i);
-					maxIndex = i; 
-				}{ 
+					maxIndex = i;
+				}{
 					val = function.value(elem, i);
 					if (val > maxValue) {
 						maxValue = val;
-						maxIndex = i; 
+						maxIndex = i;
 					}
-				}		
+				}
 			}
 			^maxIndex;
 		}
 	}
-	
+
 	minIndex { | function |
 		var minValue, minIndex;
 		if (function.isNil) { // optimized version if no function
-			this.do {|elem, i| 
+			this.do {|elem, i|
 				if (minValue.isNil) {
-					minValue = elem; 
-					minIndex = i; 
+					minValue = elem;
+					minIndex = i;
 				}{
 					if (elem < minValue) {
-						minValue = elem; 
+						minValue = elem;
 						minIndex = i;
 					}
-				}	
+				}
 			};
 			^minIndex;
 		}{
 			this.do {|elem, i| var val;
 				if (minValue.isNil) {
 					minValue = function.value(elem, i);
-					minIndex = i; 
-				}{ 
+					minIndex = i;
+				}{
 					val = function.value(elem, i);
 					if (val < minValue) {
 						minValue = val;
-						minIndex = i; 
+						minIndex = i;
 					}
-				}	
+				}
 			}
 			^minIndex;
 		}
 	}
-	
-	
+
+
 	maxValue { | function |			// must supply a function
 		var maxValue, maxElement;
-		this.do {|elem, i| 
+		this.do {|elem, i|
 				var val;
 				if (maxValue.isNil) {
 					maxValue = function.value(elem, i);
-					maxElement = elem; 
-				}{ 
+					maxElement = elem;
+				}{
 					val = function.value(elem, i);
 					if (val > maxValue) {
 						maxValue = val;
-						maxElement = elem; 
+						maxElement = elem;
 					}
-				}	
+				}
 		};
 		^maxValue;
 	}
 	minValue { | function |
 		var minValue, minElement;
-		this.do {|elem, i| 
+		this.do {|elem, i|
 				var val;
 				if (minValue.isNil) {
 					minValue = function.value(elem, i);
-					minElement = elem; 
-				}{ 
+					minElement = elem;
+				}{
 					val = function.value(elem, i);
 					if (val < minValue) {
 						minValue = val;
-						minElement = elem; 
+						minElement = elem;
 					}
-				}	
+				}
 		};
 		^minValue;
 	}
@@ -402,7 +402,7 @@ Collection {
 		axis.notNil.if({index = axis * 2}, {index = this.minItem + this.maxItem});
 		^index - this;
 	}
-	
+
 	sect { | that |
 		var result = this.species.new;
 		this.do { | item |
@@ -439,21 +439,21 @@ Collection {
 		^result;
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
-	
+
 	asArray { ^Array.new(this.size).addAll(this); }
 	asBag { ^Bag.new(this.size).addAll(this); }
 	asList { ^List.new(this.size).addAll(this); }
 	asSet { ^Set.new(this.size).addAll(this); }
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this); }
-	
+
 	powerset {
 		var species = this.species;
 		var result = this.asArray.powerset;
-		^if(species == Array) { result } { 
-			result.collectAs({ | item | item.as(species) }, species) 
+		^if(species == Array) { result } {
+			result.collectAs({ | item | item.as(species) }, species)
 		}
 	}
-	
+
 	flopDict { | unbubble=true |
 		var res, first = true;
 		this.do { | dict |
@@ -466,51 +466,51 @@ Collection {
 		^res
 	}
 
-	histo { arg steps = 100, min, max; 
-		var freqs, freqIndex, lastIndex, stepSize, outliers = 0; 
-		
+	histo { arg steps = 100, min, max;
+		var freqs, freqIndex, lastIndex, stepSize, outliers = 0;
+
 		min = min ?? { this.minItem };
 		max = max ?? { this.maxItem };
-		
-		freqs = Array.fill(steps, 0); 
+
+		freqs = Array.fill(steps, 0);
 		lastIndex = steps - 1;
 		stepSize = steps / (max - min);
-		
-		this.do { arg el; 
+
+		this.do { arg el;
 			freqIndex = ((el - min) * stepSize).asInteger;
 
-			if (freqIndex.inclusivelyBetween(0, lastIndex)) { 
+			if (freqIndex.inclusivelyBetween(0, lastIndex)) {
 				freqs[freqIndex] = freqs[freqIndex] + 1;
-			} { 
+			} {
 						// if max is derived from maxItem, count it in:
-				if (el == max) { 
+				if (el == max) {
 					freqs[steps-1] = freqs[steps-1] + 1;
 				} { 		// else it is an outlier.
-					outliers =  outliers + 1; 
+					outliers =  outliers + 1;
 				};
 			};
 		};
-		
-		if (outliers > 0) { 
-			("histogram :" + outliers + "out of (histogram) range values in collection.").inform; 
+
+		if (outliers > 0) {
+			("histogram :" + outliers + "out of (histogram) range values in collection.").inform;
 		};
 
 		^freqs;
 	}
-	
+
 //	printAll { this.do { | item | item.postln; }; } // convenience method
-	printAll { |before, after| 
+	printAll { |before, after|
 		if (before.isNil and: after.isNil) {
-			this.do { | item | item.postln; }; 
-		} { 
-			before = before ? ""; after = after ? ""; 
-			this.do { | item | before.post; item.post; after.postln; }; 
+			this.do { | item | item.postln; };
+		} {
+			before = before ? ""; after = after ? "";
+			this.do { | item | before.post; item.post; after.postln; };
 		};
 	}
 
 	printcsAll { this.do { | item | item.postcs; }; } // convenience method
 	dumpAll { this.do { | item | item.dump; }; } // convenience method
-	
+
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << "[ " ;
@@ -539,17 +539,17 @@ Collection {
 			item.printOn(stream);
 		};
 	}
-	
+
 	// Synth support
-	
+
 	writeDef { | file |
 		file.putString("SCgf");
 		file.putInt32(1); // file version
 		file.putInt16(this.size); // number of defs in file.
-		
+
 		this.do { | item | item.writeDef(file); }
 	}
-	
+
 	writeInputSpec { | file, synthDef |
 		this.do { | item | item.writeInputSpec(file, synthDef) };
 	}
@@ -563,12 +563,12 @@ Collection {
 			^default.value;
 		}
 	}
-	
+
 	// Event support
 	makeEnvirValPairs {
 		var res = Array.new(this.size * 2);
-		this.do { |item| 
-			res.add(item); 
+		this.do { |item|
+			res.add(item);
 			res.add(currentEnvironment[item]);
 		};
 		^res

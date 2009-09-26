@@ -1,7 +1,7 @@
 
 Array2D : Collection {
 	var <rows, <cols, <array;
-	*new { arg rows=1, cols=1; 
+	*new { arg rows=1, cols=1;
 		^super.new.init(rows, cols);
 	}
 	init { arg argRows, argCols;
@@ -9,15 +9,15 @@ Array2D : Collection {
 		cols = argCols;
 		array = Array.newClear(rows * cols);
 	}
-	
-	at { arg row, col; 
-		^array.at(row*cols + col) 
+
+	at { arg row, col;
+		^array.at(row*cols + col)
 	}
-	put { arg row, col, val; 
-		array.put(row*cols + col, val) 
+	put { arg row, col, val;
+		array.put(row*cols + col, val)
 	}
-	
-	asArray { ^array } 
+
+	asArray { ^array }
 	*fromArray { arg rows,cols, array;
 		^this.new(rows,cols).with(array);
 	}
@@ -31,12 +31,12 @@ Array2D : Collection {
 			func.value( Array.fill(rows,{ arg ri; this.at(ri,ci) }), ci )
 		})
 	}
-	rowsDo { arg func;	
+	rowsDo { arg func;
 		rows.do({ arg ri;
 			func.value( Array.fill(cols,{ arg ci; this.at(ri,ci) }), ri )
 		})
 	}
-	
+
 	colAt { arg ci;
 		^Array.fill(rows,{ arg ri; this.at(ri,ci) })
 	}

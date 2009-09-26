@@ -3,7 +3,7 @@
 SCTextFieldOld : SCNumberBox {
 
 	*viewClass { ^SCNumberBox }
-	
+
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		if(unicode == 0,{ ^this });
 		// standard keydown
@@ -30,7 +30,7 @@ SCTextFieldOld : SCNumberBox {
 			});
 			^this
 		});
-		if (keyString.isNil, { 
+		if (keyString.isNil, {
 			keyString = this.string;
 			this.stringColor = typingColor;
 		});
@@ -39,10 +39,10 @@ SCTextFieldOld : SCNumberBox {
 	}
 	string_ { arg s; super.string = s.as(String); }
 
-	defaultGetDrag { 
+	defaultGetDrag {
 		^this.string
 	}
-	defaultCanReceiveDrag { 
+	defaultCanReceiveDrag {
 		^currentDrag.respondsTo(\asString)
 	}
 	defaultReceiveDrag {
@@ -55,9 +55,9 @@ SCTextFieldOld : SCNumberBox {
 /*
 
 SCAutoCompleteTextField : SCTextField {
-	
+
 	var <possibles,charIndex=0,searchIndex=0;
-	
+
 	possibles_ { arg list;
 		possibles = list.sort;
 	}
@@ -99,7 +99,7 @@ SCAutoCompleteTextField : SCTextField {
 			searchIndex = charIndex = 0;
 		});
 		if(key == $\t) { // tab
-			// step through 
+			// step through
 			keyChar = keyString.at(charIndex);
 			for(searchIndex,possibles.size - 1,{ arg i;
 				var candidate;
@@ -122,7 +122,7 @@ SCAutoCompleteTextField : SCTextField {
 SCTabletView : SCView {
 
 //	var <>mouseDownAction,<>mouseUpAction;
-	
+
 	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation;
 		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID, buttonNumber,clickCount,absoluteZ,rotation);
 	}

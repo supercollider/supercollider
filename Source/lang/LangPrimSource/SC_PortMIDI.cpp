@@ -110,34 +110,34 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 //  long msg;
 
   /*
-  // check for messages 
-  do { 
-    result = Pm_Dequeue(main_to_midi, &msg); 
-    if (result) 
+  // check for messages
+  do {
+    result = Pm_Dequeue(main_to_midi, &msg);
+    if (result)
     {
-      if (msg >= -127 && msg <= 127) 
+      if (msg >= -127 && msg <= 127)
         transpose = msg;
-      else if (msg == QUIT_MSG) 
+      else if (msg == QUIT_MSG)
       {
-        // acknowledge receipt of quit message 
+        // acknowledge receipt of quit message
         Pm_Enqueue(midi_to_main, &msg);
         active = FALSE;
         return;
-      } 
-      else if (msg == MONITOR_MSG) 
+      }
+      else if (msg == MONITOR_MSG)
       {
         // main has requested a pitch. monitor is a flag that
         // records the request:
         monitor = TRUE;
-      } 
-      else if (msg == THRU_MSG) 
+      }
+      else if (msg == THRU_MSG)
       {
-        // toggle Thru on or off 
+        // toggle Thru on or off
         midi_thru = !midi_thru;
       }
     }
-  } while (result);         
-  */    
+  } while (result);
+  */
 
   for( int i = 0 ; i < kMaxMidiPorts; ++i )
   {
@@ -145,15 +145,15 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
     PmStream* midi_in = gMidiInStreams[i];
     if( midi_in )
     {
-      do 
+      do
       {
         result = Pm_Poll(midi_in);
-        if (result) 
+        if (result)
         {
           long Tstatus, data1, data2;
-          if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow) 
+          if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow)
             continue;
-          // unless there was overflow, we should have a message now 
+          // unless there was overflow, we should have a message now
           Tstatus = Pm_MessageStatus(buffer.message);
           data1 = Pm_MessageData1(buffer.message);
           data2 = Pm_MessageData2(buffer.message);
@@ -162,29 +162,29 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
           // | Lock the interp. mutex and dispatch message |
           // +---------------------------------------------+
           pthread_mutex_lock (&gLangMutex); // it is needed  -jamesmcc
-          if (compiledOK) 
+          if (compiledOK)
           {
             VMGlobals *g = gMainVMGlobals;
-            uint8 status = static_cast<uint8>(Tstatus & 0xF0);			
+            uint8 status = static_cast<uint8>(Tstatus & 0xF0);
             uint8 chan = static_cast<uint8>(Tstatus & 0x0F);
 
             g->canCallOS = false; // cannot call the OS
 
             ++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
-            //set arguments: 
+            //set arguments:
 
             ++g->sp;SetInt(g->sp,  pmdid); //src
             // ++g->sp;  SetInt(g->sp, status); //status
             ++g->sp;  SetInt(g->sp, chan); //chan
 
-            switch (status) 
+            switch (status)
             {
             case 0x80 : //noteOff
               ++g->sp; SetInt(g->sp, data1);
               ++g->sp; SetInt(g->sp, data2);
               runInterpreter(g, s_midiNoteOffAction, 5);
               break;
-            case 0x90 : //noteOn 
+            case 0x90 : //noteOn
               ++g->sp; SetInt(g->sp, data1);
               ++g->sp; SetInt(g->sp, data2);
               runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
@@ -207,7 +207,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
               ++g->sp; SetInt(g->sp, data1);
               runInterpreter(g, s_midiTouchAction, 4);
               break;
-            case 0xE0 : //bend	
+            case 0xE0 : //bend
               ++g->sp; SetInt(g->sp, (data2 << 7) | data1);
               runInterpreter(g, s_midiBendAction, 4);
               break;
@@ -218,12 +218,12 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
               default :	// data byte => continuing sysex message
               chan = 0;
               midiProcessSystemPacket(pkt, chan);
-              break;				
+              break;
               */
             }
             g->canCallOS = false;
-          } 
-          pthread_mutex_unlock (&gLangMutex); 
+          }
+          pthread_mutex_unlock (&gLangMutex);
         }
       } while (result);
     } // if (midi_in)
@@ -341,14 +341,14 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
   // 5
   PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-  SetObject(idarray->slots+idarray->size++, devarrayDe);       
+  SetObject(idarray->slots+idarray->size++, devarrayDe);
   g->gc->GCWrite(idarray, devarrayDe);
 
   for (int i=0; i<numSrc; ++i) {
     const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(gMidiInputIndexToPmDevIndex[i]);
-    
+
     char cendname[1024], cdevname[1024];
-    
+
     // currently, copy both name strings in endpoint name and dev name
     strncpy(cendname,devInfo->name,1023);
     cendname[1023] = 0;
@@ -402,7 +402,7 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
   ScopeMutexLock mulo(&gPmStreamMutex);
-  
+
   //PyrSlot *a = g->sp - 2;
   PyrSlot *b = g->sp - 1;
   PyrSlot *c = g->sp;
@@ -410,18 +410,18 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
   int err, inputIndex, uid;
   err = slotIntVal(b, &inputIndex);
   if (err) return errWrongType;
-  if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) 
+  if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts)
     return errIndexOutOfRange;
 
   err = slotIntVal(c, &uid);
-  if (err) 
+  if (err)
     return errWrongType;
 
   // the uid is the input device PmDeviceId
 
   PmStream* inStream = NULL;
   int pmdid = gMidiInputIndexToPmDevIndex[uid];
-  PmError pmerr = Pm_OpenInput( &inStream, pmdid, 
+  PmError pmerr = Pm_OpenInput( &inStream, pmdid,
                 PMSTREAM_DRIVER_INFO,
                 PMSTREAM_INPUT_BUFFER_SIZE,
                 PMSTREAM_TIME_PROC,
@@ -444,7 +444,7 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
   if (err) return err;
   if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
   err = slotIntVal(c, &uid);
-  if (err) 
+  if (err)
     return err;
 
   PmError pmerr = Pm_Close(gMidiInStreams[uid]);
@@ -469,7 +469,7 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
   if (err) return errWrongType;
 
   err = slotIntVal(c, &numOut);
-  if (err) 
+  if (err)
     return errWrongType;
 
   return initMIDI(numIn, numOut);
@@ -488,7 +488,7 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
     post("error could not dispose MIDIClient \n");
     return errFailed;
   }
-  return errNone;	
+  return errNone;
   */
   return errFailed;
 }
@@ -498,7 +498,7 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 {
 //  MIDIRestart();
-//  return errNone;	
+//  return errNone;
   return errFailed;
 }
 
@@ -534,10 +534,10 @@ void sendsysex(MIDIEndpointRef dest, int size, Byte* data)
 */
 
 int prSendSysex(VMGlobals *g, int numArgsPushed)
-{	
+{
  /*
   int err, uid, size;
-  PyrInt8Array* packet = g->sp->uob;				
+  PyrInt8Array* packet = g->sp->uob;
   size = packet->size;
   Byte *data = (Byte *)malloc(size);
 
@@ -550,7 +550,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
   MIDIEndpointRef dest;
   MIDIObjectType mtype;
   MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
-  if (mtype != kMIDIObjectType_Destination) return errFailed;            
+  if (mtype != kMIDIObjectType_Destination) return errFailed;
   if (!dest) return errFailed;
 
   sendsysex(dest, size, data);
@@ -569,10 +569,10 @@ void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loSt
   MIDIPacketList * pktlist = &mpktlist;
   MIDIPacket * pk = MIDIPacketListInit(pktlist);
   //lets add some latency
-  float  latency =  1000000 * late ; //ms to nano 
+  float  latency =  1000000 * late ; //ms to nano
   UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
   ByteCount nData = (ByteCount) length;
-  pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F); 
+  pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F);
   pk->data[1] = (Byte) aval;
   pk->data[2] = (Byte) bval;
   pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
@@ -670,9 +670,9 @@ void initMIDIPrimitives()
   s_midiSMPTEAction = getsym("doSMPTEaction");
   s_numMIDIDev = getsym("prSetNumberOfDevices");
   s_midiclient = getsym("MIDIClient");
-  definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
+  definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);
   definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
-  definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);	
+  definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);
   definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
   definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
   definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);

@@ -6,17 +6,17 @@
 			numChannels = this.numChannels;
 			rate = this.rate;
 			bus = Bus.perform(rate, Server.internal, numChannels);
-			switch(rate, 
+			switch(rate,
 				\audio, {Out.ar(bus.index, this)},
 				\control, {Out.kr(bus.index, this)}
 			);
-			
+
 			{
-				scope = gui.stethoscope.new( gui.stethoscope.defaultServer, numChannels, bus.index, bufsize, zoom, 
+				scope = gui.stethoscope.new( gui.stethoscope.defaultServer, numChannels, bus.index, bufsize, zoom,
 					rate);
 				scope.window.name_(name.asString).bounds_( gui.stethoscope.tileBounds);
 				gui.stethoscope.ugenScopes.add(scope);
-				scope.window.onClose = { scope.free; bus.free; 
+				scope.window.onClose = { scope.free; bus.free;
 					gui.stethoscope.ugenScopes.remove(scope)};
 				CmdPeriod.doOnce({ {scope.window.close}.defer });
 			}.defer(0.001);
@@ -34,13 +34,13 @@
 			numChannels = this.numChannels;
 			rate = this.rate;
 			bus = Bus.perform(rate, Server.internal, numChannels);
-			switch(rate, 
+			switch(rate,
 				\audio, {Out.ar(bus.index, this)},
 				\control, {Out.kr(bus.index, this)}
 			);
-			
+
 			{
-				scope = gui.stethoscope.new( gui.stethoscope.defaultServer, numChannels, bus.index, bufsize, zoom, 
+				scope = gui.stethoscope.new( gui.stethoscope.defaultServer, numChannels, bus.index, bufsize, zoom,
 					rate);
 				scope.window.name_(name.asString).bounds_( gui.stethoscope.tileBounds);
 				gui.stethoscope.ugenScopes.add(scope);

@@ -142,7 +142,7 @@ bool compiledOK = false;
 int sc_strtoi(const char *str, int n, int base)
 {
 	int z = 0;
-	for (int i=0; i<n; ++i) 
+	for (int i=0; i<n; ++i)
 	{
 		int c = *str++;
 		if (!c) break;
@@ -157,7 +157,7 @@ double sc_strtof(const char *str, int n, int base)
 {
 	double z = 0.;
 	int decptpos = 0;
-	for (int i=0; i<n; ++i) 
+	for (int i=0; i<n; ++i)
 	{
 		int c = *str++;
 		if (!c) break;
@@ -167,7 +167,7 @@ double sc_strtof(const char *str, int n, int base)
 		else if (c == '.') decptpos = i;
 	}
 	//calculation previously included decimal point in count of columns (was n-decptpos); there are 1 less than n characters which are columns in the number contribution
-	z = z / pow((double)base, n -1- decptpos); 
+	z = z / pow((double)base, n -1- decptpos);
 	return z;
 }
 
@@ -189,14 +189,14 @@ bool getFileText(char* filename, char **text, int *length)
 	FILE *file;
         char *ltext;
         int llength;
-	
+
 #ifdef SC_WIN32
 	file = fopen(filename, "rb");
 #else
 	file = fopen(filename, "r");
 #endif
   if (!file) return false;
-        
+
         fseek(file, 0L, SEEK_END);
         llength = ftell(file);
         fseek(file, 0L, SEEK_SET);
@@ -226,15 +226,15 @@ bool getFileText(char* filename, char **text, int *length)
 int bugctr = 0;
 
 // strips out all the RichTextFile crap
-int rtf2txt(char* txt)  
+int rtf2txt(char* txt)
 {
-    int rdpos=0, wrpos=0; 
-    char c; 
+    int rdpos=0, wrpos=0;
+    char c;
     if (strncmp(txt,"{\\rtf",5)!=0) return 0;  // OK, not an RTF file
-text: 
-    switch (txt[wrpos]=txt[rdpos++]) 
+text:
+    switch (txt[wrpos]=txt[rdpos++])
             {
-            case 0: 
+            case 0:
                 /*{
                     char fname[32];
                     sprintf(fname, "rtf2txt_out%d.txt", bugctr++);
@@ -242,16 +242,16 @@ text:
                     fwrite(txt,wrpos,1,fp);
                     fclose(fp);
                 }*/
-                return wrpos; 
-            case OPENCURLY: 
-            case CLOSCURLY: 
-            case '\n': goto text; 
-            case '\\': 
-                if (strncmp(txt+rdpos,"fonttbl",7)==0 
+                return wrpos;
+            case OPENCURLY:
+            case CLOSCURLY:
+            case '\n': goto text;
+            case '\\':
+                if (strncmp(txt+rdpos,"fonttbl",7)==0
                         || strncmp(txt+rdpos,"filetbl",7)==0
                         || strncmp(txt+rdpos,"colortbl",8)==0
                         || strncmp(txt+rdpos,"stylesheet",10)==0
-                    ) 
+                    )
                 {
                     int level = 1;
                     while(level && (c=txt[rdpos++]) != 0) {
@@ -259,28 +259,28 @@ text:
                         else if (c == CLOSCURLY) level--;
                     }
                 } else {
-                    if (txt[rdpos]==CLOSCURLY || txt[rdpos]==OPENCURLY 
-                            || txt[rdpos]=='\\' || txt[rdpos]=='\t'|| txt[rdpos]=='\n') 
+                    if (txt[rdpos]==CLOSCURLY || txt[rdpos]==OPENCURLY
+                            || txt[rdpos]=='\\' || txt[rdpos]=='\t'|| txt[rdpos]=='\n')
                         { txt[wrpos++] = txt[rdpos++]; goto text; }
                     if (strncmp(txt+rdpos,"tab",3)==0) { txt[wrpos++] = '\t'; }
                     if (strncmp(txt+rdpos,"par",3)==0) { txt[wrpos++] = '\n'; }
 
-                    while((c=txt[rdpos++]) && c!=' ' && c!='\\'); 
-                    if (c=='\\') rdpos--; 
+                    while((c=txt[rdpos++]) && c!=' ' && c!='\\');
+                    if (c=='\\') rdpos--;
                 }
                 goto text;
-        default : 
+        default :
             wrpos++;
             goto text;
     }
 }
 
 // strips HTML down to plaintext tags in a fairly simple-minded way
-int html2txt(char* txt)  
+int html2txt(char* txt)
 {
     int rdpos=-1, wrpos=0, bodypos=-1;
 	bool intag = false;
-	
+
 	// First check if we can find a BODY tag to start at
 	while(bodypos == -1 && txt[++rdpos] != 0){
 		if(strncmp(txt+rdpos, "<body", 5) == 0) // FIXME: should be case-insensitive, ideally
@@ -290,7 +290,7 @@ int html2txt(char* txt)
 		rdpos = bodypos;
 	else
 		rdpos = 0;
-	
+
 	// Now we start from our start, and add the non-tag text to the result
 	while(txt[rdpos] != 0){
 		if(intag){
@@ -323,36 +323,36 @@ int html2txt(char* txt)
 	}
 	txt[wrpos] = 0;
 	return wrpos;
-	
+
 }
 
-bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset) 
+bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
 	char *filename = fileSym->name;
-	
+
 	textlen = -1;
-	
+
 	if(!fileSym->u.source) {
 		if (!getFileText(filename, &text, &textlen)) return false;
 		fileSym->u.source = text;
-		rtf2txt(text);		
+		rtf2txt(text);
 	}
 	else
 		text = fileSym->u.source;
-		
+
 	if((startPos >= 0) && (endPos > 0)) {
 		textlen = endPos - startPos;
 		text += startPos;
 	}
 	else if(textlen == -1)
 		textlen = strlen(text);
-	
+
 	if(lineOffset > 0) errLineOffset = lineOffset;
 	else errLineOffset = 0;
-	
+
 	if(startPos > 0) errCharPosOffset = startPos;
 	else errCharPosOffset = 0;
-	
+
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
 	initLongStack(&generatorStack);
@@ -361,7 +361,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	linepos = 0;
 	lineno = 1;
 	charno = 0;
-	
+
 	yylen = 0;
 	zzval = 0;
 	parseFailed = 0;
@@ -371,13 +371,13 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
 	linestarts[1] = 0;
-	
+
 	return true;
 }
 
 void startLexerCmdLine(char *textbuf, int textbuflen)
 {
-	// pyrmalloc: 
+	// pyrmalloc:
 	// lifetime: kill after compile. (this one gets killed anyway)
 	text = (char*)pyr_pool_compile->Alloc((textbuflen+2) * sizeof(char));
 	MEMFAIL(text);
@@ -385,9 +385,9 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	text[textbuflen] = ' ';
 	text[textbuflen+1] = 0;
 	textlen = textbuflen + 1;
-	
+
 	rtf2txt(text);
-		
+
 	initLongStack(&brackets);
 	initLongStack(&closedFuncCharNo);
 	initLongStack(&generatorStack);
@@ -396,7 +396,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	linepos = 0;
 	lineno = 1;
 	charno = 0;
-	
+
 	yylen = 0;
 	zzval = 0;
 	parseFailed = 0;
@@ -406,12 +406,12 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
 	linestarts[1] = 0;
-	
+
 	errLineOffset = 0;
 	errCharPosOffset = 0;
 }
 
-void finiLexer() 
+void finiLexer()
 {
 	pyr_pool_compile->Free(linestarts);
 	freeLongStack(&brackets);
@@ -419,12 +419,12 @@ void finiLexer()
 	freeLongStack(&generatorStack);
 }
 
-void initLexer() 
+void initLexer()
 {
 	//strcpy(binopchars, "!@%&*-+=|:<>?/");
 }
 
-int input() 
+int input()
 {
 	int c;
 	if (textpos >= textlen) {
@@ -451,7 +451,7 @@ int input()
 	return c;
 }
 
-int input0() 
+int input0()
 {
 	int c;
 	if (textpos >= textlen) {
@@ -478,7 +478,7 @@ int input0()
 	return c;
 }
 
-void unput(int c) 
+void unput(int c)
 {
 	if (textpos>0) textpos--;
 	if (c) {
@@ -490,7 +490,7 @@ void unput(int c)
 	}
 }
 
-void unput0(int c) 
+void unput0(int c)
 {
 	if (textpos>0) textpos--;
 	if (charno) --charno;
@@ -499,7 +499,7 @@ void unput0(int c)
 	}
 }
 
-int yylex() 
+int yylex()
 {
 	int r, c, c2, d;
 	int radix;
@@ -515,7 +515,7 @@ int yylex()
 	}
 start:
 	c = input();
-	
+
 	if (c == 0)   { r = 0; goto leave; }
 	else if (c==' ' || c=='\t' || c=='\n' || c=='\r' || c=='\v' || c=='\f') {
 		yylen = 0;
@@ -537,7 +537,7 @@ start:
 		r = c;
 		goto leave;
 	}
-	else if (c == CLOSSQUAR) { 
+	else if (c == CLOSSQUAR) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENSQUAR) {
 				fatal();
@@ -549,10 +549,10 @@ start:
 			post("unmatched '%c'\n",c);
 			goto error2;
 		}
-		r = c; 
-		goto leave; 
+		r = c;
+		goto leave;
 	}
-	else if (c == CLOSPAREN) { 
+	else if (c == CLOSPAREN) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENPAREN) {
 				fatal();
@@ -564,10 +564,10 @@ start:
 			post("unmatched '%c'\n",c);
 			goto error2;
 		}
-		r = c; 
-		goto leave; 
+		r = c;
+		goto leave;
 	}
-	else if (c == CLOSCURLY) { 
+	else if (c == CLOSCURLY) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENCURLY) {
 				fatal();
@@ -580,8 +580,8 @@ start:
 			post("unmatched '%c'\n",c);
 			goto error2;
 		}
-		r = c; 
-		goto leave; 
+		r = c;
+		goto leave;
 	}
 	else if (c == '^') { r = c; goto leave; }
 	else if (c == '~') { r = c; goto leave; }
@@ -591,35 +591,35 @@ start:
 	else if (c == '\\') goto symbol1;
 	else if (c == '\'') goto symbol3;
 	else if (c == '"') goto string1;
-	else if (c == '.') { 
+	else if (c == '.') {
 		if ((c = input()) == '.') {
 			if ((c = input()) == '.') {
 				r = ELLIPSIS;
-				goto leave; 
+				goto leave;
 			} else {
 				r = DOTDOT;
-				unput(c); 
-				goto leave; 
+				unput(c);
+				goto leave;
 			}
 		} else {
-			unput(c); 
+			unput(c);
 			r = '.';
-			goto leave; 
+			goto leave;
 		}
-			
+
 	}
-	else if (c == '#') { 
+	else if (c == '#') {
 		if ((c = input()) == OPENCURLY) {
 			pushls(&brackets, OPENCURLY);
 			pushls(&closedFuncCharNo, linestarts[lineno] + charno - 2);
 			r = BEGINCLOSEDFUNC;
 		} else {
-			unput(c); 
-			r = '#'; 
+			unput(c);
+			r = '#';
 		}
 		goto leave;
 	}
-	else if (c == '$') { 
+	else if (c == '$') {
 		c = input();
 		if (c == '\\') {
 			c = input();
@@ -632,16 +632,16 @@ start:
 			}
 		}
 		r = processchar(c);
-		goto leave; 
+		goto leave;
 	}
 	else if (c == ',') { r = c; goto leave; }
 	else if (c == '=') {
 		c = input();
 		if (strchr(binopchars, c)) goto binop;
-		else { 
-			unput(c); 
+		else {
+			unput(c);
 			r = '=';
-			goto leave; 
+			goto leave;
 		}
 	}
 	else if (strchr(binopchars, c))  goto binop;
@@ -653,67 +653,67 @@ start:
 
 ident:
 	c = input();
-	
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' 
+
+	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
 		|| c == '_' || c >= '0' && c <= '9') goto ident;
 	else if (c == ':') {
 		yytext[yylen] = 0;
-		r = processkeywordbinop(yytext) ; 
+		r = processkeywordbinop(yytext) ;
 		goto leave;
 	} else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processident(yytext) ; 
+		r = processident(yytext) ;
 		goto leave;
 	}
 
 symbol1:
 	c = input();
-	
+
 	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto symbol2;
 	else if (c >= '0' && c <= '9') goto symbol4;
 	else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processsymbol(yytext) ; 
+		r = processsymbol(yytext) ;
 		goto leave;
 	}
 
 symbol2:
 	c = input();
-	
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' 
+
+	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
 		|| c == '_' || c >= '0' && c <= '9') goto symbol2;
 	else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processsymbol(yytext) ; 
+		r = processsymbol(yytext) ;
 		goto leave;
 	}
-	
+
 symbol4:
 	c = input();
 	if (c >= '0' && c <= '9') goto symbol4;
 	else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processsymbol(yytext) ; 
+		r = processsymbol(yytext) ;
 		goto leave;
 	}
-	
+
 
 
 binop:
 
 	c = input();
-	
+
 	if (c == 0) goto binop2;
 	if (strchr(binopchars, c))  goto binop;
 	else {
 		binop2:
 		unput(c);
 		yytext[yylen] = 0;
-		r = processbinop(yytext) ; 
+		r = processbinop(yytext) ;
 		goto leave;
 	}
 
@@ -730,7 +730,7 @@ radix_digits_1:
 	yytext[yylen] = 0;
 	r = processintradix(yytext, yylen, radix);
 	goto leave;
-	
+
 radix_digits_2:
 
 	c = input();
@@ -756,7 +756,7 @@ hexdigits:
 digits_1:	/* number started with digits */
 
 	c = input();
-	
+
 	if (c >= '0' && c <= '9') goto digits_1;
 	else if (c == 'r') {
 		radix = sc_strtoi(yytext, yylen-1, 10);
@@ -771,10 +771,10 @@ digits_1:	/* number started with digits */
 			unput(c2);
 			unput(c);
 			yytext[yylen] = 0;
-			r = processint(yytext); 
+			r = processint(yytext);
 			goto leave;
 		}
-	} 
+	}
 	else if (c == 'b' || c == 's') {
 		d = input();
 		if (d >= '0' && d <= '9') goto accidental1;
@@ -785,7 +785,7 @@ accidental1:
 		if (d >= '0' && d <= '9') goto accidental1;
 		unput(d);
 		yytext[yylen] = 0;
-		r = processaccidental1(yytext); 
+		r = processaccidental1(yytext);
 		goto leave;
 accidental2:
 		d = input();
@@ -793,73 +793,73 @@ accidental2:
 accidental3:
 		unput(d);
 		yytext[yylen] = 0;
-		r = processaccidental2(yytext); 
+		r = processaccidental2(yytext);
 		goto leave;
 	}
 	else if (c == 'x') {
-		yylen = 0; 
+		yylen = 0;
 		goto hexdigits;
 	} else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processint(yytext); 
+		r = processint(yytext);
 		goto leave;
 	}
 
-digits_2:	
+digits_2:
 
 	c = input();
-	
+
 	if (c >= '0' && c <= '9') goto digits_2;
 	else if (c == 'e' || c == 'E') goto expon_1;
 //	else if (c == 'π' || c == '∏') {
 //		--yylen;
 //		yytext[yylen] = 0;
-//		r = processfloat(yytext, 1); 
+//		r = processfloat(yytext, 1);
 //		goto leave;
-//	} 
+//	}
 	else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processfloat(yytext, 0); 
+		r = processfloat(yytext, 0);
 		goto leave;
 	}
 
 expon_1:	/* e has been seen, need digits */
 	c = input();
-	
+
 	if (c >= '0' && c <= '9') goto expon_3;
 	else if (c == '+' || c == '-') goto expon_2;
 	else goto error1;
 
 expon_2:	/* + or - seen but still need digits */
 	c = input();
-	
+
 	if (c >= '0' && c <= '9') goto expon_3;
 	else goto error1;
 
 expon_3:
 	c = input();
-	
+
 	if (c >= '0' && c <= '9') goto expon_3;
 //	else if (c == 'π' || c == '∏') {
 //		--yylen;
 //		yytext[yylen] = 0;
-//		r = processfloat(yytext, 1); 
+//		r = processfloat(yytext, 1);
 //		goto leave;
 //	}
 	else {
 		unput(c);
 		yytext[yylen] = 0;
-		r = processfloat(yytext, 0); 
+		r = processfloat(yytext, 0);
 		goto leave;
 	}
-	
-symbol3 : {	
+
+symbol3 : {
 		int startline, endchar;
 		startline = lineno;
 		endchar = '\'';
-        
+
 		/*do {
 			c = input();
 		} while (c != endchar && c != 0);*/
@@ -867,10 +867,10 @@ symbol3 : {
 			c = input();
 			if (c == '\n' || c == '\r') {
                 asRelativePath(curfilename,extPath);
-				post("Symbol open at end of line on line %d in file '%s'\n", 
+				post("Symbol open at end of line on line %d in file '%s'\n",
 					startline+errLineOffset, extPath);
 				yylen = 0;
-				r = 0; 
+				r = 0;
 				goto leave;
 			}
 			if (c == '\\') {
@@ -881,10 +881,10 @@ symbol3 : {
 		}
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
-			post("Open ended symbol ... started on line %d in file '%s'\n", 
+			post("Open ended symbol ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			yylen = 0;
-			r = 0; 
+			r = 0;
 			goto leave;
 		}
 		yytext[yylen] = 0;
@@ -892,12 +892,12 @@ symbol3 : {
 		r = processsymbol(yytext);
 		goto leave;
 	}
-	
-string1 : {	
+
+string1 : {
 		int startline, endchar;
 		startline = lineno;
 		endchar = '"';
-		
+
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\\') {
@@ -916,29 +916,29 @@ string1 : {
 		}
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
-			post("Open ended string ... started on line %d in file '%s'\n", 
+			post("Open ended string ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			yylen = 0;
-			r = 0; 
+			r = 0;
 			goto leave;
 		}
 		yylen--;
-		
+
 		do {
 			c = input0();
 		} while (c && isspace(c));
-		
+
 		if (c == '"') goto string1;
 		else if (c) unput0(c);
-		
+
 		yytext[yylen] = 0;
 		r = processstring(yytext);
 		goto leave;
 	}
-	
+
 comment1:	/* comment -- to end of line */
 	do {
-		c = input0(); 
+		c = input0();
 	} while (c != '\n' && c != '\r' && c != 0);
 	yylen = 0;
 	if (c == 0) { r = 0; goto leave; }
@@ -959,35 +959,35 @@ comment2 : {
 		yylen = 0;
 		if (c == 0) {
             asRelativePath(curfilename,extPath);
-			post("Open ended comment ... started on line %d in file '%s'\n", 
+			post("Open ended comment ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
-			r = 0; 
+			r = 0;
 			goto leave;
 		}
 		goto start;
 	}
 
-	
+
 error1:
-	
+
 	yytext[yylen] = 0;
-    
+
     asRelativePath(curfilename, extPath);
-	post("illegal input string '%s' \n   at '%s' line %d char %d\n", 
+	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
 		yytext, extPath, lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
-	
+
 error2:
     asRelativePath(curfilename, extPath);
 	post("  in file '%s' line %d char %d\n", extPath, lineno+errLineOffset, charno);
-	r = BADTOKEN; 
+	r = BADTOKEN;
 	goto leave;
-	
+
 leave:
 	yytext[yylen] = 0;
-	
+
 #if DEBUGLEX
 	if (gDebugLexer) postfl("yylex: %d  '%s'\n",r,yytext);
 #endif
@@ -995,12 +995,12 @@ leave:
 	return r;
 }
 
-int processbinop(char *token) 
+int processbinop(char *token)
 {
 	PyrSymbol *sym;
 	PyrSlot slot;
 	PyrSlotNode *node;
-	
+
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processbinop: '%s'\n",token);
 #endif
@@ -1019,14 +1019,14 @@ int processbinop(char *token)
 	return BINOP;
 }
 
-int processkeywordbinop(char *token) 
+int processkeywordbinop(char *token)
 {
 	PyrSymbol *sym;
 	PyrSlot slot;
 	PyrSlotNode *node;
-	
+
 	//post("'%s'  file '%s'\n", token, curfilename);
-	
+
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processkeywordbinop: '%s'\n",token);
 #endif
@@ -1038,17 +1038,17 @@ int processkeywordbinop(char *token)
 	return KEYBINOP;
 }
 
-int processident(char *token) 
+int processident(char *token)
 {
 	char c;
 	PyrSymbol *sym;
-	
+
 	PyrSlot slot;
 	PyrParseNode *node;
-	
+
 	c = token[0];
 	zzval = -1;
-	
+
 #if DEBUGLEX
 	if (gDebugLexer) postfl("word: '%s'\n",token);
 #endif
@@ -1081,42 +1081,42 @@ int processident(char *token)
 #endif
 		return CLASSNAME;
 	}
-	if (strcmp("var",token) ==0) return VAR; 
-	if (strcmp("arg",token) ==0) return ARG; 
-	if (strcmp("classvar",token) ==0) return CLASSVAR; 
-	if (strcmp("const",token) ==0) return SC_CONST; 
-	
-	if (strcmp("while",token) ==0) { 
+	if (strcmp("var",token) ==0) return VAR;
+	if (strcmp("arg",token) ==0) return ARG;
+	if (strcmp("classvar",token) ==0) return CLASSVAR;
+	if (strcmp("const",token) ==0) return SC_CONST;
+
+	if (strcmp("while",token) ==0) {
 
 		sym = getsym(token);
 		SetSymbol(&slot, sym);
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-		return WHILE; 
+		return WHILE;
 	}
 	if (strcmp("pi",token) ==0) {
 		SetFloat(&slot, pi);
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-		return PIE; 
+		return PIE;
 	}
 	if (strcmp("true",token) ==0) {
 		SetTrue(&slot);
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-		return TRUEOBJ; 
+		return TRUEOBJ;
 	}
 	if (strcmp("false",token) ==0) {
 		SetFalse(&slot);
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-		return FALSEOBJ; 
+		return FALSEOBJ;
 	}
 	if (strcmp("nil",token) ==0) {
 		SetNil(&slot);
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-		return NILOBJ; 
+		return NILOBJ;
 	}
 	if (strcmp("inf",token) ==0) {
 #ifdef SC_WIN32
@@ -1128,11 +1128,11 @@ int processident(char *token)
 #endif
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-    return SC_FLOAT; 
+    return SC_FLOAT;
   }
 
 	sym = getsym(token);
-	
+
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
@@ -1157,7 +1157,7 @@ int processhex(char *s)
 		else if (*c >= 'A' && *c <= 'Z') val = val*16 + *c - 'A' + 10;
 		c++;
 	}
-	
+
 	SetInt(&slot, val);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
@@ -1165,21 +1165,21 @@ int processhex(char *s)
 }
 
 
-int processintradix(char *s, int n, int radix) 
+int processintradix(char *s, int n, int radix)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processintradix: '%s'\n",s);
 #endif
-	
+
 	SetInt(&slot, sc_strtoi(s, n, radix));
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
 	return INTEGER;
 }
 
-int processfloatradix(char *s, int n, int radix) 
+int processfloatradix(char *s, int n, int radix)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1193,35 +1193,35 @@ int processfloatradix(char *s, int n, int radix)
 	return INTEGER;
 }
 
-int processint(char *s) 
+int processint(char *s)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processint: '%s'\n",s);
 #endif
-	
+
 	SetInt(&slot, atoi(s));
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
 	return INTEGER;
 }
 
-int processchar(int c) 
+int processchar(int c)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processhex: '%c'\n",c);
 #endif
-	
+
 	SetChar(&slot, c);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
 	return ASCII;
 }
 
-int processfloat(char *s, int sawpi) 
+int processfloat(char *s, int sawpi)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1229,16 +1229,16 @@ int processfloat(char *s, int sawpi)
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processfloat: '%s'\n",s);
 #endif
-	
+
 	if (sawpi) { z = atof(s)*pi; SetFloat(&slot, z); }
 	else  { SetFloat(&slot, atof(s)); }
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
-    return SC_FLOAT; 
+    return SC_FLOAT;
 }
 
 
-int processaccidental1(char *s) 
+int processaccidental1(char *s)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1256,11 +1256,11 @@ int processaccidental1(char *s)
 		else break;
 		c++;
 	}
-	
+
 	if (*c == 'b') centsdiv = -1000.;
 	else if (*c == 's') centsdiv = 1000.;
 	c++;
-		
+
 	while (*c) {
 		if (*c >= '0' && *c <= '9') {
 			cents = cents*10. + *c - '0';
@@ -1268,7 +1268,7 @@ int processaccidental1(char *s)
 		else break;
 		c++;
 	}
-	
+
 	if (cents > 499.) cents = 499.;
 
 	SetFloat(&slot, degree + cents/centsdiv);
@@ -1277,7 +1277,7 @@ int processaccidental1(char *s)
 	return ACCIDENTAL;
 }
 
-int processaccidental2(char *s) 
+int processaccidental2(char *s)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1294,7 +1294,7 @@ int processaccidental2(char *s)
 		else break;
 		c++;
 	}
-	
+
 	while (*c) {
 		if (*c == 'b') semitones -= 1.;
 		else if (*c == 's') semitones += 1.;
@@ -1302,14 +1302,14 @@ int processaccidental2(char *s)
 	}
 
 	if (semitones > 4.) semitones = 4.;
-	
+
 	SetFloat(&slot, degree + semitones/10.);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
 	return ACCIDENTAL;
 }
 
-int processsymbol(char *s) 
+int processsymbol(char *s)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1318,14 +1318,14 @@ int processsymbol(char *s)
 	if (gDebugLexer) postfl("processsymbol: '%s'\n",s);
 #endif
 	sym = getsym(s+1);
-	
+
 	SetSymbol(&slot, sym);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
 	return SYMBOL;
 }
 
-int processstring(char *s) 
+int processstring(char *s)
 {
 	PyrSlot slot;
 	PyrSlotNode *node;
@@ -1341,7 +1341,7 @@ int processstring(char *s)
 	return STRING;
 }
 
-void yyerror(char *s) 
+void yyerror(char *s)
 {
 	parseFailed = 1;
 	yytext[yylen] = 0;
@@ -1350,7 +1350,7 @@ void yyerror(char *s)
 	//Debugger();
 }
 
-void fatal() 
+void fatal()
 {
 	parseFailed = 1;
 	yytext[yylen] = 0;
@@ -1360,11 +1360,11 @@ void fatal()
 }
 
 #if 0
-void postErrorLine() 
+void postErrorLine()
 {
 	int i, j, start, end;
 	char str[256];
-	
+
 	parseFailed = true;
 	for (i=textpos-1; i>=0; --i) {
 		if (text[i] == '\r' || text[i] == '\n') break;
@@ -1385,11 +1385,11 @@ void postErrorLine()
 }
 #endif
 
-void postErrorLine(int linenum, int start, int charpos) 
+void postErrorLine(int linenum, int start, int charpos)
 {
 	int i, j, end, pos;
 	char str[256];
-	
+
 	//post("start %d\n", start);
 	//parseFailed = true;
     char extPath[MAXPATHLEN];
@@ -1413,7 +1413,7 @@ void postErrorLine(int linenum, int start, int charpos)
 	if (pos == end) str[j++] = BULLET_CHAR;
 	str[j] = 0;
 	post("  %s\n", str);
-	
+
 	i=end+1;
 	if (i<textlen) {
 		// postfl following line for context
@@ -1477,14 +1477,14 @@ bool scanForClosingBracket()
 	int r, c, d, startLevel;
 	bool res = true;
 	// finite state machine to parse input stream into tokens
-	
+
 #if DEBUGLEX
 	if (gDebugLexer) postfl("->scanForClosingBracket\n");
 #endif
 	startLevel = brackets.num;
 start:
 	c = input0();
-	
+
 	if (c == 0) goto leave;
 	else if (c==' ' || c=='\t' || c=='\n' || c=='\r' || c=='\v' || c=='\f') {
 		goto start;
@@ -1497,7 +1497,7 @@ start:
 		else if (c == '*') goto comment2;
 		else { unput(c); goto start; }
 	}
-	else if (c == '$') { 
+	else if (c == '$') {
 		c = input0();
 		if (c == '\\') {
 			c = input0();
@@ -1509,14 +1509,14 @@ start:
 				case 'v' : c = '\v'; break;
 			}
 		}
-		goto start; 
+		goto start;
 	}
 	else if (c == OPENPAREN || c == OPENSQUAR || c == OPENCURLY) {
 		pushls(&brackets, (int)c);
 		r = c;
 		goto start;
 	}
-	else if (c == CLOSSQUAR) { 
+	else if (c == CLOSSQUAR) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENSQUAR) {
 				fatal();
@@ -1528,11 +1528,11 @@ start:
 			post("unmatched '%c'\n",c);
 			goto error1;
 		}
-		r = c; 
+		r = c;
 		if (brackets.num < startLevel) goto leave;
-		else goto start; 
+		else goto start;
 	}
-	else if (c == CLOSPAREN) { 
+	else if (c == CLOSPAREN) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENPAREN) {
 				fatal();
@@ -1545,9 +1545,9 @@ start:
 			goto error1;
 		}
 		if (brackets.num < startLevel) goto leave;
-		else goto start; 
+		else goto start;
 	}
-	else if (c == CLOSCURLY) { 
+	else if (c == CLOSCURLY) {
 		if (!emptyls(&brackets)) {
 			if ((d = popls(&brackets)) != OPENCURLY) {
 				fatal();
@@ -1560,15 +1560,15 @@ start:
 			goto error1;
 		}
 		if (brackets.num < startLevel) goto leave;
-		else goto start; 
+		else goto start;
 	} else {
-		goto start; 
+		goto start;
 	}
-symbol3 : {	
+symbol3 : {
 		int startline, endchar;
 		startline = lineno;
 		endchar = '\'';
-	
+
 		do {
 			c = input0();
 			if (c == '\\') {
@@ -1578,18 +1578,18 @@ symbol3 : {
 		if (c == 0) {
             char extPath[MAXPATHLEN];
             asRelativePath(curfilename, extPath);
-			post("Open ended symbol ... started on line %d in file '%s'\n", 
+			post("Open ended symbol ... started on line %d in file '%s'\n",
 				startline, extPath);
 			goto error2;
 		}
 		goto start;
 	}
 
-string1 : {	
+string1 : {
 		int startline, endchar;
 		startline = lineno;
 		endchar = '\"';
-	
+
 		do  {
 			c = input0();
 			if (c == '\\') {
@@ -1599,7 +1599,7 @@ string1 : {
 		if (c == 0) {
             char extPath[MAXPATHLEN];
             asRelativePath(curfilename, extPath);
-			post("Open ended string ... started on line %d in file '%s'\n", 
+			post("Open ended string ... started on line %d in file '%s'\n",
 				startline, extPath);
 			goto error2;
 		}
@@ -1607,7 +1607,7 @@ string1 : {
 	}
 comment1:	/* comment -- to end of line */
 	do {
-		c = input0(); 
+		c = input0();
 	} while (c != '\n' && c != '\r' && c != 0);
 	if (c == 0) { goto leave; }
 	else goto start;
@@ -1627,7 +1627,7 @@ comment2 : {
 		if (c == 0) {
             char extPath[MAXPATHLEN];
             asRelativePath(curfilename, extPath);
-			post("Open ended comment ... started on line %d in file '%s'\n", 
+			post("Open ended comment ... started on line %d in file '%s'\n",
 				startline, extPath);
 			goto error2;
 		}
@@ -1640,11 +1640,11 @@ error1:
 	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
 	res = false;
 	goto leave;
-	
+
 error2:
 	res = false;
 	goto leave;
-	
+
 leave:
 #if DEBUGLEX
 	if (gDebugLexer) postfl("<-scanForClosingBracket\n");
@@ -1673,15 +1673,15 @@ ClassExtFile* newClassExtFile(PyrSymbol *fileSym, int startPos, int endPos)
 }
 
 
-ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName, 
+ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName,
 	PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
 	ClassDependancy* classdep;
-	
-	//post("classdep '%s' '%s' '%s' %d %d\n", className->name, superClassName->name, 
+
+	//post("classdep '%s' '%s' '%s' %d %d\n", className->name, superClassName->name,
 	//	fileSym->name, className, superClassName);
-	// pyrmalloc: 
-	// lifetime: kill after compile. 
+	// pyrmalloc:
+	// lifetime: kill after compile.
 	numClassDeps++;
 	if (className->classdep) {
 		error("duplicate Class found: '%s' \n", className->name);
@@ -1697,11 +1697,11 @@ ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassN
 	classdep->superClassDep = NULL;
 	classdep->next = NULL;
 	classdep->subclasses = NULL;
-	
+
 	classdep->startPos = startPos;
-	classdep->endPos = endPos;	
+	classdep->endPos = endPos;
 	classdep->lineOffset = lineOffset;
-	
+
 	className->classdep = classdep;
 	return classdep;
 }
@@ -1710,7 +1710,7 @@ void buildDepTree()
 {
 	ClassDependancy *next;
 	SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-	
+
 	//postfl("->buildDepTree\n"); fflush(stdout);
 	for (int i=0; i<symbolTable->TableSize(); ++i) {
 		PyrSymbol *sym = symbolTable->Get(i);
@@ -1745,7 +1745,7 @@ void traverseFullDepTree()
 	gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Alloc(
 								gClassCompileOrderSize * sizeof(ClassDependancy));
 	MEMFAIL(gClassCompileOrder);
-	
+
 	// parse and compile all files
 	initParser(); // sets compiler errors to 0
 	gParserResult = -1;
@@ -1753,7 +1753,7 @@ void traverseFullDepTree()
 	traverseDepTree(s_object->classdep, 0);
 	compileDepTree(); // compiles backwards using the order defined in gClassCompileOrder
 	compileClassExtensions();
-	
+
 	pyr_pool_compile->Free(gClassCompileOrder);
 
 	finiParser();
@@ -1764,24 +1764,24 @@ void traverseFullDepTree()
 void traverseDepTree(ClassDependancy *classdep, int level)
 {
 	ClassDependancy *subclassdep;
-        
+
         if (!classdep) return;
-	
+
 	subclassdep = classdep->subclasses;
 	for (; subclassdep; subclassdep = subclassdep->next) {
 		traverseDepTree(subclassdep, level+1);
 	}
 	if (gClassCompileOrderNum > gClassCompileOrderSize) {
 		gClassCompileOrderSize *= 2;
-		gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Realloc(gClassCompileOrder, 
+		gClassCompileOrder = (ClassDependancy**)pyr_pool_compile->Realloc(gClassCompileOrder,
 								gClassCompileOrderSize * sizeof(ClassDependancy));
-		MEMFAIL(gClassCompileOrder);		
+		MEMFAIL(gClassCompileOrder);
 	}
 
 /*	postfl("traverse level:%d, gClassCompileOrderNum:%d, '%s' '%s' '%s'\n", level, gClassCompileOrderNum, classdep->className->name, classdep->superClassName->name,
 		classdep->fileSym->name); fflush(stdout);
 */
-	
+
 	gClassCompileOrder[gClassCompileOrderNum++] = classdep;
 }
 
@@ -1822,7 +1822,7 @@ void compileDepTree()
 {
 	ClassDependancy *classdep;
 	int i;
-	
+
 	for (i=gClassCompileOrderNum-1; i>=0; --i) {
 		classdep = gClassCompileOrder[i];
 		/*postfl("compile %d '%s' '%s' '%s'...%d/%d/%d\n", i, classdep->className->name, classdep->superClassName->name,
@@ -1853,7 +1853,7 @@ void traverseFullDepTree2()
 	if (!parseFailed && !compileErrors) {
 		buildClassTree();
 		gNumClasses = 0;
-		
+
 		// now I index them during pass one
 		indexClassTree(class_object, 0);
 		setSelectorFlags();
@@ -1891,20 +1891,20 @@ bool parseOneClass(PyrSymbol *fileSym)
 	PyrSymbol *className, *superClassName;
 	ClassDependancy *classdep;
 	bool res;
-	
+
 	int startPos, startLine, startLineOffset;
-	
+
 	res = true;
-	
+
 	startPos = textpos;
 	startLineOffset = lineno - 1;
-	
+
 	token = yylex();
 	if (token == CLASSNAME) {
 		className = ((PyrSlotNode*)zzval)->mSlot.us;
 		// I think this is wrong: zzval is space pool alloced
 		//pyrfree((PyrSlot*)zzval);
-		
+
 		token = yylex();
 		if (token == 0) return false;
 		if (token == OPENSQUAR) {
@@ -1982,20 +1982,20 @@ void pyrmath_init_globs();
 void initPassOne()
 {
 	aboutToFreeRuntime();
-	
+
 	//dump_pool_histo(pyr_pool_runtime);
 	pyr_pool_runtime->FreeAllInternal();
 	//dump_pool_histo(pyr_pool_runtime);
 	//gPermanentObjPool.Init(pyr_pool_runtime, PERMOBJCHUNK);
 	sClassExtFiles = 0;
-	
+
 	void *ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
 	gMainVMGlobals->symbolTable  = new (ptr) SymbolTable(pyr_pool_runtime, 8192);
 
 	//gFileSymbolTable = newSymbolTable(512);
-	
+
 	pyrmath_init_globs();
-	
+
 	initSymbols(); // initialize symbol globals
 	//init_graph_compile();
 	initSpecialSelectors();
@@ -2022,7 +2022,7 @@ bool passOne_ProcessDir(char *dirname, int level);
 bool passOne_ProcessDir(char *dirname, int level)
 {
 	bool success = true;
-	
+
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
 		post("\texcluding dir: '%s'\n", dirname);
@@ -2037,20 +2037,20 @@ bool passOne_ProcessDir(char *dirname, int level)
 		error("open directory failed '%s'\n", dirname); fflush(stdout);
 		return false;
 	}
-	
+
 	for (;;) {
 		char diritem[MAXPATHLEN];
 		bool skipItem = true;
 		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
 		if (!validItem) break;
 		if (skipItem) continue;
-		
+
         if (sc_DirectoryExists(diritem)) {
             success = passOne_ProcessDir(diritem, level + 1);
         } else {
             success = passOne_ProcessOneFile(diritem, level + 1);
         }
-		
+
 		if (!success) break;
 	}
 
@@ -2086,7 +2086,7 @@ bool passOne()
 	// This function must be provided by the host environment.
 	// It should choose a directory to scan recursively and call
 	// passOne_ProcessOneFile(char *filename) for each file
-	
+
 	if (!gLibraryConfig) {
 	        sc_InitCompileDirectories();
 
@@ -2120,7 +2120,7 @@ bool passOne()
 bool isValidSourceFileName(char *filename)
 {
 	int len = strlen(filename);
-	return (len>3 && strncmp(filename+len-3, ".sc",3) == 0) 
+	return (len>3 && strncmp(filename+len-3, ".sc",3) == 0)
             || (len>7 && strncmp(filename+len-7, ".sc.rtf",7) == 0);
 }
 
@@ -2128,7 +2128,7 @@ bool isValidSourceFileName(char *filename)
 bool passOne_ProcessOneFile(char *filenamearg, int level)
 {
 	bool success = true;
-	
+
 	bool isAlias = false;
 	// on non-Darwin, sc_ResolveIfAlias always returns original path
 	char filename[MAXPATHLEN];
@@ -2177,19 +2177,19 @@ void schedRun();
 void compileSucceeded();
 void compileSucceeded()
 {
-	compiledOK = !(parseFailed || compileErrors);	
-	if (compiledOK) {		
+	compiledOK = !(parseFailed || compileErrors);
+	if (compiledOK) {
 		compiledOK = true;
-		
+
 		compiledOK = initRuntime(gMainVMGlobals, 128*1024, pyr_pool_runtime);
-			
-		if (compiledOK) { 				
+
+		if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
-			
+
 			g->canCallOS = true;
 			//++g->sp; SetObject(g->sp, g->process);
 			//runInterpreter(g, s_hardwaresetup, 1);
-			
+
 			++g->sp; SetObject(g->sp, g->process);
 			runInterpreter(g, s_startup, 1);
                         g->canCallOS = false;
@@ -2223,11 +2223,11 @@ void shutdownLibrary()
 	closeAllGUIScreens();
 	aboutToCompileLibrary();
 	schedStop();
-	TempoClock_stopAll();	
+	TempoClock_stopAll();
 }
 
 bool compileLibrary();
-bool compileLibrary() 
+bool compileLibrary()
 {
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
@@ -2236,16 +2236,16 @@ bool compileLibrary()
 	gNumCompiledFiles = 0;
 	compiledOK = false;
         compileStartTime = elapsedTime();
-	
+
 	totalByteCodes = 0;
-	
+
 	postfl("compiling class library..\n");
 
 	bool res = passOne();
 	if (res) {
-		
+
 		postfl("\tpass 1 done\n");
-		
+
 		if (!compileErrors) {
 			buildDepTree();
 			traverseFullDepTree();
@@ -2259,11 +2259,11 @@ bool compileLibrary()
 		}
 		pyr_pool_compile->FreeAll();
 		flushPostBuf();
-		compileSucceeded();	
+		compileSucceeded();
 	} else {
 		compiledOK = false;
 	}
-	
+
 	pthread_mutex_unlock (&gLangMutex);
 	//printf("<-compileLibrary\n");
 	return compiledOK;
@@ -2273,7 +2273,7 @@ void signal_init_globs();
 
 void dumpByteCodes(PyrBlock *theBlock);
 
-void runLibrary(PyrSymbol* selector) 
+void runLibrary(PyrSymbol* selector)
 {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
@@ -2288,7 +2288,7 @@ void runLibrary(PyrSymbol* selector)
 		PyrMethod *meth = g->method;
 		if (meth) {
 			int ip = meth->code.uob ? g->ip - meth->code.uob->b : -1;
-			post("caught exception in runLibrary %s:%s %3d\n", 
+			post("caught exception in runLibrary %s:%s %3d\n",
 				meth->ownerclass.uoc->name.us->name, meth->name.us->name, ip
 			);
 			dumpByteCodes(meth);
@@ -2305,7 +2305,7 @@ void runLibrary(PyrSymbol* selector)
 void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
 {
 	PyrString *string;
-	
+
 	if (compiledOK) {
 		PyrSlot slot;
 

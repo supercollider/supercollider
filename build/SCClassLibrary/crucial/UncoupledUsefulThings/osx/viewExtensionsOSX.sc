@@ -23,8 +23,8 @@
 		this.children.do({arg child;
 			child.deepDo(function);
 		});
-	}	 
-	allChildren { 
+	}
+	allChildren {
 		var all;
 		all = Array.new;
 		this.deepDo({ arg child; all = all.add(child) });
@@ -39,8 +39,8 @@
 		this.children.do({arg child;
 			child.deepDo(function);
 		});
-	}	 
-	allChildren { 
+	}
+	allChildren {
 		var all;
 		all = Array.new;
 		this.deepDo({ arg child; all = all.add(child) });

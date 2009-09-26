@@ -31,7 +31,7 @@ extern "C"
 InterfaceTable *ft;
 
 
-/// RM 
+/// RM
 SCPolarBuf* ToPolarApx(SndBuf *buf);
 SCPolarBuf* ToPolarApx(SndBuf *buf)
 {
@@ -70,7 +70,7 @@ extern void initPartConv(InterfaceTable *inTable);
 
 void load(InterfaceTable *inTable)
 {
-	
+
 	ft= inTable;
 	init_SCComplex(inTable);
 

@@ -17,9 +17,9 @@
 	NSTimer *appClockTimer;
 	NSTimer *deferredTaskTimer;
     NSMutableArray *deferredOperations;
-	
+
 	MPMoviePlayerController *recordingPlayer;
-	
+
 	IBOutlet UITabBarController *tabBarController;
 	IBOutlet UITextView *logView;
 	IBOutlet UIViewController *browserViewController;

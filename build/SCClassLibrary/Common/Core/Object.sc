@@ -1,25 +1,25 @@
 Object  {
 	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods;
-	
+
 	const nl = "\n";
-	
-	*new { arg maxSize = 0; 
-		_BasicNew 
+
+	*new { arg maxSize = 0;
+		_BasicNew
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize 
+		// creates a new instance that can hold up to maxSize
 		// indexable slots. the indexed size will be zero.
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*newCopyArgs { arg ... args; 
-		_BasicNewCopyArgsToInstVars 
+	*newCopyArgs { arg ... args;
+		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize 
+		// creates a new instance that can hold up to maxSize
 		// indexable slots. the indexed size will be zero.
 		// to actually put things in the object you need to
 		// add them.
 	}
-		
+
 	// debugging and diagnostics
 	dump { _ObjectDump }
 	post { this.asString.post }
@@ -34,16 +34,16 @@ Object  {
 	gcInfo { _GCInfo }
 	gcSanity { _GCSanity }
 	canCallOS { _CanCallOS }
-	
-		
+
+
 	//accessing
 	size { ^0 }
 	indexedSize { ^0 }
-			
+
 	do { arg function; function.value(this, 0) }
 	generate { arg function, state; this.do(function); ^state }
 	//reverseDo { arg function; function.value(this, 0) }
-	
+
 	// class membership
 	class { _ObjectClass; ^this.primitiveFailed }
 	isKindOf { arg aClass; _ObjectIsKindOf; ^this.primitiveFailed }
@@ -51,36 +51,36 @@ Object  {
 	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
 
 	performMsg { arg msg;
-		_ObjectPerformMsg; 
-		^this.primitiveFailed 
+		_ObjectPerformMsg;
+		^this.primitiveFailed
 	}
-	
+
 	perform { arg selector ... args;
-		_ObjectPerform; 
-		^this.primitiveFailed 
+		_ObjectPerform;
+		^this.primitiveFailed
 	}
 	performList { arg selector, arglist;
-		_ObjectPerformList; 
-		^this.primitiveFailed 
-	}	
+		_ObjectPerformList;
+		^this.primitiveFailed
+	}
 	functionPerformList {
 		// perform only if Function. see Function-functionPerformList
 		^this
-	}	
-	
+	}
+
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
 	superPerform { arg selector ... args;
-		_SuperPerform; 
-		^this.primitiveFailed 
+		_SuperPerform;
+		^this.primitiveFailed
 	}
 	superPerformList { arg selector, arglist;
-		_SuperPerformList; 
-		^this.primitiveFailed 
-	}	
-	
+		_SuperPerformList;
+		^this.primitiveFailed
+	}
+
 	tryPerform { arg selector ... args;
 		^if(this.respondsTo(selector),{
 			this.performList(selector,args)
@@ -97,12 +97,12 @@ Object  {
 	copy { ^this.shallowCopy }
 	contentsCopy { ^this.shallowCopy }
 	shallowCopy { _ObjectShallowCopy; ^this.primitiveFailed }
-	copyImmutable { 
+	copyImmutable {
 		// if object is immutable then return a shallow copy, else return receiver.
-		_ObjectCopyImmutable; 
-		^this.primitiveFailed 
+		_ObjectCopyImmutable;
+		^this.primitiveFailed
 	}
-	
+
 	deepCopy {
 		_ObjectDeepCopy
 		^this.primitiveFailed
@@ -113,21 +113,21 @@ Object  {
 	! { arg n;
 		^this.dup(n)
 	}
-			
+
 	// evaluation
 	poll { ^this.value }
 	value { ^this }
 	valueArray { ^this }
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
-	
+
 	// equality, identity
 	== { arg obj; ^this === obj }
 	!= { arg obj; ^not(this == obj) }
 	=== { arg obj; _Identical; ^this.primitiveFailed }
 	!== { arg obj;_NotIdentical; ^this.primitiveFailed }
 	equals { arg that, properties;
-		^that.respondsTo(properties) and: { 
+		^that.respondsTo(properties) and: {
 			properties.every { |selector| this.perform(selector) == that.perform(selector) }
 		}
 	}
@@ -145,17 +145,17 @@ Object  {
 			this.instVarSize.do({ arg i;
 				if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
 			});
-		});			
+		});
 		^true
 	}
-	
+
 	basicHash { _ObjectHash; ^this.primitiveFailed }
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
-		
+
 	// create an association
 	-> { arg obj; ^Association.new(this, obj) }
-	
+
 	// stream
 	next { ^this }
 	reset { ^this }
@@ -185,18 +185,18 @@ Object  {
 			}
 		}
 	}
-	
+
 	repeat { arg repeats = inf; ^Pn(this, repeats).asStream }
 	loop { ^this.repeat(inf) }
-	
+
 	asStream { ^this }
-	
+
 	eventAt { ^nil }
 	composeEvents { arg event; ^event.copy }
-	
+
 	finishEvent {}
 	atLimit { ^false }
-	
+
 	// testing
 	? { arg obj; ^this }
 	?? { arg obj; ^this }
@@ -206,7 +206,7 @@ Object  {
 	notNil { ^true }
 	isNumber { ^false }
 	isInteger { ^false }
-	isFloat { ^false }	
+	isFloat { ^false }
 	isSequenceableCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
@@ -220,22 +220,22 @@ Object  {
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
 	frozen { _ObjectIsPermanent; ^this.primitiveFailed }
-	
+
 	// errors
 	halt {
 		thisProcess.nowExecutingPath = nil;
 		UI.reset;
-		this.prHalt 
+		this.prHalt
 	}
 	prHalt { _Halt }
-	primitiveFailed { 
+	primitiveFailed {
 		PrimitiveFailedError(this).throw;
 	}
 	reportError {
 		error(this.asString);
 		this.dumpBackTrace;
 	}
-	
+
 	subclassResponsibility { arg method;
 		SubclassResponsibilityError(this, method, this.class).throw;
 	}
@@ -244,33 +244,33 @@ Object  {
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
-	} 
+	}
 	outOfContextReturn { arg method, result;
 		OutOfContextReturnError(this, method, result).throw;
-	} 
+	}
 	immutableError { arg value;
 		ImmutableError(this, value).throw;
 	}
-	
+
 	deprecated { arg method, alternateMethod;
 		DeprecatedError(this, method, alternateMethod, this.class).throw;
 	}
-	
+
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplementedError(nil, this).throw; }
-	
+
 	dumpBackTrace { _DumpBackTrace }
 	getBackTrace { _GetBackTrace }
 	throw {
-		if (Error.handling) { 
+		if (Error.handling) {
 			error("throw during error handling!\n");
 			this.dump;
 			^this
 		};
 		thisThread.handleError(this);
 	}
-	
-			
+
+
 	// conversion
 	species { ^this.class }
 	asCollection { ^[this] }
@@ -283,7 +283,7 @@ Object  {
 		^string
 	}
 	asCompileString {
-		_ObjectCompileString 
+		_ObjectCompileString
 		^String.streamContents({ arg stream; this.storeOn(stream); });
 	}
 
@@ -310,7 +310,7 @@ Object  {
 	storeArgs { ^#[] }
 	storeModifiersOn { arg stream;}
 
-	
+
 	as { arg aSimilarClass; ^aSimilarClass.newFrom(this) }
 	dereference { ^this } // see Ref::dereference
 	reference { ^Ref.new(this) }
@@ -325,21 +325,21 @@ Object  {
 	slice { ^this }
 	shape { ^nil }
 	unbubble { ^this }
-	bubble { arg depth=0, levels=1; 
+	bubble { arg depth=0, levels=1;
 		if (levels <= 1) { ^[this] };
 		^[this.bubble(depth,levels-1)]
 	}
-	
+
 	// compatibility with sequenceable collection
-	
+
 	obtain { arg index, default;  ^if(index == 0) { this } { default } }
-	
+
 	instill { arg index, item, default;
 		^if(index == 0) { item } {
 			this.asArray.instill(index, item, default)
 		}
 	}
-	
+
 	// FunctionList support
 	addFunc { arg ... functions;
 		^FunctionList([this] ++ functions)
@@ -361,7 +361,7 @@ Object  {
 		if (cases.size.odd) { ^cases.last.value };
 		^nil
 	}
-	
+
 	// coroutine support
 	yield {
 		_RoutineYield
@@ -379,7 +379,7 @@ Object  {
 		var time = thisThread.beats;
 		while { thisThread.beats - time < val } { this.value.yield }
 	}
-	
+
 	// dependancy support
 	*initClass { dependantsDictionary = IdentityDictionary.new(4); }
 	dependants {
@@ -398,7 +398,7 @@ Object  {
 			dependantsDictionary.put(this, theDependants);
 		},{
 			theDependants.add(dependant);
-		});		
+		});
 	}
 	removeDependant { arg dependant;
 		var theDependants;
@@ -419,7 +419,7 @@ Object  {
 	update { arg theChanged, theChanger;	// respond to a change in a model
 	}
 
-	
+
 	// instance specific method support
 	addUniqueMethod { arg selector, function;
 		var methodDict;
@@ -432,7 +432,7 @@ Object  {
 		methodDict.put(selector, function);
 	}
 	removeUniqueMethods {
-		if (uniqueMethods.notNil, { 
+		if (uniqueMethods.notNil, {
 			uniqueMethods.removeAt(this);
 		});
 	}
@@ -446,14 +446,14 @@ Object  {
 					uniqueMethods.removeAt(this);
 				});
 			});
-		});		
+		});
 	}
 
 	inspect { ^this.inspectorClass.new(this) }
 	inspectorClass { ^ObjectInspector }
-	inspector { 
+	inspector {
 		// finds the inspector for this object, if any.
-		^Inspector.inspectorFor(this) 
+		^Inspector.inspectorFor(this)
 	}
 
 
@@ -462,15 +462,15 @@ Object  {
 	stackDepth { _StackDepth }
 	dumpStack { _DumpStack }
 	dumpDetailedBackTrace { _DumpDetailedBackTrace }
-	
-	
-	freeze { 
-		_ObjectDeepFreeze 
+
+
+	freeze {
+		_ObjectDeepFreeze
 		^this.primitiveFailed
 	}
-	
+
 	// Math protocol support
-	// translate these operators to names the code generator can safely generate in C++	
+	// translate these operators to names the code generator can safely generate in C++
 	& { arg that; ^bitAnd(this, that) }
 	| { arg that; ^bitOr(this, that) }
 	% { arg that; ^mod(this, that) }
@@ -479,17 +479,17 @@ Object  {
 	>> { arg that; ^rightShift(this, that) }
 	+>> { arg that; ^unsignedRightShift(this, that) }
 	<! { arg that; ^firstArg(this, that) }
-	
+
 	blend { arg that, blendFrac = 0.5;
 		// blendFrac should be from zero to one
 		^this + (blendFrac * (that - this));
 	}
-	
+
 	blendAt { arg index, method='clipAt';
 		var iMin = index.roundUp.asInteger - 1;
 		^blend(this.perform(method, iMin), this.perform(method, iMin+1), absdif(index, iMin));
 	}
-	
+
 	blendPut { arg index, val, method='wrapPut';
 		var iMin = index.floor.asInteger;
 		var ratio = absdif(index, iMin);
@@ -499,10 +499,10 @@ Object  {
 
 
 	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
-	
+
 	isUGen { ^false }
-	numChannels { ^1 } 
-	
+	numChannels { ^1 }
+
 	pair { arg that; ^[this, that] }
 	pairs { arg that;
 		var list;
@@ -514,7 +514,7 @@ Object  {
 		};
 		^list;
 	}
-	
+
 
 	// scheduling
 	awake { arg beats, seconds, clock;
@@ -551,29 +551,29 @@ Object  {
 	performBinaryOpOnUGen { arg aSelector, thing, adverb;
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	
+
 	writeDefFile { arg name, dir, overwrite = (true);
-		
+
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
 			if (name.isNil) { error("missing SynthDef file name") } {
 				name = dir ++ name ++ ".scsyndef";
-				if(overwrite or: { pathMatch(name).isEmpty }) 
+				if(overwrite or: { pathMatch(name).isEmpty })
 					{
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
 						this.asArray.writeDef(file);
-					}{		
+					}{
 						file.close;
 					}
 				}
 			}
 		}
-		
+
 	}
-	
+
 	isInputUGen { ^false }
 	isOutputUGen { ^false }
 	isControlUGen { ^false }
@@ -584,26 +584,26 @@ Object  {
 
 
 	// these are the same as new and newCopyArgs, but should not be overridden by any class.
-	*prNew { arg maxSize = 0; 
-		_BasicNew 
+	*prNew { arg maxSize = 0;
+		_BasicNew
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize 
+		// creates a new instance that can hold up to maxSize
 		// indexable slots. the indexed size will be zero.
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*prNewCopyArgs { arg ... args; 
-		_BasicNewCopyArgsToInstVars 
+	*prNewCopyArgs { arg ... args;
+		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
 		// creates a new instance which holds the args as slots
 	}
-	
+
 	//////
-	// these are dangerous operations as they break encapsulation and 
+	// these are dangerous operations as they break encapsulation and
 	// can allow access to slots that should not be accessed because they are private to the
-	// virtual machine, such as Frame objects. 
+	// virtual machine, such as Frame objects.
 	// Use with caution.
-	// see counterparts to these in ArrayedCollection 
+	// see counterparts to these in ArrayedCollection
 	slotSize {
 		^this.instVarSize;
 	}
@@ -633,9 +633,9 @@ Object  {
 			function.value(this.slotAt(i), i);
 		};
 	}
-	
+
 	// getSlots and setSlots will be used for a new implementation of asCompileString.
-	// getSlots stores the keys and values so that if the instance 
+	// getSlots stores the keys and values so that if the instance
 	// variable order changes, setSlots they will still set the right one.
 	getSlots {
 		var array;
@@ -645,7 +645,7 @@ Object  {
 			array.add(this.slotAt(i));
 		};
 		^array;
-	}	
+	}
 	setSlots { arg array;
 		array.pairsDo {|key, value|
 			this.slotPut(key, value);
@@ -653,17 +653,17 @@ Object  {
 	}
 
 	instVarSize { _InstVarSize; ^this.primitiveFailed }
-	instVarAt { arg index; 
+	instVarAt { arg index;
 		// index can be an integer or symbol.
 		_InstVarAt;
 		^this.primitiveFailed;
 	}
-	instVarPut { arg index, item; 
+	instVarPut { arg index, item;
 		// index can be an integer or symbol.
 		_InstVarPut;
 		^this.primitiveFailed;
 	}
-	
+
 	//////////// ARCHIVING ////////////
 
 	writeArchive { arg pathname;
@@ -675,7 +675,7 @@ Object  {
 	asArchive {
 		^this.asTextArchive;
 	}
-		
+
 	initFromArchive {}
 
 	archiveAsCompileString { ^false }
@@ -699,22 +699,22 @@ Object  {
 	}
 	asTextArchive {
 		var objects, list, stream, firsttime = true;
-		
+
 		if (this.archiveAsCompileString) {
 			this.checkCanArchive;
 			^this.asCompileString ++ "\n"
 		};
-		
+
 		objects = IdentityDictionary.new;
 
 		this.getContainedObjects(objects);
-		
+
 		stream = CollStream.new;
 		stream << "var o, p;\n";
 
 		list = List.newClear(objects.size);
 		objects.keysValuesDo {|obj, index| list[index] = obj };
-		
+
 		stream << "o = [";
 		list.do {|obj, i|
 			var size;
@@ -775,14 +775,14 @@ Object  {
 			};
 		};
 		stream << "\n];\n";
-		
+
 		stream << "prUnarchive(o,p);\n";
 		^stream.contents
 	}
 	getContainedObjects { arg objects;
 		if (objects[this].notNil) {^this};
 		objects[this] = objects.size;
-		
+
 		if (this.archiveAsCompileString.not) {
 			this.slotsDo {|key, slot|
 				if (slot.archiveAsObject) {
@@ -790,7 +790,7 @@ Object  {
 				};
 			};
 		};
-		
+
 	}
 	// old binary archiving
 	// this will break if the instance vars change !
@@ -816,7 +816,7 @@ Object  {
 	// support for Gen
 	genNext { ^nil }
 	genCurrent { ^this }
-	
+
 	// support for ViewRedirect
 	*classRedirect { ^this }
 }

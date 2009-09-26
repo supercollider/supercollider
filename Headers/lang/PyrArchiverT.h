@@ -44,21 +44,21 @@ class PyrArchiver
 {
 public:
 	PyrArchiver(VMGlobals *inG)
-		: g(inG), mObjectArray(mInitialObjectArray), mNumObjects(0), 
+		: g(inG), mObjectArray(mInitialObjectArray), mNumObjects(0),
 			mObjectArrayCapacity( kObjectArrayInitialCapacity ),
 			mReadArchiveVersion(0)
 		{
 		}
-	
+
 	~PyrArchiver()
 		{
 			if (mObjectArray != mInitialObjectArray) {
 				g->allocPool->Free(mObjectArray);
 			}
 		}
-		
+
 	void setStream(S s) { mStream.SetStream(s); }
-	
+
 	int32 calcArchiveSize()
 		{
 			PyrSlot *slot;
@@ -89,28 +89,28 @@ public:
 			}
 			return size;
 		}
-	
+
 	long prepareToWriteArchive(PyrSlot *objectSlot)
 		{
 			long err = errNone;
-				
+
 			try {
 				mTopSlot.ucopy = objectSlot->ucopy;
-				if (IsObj(objectSlot)) constructObjectArray(objectSlot->uo);				
+				if (IsObj(objectSlot)) constructObjectArray(objectSlot->uo);
 			} catch (std::exception &ex) {
 				error(ex.what());
 				err = errFailed;
 			}
 			return err;
 		}
-		
+
 	long writeArchive()
 		{
 			long err = errNone;
-				
-			try {				
+
+			try {
 				writeArchiveHeader();
-				
+
 				if (mNumObjects == 0) {
 					writeSlot(&mTopSlot);
 				} else {
@@ -132,10 +132,10 @@ public:
 		{
 			//postfl("->readArchive\n");
 			long err = errNone;
-			
-			
+
+
 			SetNil(objectSlot);
-			
+
 			try {
 				readArchiveHeader();
 				//postfl("readObjectHeaders %d\n", mNumObjects);
@@ -162,16 +162,16 @@ public:
 			//postfl("<-readArchive\n");
 			return err;
 		}
-	
+
 private:
-		
+
 	void writeArchiveHeader()
 		{
 			mStream.writeInt32_be(('!'<<24)|('S'<<16)|('C'<<8)|'a' /*'!SCa'*/);
 			mStream.writeInt32_be(2); // file version
 			mStream.writeInt32_be(mNumObjects);
 		}
-	
+
 	void readArchiveHeader()
 		{
 			int32 magicNumber = mStream.readInt32_be();
@@ -181,16 +181,16 @@ private:
 			mReadArchiveVersion = mStream.readInt32_be(); // file version
 			mNumObjects = mStream.readInt32_be();
 			//post("readArchiveHeader %d %d\n", mReadArchiveVersion, mNumObjects);
-			
+
 			if (mNumObjects > kObjectArrayInitialCapacity) {
 				mObjectArray = (PyrObject**)g->allocPool->Alloc(mNumObjects * sizeof(PyrObject*));
 				mObjectArrayCapacity = mNumObjects;
 			}
-			
+
 		}
 
 	void recurse(PyrObject *obj, int n)
-		{	
+		{
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
 				if (IsObj(slot)) constructObjectArray(slot->uo);
@@ -200,7 +200,7 @@ private:
 	void growObjectArray()
 		{
 			int32 newObjectArrayCapacity = mObjectArrayCapacity << 1;
-			
+
 			int32 newSize = newObjectArrayCapacity * sizeof(PyrObject*);
 			PyrObject** newArray = (PyrObject**)g->allocPool->Alloc(newSize);
 			memcpy(newArray, mObjectArray, mNumObjects * sizeof(PyrObject*));
@@ -210,15 +210,15 @@ private:
 			mObjectArrayCapacity = newObjectArrayCapacity;
 			mObjectArray = newArray;
 		}
-		
+
 	void putObject(PyrObject *obj)
 		{
 			obj->SetMark();
 			obj->scratch1 = mNumObjects;
-			
+
 			// expand array if needed
 			if (mNumObjects >= mObjectArrayCapacity) growObjectArray();
-			
+
 			// add to array
 			mObjectArray[mNumObjects++] = obj;
 		}
@@ -247,7 +247,7 @@ private:
 					} else if (isKindOf(obj, class_array)) {
 						putObject(obj);
 						recurse(obj, obj->size);
-						
+
 					} else {
 						putObject(obj);
 						recurse(obj, obj->size);
@@ -260,7 +260,7 @@ private:
 		{
 			//postfl("writeSlot %08X\n", slot->utag);
 			switch (slot->utag) {
-				case tagObj : 
+				case tagObj :
 					if (isKindOf(slot->uo, class_class)) {
 						return slot->uoc->name.us->length + 1;
 					} else if (isKindOf(slot->uo, class_process)) {
@@ -273,22 +273,22 @@ private:
 						return sizeof(int32);
 					}
 					break;
-				case tagInt : 
+				case tagInt :
 					return sizeof(int32);
-				case tagSym : 
+				case tagSym :
 					return slot->us->length + 1;
-				case tagChar : 
+				case tagChar :
 					return sizeof(int32);
-				case tagNil : 
+				case tagNil :
 					return 0;
-				case tagFalse : 
+				case tagFalse :
 					return 0;
-				case tagTrue : 
+				case tagTrue :
 					return 0;
-				case tagPtr : 
+				case tagPtr :
 					throw std::runtime_error("cannot archive RawPointers.");
 					return 0;
-				default : 
+				default :
 					return sizeof(double);
 			}
 		}
@@ -311,10 +311,10 @@ private:
 	void writeObjectHeader(PyrObject *obj)
 		{
 			obj->ClearMark();
-			
+
 			//postfl("writeObjectHeader %s\n", obj->classptr->name.us->name);
 			mStream.writeSymbol(obj->classptr->name.us->name);
-			
+
 			mStream.writeInt32_be(obj->size);
 		}
 
@@ -378,7 +378,7 @@ private:
 			PyrObject *obj;
 			//postfl("    writeSlot %08X\n", slot->utag);
 			switch (slot->utag) {
-				case tagObj : 
+				case tagObj :
 					obj = slot->uo;
 					if (isKindOf(obj, class_class)) {
 						mStream.writeInt8('C');
@@ -392,31 +392,31 @@ private:
 						mStream.writeInt32_be(obj->scratch1);
 					}
 					break;
-				case tagInt : 
+				case tagInt :
 					mStream.writeInt8('i');
 					mStream.writeInt32_be(slot->ui);
 					break;
-				case tagSym : 
+				case tagSym :
 					mStream.writeInt8('s');
 					mStream.writeSymbol(slot->us->name);
 					break;
-				case tagChar : 
+				case tagChar :
 					mStream.writeInt8('c');
 					mStream.writeInt32_be(slot->ui);
 					break;
-				case tagNil : 
+				case tagNil :
 					mStream.writeInt8('N');
 					break;
-				case tagFalse : 
+				case tagFalse :
 					mStream.writeInt8('F');
 					break;
-				case tagTrue : 
+				case tagTrue :
 					mStream.writeInt8('T');
 					break;
-				case tagPtr : 
+				case tagPtr :
 					mStream.writeInt8('N');
 					break;
-				default : 
+				default :
 					mStream.writeInt8('f');
 					mStream.writeDouble_be(slot->uf);
 					break;
@@ -486,7 +486,7 @@ private:
 			int32 size = obj->size;
 			//postfl("writeRawArray %d\n", size);
 			switch (obj->obj_format) {
-				case obj_char : 
+				case obj_char :
 				case obj_int8 : {
 					char *data = (char*)obj->slots;
 					mStream.writeData(data, size);
@@ -497,7 +497,7 @@ private:
 						mStream.writeInt16_be(data[i]);
 					}
 				} break;
-				case obj_int32 : 
+				case obj_int32 :
 				case obj_float : {
 					int32 *data = (int32*)obj->slots;
 					for (int i=0; i<size; ++i) {
@@ -516,7 +516,7 @@ private:
 						mStream.writeSymbol(data[i]->name);
 					}
 				} break;
-			}		
+			}
 		}
 
 	void readRawArray(PyrObject *obj)
@@ -524,7 +524,7 @@ private:
 			//postfl("readRawArray\n");
 			int32 size = obj->size;
 			switch (obj->obj_format) {
-				case obj_char : 
+				case obj_char :
 				case obj_int8 : {
 					int8 *data = (int8*)obj->slots;
 					for (int i=0; i<size; ++i) {
@@ -537,7 +537,7 @@ private:
 						data[i] = mStream.readInt16_be();
 					}
 				} break;
-				case obj_int32 : 
+				case obj_int32 :
 				case obj_float : {
 					int32 *data = (int32*)obj->slots;
 					for (int i=0; i<size; ++i) {
@@ -557,16 +557,16 @@ private:
 					}
 				} break;
 			}
-					
+
 		}
-		
+
 	VMGlobals *g;
-		
+
 	PyrObject **mObjectArray;
 	int32 mNumObjects;
 	int32 mObjectArrayCapacity;
 	PyrSlot mTopSlot;
-		
+
 	SC_IOStream<S> mStream;
 	int32 mReadArchiveVersion;
 

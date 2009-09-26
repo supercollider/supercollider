@@ -92,7 +92,7 @@ sourceFiles = [	'../../Source/common/dtoa.c',
 				'../../Source/lang/LangPrimSource/PyrUnixPrim.cpp',
 				'../../Source/lang/LangPrimSource/PyrUStringPrim.cpp',
 				'../../Source/lang/LangPrimSource/SC_ComPort.cpp',
-				'../../Source/lang/LangPrimSource/SC_Wii.cpp', 
+				'../../Source/lang/LangPrimSource/SC_Wii.cpp',
 
                 # PySCLang files
 				'./pycxx/Src/cxxextensions.c',
@@ -102,7 +102,7 @@ sourceFiles = [	'../../Source/common/dtoa.c',
 				'./PySCLang_Module_GUIStuff.cpp',
 				'./PySCLang_vpost_stuff.cpp',
 				'./PySCLang_Module.cpp'
-			  ]   
+			  ]
 
 # ------------------------------------------------------------------------------
 # platform specific files and defines
@@ -145,10 +145,10 @@ elif getPlatform() == 'win':
 # PySCLang module
 pysclang = Extension('PySCLang',
                     define_macros = defines,
-                    include_dirs = ['../../Headers/app', 
-									'../../Headers/common', 
-									'../../Headers/lang', 
-									'../../Headers/plugin_interface', 
+                    include_dirs = ['../../Headers/app',
+									'../../Headers/common',
+									'../../Headers/lang',
+									'../../Headers/plugin_interface',
 									'../../Headers/server',
 									'../../Source/lang/LangSource/Bison',
 									'./pycxx'

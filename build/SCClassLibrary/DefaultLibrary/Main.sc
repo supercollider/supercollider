@@ -6,7 +6,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 
 	var <platform, argv;
 	var <>recvOSCfunc;
-	
+
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
 	var	<>nowExecutingPath;
@@ -17,16 +17,16 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 		// that depend on thisProcess.platform methods.
 		platform = this.platformClass.new;
 		platform.initPlatform;
-	
+
 		super.startup;
-		
+
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 		GUI.fromID( this.platform.defaultGUIScheme );
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		this.platform.startup;
 		StartUp.run;
-		
+
 		("Welcome to SuperCollider"
 			++ (Platform.ideName.switch(
 				"scvim", {", type :SChelp for help"},
@@ -40,30 +40,30 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 				 	windows: ", press F1 for help",
 					iphone: ""
 				 ).at(platform.name);
-	
+
 			})
 		).postln;
 
 	}
-	
+
 	shutdown { // at recompile, quit
 		Server.quitAll;
 		this.platform.shutdown;
 		super.shutdown;
 	}
-	
+
 	run { // used to be called by command-R, customisation now via CocoaMenuItem
 		//interpreter.interpretPrintCmdLine;
 	}
-	
+
 	stop { // called by command-.
 		CmdPeriod.run;
 	}
-	
+
 	hardStop { // called by command alt dot
 		CmdPeriod.hardRun;
 	}
-	
+
 	recvOSCmessage { arg time, replyAddr, msg;
 		// this method is called when an OSC message is received.
 		recvOSCfunc.value(time, replyAddr, msg);
@@ -72,11 +72,11 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 
 	recvOSCbundle { arg time, replyAddr ... msgs;
 		// this method is called when an OSC bundle is received.
-		msgs.do({ arg msg; 
-			this.recvOSCmessage(time, replyAddr, msg); 
+		msgs.do({ arg msg;
+			this.recvOSCmessage(time, replyAddr, msg);
 		});
 	}
-	
+
 	newSCWindow {
 		var win, palette;
 		win = SCWindow("construction");
@@ -86,7 +86,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 
 //	override in platform specific extension
 //
-//	platformClass {		
+//	platformClass {
 //		^Platform
 //	}
 
@@ -100,7 +100,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 	showHelpSearch {
 		Help.searchGUI
 	}
-	
+
 	showClassBrowser {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
@@ -109,7 +109,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 	}
 
 	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
-	
+
 	*versionAtLeast { |maj, min|
 		^if((maj==scVersionMajor) and:{min.notNil}){
 			scVersionMinor >= min
@@ -117,7 +117,7 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 			scVersionMajor >= maj
 		};
 	}
-	
+
 	*versionAtMost { |maj, min|
 		^if((maj==scVersionMajor) and:{min.notNil}){
 			scVersionMinor <= min
@@ -125,21 +125,21 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 			scVersionMajor <= maj
 		};
 	}
-	
+
 	pid {
 		_GetPid
 		^this.primitiveFailed
 	}
-	
+
 	// PRIVATE
 	prArgv {
 		_Argv
 		^[]
 	}
-	
+
 	recompile { platform.recompile }
-	
+
 	escapeWindow { platform.escapeWindow }
-	
+
 	exitFullScreen { platform.exitFullScreen }
 }

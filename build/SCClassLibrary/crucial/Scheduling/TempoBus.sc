@@ -2,7 +2,7 @@
 TempoBus   {
 
 	var <>tempo,bus,isReady = false;
-	
+
 	*new { arg server,tempo;
 		var new;
 		server = server ? Server.local;
@@ -45,7 +45,7 @@ TempoBus   {
 		//bus = nil;
 		//isReady = false;
 	}
-	
+
 	init { arg server;
 		// BusPool
 		bus = Bus.control(server,1);
@@ -53,7 +53,7 @@ TempoBus   {
 		bus.set(tempo.tempo);
 		tempo.addDependant(this);
 
-		if(server.serverRunning,{ 
+		if(server.serverRunning,{
 			isReady = true;
 			bus.value = tempo.tempo;
 		});

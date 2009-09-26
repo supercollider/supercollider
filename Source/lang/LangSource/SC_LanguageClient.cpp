@@ -158,7 +158,7 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 		lock();
 		if (isLibraryCompiled()) {
 			VMGlobals *g = gMainVMGlobals;
-			
+
 			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
 			memcpy(strobj->s, buf, size);
 
@@ -235,7 +235,7 @@ bool SC_LanguageClient::parseMemArg(const char* arg, int* res)
 {
 	long value, factor = 1;
 	char* endPtr = 0;
-	
+
 	if (*arg == '\0') return false;
 
 	value = strtol(arg, &endPtr, 0);
@@ -270,7 +270,7 @@ bool SC_LanguageClient::parsePortArg(const char* arg, int* res)
 	char* endPtr;
 
 	if (*arg == '\0') return false;
-	
+
 	value = strtol(arg, &endPtr, 0);
 
 	if ((*endPtr != '\0') || (value < 0) || (value > 65535))
@@ -312,7 +312,7 @@ void SC_LanguageClient::onInterpStartup()
 // library functions
 // =====================================================================
 
-// this is defined in PySCLang 
+// this is defined in PySCLang
 #ifndef PYSCLANG
 void setPostFile(FILE* file)
 {
@@ -340,7 +340,7 @@ void postfl(const char *fmt, ...)
 {
 	char buf[512];
     va_list ap;
-    va_start(ap, fmt); 
+    va_start(ap, fmt);
 	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
 	if (n > 0) {
 		SC_LanguageClient::instance()->postFlush(buf, sc_min(n, sizeof(buf) - 1));

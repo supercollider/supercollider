@@ -2,7 +2,7 @@
 SharedBus : Bus {
 
 	var released = false,<>owner;
-	
+
 	*newFrom { arg bus,owner;
 		// only the top owner can free the bus
 		if(bus.isKindOf(SharedBus).not,{

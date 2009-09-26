@@ -2,7 +2,7 @@
 	File:		HID_Error_Handler.h
 
 	Contains:   Definition of the interfaces to <HID_Error_Handler.c>
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -44,7 +44,7 @@
 
 */
 
-// Usage notes: 
+// Usage notes:
 
 // include control --------------------------------------------------
 #ifdef SC_DARWIN

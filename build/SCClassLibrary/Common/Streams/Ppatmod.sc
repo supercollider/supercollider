@@ -7,7 +7,7 @@ Plazy : Pattern {
 	//asStream { arg ... args;
 //		^func.valueArray(args).asStream
 //	}
-	embedInStream { arg inval;				
+	embedInStream { arg inval;
 		^func.value(inval).embedInStream(inval)
 	}
 	storeArgs { ^[func] }
@@ -15,11 +15,11 @@ Plazy : Pattern {
 
 PlazyEnvir : Plazy {
 	var <>passEvent=false;
-	
+
 	embedInStream { arg inval;
 		^if(inval.isNil) { func.value.embedInStream(inval) } {
-			inval.use { 
-				if(passEvent) { func.valueEnvir(inval) } { func.valueEnvir }.embedInStream(inval) 
+			inval.use {
+				if(passEvent) { func.valueEnvir(inval) } { func.valueEnvir }.embedInStream(inval)
 			}
 		}
 	}
@@ -28,13 +28,13 @@ PlazyEnvir : Plazy {
 
 PlazyEnvirN : PlazyEnvir {
 	var genFunc;
-	
+
 	*new { arg func; ^super.new(func).makeGenFunc }
-	
+
 	embedInStream { arg inval;
 		var patterns;
 		^if(inval.isNil) {
-			func.value.embedInStream(inval) 
+			func.value.embedInStream(inval)
 		} {
 			inval.use {
 				patterns = if(passEvent) { genFunc.valueEnvir(inval) } { genFunc.valueEnvir };
@@ -60,10 +60,10 @@ Penvir : Pattern {
 	}
 	storeArgs { ^[envir,pattern,independent] }
 	embedInStream { arg inval;
-		if(independent) 
+		if(independent)
 			{ Event.new(8, nil, envir) }
 			{ envir }
-		.use { pattern.embedInStream(inval) }; 
+		.use { pattern.embedInStream(inval) };
 		^inval
 	}
 }

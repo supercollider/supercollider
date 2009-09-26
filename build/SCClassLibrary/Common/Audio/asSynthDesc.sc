@@ -33,7 +33,7 @@
 			server.value.sendBundle(nil, ["/d_recv", this.asBytes] ++ completionMsg)
 		});
 	}
-	
+
 	asSynthDesc { |libname=\global, keepDef = true|
 		var	lib, stream = CollStream(this.asBytes), desc;
 		libname ?? { libname = \global };

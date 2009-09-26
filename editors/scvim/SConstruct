@@ -73,21 +73,21 @@ def share_dir(prefix):
     return os.path.join(prefix, 'share')
 
 #build help, the help depends on having the home directory enviroment variable.. that could change
-build_help = Builder(action = 
+build_help = Builder(action =
 		'export HOME=' + os.environ.get('HOME') + ' && ruby ' + os.getcwd() + '/bin/scvim_make_help -f -s $SOURCE -d $TARGET')
 
 #create our options
 opts = Options()
-opts.Add(PathOption('PREFIX', 'Specify the prefix for the bin and share files', 
+opts.Add(PathOption('PREFIX', 'Specify the prefix for the bin and share files',
 	DEFAULT_PREFIX, PathOption.PathIsDir))
-opts.Add(PathOption('CACHE_DIR', 
-		'Specify the dir for scvim help docs, syntax highlighting, etc', 
+opts.Add(PathOption('CACHE_DIR',
+		'Specify the dir for scvim help docs, syntax highlighting, etc',
 		os.path.join(os.environ.get('HOME', '/'), '.scvim/'), PathOption.PathAccept))
-opts.Add(PathOption('VIMFILE_DIR', 
+opts.Add(PathOption('VIMFILE_DIR',
 		'Specify the dir for vim files, these need to be in vim\'s runtime path',
 		os.path.join(os.environ.get('HOME', '/'), '.vim/'), PathOption.PathAccept))
-opts.Add(PathOption('SUPERCOLLIDER_HELP_DIR', 
-	'Specify the location of SuperCollider\'s help', 
+opts.Add(PathOption('SUPERCOLLIDER_HELP_DIR',
+	'Specify the location of SuperCollider\'s help',
 	DEFAULT_SC_HELP, PathOption.PathIsDir))
 
 #create our enviroment, with our options and custom builders
@@ -124,12 +124,12 @@ install_vimfiles = env.Alias('install-vimfiles', [
 	)
 
 install_doc = env.Alias('install-doc', env.Install(DOC_DIR, ['SCVim.scd']))
-build_help = env.Alias('build-help', env.BuildHelp(target = Dir(DOC_DIR), 
+build_help = env.Alias('build-help', env.BuildHelp(target = Dir(DOC_DIR),
 	source = Dir(SUPERCOLLIDER_HELP_DIR)))
 AlwaysBuild(Dir(DOC_DIR))
 Depends(build_help, install_doc)
 
-install_bin = env.Alias('install-bin', 
+install_bin = env.Alias('install-bin',
 		install_dir(env, 'bin', bin_dir(PREFIX), ANY_FILE_RE, 1))
 
 install_rc = env.Alias('install-rc', env.Install(os.path.join(share_dir(PREFIX), 'scvim/'), ['scvimrc']))

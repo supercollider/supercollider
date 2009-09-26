@@ -96,7 +96,7 @@ The expressions are joined as alternatives with the \\| operator."
   (concat "^\\s *\\*?\\(" sclang-method-name-regexp "\\)\\s *{")
   "Regular expression matching method definitions.")
 
-(defconst sclang-block-regexp 
+(defconst sclang-block-regexp
   "^\\((\\)\\s *\\(?:/[/*]?.*\\)?"
   "Regular expression matching the beginning of a code block.
 

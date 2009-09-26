@@ -59,7 +59,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 			stmt;								\
 		}										\
 	}
-	
+
 #define UNROLL4_CODE(size,var,stmt)		\
 	{	int tempi, tempend;						\
 		tempend = size>>2;							\
@@ -92,7 +92,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 			stmt;								\
 		}										\
 	}
-	
+
 
 #if UNROLL == 8
 #define UNROLL_CODE UNROLL8_CODE
@@ -105,7 +105,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 #if 0
 
 #define BINOP_LOOP1(OP)
-#define BINOP_LOOP2(STMT1, STMT2, STMT3)	
+#define BINOP_LOOP2(STMT1, STMT2, STMT3)
 
 #else
 
@@ -157,7 +157,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 /*
 	compound formulas :
 	amclip	out = B<=0 ? 0 : A*B;		// two quadrant amplitude modulation
-	ring1	out = A*(B+1) = A*B + A;	// amplitude modulation of a by b.		
+	ring1	out = A*(B+1) = A*B + A;	// amplitude modulation of a by b.
 	ring2	out = A*B + A + B;			// ring modulation plus both original signals
 	ring3	out = A*A*B;				// ring modulation variant
 	ring4	out = A*A*B - A*B*B;		// ring modulation variant
@@ -167,7 +167,7 @@ PyrObject* newPyrSignal(VMGlobals *g, long size);
 	sqrsum	out = (A + B)^2				// square of the sum        = a^2 + b^2 + 2ab
 */
 
-void signal_init_globs();	
+void signal_init_globs();
 PyrObject* signal_fill(PyrObject *outSignal, float inValue);
 PyrObject* signal_scale(PyrObject *outSignal, float inValue);
 PyrObject* signal_offset(PyrObject *outSignal, float inValue);
@@ -257,7 +257,7 @@ PyrObject* signal_softclip(VMGlobals *g, PyrObject *inPyrSignal);
 PyrObject* signal_softclipneg(VMGlobals *g, PyrObject *inPyrSignal);
 PyrObject* signal_fsin(VMGlobals *g, PyrObject *inPyrSignal);
 PyrObject* signal_poly3(VMGlobals *g, PyrObject *inPyrSignal, float a, float b, float c);
-PyrObject* signal_poly3r(VMGlobals *g, PyrObject *inPyrSignal, 
+PyrObject* signal_poly3r(VMGlobals *g, PyrObject *inPyrSignal,
 	float a1, float a2, float b1, float b2, float c1, float c2, float slopeFactor);
 PyrObject* signal_integrate(VMGlobals *g, PyrObject *inPyrSignal, float *ioSum);
 PyrObject* signal_leakdc(VMGlobals *g, PyrObject *inPyrSignal, float *ioDC, float leakFactor);
@@ -273,9 +273,9 @@ PyrObject* signal_overwrite(VMGlobals *g, PyrObject* ina, PyrObject* inb, long i
 PyrObject* signal_cat3(VMGlobals *g, PyrObject* ina, PyrObject* inb, PyrObject* inc);
 PyrObject* signal_linen(VMGlobals *g, PyrObject* ina, long atk, long dcy, float amp);
 PyrObject* signal_linen2(VMGlobals *g, PyrObject* ina, long atk, long dcy, float amp, float midamp);
-PyrObject* signal_writesplice(VMGlobals *g, PyrObject* outc, PyrObject* ina, PyrObject* inb, 
+PyrObject* signal_writesplice(VMGlobals *g, PyrObject* outc, PyrObject* ina, PyrObject* inb,
 	long indexc, long indexa, long indexb, long fadelen, float midamp);
-PyrObject* signal_splice(VMGlobals *g, PyrObject* ina, PyrObject* inb, 
+PyrObject* signal_splice(VMGlobals *g, PyrObject* ina, PyrObject* inb,
 	long indexa, long indexb, long fadelen, float midamp);
 
 PyrObject* signal_invert_ds(PyrObject *inPyrSignal);

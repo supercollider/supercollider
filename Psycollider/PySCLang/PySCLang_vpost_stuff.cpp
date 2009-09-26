@@ -1,14 +1,14 @@
 /*
  * File: PYSCLang_Module_GUIStuff.cpp
  * Project : Psycollider
- * 
+ *
  * by:
  * Benjamin Golinvaux
  * benjamin.golinvaux@euresys.com
  * messenger: bgolinvaux@hotmail.com
- * 
+ *
  * currently maintained by:
- * Christopher Frauenberger 
+ * Christopher Frauenberger
  * frauenberger@iem.at
  *
  *  This program is free software; you can redistribute it and/or
@@ -63,16 +63,16 @@ int PySCLang_vpost(const char *fmt, va_list ap)
 
 	if( PySCLang_Module::scLogSink_s != NULL) {
 		/* make the Python call thread safe (global interpreter clock) */
-		PyGILState_STATE gstate;	
+		PyGILState_STATE gstate;
 		gstate = PyGILState_Ensure();
 
 		PyObject *arglist = Py_BuildValue("(s)", _postBuffer);
 		PyEval_CallObject(PySCLang_Module::scLogSink_s, arglist);
-		
+
 		PyGILState_Release(gstate);
 	}
     else { // no log sink callable..
-      cout << _postBuffer; 
+      cout << _postBuffer;
     }
 
   }
@@ -104,14 +104,14 @@ int vpost(const char *fmt, va_list ap)
 void post(const char *fmt, ...)
 {
   va_list ap;
-  va_start(ap, fmt); 
+  va_start(ap, fmt);
   PySCLang_vpost(fmt, ap);
 }
 
 void postfl(const char *fmt, ...)
 {
   va_list ap;
-  va_start(ap, fmt); 
+  va_start(ap, fmt);
   PySCLang_vpost(fmt, ap);
 }
 

@@ -135,9 +135,9 @@ sc_pclose(FILE *iop, pid_t mPid)
 /*	The process handle allows us to get the exit code after
 	the process has died. It must be closed in sc_pclose;
 	just having the pid as in the unix version is not enough.
-	Thus this global linked list needs to be maintained and 
+	Thus this global linked list needs to be maintained and
 	access to it needs to be locked. */
-	
+
 static struct process {
 	struct process *next;
 	FILE *fp;
@@ -163,16 +163,16 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 	char *new_cmd = NULL;
 	struct process *cur;
 	BOOL read_mode, write_mode;
-	
+
 	if (cmd == NULL) {
 		return NULL;
 	}
 
 	new_cmd = (char *)malloc(strlen(cmd) + 10);
 	sprintf(new_cmd, "cmd /c %s", cmd);
-	
+
 	current_pid = GetCurrentProcess();
-	
+
 	ZeroMemory( &si, sizeof(STARTUPINFO) );
 	si.cb = sizeof(STARTUPINFO);
 	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
@@ -180,12 +180,12 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 	si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
 	si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-	
+
 	binary_mode = (strchr(mode, 'b') ? _O_BINARY : _O_TEXT);
-	
+
 	read_mode = (strchr(mode, 'r') != 0);
 	write_mode = (strchr(mode, 'w') != 0);
-	
+
 	/* Opening the pipe for writing */
 	if (write_mode) {
 		binary_mode |= _O_WRONLY;
@@ -193,7 +193,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 			fprintf(stderr, "popen: error CreatePipe\n");
 			return NULL;
 		}
-		
+
 		if (DuplicateHandle(current_pid, child_in,
 							current_pid, &father_in_dup,
 							0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
@@ -201,7 +201,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 			return NULL;
 		}
 		si.hStdInput = father_in_dup;
-		
+
 		CloseHandle(child_in);
 		fno = _open_osfhandle((long)father_out, binary_mode);
 		f = _fdopen(fno, mode);
@@ -229,7 +229,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		free(new_cmd);
 		return NULL;
 	}
-	
+
 	/* creating child process */
 	if (CreateProcess(NULL,	/* pointer to name of executable module */
 					  new_cmd,	/* pointer to command line string */
@@ -247,10 +247,10 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		fclose(f);
 		return NULL;
 	}
-	
+
 	/* Only the process handle is needed, ignore errors */
 	CloseHandle(pi.hThread);
-	
+
 	/* Closing the unnecessary part of the pipe */
 	if (read_mode)
 		CloseHandle(father_out_dup);
@@ -270,11 +270,11 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 	cur->next = processlist;
 	processlist = cur;
 	THREAD_UNLOCK();
-	
+
 	if (new_cmd) free(new_cmd);
 
 	*pid = pi.dwProcessId;
-	
+
 	return f;
 }
 
@@ -303,7 +303,7 @@ sc_pclose(FILE *f, pid_t pid)
 		free(cur);
 		return -1;
 	}
-	
+
 	if (GetExitCodeProcess(cur->handle, (LPDWORD)&exit_code) == 0) {
 		fprintf(stderr, "sc_pclose: can't get process exit code\n");
 		free(cur);
@@ -311,13 +311,13 @@ sc_pclose(FILE *f, pid_t pid)
 	}
 
 	fclose(cur->fp);
-	
+
 	if (CloseHandle(cur->handle) == FALSE) {
 		fprintf(stderr, "sc_pclose: error closing process handle\n");
 		free(cur);
 		return -1;
 	}
-	
+
 	free(cur);
 
 	return exit_code;

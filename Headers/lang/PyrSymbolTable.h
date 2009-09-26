@@ -42,17 +42,17 @@ private:
 class SymbolTable
 {
 public:
-	
+
 	SymbolTable(AllocPool *inPool, int inSize);
-	
+
 	void CopyFrom(SymbolTable& inTable);
-	
+
 	int NumItems() { return mNumItems; }
 	int TableSize() { return mMaxItems; }
 	PyrSymbol* Get(int inIndex) { return mTable[inIndex]; }
-	
+
 	void CheckSymbols();
-	
+
 private:
 	friend PyrSymbol* getsym(const char *name);
 	friend PyrSymbol* findsym(const char *name);
@@ -68,7 +68,7 @@ private:
 	void Add(PyrSymbol* inSymbol);
 	void Rehash(PyrSymbol** inTable, int inSize);
 	void MakeEmpty();
-	
+
 	AllocPool *mPool;
 	SymbolSpace mSpace;
 	PyrSymbol **mTable;

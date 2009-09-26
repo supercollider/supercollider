@@ -6,14 +6,14 @@
 
 +Symbol {
 	isBasicOperator {
-		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ].includes(this);	
+		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ].includes(this);
 	}
-	
+
 }
 
 +Object {
 	// might need correction for literals.
-	envirKey { arg envir; ^(envir ? currentEnvironment).findKeyForValue(this) } 
+	envirKey { arg envir; ^(envir ? currentEnvironment).findKeyForValue(this) }
 	envirCompileString {
 		var key = this.envirKey;
 		^if(key.notNil) { "~" ++ key } { this.asCompileString };
@@ -22,32 +22,32 @@
 
 
 +NodeProxy {
-	key { arg envir; 
+	key { arg envir;
 		^super.envirKey(envir);
 		//don't want to add a slot yet. not optimized
 	}
 		// not ideal, but usable for now.
-	storeOn { |stream| 
+	storeOn { |stream|
 		var key = this.key ? '<unnamed nodeproxy>';
 		stream << ("~" ++ key);
 	}
-	
+
 	playNDialog { |bounds|		var editstring, doc;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
-		editstring = this.asCompileString ++ ".playN(\n" 
+		editstring = this.asCompileString ++ ".playN(\n"
 			++ "\touts:" + try { this.monitor.outs } ?? { (0..this.numChannels - 1) }  ++ ",\n"
 			++ "\tamps:" + try { this.monitor.amps } ?? { 1 ! this.numChannels }  ++ ",\n"
-			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);"; 
-			
-		doc = Document("edit outs:", editstring); 
+			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);";
+
+		doc = Document("edit outs:", editstring);
 		try { doc.bounds_(bounds) };	// swingosc safe	}
-	
+
 	findInOpenDocuments {
 		var src, str, startSel, doc;
-		src = this.source; 
+		src = this.source;
 		src ?? { "no source yet.".postln; ^this };
-		
-		str = src.asCompileString; 
+
+		str = src.asCompileString;
 		doc = Document.allDocuments.detect { |doc|
 			startSel = doc.string.find(str);
 			startSel.notNil;
@@ -62,7 +62,7 @@
 		var basic = operator.isBasicOperator;
 		astr = a.envirCompileString;
 		bstr = b.envirCompileString;
-		
+
 		if(b.isKindOf(AbstractOpPlug)){ bstr = "(%)".format(bstr) };
 		opstr = if(basic.not) { ".%(" } { " % " }.format(operator);
 		str = str ++ astr ++ opstr ++ bstr;
@@ -79,7 +79,7 @@
 
 
 + ProxySpace {
-	
+
 	storeOn { arg stream, keys, includeSettings = true;
 		var proxies, hasGlobalClock;
 		hasGlobalClock = clock.isKindOf(TempoBusClock);
@@ -88,12 +88,12 @@
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
 			keys.do { arg key; var p = envir[key]; p !? { p.getFamily(proxies) } };
-			keys = proxies.collect { arg item; item.key(envir) }; 
+			keys = proxies.collect { arg item; item.key(envir) };
 		} { keys = envir.keys };
-		
+
 		if(hasGlobalClock) { keys.remove(\tempo) };
 		// add all objects to compilestring
-		keys.do { arg key; 
+		keys.do { arg key;
 			var proxy, str, multiline;
 			proxy = envir.at(key);
 			if(proxy.objects.size == 1 and: { proxy.objects.indices.first == 0 }) {
@@ -128,35 +128,35 @@
 	documentOutput {
 		^this.document(nil, true)
 	}
-	
-	document { arg keys, onlyAudibleOutput=false, includeSettings=true; 
+
+	document { arg keys, onlyAudibleOutput=false, includeSettings=true;
 		var str;
 		if(onlyAudibleOutput) {
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
-		str = String.streamContents({ arg stream; 
+		str = String.streamContents({ arg stream;
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
 			this.storeOn(stream, keys, includeSettings);
-			this.do { arg px; if(px.monitorGroup.isPlaying) { 
+			this.do { arg px; if(px.monitorGroup.isPlaying) {
 				stream << "~" << px.key << ".play; \n"
 				}
 			};
 		});
 		^Document.new((name ? "proxyspace").asString, str)
 	}
-	
+
 }
 
 + ProxyNodeMap {
 	storeOn { arg stream, namestring="", dropOut=false, envir;
 			var strippedSetArgs, storedSetNArgs, rates, proxyMapKeys, proxyMapNKeys;
 			this.updateBundle;
-			if(dropOut) { 
-				forBy(0, setArgs.size - 1, 2, { arg i; 
+			if(dropOut) {
+				forBy(0, setArgs.size - 1, 2, { arg i;
 					var item;
 					item = setArgs[i];
 					if(item !== 'out' and: { item !== 'i_out' })
-					{ 
+					{
 						strippedSetArgs = strippedSetArgs.add(item);
 						strippedSetArgs = strippedSetArgs.add(setArgs[i+1]);
 					}
@@ -166,16 +166,16 @@
 				stream << namestring << ".set(" <<<* strippedSetArgs << ");" << Char.nl;
 			};
 			if(mapArgs.notNil or: { mapnArgs.notNil } and: { envir.notNil }) {
-				settings.keysValuesDo { arg key, s; 
+				settings.keysValuesDo { arg key, s;
 					var proxyKey;
-					if(s.isMapped) { 
+					if(s.isMapped) {
 						proxyKey = s.value.key;
 						if(proxyKey.notNil) {
 							if(s.isMultiChannel) {
-								proxyMapNKeys = proxyMapNKeys.add("'" ++ key ++ "'"); 
+								proxyMapNKeys = proxyMapNKeys.add("'" ++ key ++ "'");
 								proxyMapNKeys = proxyMapNKeys.add("~" ++ proxyKey);
 							}{
-								proxyMapKeys = proxyMapKeys.add("'" ++ key ++ "'"); 
+								proxyMapKeys = proxyMapKeys.add("'" ++ key ++ "'");
 								proxyMapKeys = proxyMapKeys.add("~" ++ proxyKey);
 							}
 						};
@@ -188,7 +188,7 @@
 					stream << namestring << ".mapn(" <<* proxyMapNKeys << ");" << Char.nl;
 				};
 			};
-	
+
 			if(setnArgs.notNil) {
 				storedSetNArgs = Array.new;
 				settings.keysValuesDo { arg key, s;
@@ -205,7 +205,7 @@
 			if(rates.notNil) {
 				stream << namestring << ".setRates(" <<<* rates << ");" << Char.nl;
 			}
-			
+
 		}
 
 }

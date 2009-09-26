@@ -43,15 +43,15 @@ class GCSet
 public:
 	GCSet() {}
 	void Init(int inSizeClass);
-	
+
 	bool HasFree() { return mFree != &mBlack; }
-	
+
 private:
 	friend class PyrGC;
-	
+
 	void MajorFlip();
 	void MinorFlip();
-	
+
 	PyrObjectHdr mBlack;
 	PyrObjectHdr mWhite;
 	PyrObjectHdr* mFree;
@@ -59,7 +59,7 @@ private:
 
 struct SlotRef {
 	SlotRef(PyrObject* inObj, int32 inIndex) : obj(inObj), slotIndex(inIndex) {}
-	
+
 	PyrObject *obj;
 	int32 slotIndex;
 };
@@ -68,22 +68,22 @@ class PyrGC
 {
 public:
 	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
-	
+
 	PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
 	PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
-						
-	static PyrObject* NewPermanent(size_t inNumBytes, 
+
+	static PyrObject* NewPermanent(size_t inNumBytes,
 						long inFlags, long inFormat);
 
 	PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
-			
-#if 0	
+
+#if 0
 // Codewarrior is not inlining these.. why?
 	bool IsBlack(PyrObjectHdr* inObj) { return inObj->gc_color == mBlackColor; }
 	bool IsWhite(PyrObjectHdr* inObj) { return inObj->gc_color == mWhiteColor; }
 	bool IsGrey(PyrObjectHdr* inObj) { return inObj->gc_color == mGreyColor; }
 	bool IsMarker(PyrObjectHdr* inObj) { return inObj->gc_color == obj_gcmarker; }
-#else 
+#else
 
 #define IsBlack(inObj) ((inObj)->gc_color == mBlackColor)
 #define IsWhite(inObj) ((inObj)->gc_color == mWhiteColor)
@@ -99,50 +99,50 @@ public:
 
 
 	// general purpose write barriers:
-	void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot) 
-		{ 
+	void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot)
+		{
 			if (IsBlack(inParent) && IsObj(inSlot) && IsWhite(inSlot->uo)) {
 				ToGrey(inSlot->uo);
 			}
 		}
-	void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild) 
-		{ 
+	void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
+		{
 			if (IsBlack(inParent) && IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
 		}
 	// when you know the parent is black:
-	void GCWriteBlack(PyrSlot* inSlot) 
-		{ 
+	void GCWriteBlack(PyrSlot* inSlot)
+		{
 			if (IsObj(inSlot)) {
 				if (IsWhite(inSlot->uo)) {
 					ToGrey(inSlot->uo);
 				}
 			}
 		}
-	void GCWriteBlack(PyrObjectHdr* inChild) 
-		{ 
+	void GCWriteBlack(PyrObjectHdr* inChild)
+		{
 			if (IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
 		}
 	// when you know the child is white
-	void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild) 
-		{ 
+	void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
+		{
 			if (IsBlack(inParent)) {
 				ToGrey(inChild);
 			}
 		}
 
 // users should not call anything below.
-				
+
 	void Collect();
 	void Collect(int32 inNumToScan);
 	void FullCollection();
 	void ScanFinalizers();
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
 	void CompletePartialScan(PyrObject *obj);
-	
+
 	void ToGrey(PyrObjectHdr* inObj);
 	void ToGrey2(PyrObjectHdr* inObj);
 	void ToBlack(PyrObjectHdr* inObj);
@@ -164,13 +164,13 @@ public:
 	void DumpInfo();
 	void DumpGrey();
 	void DumpSet(int set);
-	
+
 	void BecomePermanent(PyrObject *inObject);
 	void BecomeImmutable(PyrObject *inObject);
-	
+
 	bool IsPartialScanObject(PyrObject* inObject) const { return inObject == mPartialScanObj; }
 	int32 GetPartialScanIndex() const { return mPartialScanSlot; }
-	
+
 private:
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
@@ -185,15 +185,15 @@ private:
 
 	void ClearMarks();
 	void Finalize(PyrObject *obj);
-	
+
 	void beginPause();
 	void endPause();
 	void reportPause();
-	
+
 	VMGlobals *mVMGlobals;
 	AllocPool *mPool;
 	AdvancingAllocPool mNewPool;
-	GCSet mSets[kNumGCSets]; 
+	GCSet mSets[kNumGCSets];
 	PyrProcess *mProcess; // the root is the pyrprocess which contains this struct
 	PyrObject *mStack;
 	PyrObject *mPartialScanObj;
@@ -203,21 +203,21 @@ private:
 	int32 mNumToScan;
 	int32 mNumGrey;
 	int32 mCurSet;
-	
+
 	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
-	
+
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	bool mCanSweep;
 	bool mRunning;
 };
 
-inline void PyrGC::DLRemove(PyrObjectHdr *obj) 
+inline void PyrGC::DLRemove(PyrObjectHdr *obj)
 {
 	obj->next->prev = obj->prev;
 	obj->prev->next = obj->next;
 }
 
-inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj) 
+inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
 {
 	obj->next = after->next;
 	obj->prev = after;
@@ -225,7 +225,7 @@ inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
 	after->next = obj;
 }
 
-inline void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj) 
+inline void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj)
 {
 	obj->prev = before->prev;
 	obj->next = before;
@@ -233,35 +233,35 @@ inline void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj)
 	before->prev = obj;
 }
 
-inline GCSet* PyrGC::GetGCSet(PyrObjectHdr* inObj) 
+inline GCSet* PyrGC::GetGCSet(PyrObjectHdr* inObj)
 {
 	return mSets + (inObj->classptr == class_finalizer ? kFinalizerSet : inObj->obj_sizeclass);
 }
 
-inline void PyrGC::ToBlack(PyrObjectHdr *obj) 
-{		
+inline void PyrGC::ToBlack(PyrObjectHdr *obj)
+{
 	if (IsGrey(obj)) {
 		mNumGrey--;
 		//post("ToBlack %d\n", mNumGrey);
 	}
 
-	DLRemove(obj);		
-	
+	DLRemove(obj);
+
 	GCSet *gcs = GetGCSet(obj);
 	DLInsertAfter(&gcs->mBlack, obj);
 
 	obj->gc_color = mBlackColor;
 }
 
-inline void PyrGC::ToWhite(PyrObjectHdr *obj) 
-{	
+inline void PyrGC::ToWhite(PyrObjectHdr *obj)
+{
 	if (IsGrey(obj)) {
 		mNumGrey--;
 		//post("ToWhite %d\n", mNumGrey);
 	}
 
-	DLRemove(obj);	
-		
+	DLRemove(obj);
+
 	GCSet *gcs = GetGCSet(obj);
 	DLInsertAfter(&gcs->mWhite, obj);
 
@@ -269,18 +269,18 @@ inline void PyrGC::ToWhite(PyrObjectHdr *obj)
 }
 
 inline void PyrGC::Free(PyrObjectHdr* obj)
-{	
+{
 	if (IsGrey(obj)) {
 		mNumGrey--;
 		//post("ToWhite %d\n", mNumGrey);
 	}
 
-	DLRemove(obj);	
-		
+	DLRemove(obj);
+
 	GCSet *gcs = GetGCSet(obj);
 	DLInsertBefore(gcs->mFree, obj);
 	gcs->mFree = obj;
-	
+
 	obj->gc_color = mFreeColor;
 	obj->size = 0;
 }

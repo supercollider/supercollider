@@ -42,16 +42,16 @@ enum {
 	opSign,
 	opSquared,
 	opCubed,
-	opSqrt,		
+	opSqrt,
 	opExp,
 	opRecip,
 	opMIDICPS,
 	opCPSMIDI,
-	
+
 	opMIDIRatio,
 	opRatioMIDI,
 	opDbAmp,
-	opAmpDb,	
+	opAmpDb,
 	opOctCPS,
 	opCPSOct,
 	opLog,
@@ -76,7 +76,7 @@ enum {
 	opDistort,
 	opSoftClip,
 	opCoin,
-	
+
 	opDigitValue,
 	opSilence,
 	opThru,
@@ -84,10 +84,10 @@ enum {
 	opHanWindow,
 	opWelchWindow,
 	opTriWindow,
-	
+
 	opRamp,
 	opSCurve,
-	
+
 	opNumUnarySelectors
 };
 
@@ -197,7 +197,7 @@ extern "C"
 void ChooseOperatorFunc(UnaryOpUGen *unit);
 
 void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
-{	
+{
 	ChooseOperatorFunc(unit);
 	(unit->mCalcFunc)(unit, 1);
 }
@@ -209,8 +209,8 @@ void invert_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = -ZXP(a);
 	);
 }
@@ -220,9 +220,9 @@ void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-	
+
 	vint32 neg = (vint32)vinit(0x80000000);
-	
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vec_st((vfloat32)vec_xor(neg, (vint32)vec_ld(i, a)), i, out);
@@ -234,8 +234,8 @@ void not_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = ZXP(a) > 0.f ? 0.f : 1.f;
 	);
 }
@@ -243,7 +243,7 @@ void not_a(UnaryOpUGen *unit, int inNumSamples)
 void zero_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	
+
 	ZClear(inNumSamples, out);
 }
 
@@ -251,7 +251,7 @@ void thru_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
+
 	ZCopy(inNumSamples, out, a);
 }
 
@@ -259,8 +259,8 @@ void abs_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = fabs(ZXP(a));
 	);
 }
@@ -270,9 +270,9 @@ void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-	
+
 	vint32 mask = (vint32)vinit(0x7fffffff);
-	
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vec_st((vfloat32)vec_and(mask, (vint32)vec_ld(i, a)), i, out);
@@ -284,8 +284,8 @@ void recip_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = 1.f / ZXP(a);
 	);
 }
@@ -295,7 +295,7 @@ void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-		
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vec_st(vec_reciprocal(vec_ld(i, a)), i, out);
@@ -307,8 +307,8 @@ void floor_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = floor(ZXP(a));
 	);
 }
@@ -318,7 +318,7 @@ void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-		
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vec_st(vec_floor(vec_ld(i, a)), i, out);
@@ -330,8 +330,8 @@ void ceil_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = ceil(ZXP(a));
 	);
 }
@@ -341,7 +341,7 @@ void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-		
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vec_st(vec_ceil(vec_ld(i, a)), i, out);
@@ -353,8 +353,8 @@ void sin_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::sin(ZXP(a));
 	);
 }
@@ -363,8 +363,8 @@ void cos_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::cos(ZXP(a));
 	);
 }
@@ -373,8 +373,8 @@ void tan_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::tan(ZXP(a));
 	);
 }
@@ -383,8 +383,8 @@ void asin_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::asin(ZXP(a));
 	);
 }
@@ -393,8 +393,8 @@ void acos_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::acos(ZXP(a));
 	);
 }
@@ -403,8 +403,8 @@ void atan_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::atan(ZXP(a));
 	);
 }
@@ -413,8 +413,8 @@ void sinh_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::sinh(ZXP(a));
 	);
 }
@@ -423,8 +423,8 @@ void cosh_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::cosh(ZXP(a));
 	);
 }
@@ -433,8 +433,8 @@ void tanh_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::tanh(ZXP(a));
 	);
 }
@@ -443,8 +443,8 @@ void log_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::log(ZXP(a));
 	);
 }
@@ -453,8 +453,8 @@ void log2_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_log2(ZXP(a));
 	);
 }
@@ -463,8 +463,8 @@ void log10_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_log10(ZXP(a));
 	);
 }
@@ -473,8 +473,8 @@ void exp_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = std::exp(ZXP(a));
 	);
 }
@@ -483,8 +483,8 @@ void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_sqrt(ZXP(a));
 	);
 }
@@ -493,8 +493,8 @@ void ampdb_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_ampdb(ZXP(a));
 	);
 }
@@ -503,8 +503,8 @@ void dbamp_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_dbamp(ZXP(a));
 	);
 }
@@ -513,8 +513,8 @@ void midicps_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_midicps(ZXP(a));
 	);
 }
@@ -523,8 +523,8 @@ void cpsmidi_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_cpsmidi(ZXP(a));
 	);
 }
@@ -533,8 +533,8 @@ void midiratio_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_midiratio(ZXP(a));
 	);
 }
@@ -543,8 +543,8 @@ void ratiomidi_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_ratiomidi(ZXP(a));
 	);
 }
@@ -553,8 +553,8 @@ void cpsoct_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_cpsoct(ZXP(a));
 	);
 }
@@ -563,8 +563,8 @@ void octcps_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_octcps(ZXP(a));
 	);
 }
@@ -573,8 +573,8 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa - std::floor(xa);
 	);
@@ -585,7 +585,7 @@ void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
-		
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vfloat32 z = vec_ld(i, a);
@@ -598,8 +598,8 @@ void squared_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa;
 	);
@@ -611,7 +611,7 @@ void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
 	define_vzero;
-	
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vfloat32 z = vec_ld(i, a);
@@ -624,8 +624,8 @@ void cubed_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa * xa;
 	);
@@ -637,7 +637,7 @@ void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 	vfloat32 *out = (vfloat32*)OUT(0);
 	vfloat32 *a = (vfloat32*)IN(0);
 	define_vzero;
-	
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vfloat32 z = vec_ld(i, a);
@@ -650,8 +650,8 @@ void sign_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa < 0.f ? -1.f : (xa > 0.f ? 1.f : 0.f);
 	);
@@ -661,14 +661,14 @@ void distort_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	/*LOOP(inNumSamples, 
+
+	/*LOOP(inNumSamples,
 		float z = ZXP(a);
 		if (z < 0.f) ZXP(out) = z/(1. - z);
 		else ZXP(out) = z/(1. + z);
 	);*/
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float z = ZXP(a);
 		ZXP(out) = z/(1.f + std::abs(z));
 	);
@@ -682,7 +682,7 @@ void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 	define_vzero;
 	define_vones;
 	vint32 mask = (vint32)vinit(0x7fffffff);
-	
+
 	int len = inNumSamples << 2;
 	for (int i=0; i<len; i+=16) {
 		vfloat32 z = vec_ld(i, a);
@@ -695,8 +695,8 @@ void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float z = ZXP(a);
 		if (z < 0.f) ZXP(out) = z/(1.f - z);
 		else ZXP(out) = z;
@@ -707,15 +707,15 @@ void softclip_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	/*LOOP(inNumSamples, 
+
+	/*LOOP(inNumSamples,
 		float z = ZXP(a);
 		if (z < -0.5) ZXP(out) = (-z - .25)/z;
 		else if (z > 0.5) ZXP(out) = (z - .25)/z;
 		else ZXP(out) = z;
 	);*/
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float z = ZXP(a);
 		float az = fabs(z);
 		if (az > 0.5f) ZXP(out) = (az - .25f)/z;
@@ -728,8 +728,8 @@ void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_rectwindow(ZXP(a));
 	);
 }
@@ -738,8 +738,8 @@ void hanwindow_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_hanwindow(ZXP(a));
 	);
 }
@@ -748,8 +748,8 @@ void welwindow_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_welwindow(ZXP(a));
 	);
 }
@@ -758,8 +758,8 @@ void triwindow_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		float x = ZXP(a);
 		float z;
 		if (x < 0.f || x > 1.f) z = 0.f;
@@ -774,8 +774,8 @@ void scurve_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_scurve(ZXP(a));
 	);
 }
@@ -784,8 +784,8 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
-	
-	LOOP(inNumSamples, 
+
+	LOOP(inNumSamples,
 		ZXP(out) = sc_ramp(ZXP(a));
 	);
 }
@@ -1152,8 +1152,8 @@ void distortneg_d(UnaryOpUGen *unit, int inNumSamples)
 	} else {
 		RESETINPUT(0);
 	}
-}		
-		
+}
+
 void softclip_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
@@ -1227,12 +1227,12 @@ void scurve_d(UnaryOpUGen *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 
 UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
-	
+
 	switch (unit->mSpecialIndex) {
 		case opSilence : func = &zero_a; break;
 		case opThru : func = &thru_a; break;
@@ -1252,7 +1252,7 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 		case opCPSMIDI : func = &cpsmidi_a; break;
 
 		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opRatioMIDI : func = &ratiomidi_a; break;
 		case opDbAmp : func = &dbamp_a; break;
 		case opAmpDb : 	func = &ampdb_a; break;
 		case opOctCPS : func = &octcps_a; break;
@@ -1280,7 +1280,7 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_a; break;
 		case opRamp : func = &ramp_a; break;
-		
+
 		default : func = &thru_a; break;
 	}
 	return func;
@@ -1290,7 +1290,7 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
-	
+
 	switch (unit->mSpecialIndex) {
 		case opSilence : func = &zero_d; break;
 		case opThru : func = &thru_d; break;
@@ -1310,7 +1310,7 @@ UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 		case opCPSMIDI : func = &cpsmidi_d; break;
 
 		case opMIDIRatio : func = &midiratio_d; break;
-		case opRatioMIDI : func = &ratiomidi_d; break;	
+		case opRatioMIDI : func = &ratiomidi_d; break;
 		case opDbAmp : func = &dbamp_d; break;
 		case opAmpDb : 	func = &ampdb_d; break;
 		case opOctCPS : func = &octcps_d; break;
@@ -1338,7 +1338,7 @@ UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_d; break;
 		case opRamp : func = &ramp_d; break;
-		
+
 		default : func = &thru_d; break;
 	}
 	return func;
@@ -1348,7 +1348,7 @@ UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
-	
+
 	switch (unit->mSpecialIndex) {
 		case opSilence : func = &zero_a; break;
 		case opThru : func = &thru_a; break;
@@ -1368,7 +1368,7 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 		case opCPSMIDI : func = &cpsmidi_a; break;
 
 		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opRatioMIDI : func = &ratiomidi_a; break;
 		case opDbAmp : func = &dbamp_a; break;
 		case opAmpDb : 	func = &ampdb_a; break;
 		case opOctCPS : func = &octcps_a; break;
@@ -1396,7 +1396,7 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_a; break;
 		case opRamp : func = &ramp_a; break;
-		
+
 		default : func = &thru_a; break;
 	}
 	return func;
@@ -1407,7 +1407,7 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 {
 	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
 	UnaryOpFunc func;
-	
+
 	if (unit->mCalcRate == calc_DemandRate) {
 		func = ChooseDemandFunc(unit);
 	} else if (BUFLENGTH == 1) {

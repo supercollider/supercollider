@@ -2,8 +2,8 @@
 SelectButtonSet  {
 
 	var butts,<selected=0,<>action,<>colorFunc,<>selectedColor,<>labelArray;
-	
-	*new { arg layout,	
+
+	*new { arg layout,
 		/*buttonSizeX,
 		buttonSizeY,*/
 		labelArrayOrQnty=10,	// integer generates numerical labels
@@ -11,13 +11,13 @@ SelectButtonSet  {
 		color,
 		selectedColor,
 		width=20,height=20;
-		
+
 		^super.new.init(layout.asFlowView,width,height,labelArrayOrQnty,action,color,selectedColor)
 	}
-	
+
 	init { arg layout,x,y,arglabelArray,argaction,
 					argcolorFunc,argselectedColor;
-				
+
 		//layout=layout.asFlowView;//PageLayout;
 		//layout=layout.asPageLayout;
 		action=argaction;
@@ -25,11 +25,11 @@ SelectButtonSet  {
 		selectedColor=argselectedColor ?? {Color.red(alpha:0.7)};
 
 		if(arglabelArray.isNumber,{
-			 labelArray=Array.series(arglabelArray,0,1) 
+			 labelArray=Array.series(arglabelArray,0,1)
 		},{
 			labelArray=arglabelArray
 		});
-		
+
 	   butts=
 		labelArray.collect({ arg la,i;
 			GUI.button.new(layout,(x@y))
@@ -39,9 +39,9 @@ SelectButtonSet  {
 		});
 		this.refresh;
 	}
-	
+
 	select { arg x;
-		this.passiveSelect(x);	
+		this.passiveSelect(x);
 		^action.value(selected,this);
 	}
 	passiveSelect { arg x;
@@ -51,7 +51,7 @@ SelectButtonSet  {
 			selected=x;
 		});
 	}
-	
+
 	update { arg x;
 		this.passiveSelect(x)
 	}
@@ -64,7 +64,7 @@ SelectButtonSet  {
 	selectedIndex { ^selected }
 	selectedLabel { ^labelArray.at(selected) }
 	selectedItem { ^labelArray.at(selected) }
-	
+
 	// leaves the selected number set
 	deselect { this.colorNormal(selected) }
 
@@ -82,13 +82,13 @@ SelectButtonSet  {
 		butts.at(i).setProperty(\value, 1);
 		this.setButtonColor(butts.at(i),selectedColor.value(i))
 	}
-	
+
 	doAction {  ^action.value(selected,this) }
-	
+
 	addAction { arg func;
 		var old;
 		old=action;
-		action={ func.value(selected); old.value(selected) }	
+		action={ func.value(selected); old.value(selected) }
 	}
 	font_ { arg f;
 		butts.do({ |b| b.font_(f); });

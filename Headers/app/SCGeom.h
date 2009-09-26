@@ -61,7 +61,7 @@ inline SCRect SCRectUnion(SCRect a, SCRect b)
 {
         if (a.height <= 0. && a.width <= 0.) return b;
         if (b.height <= 0. && b.width <= 0.) return a;
-        
+
 	SCRect u;
 	u.x = sc_min(a.x, b.x);
 	u.y = sc_min(a.y, b.y);

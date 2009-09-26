@@ -42,8 +42,8 @@ extern "C"
 	// mul add functions for every occasion:
 	void ampmix_k(MulAdd *unit, int inNumSamples);
 
-	void ampmix_aa(MulAdd *unit, int inNumSamples); 
-	void ampmix_ak(MulAdd *unit, int inNumSamples); 
+	void ampmix_aa(MulAdd *unit, int inNumSamples);
+	void ampmix_ak(MulAdd *unit, int inNumSamples);
 	void ampmix_ai(MulAdd *unit, int inNumSamples);
 
 	void ampmix_ka(MulAdd *unit, int inNumSamples);
@@ -66,7 +66,7 @@ void ampmix_k(MulAdd *unit, int inNumSamples)
 
 void ampmix_aa(MulAdd *unit, int inNumSamples);
 void ampmix_aa(MulAdd *unit, int inNumSamples)
-{	
+{
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
 	float *amp = MULIN - ZOFF;
@@ -104,7 +104,7 @@ void ampmix_ai(MulAdd *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *amp = MULIN - ZOFF;
 	float mix_cur = unit->mPrevAdd;
-	
+
 	LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
 }
 
@@ -117,7 +117,7 @@ void ampmix_ka(MulAdd *unit, int inNumSamples)
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
 	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-	
+
 	if (amp_slope == 0.f) {
 		if (amp_cur == 0.f) {
 			ZCopy(inNumSamples, out, mix);
@@ -137,14 +137,14 @@ void ampmix_kk(MulAdd *unit, int inNumSamples)
 {
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
-	
+
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
 	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
 	float mix_slope = CALCSLOPE(nextMix, mix_cur);
-	
+
 	if (amp_slope == 0.f) {
 		if (mix_slope == 0.f) {
 			if (mix_cur == 0.f) {
@@ -194,13 +194,13 @@ void ampmix_ki(MulAdd *unit, int inNumSamples)
 {
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
-	
+
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
 	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	float mix_cur = unit->mPrevAdd;
 	//postbuf("ampmix_ki %08X %g %g\n", out, amp_cur, mix_cur);
-	
+
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
 			LOOP(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
@@ -239,12 +239,12 @@ void ampmix_ik(MulAdd *unit, int inNumSamples)
 {
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
-	
+
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
 	float mix_slope = CALCSLOPE(nextMix, mix_cur);
-	
+
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
 			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in); );
@@ -298,7 +298,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 	float *out = OUT(0);
 	float *amp = MULIN;
 	float nextMix = ADDIN[0];
-	
+
 	float mix_cur = unit->mPrevAdd;
 	float mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
@@ -307,7 +307,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 *vamp = (vfloat32*)amp;
-			define_vzero 				
+			define_vzero
 			for (i=0; i<len; i+=16) {
 				vec_st(vec_mul(vec_ld(i, vamp), vec_ld(i, vin)), i, vout);
 			}
@@ -334,7 +334,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 		}
 		unit->mPrevAdd = nextMix;
 	}
-	
+
 }
 
 void v_ampmix_ai(MulAdd *unit, int inNumSamples);
@@ -344,7 +344,7 @@ void v_ampmix_ai(MulAdd *unit, int inNumSamples)
 
 	float *in = IN(0);
 	float *out = OUT(0);
-	
+
 	float *amp = MULIN;
 
 	float mix_cur = unit->mPrevAdd;
@@ -714,14 +714,14 @@ void MulAdd_Ctor(MulAdd *unit)
 
 	unit->mPrevMul = ZIN0(1);
 	unit->mPrevAdd = ZIN0(2);
-	
+
 	int mulRate = INRATE(1);
 	int addRate = INRATE(2);
 
 	//Print("muladd %d %d %g %g\n", mulRate, addRate, unit->mPrevMul, unit->mPrevAdd);
 	//Print("**** %08X %08X %08X    %08X\n", IN(0), IN(1), IN(2), OUT(0));
 
-#if __VEC__	
+#if __VEC__
 	if (!USEVEC) {
 #endif
 		switch (mulRate) {

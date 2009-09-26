@@ -9,17 +9,17 @@
 */
 
 TopicHelper {
-	
+
 	// Topic si the simplest case.
 	// Just a replacement in the template
-	
+
 	var <>topic, <>path ;
 	classvar text ;
-	
+
 	*new { arg topic, path ;
-			^super.new.initTopicHelper( topic, path ) 
+			^super.new.initTopicHelper( topic, path )
 	}
-	
+
 	initTopicHelper { arg aTopic, aPath ;
 		topic = aTopic ;
 		path = aPath ;
@@ -29,7 +29,7 @@ TopicHelper {
 			}, { this.makeHelp }) ;
 
 	}
-		
+
 	createText {
 		text = "
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
@@ -90,7 +90,7 @@ span.Apple-tab-span {white-space:pre}
 <p class=\"p7\"><br></p>
 <p class=\"p8\">...</p>
 </body>
-</html>			
+</html>
 "		.replace("Some Topic", topic) ;  // et voila
 
 	}
@@ -104,7 +104,7 @@ span.Apple-tab-span {white-space:pre}
 			.close ;
 		// and reopen thru topic.openHelpFile
 		// open works if the path is a place where SC looks for Help files
-		topic.openHelpFile 	
+		topic.openHelpFile
 	}
 }
 

@@ -108,7 +108,7 @@ EmacsDocument
 	}
 
 	background_ {arg color, rangestart= -1, rangesize = 0;
-	}	
+	}
 	stringColor_ {arg color, rangeStart = -1, rangeSize = 0;
 	}
 
@@ -116,15 +116,15 @@ EmacsDocument
 	front {
 		Emacs.sendToLisp(\_documentSwitchTo, this);
 	}
-	
+
 	unfocusedFront {
 		Emacs.sendToLisp(\_documentPopTo, this);
 	}
-	
+
 	syntaxColorize {
 		Emacs.sendToLisp(\_documentSyntaxColorize, this);
 	}
-	
+
 	selectRange { arg start=0, length=0;
 		//_TextWindow_SelectRange
 	}
@@ -150,7 +150,7 @@ EmacsDocument
 	string_{|string, rangestart = -1, rangesize = 1|
 		Emacs.sendToLisp(\_documentPutString, [this, string]);
 	}
-	
+
 	currentLine { |returnFunc|
 		Emacs.evalLispExpression(['sclang-line-at-point'].asLispString, { |result| returnFunc.value( result ) }  );
 		//		['with-current-buffer', title, ['thing-at-point', '\'line'] ].asLispString, { |result| returnFunc.value( result ) } )
@@ -168,7 +168,7 @@ EmacsDocument
 		Emacs.evalLispExpression(['with-current-buffer', title, ['current-word'] ].asLispString, { |result| returnFunc.value( result ) } )
 		^nil;
 	}
-	
+
 	// environment support
 	/*	envir_ { | environment |
 		envir = environment;
@@ -184,15 +184,15 @@ EmacsDocument
 		};
 		current = this;
 	}
-	
+
 	didResignKey {
 		if (envir === currentEnvironment) {
 			envir.pop;
 		};
 		if ( current === this, { current = nil } );
 		//super.didResignKey;
-	}	
-	
+	}
+
 
 	// PRIVATE
 	*prNewFromPath { | argPath, selectionStart, selectionLength, completionFunc |
@@ -207,7 +207,7 @@ EmacsDocument
 					this.documentDo(id, completionFunc);
 				}
 			});
-	} 
+	}
 	*prNewFromString { | name, str, makeListener, completionFunc |
 		Emacs.sendToLisp(
 		 	\_documentNew,
@@ -249,8 +249,8 @@ EmacsDocument
 	prSetTitle { | argTitle |
 		title = argTitle;
 	}
-	
-	
+
+
 	prGetFileName {
 		^path
 	}
@@ -260,7 +260,7 @@ EmacsDocument
 			path = Document.standardizePath(path);
 		}
 	}
-	
+
 	prSetIsListener { | flag |
 		isListener = flag.notNil;
 	}
@@ -285,14 +285,14 @@ EmacsDocument
 	selectedText {
 		^""
 	}
-	rangeText { arg rangestart=0, rangesize=1; 
+	rangeText { arg rangestart=0, rangesize=1;
 		^""
 	}
 	prinsertText { arg dataptr, txt;
 	}
 	insertTextRange { arg string, rangestart, rangesize;
 	}
-	setBackgroundColor { }	
+	setBackgroundColor { }
 	selectedRangeLocation {
 		^0
 	}
@@ -308,7 +308,7 @@ EmacsDocument
 	}
 	prinitByIndex {
 		^this.shouldNotImplement(thisMethod)
-	}	
+	}
 	initLast {
 		^this.shouldNotImplement(thisMethod)
 	}

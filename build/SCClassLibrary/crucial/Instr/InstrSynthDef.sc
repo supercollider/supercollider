@@ -1,19 +1,19 @@
 
 InstrSynthDef : SynthDef {
-	
+
 	var <longName;
 	var instr;
 	var inputs; // the inputs supplied the last time this was built
 	var outputProxies; // the output proxies those inputs created, primarily used for error reporting
-	
+
 	// secret because the function doesn't have them as arg names
 	// they are created in the context of the synth def and added
 	// magically/secretly.  backdoor access.
 	// this is for adding buffers, samples, inline players, subpatches, spawners etc.
 	var secretIr, secretKr,stepchildren,synthProxy;
-	
+
 	var <>tempTempoKr;
-	
+
 	var <rate,<numChannels; // known only after building
 
 	*new {
@@ -32,10 +32,10 @@ InstrSynthDef : SynthDef {
 		var isScalarOut;
 
 		outClass = outClass.asClass;
-		
+
 		instr = argInstr;
 		inputs = args;
-		
+
 		// restart controls in case of *wrap
 		controlNames = nil;
 		controls = nil;
@@ -47,17 +47,17 @@ InstrSynthDef : SynthDef {
 			// create OutputProxy In InTrig Float etc.
 			outputProxies = this.buildControlsWithObjects(instr,inputs);
 			result = instr.valueArray(outputProxies);
-	
+
 			if(result != 0.0,{
 				rate = result.rate;
 				numChannels = max(1,result.size);
-		
+
 				if(outClass === XOut,{
 					"XOut not tested yet.".error;
 					//out = outClass.perform(if(this.rate == \audio,\ar,\kr),
 					//			inputs.at(0),xfader.value,out)
 				});
-				
+
 				rate.switch(
 					\audio, {
 						result = outClass.ar(Control.names([\out]).ir([0]) , result);
@@ -67,16 +67,16 @@ InstrSynthDef : SynthDef {
 						result = outClass.kr(Control.names([\out]).ir([0]) , result);
 					},
 					\scalar, { // doesn't make sense for a UGen
-						("InstrSynthDef: result of your Instr function was a scalar rate object:" 
+						("InstrSynthDef: result of your Instr function was a scalar rate object:"
 							+ result + this.buildErrorString).error;
 					},
 					\noncontrol,{
-					
-						("InstrSynthDef: result of your Instr function was a noncontrol rate object:" 
+
+						("InstrSynthDef: result of your Instr function was a noncontrol rate object:"
 							+ result + this.buildErrorString).error;
-					},						
+					},
 					{
-						("InstrSynthDef: result of your Instr function was an object with unknown rate:" 
+						("InstrSynthDef: result of your Instr function was an object with unknown rate:"
 							+ result + rate + this.buildErrorString).error;
 					}
 				);
@@ -106,8 +106,8 @@ InstrSynthDef : SynthDef {
 			},{
 				//inputs[i].addToDefName
 				// if outputProxy != control
-				
-				
+
+
 			});
 			switch(controlName.rate,
 				\control, {
@@ -134,13 +134,13 @@ InstrSynthDef : SynthDef {
 		name = firstName ++ "*" ++ longName.hash;
 		// name.debug("name");
 	}
-	
+
 	// passed to Instr function but not to synth
 	addInstrOnlyArg { arg name,value;
 		this.addNonControl(name, value);
 	}
-	
-	
+
+
 	// to cache this def, this info needs to be saved
 	// argi points to the slot in objects (as supplied to secretDefArgs)
 	// selector will be called on that object to produce the synthArg
@@ -216,7 +216,7 @@ InstrSynthDef : SynthDef {
 		});
 		^synthArgs
 	}
-	
+
 	buildControlsWithObjects { arg instr,objects;
 		var argNames,defargs,outputProxies;
 		objects.do({ arg obj,argi; obj.initForSynthDef(this,argi) });
@@ -239,7 +239,7 @@ InstrSynthDef : SynthDef {
 		var errors,message;
 		children.do { arg ugen;
 			var err;
-			if ((err = ugen.checkInputs).notNil) { 
+			if ((err = ugen.checkInputs).notNil) {
 				errors = errors.add([ugen, err]);
 			};
 		};
@@ -289,13 +289,13 @@ InstrSynthDef : SynthDef {
 	instrName { ^instr.dotNotation }
 	tempoKr { arg object,selector;
 		// first client to request will later be asked to produce the TempoBus
-		^(tempTempoKr ?? { 
+		^(tempTempoKr ?? {
 			tempTempoKr = In.kr(
 				this.addSecretKr(object,1.0,selector)
 			)
 		})
 	}
-	
+
 	*defNameFromObjects { arg objects;
 		^String.streamContents({ arg stream;
 			var iks=0;
@@ -313,7 +313,7 @@ InstrSynthDef : SynthDef {
 					this.clearCache(server);
 					//this.loadCacheFromDir(server);
 			});
-		});		
+		});
 			/*SimpleController(server)
 				.put(\serverRunning,{ //clear on quit
 					if(server.serverRunning.not,{
@@ -367,7 +367,7 @@ InstrSynthDef : SynthDef {
 	}
 
 	/*synthProxy {
-		^synthProxy ?? { 
+		^synthProxy ?? {
 			synthProxy = SynthProxy.new;
 			stepchildren = stepchildren.add(synthProxy);
 			synthProxy
@@ -386,7 +386,7 @@ ClientOnTrigResponder {
 	}
 	didSpawn { |synth|
 		var commandpath = ['/tr', synth.nodeID, triggerID];
-		responder = OSCpathResponder(synth.server.addr, commandpath, 
+		responder = OSCpathResponder(synth.server.addr, commandpath,
 			{|time,responder,message| func.value(time,message[3]) });
 		responder.add;
 	}
@@ -399,7 +399,7 @@ ClientOnTrigResponder {
 // there is only one SynthProxy per synth def, though there may be multiple synths spawned
 // the synthProxy is in stepchildren and in the Patch's stepChildren so it is prepared and spawned.
 // it is roughly equivalent to the synth argument in SC2's Spawn
-// 
+//
 /*SynthProxy  {
 
 	var events,sched,<synth;
@@ -407,13 +407,13 @@ ClientOnTrigResponder {
 	spawnToBundle { |b|
 		b.addMessage(this,\didSpawn)
 	}
-	
+
 	didSpawn { |synth|
 		sched = BeatSched.new;
 		// sched any events
 		events.do({ |df|
 			sched.sched(df[0],df[1])
-		})	
+		})
 	}
 	sched { |delta, function|
 		events = events.add([delta,function]);

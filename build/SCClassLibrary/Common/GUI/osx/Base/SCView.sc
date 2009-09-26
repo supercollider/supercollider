@@ -8,7 +8,7 @@ SCView {  // abstract class
 	var <>keyDownAction, <>keyUpAction, <>keyTyped, <> keyModifiersChangedAction;
 	var <>beginDragAction,<>canReceiveDragHandler,<>receiveDragHandler;
 	var <>onClose;
-	
+
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
 	}
@@ -16,7 +16,7 @@ SCView {  // abstract class
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds);
 	}
-	
+
 	init { arg argParent, argBounds;
 		parent = argParent.asView; // actual view
 		background = Color.clear;
@@ -24,30 +24,30 @@ SCView {  // abstract class
 		this.prInit(parent.asView, argBounds.asRect,this.class.viewClass);
 		argParent.add(this);//maybe window or viewadapter
 	}
-	
+
 	asView { ^this }
-	
+
 	bounds {
 		^this.getProperty(\bounds, Rect.new)
 	}
 	bounds_ { arg rect;
 		this.setProperty(\bounds, rect)
 	}
-	
+
 	visible {
 		^this.getProperty(\visible)
 	}
 	visible_ { arg bool;
 		this.setProperty(\visible, bool)
 	}
-	
+
 	enabled {
 		^this.getProperty(\enabled)
 	}
 	enabled_ { arg bool;
 		this.setProperty(\enabled, bool)
 	}
-	
+
 	canFocus {
 		^this.getProperty(\canFocus)
 	}
@@ -62,26 +62,26 @@ SCView {  // abstract class
 		_SCView_HasFocus
 		^this.primitiveFailed
 	}
-	
+
 	focusColor_{|color|
 		this.setProperty(\focusColor, color);
 	}
-	
+
 	focusColor{
 		^this.getProperty(\focusColor, Color.new);
 	}
-		
+
 	id {
 		^this.getProperty(\id)
 	}
 	id_ { arg id;
 		this.setProperty(\id, id)
 	}
-	
+
 	dragLabel_ { arg string;
 		this.setProperty(\dragLabel, string)
 	}
-	
+
 	refresh {
 		_SCView_Refresh
 		^this.primitiveFailed
@@ -90,7 +90,7 @@ SCView {  // abstract class
 		_SCView_FindByID
 		^this.primitiveFailed
 	}
-	
+
 	isClosed { ^dataptr.isNil }
 	notClosed { ^dataptr.notNil }
 	remove {
@@ -107,15 +107,15 @@ SCView {  // abstract class
 		1  2  3
 		4  5  6
 		7  8  9
-		
+
 		1 - fixed to left, fixed to top
 		2 - horizontally elastic, fixed to top
 		3 - fixed to right, fixed to top
-		
+
 		4 - fixed to left, vertically elastic
 		5 - horizontally elastic, vertically elastic
 		6 - fixed to right, vertically elastic
-		
+
 		7 - fixed to left, fixed to bottom
 		8 - horizontally elastic, fixed to bottom
 		9 - fixed to right, fixed to bottom
@@ -126,7 +126,7 @@ SCView {  // abstract class
 	resize_ { arg resize;
 		this.setProperty(\resize, resize)
 	}
-	
+
 	background_ { arg color;
 		background = color;
 		this.setProperty(\background, color)
@@ -138,27 +138,27 @@ SCView {  // abstract class
 		this.perform(selector.asSetter, this.perform(selector).removeFunc(func));
 	}
 	mouseDown{arg x, y, modifiers, buttonNumber, clickCount;
-		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);	
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);
 	}
 	mouseUp{arg x, y, modifiers;
-		mouseUpAction.value(this, x, y, modifiers);	
+		mouseUpAction.value(this, x, y, modifiers);
 	}
 	mouseMove{arg x, y, modifiers;
-		mouseMoveAction.value(this, x, y, modifiers);	
-	}	
+		mouseMoveAction.value(this, x, y, modifiers);
+	}
 	mouseOver{arg x, y;
 		mouseOverAction.value(this, x, y);
 	}
-	
+
 	keyDown { arg char, modifiers, unicode,keycode;
-		globalKeyDownAction.value(this, char, modifiers, unicode, keycode); 
+		globalKeyDownAction.value(this, char, modifiers, unicode, keycode);
 		this.handleKeyDownBubbling(this, char, modifiers, unicode, keycode);
 	}
-	
-	keyModifiersChanged{arg modifiers;	
+
+	keyModifiersChanged{arg modifiers;
 		this.handleKeyModifiersChangedBubbling(this,modifiers)
 	}
-	
+
 	handleKeyModifiersChangedBubbling { arg view, modifiers;
 		var result;
 		// nil from keyDownAction --> pass it on
@@ -168,12 +168,12 @@ SCView {  // abstract class
 		}{
 			result = keyModifiersChangedAction.value(view, modifiers);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyModifiersChangedBubbling(view, modifiers);
 		};
 	}
-	
+
 	defaultKeyDownAction { ^nil }
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		var result;
@@ -183,14 +183,14 @@ SCView {  // abstract class
 		}{
 			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
 		};
 	}
-	
+
 	// sc.solar addition
-	keyUp { arg char, modifiers, unicode,keycode; 
+	keyUp { arg char, modifiers, unicode,keycode;
 		this.keyTyped = char;
 		// always call global keydown action first
 		globalKeyUpAction.value(this, char, modifiers, unicode, keycode);
@@ -205,7 +205,7 @@ SCView {  // abstract class
 		}{
 			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyUpBubbling(view, char, modifiers, unicode, keycode);
 		};
@@ -213,8 +213,8 @@ SCView {  // abstract class
 
 
 	beginDrag {
-		currentDrag = if (beginDragAction.notNil) 
-		{	
+		currentDrag = if (beginDragAction.notNil)
+		{
 			beginDragAction.value(this)
 		}{
 			this.defaultGetDrag
@@ -239,11 +239,11 @@ SCView {  // abstract class
 		while({(view = view.asView.parent).notNil},{ parents.add(view)});
 		^parents
 	}
-	
+
 	doAction {
 		action.value(this);
 	}
-	
+
 	properties {
 		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background,
 				\minWidth,\maxWidth,\minHeight,\maxHeight,\focusColor]
@@ -260,8 +260,8 @@ SCView {  // abstract class
 			this.perform(name.asSetter, value);
 		});
 	}
-	
-	// private	
+
+	// private
 	prInit { arg argParent, argBounds,argViewClass;
 		_SCView_New
 		^this.primitiveFailed
@@ -278,7 +278,7 @@ SCView {  // abstract class
 	getProperty { arg key, value;
 		_SCView_GetProperty
 		^this.primitiveFailed
-	}	
+	}
 	setPropertyWithAction { arg symbol, obj;
 		// setting some properties may need to have the action called.
 		if (this.setProperty(symbol, obj), {
@@ -286,8 +286,8 @@ SCView {  // abstract class
 			this.doAction;
 		});
 	}
-	
-//	*importDrag { 
+
+//	*importDrag {
 //		// this is called when an NSString is the drag object
 //		// from outside of the SC app
 //		// we compile it to an SCObject.
@@ -306,17 +306,17 @@ SCContainerView : SCView { // abstract class
 		// at that time, ALL composite views will measure coordinates
 		// from their own top left (not window top left)
 	var <children, <decorator, relativeOrigin = true;
-			
+
 	add { arg child;
 		children = children.add(child);
 		if (decorator.notNil, { decorator.place(child); });
 	}
-	
+
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
 		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
-	
+
 	removeAll {
 		children.copy.do {|child| child.remove };
 	}
@@ -329,15 +329,15 @@ SCContainerView : SCView { // abstract class
 		this.deprecated(thisMethod);
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
-	}	
+	}
 
-	addFlowLayout { |margin, gap| 
+	addFlowLayout { |margin, gap|
 		relativeOrigin.if
 			{this.decorator_( FlowLayout( this.bounds.moveTo(0,0), margin, gap ) )}
 			{this.decorator_( FlowLayout( this.bounds, margin, gap ) )};
 		^this.decorator;
 		}
-	
+
 	decorator_ {|decor|
 		if(relativeOrigin, {
 			decor.bounds = decor.bounds.moveTo(0, 0);
@@ -345,19 +345,19 @@ SCContainerView : SCView { // abstract class
 		});
 		decorator = decor;
 	}
-	
+
 	prRemoveChild { arg child;
 		children.remove(child);
 		// ... decorator should re-place all
 	}
 
 	//bounds_  ... replace all
-	
+
 	prClose {
 		super.prClose;
 		children.do({ arg item; item.prClose });
 	}
-	
+
 		// NOTE: This TEMPORARY method exists only because some few view classes
 		// need to ask for the relativeOrigin status.
 		// When relativeOrigin is permanently removed, this method
@@ -382,7 +382,7 @@ SCTopView : SCCompositeView {
 	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
 		keyUpAction.value(view, char, modifiers, unicode, keycode);
 	}
-	
+
 	//only in construction mode, handled internally
 	canReceiveDrag { ^currentDrag.isKindOf(Class)}
 //	remove { this.removeAll }
@@ -394,30 +394,30 @@ SCTopView : SCCompositeView {
 			}
 		}
 	}
-	
+
 	/* construction mode */
-	
-	constructionGrid_{ arg point;  
+
+	constructionGrid_{ arg point;
 		this.setProperty( \constructionGrid, point );
 	}
-	
+
 	constructionGrid {
 		^this.getProperty( \constructionGrid, Point.new );
 	}
-	
+
 	enableConstructionGrid_{arg flag;
-		this.setProperty( \enableConstructionGrid, flag );	
+		this.setProperty( \enableConstructionGrid, flag );
 	}
 
 	enableConstructionGrid{
-		^this.getProperty( \enableConstructionGrid );	
+		^this.getProperty( \enableConstructionGrid );
 	}
-		
+
 	//private called from lang
 	setConstructionMode {|flag|
 		this.setProperty( \setConstructionMode, flag )
-	}	
-	
+	}
+
 	defaultReceiveDrag{|x,y|
 		var win, view;
 		win = this.findWindow;
@@ -433,37 +433,37 @@ SCTopView : SCCompositeView {
 SCScrollTopView : SCTopView {
 	var <autohidesScrollers = true, <hasHorizontalScroller = true, <hasVerticalScroller = true;
 	var <autoScrolls = true;
-	
+
 	autohidesScrollers_{|bool|
 		autohidesScrollers = bool;
 		this.setProperty(\setAutohidesScrollers, bool);
 	}
-	
+
 	hasHorizontalScroller_{|bool|
 		hasHorizontalScroller = bool;
 		this.setProperty(\setHasHorizontalScroller, bool);
 	}
-	
+
 	hasVerticalScroller_{|bool|
 		hasVerticalScroller = bool;
 		this.setProperty(\setHasVerticalScroller, bool);
 	}
-	
-	visibleOrigin_ { arg point;  
+
+	visibleOrigin_ { arg point;
 		this.setProperty( \clipViewOrigin, point );
 	}
-	
+
 	visibleOrigin { ^this.getProperty( \clipViewOrigin, Point.new );}
-	
+
 	autoScrolls_ {|bool|
 		autoScrolls = bool;
 		this.setProperty(\setAutoScrolls, bool);
 	}
-	
+
 	innerBounds {
 		^this.getProperty(\innerBounds, Rect.new)
 	}
-	
+
 	bounds {
 		var	bounds = this.absoluteBounds;
 		this.getParents.do({ |parent|
@@ -484,12 +484,12 @@ SCScrollTopView : SCTopView {
 //		}{
 //			result = keyModifiersChangedAction.value(view, modifiers);
 //		};
-//		if(result.isNil) {  
+//		if(result.isNil) {
 //			// call keydown action of parent view
 //			parent.handleKeyModifiersChangedBubbling(view, modifiers);
 //		};
 //	}
-//	
+//
 //	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 //		var result;
 //		// nil from keyDownAction --> pass it on
@@ -498,7 +498,7 @@ SCScrollTopView : SCTopView {
 //		}{
 //			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 //		};
-//		if(result.isNil) {  
+//		if(result.isNil) {
 //			// call keydown action of parent view
 //			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
 //		};
@@ -512,11 +512,11 @@ SCScrollTopView : SCTopView {
 //		}{
 //			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 //		};
-//		if(result.isNil) {  
+//		if(result.isNil) {
 //			// call keydown action of parent view
 //			parent.handleKeyUpBubbling(view, char, modifiers, unicode, keycode);
 //		};
-//	}	
+//	}
 
 }
 
@@ -526,15 +526,15 @@ SCScrollView : SCScrollTopView {
 	hasBorder_ { arg bool = true;
 		this.setProperty(\border, bool);
 	}
-	
+
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
 
 		relativeOrigin = false; // scroll views are never relative, although they really are ;-)
 	}
-	
+
 	relativeOrigin_ {  }
-	
+
 	handleKeyModifiersChangedBubbling { arg view, modifiers;
 		var result;
 		// nil from keyDownAction --> pass it on
@@ -543,12 +543,12 @@ SCScrollView : SCScrollTopView {
 		}{
 			result = keyModifiersChangedAction.value(view, modifiers);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyModifiersChangedBubbling(view, modifiers);
 		};
 	}
-	
+
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		var result;
 		// nil from keyDownAction --> pass it on
@@ -557,7 +557,7 @@ SCScrollView : SCScrollTopView {
 		}{
 			result = keyDownAction.value(view, char, modifiers, unicode, keycode);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyDownBubbling(view, char, modifiers, unicode, keycode);
 		};
@@ -571,17 +571,17 @@ SCScrollView : SCScrollTopView {
 		}{
 			result = keyUpAction.value(view, char, modifiers, unicode, keycode);
 		};
-		if(result.isNil) {  
+		if(result.isNil) {
 			// call keydown action of parent view
 			parent.handleKeyUpBubbling(view, char, modifiers, unicode, keycode);
 		};
-	}	
+	}
 
 }
 
 SCLayoutView : SCContainerView {
 	properties { ^super.properties ++ #[\spacing] }
-	
+
 	spacing {
 		^this.getProperty(\spacing, 0)
 	}
@@ -606,8 +606,8 @@ SCControlView : SCView { // abstract class
 SCSliderBase : SCControlView {
 
 	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
-	
-	getScale { |modifiers| 
+
+	getScale { |modifiers|
 		^case
 			{ modifiers & 131072 == 131072 } { shift_scale }
 			{ modifiers & 262144 == 262144 } { ctrl_scale }
@@ -621,14 +621,14 @@ SCSliderBase : SCControlView {
 	knobColor_ { arg color;
 		this.setProperty(\knobColor, color)
 	}
-	
+
 	step_ { arg stepSize;
 		this.setPropertyWithAction(\step, stepSize);
 	}
 	step {
 		^this.getProperty(\step)
 	}
-	
+
 	properties {
 		^super.properties ++ #[\knobColor, \step]
 	}
@@ -642,29 +642,29 @@ SCSlider : SCSliderBase {
 	}
 	value_ { arg val;
 		this.setProperty(\value, val);
-	}	
+	}
 	valueAction_ { arg val;
 		this.setPropertyWithAction(\value, val);
-	}	
-	
+	}
+
 	increment { |zoom=1| ^this.valueAction = this.value + (max(this.step, this.pixelStep) * zoom) }
 	decrement { |zoom=1| ^this.valueAction = this.value - (max(this.step, this.pixelStep) * zoom) }
-	
-	pixelStep { 
-		var bounds = this.bounds; 
+
+	pixelStep {
+		var bounds = this.bounds;
 		^(bounds.width.max(bounds.height) - this.thumbSize).reciprocal
 	}
-	
+
 	defaultKeyDownAction { arg char, modifiers, unicode, keycode;
-		var zoom = this.getScale(modifiers); 
+		var zoom = this.getScale(modifiers);
 
 		// standard keydown
 			// rand could also use zoom factors
-		if (char == $r, { this.valueAction = 1.0.rand; ^this }); 
+		if (char == $r, { this.valueAction = 1.0.rand; ^this });
 		if (char == $n, { this.valueAction = 0.0; ^this });
 		if (char == $x, { this.valueAction = 1.0; ^this });
 		if (char == $c, { this.valueAction = 0.5; ^this });
-		
+
 		if (char == $], { this.increment(zoom); ^this });
 		if (char == $[, { this.increment(zoom); ^this });
 		if (unicode == 16rF700, { this.increment(zoom); ^this });
@@ -674,12 +674,12 @@ SCSlider : SCSliderBase {
 
 		^nil		// bubble if it's an invalid key
 	}
-	
-	defaultGetDrag { 
+
+	defaultGetDrag {
 		^this.value
 	}
-	defaultCanReceiveDrag { 
-		^currentDrag.isNumber 
+	defaultCanReceiveDrag {
+		^currentDrag.isNumber
 	}
 	defaultReceiveDrag {
 		this.valueAction = currentDrag;
@@ -691,7 +691,7 @@ SCSlider : SCSliderBase {
 	thumbSize_ { arg size;
 		this.setProperty(\thumbSize, size);
 	}
-	
+
 	properties {
 		^super.properties ++ #[\thumbSize];
 	}
@@ -706,45 +706,45 @@ SCRangeSlider : SCSliderBase {
 		v.hi = 0.7;
 		^v
 	}
-	
+
 	lo {
 		^this.getProperty(\lo)
 	}
 	lo_ { arg val;
 		this.setProperty(\lo, val);
-	}	
+	}
 	activeLo_ { arg val;
 		this.setPropertyWithAction(\lo, val);
-	}	
+	}
 	hi {
 		^this.getProperty(\hi)
 	}
 	hi_ { arg val;
 		this.setProperty(\hi, val);
-	}	
+	}
 	activeHi_ { arg val;
 		this.setPropertyWithAction(\hi, val);
-	}	
+	}
 	range {
 		^this.getProperty(\range)
 	}
 	range_ { arg val;
 		this.setProperty(\range, val);
-	}	
+	}
 	activeRange_ { arg val;
 		this.setPropertyWithAction(\range, val);
-	}	
+	}
 
 	setSpan { arg lo, hi;
 		this.lo = lo;
 		this.hi = hi;
 	}
-	
+
 	setSpanActive { arg lo, hi;
 		this.setSpan( lo, hi );
 		this.doAction;
 	}
-	
+
 	setDeviation { arg deviation, average;
 			var lo = ( 1 - deviation ) * average;
 			this.setSpan(lo, lo + deviation);
@@ -753,28 +753,28 @@ SCRangeSlider : SCSliderBase {
 	properties {
 		^super.properties ++ #[\lo, \hi]
 	}
-	
-	pixelStep { 
-		var bounds = this.bounds; 
+
+	pixelStep {
+		var bounds = this.bounds;
 		^(bounds.width.max(bounds.height)).reciprocal
 	}
 
 	increment { |zoom=1|
-		var inc = (max(this.step, this.pixelStep) * zoom); 
+		var inc = (max(this.step, this.pixelStep) * zoom);
 		var newHi = (this.hi + inc);
-		if (newHi > 1) { 
-			inc = 1 - this.hi; 
-			newHi = 1; 
+		if (newHi > 1) {
+			inc = 1 - this.hi;
+			newHi = 1;
 		};
 		this.lo_(this.lo + inc).activeHi_(newHi);
 	}
-	
+
 	decrement { |zoom=1|
-		var inc = (max(this.step, this.pixelStep) * zoom); 
+		var inc = (max(this.step, this.pixelStep) * zoom);
 		var newLo = (this.lo - inc);
-		if (newLo < 0) { 
-			inc =  this.lo; 
-			newLo = 0; 
+		if (newLo < 0) {
+			inc =  this.lo;
+			newLo = 0;
 		};
 		this.lo_(newLo).activeHi_(this.hi - inc);
 	}
@@ -783,9 +783,9 @@ SCRangeSlider : SCSliderBase {
 		var a, b;
 		var zoom = this.getScale(modifiers);
 		// standard keydown
-		if (char == $r, { 
-			a = 1.0.rand; 
-			b = 1.0.rand; 
+		if (char == $r, {
+			a = 1.0.rand;
+			b = 1.0.rand;
 			this.activeLo_(min(a, b));
 			this.activeHi_(max(a, b));
 			^this
@@ -800,34 +800,34 @@ SCRangeSlider : SCSliderBase {
 		if (unicode == 16rF702, { this.decrement(zoom); ^this });
 		^nil		// bubble if it's an invalid key
 	}
-	defaultGetDrag { ^Point(this.lo, this.hi) }	
-	defaultCanReceiveDrag {	
-		^currentDrag.isKindOf(Point);	
+	defaultGetDrag { ^Point(this.lo, this.hi) }
+	defaultCanReceiveDrag {
+		^currentDrag.isKindOf(Point);
 	}
 	defaultReceiveDrag {
 		// changed to x,y instead of lo, hi
 		this.lo = currentDrag.x;
 		this.hi = currentDrag.y;
-		this.doAction		
+		this.doAction
 	}
 }
 
-SC2DSlider : SCSliderBase { 
+SC2DSlider : SCSliderBase {
 	x {
 		^this.getProperty(\x)
 	}
 	x_ { arg val;
 		this.setProperty(\x, val);
-	}	
+	}
 	activex_ { arg val;
 		this.setPropertyWithAction(\x, val);
-	}	
+	}
 	y {
 		^this.getProperty(\y)
 	}
 	y_ { arg val;
 		this.setProperty(\y, val);
-	}	
+	}
 	activey_ { arg val;
 		this.setPropertyWithAction(\y, val);
 	}
@@ -836,7 +836,7 @@ SC2DSlider : SCSliderBase {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	setXYActive { arg x, y;
 		this.setXY( x, y );
 		this.doAction;
@@ -845,7 +845,7 @@ SC2DSlider : SCSliderBase {
 	properties {
 		^super.properties ++ #[\x, \y]
 	}
-	
+
 	pixelStepX { ^(this.bounds.width).reciprocal }
 	pixelStepY { ^(this.bounds.height).reciprocal }
 
@@ -855,7 +855,7 @@ SC2DSlider : SCSliderBase {
 	decrementX { |zoom=1| ^this.x = this.x - (this.pixelStepX * zoom) }
 
 	defaultKeyDownAction { arg char, modifiers, unicode,keycode;
-		var zoom = this.getScale(modifiers); 
+		var zoom = this.getScale(modifiers);
 		// standard keydown
 		if (char == $r, { this.x = 1.0.rand; this.y = 1.0.rand; ^this });
 		if (char == $n, { this.x = 0.0; this.y = 0.0; ^this });
@@ -867,7 +867,7 @@ SC2DSlider : SCSliderBase {
 		if (unicode == 16rF702, { this.decrementX(zoom); ^this });
 		^nil		// bubble if it's an invalid key
 	}
-	defaultGetDrag { 
+	defaultGetDrag {
 		^Point(this.x, this.y)
 	}
 	defaultCanReceiveDrag {
@@ -881,20 +881,20 @@ SC2DSlider : SCSliderBase {
 SC2DTabletSlider : SC2DSlider {
 
 //	var <>mouseDownAction,<>mouseUpAction;
-	
+
 	mouseDown { arg x,y,pressure,tiltx,tilty,deviceID,
 			 buttonNumber,clickCount,absoluteZ,rotation;
-		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+		mouseDownAction.value(this,x,y,pressure,tiltx,tilty,deviceID,
 			buttonNumber,clickCount,absoluteZ,rotation);
 	}
-	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID, 
+	mouseUp { arg x,y,pressure,tiltx,tilty,deviceID,
 			buttonNumber,clickCount,absoluteZ,rotation;
-		mouseUpAction.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+		mouseUpAction.value(this,x,y,pressure,tiltx,tilty,deviceID,
 			buttonNumber,clickCount,absoluteZ,rotation);
 	}
-	doAction { arg x,y,pressure,tiltx,tilty,deviceID, 
+	doAction { arg x,y,pressure,tiltx,tilty,deviceID,
 			buttonNumber,clickCount,absoluteZ,rotation;
-		action.value(this,x,y,pressure,tiltx,tilty,deviceID, 
+		action.value(this,x,y,pressure,tiltx,tilty,deviceID,
 			buttonNumber,clickCount,absoluteZ,rotation);
 	}
 }
@@ -910,21 +910,21 @@ SCButton : SCControlView {
 			["Pop", Color.white, Color.blue]];
 		^v
 	}
-	
+
 	value {
 		^this.getProperty(\value)
 	}
 	value_ { arg val;
 		this.setProperty(\value, val);
-	}	
+	}
 	valueAction_ { arg val;
 		this.setPropertyWithAction(\value, val);
-	}	
-	
+	}
+
 	doAction { arg modifiers;
 		action.value(this, modifiers);
 	}
-	
+
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
 		if (char == $\r, { this.valueAction = this.value + 1; ^this });
@@ -942,12 +942,12 @@ SCButton : SCControlView {
 		states = array;
 		this.setProperty(\states, states);
 	}
-	
+
 	properties {
 		^super.properties ++ #[\value, \font, \states]
 	}
-	
-	defaultGetDrag { 
+
+	defaultGetDrag {
 		^this.value
 	}
 	defaultCanReceiveDrag {
@@ -965,23 +965,23 @@ SCButton : SCControlView {
 
 SCPopUpMenu : SCControlView {
 	var <font, <items;
-	
+
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
 		v.items = #["linear","exponential","sine","welch","squared","cubed"];
 		^v
 	}
-		
+
 	value {
 		^this.getProperty(\value)
 	}
 	value_ { arg val;
 		this.setProperty(\value, val);
-	}	
+	}
 	valueAction_ { arg val;
 		this.setPropertyWithAction(\value, val);
-	}	
+	}
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		if (char == $ , { this.valueAction = this.value + 1; ^this });
@@ -1002,23 +1002,23 @@ SCPopUpMenu : SCControlView {
 		items = array;
 		this.setProperty(\items, items);
 	}
-	
+
 	item {
 		^items[this.value]
 	}
-		
+
 	stringColor {
 		^this.getProperty(\stringColor, Color.new)
 	}
 	stringColor_ { arg color;
 		this.setProperty(\stringColor, color)
 	}
-	
+
 	properties {
 		^super.properties ++ #[\value, \font, \items, \stringColor]
 	}
 
-	defaultGetDrag { 
+	defaultGetDrag {
 		^this.value
 	}
 	defaultCanReceiveDrag {
@@ -1033,12 +1033,12 @@ SCPopUpMenu : SCControlView {
 
 SCStaticTextBase : SCView {
 	var <string, <font, <object, <>setBoth=true;
-	
+
 	font_ { arg argFont;
 		font = argFont;
 		this.setProperty(\font, font)
 	}
-	
+
 	string_ { arg argString;
 		string = argString.asString;
 		this.setProperty(\string, string)
@@ -1046,7 +1046,7 @@ SCStaticTextBase : SCView {
 	align_ { arg align;
 		this.setProperty(\align, align)
 	}
-	
+
 	stringColor {
 		^this.getProperty(\stringColor, Color.new)
 	}
@@ -1058,7 +1058,7 @@ SCStaticTextBase : SCView {
 		object = obj;
 		if (setBoth) { this.string = object.asString(80); };
 	}
-	
+
 	properties {
 		^super.properties ++ #[\string, \font, \stringColor]
 	}
@@ -1077,17 +1077,17 @@ SCStaticText : SCStaticTextBase {
 SCNumberBox : SCStaticTextBase {
 	var <> keyString, <>step=1, <>scroll_step=1;
 	var <>typingColor, <>normalColor;
-	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true; 
+	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true;
 	var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
-	
-	getScale { |modifiers| 
+
+	getScale { |modifiers|
 		^case
 			{ modifiers & 131072 == 131072 } { shift_scale }
 			{ modifiers & 262144 == 262144 } { ctrl_scale }
 			{ modifiers & 524288 == 524288 } { alt_scale }
 			{ 1 };
 	}
-	
+
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
@@ -1106,16 +1106,16 @@ SCNumberBox : SCStaticTextBase {
 
 	increment {arg mul=1; this.valueAction = this.value + (step*mul); }
 	decrement {arg mul=1; this.valueAction = this.value - (step*mul); }
-	
+
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var zoom = this.getScale(modifiers);
-		
+
 		// standard chardown
 		if (unicode == 16rF700, { this.increment(zoom); ^this });
 		if (unicode == 16rF703, { this.increment(zoom); ^this });
 		if (unicode == 16rF701, { this.decrement(zoom); ^this });
 		if (unicode == 16rF702, { this.decrement(zoom); ^this });
-		
+
 		if ((char == 3.asAscii) || (char == $\r) || (char == $\n), { // enter key
 			if (keyString.notNil,{ // no error on repeated enter
 				this.valueAction_(keyString.asFloat);
@@ -1129,7 +1129,7 @@ SCNumberBox : SCStaticTextBase {
 			^this
 		});
 		if (char.isDecDigit || "+-.eE".includes(char), {
-			if (keyString.isNil, { 
+			if (keyString.isNil, {
 				keyString = String.new;
 				this.stringColor = typingColor;
 			});
@@ -1137,8 +1137,8 @@ SCNumberBox : SCStaticTextBase {
 			this.string = keyString;
 			^this
 		});
-		
-		
+
+
 
 		^nil		// bubble if it's an invalid key
 	}
@@ -1149,7 +1149,7 @@ SCNumberBox : SCStaticTextBase {
 		this.stringColor = normalColor;
 		object = val !? { val.clip(clipLo, clipHi) };
 		this.string = object.asString;
-	}	
+	}
 	valueAction_ { arg val;
 		var prev;
 		prev = object;
@@ -1169,19 +1169,19 @@ SCNumberBox : SCStaticTextBase {
 	properties {
 		^super.properties ++ #[\boxColor]
 	}
-	defaultGetDrag { 
+	defaultGetDrag {
 		^object.asFloat
 	}
 	defaultCanReceiveDrag {
 		^currentDrag.isNumber;
 	}
 	defaultReceiveDrag {
-		this.valueAction = currentDrag;	
+		this.valueAction = currentDrag;
 	}
 
 	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
 		hit = Point(x,y);
-		if (scroll == true, { inc = this.getScale(modifiers) });			
+		if (scroll == true, { inc = this.getScale(modifiers) });
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
@@ -1195,7 +1195,7 @@ SCNumberBox : SCStaticTextBase {
 			this.valueAction = (this.value + (inc * this.scroll_step * direction));
 			hit = Point(x, y);
 		});
-		mouseMoveAction.value(this, x, y, modifiers);	
+		mouseMoveAction.value(this, x, y, modifiers);
 	}
 	mouseUp{
 		inc=1
@@ -1204,14 +1204,14 @@ SCNumberBox : SCStaticTextBase {
 
 SCListView : SCControlView {
 	var <font, <items, <>enterKeyAction;
-	
+
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
 		v.items = #["linear","exponential","sine","welch","squared","cubed"];
 		^v
 	}
-	
+
 	init { arg argParent, argBounds;
 		parent = argParent.asView; // actual view
 			// call asView again because parent by this point might be a FlowView
@@ -1219,7 +1219,7 @@ SCListView : SCControlView {
 		argParent.add(this);//maybe window or viewadapter
 		this.items = []; // trick to draw right in scrollviews
 	}
-	
+
 	item {
 		^items[this.value]
 	}
@@ -1228,10 +1228,10 @@ SCListView : SCControlView {
 	}
 	value_ { arg val;
 		this.setProperty(\value, val);
-	}	
+	}
 	valueAction_ { arg val;
 		this.setPropertyWithAction(\value, val);
-	}	
+	}
 
 	defaultKeyDownAction { arg char, modifiers, unicode;
 		var index;
@@ -1261,41 +1261,41 @@ SCListView : SCControlView {
 		items = array;
 		this.setProperty(\items, items);
 	}
-	
+
 	colors_{arg incolors;
 		this.setProperty(\itemColors, incolors);
 	}
-	
+
 	colors{
-		^this.getProperty(\itemColors, {Color.new}!items.size);	
+		^this.getProperty(\itemColors, {Color.new}!items.size);
 	}
-	
+
 	stringColor {
 		^this.getProperty(\stringColor, Color.new)
 	}
 	stringColor_ { arg color;
 		this.setProperty(\stringColor, color)
 	}
-	
+
 	selectedStringColor {
 		^this.getProperty(\selectedStringColor, Color.new)
 	}
 	selectedStringColor_ { arg color;
 		this.setProperty(\selectedStringColor, color)
 	}
-	
+
 	hiliteColor {
 		^this.getProperty(\hiliteColor, Color.new)
 	}
 	hiliteColor_ { arg color;
 		this.setProperty(\hiliteColor, color)
 	}
-	
+
 	properties {
 		^super.properties ++ #[\value, \font, \items, \stringColor, \align, \itemColors]
 	}
 
-	defaultGetDrag { 
+	defaultGetDrag {
 		^this.value
 	}
 	defaultCanReceiveDrag {
@@ -1308,23 +1308,23 @@ SCListView : SCControlView {
 
 
 SCDragView : SCStaticTextBase {
-	
+
 	*paletteExample { arg parent, bounds;
 		var v;
 		v = this.new(parent, bounds);
 		v.object = \something;
 		^v
 	}
-	defaultGetDrag { 
+	defaultGetDrag {
 		^object
 	}
 }
 
 SCDragSource : SCDragView {
-	
+
 }
 
-SCDragSink : SCDragView {	
+SCDragSink : SCDragView {
 	defaultCanReceiveDrag { ^true;	}
 	defaultReceiveDrag {
 		this.object = currentDrag;
@@ -1332,7 +1332,7 @@ SCDragSink : SCDragView {
 	}
 }
 
-SCDragBoth : SCDragSink {	
+SCDragBoth : SCDragSink {
 	defaultGetDrag { ^object }
 }
 
@@ -1342,106 +1342,106 @@ SCUserView : SCView {
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
 	var < clearOnRefresh = true, relativeOrigin = true;
 	var < drawingEnabled = true;
-	
+
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
 		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
-	
-	draw { 
-		drawFunc.value(this) ;	
+
+	draw {
+		drawFunc.value(this) ;
 	}
-	
+
 	clearDrawing{
-			this.setProperty(\clearDrawing);	
+			this.setProperty(\clearDrawing);
 	}
 
 	mousePosition{
 		this.deprecated(thisMethod);
 		^this.getProperty(\mousePosition, Point.new)
 	}
-		
+
 	clearOnRefresh_{|bool|
 		clearOnRefresh = bool;
 		this.setProperty(\clearOnRefresh, bool);			}
-		
+
 	relativeOrigin {
 		this.deprecated(thisMethod);
 		^relativeOrigin;
 	}
-	
+
 	relativeOrigin_{ |bool|
 		this.deprecated(thisMethod);
 		relativeOrigin = bool;
 		this.setProperty(\relativeOrigin, bool);
-	}	
-	
+	}
+
 	drawingEnabled_{|bool|
 		drawingEnabled = bool;
-		this.setProperty(\drawingEnabled, bool);	}	
+		this.setProperty(\drawingEnabled, bool);	}
 
 	/* backwards compatibility */
 	keyDownFunc_{|action|
 		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
 		keyDownAction = action;
 	}
-	
+
 	keyDownFunc{
 		"SCUserView:keyDownFunc deprecated, use SCUserView:keyDownAction".warn;
-		^keyDownAction	
+		^keyDownAction
 	}
-	
+
 	mouseBeginTrackFunc_{|action|
 		"SCUserView:mouseBeginTrackFunc deprecated, use SCUserView:mouseDownAction".warn;
-		mouseDownAction = action;	
+		mouseDownAction = action;
 	}
 	mouseBeginTrackFunc{
 		"SCUserView:mouseBeginTrackFunc deprecated, use SCUserView:mouseDownAction".warn;
-		^mouseDownAction;	
-	}	
+		^mouseDownAction;
+	}
 
 	mouseTrackFunc_{|action|
 		"SCUserView:mouseTrackFunc deprecated, use SCUserView:mouseMoveAction".warn;
-		mouseMoveAction = action;	
+		mouseMoveAction = action;
 	}
 	mouseTrackFunc{
 		"SCUserView:mouseTrackFunc deprecated, use SCUserView:mouseMoveAction".warn;
-		^mouseMoveAction;	
-	}	
+		^mouseMoveAction;
+	}
 
 	mouseEndTrackFunc_{|action|
 		"SCUserView:mouseEndTrackFunc deprecated, use SCUserView:mouseUpAction".warn;
-		mouseUpAction = action;	
+		mouseUpAction = action;
 	}
-	
+
 	mouseEndTrackFunc{
 		"SCUserView:mouseEndTrackFunc deprecated, use SCUserView:mouseUpAction".warn;
-		^mouseUpAction;	
-	}			
-	
+		^mouseUpAction;
+	}
+
 }
 //
 //SCFuncUserView : SCUserView {
 //	var <>keyDownFunc, <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-//	
+//
 //	draw { drawFunc.value(this) }
-//	mouseBeginTrack { arg x, y, modifiers; 
-//		mouseBeginTrackFunc.value(this, x, y, modifiers); 
+//	mouseBeginTrack { arg x, y, modifiers;
+//		mouseBeginTrackFunc.value(this, x, y, modifiers);
 //	}
-//	mouseTrack { arg x, y, modifiers; 
-//		mouseTrackFunc.value(this, x, y, modifiers); 
+//	mouseTrack { arg x, y, modifiers;
+//		mouseTrackFunc.value(this, x, y, modifiers);
 //	}
-//	mouseEndTrack { arg x, y, modifiers; 
-//		mouseEndTrackFunc.value(this, x, y, modifiers); 
+//	mouseEndTrack { arg x, y, modifiers;
+//		mouseEndTrackFunc.value(this, x, y, modifiers);
 //	}
-//	keyDown { arg key, modifiers, unicode; 
-//		keyDownFunc.value(this, key, modifiers, unicode) 
+//	keyDown { arg key, modifiers, unicode;
+//		keyDownFunc.value(this, key, modifiers, unicode)
 //	}
 //}
 
 //by jt v.0.22
-SCMultiSliderView : SCView { 
+SCMultiSliderView : SCView {
 
 	var <>metaAction;
 //	var <>mouseUpAction;
@@ -1449,7 +1449,7 @@ SCMultiSliderView : SCView {
 	var <gap;
 	var <editable = true;
 	var <elasticMode = 0;
-	
+
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
 	mouseTrack { arg x, y, modifiers; 	}
@@ -1458,23 +1458,23 @@ SCMultiSliderView : SCView {
 	}
 	properties {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \referenceValues, \thumbWidth, \absoluteX, \isFilled, \step, \elasticResizeMode]
-	}	
-	
+	}
 
-	
+
+
 	elasticMode_{arg mode;
 		elasticMode =mode;
 		this.setProperty(\elasticResizeMode, mode);
 	}
-	
+
 	step_ { arg stepSize;
 		this.setPropertyWithAction(\step, stepSize);
 	}
-	
+
 	step {
 		^this.getProperty(\step)
 	}
-	
+
 	value { //returns array
 		^this.getProperty(\value, Array.newClear(this.size))
 	}
@@ -1482,12 +1482,12 @@ SCMultiSliderView : SCView {
 		this.size = val.size;
 		this.setProperty(\value, val)
 	}
-	
+
 	valueAction_ { arg val;
-		this.size = val.size;	
+		this.size = val.size;
 		this.setPropertyWithAction(\value, val);
 	}
-	
+
 	reference { //returns array
 		^this.getProperty(\referenceValues, Array.newClear(this.size))
 	}
@@ -1514,7 +1514,7 @@ SCMultiSliderView : SCView {
 
 	startIndex_ { arg val; this.setProperty( \startIndex, val )}
 
-	selectionSize { 
+	selectionSize {
 		^this.getProperty(\selectionSize)
 	}
 	selectionSize_ { arg aval;
@@ -1566,25 +1566,25 @@ SCMultiSliderView : SCView {
 		this.setProperty(\valueThumbSize, val)
 	}
 	indexIsHorizontal_ { arg val;
-		this.setProperty(\isHorizontal,val);	
+		this.setProperty(\isHorizontal,val);
 	}
 	defaultCanReceiveDrag {	^true; }
 	defaultReceiveDrag {
-		if(currentDrag.at(0).isSequenceableCollection, { 
+		if(currentDrag.at(0).isSequenceableCollection, {
 			this.value_(currentDrag.at(0));
 			this.reference_(currentDrag.at(1));
 		},{
 			this.value_(currentDrag);
 		});
-	}	
+	}
 	defaultGetDrag {
 		var setsize, vals, rvals, outval;
 		rvals = this.reference;
 		vals = this.value;
 		if(this.selectionSize > 1, {
 			vals = vals.copyRange(this.index, this.selectionSize + this.index);});
-		if(rvals.isNil, { 
-			^vals 
+		if(rvals.isNil, {
+			^vals
 		},{
 		if(this.selectionSize > 1, {
 			rvals = rvals.copyRange(this.index, this.selectionSize + this.index);});
@@ -1593,7 +1593,7 @@ SCMultiSliderView : SCView {
 		});
 		^outval
 	}
-		
+
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		//modifiers.postln; 16rF702
 		if (unicode == 16rF703, { this.index = this.index + 1; ^this });
@@ -1602,14 +1602,14 @@ SCMultiSliderView : SCView {
 		if (unicode == 16rF701, { this.gap = this.gap - 1; ^this });
 		^nil		// bubble if it's an invalid key
 	}
-	
+
 	*paletteExample{ arg parent, bounds;
 		var example;
 		example = this.new(parent, bounds).valueThumbSize_(2);
 		^example
-	}	
-		
-	doMetaAction{ 
+	}
+
+	doMetaAction{
 		metaAction.value(this)
 	} //on ctrl click
 }
@@ -1624,60 +1624,60 @@ SCEnvelopeView : SCView {
 	var <editable = true;
 	var <curves = \linear;
 	var <gridOn, <gridColor, <grid;
-	
+
 	init{arg argParent, argBounds;
 		super.init(argParent, argBounds);
-		gridOn = false; 
+		gridOn = false;
 		gridColor = Color(0,0,0.8, 0.3);
 		grid = Point(0.1, 0.1);
 	}
-	
+
 	draw {}
 	mouseBeginTrack { arg x, y, modifiers;}
 	mouseTrack { arg x, y, modifiers; 	}
 	mouseEndTrack { arg x, y, modifiers;
 		mouseUpAction.value(this);
 	}
-	
+
 	grid_{arg point;
 		this.setProperty(\setGrid, [point.x, point.y]);
 		grid = point;
 	}
-	
+
 	gridOn_{arg bool;
 		this.setProperty(\showGrid, bool);
 		gridOn = bool;
 	}
-	
+
 	gridColor_{arg color;
 		this.setProperty(\setGridColor, color);
 		gridColor = color;
 	}
-	
+
 	properties {
 		^super.properties ++ #[\value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step, \setCurve, \setCurves, \showGrid, setGridColor, \setGrid]
-	}	
-		
+	}
+
 	step_ { arg stepSize;
 		this.setPropertyWithAction(\step, stepSize);
 	}
-	
+
 	step {
 		^this.getProperty(\step)
 	}
-		
+
 	valueAction_ { arg val;
 		this.value_(val);
 		this.doAction;
 	}
-	
+
 	currentvalue { //returns value of selected index
 		^this.getProperty(\y)
 	}
 	currentvalue_ { arg iny;
 		this.setProperty(\y, iny)
 	}
-		
+
 	strokeColor_ { arg acolor;
 		this.setProperty(\strokeColor, acolor)
 	}
@@ -1685,7 +1685,7 @@ SCEnvelopeView : SCView {
 		this.strokeColor_(strokec);
 		this.fillColor_(fillc);
 	}
-	
+
 	drawLines { arg abool;
 		this.setProperty(\drawLines, abool)
 	}
@@ -1695,9 +1695,9 @@ SCEnvelopeView : SCView {
 	drawRects_ { arg abool;
 		this.setProperty(\drawRects, abool)
 	}
-	
+
 	defaultCanReceiveDrag {	^true; }
-			
+
     defaultKeyDownAction { arg key, modifiers, unicode;
 	    	(modifiers==10617090).if{ // shift key
 	       		(this.index > 1.neg).if{
@@ -1711,11 +1711,11 @@ SCEnvelopeView : SCView {
 	     	   if (unicode == 16rF700, { this.y = this.value[1][this.index] + this.step; ^this });	     	   if (unicode == 16rF701, { this.y = this.value[1][this.index] - this.step; ^this });
 	     	};
         ^nil        // bubble if it's an invalid key    }
-    	
-	doMetaAction{ 
+
+	doMetaAction{
 		metaAction.value(this)
 	} //on ctrl click
-	
+
 	value_ { arg val;
 		if(val.at(1).size != val.at(0).size,{
 			// otherwise its a fatal crash
@@ -1741,7 +1741,7 @@ SCEnvelopeView : SCView {
 		axy = Array.with(ax, ay);
 		^this.getProperty(\value, axy)
 	}
-	
+
 	setThumbHeight {arg index, height;
 		this.setProperty(\thumbHeight, [index, height]);
 	}
@@ -1760,13 +1760,13 @@ SCEnvelopeView : SCView {
 	thumbSize_ { arg size;
 		this.setThumbSize(-1, size);
 	}
-	setFillColor { arg index, color; 
+	setFillColor { arg index, color;
 		this.setProperty(\fillColor, [index, color]);
 	}
-	fillColor_ { arg color; 
+	fillColor_ { arg color;
 		this.setFillColor(-1, color);
 	}
-	
+
 	curves_{arg inCurves;
 		var curveNumbers;
 		var shapeNum, curveNum=0;
@@ -1783,7 +1783,7 @@ SCEnvelopeView : SCView {
 			};
 //			this.debug(curveNumbers);
 			this.prSetCurves(curveNumbers);
-		}{ 				
+		}{
 			shapeNum = this.shapeNumber(curves);
 				if(shapeNum == 5){
 					curveNum = curves;
@@ -1793,7 +1793,7 @@ SCEnvelopeView : SCView {
 			this.prSetCurve([-1, shapeNum, curveNum]);
 		}
 	}
-	
+
 	setEnv{arg env, minValue, maxValue, minTime, maxTime;
 		var times, levels;
 		var spec;
@@ -1807,16 +1807,16 @@ SCEnvelopeView : SCView {
 		minTime = minTime ? 0;
 		levels = env.levels;
 		minValue = minValue ? levels.minItem;
-		maxValue = maxValue ? levels.maxItem; 
-		
+		maxValue = maxValue ? levels.maxItem;
+
 		levels = levels.linlin(minValue, maxValue, 0, 1);
 		times = times.linlin(minTime, maxTime, 0, 1);
-		
+
 		this.value_([times.asFloat, levels.asFloat]);
 		this.curves_(env.curves);
-		
+
 	}
-	
+
 	editEnv{arg env, minValue, maxValue, duration;
 		var vals, levels, times, lastTime = 0;
 		vals = this.value;
@@ -1831,7 +1831,7 @@ SCEnvelopeView : SCView {
 		env.levels_(levels);
 		env.curves_(this.curves);
 	}
-	
+
 	asEnv{arg env, minValue, maxValue, duration;
 		var vals, levels, times, lastTime = 0;
 		vals = this.value;
@@ -1845,29 +1845,29 @@ SCEnvelopeView : SCView {
 		env.times_(times);
 		env.levels_(levels);
 		env.curves_(this.curves);
-		^Env(levels, times, this.curves); 
-	}	
-	
+		^Env(levels, times, this.curves);
+	}
+
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds).setEnv(Env([0.1, 0.3, 0.4, 0.01], [0.3, 1, 3]));
-	}	
-		
+	}
+
 	prSetCurves{|arr|
 		this.setProperty(\setCurves, arr);
 	}
-	
+
 	prSetCurve{|arr|
 //		this.debug([\setCurves, arr]);
 		this.setProperty(\setCurve, arr);
 	}
-	
+
 	shapeNumber { arg shapeName;
 		var shape;
 		shape = Env.shapeNames.at(shapeName);
 		if (shape.notNil) { ^shape }{^5};
 	}
-	
-	connect { arg from, aconnections; 
+
+	connect { arg from, aconnections;
 		this.setProperty(\connect, [from, aconnections.asFloat]);
 	}
 
@@ -1897,34 +1897,34 @@ SCEnvelopeView : SCView {
 	}
 
 	setEditable { arg index, boolean;
-		this.setProperty(\editable, [index,boolean]);		
-	}	
+		this.setProperty(\editable, [index,boolean]);
+	}
 
 	editable_{arg boolean;
-		this.setEditable(-1, boolean);		
+		this.setEditable(-1, boolean);
 	}
-	
+
 	selectionColor_ { arg acolor;
 		this.setProperty(\selectionColor, acolor)
 	}
-	defaultGetDrag { 
+	defaultGetDrag {
 		^this.value
 	}
 	defaultReceiveDrag {
 		if(currentDrag.isString, {
 			this.addValue;
 			items = items.insert(this.lastIndex + 1, currentDrag);
-			this.strings_(items);		
-		},{		
+			this.strings_(items);
+		},{
 			this.value_(currentDrag);
 		});
 	}
-	
+
 	addValue { arg xval, yval;
 		var arr, arrx, arry, aindx;
 		arr = this.value;
 		arrx = arr@0;
-		arry = arr@1;	
+		arry = arr@1;
 		arrx.do{|val, i|
 			if(val>xval and: aindx.isNil){
 				aindx = i;
@@ -1934,8 +1934,8 @@ SCEnvelopeView : SCView {
 		arrx = arrx.insert(aindx , xval);
 		arry = arry.insert(aindx , yval);
 		this.value_([arrx,arry]);
-	}	
-	
+	}
+
 	fixedSelection_ { arg bool;
 		fixedSelection =  bool;
 		this.setProperty(\setFixedSelection, bool);
@@ -1950,7 +1950,7 @@ SCEnvelopeView : SCView {
 // KeyDownAction for all Views
 // bug fixed in SCNumberBox-defaultKeyDownAction
 // passing keydown up the tree
-// consuming keydown in function 
+// consuming keydown in function
 // added keyup
 // and SCMultiSlider by jan t.
 // added customizable drag handlers, cx

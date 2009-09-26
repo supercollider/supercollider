@@ -1,5 +1,5 @@
 Signal[float] : FloatArray {
-	
+
 	*sineFill { arg size, amplitudes, phases;
 		^Signal.newClear(size).sineFill(amplitudes, phases).normalize
 	}
@@ -42,100 +42,100 @@ Signal[float] : FloatArray {
 	fill { arg val; _SignalFill ^this.primitiveFailed }
 	scale { arg scale; _SignalScale ^this.primitiveFailed }
 	offset { arg offset; _SignalOffset ^this.primitiveFailed }
-	
-	asWavetable { 
+
+	asWavetable {
 		// Interpolating oscillators require wavetables in a special format.
 		// This method returns a wavetable in that format.
-		_SignalAsWavetable; 
-		^this.primitiveFailed 
+		_SignalAsWavetable;
+		^this.primitiveFailed
 	}
-	
-	asWavetableNoWrap { 
+
+	asWavetableNoWrap {
 		// Shaper requires wavetables without wrap.
 		// This method returns a wavetable in that format.
 		//To generate size N wavetable need N/2+1 signal values rather than N/2
-		//because Buffer's add_wchebyshev calculates N/2+1 values whilst 
-		//Signal's _SignalAddChebyshev calculates N/2! 
-		
-		var newsig = Signal.newClear((this.size-1)*2); 
-		var next, cur; 
-		
+		//because Buffer's add_wchebyshev calculates N/2+1 values whilst
+		//Signal's _SignalAddChebyshev calculates N/2!
+
+		var newsig = Signal.newClear((this.size-1)*2);
+		var next, cur;
+
 		cur= this[0];
 		(this.size-1).do{|i|
 		var index= 2*i;
 		next= this[i+1];
-				
-		newsig[index]= 2*cur -next; 
-		newsig[index+1]= next-cur; 
+
+		newsig[index]= 2*cur -next;
+		newsig[index+1]= next-cur;
 		cur=next;
-		
+
 		};
-		
-		^newsig 
+
+		^newsig
 	}
-	
+
 	peak { _SignalPeak; ^this.primitiveFailed }
-	
+
 	normalize { arg beginSamp=0, endSamp;
-		_SignalNormalize; 
-		^this.primitiveFailed 
+		_SignalNormalize;
+		^this.primitiveFailed
 	}
 	normalizeTransfer {
-		_SignalNormalizeTransferFn; 
-		^this.primitiveFailed 
+		_SignalNormalizeTransferFn;
+		^this.primitiveFailed
 	}
-	
+
 	invert { arg beginSamp=0, endSamp;
-		_SignalInvert; 
-		^this.primitiveFailed 
+		_SignalInvert;
+		^this.primitiveFailed
 	}
 	reverse { arg beginSamp=0, endSamp;
-		_SignalReverse; 
-		^this.primitiveFailed 
+		_SignalReverse;
+		^this.primitiveFailed
 	}
-	fade { arg beginSamp=0, endSamp, beginLevel=0.0, endLevel=1.0; 
-		_SignalFade; 
-		^this.primitiveFailed 
+	fade { arg beginSamp=0, endSamp, beginLevel=0.0, endLevel=1.0;
+		_SignalFade;
+		^this.primitiveFailed
 	}
 	rotate { arg n=1;
-		_SignalRotate 
-		^this.primitiveFailed 
+		_SignalRotate
+		^this.primitiveFailed
 	}
 	zeroPad {
 		var size;
 		size = (this.size.nextPowerOfTwo * 2);
 		^this ++ Signal.newClear(size - this.size);
 	}
-	
+
 	integral { _SignalIntegral; ^this.primitiveFailed }
-	overDub { arg aSignal, index=0; 
-		_SignalOverDub 
+	overDub { arg aSignal, index=0;
+		_SignalOverDub
 		// add a signal to myself starting at the index
 		// if the other signal is too long only the first part is overdubbed
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	overWrite { arg aSignal, index=0; 
-		_SignalOverWrite 
+	overWrite { arg aSignal, index=0;
+		_SignalOverWrite
 		// write a signal to myself starting at the index
 		// if the other signal is too long only the first part is overwritten
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	
-	play { arg loop=false, mul=0.2, numChannels=1, server; 
-		var buf; 
-		buf = Buffer.alloc(server ? Server.default, this.size, numChannels); 
+
+	play { arg loop=false, mul=0.2, numChannels=1, server;
+		var buf;
+		buf = Buffer.alloc(server ? Server.default, this.size, numChannels);
 		buf.sendCollection(this, 0, 0.1, { buf.play(loop, mul); });
 		^buf
 	}
-	
+
 	waveFill { arg function, start = 0.0, end = 1.0;
 		var i = 0, step, size, val, x;
-		
+
 		// evaluate a function for every sample over the interval from
-		// start to end. 
+		// start to end.
 		size = this.size;
 		if (size <= 0, { ^this });
-		
+
 		x = start;
 		step = (end - start) / size;
 		while ({ i < size }, {
@@ -148,7 +148,7 @@ Signal[float] : FloatArray {
 	}
 	addSine { arg harmonicNumber = 1, amplitude = 1.0, phase = 0.0;
 		_SignalAddHarmonic
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	sineFill { arg amplitudes, phases;
 		this.fill(0.0);
@@ -157,32 +157,32 @@ Signal[float] : FloatArray {
 	}
 	sineFill2 { arg list;
 		this.fill(0.0);
-		list.do({ arg item, i; 
+		list.do({ arg item, i;
 			var harm, amp, phase;
 			# harm, amp, phase = item;
 			this.addSine(harm, amp ? 1.0, phase ? 0.0);
 		});
 	}
-	
+
 	addChebyshev { arg harmonicNumber = 1, amplitude = 1.0;
 		_SignalAddChebyshev
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 	chebyFill { arg amplitudes, normalize=true;
 		this.fill(0.0);
 		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp); if(i%4==1,{this.offset(1)}); if(i%4==3,{this.offset(-1)}); }); //corrections for JMC DC offsets, as per Buffer:cheby
-		
+
 		if(normalize,{this.normalizeTransfer}); //no automatic cheby
 	}
-	
+
 	//old version
 	chebyFill_old { arg amplitudes;
 		this.fill(0.0);
-		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp) }); 
-		this.normalizeTransfer 
+		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp) });
+		this.normalizeTransfer
 	}
 
-	
+
 	*fftCosTable { arg fftsize;
 		^this.newClear((fftsize/4) + 1).fftCosTable
 	}
@@ -191,8 +191,8 @@ Signal[float] : FloatArray {
 		harm = this.size / ((this.size - 1) * 4);
 		this.addSine(harm, 1, 0.5pi);
 	}
-	
-	fft { arg imag, cosTable; 
+
+	fft { arg imag, cosTable;
 		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
 		// fftsize is the next greater power of two than the receiver's length
 		_Signal_FFT
@@ -204,7 +204,7 @@ Signal[float] : FloatArray {
 		_Signal_IFFT
 		^this.primitiveFailed
 	}
-	
+
 	neg { _Neg; ^this.primitiveFailed }
 	abs { _Abs; ^this.primitiveFailed }
 	sign { _Sign; ^this.primitiveFailed }
@@ -218,7 +218,7 @@ Signal[float] : FloatArray {
 	//midiratio { _MIDIRatio; ^this.primitiveFailed }
 	//ratiomidi { _RatioMIDI; ^this.primitiveFailed }
 	//ampdb { _AmpDb; ^this.primitiveFailed }
-	//dbamp { _DbAmp; ^this.primitiveFailed }	
+	//dbamp { _DbAmp; ^this.primitiveFailed }
 	//octcps { _OctCPS; ^this.primitiveFailed }
 	//cpsoct { _CPSOct; ^this.primitiveFailed }
 	log { _Log; ^this.primitiveFailed }
@@ -234,7 +234,7 @@ Signal[float] : FloatArray {
 	cosh { _CosH; ^this.primitiveFailed }
 	tanh { _TanH; ^this.primitiveFailed }
 	distort { _Distort; ^this.primitiveFailed }
-	softclip { _SoftClip; ^this.primitiveFailed }	
+	softclip { _SoftClip; ^this.primitiveFailed }
 
 	rectWindow { _RectWindow; ^this.primitiveFailed }
 	hanWindow { _HanWindow; ^this.primitiveFailed }
@@ -243,7 +243,7 @@ Signal[float] : FloatArray {
 
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
-	
+
 	+ { arg aNumber; _Add; ^aNumber.performBinaryOpOnSignal('+', this) }
 	- { arg aNumber; _Sub; ^aNumber.performBinaryOpOnSignal('-', this) }
 	* { arg aNumber; _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
@@ -251,7 +251,7 @@ Signal[float] : FloatArray {
 	mod { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
 	div { arg aNumber; _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
 	pow { arg aNumber; _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
-	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSignal('min', this) } 
+	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSignal('min', this) }
 	max { arg aNumber; _Max; ^aNumber.performBinaryOpOnSignal('max', this) }
 	ring1 { arg aNumber; _Ring1; ^aNumber.performBinaryOpOnSignal('ring1', this) }
 	ring2 { arg aNumber; _Ring2; ^aNumber.performBinaryOpOnSignal('ring2', this) }
@@ -273,21 +273,21 @@ Signal[float] : FloatArray {
 
 	== { arg aNumber; _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
 	!= { arg aNumber; _NE; ^aNumber.performBinaryOpOnSignal('!=', this) }
-	
+
 	clip { arg lo, hi; _ClipSignal; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapSignal; ^this.primitiveFailed }
 	fold { arg lo, hi; _FoldSignal; ^this.primitiveFailed }
-		
+
 	asInteger { _AsInt; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asSignal { ^this }
-	
+
 	// complex support
 	real { ^this }
-	imag { ^0.0 }	
-	
-	//PRIVATE: 
+	imag { ^0.0 }
+
+	//PRIVATE:
 	performBinaryOpOnSignal { arg aSelector, aNumber; ^error("Math operation failed.\n") }
 	performBinaryOpOnComplex { arg aSelector, aComplex; ^aComplex.perform(aSelector, this.asComplex) }
 	performBinaryOpOnSimpleNumber { arg aSelector, aSimpleNumber; ^aSimpleNumber.perform(aSelector, this) }
@@ -295,39 +295,39 @@ Signal[float] : FloatArray {
 
 Wavetable[float] : FloatArray {
 	// the only way to make a Wavetable is by Signal::asWavetable
-	*new { 
+	*new {
 		^this.shouldNotImplement(thisMethod)
 	}
-	*newClear { 
+	*newClear {
 		^this.shouldNotImplement(thisMethod)
 	}
-	
+
 	*sineFill { arg size, amplitudes, phases;
 		^Signal.sineFill(size, amplitudes, phases).asWavetable
 	}
-	
+
 	//size must be N/2+1 for N power of two; N is eventual size of wavetable
 	*chebyFill { arg size, amplitudes, normalize=true;
-		
+
 		^Signal.chebyFill(size, amplitudes, normalize).asWavetableNoWrap; //asWavetable causes wrap here, problem
 	}
 
 	*chebyFill_old { arg size, amplitudes;
-		
+
 		//this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cheby));
-		
+
 		^Signal.chebyFill(size, amplitudes).asWavetable; //asWavetable causes wrap here, problem
 	}
-	
+
 	asSignal {
 		_WavetableAsSignal
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 
 	blend { arg anotherWavetable, blendFrac=0.5;
 		^this.asSignal.blend(anotherWavetable.asSignal, blendFrac).asWavetable;
 	}
-	
+
 	*readNew { arg file;
 		^file.readAllSignal.asWavetable;
 	}

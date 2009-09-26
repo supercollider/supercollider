@@ -56,7 +56,7 @@ inline float PhaseFrac(uint32 inPhase)
 			u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
 			return u.ftemp - 1.f;
 		}
-		
+
 inline float PhaseFrac1(uint32 inPhase)
 		{
 			union { uint32 itemp; float ftemp; } u;

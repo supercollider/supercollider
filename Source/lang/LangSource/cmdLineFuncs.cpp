@@ -53,7 +53,7 @@ void postfl(const char *fmt, ...);
 void postfl(const char *fmt, ...)
 {
 	va_list vargs;
-	va_start(vargs, fmt); 
+	va_start(vargs, fmt);
 	vfprintf(postfile, fmt, vargs);
         fflush(postfile);
 }
@@ -72,7 +72,7 @@ void post(const char *fmt, ...);
 void post(const char *fmt, ...)
 {
 	va_list vargs;
-	va_start(vargs, fmt); 
+	va_start(vargs, fmt);
 	vfprintf(postfile, fmt, vargs);
     //fflush(postfile);
 }
@@ -82,7 +82,7 @@ void error(const char *fmt, ...)
 {
 	fprintf(postfile, "ERROR: ");
 	va_list vargs;
-	va_start(vargs, fmt); 
+	va_start(vargs, fmt);
 	vfprintf(postfile, fmt, vargs);
         fflush(postfile);
 }
@@ -95,7 +95,7 @@ void postText(const char *text, long length)
 
 void postChar(char c);
 void postChar(char c)
-{	
+{
 	fputc(c, postfile);
 }
 
@@ -162,19 +162,19 @@ void initRendezvousPrimitives()
 }
 
 bool compileLibrary();
-void runLibrary(PyrSymbol* selector); 
+void runLibrary(PyrSymbol* selector);
 
 int main();
 int main()
 {
-	
+
 	pyr_init_mem_pools(2*1024*1024, 256*1024);
 	init_OSC(57120);
 	schedInit();
 
 	compileLibrary();
 	runLibrary(s_run); fflush(postfile);
-                
+
 	return 0;
 }
 

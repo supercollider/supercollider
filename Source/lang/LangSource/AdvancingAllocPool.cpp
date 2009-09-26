@@ -68,7 +68,7 @@ void* AdvancingAllocPool::Alloc(size_t reqsize)
 		else if (mCurSize + size > mChunks->mSize) AddChunk(mGrowSize);
 		char* space = mChunks->mSpace + mCurSize;
 		mCurSize += size;
-		
+
 		//assert(SanityCheck());
 		return (void*)space;
 	} else {
@@ -78,7 +78,7 @@ void* AdvancingAllocPool::Alloc(size_t reqsize)
 		fatty->mNext = mFatties;
 		mFatties = fatty;
 		fatty->mSize = size;
-		
+
 		//assert(SanityCheck());
 		return (void*)fatty->mSpace;
 	}

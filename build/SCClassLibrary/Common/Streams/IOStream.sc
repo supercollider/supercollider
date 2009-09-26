@@ -10,18 +10,18 @@ IOStream : Stream {
 	tab { this.put(Char.tab); }
 
 	<< { arg item;
-		item.printOn(this); 
+		item.printOn(this);
 	}
 	<<< { arg item;
-		item.storeOn(this); 
+		item.storeOn(this);
 	}
 	<<* { arg collection;
-		collection.printItemsOn(this); 
+		collection.printItemsOn(this);
 	}
 	<<<* { arg collection;
-		collection.storeItemsOn(this); 
+		collection.storeItemsOn(this);
 	}
-	
+
 	readUpTo { arg delimiter = $\f;
 		var string, char;
 		string = String.new;
@@ -41,12 +41,12 @@ IOStream : Stream {
 
 CollStream : IOStream {
 	var <>collection, <pos = 0;
-	
+
 	*new { arg collection;
 		^super.new.collection_(collection ?? { String.new(128) })
 	}
-	*on { arg aCollection; 
-		^super.new.on(aCollection); 
+	*on { arg aCollection;
+		^super.new.on(aCollection);
 	}
 	on { arg aCollection;
 		collection = aCollection;
@@ -54,7 +54,7 @@ CollStream : IOStream {
 	}
 	reset { super.reset; collection = collection.extend(0) }
 
-	
+
 	// seeking
 	pos_ { arg toPos;
 		pos = toPos.clip(0, collection.size);
@@ -92,9 +92,9 @@ CollStream : IOStream {
 		collection = collection.overWrite(aCollection, pos);
 		pos = pos + aCollection.size;
 	}
-	
-	
-//	write { arg item; 
+
+
+//	write { arg item;
 //		/* writes any of the following items as binary:
 //			a double float,
 //			a long,
@@ -105,7 +105,7 @@ CollStream : IOStream {
 //				(i.e. Strings, Int8Arrays, Int16Arrays,
 //				Signals, etc.)
 //		*/
-//		_CollStream_Write 
+//		_CollStream_Write
 //		^this.primitiveFailed;
 //	}
 
@@ -115,59 +115,59 @@ CollStream : IOStream {
 	getInt32 { ^this.getInt16 << 16 | this.getInt16; }
 	getFloat { ^Float.from32Bits(this.getInt32); }
 	getDouble { ^Float.from64Bits(this.getInt32, this.getInt32); }
-	
+
 	getPascalString {
 		var	size = this.getInt8;
 		^String.fill(size, { this.getChar.asAscii })
 	}
-	
+
 		// array should be some subclass of RawArray
 	read { |array|
 		array.readFromStream(this);
 	}
-//	
+//
 	// collection should be an Int8Array
 	putChar { arg aChar; this.put(aChar.ascii); }
 	putInt8 { arg anInteger; this.put(anInteger & 255); }
-	putInt16 { arg anInteger; 
+	putInt16 { arg anInteger;
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger);
 	}
-	putInt16LE { arg anInteger; 
+	putInt16LE { arg anInteger;
 		this.putInt8(anInteger);
 		this.putInt8(anInteger>>8);
 	}
-	putInt32 { arg anInteger; 
+	putInt32 { arg anInteger;
 		this.putInt8(anInteger>>24);
 		this.putInt8(anInteger>>16);
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger);
 	}
-	putInt32LE { arg anInteger; 
+	putInt32LE { arg anInteger;
 		this.putInt8(anInteger);
 		this.putInt8(anInteger>>8);
 		this.putInt8(anInteger>>16);
 		this.putInt8(anInteger>>24);
 	}
-	putFloat { arg aFloat; 
+	putFloat { arg aFloat;
 		aFloat = aFloat.asFloat;
-		this.putInt32(aFloat.as32Bits); 
+		this.putInt32(aFloat.as32Bits);
 	}
 	putDouble { arg aFloat;
-		aFloat = aFloat.asFloat; 
-		this.putInt32(aFloat.high32Bits); 
-		this.putInt32(aFloat.low32Bits); 
-	}
-	putFloatLE { arg aFloat; 
 		aFloat = aFloat.asFloat;
-		this.putInt32LE(aFloat.as32Bits); 
+		this.putInt32(aFloat.high32Bits);
+		this.putInt32(aFloat.low32Bits);
+	}
+	putFloatLE { arg aFloat;
+		aFloat = aFloat.asFloat;
+		this.putInt32LE(aFloat.as32Bits);
 	}
 	putDoubleLE { arg aFloat;
-		aFloat = aFloat.asFloat; 
-		this.putInt32LE(aFloat.low32Bits); 
-		this.putInt32LE(aFloat.high32Bits); 
+		aFloat = aFloat.asFloat;
+		this.putInt32LE(aFloat.low32Bits);
+		this.putInt32LE(aFloat.high32Bits);
 	}
-	putString { arg aString; 
+	putString { arg aString;
 		aString.do({ arg char; this.putChar(char); });
 	}
 	putPascalString { arg aString;
@@ -178,7 +178,7 @@ CollStream : IOStream {
 
 LimitedWriteStream : CollStream {
 	var <>limit, <>limitFunc;
-	
+
 	atLimit { ^pos >= limit }
 	put { arg item;
 		var newpos;
@@ -204,7 +204,7 @@ LimitedWriteStream : CollStream {
 			pos = newpos;
 		});
 	}
-	
+
 }
 
 
@@ -215,19 +215,19 @@ Post {
 			$c -> { |x| x.asCompileString },
 		];
 	}
-	
+
 	//*flush { this.flushPostBuf }
 	* << { arg item;
-		item.printOn(this); 
+		item.printOn(this);
 	}
 	* <<< { arg item;
-		item.storeOn(this); 
+		item.storeOn(this);
 	}
 	* <<* { arg collection;
-		collection.printItemsOn(this); 
+		collection.printItemsOn(this);
 	}
 	* <<<* { arg collection;
-		collection.storeItemsOn(this); 
+		collection.storeItemsOn(this);
 	}
 	* put { arg item;
 		item.post;
@@ -244,7 +244,7 @@ Post {
 }
 
 
-Pretty : IOStream { 
+Pretty : IOStream {
 	var <>out, <>level = 0, <>state;
 	*new { arg out;
 		var stream;
@@ -267,7 +267,7 @@ PrettyState {
 }
 
 PrettyEcho : PrettyState {
-	put { arg char; 
+	put { arg char;
 		// echo chars until new line
 		if ((char == $\n) || (char == $\r), {
 			pretty.out.put($\n);
@@ -290,8 +290,8 @@ PrettyEcho : PrettyState {
 					pretty.state_(PrettyEat(pretty));
 				},{
 					pretty.out.put(char);
-				})			
-			}) 
+				})
+			})
 		});
 	}
 }

@@ -1,4 +1,4 @@
-Color {	
+Color {
 	var <>red, <>green, <>blue, <>alpha;
 
 	*new { arg red=0.0, green=0.0, blue=0.0, alpha=1.0;
@@ -26,7 +26,7 @@ Color {
 		// synonym
 		^Color.grey(gray, alpha);
 	}
-	
+
 	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
 	== {|that|
@@ -38,28 +38,28 @@ Color {
 		})
 	}
 	hash { ^red.hash bitXor: green.hash bitXor: blue.hash bitXor: alpha.hash }
-	
+
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
 	blend { arg that, blend;
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
-	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0; 
+	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0;
 		^Color.new(
-			(red + val.rand2).clip(lo,hi), 
-			(green + val.rand2).clip(lo,hi), 
-			(blue + val.rand2).clip(lo,hi), 
+			(red + val.rand2).clip(lo,hi),
+			(green + val.rand2).clip(lo,hi),
+			(blue + val.rand2).clip(lo,hi),
 			(alpha + alphaVal.rand2).clip(0,1)
-		) 
+		)
 	}
 	round { arg val=0.01;
 		^Color.fromArray([red, green, blue].round(val) ++ alpha)
 	}
-	
+
 	complementary {
 		^Color.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
-	}	
+	}
 	multiply { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
@@ -110,13 +110,13 @@ Color {
 		b = aColor.asHSV;
 		^Color.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
 	}
-	
+
 	*hsv { arg hue, sat, val, alpha=1;
 			var r, g, b, segment, fraction, t1, t2, t3;
 			hue = hue.linlin(0, 1, 0, 360);
 			if( sat == 0 )
 				{ r = g = b = val }
-				{ 		
+				{
 						segment = floor( hue/60 )%6;
 						fraction = ( hue/60 - segment );
 						t1 = val * (1 - sat);
@@ -132,9 +132,9 @@ Color {
 			//[r, g, b].postln;
 			^this.new(r, g, b, alpha);
 	}
-	
+
 	asHSV {
-		var max, min, delta, hue, sat, val;	
+		var max, min, delta, hue, sat, val;
 		max = [red,green,blue].maxItem;
 		min = [red,green,blue].minItem;
 		delta = max - min;
@@ -147,7 +147,7 @@ Color {
 		val = max;
 		^[hue, sat, val, alpha]
 	}
-	
+
 	asArray { ^[red, green, blue, alpha] }
 
 	printOn { arg stream;

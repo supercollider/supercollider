@@ -45,7 +45,7 @@ NetAddr {
 		hostname = inHostname;
 		addr = inHostname.gethostbyname;
 	}
-	
+
 
 	sendRaw { arg rawArray;
 		_NetAddr_SendRaw
@@ -64,17 +64,17 @@ NetAddr {
 	sendStatusMsg {
 		this.sendMsg("/status");
 	}
-	sendClumpedBundles { arg time ... args;		
+	sendClumpedBundles { arg time ... args;
 		if(args.bundleSize > 65535) {// udp max size.
 				args.clumpBundles.do { |item|
 					if(time.notNil) { time = time + 1e-9 }; // make it a nanosecond later
-					this.sendBundle(time, *item) 
+					this.sendBundle(time, *item)
 				};
 			} {
 				this.sendBundle(time, *args)
 		}
 	}
-	
+
 	sync { arg condition, bundles, latency; // array of bundles that cause async action
 		var resp, id;
 		if (condition.isNil) { condition = Condition.new };
@@ -100,11 +100,11 @@ NetAddr {
 		};
 		// maybe needed: a timeout
 	}
-	
+
 	makeSyncResponder { arg condition;
 			var id = UniqueID.next;
 			var resp;
-			
+
 			resp = OSCresponderNode(this, "/synced", {|time, resp, msg|
 				if (msg[1] == id) {
 					resp.remove;
@@ -115,7 +115,7 @@ NetAddr {
 			condition.test = false;
 			^id
 	}
-			
+
 	isConnected {
 		^socket.notNil
 	}
@@ -131,15 +131,15 @@ NetAddr {
 			this.prConnectionClosed;
 		};
 	}
-	
-	== { arg that; 
-		^that respondsTo: #[\port, \addr] 
+
+	== { arg that;
+		^that respondsTo: #[\port, \addr]
 			and: { this.port == that.port and: { this.addr == that.addr} }
 	}
 	hash { arg that;
 		^addr.hash bitXor: port.hash
 	}
-	
+
 	// Asymmetric: "that" may be nil or have nil port (wildcards)
 	matches { arg that;
 		^this==that or:{
@@ -148,11 +148,11 @@ NetAddr {
 			}
 		}
 	}
-	
+
 	ip {
 		^addr.asIPString
 	}
-	
+
 	hasBundle { ^false }
 
 	printOn { | stream |
@@ -167,7 +167,7 @@ NetAddr {
 	// PRIVATE
 	prConnect {
 		_NetAddr_Connect
-		^this.primitiveFailed;		
+		^this.primitiveFailed;
 	}
 	prDisconnect {
 		_NetAddr_Disconnect
@@ -202,15 +202,15 @@ BundleNetAddr : NetAddr {
 		bundle = bundle.addAll( args );
 	}
 	sendStatusMsg {} // ignore status messages
-		
+
 	recover {
 		^saveAddr.recover
 	}
 	hasBundle { ^true }
 
-		
+
 	sync { arg condition, bundles, latency;
-		bundle = bundle.add([\syncFlag, bundles, latency]); 
+		bundle = bundle.add([\syncFlag, bundles, latency]);
 			// not sure about condition. here we ignore it.
 		async = true;
 	}
@@ -222,7 +222,7 @@ BundleNetAddr : NetAddr {
 				saveAddr.sendClumpedBundles(time, *bundle);
 				^bundle;
 			};
-		
+
 			forkIfNeeded {
 					bundleList = this.splitBundles(time);
 					lastBundles = bundleList.pop;
@@ -235,7 +235,7 @@ BundleNetAddr : NetAddr {
 		};
 		^bundle
 	}
-	
+
 	splitBundles { arg time;
 		var res, curr;
 		curr = [time]; // first element in the array is always the time

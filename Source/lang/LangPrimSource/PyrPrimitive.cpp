@@ -58,7 +58,7 @@ typedef struct {
 	PrimitiveHandler func;
 	PyrSymbol* name;
 	unsigned short base;
-	unsigned char numArgs; 
+	unsigned char numArgs;
 	unsigned char varArgs;
 	unsigned char keyArgs;
 } PrimitiveDef;
@@ -127,10 +127,10 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	int index;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 
 	PyrObject *obj = a->uo;
@@ -161,11 +161,11 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c, *slot;
 	int index;
 	PyrObject *obj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
@@ -200,7 +200,7 @@ int instVarSize(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrObject *obj;
-	
+
 	a = g->sp;
 	if (a->utag != tagObj) {
 		SetInt(a, 0);
@@ -222,7 +222,7 @@ int objectHash(struct VMGlobals *g, int numArgsPushed)
 	int hash;
 
 	a = g->sp;
-	
+
 	hash = calcHash(a);
 	SetInt(a, hash);
 	return errNone;
@@ -232,7 +232,7 @@ int objectClass(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrClass *classobj;
-	
+
 	a = g->sp;
 	classobj = classOfSlot(a);
 	SetObject(a, classobj);
@@ -242,7 +242,7 @@ int objectClass(struct VMGlobals *g, int numArgsPushed)
 int prPrimitiveError(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	a->ucopy = g->thread->primitiveError.ucopy;
 	return errNone;
@@ -252,7 +252,7 @@ int prStackDepth(struct VMGlobals *g, int numArgsPushed);
 int prStackDepth(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	SetInt(a, g->gc->StackDepth());
 	return errNone;
@@ -279,7 +279,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrString *string;
 	const char *str;
-	
+
 	a = g->sp;
 	switch (g->thread->primitiveError.ui) {
 		case errReturn : str = "Return (not an error)."; break;
@@ -294,7 +294,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 		case errStackOverflow : str = "Stack overflow."; break;
 		case errOutOfMemory : str = "Out of memory."; break;
 		case errCantCallOS : str = "Operation cannot be called from this Process. Try using AppClock instead of SystemClock."; break;
-		
+
 		default : str = "Failed.";
 	}
 	string = newPyrString(g->gc, str, 0, true);
@@ -307,7 +307,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 int prPostString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	//if (a->utag != tagObj) return errWrongType;
 	// assume it is a string!
@@ -318,7 +318,7 @@ int prPostString(struct VMGlobals *g, int numArgsPushed)
 int prPostLine(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	//if (a->utag != tagObj) return errWrongType;
 	// assume it is a string!
@@ -330,7 +330,7 @@ int prPostLine(struct VMGlobals *g, int numArgsPushed)
 int prDebugger(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	//Debugger();
 	return errNone;
@@ -344,7 +344,7 @@ int prObjectString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrString *string;
 	char str[256];
-	
+
 	a = g->sp;
 	if (IsSym(a)) {
 		string = newPyrString(g->gc, a->us->name, 0, true);
@@ -364,19 +364,19 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	int precision;
 	int err = slotIntVal(b, &precision);
 	if (err) return err;
-	
+
 	char fmt[8], str[256];
 	sprintf(fmt, "%%.%dg", precision);
 	sprintf(str, fmt, a->uf);
-	
+
 	PyrString *string = newPyrString(g->gc, str, 0, true);
 	SetObject(a, string);
 	return errNone;
-	
+
 }
 
 int prAsCompileString(struct VMGlobals *g, int numArgsPushed);
@@ -385,7 +385,7 @@ int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrString *string;
 	int err = errNone;
-	
+
 	a = g->sp;
 	if (IsSym(a)) {
 		int len = strlen(a->us->name) + 1;
@@ -415,7 +415,7 @@ int prClassString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrClass *classobj;
 	PyrString *string;
-	
+
 	a = g->sp;
 	classobj = classOfSlot(a);
 	string = newPyrString(g->gc, classobj->name.us->name, 0, true);
@@ -428,7 +428,7 @@ int prPrimName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrThread *thread;
-	
+
 	a = g->sp;
 	thread = a->uot;
 	if (thread->primitiveIndex.ui <= gPrimitiveTable.size) {
@@ -444,10 +444,10 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrClass *classobj, *testclass;
 	int objClassIndex, testClassIndex, maxSubclassIndex;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagObj) return errWrongType;
 	testclass = (PyrClass*)b->uo;
 	classobj = classOfSlot(a);
@@ -460,9 +460,9 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 		classobj = classobj->superclass.us->u.classobj;
 	}
 	SetFalse(a);
-#else 	
+#else
 	// constant time lookup method:
-	
+
 	objClassIndex = classobj->classIndex.ui;
 	testClassIndex = testclass->classIndex.ui;
 	maxSubclassIndex = testclass->maxSubclassIndex.ui;
@@ -489,10 +489,10 @@ int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrClass *classobj, *testclass;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (b->utag != tagObj) return errWrongType;
 	testclass = (PyrClass*)b->uo;
 	classobj = classOfSlot(a);
@@ -507,10 +507,10 @@ int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
 int objectIdentical(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->ui == b->ui && a->utag == b->utag) {
 		SetTrue(a);
 	} else {
@@ -522,10 +522,10 @@ int objectIdentical(struct VMGlobals *g, int numArgsPushed)
 int objectNotIdentical(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->ui != b->ui || a->utag != b->utag) {
 		SetTrue(a);
 	} else {
@@ -541,10 +541,10 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 	int size;
 	PyrClass *classobj;
 	PyrObject *newobj;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
@@ -564,7 +564,7 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 	newobj = instantiateObject(g->gc, classobj, size, true, true);
 	SetObject(a, newobj);
 	return errNone;
-}	
+}
 
 int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed);
 int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
@@ -572,10 +572,10 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrClass *classobj;
 	PyrObject *newobj;
-	
+
 	a = g->sp - numArgsPushed + 1;
 	b = a + 1;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
@@ -584,14 +584,14 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 	}
 	newobj = instantiateObject(g->gc, classobj, 0, true, true);
 	SetObject(a, newobj);
-	
+
 	int length = sc_min(numArgsPushed-1, newobj->size);
 	for (int i=0; i<length; ++i) {
 		newobj->slots[i].ucopy = b[i].ucopy;
 	}
-	
+
 	return errNone;
-}	
+}
 
 
 
@@ -601,10 +601,10 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	int size;
 	PyrClass *classobj;
 	PyrObject *newobj;
-		
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
@@ -624,7 +624,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	newobj = instantiateObject(g->gc, classobj, size, false, true);
 	SetObject(a, newobj);
 	return errNone;
-}	
+}
 
 
 bool isClosed(PyrBlock* fundef);
@@ -684,7 +684,7 @@ int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	PyrBlock *block = a->uoblk;
-	
+
 	SetBool(a, isClosed(block));
 	return errNone;
 }
@@ -694,7 +694,7 @@ int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	PyrBlock *block = a->uoblk;
-	
+
 	SetBool(a, isWithinClosed(block));
 	return errNone;
 }
@@ -705,8 +705,8 @@ void reallocStack(struct VMGlobals *g, int stackNeeded, int stackDepth)
 	//PyrThread *thread = g->thread;
 	PyrGC *gc = g->gc;
 	int newStackSize = NEXTPOWEROFTWO(stackNeeded);
-	
-	PyrObject* array = newPyrArray(gc, newStackSize, 0, false);	
+
+	PyrObject* array = newPyrArray(gc, newStackSize, 0, false);
 	memcpy(array->slots, gc->Stack()->slots, stackDepth * sizeof(PyrSlot));
 	gc->SetStack(array);
 	gc->ToBlack(gc->Stack());
@@ -721,10 +721,10 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 	PyrList *list;
 	double *pslot, *qslot;
 	int m, size;
-	
+
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
-	
+
 	if (b->utag == tagObj) {
 		if (b->uo->classptr == class_array) {
 			array = (PyrObject*)b->uo;
@@ -739,7 +739,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 				reallocStack(g, stackNeeded, stackDepth);
 				b = g->sp;
 			}
-			
+
 			pslot = (double*)(array->slots - 1);
 			qslot = (double*)(b - 1);
 			//pend = (double*)(pslot + size);
@@ -748,11 +748,11 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 
 			g->sp += size - 1;
 			return blockValue(g, size+numArgsPushed-1);
-			
+
 		} else if (b->uo->classptr == class_list) {
 			list = b->uol;
 			if (list->array.utag != tagObj) return errWrongType;
-			array = list->array.uo; 
+			array = list->array.uo;
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
 		} else { // last arg is not a list or array, so pass as normal
@@ -773,10 +773,10 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrList *list;
 	double *pslot, *qslot;
 	int m, size;
-	
+
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
-	
+
 	if (b->utag == tagObj) {
 		if (b->uo->classptr == class_array) {
 			array = (PyrObject*)b->uo;
@@ -791,7 +791,7 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 				reallocStack(g, stackNeeded, stackDepth);
 				b = g->sp;
 			}
-			
+
 			pslot = (double*)(array->slots - 1);
 			qslot = (double*)(b - 1);
 			//pend = (double*)(pslot + size);
@@ -800,11 +800,11 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 
 			g->sp += size - 1;
 			return blockValueEnvir(g, size+numArgsPushed-1);
-			
+
 		} else if (b->uo->classptr == class_list) {
 			list = b->uol;
 			if (list->array.utag != tagObj) return errWrongType;
-			array = list->array.uo; 
+			array = list->array.uo;
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
 		} else { // last arg is not a list or array, so pass as normal
@@ -830,7 +830,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	PyrFrame *homeContext;
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -845,14 +845,14 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	g->execMethod = 30;
 
 	args = g->sp - numArgsPushed + 1;
-	
+
 	numArgsPushed -- ;
 	g->numpop = 0;
-	
+
 	closure = (PyrClosure*)args->uo;
 	block = closure->block.uoblk;
 	context = closure->context.uof;
-	
+
 	proto = block->prototypeFrame.uo;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
@@ -865,7 +865,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	SetObject(&frame->method, block);
 	frame->homeContext.ucopy = context->homeContext.ucopy;
 	frame->context.ucopy = closure->context.ucopy;
-	
+
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
@@ -879,14 +879,14 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	g->ip = block->code.uob->b - 1;
 	g->frame = frame;
 	g->block = block;
-	
+
 	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 
 		for (m=0; m<numArgsPushed; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
@@ -894,26 +894,26 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-		
+
 		/* push all normal args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 		for (m=0,mmax=methraw->numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - methraw->numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + methraw->numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		for (m=0; m<i; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + methraw->numargs + 1);
@@ -944,7 +944,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		g->receiver.ucopy = g->process->interpreter.ucopy;
 	}
-	
+
 	return errNone;
 }
 
@@ -964,7 +964,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	PyrFrame *homeContext;
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -975,18 +975,18 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 		}
 	}
 #endif
-	
+
 	g->execMethod = 40;
 
 	args = g->sp - allArgsPushed + 1;
 
 	allArgsPushed -- ;
 	g->numpop = 0;
-	
+
 	closure = (PyrClosure*)args->uo;
 	block = closure->block.uoblk;
 	context = closure->context.uof;
-	
+
 	proto = block->prototypeFrame.uo;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
@@ -1000,7 +1000,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	SetObject(&frame->method, block);
 	frame->homeContext.ucopy = context->homeContext.ucopy;
 	frame->context.ucopy = closure->context.ucopy;
-	
+
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
@@ -1013,14 +1013,14 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	g->ip = block->code.uob->b - 1;
 	g->frame = frame;
 	g->block = block;
-	
+
 	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 
 		for (m=0; m<numArgsPushed; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
@@ -1028,28 +1028,28 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-		
+
 		/* push all normal args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 		for (m=0,mmax=methraw->numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - methraw->numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + methraw->numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		//lend = lslot + i;
 		//while (lslot < lend) *++lslot = *++qslot;
 		for (m=0; m<i; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + methraw->numargs + 1);
@@ -1126,7 +1126,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -1137,18 +1137,18 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 #endif
-		
+
 	g->execMethod = 50;
 
 	args = g->sp - numArgsPushed + 1;
 
 	numArgsPushed -- ;
 	g->numpop = 0;
-	
+
 	closure = (PyrClosure*)args->uo;
 	block = closure->block.uoblk;
 	context = closure->context.uof;
-	
+
 	proto = block->prototypeFrame.uo;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
@@ -1161,7 +1161,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	SetObject(&frame->method, block);
 	frame->homeContext.ucopy = context->homeContext.ucopy;
 	frame->context.ucopy = closure->context.ucopy;
-	
+
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
@@ -1175,14 +1175,14 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	g->ip = block->code.uob->b - 1;
 	g->frame = frame;
 	g->block = block;
-	
+
 	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 
 		for (m=0; m<numArgsPushed; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
@@ -1204,26 +1204,26 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-		
+
 		/* push all normal args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 		for (m=0,mmax=methraw->numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - methraw->numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + methraw->numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		for (m=0; m<i; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + methraw->numargs + 1);
@@ -1274,7 +1274,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	PyrClosure *closure;
 	PyrMethodRaw *methraw;
 	PyrSlot *curEnvirSlot;
-	
+
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
 	if (tailCall) {
@@ -1285,18 +1285,18 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 		}
 	}
 #endif
-	
+
 	g->execMethod = 60;
 
 	args = g->sp - allArgsPushed + 1;
 
 	allArgsPushed -- ;
 	g->numpop = 0;
-	
+
 	closure = (PyrClosure*)args->uo;
 	block = closure->block.uoblk;
 	context = closure->context.uof;
-	
+
 	proto = block->prototypeFrame.uo;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
@@ -1310,7 +1310,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	SetObject(&frame->method, block);
 	frame->homeContext.ucopy = context->homeContext.ucopy;
 	frame->context.ucopy = closure->context.ucopy;
-	
+
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
 		SetObject(&frame->caller, g->frame);
@@ -1324,19 +1324,19 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	g->ip = block->code.uob->b - 1;
 	g->frame = frame;
 	g->block = block;
-	
+
 	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
 		/* push all args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 
 		for (m=0; m<numArgsPushed; ++m) *++pslot = *++qslot;
-		
+
 		/* push default arg values */
 		pslot = (double*)(vars + numArgsPushed);
 		qslot = (double*)(proto->slots + numArgsPushed - 1);
 		for (m=0; m<numtemps - numArgsPushed; ++m) *++pslot = *++qslot;
-		
+
 		// replace defaults with environment variables
 		curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
 
@@ -1350,33 +1350,33 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 				identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
 			}
 		}
-		
-		
+
+
 	} else if (methraw->varargs) {
 		PyrObject *list;
 		double *lslot;
-		
+
 		/* push all normal args to frame */
 		qslot = (double*)(args);
 		pslot = (double*)(vars);
 		for (m=0,mmax=methraw->numargs; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		/* push list */
 		i = numArgsPushed - methraw->numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
-		
+
 		rslot = (PyrSlot*)pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + methraw->numargs + 1, list);
-		
+
 		/* put extra args into list */
 		lslot = (double*)(list->slots - 1);
 		// fixed and raw sizes are zero
 		//lend = lslot + i;
 		//while (lslot < lend) *++lslot = *++qslot;
 		for (m=0; m<i; ++m) *++lslot = *++qslot;
-		
+
 		if (methraw->numvars) {
 			/* push default keyword and var values */
 			pslot = (double*)(vars + methraw->numargs + 1);
@@ -1422,7 +1422,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 			found1: ;
 		}
 	}
-	
+
 	homeContext = frame->homeContext.uof;
 	if (homeContext) {
 		PyrMethodRaw *methraw;
@@ -1442,7 +1442,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 	double *pslot, *qslot;
 	PyrSymbol *selector;
 	int m, mmax;
-	
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
@@ -1465,7 +1465,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 		PyrObject *array = listSlot->uo;
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
-			return errFailed; 
+			return errFailed;
 		}
 		selSlot = array->slots;
 		selector = selSlot->us;
@@ -1475,22 +1475,22 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
 			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
 		}
-		
+
 		pslot = (double*)(recvrSlot);
 		qslot = (double*)(selSlot);
 		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		g->sp += array->size - 2;
 		numArgsPushed += array->size - 2;
 		// now the stack looks just like it would for a normal message send
-		
+
 	} else {
 		badselector:
 		error("perform selector not a Symbol or Array.\n");
 		dumpObjectSlot(selSlot);
-		return errWrongType; 
+		return errWrongType;
 	}
-	
+
 	sendMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1503,7 +1503,7 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 	double *pslot, *qslot;
 	PyrSymbol *selector;
 	int m, mmax;
-	
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
@@ -1526,7 +1526,7 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 		PyrObject *array = listSlot->uo;
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
-			return errFailed; 
+			return errFailed;
 		}
 		selSlot = array->slots;
 		selector = selSlot->us;
@@ -1536,22 +1536,22 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
 			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
 		}
-		
+
 		pslot = (double*)(recvrSlot);
 		qslot = (double*)(selSlot);
 		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		g->sp += array->size - 2;
 		numArgsPushed += array->size - 2;
 		// now the stack looks just like it would for a normal message send
-		
+
 	} else {
 		badselector:
 		error("perform selector not a Symbol or Array.\n");
 		dumpObjectSlot(selSlot);
-		return errWrongType; 
+		return errWrongType;
 	}
-	
+
 	sendMessageWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1565,8 +1565,8 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 	PyrSymbol *selector;
 	int m, mmax, numargslots;
 	PyrObject *array;
-	
-	
+
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	listSlot = g->sp;
@@ -1576,14 +1576,14 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		return errWrongType;
 	}
 	selector = selSlot->us;
-	
+
 	if (listSlot->utag != tagObj) {
 		return objectPerform(g, numArgsPushed);
 	}
 	if (listSlot->uo->classptr == class_array) {
 		doarray:
 		array = listSlot->uo;
-		
+
 		PyrObject *stack = g->gc->Stack();
 		int stackDepth = g->sp - stack->slots + 1;
 		int stackSize = ARRAYMAXINDEXSIZE(stack);
@@ -1593,7 +1593,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 			recvrSlot = g->sp - numArgsPushed + 1;
 			selSlot = recvrSlot + 1;
 		}
-		
+
 		pslot = (double*)(recvrSlot);
 		if (numargslots>0) {
 			qslot = (double*)selSlot;
@@ -1606,7 +1606,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
-			return errWrongType; 
+			return errWrongType;
 		}
 		goto doarray;
 	} else {
@@ -1615,10 +1615,10 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 	g->sp += array->size - 2;
 	numArgsPushed = numargslots + array->size + 1;
 	// now the stack looks just like it would for a normal message send
-	
+
 	sendMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
-	
+
 	return errNone;
 }
 
@@ -1629,7 +1629,7 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 	double *pslot, *qslot;
 	PyrSymbol *selector;
 	int m, mmax;
-	
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 
 	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
@@ -1659,7 +1659,7 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 		PyrObject *array = listSlot->uo;
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
-			return errFailed; 
+			return errFailed;
 		}
 		selSlot = array->slots;
 		selector = selSlot->us;
@@ -1669,22 +1669,22 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
 			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
 		}
-		
+
 		pslot = (double*)(recvrSlot);
 		qslot = (double*)(selSlot);
 		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		g->sp += array->size - 2;
 		numArgsPushed += array->size - 2;
 		// now the stack looks just like it would for a normal message send
-		
+
 	} else {
 		badselector:
 		error("perform selector not a Symbol or Array.\n");
 		dumpObjectSlot(selSlot);
-		return errWrongType; 
+		return errWrongType;
 	}
-	
+
 	sendSuperMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1697,7 +1697,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 	double *pslot, *qslot;
 	PyrSymbol *selector;
 	int m, mmax;
-	
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 
 	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
@@ -1727,7 +1727,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 		PyrObject *array = listSlot->uo;
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
-			return errFailed; 
+			return errFailed;
 		}
 		selSlot = array->slots;
 		selector = selSlot->us;
@@ -1737,22 +1737,22 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 			pslot = (double*)recvrSlot + numArgsPushed + array->size - 2;
 			for (m=0; m<numArgsPushed - 2; ++m) *--pslot = *--qslot;
 		}
-		
+
 		pslot = (double*)(recvrSlot);
 		qslot = (double*)(selSlot);
 		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 		g->sp += array->size - 2;
 		numArgsPushed += array->size - 2;
 		// now the stack looks just like it would for a normal message send
-		
+
 	} else {
 		badselector:
 		error("perform selector not a Symbol or Array.\n");
 		dumpObjectSlot(selSlot);
-		return errWrongType; 
+		return errWrongType;
 	}
-	
+
 	sendSuperMessageWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1766,7 +1766,7 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 	PyrSymbol *selector;
 	int m, mmax, numargslots;
 	PyrObject *array;
-	
+
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	listSlot = g->sp;
@@ -1794,7 +1794,7 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
-			return errWrongType; 
+			return errWrongType;
 		}
 		goto doarray;
 	} else {
@@ -1803,7 +1803,7 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 	g->sp += array->size - 2;
 	numArgsPushed = numargslots + array->size + 1;
 	// now the stack looks just like it would for a normal message send
-	
+
 	sendSuperMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1819,7 +1819,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 	PyrSymbol *selector;
 	int m, mmax;
 	PyrObject *array;
-	
+
 	recvrSlot = g->sp - 1;
 	listSlot = g->sp;
 
@@ -1831,14 +1831,14 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 	if (listSlot->uo->classptr == class_array) {
 		doarray:
 		array = listSlot->uo;
-		
+
 		selSlot = array->slots;
 		if (selSlot->utag != tagSym) {
 			error("Selector not a Symbol :\n");
 			return errWrongType;
 		}
 		selector = selSlot->us;
-		
+
 		pslot = (double*)(recvrSlot);
 		qslot = (double*)(selSlot);
 		for (m=0,mmax=array->size-1; m<mmax; ++m) *++pslot = *++qslot;
@@ -1847,7 +1847,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
-			return errWrongType; 
+			return errWrongType;
 		}
 		goto doarray;
 	} else {
@@ -1858,7 +1858,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 	g->sp += array->size - 2;
 	numArgsPushed = array->size;
 	// now the stack looks just like it would for a normal message send
-	
+
 	sendMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1873,7 +1873,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 	PyrSymbol *selector;
 	int m, mmax, numargslots;
 	PyrObject *array;
-	
+
 	arraySlot = g->sp - numArgsPushed + 1;
 	array = arraySlot->uo;
 	if (array->size < 2) {
@@ -1887,7 +1887,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
-	
+
 	selector = selSlot->us;
 
 	arraySlot->ucopy = recvrSlot->ucopy;
@@ -1897,16 +1897,16 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 		pslot = (double*)arraySlot + numargslots + array->size - 1;
 		for (m=0; m<numargslots; ++m) *--pslot = *--qslot;
 	} else numargslots = 0;
-	
+
 	pslot = (double*)(arraySlot);
 	qslot = (double*)(selSlot);
 	for (m=0,mmax=array->size-2; m<mmax; ++m) *++pslot = *++qslot;
-		
+
 	g->sp += array->size - 2;
 	numArgsPushed = numargslots + array->size - 1;
-	
+
 	// now the stack looks just like it would for a normal message send
-	
+
 	sendMessage(g, selector, numArgsPushed);
 	g->numpop = 0;
 	return errNone;
@@ -1915,7 +1915,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 int objectDump(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	dumpObjectSlot(a);
 	return errNone;
@@ -1959,7 +1959,7 @@ int dumpGCdumpSet(struct VMGlobals *g, int numArgsPushed)
 	int set;
 	int err = slotIntVal(b, &set);
 	if (err) return err;
-	
+
 	g->gc->DumpSet(set);
 	return errNone;
 }
@@ -2005,10 +2005,10 @@ int prAllClasses(struct VMGlobals *g, int numArgsPushed)
 	PyrClass *classobj;
 	PyrObject *array;
 	int i;
-	
+
 	a = g->sp;
-	
-	array = newPyrArray(g->gc, gNumClasses, 0, true); 
+
+	array = newPyrArray(g->gc, gNumClasses, 0, true);
 	classobj = gClassList;
 	for (i=0; classobj; ++i) {
 		SetObject(array->slots + i, classobj);
@@ -2022,7 +2022,7 @@ int prAllClasses(struct VMGlobals *g, int numArgsPushed)
 int prPostClassTree(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	postClassTree(a->uoc, 0);
 	return errNone;
@@ -2031,7 +2031,7 @@ int prPostClassTree(struct VMGlobals *g, int numArgsPushed)
 int prDumpBackTrace(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	DumpBackTrace(g);
 	return errNone;
@@ -2044,16 +2044,16 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	int i, j;
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
-		
+
 	meth = frame->method.uom;
 	methraw = METHRAW(meth);
-	
+
 	PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, true);
 	SetObject(outSlot, debugFrameObj);
-	
+
 	SetObject(debugFrameObj->slots + 0, meth);
 	SetInt(debugFrameObj->slots + 5, (int)meth);
-	
+
 	//int numtemps = methraw->numargs;
 	int numargs = methraw->numargs;
 	int numvars = methraw->numvars;
@@ -2077,13 +2077,13 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	} else {
 		SetNil(debugFrameObj->slots + 2);
 	}
-	
+
 	if (frame->caller.uof) {
 		MakeDebugFrame(g, frame->caller.uof, debugFrameObj->slots + 3);
 	} else {
 		SetNil(debugFrameObj->slots + 3);
 	}
-	
+
 	if (frame->context.utag == tagObj && frame->context.uof == frame) {
 		SetObject(debugFrameObj->slots + 4,  debugFrameObj);
 	} else if (NotNil(&frame->context)) {
@@ -2098,23 +2098,23 @@ int prGetBackTrace(VMGlobals *g, int numArgsPushed);
 int prGetBackTrace(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	MakeDebugFrame(g, g->frame, a);
-	
+
 	return errNone;
 }
 
 int prObjectShallowCopy(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	switch (a->utag) {
 		case tagObj :
 			a->uo = copyObject(g->gc, a->uo, true);
 			break;
-		// the default case is to leave the argument unchanged on the stack			
+		// the default case is to leave the argument unchanged on the stack
 	}
 	return errNone;
 }
@@ -2123,7 +2123,7 @@ int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed);
 int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	switch (a->utag) {
 		case tagObj :
@@ -2139,7 +2139,7 @@ int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed);
 int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	if (a->utag == tagObj) {
 		if (a->uo->obj_flags & obj_immutable) {
@@ -2157,7 +2157,7 @@ int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed);
 int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	if (a->utag == tagObj) {
 		if (a->uo->gc_color == obj_permanent) {
@@ -2177,7 +2177,7 @@ int prDeepFreeze(struct VMGlobals *g, int numArgsPushed);
 int prDeepFreeze(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	PyrDeepFreezer freezer(g);
 	int err = freezer.doDeepFreeze(a);
@@ -2189,8 +2189,8 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed);
 int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
-	a = g->sp;	
+
+	a = g->sp;
 	PyrDeepCopier copier(g);
 	int err = copier.doDeepCopy(a);
 	return err;
@@ -2220,11 +2220,11 @@ bool IsSimpleLiteralSlot(PyrSlot* slot)
 int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (a->utag != tagObj) return errWrongType;
 	if (b->utag != tagInt) return errWrongType;
 	if (c->utag != tagInt) return errWrongType;
@@ -2237,20 +2237,20 @@ int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c, *d;
-	
+
 	a = g->sp - 3;
 	b = g->sp - 2;
 	c = g->sp - 1;
 	d = g->sp;
-		
+
 	PyrObject *inobj = a->uo;
 	PyrObject *newobj;
-	
+
 	int size = inobj->size;
 	int flags = ~(obj_immutable) & inobj->obj_flags;
-	
+
 	int first, second, last;
-	
+
 	if (IsInt(b)) first = b->ui;
 	else if (IsNil(b)) first = 0;
 	else return errWrongType;
@@ -2275,10 +2275,10 @@ zerolength:
 	else return errWrongType;
 
 	int step = second - first;
-	
+
 	int elemsize = gFormatElemSize[inobj->obj_format];
 	int length;
-	
+
 	if (step > 0) {
 		length = (last - first) / step + 1;
 	} else if (step < 0) {
@@ -2286,7 +2286,7 @@ zerolength:
 	} else return errFailed;
 
 	int numbytes = length * elemsize;
-	
+
 	newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
 	newobj->size = 0;
 	newobj->classptr = inobj->classptr;
@@ -2320,7 +2320,7 @@ int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 	longjmp(g->escapeInterpreter, 3);
 	//hmm need to fix this to work only on main thread. //!!!
 	//g->sp = g->gc->Stack()->slots - 1;
-	
+
 	return errReturn;
 }
 
@@ -2329,9 +2329,9 @@ int prCanCallOS(struct VMGlobals *g, int numArgsPushed);
 int prCanCallOS(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 	SetBool(a, g->canCallOS);
-	
+
 	return errNone;
 }
 
@@ -2341,9 +2341,9 @@ int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
 int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 	SetBool(a, gGenerateTailCallByteCodes);
-	
+
 	return errNone;
 }
 
@@ -2351,7 +2351,7 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
 int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp - 1;
-	
+
 #if TAILCALLOPTIMIZE
 	PyrSlot *b = g->sp;
 	if (IsTrue(b)) {
@@ -2369,7 +2369,7 @@ int prTraceOn(struct VMGlobals *g, int numArgsPushed);
 int prTraceOn(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	gTraceInterpreter = IsTrue(a);
 	return errNone;
@@ -2379,7 +2379,7 @@ int prKeywordError(struct VMGlobals *g, int numArgsPushed);
 int prKeywordError(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	gKeywordError = IsTrue(a);
 	return errNone;
@@ -2390,7 +2390,7 @@ int prFunDef_NumArgs(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
-	
+
 	a = g->sp;
 	methraw = METHRAW(a->uoblk);
 	SetInt(a, methraw->numargs);
@@ -2402,7 +2402,7 @@ int prFunDef_NumVars(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
-	
+
 	a = g->sp;
 	methraw = METHRAW(a->uoblk);
 	SetInt(a, methraw->numvars);
@@ -2414,7 +2414,7 @@ int prFunDef_VarArgs(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
-	
+
 	a = g->sp;
 	methraw = METHRAW(a->uoblk);
 	if (methraw->varargs) { SetTrue(a); } else { SetFalse(a); }
@@ -2434,7 +2434,7 @@ void dumpByteCodes(PyrBlock *theBlock);
 int prDumpByteCodes(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
 	dumpByteCodes(a->uoblk);
 	return errNone;
@@ -2445,10 +2445,10 @@ int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, temp;
 	PyrObject *obj;
 	int i;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (a->utag != tagObj) a->ucopy = o_false.ucopy;
 	else {
 		obj = a->uo;
@@ -2472,14 +2472,14 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 	PyrMethod *meth;
 	PyrSymbol *selector;
 	int index;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 
 	classobj = classOfSlot(a);
-	
+
 	if (b->utag == tagSym) {
-			
+
 		selector = b->us;
 		index = classobj->classIndex.ui + selector->u.index;
 		meth = gRowTable[index];
@@ -2492,9 +2492,9 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 		int size = b->uo->size;
 		PyrSlot *slot = b->uo->slots;
 		for (int i=0; i<size; ++i, ++slot) {
-			
+
 			if (slot->utag != tagSym) return errWrongType;
-			
+
 			selector = slot->us;
 			index = classobj->classIndex.ui + selector->u.index;
 			meth = gRowTable[index];
@@ -2541,15 +2541,15 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrString *string;
 	PyrMethod *meth;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	// check b is a string
 	if (b->utag != tagObj) return errWrongType;
 	if (!isKindOf(b->uo,  class_string)) return errWrongType;
 	string = b->uos;
-	
+
 	gRootParseNode = NULL;
 	initParserPool();
 		//assert(g->gc->SanityCheck());
@@ -2566,13 +2566,13 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 
 		meth = GetFunctionCompileContext(g);
 		if (!meth) return errFailed;
-		
+
 		((PyrBlockNode*)gRootParseNode)->mIsTopLevel = true;
-		
+
 		SetNil(&slotResult);
 		COMPILENODE(gRootParseNode, &slotResult, true);
 
-		if (slotResult.utag != tagObj 
+		if (slotResult.utag != tagObj
 			|| slotResult.uo->classptr != class_fundef) {
 				compileErrors++;
 			error("Compile did not return a FunctionDef..\n");
@@ -2580,9 +2580,9 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 		if (compileErrors) {
 			SetNil(a);
 		} else {
-			PyrBlock *block;	
+			PyrBlock *block;
 			PyrClosure *closure;
-			
+
 			block = slotResult.uoblk;
 			// create a closure
 			closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, false);
@@ -2603,11 +2603,11 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 	}
 	finiLexer();
 	freeParserPool();
-	
+
 	pyr_pool_compile->FreeAll();
 	//flushErrors();
 	compilingCmdLine = false;
-	
+
 	return !(parseFailed || compileErrors) ? errNone : errFailed;
 }
 #endif
@@ -2622,23 +2622,23 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 	char *out = sCodeStringOut;
 	char ugenPrefix[16];
 	int err;
-	
+
 	aa = g->sp - 4;	// code string
 	bb = g->sp - 3;	// ugen prefix
 	ee = g->sp - 2;	// isDecl
 	cc = g->sp - 1;	// input names
 	dd = g->sp;		// input value strings
-	
+
 	int ugenIndex;
 	err = slotIntVal(bb, &ugenIndex);
 	if (err) return err;
 	if (!isKindOfSlot(cc, class_array) && !isKindOfSlot(cc, class_symbolarray)) return errWrongType;
 	if (!isKindOfSlot(dd, class_array)) return errWrongType;
 	bool isDecl = IsTrue(ee);
-	
+
 	PyrObject *inputNamesObj = cc->uo;
 	PyrObject *inputStringsObj = dd->uo;
-	
+
 	sprintf(ugenPrefix, "u%d", ugenIndex);
 	int ugenPrefixSize = strlen(ugenPrefix);
 	PyrString* codeStringObj = aa->uos;
@@ -2649,7 +2649,7 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 	}
 	memcpy(sCodeStringIn, codeStringObj->s, codeStringSize);
 	sCodeStringIn[codeStringSize] = 0;
-		
+
 	char* in = sCodeStringIn;
 	int c;
 	while ((c = *in++) != 0) {
@@ -2676,7 +2676,7 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 				}
 				name[j++] = c;
 			} while (c);
-			
+
 			bool found = false;
 			int nameSize = j;
 			int slotIndex = -1;
@@ -2737,22 +2737,22 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 	g->gc->numToScan = 1000000;
 	doGC(g, 0);
 	assert(g->gc->SanityCheck());
-	
+
 	state = thread->state.ui;
 	if (state == tYield) {
 		if (!IsObj(&thread->method)) { error("thread method not an Object\n"); }
 		else if (!isKindOf(thread->method.uo, class_method)) { error("thread method not a Method\n"); }
 		else if (thread->method.uo->gc_color == gcColor.gcFree) { error("thread method is FREE\n"); }
-		
+
 		if (!IsObj(&thread->block)) { error("thread block not an Object\n"); }
 		else if (!isKindOf(thread->block.uo, class_func)) { error("thread block not a Function\n"); }
 		else if (thread->block.uo->gc_color == gcColor.gcFree) { error("thread block is FREE\n"); }
 
-		if (IsObj(&thread->receiver) && thread->receiver.uo->gc_color == gcColor.gcFree) 
+		if (IsObj(&thread->receiver) && thread->receiver.uo->gc_color == gcColor.gcFree)
 			{ error("thread receiver is FREE\n"); }
 
 		FrameSanity(thread->frame.uof);
-		
+
 		oldthread->method.uom = g->method;
 		oldthread->block.uoblk = g->block;
 		SetObject(&oldthread->frame, g->frame);
@@ -2776,16 +2776,16 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	PyrThread *oldthread;
 	PyrGC *gc;
 	PyrFrame *frame;
-	
+
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
 #endif
-	
+
 	oldthread = g->thread;
 	if (newthread == oldthread) return;
 	//postfl("->switchToThread %d %08X -> %08X\n", oldstate, oldthread, newthread);
 	//post("->switchToThread from %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
-	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n", 
+	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "switchToThreadA");
@@ -2798,7 +2798,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
         gc->GCWrite(oldthread, currentEnvironmentSlot);
 
 	oldthread->state.ui = oldstate;
-	
+
 	if (oldstate == tDone) {
 		SetObject(&oldthread->stack, gc->Stack());
 		gc->ToWhite(gc->Stack());
@@ -2833,7 +2833,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		gc->ToWhite(gc->Stack());
 		gc->Stack()->size = g->sp - gc->Stack()->slots + 1;
 		//post("else %08X %08X\n", oldthread->stack.uo, gc->Stack());
-	
+
 		SetObject(&oldthread->method, g->method);
 		SetObject(&oldthread->block, g->block);
 		SetObject(&oldthread->frame, g->frame);
@@ -2842,20 +2842,20 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		oldthread->receiver.ucopy = g->receiver.ucopy;
 		oldthread->numArgsPushed.ui = *numArgsPushed;
 		oldthread->numpop.ui = g->numpop;
-					
+
 		//gc->ToGrey(oldthread);
 		if (gc->ObjIsBlack(oldthread)) {
 			gc->GCWriteBlack(gc->Stack());
 			gc->GCWriteBlack(g->method);
 			gc->GCWriteBlack(g->block);
-			
+
 			frame = oldthread->frame.uof;
 			gc->GCWriteBlack(frame);
-			
+
 			gc->GCWriteBlack(&g->receiver);
 		}
 	}
-	
+
 	// restore new thread's state
 	g->thread = newthread;
 	SetObject(&g->process->curThread, newthread);
@@ -2864,28 +2864,28 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	gc->SetStack(newthread->stack.uo);
 	gc->ToBlack(gc->Stack());
 	SetNil(&newthread->stack);
-	
+
 	g->method = newthread->method.uom;
 	g->block = newthread->block.uoblk;
 	g->frame = newthread->frame.uof;
 	g->ip = (unsigned char *)newthread->ip.ui;
 	g->sp = (PyrSlot*)newthread->sp.ui;
 	g->receiver.ucopy = newthread->receiver.ucopy;
-	
+
 	g->rgen = (RGen*)(newthread->randData.uo->slots);
 
 	*numArgsPushed = newthread->numArgsPushed.ui;
-	
-	// these are perhaps unecessary because a thread may not 
+
+	// these are perhaps unecessary because a thread may not
 	// legally block within a C primitive
 	g->numpop = newthread->numpop.ui;
-	
+
 	g->execMethod = 99;
-	
+
 	//post("switchToThread ip %08X\n", g->ip);
 	//post("switchToThread newthread->ip.ui %d\n", newthread->ip.ui);
 	//post("switchToThread oldthread->ip.ui %d\n", oldthread->ip.ui);
-	
+
 	// wipe out values which will become stale as new thread executes:
 	SetNil(&newthread->method);
 	SetNil(&newthread->block);
@@ -2893,7 +2893,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	newthread->ip.ui = 0;
 	newthread->sp.ui = 0;
 	SetNil(&newthread->receiver);
-	
+
 	newthread->state.ui = tRunning;
 
 
@@ -2904,44 +2904,44 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	//post("old thread %08X stack %08X\n", oldthread, oldthread->stack.uo);
 	//post("new thread %08X stack %08X\n", g->thread, g->thread->stack.uo);
 	//post("main thread %08X stack %08X\n", g->process->mainThread.uot, g->process->mainThread.uot->stack.uo);
-	
+
 	//postfl("<-switchToThread\n");
-	//post("<-stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n", 
+	//post("<-stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "switchToThreadB");
 	//post("switchToThread ip2 %08X\n", g->ip);
 }
 
-void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
 	double beats, double seconds, PyrSlot* clock, bool collect);
-void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray, 
+void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
 	double beats, double seconds, PyrSlot* clock, bool collect)
 {
 	PyrObject *array;
 	PyrGC* gc = g->gc;
-        
+
 	thread->func.ucopy = func->ucopy;
 	gc->GCWrite(thread, func);
-	
+
 	array = newPyrArray(gc, stacksize, 0, collect);
 	SetObject(&thread->stack, array);
 	gc->GCWrite(thread, array);
 	thread->state.ui = tInit;
-		
+
 	SetObject(&thread->randData, rgenArray);
 	gc->GCWrite(thread, rgenArray);
 
 	thread->beats.uf = beats;
 	thread->seconds.uf = seconds;
-	
+
 	if (IsNil(clock)) {
-		SetObject(&thread->clock, s_systemclock->u.classobj); 
+		SetObject(&thread->clock, s_systemclock->u.classobj);
 	} else {
-		thread->clock.ucopy = clock->ucopy; 
+		thread->clock.ucopy = clock->ucopy;
 		gc->GCWrite(thread, clock);
 	}
-        
+
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
         thread->environment.ucopy = currentEnvironmentSlot->ucopy;
         gc->GCWrite(thread, currentEnvironmentSlot);
@@ -2955,27 +2955,27 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int stacksize, err;
 	PyrThread *thread;
-	
+
 	//postfl("->prThreadInit\n");
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prThreadInit");
 	a = g->sp - 2;	// thread
 	b = g->sp - 1;	// function
 	c = g->sp;		// stacksize
-	
+
 	thread = a->uot;
-	
+
 	if (b->utag != tagObj || !isKindOf(b->uo, class_func)) {
 		error("Thread function arg not a Function.\n");
 		return errWrongType;
 	}
-	
+
 	err = slotIntVal(c, &stacksize);
 	if (err) return err;
-	
-	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo), 
+
+	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo),
 		g->thread->beats.uf, g->thread->seconds.uf, &g->thread->clock, true);
-	
+
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "<prThreadInit");
@@ -2984,10 +2984,10 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 
 int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed);
 int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp - 1;	// thread
 	PyrSlot *b = g->sp;		// rand seed
-	
+
 	PyrThread *thread = a->uot;
 
 	int32 seed;
@@ -3002,16 +3002,16 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 		g->rgen = (RGen*)(rgenArray->i);
 	}
 	SetObject(&thread->randData, rgenArray);
-	g->gc->GCWrite(thread, rgenArray);	
+	g->gc->GCWrite(thread, rgenArray);
 
 	return errNone;
 }
 
 int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed);
 int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp;	// thread
-	
+
 	PyrThread *thread = a->uot;
 
 	RGen* rgen = (RGen*)thread->randData.uo->slots;
@@ -3029,13 +3029,13 @@ int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
 
 int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed);
 int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp - 1;	// thread
 	PyrSlot *b = g->sp;		// rand data array
-	
+
 	if (!isKindOfSlot(b, class_int32array)) return errWrongType;
 	if (b->uo->size < 3) return errWrongType;
-	
+
 	PyrThread *thread = a->uot;
 
 	RGen* rgen = (RGen*)thread->randData.uo->slots;
@@ -3057,12 +3057,12 @@ int transformMainThreadToRoutine(VMGlobals *g)
 	PyrProcess* process = g->process;
 	if (g->thread != process->mainThread.uot) return errFailed;
 	//if (g->thread != process->curThread.uot) return errFailed;
-	
+
 	PyrThread* curthread = (PyrThread*)process->mainThread.uo;
-	
+
 	// create a new main thread
 	PyrThread* newthread = (PyrThread*)instantiateObject(g->gc, class_thread, 0, true, false);
-	
+
 	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, false);
 	rgenArray->size = 4;
 	((RGen*)(rgenArray->i))->init(timeseed());
@@ -3078,7 +3078,7 @@ int transformMainThreadToRoutine(VMGlobals *g)
 	PyrSlot *cmdFunc = &process->interpreter.uoi->cmdFunc;
 	curthread->func.ucopy = cmdFunc->ucopy;
 	g->gc->GCWrite(curthread, cmdFunc);
-	
+
 	return errNone;
 }
 
@@ -3090,7 +3090,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed);
 int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
-	
+
 	//postfl("->prRoutineYield %08X\n", g->thread);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineYield");
@@ -3102,7 +3102,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 		error ("yield was called outside of a Routine.\n");
 		return errFailed;
 	}
-	
+
 	PyrThread *parent = g->thread->parent.uot;
 	SetNil(&g->thread->parent);
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
@@ -3122,7 +3122,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed);
 int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
-	
+
 	//postfl("->prRoutineAlwaysYield ip %08X\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineAlwaysYield");
@@ -3130,19 +3130,19 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 		error ("alwaysYield was called outside of a Routine.\n");
 		return errFailed;
 	}
-	
+
 	value.ucopy = g->sp->ucopy;
 	g->thread->terminalValue.ucopy = value.ucopy;
 	g->gc->GCWrite(g->thread, g->sp);
-	
+
 	PyrThread *parent = g->thread->parent.uot;
 	SetNil(&g->thread->parent);
 	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, parent);
 	switchToThread(g, parent, tDone, &numArgsPushed);
-	
+
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
-	
+
 	//postfl("<-prRoutineAlwaysYield ip %08X\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "<prRoutineAlwaysYield");
@@ -3155,12 +3155,12 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, threadSlot, value;
 	PyrThread *thread;
 	int state;
-	
+
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineResume");
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	thread = a->uot;
 	state = thread->state.ui;
 	//postfl("->prRoutineResume %d\n", state);
@@ -3172,7 +3172,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	//post("thread %08X\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
-                		
+
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
@@ -3180,13 +3180,13 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 
 		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tSuspended, &numArgsPushed);
-		               
+
 		// set stack
 		//post("set stack %08X %08X\n", g->sp, g->gc->Stack()->slots - 1);
 		g->sp = g->gc->Stack()->slots - 1;
 		g->receiver.ucopy = (++g->sp)->uf = threadSlot.ucopy;
 		(++g->sp)->ucopy = value.ucopy;
-		
+
 		sendMessage(g, s_prstart, 2);
 	} else if (state == tSuspended) {
 
@@ -3194,7 +3194,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 			SetObject(&thread->parent, g->thread);
 		}
 		g->gc->GCWrite(thread, g->thread);
-		
+
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
 		thread->clock.ucopy = g->thread->clock.ucopy;
@@ -3224,7 +3224,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrThread *thread;
 	int state;
-	
+
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineReset");
 	thread = g->sp->uot;
@@ -3276,7 +3276,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 	//post("->prRoutineStop\n");
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineStop");
-	
+
 	thread = g->sp->uot;
 	state = thread->state.ui;
 
@@ -3306,13 +3306,13 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, value;
 	int state;
-	
+
 	//post("->prRoutineYieldAndReset\n");
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineYieldAndReset");
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
 		error ("yieldAndReset was called outside of a Routine.\n");
 		return errFailed;
@@ -3349,10 +3349,10 @@ int prBlork(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	if (IsTrue(a)) gBlork = true;
 	else gBlork = false;
-	
+
 	return errNone;
 }
-	
+
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -3362,7 +3362,7 @@ void initPrimitiveTable()
 	int i;
 	gPrimitiveTable.maxsize = PRIMGROWSIZE;
 	gPrimitiveTable.size = 0;
-	// pyrmalloc: 
+	// pyrmalloc:
 	// lifetime: runtime. primitives are reloaded when library is compiled.
 	gPrimitiveTable.table = (PrimitiveDef*)pyr_pool_runtime->Alloc(gPrimitiveTable.maxsize * sizeof(PrimitiveDef));
 	MEMFAIL(gPrimitiveTable.table);
@@ -3384,7 +3384,7 @@ void growPrimitiveTable(int newsize)
 	oldtable = gPrimitiveTable.table;
 	oldsize = gPrimitiveTable.maxsize;
 	gPrimitiveTable.maxsize = newsize;
-	// pyrmalloc: 
+	// pyrmalloc:
 	// lifetime: runtime. primitives are reloaded when library is compiled.
 	gPrimitiveTable.table = (PrimitiveDef*)pyr_pool_runtime->Alloc(gPrimitiveTable.maxsize * sizeof(PrimitiveDef));
 	MEMFAIL(gPrimitiveTable.table);
@@ -3405,7 +3405,7 @@ int definePrimitive(int base, int index, const char *name, PrimitiveHandler hand
 {
 	int tableIndex;
 	PyrSymbol *sym;
-	
+
 	if (name[0] != '_') {
 		error("*** Primitive Name must begin with an underscore ***\n");
 		postfl("name: '%s' index: %d\n", name, index);
@@ -3443,7 +3443,7 @@ int definePrimitiveWithKeys(int base, int index, const char *name,
 {
 	int tableIndex;
 	PyrSymbol *sym;
-	
+
 	if (name[0] != '_') {
 		error("*** Primitive Name must begin with an underscore ***\n");
 		postfl("name: '%s' index: %d\n", name, index);
@@ -3495,24 +3495,24 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
-	
+#endif
+
 	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
         //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
-	
+
 	PrimitiveDef *def = gPrimitiveTable.table + primIndex;
 	int numArgsNeeded = def->numArgs;
 	int diff = numArgsNeeded - numArgsPushed;
-	
+
 	if (diff != 0) { // incorrect num of args
 		if (diff > 0) {  // not enough args
 			double* pslot = (double*)(g->sp);
 			double* qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
 			for (int m=0; m<diff; ++m) *++pslot = *++qslot;
-			
+
 			g->sp += diff;
 		} else if (def->varArgs) { // has var args
 			numArgsNeeded = numArgsPushed;
@@ -3528,11 +3528,11 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	try {
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
+#endif
 		err = (*def->func)(g, numArgsNeeded);
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
+#endif
 	} catch (std::exception& ex) {
 		post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 		error(ex.what());
@@ -3550,7 +3550,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
+#endif
 }
 
 void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int numKeyArgsPushed)
@@ -3558,10 +3558,10 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	int i, j, m, diff, err;
 	double *pslot, *qslot;
 	int numArgsNeeded, numArgsPushed;
-	
+
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
+#endif
 	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
         //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
 
@@ -3570,7 +3570,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	PrimitiveDef *def = gPrimitiveTable.table + primIndex;
 	g->primitiveIndex = primIndex - def->base;
 	g->primitiveMethod = meth;
-	
+
 	if (def->keyArgs && numKeyArgsPushed) {
 		g->numpop = allArgsPushed - 1;
 		try {
@@ -3593,7 +3593,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	} else {
 		numArgsNeeded = def->numArgs;
 		numArgsPushed = allArgsPushed - (numKeyArgsPushed << 1);
-		
+
 		if (numKeyArgsPushed) {
 			// evacuate keyword args to separate area
 			pslot = (double*)(keywordstack + (numKeyArgsPushed<<1));
@@ -3603,7 +3603,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 				*--pslot = *--qslot;
 			}
 		}
-		
+
 		diff = numArgsNeeded - numArgsPushed;
 		if (diff != 0) { // incorrect num of args
 			if (diff > 0) {  // not enough args
@@ -3662,15 +3662,15 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	}
 #if SANITYCHECK
 	g->gc->SanityCheck();
-#endif	
+#endif
 }
 
 void initPrimitives()
 {
 	int base, index;
-	
+
 	initPrimitiveTable();
-	
+
 	// unary operators
 	base = nextPrimitiveIndex();
 	definePrimitive(base, opNeg, "_Neg", doSpecialUnaryArithMsg, 1, 0);
@@ -3684,29 +3684,29 @@ void initPrimitives()
 	definePrimitive(base, opSign, "_Sign", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opSquared, "_Squared", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opCubed, "_Cubed", doSpecialUnaryArithMsg, 1, 0);			//10
-	definePrimitive(base, opSqrt, "_Sqrt", doSpecialUnaryArithMsg, 1, 0);		
+	definePrimitive(base, opSqrt, "_Sqrt", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opExp, "_Exp", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opRecip, "_Recip", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opMIDICPS, "_MIDICPS", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opCPSMIDI, "_CPSMIDI", doSpecialUnaryArithMsg, 1, 0);		//15
-	
-	definePrimitive(base, opMIDIRatio, "_MIDIRatio", doSpecialUnaryArithMsg, 1, 0);		
-	definePrimitive(base, opRatioMIDI, "_RatioMIDI", doSpecialUnaryArithMsg, 1, 0);		
+
+	definePrimitive(base, opMIDIRatio, "_MIDIRatio", doSpecialUnaryArithMsg, 1, 0);
+	definePrimitive(base, opRatioMIDI, "_RatioMIDI", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opDbAmp, "_DbAmp", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAmpDb, "_AmpDb", doSpecialUnaryArithMsg, 1, 0);	
+	definePrimitive(base, opAmpDb, "_AmpDb", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opOctCPS, "_OctCPS", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opCPSOct, "_CPSOct", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opLog, "_Log", doSpecialUnaryArithMsg, 1, 0);				
+	definePrimitive(base, opLog, "_Log", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opLog2, "_Log2", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opLog10, "_Log10", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opSin, "_Sin", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opCos, "_Cos", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opTan, "_Tan", doSpecialUnaryArithMsg, 1, 0);				
+	definePrimitive(base, opTan, "_Tan", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opArcSin, "_ArcSin", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opArcCos, "_ArcCos", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opArcTan, "_ArcTan", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opSinH, "_SinH", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCosH, "_CosH", doSpecialUnaryArithMsg, 1, 0);			
+	definePrimitive(base, opCosH, "_CosH", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opTanH, "_TanH", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opRand, "_Rand", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opRand2, "_Rand2", doSpecialUnaryArithMsg, 1, 0);
@@ -3732,38 +3732,38 @@ void initPrimitives()
 	definePrimitive(base, opSCurve, "_SCurve", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opRamp, "_Ramp", doSpecialUnaryArithMsg, 1, 0);
 
-	definePrimitive(base, opDigitValue, "_DigitValue", doSpecialUnaryArithMsg, 1, 0);	
-	
-	
+	definePrimitive(base, opDigitValue, "_DigitValue", doSpecialUnaryArithMsg, 1, 0);
+
+
 	// binary operators
 	base = nextPrimitiveIndex();
-	definePrimitive(base, opAdd, "_Add", prAddNum, 2, 0);		
-	definePrimitive(base, opSub, "_Sub", prSubNum, 2, 0); 
-	definePrimitive(base, opMul, "_Mul", prMulNum, 2, 0); 
+	definePrimitive(base, opAdd, "_Add", prAddNum, 2, 0);
+	definePrimitive(base, opSub, "_Sub", prSubNum, 2, 0);
+	definePrimitive(base, opMul, "_Mul", prMulNum, 2, 0);
 
-	definePrimitive(base, opIDiv, "_IDiv", prSpecialBinaryArithMsg, 3, 0); 
-	definePrimitive(base, opFDiv, "_FDiv", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opIDiv, "_IDiv", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opFDiv, "_FDiv", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opMod, "_Mod", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opEQ, "_EQ", prSpecialBinaryArithMsg, 3, 0);		
-	definePrimitive(base, opNE, "_NE", prSpecialBinaryArithMsg, 3, 0); 
-	definePrimitive(base, opLT, "_LT", prSpecialBinaryArithMsg, 3, 0); 
-	definePrimitive(base, opGT, "_GT", prSpecialBinaryArithMsg, 3, 0); 
+	definePrimitive(base, opEQ, "_EQ", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opNE, "_NE", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opLT, "_LT", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opGT, "_GT", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opLE, "_LE", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opGE, "_GE", prSpecialBinaryArithMsg, 3, 0);
 	//definePrimitive(base, opIdentical, "_Identical", prSpecialBinaryArithMsg, 3, 0);
-	//definePrimitive(base, opNotIdentical, "_NotIdentical", prSpecialBinaryArithMsg, 3, 0);	
-	
-	definePrimitive(base, opMin, "_Min", prSpecialBinaryArithMsg, 3, 0); 
+	//definePrimitive(base, opNotIdentical, "_NotIdentical", prSpecialBinaryArithMsg, 3, 0);
+
+	definePrimitive(base, opMin, "_Min", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opMax, "_Max", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opBitAnd, "_BitAnd", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opBitOr, "_BitOr", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opBitXor, "_BitXor", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opBitXor, "_BitXor", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opLCM, "_LCM", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opGCD, "_GCD", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opRound, "_Round", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opRoundUp, "_RoundUp", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opTrunc, "_Trunc", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opAtan2, "_Atan2", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opAtan2, "_Atan2", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opHypot, "_Hypot", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opHypotx, "_HypotApx", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opPow, "_Pow", prSpecialBinaryArithMsg, 3, 0);
@@ -3783,11 +3783,11 @@ void initPrimitives()
 	definePrimitive(base, opThresh, "_Thresh", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
 	definePrimitive(base, opAMClip, "_AMClip", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
 	definePrimitive(base, opScaleNeg, "_ScaleNeg", prSpecialBinaryArithMsg, 3, 0);	// a < 0 ? a*b : a
-	definePrimitive(base, opClip2, "_Clip2", prSpecialBinaryArithMsg, 3, 0);	
-	definePrimitive(base, opFold2, "_Fold2", prSpecialBinaryArithMsg, 3, 0);	
-	definePrimitive(base, opWrap2, "_Wrap2", prSpecialBinaryArithMsg, 3, 0);	
-	definePrimitive(base, opExcess, "_Excess", prSpecialBinaryArithMsg, 3, 0);	
-	definePrimitive(base, opFirstArg, "_FirstArg", prSpecialBinaryArithMsg, 3, 0);	
+	definePrimitive(base, opClip2, "_Clip2", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opFold2, "_Fold2", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opWrap2, "_Wrap2", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opExcess, "_Excess", prSpecialBinaryArithMsg, 3, 0);
+	definePrimitive(base, opFirstArg, "_FirstArg", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opRandRange, "_RandRange", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opExpRandRange, "_ExpRandRange", prSpecialBinaryArithMsg, 3, 0);
 
@@ -3804,19 +3804,19 @@ void initPrimitives()
 	definePrimitive(base, index++, "_BasicNewClear", basicNewClear, 2, 0);
 	definePrimitive(base, index++, "_BasicNewCopyArgsToInstVars", basicNewCopyArgsToInstanceVars, 1, 1);
 	//definePrimitive(base, index++, "_BasicNewCopyArgsByName", basicNewCopyArgsByName, 1, 1);
-	
+
 	definePrimitiveWithKeys(base, index, "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
 	index+=2;
 	definePrimitiveWithKeys(base, index, "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
 	index+=2;
-	
+
 	definePrimitive(base, index++, "_FunctionValueArray", blockValueArray, 1, 1);
 	definePrimitive(base, index++, "_FunctionValueArrayEnvir", blockValueArrayEnvir, 1, 1);
 	definePrimitive(base, index++, "_FunctionDefAsFunction", prFunctionDefAsFunction, 1, 0);
 	definePrimitive(base, index++, "_FunctionDefDumpContexts", prFunctionDefDumpContexts, 1, 0);
 	definePrimitive(base, index++, "_FunctionDefIsClosed", prFunctionDefIsClosed, 1, 0);
 	definePrimitive(base, index++, "_FunctionDefIsWithinClosed", prFunctionDefIsWithinClosed, 1, 0);
-	
+
 	definePrimitive(base, index++, "_ObjectIsKindOf", objectIsKindOf, 2, 0);
 	definePrimitive(base, index++, "_ObjectIsMemberOf", objectIsMemberOf, 2, 0);
 	definePrimitive(base, index++, "_ObjectDump", objectDump, 1, 0);
@@ -3832,24 +3832,24 @@ void initPrimitives()
 	definePrimitive(base, index++, "_TraceAnyPathsTo", prTraceAnyPathsTo, 1, 0);
 	definePrimitive(base, index++, "_TraceAnyPathToAllInstancesOf", prTraceAnyPathToAllInstancesOf, 1, 0);
 #endif
-	
+
 	definePrimitive(base, index++, "_Identical", objectIdentical, 2, 0);
-	definePrimitive(base, index++, "_NotIdentical", objectNotIdentical, 2, 0);	
-	definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);	
+	definePrimitive(base, index++, "_NotIdentical", objectNotIdentical, 2, 0);
+	definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
 	index+=2;
-	definePrimitive(base, index++, "_ObjectPerformList", objectPerformList, 2, 1);	
-	definePrimitiveWithKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);	
+	definePrimitive(base, index++, "_ObjectPerformList", objectPerformList, 2, 1);
+	definePrimitiveWithKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
 	index+=2;
-	definePrimitive(base, index++, "_SuperPerformList", objectSuperPerformList, 2, 1);	
+	definePrimitive(base, index++, "_SuperPerformList", objectSuperPerformList, 2, 1);
 	definePrimitive(base, index++, "_ObjectPerformMsg", objectPerformSelList, 2, 0);
 	//definePrimitive(base, index++, "_ArrayPerformMsg", arrayPerformMsg, 1, 1);
-	definePrimitive(base, index++, "_ObjectString", prObjectString, 1, 0);	
-	definePrimitive(base, index++, "_Float_AsStringPrec", prFloat_AsStringPrec, 2, 0);	
-	definePrimitive(base, index++, "_ObjectCompileString", prAsCompileString, 1, 0);	
-	definePrimitive(base, index++, "_ClassString", prClassString, 1, 0);	
-	definePrimitive(base, index++, "_PostString", prPostString, 1, 0);	
-	definePrimitive(base, index++, "_PostLine", prPostLine, 1, 0);	
-	definePrimitive(base, index++, "_HostDebugger", prDebugger, 1, 0);	
+	definePrimitive(base, index++, "_ObjectString", prObjectString, 1, 0);
+	definePrimitive(base, index++, "_Float_AsStringPrec", prFloat_AsStringPrec, 2, 0);
+	definePrimitive(base, index++, "_ObjectCompileString", prAsCompileString, 1, 0);
+	definePrimitive(base, index++, "_ClassString", prClassString, 1, 0);
+	definePrimitive(base, index++, "_PostString", prPostString, 1, 0);
+	definePrimitive(base, index++, "_PostLine", prPostLine, 1, 0);
+	definePrimitive(base, index++, "_HostDebugger", prDebugger, 1, 0);
 	definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
 	definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
 	definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
@@ -3857,65 +3857,65 @@ void initPrimitives()
 	definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
 
 
-	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);	
-	definePrimitive(base, index++, "_PrimitiveErrorString", prPrimitiveErrorString, 1, 0);	
-	definePrimitive(base, index++, "_DumpStack", prDumpStack, 1, 0);	
-	definePrimitive(base, index++, "_DumpDetailedBackTrace", prDumpDetailedBackTrace, 1, 0);	
-	definePrimitive(base, index++, "_StackDepth", prStackDepth, 1, 0);	
-	definePrimitive(base, index++, "_PrimName", prPrimName, 1, 0);	
-	definePrimitive(base, index++, "_ObjectShallowCopy", prObjectShallowCopy, 1, 0);	
-	definePrimitive(base, index++, "_ObjectCopyImmutable", prObjectCopyImmutable, 1, 0);	
-	definePrimitive(base, index++, "_ObjectCopyRange", prObjectCopyRange, 3, 0);	
-	definePrimitive(base, index++, "_ObjectCopySeries", prObjectCopySeries, 4, 0);	
-	definePrimitive(base, index++, "_ObjectPointsTo", prObjectPointsTo, 2, 0);	
-	definePrimitive(base, index++, "_ObjectRespondsTo", prObjectRespondsTo, 2, 0);	
+	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);
+	definePrimitive(base, index++, "_PrimitiveErrorString", prPrimitiveErrorString, 1, 0);
+	definePrimitive(base, index++, "_DumpStack", prDumpStack, 1, 0);
+	definePrimitive(base, index++, "_DumpDetailedBackTrace", prDumpDetailedBackTrace, 1, 0);
+	definePrimitive(base, index++, "_StackDepth", prStackDepth, 1, 0);
+	definePrimitive(base, index++, "_PrimName", prPrimName, 1, 0);
+	definePrimitive(base, index++, "_ObjectShallowCopy", prObjectShallowCopy, 1, 0);
+	definePrimitive(base, index++, "_ObjectCopyImmutable", prObjectCopyImmutable, 1, 0);
+	definePrimitive(base, index++, "_ObjectCopyRange", prObjectCopyRange, 3, 0);
+	definePrimitive(base, index++, "_ObjectCopySeries", prObjectCopySeries, 4, 0);
+	definePrimitive(base, index++, "_ObjectPointsTo", prObjectPointsTo, 2, 0);
+	definePrimitive(base, index++, "_ObjectRespondsTo", prObjectRespondsTo, 2, 0);
 	definePrimitive(base, index++, "_ObjectIsMutable", prObjectIsMutable, 1, 0);
 	definePrimitive(base, index++, "_ObjectIsPermanent", prObjectIsPermanent, 1, 0);
 	definePrimitive(base, index++, "_ObjectDeepFreeze", prDeepFreeze, 1, 0);
 	definePrimitive(base, index++, "_ObjectDeepCopy", prDeepCopy, 1, 0);
 
-#if !SCPLAYER	
-	definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);	
+#if !SCPLAYER
+	definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);
 #endif
-	definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);	
-	definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);	
-	definePrimitive(base, index++, "_DumpByteCodes", prDumpByteCodes, 1, 0);	
+	definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);
+	definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);
+	definePrimitive(base, index++, "_DumpByteCodes", prDumpByteCodes, 1, 0);
 
-	definePrimitive(base, index++, "_AllClasses", prAllClasses, 1, 0);	
-	definePrimitive(base, index++, "_DumpClassSubtree", prPostClassTree, 1, 0);	
+	definePrimitive(base, index++, "_AllClasses", prAllClasses, 1, 0);
+	definePrimitive(base, index++, "_DumpClassSubtree", prPostClassTree, 1, 0);
 
-//	definePrimitive(base, index++, "_TabletTracking", prTabletTracking, 1, 0);	
+//	definePrimitive(base, index++, "_TabletTracking", prTabletTracking, 1, 0);
 
-	definePrimitive(base, index++, "_FunDef_NumArgs", prFunDef_NumArgs, 1, 0);	
-	definePrimitive(base, index++, "_FunDef_NumVars", prFunDef_NumVars, 1, 0);	
-	definePrimitive(base, index++, "_FunDef_VarArgs", prFunDef_VarArgs, 1, 0);	
+	definePrimitive(base, index++, "_FunDef_NumArgs", prFunDef_NumArgs, 1, 0);
+	definePrimitive(base, index++, "_FunDef_NumVars", prFunDef_NumVars, 1, 0);
+	definePrimitive(base, index++, "_FunDef_VarArgs", prFunDef_VarArgs, 1, 0);
 
-	definePrimitive(base, index++, "_Thread_Init", prThreadInit, 3, 0);	
-	definePrimitive(base, index++, "_Thread_RandSeed", prThreadRandSeed, 2, 0);	
-	definePrimitive(base, index++, "_Thread_GetRandData", prThreadGetRandData, 1, 0);	
-	definePrimitive(base, index++, "_Thread_SetRandData", prThreadSetRandData, 2, 0);	
-//	definePrimitive(base, index++, "_ThreadRun", prThreadRun, 2, 0);	
-//	definePrimitive(base, index++, "_RunNextThread", prRunNextThread, 1, 0);	
-	definePrimitive(base, index++, "_RoutineYield", prRoutineYield, 1, 0);	
-	definePrimitive(base, index++, "_RoutineAlwaysYield", prRoutineAlwaysYield, 1, 0);	
-	definePrimitive(base, index++, "_RoutineResume", prRoutineResume, 2, 0);	
-	definePrimitive(base, index++, "_RoutineReset", prRoutineReset, 1, 0);	
-	definePrimitive(base, index++, "_RoutineYieldAndReset", prRoutineYieldAndReset, 2, 0);	
-	definePrimitive(base, index++, "_RoutineStop", prRoutineStop, 1, 0);	
-	
-//	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);	
-	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);	
-	definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);	
+	definePrimitive(base, index++, "_Thread_Init", prThreadInit, 3, 0);
+	definePrimitive(base, index++, "_Thread_RandSeed", prThreadRandSeed, 2, 0);
+	definePrimitive(base, index++, "_Thread_GetRandData", prThreadGetRandData, 1, 0);
+	definePrimitive(base, index++, "_Thread_SetRandData", prThreadSetRandData, 2, 0);
+//	definePrimitive(base, index++, "_ThreadRun", prThreadRun, 2, 0);
+//	definePrimitive(base, index++, "_RunNextThread", prRunNextThread, 1, 0);
+	definePrimitive(base, index++, "_RoutineYield", prRoutineYield, 1, 0);
+	definePrimitive(base, index++, "_RoutineAlwaysYield", prRoutineAlwaysYield, 1, 0);
+	definePrimitive(base, index++, "_RoutineResume", prRoutineResume, 2, 0);
+	definePrimitive(base, index++, "_RoutineReset", prRoutineReset, 1, 0);
+	definePrimitive(base, index++, "_RoutineYieldAndReset", prRoutineYieldAndReset, 2, 0);
+	definePrimitive(base, index++, "_RoutineStop", prRoutineStop, 1, 0);
+
+//	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);
+	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);
+	definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();
-	
+
 	//initOscilPrimitives();
 	//initControllerPrimitives();
 	initMathPrimitives();
 	initSignalPrimitives();
 	initArrayPrimitives();
-	
+
 void initSymbolPrimitives();
 	initSymbolPrimitives();
 
@@ -3939,10 +3939,10 @@ void initPlatformPrimitives();
 
 void initStringPrimitives();
 	initStringPrimitives();
-	
+
 void initUStringPrimitives();
 	initUStringPrimitives();
-	
+
 void initListPrimitives();
 	initListPrimitives();
 
@@ -3974,17 +3974,17 @@ void initHIDPrimitives();
 	initHIDPrimitives();
 
 void initSpeechPrimitives();
-	initSpeechPrimitives();     
-                
+	initSpeechPrimitives();
+
 void initCocoaFilePrimitives();
 	initCocoaFilePrimitives();
-		
+
 void initCocoaBridgePrimitives();
 	initCocoaBridgePrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
-	
+
 void initWiiPrimitives();
 	initWiiPrimitives();
 
@@ -3997,7 +3997,7 @@ void initCoreAudioPrimitives();
 // CR ADDED
 void initRendezvousPrimitives();
 	initRendezvousPrimitives();
-	
+
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
@@ -4005,7 +4005,7 @@ void initOpenGLPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
-	
+
 }
 
 

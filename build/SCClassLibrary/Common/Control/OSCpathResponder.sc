@@ -1,4 +1,4 @@
-/* 
+/*
 OSCpathDispatcher dispatches OSC commands to OSCpathResponder 's.
 It is also an OSCMultiResponder, so it distributes a command to
 any OSCresponderNode's assigned to that command.
@@ -12,7 +12,7 @@ OSCpathDispatcher : OSCMultiResponder {
 
 	var <>pathResponders;
 	var <>maxPathSize = 0;
-	
+
 	*new {  arg addr, cmdName, action, pathSize;
 		^super.new(addr, cmdName, action).init(pathSize);
 	}
@@ -20,25 +20,25 @@ OSCpathDispatcher : OSCMultiResponder {
 		maxPathSize = pathSize;
 		pathResponders = Set.new;
 	}
-	value { arg time, msg; 
+	value { arg time, msg;
 		var cmdPath, match, responder;
 		super.value(time, msg);
 		if (maxPathSize.notNil, {
 			cmdPath = [cmdName] ++ msg[1..maxPathSize];
 			responder = OSCpathResponder(addr, cmdPath);
 			match = pathResponders.findMatch(responder);
-			if (match.notNil, { 
-				match.value(time, msg); 
+			if (match.notNil, {
+				match.value(time, msg);
 			});
 			(maxPathSize - 1).do({ arg i;
 				responder.path.removeAt(responder.path.size - 1);
 				match = pathResponders.findMatch(responder);
-				if (match.notNil, { 
-					match.value(time, msg); 
+				if (match.notNil, {
+					match.value(time, msg);
 				});
 			});
 		});
-	}	
+	}
 	addChild { arg responder;
 		var old;
 		old = pathResponders.findMatch(responder);
@@ -53,20 +53,20 @@ OSCpathDispatcher : OSCMultiResponder {
 		 };
 		 if(this.isEmpty) { this.remove };
 	}
-	
+
 	isEmpty { ^(nodes.size + pathResponders.size) == 0 }
 }
 
 OSCpathResponder : OSCresponder {
 	var <>path;
 	var <>dispatcher;
-	
-	*new { arg addr, cmdPath, action; 
+
+	*new { arg addr, cmdPath, action;
 		var cmdName, path;
 		#cmdName ...path = cmdPath;
 		^super.newCopyArgs(addr, cmdName, action, path);
 	}
-	
+
 	findDispatcher {
 		var responder, match, pathIndices;
 		responder = OSCpathDispatcher(addr, cmdName, nil, path.size);
@@ -83,21 +83,21 @@ OSCpathResponder : OSCresponder {
 			^responder.add;
 		});
 		^match;
-	}		
-	add { 
+	}
+	add {
 		dispatcher = this.findDispatcher;
 		dispatcher.addChild(this);
 	}
-	
-	remove { 
+
+	remove {
 		dispatcher.removeChild(this);
 	}
-		
+
 	== { arg that;
 		^that respondsTo: \path and: { path == that.path }
 	}
 	hash { ^path.hash }
-}		
+}
 
 /*
 (

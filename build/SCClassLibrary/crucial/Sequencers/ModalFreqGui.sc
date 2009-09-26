@@ -11,7 +11,7 @@ ModalFreqGui : KrPlayerGui {
 		CXLabel(layout.startRow,"octave:");
 		model.octave.gui(layout);
 		CXLabel(layout.startRow,"stepsPerOctave:");
-		model.stepsPerOctave.gui(layout);	
+		model.stepsPerOctave.gui(layout);
 	}
 
 }

@@ -1,11 +1,11 @@
 File : UnixFILE {
-	
+
 	classvar <openDialogs;
-	
-	*new { arg pathName, mode; 
+
+	*new { arg pathName, mode;
 		^super.new.open(pathName, mode);
 	}
-	*open { arg pathName, mode; 
+	*open { arg pathName, mode;
 		^super.new.open(pathName, mode);
 	}
 	*use { arg pathName, mode, function;
@@ -32,7 +32,7 @@ File : UnixFILE {
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
 			"r","w","a","rb","wb","ab","r+","w+","a+",
-			"rb+","wb+","ab+" 
+			"rb+","wb+","ab+"
 		*/
 		if (this.prOpen(pathName, mode), {
 			this.addOpenFile;
@@ -46,21 +46,21 @@ File : UnixFILE {
 	length { // returns the length of the file
 		_FileLength;
 		^this.primitiveFailed;
-	}		
+	}
 	pos { // current file position
-		_FilePos 
+		_FilePos
 		^this.primitiveFailed;
 	}
 	pos_ { arg toPos;
 		toPos = toPos.clip(0, this.length - 1);
 		this.seek(toPos, 0);
 	}
-	seek { arg offset = 0, origin = 0; 
-		// origin is an integer, one of: 
+	seek { arg offset = 0, origin = 0;
+		// origin is an integer, one of:
 		// 0 - from beginning of file
 		// 1 - from current position
 		// 2 - from end of file
-		
+
 		_FileSeek
 		^this.primitiveFailed;
 	}
@@ -83,19 +83,19 @@ File : UnixFILE {
 		this.read(signal);
 		^signal
 	}
-	
+
 	// PRIVATE
 	prOpen { arg pathName, mode;
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
 			"r","w","a","rb","wb","ab","r+","w+","a+",
-			"rb+","wb+","ab+" 
+			"rb+","wb+","ab+"
 		*/
-		_FileOpen 
+		_FileOpen
 		^this.primitiveFailed;
 	}
 	prClose {
-		_FileClose 
+		_FileClose
 		^this.primitiveFailed;
 	}
 
@@ -108,33 +108,33 @@ File : UnixFILE {
 
 Pipe : UnixFILE {
 	// pipe stdin to, or stdout from, a unix shell command.
-	*new { arg commandLine, mode; 
+	*new { arg commandLine, mode;
 		^super.new.open(commandLine, mode);
 	}
 	open { arg commandLine, mode;
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
-			"r","w" 
+			"r","w"
 		*/
 		if (this.prOpen(commandLine, mode), {
 			this.addOpenFile;
 		});
 	}
-	
+
 	close { // close the file
 		// the GC will not call this for you
-		_PipeClose 
+		_PipeClose
 		^this.primitiveFailed;
 	}
 
-	
+
 	// PRIVATE
 	prOpen { arg pathName, mode;
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
-			"r","w" 
+			"r","w"
 		*/
-		_PipeOpen 
+		_PipeOpen
 		^this.primitiveFailed;
 	}
 }

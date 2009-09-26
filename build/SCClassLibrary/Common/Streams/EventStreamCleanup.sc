@@ -7,10 +7,10 @@ EventStreamCleanup {
 	var <>functions;		// cleanup functions from child streams and parent stream
 	*new { ^super.new.clear }
 
-	clear { 
+	clear {
 		functions = IdentitySet.new;
 	}
-	
+
 	addFunction { |event, function |
 		if(event.respondsTo(\keysValuesDo)) {
 			functions = functions.add(function);
@@ -24,7 +24,7 @@ EventStreamCleanup {
 			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
 		};
 	}
-	
+
 	update { | event |
 		if(event.respondsTo(\keysValuesDo)) {
 			functions = functions.addAll(event[\addToNodeCleanup]);
@@ -33,7 +33,7 @@ EventStreamCleanup {
 		};
 		^event
 	}
-	
+
 	exit { | event, freeNodes = true |
 		if(event.respondsTo(\keysValuesDo)) {
 			this.update(event);
@@ -43,11 +43,11 @@ EventStreamCleanup {
 		};
 		^event
 	}
-		
+
 	terminate { | freeNodes = true |
 		functions.do(_.value(freeNodes));
-		this.clear	
+		this.clear
 	}
-	
+
 }
 

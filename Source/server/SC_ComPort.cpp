@@ -38,7 +38,7 @@ typedef int socklen_t;
 # define bzero( ptr, count ) memset( ptr, 0, count )
 #else
 #include <netinet/tcp.h>
-#endif                  
+#endif
 
 #ifdef SC_LINUX
 # include <errno.h>
@@ -68,7 +68,7 @@ void dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
 	char *data;
-	
+
 	if (inData[0]) {
 		char *addr = inData;
 		data = OSCstrskip(inData);
@@ -81,9 +81,9 @@ void dumpOSCmsg(int inSize, char* inData)
 		data = inData + 4;
 		size = inSize - 4;
 	}
-	
+
 	sc_msg_iter msg(size, data);
-				
+
 	while (msg.remain())
 	{
 		char c = msg.nextTag('i');
@@ -106,7 +106,7 @@ void dumpOSCmsg(int inSize, char* inData)
 				msg.skipb();
 				break;
 			case '[' :
-				scprintf("[");	
+				scprintf("[");
 				msg.count++;
 				break;
 			case ']' :
@@ -134,15 +134,15 @@ void hexdump(int size, char* data)
 		{
 			scprintf("%4d   ", i);
 		}
-		if (i >= size) 
+		if (i >= size)
 		{
 			scprintf("   ");
 			ascii[i&15] = 0;
 		}
-		else 
+		else
 		{
 			scprintf("%02x ", (unsigned char)data[i] & 255);
-			
+
 			if (isprint(data[i])) ascii[i&15] = data[i];
 			else ascii[i&15] = '.';
 		}
@@ -163,7 +163,7 @@ void dumpOSC(int mode, int size, char* inData)
 {
 	if (mode & 1)
 	{
-		if (strcmp(inData, "#bundle") == 0) 
+		if (strcmp(inData, "#bundle") == 0)
 		{
 			char* data = inData + 8;
 			scprintf("[ \"#bundle\", %lld, ", OSCtime(data));
@@ -179,13 +179,13 @@ void dumpOSC(int mode, int size, char* inData)
 			}
 			scprintf("\n]\n");
 		}
-		else 
+		else
 		{
 			dumpOSCmsg(size, inData);
 			scprintf("\n");
 		}
 	}
-	
+
 	if (mode & 2) hexdump(size, inData);
 }
 
@@ -300,7 +300,7 @@ void SC_TcpInPort::PublishToRendezvous()
 
 SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 	: SC_ComPort(inWorld, inPortNum)
-{	
+{
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
 	}
@@ -313,7 +313,7 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, &bufsize, sizeof(bufsize));
 #endif
 	}
-	
+
 	//scprintf("@@@ sizeof(ReplyAddress) %d\n", sizeof(ReplyAddress));
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
@@ -329,9 +329,9 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous){
-		pthread_create(&mRendezvousThread, 
-			NULL, 
-			rendezvous_thread_func, 
+		pthread_create(&mRendezvousThread,
+			NULL,
+			rendezvous_thread_func,
 			(void*)this);
 	}
 #endif
@@ -365,11 +365,11 @@ void DumpReplyAddress(ReplyAddress *inReplyAddress)
 int32 GetHash(ReplyAddress *inReplyAddress)
 {
 	int32 hash = Hash(inReplyAddress->mSockAddr.sin_addr.s_addr);
-	
-	hash += (inReplyAddress->mSockAddr.sin_len << 24)	
+
+	hash += (inReplyAddress->mSockAddr.sin_len << 24)
 		| (inReplyAddress->mSockAddr.sin_family << 16)
 		| inReplyAddress->mSockAddr.sin_port;
-	
+
 	return Hash(hash);
 }
 
@@ -405,12 +405,12 @@ ReplyFunc SC_UdpInPort::GetReplyFunc()
 void* SC_UdpInPort::Run()
 {
 	OSC_Packet *packet = 0;
-	while (true) {		
+	while (true) {
 		if (!packet) {
 			// preallocate packet before we need it.
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}
-		
+
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 #ifdef SC_WIN32
 		int size = recvfrom(mSocket, (char *)mReadBuf, kMaxUDPSize , 0,
@@ -418,12 +418,12 @@ void* SC_UdpInPort::Run()
 		int size = recvfrom(mSocket, mReadBuf, kMaxUDPSize , 0,
 #endif
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
-		
+
 		if (size > 0) {
 			char *data = (char*)malloc(size);
 			memcpy(data, mReadBuf, size);
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
-			
+
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mReplyAddr.mReplyData = 0;
 			packet->mSize = size;
@@ -446,21 +446,21 @@ void* SC_UdpInPort::Run()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnections, int inBacklog)
-	: SC_ComPort(inWorld, inPortNum), mConnectionAvailable(inMaxConnections), 
+	: SC_ComPort(inWorld, inPortNum), mConnectionAvailable(inMaxConnections),
         mBacklog(inBacklog)
-{    
+{
     if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         throw std::runtime_error("failed to create tcp socket\n");
     }
-    
+
 	//const int on = 1;
 	//setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
-    
+
     bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
     mBindSockAddr.sin_family = AF_INET;
     mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     mBindSockAddr.sin_port = htons(mPortNum);
-    
+
     if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
     {
         throw std::runtime_error("unable to bind tcp socket\n");
@@ -470,13 +470,13 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     {
         throw std::runtime_error("unable to listen tcp socket\n");
     }
-    
+
     Start();
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous){
-		pthread_create(&mRendezvousThread, 
-			NULL, 
-			rendezvous_thread_func, 
+		pthread_create(&mRendezvousThread,
+			NULL,
+			rendezvous_thread_func,
 			(void*)this);
 	}
 #endif
@@ -519,7 +519,7 @@ SC_TcpConnectionPort::SC_TcpConnectionPort(struct World *inWorld, SC_TcpInPort *
     : SC_ComPort(inWorld, 0), mParent(inParent)
 {
     mSocket = inSocket;
-	
+
 #ifdef SC_WIN32
 	const char on = 1;
 	setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on));
@@ -527,7 +527,7 @@ SC_TcpConnectionPort::SC_TcpConnectionPort(struct World *inWorld, SC_TcpInPort *
 	const int on = 1;
 	setsockopt( mSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
 #endif
-	
+
     Start();
 }
 
@@ -567,19 +567,19 @@ void* SC_TcpConnectionPort::Run()
 	// wait for login message
 	int32 size;
 	int32 msglen;
-	
+
 	// first message must be the password. 4 tries.
 	bool validated = mWorld->hw->mPassword[0] == 0;
-	for (int i=0; !validated && i<4; ++i) {		
+	for (int i=0; !validated && i<4; ++i) {
 		size = recvall(mSocket, &msglen, sizeof(int32) );
 		if (size < 0) goto leave;
-		
+
 		msglen = ntohl(msglen);
 		if (msglen > kMaxPasswordLen) break;
-		
+
 		size = recvall(mSocket, buf, msglen);
 		if (size < 0) goto leave;
-		
+
 		validated = strcmp(buf, mWorld->hw->mPassword) == 0;
 #ifdef SC_WIN32
 		if (!validated) Sleep(i+1);	// thwart cracking.
@@ -587,24 +587,24 @@ void* SC_TcpConnectionPort::Run()
 		if (!validated) sleep(i+1);	// thwart cracking.
 #endif
 	}
-	
+
 	if (validated) {
-		while (true) {		
+		while (true) {
 			if (!packet) {
 				packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 			}
 			size = recvall(mSocket, &msglen, sizeof(int32));
 			if (size != sizeof(int32)) goto leave;
-			
+
 			// sk: msglen is in network byte order
 			msglen = ntohl(msglen);
-			
+
 			char *data = (char*)malloc(msglen);
 			size = recvall(mSocket, data, msglen);
 			if (size < msglen) goto leave;
-			
+
 			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
-			
+
 			packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 			packet->mReplyAddr.mReplyData = 0;
 			packet->mSize = msglen;
@@ -665,7 +665,7 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 int sendall(int socket, const void *msg, size_t len)
 {
 	int total = 0;
-	while (total < (int)len) 
+	while (total < (int)len)
 	{
 #ifdef SC_WIN32
 		int numbytes = send(socket, (const char*)msg, len - total, 0);

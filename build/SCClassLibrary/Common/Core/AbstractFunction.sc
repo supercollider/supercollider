@@ -1,5 +1,5 @@
 AbstractFunction {
-	
+
 	// function compositions
 	// override these in subclasses to perform different kinds of function compositions
 	composeUnaryOp { arg aSelector;
@@ -16,19 +16,19 @@ AbstractFunction {
 	}
 
 	// double dispatch for mixed operations
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb; 
-		^this.reverseComposeBinaryOp(aSelector, aNumber, adverb) 
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aNumber, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector, aSignal, adverb; 
-		^this.reverseComposeBinaryOp(aSelector, aSignal, adverb) 
+	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aSignal, adverb)
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; 
-		^this.reverseComposeBinaryOp(aSelector, aComplex, adverb) 
+	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aComplex, adverb)
 	}
-	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb; 
-		^this.reverseComposeBinaryOp(aSelector, aSeqColl, adverb) 
+	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aSeqColl, adverb)
 	}
-	
+
 	// respond to math operators
 	neg { ^this.composeUnaryOp('neg') }
 	reciprocal { ^this.composeUnaryOp('reciprocal') }
@@ -49,7 +49,7 @@ AbstractFunction {
 	midiratio { ^this.composeUnaryOp('midiratio') }
 	ratiomidi { ^this.composeUnaryOp('ratiomidi') }
 	ampdb { ^this.composeUnaryOp('ampdb') }
-	dbamp { ^this.composeUnaryOp('dbamp') }	
+	dbamp { ^this.composeUnaryOp('dbamp') }
 	octcps { ^this.composeUnaryOp('octcps') }
 	cpsoct { ^this.composeUnaryOp('cpsoct') }
 	log { ^this.composeUnaryOp('log') }
@@ -87,12 +87,12 @@ AbstractFunction {
 	isPositive { ^this.composeUnaryOp('isPositive') }
 	isNegative { ^this.composeUnaryOp('isNegative') }
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
-	
+
 	rho {  ^this.composeUnaryOp('rho') }
 	theta {  ^this.composeUnaryOp('theta') }
 	rotate { arg function; ^this.composeBinaryOp('rotate', function) }
 	dist { arg function; ^this.composeBinaryOp('dist', function) }
-	
+
 	+ { arg function, adverb; ^this.composeBinaryOp('+', function, adverb) }
 	- { arg function, adverb; ^this.composeBinaryOp('-', function, adverb) }
 	* { arg function, adverb; ^this.composeBinaryOp('*', function, adverb) }
@@ -100,24 +100,24 @@ AbstractFunction {
 	div { arg function, adverb; ^this.composeBinaryOp('div', function, adverb) }
 	mod { arg function, adverb; ^this.composeBinaryOp('mod', function, adverb) }
 	pow { arg function, adverb; ^this.composeBinaryOp('pow', function, adverb) }
-	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) } 
+	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) }
 	max { arg function=0, adverb; ^this.composeBinaryOp('max', function, adverb) }
-	
+
 	<  { arg function, adverb; ^this.composeBinaryOp('<',  function, adverb) }
 	<= { arg function, adverb; ^this.composeBinaryOp('<=', function, adverb) }
 	>  { arg function, adverb; ^this.composeBinaryOp('>',  function, adverb) }
 	>= { arg function, adverb; ^this.composeBinaryOp('>=', function, adverb) }
-	
+
 	bitAnd { arg function, adverb; ^this.composeBinaryOp('bitAnd', function, adverb) }
 	bitOr { arg function, adverb; ^this.composeBinaryOp('bitOr', function, adverb) }
 	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }	bitHammingDistance { arg function, adverb; ^this.composeBinaryOp('hammingDistance', function, adverb) }
-	
+
 	lcm { arg function, adverb; ^this.composeBinaryOp('lcm', function, adverb) }
 	gcd { arg function, adverb; ^this.composeBinaryOp('gcd', function, adverb) }
 	round { arg function=1, adverb; ^this.composeBinaryOp('round', function, adverb) }
 	roundUp { arg function=1, adverb; ^this.composeBinaryOp('roundUp', function, adverb) }
 	trunc { arg function=1, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
-	atan2 { arg function, adverb; ^this.composeBinaryOp('atan2', function, adverb) }	
+	atan2 { arg function, adverb; ^this.composeBinaryOp('atan2', function, adverb) }
 	hypot { arg function, adverb; ^this.composeBinaryOp('hypot', function, adverb) }
 	hypotApx { arg function, adverb; ^this.composeBinaryOp('hypotApx', function, adverb) }
 	leftShift { arg function, adverb; ^this.composeBinaryOp('leftShift', function, adverb) }
@@ -143,11 +143,11 @@ AbstractFunction {
 	rrand { arg function, adverb; ^this.composeBinaryOp('rrand', function, adverb) }
 	exprand { arg function, adverb; ^this.composeBinaryOp('exprand', function, adverb) }
 	@ { arg function, adverb; ^this.composeBinaryOp('@', function, adverb) }
-	
+
 	// complex support
 	real { ^this }
 	imag { ^0.0 }
-	
+
 
 	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
 	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }
@@ -155,13 +155,13 @@ AbstractFunction {
 	nand { arg function, adverb; ^this.composeBinaryOp('nand', function, adverb) }
 	not { ^this.composeUnaryOp('not') }
 	ref { ^this.composeUnaryOp('asRef') }
-	
+
 	// nary operators
 	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }
 	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
 	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
 	blend { arg that, blendFrac = 0.5; ^this.composeNAryOp('blend', [that, blendFrac]) }
-	
+
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax, clip])
 	}
@@ -175,13 +175,13 @@ AbstractFunction {
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax, clip])
 	}
 
-	degreeToKey { arg scale, stepsPerOctave=12; 
+	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
 	}
 	applyTo { arg ... args;
 		^this.valueArray(args)
 	}
-	
+
 	<> { arg that;
 		// function composition
 		^{|...args| this.value(that.value(*args)) }
@@ -197,9 +197,9 @@ AbstractFunction {
 
 UnaryOpFunction : AbstractFunction {
 	var selector, a;
-	
-	*new { arg selector, a; 
-		^super.newCopyArgs(selector, a) 
+
+	*new { arg selector, a;
+		^super.newCopyArgs(selector, a)
 	}
 	value { arg ... args;
 		^a.valueArray(args).perform(selector)
@@ -207,10 +207,10 @@ UnaryOpFunction : AbstractFunction {
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector)
 	}
-	valueEnvir { arg ... args; 
+	valueEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector)
 	}
-	valueArrayEnvir { arg ... args; 
+	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector)
 	}
 	functionPerformList { arg selector, arglist;
@@ -219,15 +219,15 @@ UnaryOpFunction : AbstractFunction {
 	storeOn { arg stream;
 		stream <<< a << "." << selector;
 	}
-	
-	
+
+
 }
 
 BinaryOpFunction : AbstractFunction {
 	var selector, a, b, adverb;
-	
-	*new { arg selector, a, b, adverb; 
-		^super.newCopyArgs(selector, a, b, adverb) 
+
+	*new { arg selector, a, b, adverb;
+		^super.newCopyArgs(selector, a, b, adverb)
 	}
 	value { arg ... args;
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
@@ -235,10 +235,10 @@ BinaryOpFunction : AbstractFunction {
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
 	}
-	valueEnvir { arg ... args; 
+	valueEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
-	valueArrayEnvir { arg ... args; 
+	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
 	functionPerformList { arg selector, arglist;
@@ -248,15 +248,15 @@ BinaryOpFunction : AbstractFunction {
 		stream << "(" <<< a << " " << selector.asBinOpString;
 		if(adverb.notNil) { stream << "." << adverb };
 		stream << " " <<< b << ")"
-	
+
 	}
 }
 
 NAryOpFunction : AbstractFunction {
 	var selector, a, arglist;
-	
-	*new { arg selector, a, arglist; 
-		^super.newCopyArgs(selector, a, arglist) 
+
+	*new { arg selector, a, arglist;
+		^super.newCopyArgs(selector, a, arglist)
 	}
 	value { arg ... args;
 		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
@@ -264,10 +264,10 @@ NAryOpFunction : AbstractFunction {
 	valueArray { arg args;
 		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
 	}
-	valueEnvir { arg ... args; 
+	valueEnvir { arg ... args;
 		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
 	}
-	valueArrayEnvir { arg ... args; 
+	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
 	}
 	functionPerformList { arg selector, arglist;
@@ -275,14 +275,14 @@ NAryOpFunction : AbstractFunction {
 	}
 	storeOn { arg stream;
 		stream <<< a << "." << selector << "(" <<<* arglist << ")"
-	
+
 	}
-	
+
 }
 
 FunctionList : AbstractFunction {
 	var <>array, <flopped=false;
-	
+
 	*new { arg functions;
 		^super.newCopyArgs(functions)
 	}
@@ -294,7 +294,7 @@ FunctionList : AbstractFunction {
 		array.remove(function);
 		if(array.size < 2) { ^array[0] };
 	}
-	
+
 	value { arg ... args;
 		var res = array.collect(_.valueArray(args));
 		^if(flopped) { res.flop } { res }

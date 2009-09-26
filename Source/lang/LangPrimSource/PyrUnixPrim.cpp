@@ -55,10 +55,10 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 	char cmdline[1024];
 	int err = slotStrVal(a, cmdline, 1023);
 	if (err) return err;
-	
+
 	int res = system(cmdline);
 	SetInt(a, res);
-	
+
 	return errNone;
 }
 
@@ -115,7 +115,7 @@ void* string_popen_thread_func(void *data)
 	FILE *stream = process->stream;
 	pid_t pid = process->pid;
 	char buf[1024];
-	
+
 	while (process->postOutput) {
 		char *string = fgets(buf, 1024, stream);
 		if (!string) break;
@@ -125,12 +125,12 @@ void* string_popen_thread_func(void *data)
 	int res;
 	res = sc_pclose(stream, pid);
 	res = WEXITSTATUS(res);
-	
+
 	if(process->postOutput)
 		post("RESULT = %d\n", res);
-	
+
 	free(process);
-	
+
     pthread_mutex_lock (&gLangMutex);
     if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
@@ -144,7 +144,7 @@ void* string_popen_thread_func(void *data)
     pthread_mutex_unlock (&gLangMutex);
 
 	return 0;
-}   
+}
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
 int prString_POpen(struct VMGlobals *g, int numArgsPushed)
@@ -153,7 +153,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 	int err;
-	
+
 	if (!isKindOfSlot(a, class_string)) return errWrongType;
 
 	char *cmdline = (char*)malloc(a->uo->size + 1);
@@ -175,7 +175,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 	process->postOutput = IsTrue(b);
 
 	free(cmdline);
-   
+
 	if(process->stream == NULL) {
 		free(process);
 		return errFailed;
@@ -198,16 +198,16 @@ int prPidRunning(VMGlobals *g, int numArgsPushed)
 
 #ifdef SC_WIN32
 	HANDLE handle;
-	
+
 	handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, a->ui);
 	if(handle) {
 		unsigned long exitCode;
-	
+
 		if(GetExitCodeProcess(handle, &exitCode) == 0)
 			SetFalse(a);
 		else if(exitCode == STILL_ACTIVE)
 			SetTrue(a);
-		
+
 		CloseHandle(handle);
 	}
 	else
@@ -228,7 +228,7 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 
 	SetInt(a, errno);
-	
+
 	return errNone;
 }
 
@@ -245,12 +245,12 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	PyrSlot *slots = a->uo->slots;
-	
+
 	struct timeval tv;
 	gettimeofday(&tv, 0);
-	
+
 	struct tm* tm = localtime((const time_t*)&tv.tv_sec);
-	
+
 	SetInt(slots+0, tm->tm_year + 1900);
 	SetInt(slots+1, tm->tm_mon + 1); // 0 based month ??
 	SetInt(slots+2, tm->tm_mday);
@@ -260,7 +260,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	SetInt(slots+6, tm->tm_wday);
 	SetFloat(slots+7, tv.tv_sec + 1e-6 * tv.tv_usec);
 	SetFloat(slots+8, bootSeconds());
-	
+
 	return errNone;
 }
 
@@ -269,12 +269,12 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	PyrSlot *slots = a->uo->slots;
-	
+
 	struct timeval tv;
 	gettimeofday(&tv, 0);
-	
+
 	struct tm* tm = gmtime((const time_t*)&tv.tv_sec);
-	
+
 	SetInt(slots+0, tm->tm_year + 1900);
 	SetInt(slots+1, tm->tm_mon + 1);
 	SetInt(slots+2, tm->tm_mday);
@@ -284,7 +284,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	SetInt(slots+6, tm->tm_wday);
 	SetFloat(slots+7, tv.tv_sec + 1e-6 * tv.tv_usec);
 	SetFloat(slots+8, bootSeconds());
-	
+
 	return errNone;
 }
 
@@ -346,7 +346,7 @@ int prStrFTime(struct VMGlobals *g, int numArgsPushed)
         if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
         if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
         if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
-		
+
         char format[1024];
         if (slotStrVal(b, format, 1024)) return errWrongType;
 
@@ -378,7 +378,7 @@ int prGetPid(VMGlobals *g, int numArgsPushed);
 int prGetPid(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	SetInt(a, 
+	SetInt(a,
 #ifndef SC_WIN32
 		getpid()
 #else
@@ -393,11 +393,11 @@ void initUnixPrimitives();
 void initUnixPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
-	
+
     s_unixCmdAction = getsym("doUnixCmdAction");
-	
+
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
 	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
 	definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);

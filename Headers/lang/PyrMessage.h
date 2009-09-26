@@ -31,22 +31,22 @@ extern PyrMethod **gRowTable;
 
 void initUniqueMethods();
 
-void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, 
+void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector,
 		long numArgsPushed, long numKeyArgsPushed);
 void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
-void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, 
+void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector,
 		long numArgsPushed, long numKeyArgsPushed);
 void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
-void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector, 
+void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 		long numArgsPushed, long numKeyArgsPushed);
-void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector, 
+void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 		long numArgsPushed);
 void returnFromBlock(VMGlobals *g);
 void returnFromMethod(VMGlobals *g);
 void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed);
-void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, 
+void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed,
 		long numKeyArgsPushed);
-int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed, 
+int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed,
 		long numKeyArgsPushed);
 
 #endif

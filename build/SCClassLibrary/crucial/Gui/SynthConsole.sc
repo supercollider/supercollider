@@ -2,7 +2,7 @@
 AbstractConsole {
 
 	var <>layout,<>defaultPath;
-	
+
 	getPathThen {  arg then ... args;
 		/*
 		PutFileDialog.new("Filename..." ++ then.asString, defaultPath, { arg ok, path;
@@ -23,14 +23,14 @@ SynthConsole : AbstractConsole  {
 	var <>format, <>duration;
 	var <>ugenFunc,<>onRecordOrWrite;
 	 var pauseControl;
-	 
+
 	 var tempoG;
-	 
+
 	*new { arg ugenFunc,layout;
 		^super.new.ugenFunc_(ugenFunc).layout_(layout.asPageLayout).format_(SoundFileFormats.new)
 	}
-	
-	play {	
+
+	play {
 		ActionButton(layout,">",{this.doPlay }).background_(Color.green);
 	}
 	prepare {
@@ -63,9 +63,9 @@ SynthConsole : AbstractConsole  {
 		//		if(defpath.notNil,{ defaultPath = defpath });
 		//		ActionButton(layout, "{}",{ this.getPathThen(\doWrite,dur.value ? duration ?? { 120 }) } ); // do a dialog
 	}
-	
+
 	stop { arg stopFunc;
-		ActionButton(layout,"[_]",{ 
+		ActionButton(layout,"[_]",{
 			this.doStop(stopFunc)
 		});
 	}
@@ -84,13 +84,13 @@ SynthConsole : AbstractConsole  {
 	}
 
 	// pr
-	doPlay { 
+	doPlay {
 		this.ugenFunc.play;
 	}
 	doPrepare {
 		this.ugenFunc.prepareForPlay
 	}
-	
+
 	doScope { arg duration=0.5;
 //		Synth.scope({ arg synth;
 //			Tempo.setTempo;
@@ -103,33 +103,33 @@ SynthConsole : AbstractConsole  {
 //			this.ugenFunc.value(synth)
 //		})
 	}
-	
+
 	doStop { arg stopFunc;
 		stopFunc.value;
 		ugenFunc.stop;
 		NotificationCenter.notify(this,\didStop);
 	}
-		
+
 	doRecord {	arg path;
 //		var hformat,sformat;
 //		# hformat, sformat = this.getFormats;
-//	
-//		Synth.record({arg synth; 
+//
+//		Synth.record({arg synth;
 //			Tempo.setTempo;
-//			this.ugenFunc.value(synth) 
+//			this.ugenFunc.value(synth)
 //		},duration,path,hformat,sformat);
 //		onRecordOrWrite.value(path);
 //		NotificationCenter.notify(this,\didRecordOrWrite);
 	}
-	
+
 	doWrite { arg path, argduration;
 //		var hformat,sformat;
 //		# hformat, sformat = this.getFormats;
-//	
-//		Synth.write({arg synth; 
+//
+//		Synth.write({arg synth;
 //			Tempo.setTempo;
-//			this.ugenFunc.value(synth) 
-//		} ,argduration ? duration,path,hformat,sformat);	
+//			this.ugenFunc.value(synth)
+//		} ,argduration ? duration,path,hformat,sformat);
 //		onRecordOrWrite.value(path);
 //		NotificationCenter.notify(this,\didRecordOrWrite);
 	}
@@ -145,7 +145,7 @@ SynthConsole : AbstractConsole  {
 //			Tempo.setTempo;
 //
 //			ugenGraph = this.ugenFunc.value(synth).asArray;
-//			
+//
 //			file = SoundFile.new;
 //			file.headerFormat = hformat;
 //			file.sampleFormat = sformat;
@@ -161,9 +161,9 @@ SynthConsole : AbstractConsole  {
 //				nil
 //			});
 //		});
-//		
-//		if (newsynth.notNil, { 
-//			NotificationCenter.registerOneShot(this,\didStop,this,{ 
+//
+//		if (newsynth.notNil, {
+//			NotificationCenter.registerOneShot(this,\didStop,this,{
 //				//Synth.stop appears to return asynch
 //				if(Synth.isPlaying.not,{
 //					file.endRecord
@@ -184,14 +184,14 @@ SaveConsole : AbstractConsole {
 	var <>object;
 	var <path; // defaultPath may be a function
 	var <>onSaveAs; // arg path
-	
+
 	*new { arg object, path,layout;
 		^super.new.object_(object).path_(path)
 			.layout_(layout ?? {MultiPageLayout.new.front})
 	}
-	
+
 	print {
-		ActionButton(layout,"post",{ object.asCompileString.postln }); 
+		ActionButton(layout,"post",{ object.asCompileString.postln });
 	}
 	printPath {
 		ActionButton(layout,"post path",{ path.value.asCompileString.postln })
@@ -200,12 +200,12 @@ SaveConsole : AbstractConsole {
 		ActionButton(layout,title,{
 			if(path.value.isNil,{
 		 		this.getPathThen(\doSaveAs);
-		 	},{	
-		 		this.doSave 
+		 	},{
+		 		this.doSave
 		 	})
 	 	},minWidth).background_(
 	 		if(path.value.isNil,{ // virgin
-	 			Color.new255(202,255,161) 
+	 			Color.new255(202,255,161)
 	 		},{
 	 			Color.new255(255,242,89)
 	 		})
@@ -218,7 +218,7 @@ SaveConsole : AbstractConsole {
 			this.getPathThen(\doSaveAs,default);
 	 	});
 	}
-			
+
 	getPathThen {  arg then ... args;
 		//var defPath;
 		//defPath=(defaultPath.value ? object).asString;
@@ -227,7 +227,7 @@ SaveConsole : AbstractConsole {
 			this.performList(then,[path] ++ args);
 		});
 	}
-	
+
 	doSave {
 		var clobber,vpath,evpath;
 		vpath = path.value;
@@ -248,11 +248,11 @@ SaveConsole : AbstractConsole {
 		onSaveAs.value(vpath);
 	}
 
-	path_ { arg p; 
+	path_ { arg p;
 		if(p.notNil,{
-			path = PathName(p).asRelativePath 
+			path = PathName(p).asRelativePath
 		})
-	}	
+	}
 }
 
 SoundFileFormats { // an interface
@@ -285,7 +285,7 @@ SoundFileFormats { // an interface
 		});
 		^nil
 	}
-	
+
 	sampleFormat {
 		if(format=='float32',{
 			^'float32'
@@ -299,7 +299,7 @@ SoundFileFormats { // an interface
 		if(format=='wav16',{
 			^'int16'
 		});
-		^nil	
+		^nil
 	}
 }
 

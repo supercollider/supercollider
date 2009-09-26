@@ -120,8 +120,8 @@ PyrSymbol* SymbolTable::Find(const char *inName, int inHash)
 
 void SymbolTable::Add(PyrSymbol* inSymbol)
 {
-	if (mNumItems + 1 > (mMaxItems>>1)) Grow();	
-	
+	if (mNumItems + 1 > (mMaxItems>>1)) Grow();
+
 	int index = inSymbol->hash & mMask;
 	PyrSymbol *testSymbol = mTable[index];
 	while (testSymbol && testSymbol != inSymbol) {
@@ -135,10 +135,10 @@ void SymbolTable::Add(PyrSymbol* inSymbol)
 }
 
 PyrSymbol* SymbolTable::MakeNew(const char *inName, int inHash, int inLength)
-{	
+{
 	PyrSymbol* symbol = mSpace.NewSymbol(inName, inHash, inLength);
 	Add(symbol);
-	
+
 	return symbol;
 }
 
@@ -163,7 +163,7 @@ void SymbolTable::AllocTable()
 	int size = mMaxItems * sizeof(PyrSymbol*);
 	mTable = (PyrSymbol**)mPool->Alloc(size);
 	MEMFAIL(mTable);
-	
+
 	MakeEmpty();
 	mMask = mMaxItems - 1;
 }
@@ -177,14 +177,14 @@ void SymbolTable::Rehash(PyrSymbol** inTable, int inSize)
 }
 
 void SymbolTable::Grow()
-{	
+{
 	PyrSymbol **oldtable = mTable;
 	int oldsize = mMaxItems;
-	
+
 	// create new table
 	mMaxItems += mMaxItems;
 	AllocTable();
-	
+
 	Rehash(oldtable, oldsize);
 
 	mPool->Free(oldtable);

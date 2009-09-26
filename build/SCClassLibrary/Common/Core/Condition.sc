@@ -1,7 +1,7 @@
 
 Condition {
 	var <>test, waitingThreads;
-	
+
 	*new { arg test=false;
 		^super.newCopyArgs(test, Array(8))
 	}
@@ -16,14 +16,14 @@ Condition {
 		waitingThreads = waitingThreads.add(thisThread);
 		value.yield;
 	}
-	
+
 	signal {
 		var tempWaitingThreads, time;
-		if (test.value, {		
+		if (test.value, {
 			time = thisThread.seconds;
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
-			tempWaitingThreads.do({ arg thread; 
+			tempWaitingThreads.do({ arg thread;
 				thread.clock.sched(0, thread);
 			});
 		});
@@ -34,7 +34,7 @@ Condition {
 		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
-		tempWaitingThreads.do({ arg thread; 
+		tempWaitingThreads.do({ arg thread;
 			thread.clock.sched(0, thread);
 		});
 	}
@@ -43,7 +43,7 @@ Condition {
 FlowVar {
 	var value = \unbound;
 	var condition;
-	
+
 	*new { arg inVal = \unbound;
 		^super.init(inVal)
 	}

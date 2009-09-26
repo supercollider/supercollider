@@ -38,10 +38,10 @@
 				^nil
 			});
 		});
-		if(obj.isNil and: warnIfNotFound, { 
+		if(obj.isNil and: warnIfNotFound, {
 			warn("String:loadPath found nil, empty contents or parse error in " + path);
-			
-			//^ObjectNotFound.new(path) 
+
+			//^ObjectNotFound.new(path)
 		});
 		^obj
 	}
@@ -72,12 +72,12 @@
 }
 
 + AbstractPlayer {
-	
+
 	enpath {
 		//document enpath abrev it
 		^if(path.notNil,{
 			^Document.abrevPath(path)
-		},{ 
+		},{
 			this
 		})
 	}
@@ -114,12 +114,12 @@
 + Integer {
 
 	asFileSafeChar {
-		^(#[ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z","_","*","#","-","+","~","$" ]).at(this)	
+		^(#[ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z","_","*","#","-","+","~","$" ]).at(this)
 	}
-	/*  
+	/*
 		extension methods crash if called recursively.
 		james is working on a fix.
-		
+
 	asFileSafeString {
 		var output,msd,lsd;
 		if(this < 62,{
@@ -151,15 +151,15 @@
 		if (this < 0, { ^"-" ++ output });
 		^output
 	}
-	
+
 }
 
 + Object {
-	
+
 	asFileSafeString {
 		^this.asCompileString.hash.asFileSafeString
 	}
-	
+
 }
 
 + String {

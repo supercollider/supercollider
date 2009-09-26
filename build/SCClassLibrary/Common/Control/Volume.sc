@@ -26,7 +26,7 @@ Volume {
 	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window, <volume, spec;
 	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
-	
+
 	*new { arg server, startBus = 0, numChans, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
 	}
@@ -42,10 +42,10 @@ Volume {
 	}
 
 	sendDef {
-		SynthDef(sdname = (\volumeAmpControl ++ synthNumChans).asSymbol, 
+		SynthDef(sdname = (\volumeAmpControl ++ synthNumChans).asSymbol,
 			{ arg volumeAmp = 1, volumeLag = 0.1, volumeGate=1;
-			XOut.ar(startBus, 
-				Linen.kr(volumeGate, releaseTime: 0.05, doneAction:2), 
+			XOut.ar(startBus,
+				Linen.kr(volumeGate, releaseTime: 0.05, doneAction:2),
 				In.ar(startBus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
 		}).send(server);
 	}
@@ -86,7 +86,7 @@ Volume {
 						// we have permanent node IDs so we should use them
 					nodeID = server.nodeAllocator.allocPerm(1);
 					ampSynth = Synth.basicNew(sdname, server, nodeID);
-					server.sendBundle(nil, ampSynth.newMsg(1, 
+					server.sendBundle(nil, ampSynth.newMsg(1,
 						[\volumeAmp, volume.dbamp, \volumeLag, lag],
 						addAction: \addAfter));
 					mute.if({this.mute});
@@ -94,9 +94,9 @@ Volume {
 			}, {
 				"Volume only works on a running Server. Please boot".warn;
 			})
-		})	
+		})
 	}
-		
+
 	free {
 		var	nodeIDToFree = ampSynth.nodeID;
 		ampSynth.set(\volumeGate, 0.0);
@@ -105,7 +105,7 @@ Volume {
 		CmdPeriod.remove(cpFun);
 		cpFun = nil;
 	}
-	
+
 	numChans { ^numChans ? synthNumChans ? server.options.numOutputBusChannels }
 	numChans_ { |num|
 		if(isPlaying and: { num != synthNumChans }) {
@@ -113,59 +113,59 @@ Volume {
 		};
 		numChans = num;
 	}
-	
+
 	mute {
-		this.isPlaying.if({		
+		this.isPlaying.if({
 			this.prmute;
 		}, {
 			this.playVolume(true)
-		});	
+		});
 	}
-	
+
 	unmute {
 		this.prunmute;
 		(this.muteamp == 0.0).if({
 			this.free;
-		});	
-	}	
+		});
+	}
 
-	
+
 	prmute {
 		isMuted = true;
 		muteamp = volume;
 		ampSynth.set(\volumeAmp, 0);
 		this.changed(\mute, true);
 	}
-		
+
 	prunmute {
-		isMuted = false;	
+		isMuted = false;
 		ampSynth.set(\volumeAmp, muteamp.dbamp);
 		this.changed(\mute, false);
 	}
-	
+
 	// sets volume back to 1 - removes the synth
 	reset {
 		this.free;
 	}
-		
+
 	// cleaner with MVC - in db
 	volume_ { arg aVolume;
 		volume = aVolume;
 		(volume == 0.0).if({
 			(this.isPlaying and: {this.isMuted.not}).if({
-				this.free; 
+				this.free;
 			})
 		}, {
 			server.serverRunning.if({
 				this.playVolume(isMuted);
 			})
 		});
-		volume = volume.clip(min, max);	
+		volume = volume.clip(min, max);
 		if(isMuted) { muteamp = volume };
 		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
 	}
-	
+
 	playVolume { arg muted = false;
 		(this.isPlaying.not and: {
 			(volume != 0.0) or: {muted}
@@ -173,24 +173,24 @@ Volume {
 			this.play(muted);
 		})
 	}
-			
+
 	lag_ { arg aLagTime;
 		lag = aLagTime;
 		ampSynth.set(\volumeLag, lag);
 	}
-	
+
 	setVolumeRange { arg argMin, argMax;
 		argMin !? { min = argMin };
 		argMax !? { max = argMax };
 		this.changed(\ampRange, min, max);
 	}
-		
-	
+
+
 	gui { arg window, bounds;
 //		this.debug(\gui);
-		^VolumeGui(this, window, bounds)	
+		^VolumeGui(this, window, bounds)
 	}
-	
+
 	close {
 		window.close;
 	}
@@ -199,11 +199,11 @@ Volume {
 VolumeGui{
 	var <>model;
 	var window, spec, slider, box, simpleController;
-	
-	*new{|model, win, bounds|	
+
+	*new{|model, win, bounds|
 		^super.new.model_(model).init(win, bounds)
 	}
-	
+
 	init{|win, bounds|
 		spec = [model.min, model.max, \db].asSpec;
 		bounds = bounds ?? {Rect(100, 100, 80, 330)};

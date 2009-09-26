@@ -1,7 +1,7 @@
 
 Pattern : AbstractFunction {
-	
-	
+
+
 	// concatenate Patterns
 	++ { arg aPattern;
 		^Pseq.new([this, aPattern])
@@ -10,14 +10,14 @@ Pattern : AbstractFunction {
 	<> { arg aPattern;
 		^Pchain(this, aPattern)
 	}
-	
+
 	play { arg clock, protoEvent, quant;
 		^this.asEventStreamPlayer(protoEvent).play(clock, false, quant)
 	}
 	// phase causes pattern to start somewhere in the current measure rather than on a downbeat
 	// offset allows pattern to compute ahead a bit to allow negative lags for strummed chords
 	// and to ensure one pattern computes ahead of another
-	
+
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 	iter { ^this.asStream }
 
@@ -30,7 +30,7 @@ Pattern : AbstractFunction {
 	do { arg function;
 		this.asStream.do(function)
 	}
-	
+
 	// filtering operations
 	collect { arg function;
 		^Pcollect.new(function, this)
@@ -41,7 +41,7 @@ Pattern : AbstractFunction {
 	reject { arg function;
 		^Preject.new(function, this)
 	}
-	
+
 	// function composition
 	composeUnaryOp { arg operator;
 		^Punop.new(operator, this)
@@ -55,9 +55,9 @@ Pattern : AbstractFunction {
 	composeNAryOp { arg selector, argList;
 		^Pnaryop.new(selector, this, argList);
 	}
-	
+
 	//////////////////////
-	
+
 	mtranspose { arg n; ^Paddp(\mtranspose, n, this) }
 	ctranspose { arg n; ^Paddp(\ctranspose, n, this) }
 	gtranspose { arg n; ^Paddp(\gtranspose, n, this) }
@@ -71,7 +71,7 @@ Pattern : AbstractFunction {
 	legato { arg x; ^Pmulp(\legato, x, this) }
 
 	db { arg db; ^Paddp(\db, db, this) }
-	
+
 	clump { arg n; ^Pclump(n, this) }
 	flatten { arg n = 1; ^Pflatten(n, this) }
 	repeat { arg n=inf; ^Pn(this, n) }
@@ -80,7 +80,7 @@ Pattern : AbstractFunction {
 	stutter { arg n; ^Pstutter(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
 	fin { arg n; ^Pfin(n, this) }
-	
+
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	differentiate { ^Pdiff(this) }
 }
@@ -88,7 +88,7 @@ Pattern : AbstractFunction {
 Pfunc : Pattern {
 	var <>nextFunc; // Func is evaluated for each next state
 	var <>resetFunc; // Func is evaluated for each next state
-	*new { arg nextFunc, resetFunc;	
+	*new { arg nextFunc, resetFunc;
 		^super.newCopyArgs(nextFunc, resetFunc)
 	}
 	storeArgs { ^[nextFunc] ++ resetFunc }
@@ -126,7 +126,7 @@ Pfuncn : Pattern {
 		});
 		^inval
 	}
-}	
+}
 
 
 // Punop and Pbinop are used to create patterns in response to math operations
@@ -135,13 +135,13 @@ Punop : Pattern {
 	*new { arg operator, a;
 		^super.newCopyArgs(operator, a)
 	}
-	
+
 	storeOn { arg stream; stream <<< a << "." << operator }
 
 	embedInStream { arg inval;
 		var stream, outval;
 		stream = a.asStream;
-		loop { 
+		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
 			inval = yield(outval.perform(operator));
@@ -159,7 +159,7 @@ Pbinop : Pattern {
 	*new { arg operator, a, b, adverb;
 		^super.newCopyArgs(operator, a, b, adverb)
 	}
-	
+
 	storeOn { arg stream;
 			stream << "(" <<< a << " " << operator.asBinOpString;
 			if(adverb.notNil) { stream << "." << adverb };
@@ -180,14 +180,14 @@ Pbinop : Pattern {
 			};
 		};
 		if (adverb == 'x') {
-			if (vala.isNil) { 
+			if (vala.isNil) {
 				vala = a.next(inval);
 				if (vala.isNil) { ^inval };
 				valb = b.next(inval);
 				if (valb.isNil, { ^inval });
 			}{
 				valb = b.next(inval);
-				if (valb.isNil) { 
+				if (valb.isNil) {
 					vala = a.next(inval);
 					if (vala.isNil) { ^inval };
 					b.reset;
@@ -222,16 +222,16 @@ Pnaryop : Pattern {
 	embedInStream { arg inval;
 		var streamA, streamlist, vala, values, isNumeric;
 		streamA = a.asStream;
-		isNumeric = arglist.every { arg item; 
+		isNumeric = arglist.every { arg item;
 			item.isNumber or: {item.class === Symbol} }; // optimization
-		
+
 		if (isNumeric) {
 			loop {
 				vala = streamA.next(inval);
 				if (vala.isNil) { ^inval };
 				inval = yield(vala.performList(operator, arglist));
 			}
-		}{		
+		}{
 			streamlist = arglist.collect({ arg item; item.asStream });
 			loop {
 				vala = streamA.next(inval);
@@ -254,7 +254,7 @@ Pnaryop : Pattern {
 }
 
 PdegreeToKey : Pnaryop {
-	*new { arg pattern, scale, stepsPerOctave=12; 
+	*new { arg pattern, scale, stepsPerOctave=12;
 		^super.new('degreeToKey', pattern, [scale, stepsPerOctave])
 	}
 	// this is not reversible
@@ -287,12 +287,12 @@ Pchain : Pattern {
 					str.next(inval);
 				};
 				^nil.yield;
-			};			
+			};
 		};
 	}
 	storeOn { arg stream;
-			stream << "("; 
-			patterns.do { |item,i|  if(i != 0) { stream << " <> " }; stream <<< item; }; 
+			stream << "(";
+			patterns.do { |item,i|  if(i != 0) { stream << " <> " }; stream <<< item; };
 			stream << ")"
 	}
 }
@@ -300,7 +300,7 @@ Pchain : Pattern {
 
 Pevent : Pattern {
 	var <>pattern, <>event;
-	
+
 	*new { arg pattern, event;
 		^super.newCopyArgs(pattern, event);
 	}
@@ -308,7 +308,7 @@ Pevent : Pattern {
 	embedInStream { arg inval;
 		var outval;
 		var stream = pattern.asStream;
-		loop { 
+		loop {
 			outval = stream.next(event);
 			if (outval.isNil) {^inval};
 			inval = outval.yield
@@ -323,11 +323,11 @@ Pbind : Pattern {
 		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
 		^super.newCopyArgs(pairs)
 	}
-	
+
 	storeArgs { ^patternpairs }
 	embedInStream { arg inevent;
 		var event;
-		var sawNil = false;		
+		var sawNil = false;
 		var streampairs = patternpairs.copy;
 		var endval = streampairs.size - 1;
 
@@ -340,14 +340,14 @@ Pbind : Pattern {
 			event = inevent.copy;
 			forBy (0, endval, 2) { arg i;
 				var name = streampairs[i];
-				var stream = streampairs[i+1];		
+				var stream = streampairs[i+1];
 				var streamout = stream.next(event);
 				if (streamout.isNil) { ^inevent };
 
 				if (name.isSequenceableCollection) {
-					if (name.size > streamout.size) {  
+					if (name.size > streamout.size) {
 						("the pattern is not providing enough values to assign to the key set:" + name).warn;
-						^inevent 
+						^inevent
 					};
 					name.do { arg key, i;
 						event.put(key, streamout[i]);
@@ -355,10 +355,10 @@ Pbind : Pattern {
 				}{
 					event.put(name, streamout);
 				};
-				
+
 			};
 			inevent = event.yield;
-		}		
+		}
 	}
 }
 
@@ -368,10 +368,10 @@ Pmono : Pattern {
 		if (pairs.size.odd, { Error("Pmono should have odd number of args.\n").throw; });
 		^super.newCopyArgs(name.asSymbol, pairs)
 	}
-	
+
 	embedInStream { | inevent |
 		^PmonoStream(this).embedInStream(inevent)
-	}	
+	}
 }
 
 PmonoArtic : Pmono {
@@ -386,7 +386,7 @@ Pseries : Pattern {	// arithmetic series
 	*new { arg start = 0, step = 1, length=inf;
 		^super.newCopyArgs(start, step, length)
 	}
-	storeArgs { ^[start,step,length] }	
+	storeArgs { ^[start,step,length] }
 
 	embedInStream { arg inval;
 		var outval, counter = 0;
@@ -404,7 +404,7 @@ Pseries : Pattern {	// arithmetic series
 		^inval;
 	}
 }
-		
+
 Pgeom : Pattern {	// geometric series
 	var <>start=1.0, <>grow=1.0, <>length=inf;
 	*new { arg start = 0, grow = 1, length=inf;
@@ -416,7 +416,7 @@ Pgeom : Pattern {	// geometric series
 		var cur = start.value;
 		var len = length.value;
 		var growStr = grow.asStream, growVal;
-		
+
 		while { counter < len } {
 			growVal = growStr.next(inval);
 			if(growVal.isNil) { ^inval };
@@ -432,37 +432,37 @@ Pgeom : Pattern {	// geometric series
 
 Pbrown : Pattern {
 	var <>lo, <>hi, <>step, <>length;
-	
+
 	*new { arg lo=0.0, hi=1.0, step=0.125, length=inf;
 		^super.newCopyArgs(lo, hi, step, length)
 	}
-	
+
 	storeArgs { ^[lo,hi,step,length] }
-	
+
 	embedInStream { arg inval;
 		var cur;
 		var loStr = lo.asStream, loVal;
 		var hiStr = hi.asStream, hiVal;
 		var stepStr = step.asStream, stepVal;
-		
+
 		loVal = loStr.next(inval);
 		hiVal = hiStr.next(inval);
 		stepVal = stepStr.next(inval);
 		cur = rrand(loVal, hiVal);
 		if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
-		
+
 		length.value.do {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			stepVal = stepStr.next(inval);
 			if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
 			cur = this.calcNext(cur, stepVal).fold(loVal, hiVal);
-			inval = cur.yield;				
+			inval = cur.yield;
 		};
-		
+
 		^inval;
 	}
-	
+
 	calcNext { arg cur, step;
 		^cur + step.xrand2
 	}
@@ -496,7 +496,7 @@ Pwhite : Pattern {
 
 Pprob : Pattern {
 	var <>hi, <>lo, <>length, <tableSize, <distribution, <table;
-	
+
 	*new { arg distribution, lo=0.0, hi=1.0, length=inf, tableSize;
 		^super.newCopyArgs(hi, lo, length, tableSize).distribution_(distribution);
 	}
@@ -513,17 +513,17 @@ Pprob : Pattern {
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
-		
+
 		length.value.do {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
 			inval = ((table.tableRand * (hiVal - loVal)) + loVal).yield;		};
-	
+
 		^inval;
 	}
 }
-				
+
 Pstep2add : Pattern {
 	var <>pattern1, <>pattern2;
 	*new { arg pattern1, pattern2;
@@ -532,7 +532,7 @@ Pstep2add : Pattern {
 	storeArgs { ^[pattern1,pattern2] }
 	embedInStream { arg inval;
 		var stream1, stream2, val1, val2;
-		
+
 		stream1 = pattern1.asStream;
 		while {
 			(val1 = stream1.next(inval)).notNil;
@@ -554,10 +554,10 @@ Pstep3add : Pattern {
 		^super.newCopyArgs(pattern1, pattern2, pattern3)
 	}
 	storeArgs { ^[pattern1,pattern2,pattern3] }
-	
+
 	embedInStream { arg inval;
 		var stream1, stream2, stream3, val1, val2, val3;
-		
+
 		stream1 = pattern1.asStream;
 		while {
 			(val1 = stream1.next(inval)).notNil;
@@ -586,7 +586,7 @@ PstepNfunc : Pattern {
 	}
 	storeArgs { ^[function,patterns] }
 	embedInStream { arg inval;
-		var val;		
+		var val;
 		var size = patterns.size;
 		var max = size - 1;
 		var streams = Array.newClear(size);
@@ -604,11 +604,11 @@ PstepNfunc : Pattern {
 						inval = yield(function.value(vals));
 					}
 				};
-			inval;	
+			inval;
 		};
 		^f.value(inval);
 	}
-	
+
 }
 
 PstepNadd : PstepNfunc {
@@ -633,7 +633,7 @@ Ptime : Pattern {
 	}
 }
 
-// if an error is thrown in the stream, func is evaluated 
+// if an error is thrown in the stream, func is evaluated
 
 Pprotect : FilterPattern {
 	var <>func;
@@ -644,8 +644,8 @@ Pprotect : FilterPattern {
 	asStream {
 		var rout = Routine(pattern.embedInStream(_));
 		rout.exceptionHandler = { |error|
-			func.value(error, rout); 
-			nil.handleError(error) 
+			func.value(error, rout);
+			nil.handleError(error)
 		};
 		^rout
 	}
@@ -679,7 +679,7 @@ Pif : Pattern {
 		var	condStream = condition.asStream,
 			trueStream = iftrue.asStream,
 			falseStream = iffalse.asStream;
-		
+
 		^FuncStream({ |inval|
 			var test;
 			(test = condStream.next(inval)).isNil.if({

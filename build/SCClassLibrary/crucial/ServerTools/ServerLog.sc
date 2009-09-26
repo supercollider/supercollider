@@ -73,7 +73,7 @@ ServerLog : NetAddr {
 		^super.sendBundle(*([time]++args))
 	}
 	guiClass { ^ServerLogGui }
-	
+
 	getSortedEvents { arg tail,function;
 		// list in logical time order
 

@@ -12,15 +12,15 @@ AbstractSFP  : AbstractPlayer {
 	var <>file;
 
 	var segmentBuffers,sched,lastSynth,nextSynth;
-	
+
 	*new { arg file;
 		^super.new.file_(loadDocument(file))
 	}
-	*standardizePath { arg path; 
+	*standardizePath { arg path;
 		var pathName;
 		pathName = PathName.fromOS9(path);
 		^if(pathName.isRelativePath,{
-			dir ++ pathName.asRelativePath 
+			dir ++ pathName.asRelativePath
 		},{
 			pathName.fullPath
 		})
@@ -42,12 +42,12 @@ AbstractSFP  : AbstractPlayer {
 	fileName { ^file.fileName }
 	soundFilePath { ^file.soundFilePath }
 	fileDuration { ^file.fileDuration }
-	// my own path name if i have it else my sound files path name 
+	// my own path name if i have it else my sound files path name
 	name { ^super.name ?? {this.fileName} }
-	
+
 	timeDuration { ^this.numFrames / this.sampleRate }
 	beatDuration { ^this.timeDuration * this.tempo }
-	
+
 
 	// conversions
 	frames2secs { arg frames; ^ frames / this.sampleRate }
@@ -56,21 +56,21 @@ AbstractSFP  : AbstractPlayer {
 	// multiple layers ? this will fail !  you'll get multiple translations
 	frames2beats { arg frames;  ^(frames - this.firstBeatIsAt / this.sampleRate * this.tempo) }
 	beats2frames { arg beats; ^beats * this.tempo.reciprocal  * this.sampleRate + this.firstBeatIsAt }
-		
+
 	relativeBeats2secs { arg beats; ^(beats * (this.tempo.reciprocal )) }
 	relativeSecs2beats { arg secs; ^(secs * (this.tempo )) }
 
 	// start beat adjusted (whole track)
-	beats2secs { arg beats; 
+	beats2secs { arg beats;
 		^this.frames2secs( this.beats2frames(beats) )
 	}
-	secs2beats { arg secs; 
+	secs2beats { arg secs;
 		^this.frames2beats(this.secs2frames(secs) )
 	}
 	snapSecondToBeat { arg second,beats=4.0;
 		^this.beats2secs( this.secs2beats(second).round(beats) )
 	}
-	
+
 	// server support
 	loadBuffersToBundle { arg bundle;
 		// prepare all the preloads
@@ -87,7 +87,7 @@ AbstractSFP  : AbstractPlayer {
 			})
 		})
 	}
-			
+
 	asSynthDef {
 		^SynthDef(this.defName,{ arg i_bufnum=0,gate=1,out=0;
 			Out.ar(out,
@@ -97,7 +97,7 @@ AbstractSFP  : AbstractPlayer {
 		})
 	}
 	defName { ^this.class.name.asString ++ this.numChannels }
-	synthDefArgs { 
+	synthDefArgs {
 		// first buf to play
 		^[\i_bufnum, segmentBuffers.first.bufnum,\gate,1,\out,patchOut.synthArg ]
 	}
@@ -120,7 +120,7 @@ AbstractSFP  : AbstractPlayer {
 					[// release previous synth
 					[ "/n_set", lastSynth.nodeID,\gate,0],
 					// start new synth
-					[ nextSynth.addToTailMsg(patchOut.group, 
+					[ nextSynth.addToTailMsg(patchOut.group,
 						["i_bufnum",sb,"out",patchOut.synthArg])
 					]],{
 						// this stepped
@@ -142,7 +142,7 @@ AbstractSFP  : AbstractPlayer {
 	children { ^[file] }
 
 	guiClass { ^AbstractSFPGui }
-	
+
 }
 
 /**
@@ -151,32 +151,32 @@ AbstractSFP  : AbstractPlayer {
   * only SFP has a real concrete sound file
   */
 SFP : AbstractSFP  {
-	
+
 	var tempo, <>firstBeatIsAt=0.0;// will be part of the BeatMap
 		 // and a real concrete tempo
-		 
+
 	var <found = false,<soundFilePath;
-	
+
 	*new { arg path,tempo,firstBeatIsAtFrame=0;
 		^super.new.init(path).tempo_(tempo).firstBeatIsAt_(firstBeatIsAtFrame)
 	}
 	storeArgs { ^[this.soundFilePath,tempo,firstBeatIsAt] }
-	
+
 	*getNew { arg receivingFunction;
-		GetFileDialog({ arg ok, path;	
+		GetFileDialog({ arg ok, path;
 			if(ok,{
 				{
 					if(receivingFunction.notNil,{
 						receivingFunction.value(this.new(path));
-					},{	
+					},{
 						this.new(path).gui;
 					});
 					nil
 				}.defer
-			})	
+			})
 		})
 	}
-	
+
 	init { arg sfilePath;
 		if(sfilePath.isNil,{
 			file = SoundFile.new(nil).numChannels_(2);
@@ -203,19 +203,19 @@ SFP : AbstractSFP  {
 			});
 		});
 	}
-	
+
 	fileNotFound { arg sfilePath;
 		// give you a chance to search for it
 		ModalDialog({ arg layout;
 			CXLabel(layout, "SoundFile not found ! " ++ sfilePath ++ ".  Find it manually ? ");
 		},{
-			GetFileDialog({ arg ok, sfilePath;	
-				var it;	
+			GetFileDialog({ arg ok, sfilePath;
+				var it;
 				if(ok,{
 					this.init(sfilePath);
-				})	
+				})
 			})
-		});	
+		});
 	}
 
 	preloadData { arg startAt=0,endAt,group,bundle,parentSegmentBuffers;
@@ -223,50 +223,50 @@ SFP : AbstractSFP  {
 		// wasteful but...
 		// each segment needs its own
 		// sharing the preload doesn't work, needs to be reset each time
-		
+
 		// create multiple SoundFiles and put them in the cache
-		
+
 		// if they exist, just repark them
 
 		sf = Buffer.new(group.server,32768,this.numChannels);
-		
-		bundle.addPrepare( 
+
+		bundle.addPrepare(
 			sf.allocMsg(
-				sf.cueSoundFileMsg( this.soundFilePath, startAt * file.sampleRate,32768) 
+				sf.cueSoundFileMsg( this.soundFilePath, startAt * file.sampleRate,32768)
 			)
 		);
 		parentSegmentBuffers.add( sf );
 	}
-	
+
 	//name { ^this.fileName }
-	fileName { 
+	fileName {
 		if(soundFilePath.isNil,{ ^nil });
-		^PathName(soundFilePath).fileName 
+		^PathName(soundFilePath).fileName
 	}
 	fileDuration { ^file.duration }
 	timeDuration { ^file.duration }
 
 	tempo { ^(tempo ?? {Tempo.tempo}) }
-	tempo_ { arg t;  
+	tempo_ { arg t;
 		tempo = t; // ? Tempo.tempo
 		if(t.notNil,{
 			Tempo.tempo = t;
 		});
 	}
 	children { ^[] }
-	
+
 	guiClass { ^SFPGui }
-	
+
 }
 
 /**
   * Variable speed Sound File Player
   */
 VSFP : SFP {
-	
+
 	var tempoClock,myTempo,<pchRatio=1.0;
 	var buff,spawnTask;
-	
+
 	pchRatio_ { arg p;
 		p = max(p,0.001);
 		if(synth.isPlaying,{
@@ -305,7 +305,7 @@ VSFP : SFP {
 			)
 		});
 	}
-	synthDefArgs { 
+	synthDefArgs {
 		^[\i_bufnum, buff.bufnum,\pchRatio,myTempo.tempo,\out,patchOut.synthArg ]
 	}
 	didSpawn {
@@ -338,14 +338,14 @@ VSFP : SFP {
 					);
 				}
 			];
-			
+
 			sched.time = 0;
 			sched.beat = 0;
 
 			// wait 4 beats
 			4.wait;
-			beat = beat + 6;			
-			
+			beat = beat + 6;
+
 			while({
 				o = beat * 44100;
 				o < file.numFrames

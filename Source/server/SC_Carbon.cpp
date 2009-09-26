@@ -108,7 +108,7 @@ static void sigIllHandler(int sig)
 bool sc_HasVectorUnit()
 {
 	sigIllOldHandler = signal(SIGILL, sigIllHandler);
-	
+
 	if (sigsetjmp(sigIllJmpBuf, 1)) {
 		signal(SIGILL, sigIllOldHandler);
 	} else {
@@ -171,7 +171,7 @@ static bool cpuid(
 		   %ebx holds the address of the global offset table.  GCC seems
 		   to be unable to handle asms in PIC with result operands that
 		   live in %ebx.  For example:
-		   
+
             $ cat pic-ebx-asm.c
             int
             foo (void)
@@ -204,7 +204,7 @@ static bool cpuid(
 					  : "=a" (*eax), "=S" (*ebx), "=c" (*ecx), "=d" (*edx)
 					  : "0" (request)
 					  : "memory");
-		
+
 		return true;
     }
 	else
@@ -258,7 +258,7 @@ void sc_SetDenormalFlags()
 		cpuid(0, &a, &b, &c, &d);
 		if (b == 0x756e6547) { /* It's an Intel */
 			int stepping, model, family, extfamily;
-			
+
 			family = (a >> 8) & 0xf;
 			extfamily = (a >> 20) & 0xff;
 			model = (a >> 4) & 0xf;

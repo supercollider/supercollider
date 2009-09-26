@@ -80,7 +80,7 @@ public:
 	static const int kReadTimeoutMs = 1000;
 
 	typedef SC_FIFO<uint8_t,kBufferSize> FIFO;
-	
+
 	struct Error : std::runtime_error
 	{
 		explicit Error(const char* what)
@@ -175,7 +175,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	// initialize serial connection
 
 	// get current settings and remember them
-	struct termios toptions;    
+	struct termios toptions;
 	if (tcgetattr(m_fd, &toptions) < 0) {
 		int e = errno;
 		close(m_fd);
@@ -320,7 +320,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	// NOTE: unused for non-blocking reads
 // 	toptions.c_cc[VMIN]  = 0;
 // 	toptions.c_cc[VTIME] = 20;
-    
+
 	if (tcsetattr(m_fd, TCSAFLUSH, &toptions) < 0) {
 		int e = errno;
 		close(m_fd);
@@ -398,7 +398,7 @@ void SerialPort::dataAvailable()
     if (m_obj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp; SetObject(g->sp, m_obj); 
+        ++g->sp; SetObject(g->sp, m_obj);
         runInterpreter(g, method, 1);
         g->canCallOS = false;
     }
@@ -412,7 +412,7 @@ void SerialPort::doneAction()
     if (m_obj) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp; SetObject(g->sp, m_obj); 
+        ++g->sp; SetObject(g->sp, m_obj);
         runInterpreter(g, method, 1);
         g->canCallOS = false;
     }
@@ -521,7 +521,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot* self = args+0;
 	if (getSerialPort(self) != 0)
 		return errFailed;
-	
+
 	char portName[PATH_MAX];
 	err = slotStrVal(args+1, portName, sizeof(portName));
 	if (err) return err;

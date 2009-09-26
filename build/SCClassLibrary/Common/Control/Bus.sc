@@ -3,7 +3,7 @@ Bus {
 
 	var <rate,<index,<numChannels,<server;
 	var mapSymbol;
-	
+
 	*control { arg server,numChannels=1;
 		var alloc;
 		server = server ? Server.default;
@@ -35,14 +35,14 @@ Bus {
 	}
 
 	set { arg ... values; // shouldn't be larger than this.numChannels
-		server.sendBundle(nil,(["/c_set"] 
+		server.sendBundle(nil,(["/c_set"]
 			++ values.collect({ arg v,i; [index + i ,v] }).flat));
 	}
 	setMsg { arg ... values;
-		^["/c_set"] 
+		^["/c_set"]
 			++ values.collect({ arg v,i; [index + i ,v] }).flat
 	}
-	
+
 	setn { arg values;
 		// could throw an error if values.size > numChannels
 		server.sendBundle(nil,
@@ -52,12 +52,12 @@ Bus {
 		^["/c_setn",index,values.size] ++ values;
 	}
 	get { arg action;
-		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg; 
+		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
 			action.value(msg.at(2)); r.remove }).add;
 		server.listSendMsg(["/c_get",index]);
-	}	
+	}
 	getn { arg count, action;
-		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg; 
+		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg;
 			action.value(msg.copyToEnd(3)); r.remove } ).add;
 		server.listSendMsg(this.getnMsg(count));
 	}
@@ -73,7 +73,7 @@ Bus {
 		server.sendBundle(nil,
 			["/c_fill",index,numChans,value]);
 	}
-	
+
 	fillMsg { arg value;
 		^["/c_fill",index,numChannels,value];
 	}
@@ -90,9 +90,9 @@ Bus {
 		numChannels = nil;
 		mapSymbol = nil;
 	}
-	
+
 	// allow reallocation
-	
+
 	alloc {
 		if(rate === 'audio', {
 			index = server.audioBusAllocator.alloc(numChannels);
@@ -101,7 +101,7 @@ Bus {
 		});
 		mapSymbol = nil;
 	}
-	
+
 	realloc {
 		var r, n;
 		if(index.notNil, {
@@ -116,32 +116,32 @@ Bus {
 	setAll { arg value;
 		this.fill(value,numChannels);
 	}
-	
+
 	value_ { arg value;
 		this.fill(value,numChannels);
 	}
-	
+
 	printOn { arg stream;		stream << this.class.name << "(" <<*			[rate, index, numChannels, server]  <<")"	}
-	
+
 	storeOn { arg stream;
 		stream << this.class.name << "(" <<*
 			[rate.asCompileString, index, numChannels, server.asCompileString]  <<")"
 	}
-	
+
 	== { arg aBus;
 		if(aBus === this,{ ^true });
 		^aBus respondsTo: #[\index, \numChannels, \rate, \server]
-		and: { aBus.index == index 
+		and: { aBus.index == index
 		and: { aBus.numChannels == numChannels
 		and: { aBus.rate == rate
 		and: { aBus.server === server }}}}
 	}
 	hash { ^index.hash bitXor: numChannels.hash bitXor: rate.hash bitXor: server.hash }
-	
+
 	isAudioOut { // audio interface
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
 	}
-	
+
 	ar {
 		if(rate == \audio,{
 			^In.ar(index,numChannels)
@@ -162,7 +162,7 @@ Bus {
 			^{ this.ar }.play(target, outbus, fadeTime, addAction);
 		});
 	}
-	
+
 	asUGenInput { ^this.index }
 	asControlInput { ^this.index }
 
@@ -180,7 +180,7 @@ Bus {
 		if ( offset > bus.numChannels or: {numChannels + offset >
 			bus.numChannels} )
 		{
-			Error( "Bus:newFrom tried to reach outside the channel range of  
+			Error( "Bus:newFrom tried to reach outside the channel range of
 %".format( bus )).throw
 		};
 		^Bus.new( bus.rate, bus.index + offset, numChannels);

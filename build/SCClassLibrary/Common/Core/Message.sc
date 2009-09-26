@@ -1,7 +1,7 @@
 
 Message {
 	var <>receiver, <>selector, <>args;
-	
+
 	*new { arg receiver, selector, args;
 		^super.newCopyArgs(receiver, selector, args);
 	}
@@ -13,7 +13,7 @@ Message {
 
 MethodQuote {
 	var <>selector;
-	
+
 	*new { arg selector;
 		^super.newCopyArgs(selector);
 	}

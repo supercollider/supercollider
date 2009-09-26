@@ -12,9 +12,9 @@
  *
  *	@version	0.16, 10-Apr-07
  */
-GUI { 
+GUI {
 	classvar <scheme, <schemes, <skin, <skins;
-	
+
 	*new { arg key; ^scheme.perform( key )}
 
 	*makeGUI { arg key, args, properties;
@@ -30,22 +30,22 @@ GUI {
 		args.postln;
 		^class.new(*args)
 	}
-	
-	*initClass { 
+
+	*initClass {
 		skins = (
 			default: (
 				fontSpecs: 	["Helvetica", 10],
 				fontColor: 	Color.black,
 				background: 	Color(0.8, 0.85, 0.7, 0.5),
 				foreground:	Color.grey(0.95),
-				onColor:		Color(0.5, 1, 0.5), 
+				onColor:		Color(0.5, 1, 0.5),
 				offColor:		Color.clear,
 				gap:			0 @ 0,
 				margin: 		2@2,
 				buttonHeight:	16
 			)
-		); 
-		
+		);
+
 		skin		= skins.default;
 		schemes	= IdentityDictionary.new;
 	}
@@ -60,7 +60,7 @@ GUI {
 	*cocoa {
 		^this.fromID( \cocoa );
 	}
-	
+
 	/**
 	 *	Makes Swing (Java GUI) the current scheme
 	 *	and returns it. Subsequent GUI object calls
@@ -71,7 +71,7 @@ GUI {
 	*swing {
 		^this.fromID( \swing );
 	}
-	
+
 	/**
 	 *	Changes the current scheme and returns it.
 	 *
@@ -107,7 +107,7 @@ GUI {
 	*current {
 		^scheme;
 	}
-	
+
 	/**
 	 *	Returns the scheme for a given identifier.
 	 *	Does not switch the current scheme.
@@ -120,7 +120,7 @@ GUI {
 	*get { arg id;
 		^schemes[ id.asSymbol ];
 	}
-	
+
 	/**
 	 *	Changes the current scheme.
 	 *
@@ -129,7 +129,7 @@ GUI {
 	*set { arg aScheme;
 		scheme = aScheme;
 	}
-	
+
 	/**
 	 *	Executes a function body, temporarily
 	 *	setting the current GUI scheme. This is usefull inside
@@ -146,7 +146,7 @@ GUI {
 		scheme		= aScheme;
 		^func.protect({ scheme = recent });
 	}
-	
+
 	/**
 	 *	Same as 'use' but using a scheme's id as first argument
 	 *
@@ -157,7 +157,7 @@ GUI {
 	*useID { arg id, func;
 		^this.use( schemes[ id.asSymbol ], func );
 	}
-	
+
 	/**
 	 *	Registers a new scheme. This is typically called
 	 *	by external libraries in their startup procedure.
@@ -174,7 +174,7 @@ GUI {
 			scheme = schemes[ scheme.id ];	// in case we are updating an existing scheme
 		});
 	}
-	
+
 	/**
 	 *	All method calls are mapped to the current
 	 *	scheme, so that for example GUI.button can be used
@@ -184,7 +184,7 @@ GUI {
 	*doesNotUnderstand { arg selector ... args;
 		^scheme.performList( selector, args );
 	}
-	
+
 	/**
 	 *	Add skins : GUI.skins.put(skinName,( fontSpecs: etc.  )  )
 	 *	then set that as default here.

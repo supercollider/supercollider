@@ -2,17 +2,17 @@
 	SuperCollider real time audio synthesis system
  Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
- 
+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
@@ -24,7 +24,7 @@
 
 //helpful constants
 //#define PI 3.1415926535898f
-//#define TWOPI 6.28318530717952646f 
+//#define TWOPI 6.28318530717952646f
 
 extern InterfaceTable *ft;
 
@@ -42,63 +42,63 @@ extern double phons[11];
 #include "BeatTrack2.h"
 
 struct Loudness : Unit {
-	
+
 	//FFT data
-	int m_numbands; 
+	int m_numbands;
 	float * m_ERBbands;
 
 	//float m_phontotal;
 	//final output
-	float m_sones;	
+	float m_sones;
 };
 
 
 
 struct KeyTrack : Unit {
-	
+
 	//FFT data
 	float * m_FFTBuf;
-	
+
 	//coping with different sampling rates
 	float m_srate;		//use as a flag to check sample rate is correct
 	float * m_weights;  //will point to the sample rate specific data
-	int * m_bins; 
-	float m_frameperiod; 
-	
+	int * m_bins;
+	float m_frameperiod;
+
 	//counter
 	//uint32 m_frame;
-	
+
 	//experimental transient avoidance
 	//float m_prevphase[720]; //60*12
-	//float m_leaknote[60]; 
-	
-	float m_chroma[12]; 
-	float m_key[24]; 
-	
+	//float m_leaknote[60];
+
+	float m_chroma[12];
+	float m_key[24];
+
 	float m_histogram[24];   //key histogram
 							 //float m_keyleak; //fade parameter for histogram
-	//int m_triggerid;	
-	
-	int m_currentKey;	
+	//int m_triggerid;
+
+	int m_currentKey;
 };
 
 
 struct MFCC : Unit {
-	
+
 	//MFCC
-	int m_numcoefficients; 
+	int m_numcoefficients;
 	float * m_mfcc;
 	//ERB
-	int m_numbands; 
+	int m_numbands;
 	float * m_bands;
 
 	//sampling rate specific data
-	float m_srate;  	
+	float m_srate;
 	int * m_startbin;
 	int * m_endbin;
 	int * m_cumulindex;
 	float * m_bandweights;
-	
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ struct MFCC : Unit {
 struct FFTAnalyser_Unit : Unit
 {
 	float outval;
-	
+
 	// Not always used: multipliers which convert from bin indices to freq vals, and vice versa.
 	// See also the macros for deriving these.
 	float m_bintofreq /* , m_freqtobin */;
@@ -122,7 +122,7 @@ struct SpecFlatness : FFTAnalyser_Unit
 {
 };
 
-struct SpecPcile : FFTAnalyser_OutOfPlace 
+struct SpecPcile : FFTAnalyser_OutOfPlace
 {
 	bool m_interpolate;
 };
@@ -143,7 +143,7 @@ extern "C"
 	void KeyTrack_next(KeyTrack *unit, int wrongNumSamples);
 	void KeyTrack_Ctor(KeyTrack *unit);
 	void KeyTrack_Dtor(KeyTrack *unit);
-	
+
 	void MFCC_next(MFCC *unit, int wrongNumSamples);
 	void MFCC_Ctor(MFCC *unit);
 	void MFCC_Dtor(MFCC *unit);

@@ -26,34 +26,34 @@
 #include "SC_Dimension.h"
 #include "SC_SndBuf.h"
 
-struct Graph 
+struct Graph
 {
 	Node mNode;
-		
+
 	uint32 mNumWires;
 	struct Wire *mWire;
-	
+
 	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
-	
+
 	// try this for setting the rate of a control
 	int *mControlRates;
 
         uint32 mNumUnits;
 	struct Unit **mUnits;
-	
+
 	int mNumCalcUnits;
 	struct Unit **mCalcUnits; // excludes i-rate units.
 
 	int mSampleOffset;
 	struct RGen* mRGen;
-	
+
 	struct Unit *mLocalAudioBusUnit;
 	struct Unit *mLocalControlBusUnit;
-	
+
 	float mSubsampleOffset;
-	
+
 	SndBuf *mLocalSndBufs;
 	int localBufNum;
 	int localMaxBufNum;

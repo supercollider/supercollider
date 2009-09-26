@@ -36,31 +36,31 @@ int sc_fpclassify(float x);
 int sc_fpclassify(float x) {
 	int result;
 	int kind = _fpclass((double)x);
-	switch (kind) 
-	{ 
-		case _FPCLASS_NINF: 
+	switch (kind)
+	{
+		case _FPCLASS_NINF:
 			result = FP_INFINITE;
 			break;
-		case _FPCLASS_PINF: 
+		case _FPCLASS_PINF:
 			result = FP_INFINITE;
-			break; 
-		case _FPCLASS_SNAN: 
+			break;
+		case _FPCLASS_SNAN:
 			result = FP_NAN;
 			break;
-		case _FPCLASS_QNAN: 
+		case _FPCLASS_QNAN:
 			result = FP_NAN;
-			break;  
+			break;
 		case _FPCLASS_ND:
 			result = FP_SUBNORMAL;
 			break;
 		case _FPCLASS_PD:
 			result = FP_SUBNORMAL;
 			break;
-		default: 
+		default:
 			result = FP_NORMAL;
 	};
 	return result;
-	
+
 }
 
 #else
@@ -80,11 +80,11 @@ struct CheckBadValues : public Unit {
 	int		prevclass;
 };
 
-// declare unit generator functions 
+// declare unit generator functions
 extern "C"
 {
 	void load(InterfaceTable *inTable);
-	
+
 	void CheckBadValues_Ctor(CheckBadValues* unit);
 	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
 	const char *CheckBadValues_fpclassString(int fpclass);
@@ -103,36 +103,36 @@ void CheckBadValues_Ctor(CheckBadValues* unit)
 
 void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 {
-	
-	
+
+
 	float *in = ZIN(0);
 	float *out = ZOUT(0);
 	float id = ZIN0(1);
 	int post = (int) ZIN0(2);
-	
+
 	float samp;
 	int classification;
-	
+
 	switch(post) {
 		case 1:		// post a line on every bad value
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
 				 classification = sc_fpclassify(samp);
-				 switch (classification) 
-				 { 
-					 case FP_INFINITE: 
-						 printf("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+				 switch (classification)
+				 {
+					 case FP_INFINITE:
+						 printf("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 						 ZXP(out) = 2;
-						 break; 
-					 case FP_NAN: 
-						 printf("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+						 break;
+					 case FP_NAN:
+						 printf("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 						 ZXP(out) = 1;
-						 break; 
+						 break;
 					 case FP_SUBNORMAL:
-						 printf("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id); 
+						 printf("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 						 ZXP(out) = 3;
 						 break;
-					 default: 
+					 default:
 						 ZXP(out) = 0;
 				 };
 			 );
@@ -153,18 +153,18 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 					};
 					unit->sameCount = 0;
 				};
-				switch (classification) 
-				{ 
-					case FP_INFINITE: 
+				switch (classification)
+				{
+					case FP_INFINITE:
 						ZXP(out) = 2;
-						break; 
-					case FP_NAN: 
+						break;
+					case FP_NAN:
 						ZXP(out) = 1;
-						break; 
+						break;
 					case FP_SUBNORMAL:
 						ZXP(out) = 3;
 						break;
-					default: 
+					default:
 						ZXP(out) = 0;
 				};
 				unit->sameCount++;
@@ -175,18 +175,18 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 			LOOP(inNumSamples,
 				 samp = ZXP(in);
 				 classification = sc_fpclassify(samp);
-				 switch (classification) 
-				 { 
-					 case FP_INFINITE: 
+				 switch (classification)
+				 {
+					 case FP_INFINITE:
 						 ZXP(out) = 2;
-						 break; 
-					 case FP_NAN: 
+						 break;
+					 case FP_NAN:
 						 ZXP(out) = 1;
-						 break; 
+						 break;
 					 case FP_SUBNORMAL:
 						 ZXP(out) = 3;
 						 break;
-					 default: 
+					 default:
 						 ZXP(out) = 0;
 				 };
 			 );
@@ -229,7 +229,7 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 PluginLoad(Test)
 {
 	ft = inTable;
-	
+
 	DefineSimpleUnit(CheckBadValues);
 }
 

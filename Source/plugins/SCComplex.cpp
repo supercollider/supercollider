@@ -44,7 +44,7 @@ void init_SCComplex(InterfaceTable *ft)
 	gSine = ft->mSine;
 	gSinePhaseScale = (float)(gSineSize / twopi);
 	gSineMask = gSineSize - 1;
-	
+
 	double rPolarLUTSize2 = 1. / kPolarLUTSize2;
 	for (int i=0; i < kPolarLUTSize; ++i) {
 		double slope = (i - kPolarLUTSize2) * rPolarLUTSize2;
@@ -68,7 +68,7 @@ SCComplex SCPolar::ToComplex()
 float fhypotx(float real, float imag);
 float fhypotx(float real, float imag)
 {
-	
+
 	int32 index;
 	float absreal = fabs(real);
 	float absimag = fabs(imag);

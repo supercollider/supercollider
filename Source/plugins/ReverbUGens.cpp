@@ -5,7 +5,7 @@
 #include "SC_PlugIn.h"
 
 // gcc3.3 mathlib doesnt know these yet
-#if gccversion < 4 
+#if gccversion < 4
     #define powf pow
     #define sqrtf sqrt
 #endif
@@ -75,14 +75,14 @@ typedef struct {
     int idx;
     float* buf;
     } g_fixeddelay;
-        
+
 typedef struct {
     int size;
     float coef;
     int idx;
     float* buf;
     } g_diffuser;
-    
+
 typedef struct {
     float damping;
     float delay;
@@ -92,7 +92,7 @@ typedef struct {
 
 struct GVerb : public Unit
 {
-    float roomsize, revtime, damping, spread, inputbandwidth, drylevel, earlylevel, taillevel;    
+    float roomsize, revtime, damping, spread, inputbandwidth, drylevel, earlylevel, taillevel;
     float maxroomsize;
     float maxdelay, largestdelay;
     g_damper *inputdamper;
@@ -119,7 +119,7 @@ extern "C"
     void load(InterfaceTable *inTable);
     void FreeVerb_Ctor(FreeVerb *unit);
     void FreeVerb_next(FreeVerb *unit, int inNumSamples);
-    
+
 
     void GVerb_Ctor(GVerb *unit);
     void GVerb_Dtor(GVerb *unit);
@@ -182,7 +182,7 @@ void FreeVerb_Ctor(FreeVerb *unit)
     for(int i=0; i<1116; i++) unit->dline9[i] = 0.0;
     for(int i=0; i<1188; i++) unit->dline10[i] = 0.0;
     for(int i=0; i<1356; i++) unit->dline11[i] = 0.0;
-    
+
     FreeVerb_next(unit, 1);
 }
 
@@ -504,7 +504,7 @@ void FreeVerb2_Ctor(FreeVerb2 *unit)
     unit->iota21 = 0;
     unit->iota22 = 0;
     unit->iota23 = 0;
-    
+
     unit->R0_0 = 0.0;
     unit->R1_0 = 0.0;
     unit->R2_0 = 0.0;
@@ -580,7 +580,7 @@ void FreeVerb2_Ctor(FreeVerb2 *unit)
     for(int i=0; i<1139; i++) unit->dline21[i] = 0.0;
     for(int i=0; i<1211; i++) unit->dline22[i] = 0.0;
     for(int i=0; i<1379; i++) unit->dline23[i] = 0.0;
-    
+
     FreeVerb2_next(unit, 1);
 }
 
@@ -1003,7 +1003,7 @@ void free_diffuser(GVerb *unit, g_diffuser *p){
     RTFree(unit->mWorld, p->buf);
     RTFree(unit->mWorld, p);
     }
-    
+
 g_fixeddelay *make_fixeddelay(GVerb *unit, int size, int maxsize){
     g_fixeddelay *p;
     p = (g_fixeddelay*)RTAlloc(unit->mWorld, sizeof(g_fixeddelay));
@@ -1013,12 +1013,12 @@ g_fixeddelay *make_fixeddelay(GVerb *unit, int size, int maxsize){
 	Clear(maxsize, p->buf);
 	return(p);
     }
-    
+
 void free_fixeddelay(GVerb *unit, g_fixeddelay *p){
     RTFree(unit->mWorld, p->buf);
     RTFree(unit->mWorld, p);
     }
-            
+
 static inline float diffuser_do(GVerb *unit, g_diffuser *p, float x){
     float y,w;
     w = x - p->buf[p->idx] * p->coef;
@@ -1026,7 +1026,7 @@ static inline float diffuser_do(GVerb *unit, g_diffuser *p, float x){
     y = p->buf[p->idx] + w * p->coef;
     p->buf[p->idx] = zapgremlins(w);
     p->idx = (p->idx + 1) % p->size;
-    return(y);	
+    return(y);
     }
 
 static inline float fixeddelay_read(GVerb *unit, g_fixeddelay *p, int n){
@@ -1034,17 +1034,17 @@ static inline float fixeddelay_read(GVerb *unit, g_fixeddelay *p, int n){
     i = (p->idx - n + p->size) % p->size;
     return(p->buf[i]);
     }
-    
+
 static inline void fixeddelay_write(GVerb *unit, g_fixeddelay *p, float x){
     p->buf[p->idx] = zapgremlins(x);
     p->idx = (p->idx + 1) % p->size;
     }
 
-static inline void damper_set(GVerb *unit, g_damper *p, float damping){ 
+static inline void damper_set(GVerb *unit, g_damper *p, float damping){
     p->damping = damping;
-    } 
+    }
 
-static inline float damper_do(GVerb *unit, g_damper *p, float x){ 
+static inline float damper_do(GVerb *unit, g_damper *p, float x){
     float y;
     y = x*(1.0-p->damping) + p->delay*p->damping;
     p->delay = zapgremlins(y);
@@ -1096,7 +1096,7 @@ static inline void gverb_set_roomsize(GVerb *unit, const float a)
     unit->tapgains[i] = pow(unit->alpha, unit->taps[i]);
     unit->tapgainslopes[i] = CALCSLOPE(unit->tapgains[i], oldtapgain);
   }
- 
+
 }
 
 static inline void gverb_set_revtime(GVerb *unit, float a)
@@ -1170,15 +1170,15 @@ void GVerb_Ctor(GVerb *unit)
     unit->drylevel = 0.; //IN0(6);
     unit->earlylevel = 0.; // IN0(7);
     unit->taillevel = 0.; //IN0(8);
-    
+
     float maxroomsize = unit->maxroomsize = IN0(9);
-    
+
     float maxdelay = unit->maxdelay = SAMPLERATE*maxroomsize/340.f;
     float largestdelay = unit->largestdelay = SAMPLERATE*roomsize/340.f;
-    
+
     // make the inputdamper
     unit->inputdamper = make_damper(unit, 1. - inputbandwidth);
-    
+
     //float ga = powf(10.f, -60.f/20.f);
     float ga = 0.001f;
     float n = SAMPLERATE * revtime;
@@ -1198,7 +1198,7 @@ void GVerb_Ctor(GVerb *unit)
 	unit->fdndels[i] = make_fixeddelay(unit, (int)unit->fdnlens[i], (int)maxdelay+1000);
 	unit->fdndamps[i] = make_damper(unit, damping); // damping is the same as fdndamping in source
 	}
-     
+
     // diffuser section
     float diffscale = (float)unit->fdnlens[3]/(210. + 159. + 562. + 410.);
     float spread1 = spread;
@@ -1234,7 +1234,7 @@ void GVerb_Ctor(GVerb *unit)
     unit->rdifs[1] = make_diffuser(unit, f_round(diffscale * cc), 0.75);
     unit->rdifs[2] = make_diffuser(unit, f_round(diffscale * dd), 0.625);
     unit->rdifs[3] = make_diffuser(unit, f_round(diffscale * e), 0.625);
-    
+
     unit->taps[0] = 5 + (int)(0.410 * largestdelay);
     unit->taps[1] = 5 + (int)(0.300 * largestdelay);
     unit->taps[2] = 5 + (int)(0.155 * largestdelay);
@@ -1243,17 +1243,17 @@ void GVerb_Ctor(GVerb *unit)
     for(int i = 0; i < FDNORDER; i++) {
 	unit->tapgains[i] = pow(alpha,(double)unit->taps[i]);
 	}
-    
+
     unit->tapdelay = make_fixeddelay(unit, 44000, 44000);
-    
+
     // init the slope values
     unit->earlylevelslope = unit->drylevelslope = unit->taillevelslope = 0.f;
     ClearUnitOutputs(unit, 1);
     }
-    
+
 void GVerb_Dtor(GVerb *unit)
 {
-   free_damper(unit, unit->inputdamper); 
+   free_damper(unit, unit->inputdamper);
    free_fixeddelay(unit, unit->tapdelay);
 
    for(int i = 0; i < FDNORDER; i++){
@@ -1280,7 +1280,7 @@ void GVerb_next(GVerb* unit, int inNumSamples)
     float earlylevelslope, taillevelslope, drylevelslope;
     float* fdngainslopes;
     float* tapgainslopes;
-    g_diffuser** ldifs = unit->ldifs; 
+    g_diffuser** ldifs = unit->ldifs;
     g_diffuser** rdifs = unit->rdifs;
     float* u = unit->u;
     float* f = unit->f;
@@ -1288,12 +1288,12 @@ void GVerb_next(GVerb* unit, int inNumSamples)
     g_damper* inputdamper = unit->inputdamper;
     float* tapgains = unit->tapgains;
     g_fixeddelay* tapdelay = unit->tapdelay;
-    int* taps = unit->taps;   
+    int* taps = unit->taps;
     g_damper** fdndamps = unit->fdndamps;
     g_fixeddelay** fdndels = unit->fdndels;
     float* fdngains = unit->fdngains;
     int* fdnlens = unit->fdnlens;
-    
+
     if((roomsize != unit->roomsize) || (revtime != unit->revtime) || (damping != unit->damping) ||
 	    (inputbandwidth != unit->inputbandwidth) || (drylevel != unit->drylevel) ||
 	    (earlylevel != unit->earlylevel) || (taillevel != unit->taillevel)) {
@@ -1306,32 +1306,32 @@ void GVerb_next(GVerb* unit, int inNumSamples)
 	earlylevel = gverb_set_earlylevel(unit, earlylevel);
 	taillevel = gverb_set_taillevel(unit, taillevel);
 	}
-    
+
     earlylevelslope = unit->earlylevelslope;
     taillevelslope = unit->taillevelslope;
     drylevelslope = unit->drylevelslope;
     fdngainslopes = unit->fdngainslopes;
     tapgainslopes = unit->tapgainslopes;
 
-    
+
     for(int i = 0; i < inNumSamples; i++){
 	float sign, sum, lsum, rsum, x;
-	if(sc_isnan(in[i])) x = 0.f; else x = in[i];	
+	if(sc_isnan(in[i])) x = 0.f; else x = in[i];
 	sum = 0.f;
 	sign = 1.f;
-	
+
 	float z = damper_do(unit, inputdamper, x);
 	z = diffuser_do(unit, ldifs[0], z);
 
 	for(int j = 0; j < FDNORDER; j++) {
 	    u[j] = tapgains[j] * fixeddelay_read(unit, tapdelay, taps[j]);
 	}
-	
+
 	fixeddelay_write(unit, tapdelay, z);
 
 	for(int j = 0; j < FDNORDER; j++) {
 	    d[j] = damper_do(unit, fdndamps[j],
-			    fdngains[j] * 
+			    fdngains[j] *
 				fixeddelay_read(unit, fdndels[j], fdnlens[j]));
 	}
 
@@ -1343,13 +1343,13 @@ void GVerb_next(GVerb* unit, int inNumSamples)
 	sum += x * earlylevel;
 	lsum = sum;
 	rsum = sum;
-	
+
 	gverb_fdnmatrix(d, f);
 
 	for(int j = 0; j < FDNORDER; j++) {
 	    fixeddelay_write(unit, fdndels[j], u[j] + f[j]);
 	}
-	
+
 	lsum = diffuser_do(unit, ldifs[1],lsum);
 	lsum = diffuser_do(unit, ldifs[2],lsum);
 	lsum = diffuser_do(unit, ldifs[3],lsum);
@@ -1357,10 +1357,10 @@ void GVerb_next(GVerb* unit, int inNumSamples)
 	rsum = diffuser_do(unit, rdifs[2],rsum);
 	rsum = diffuser_do(unit, rdifs[3],rsum);
 
-	x = x * drylevel; 
-	outl[i] = lsum + x;	
+	x = x * drylevel;
+	outl[i] = lsum + x;
 	outr[i] = rsum + x;
-	
+
 	drylevel += drylevelslope;
 	taillevel += taillevelslope;
 	earlylevel += earlylevelslope;
@@ -1369,7 +1369,7 @@ void GVerb_next(GVerb* unit, int inNumSamples)
 	    tapgains[j] += tapgainslopes[j];
 	    }
 	}
-	
+
     // store vals back to the struct
     for(int i = 0; i < FDNORDER; i++){
 	unit->ldifs[i] = ldifs[i];
@@ -1397,6 +1397,6 @@ PluginLoad(Reverb)
 	ft = inTable;
 	DefineSimpleUnit(FreeVerb);
 	DefineSimpleUnit(FreeVerb2);
-	DefineDtorUnit(GVerb);	
+	DefineDtorUnit(GVerb);
 }
 

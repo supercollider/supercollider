@@ -2,13 +2,13 @@
 PlayerPool : PlayerSocket { 	// implements selectable interface
 
 	var <>selected, <>list, <>autostart=false;
-	
+
 	*new { arg list,selected=0,env,round=0.0,rate=\audio,numChannels=2;
 		list = loadDocument(list);
 		^super.prNew(rate,
 				//with patches they still don't know
 				numChannels ?? {list.maxValue({ arg it; it.numChannels })},
-				round, 
+				round,
 				env ?? {Env.new([ 0, 1.0, 0 ], [ 0.01, 0.7 ], -4, 1, nil)})
 			.list_(list)
 			.select(selected)
@@ -22,7 +22,7 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 		if(this.isPlaying,{
 			this.preparePlayer(player);
 		});
-		this.changed(\players);	
+		this.changed(\players);
 	}
 
 	select { arg i;
@@ -37,12 +37,12 @@ PlayerPool : PlayerSocket { 	// implements selectable interface
 		})
 	}
 	selectedItem { ^list.at(selected) }
-	
+
 	selectedAsString {
 		^list.at(selected).asString
 	}
 	maxIndex { ^list.size }
-		
+
 	choose {
 		this.select(list.size.rand)
 	}

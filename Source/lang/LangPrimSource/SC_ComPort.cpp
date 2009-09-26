@@ -69,7 +69,7 @@ void dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
 	char *data;
-	
+
 	if (inData[0]) {
 		char *addr = inData;
 		data = OSCstrskip(inData);
@@ -82,9 +82,9 @@ void dumpOSCmsg(int inSize, char* inData)
 		data = inData + 4;
 		size = inSize - 4;
 	}
-	
+
 	sc_msg_iter msg(size, data);
-				
+
 	while (msg.remain())
 	{
 		char c = msg.nextTag('i');
@@ -127,15 +127,15 @@ void hexdump(int size, char* data)
 		{
 			printf("%4d   ", i);
 		}
-		if (i >= size) 
+		if (i >= size)
 		{
 			printf("   ");
 			ascii[i&15] = 0;
 		}
-		else 
+		else
 		{
 			printf("%02x ", (unsigned char)data[i] & 255);
-			
+
 			if (isprint(data[i])) ascii[i&15] = data[i];
 			else ascii[i&15] = '.';
 		}
@@ -156,7 +156,7 @@ void dumpOSC(int mode, int size, char* inData)
 {
 	if (mode & 1)
 	{
-		if (strcmp(inData, "#bundle") == 0) 
+		if (strcmp(inData, "#bundle") == 0)
 		{
 			char* data = inData + 8;
 			printf("[ \"#bundle\", %lld, ", OSCtime(data));
@@ -172,13 +172,13 @@ void dumpOSC(int mode, int size, char* inData)
 			}
 			printf("\n]\n");
 		}
-		else 
+		else
 		{
 			dumpOSCmsg(size, inData);
 			printf("\n");
 		}
 	}
-	
+
 	if (mode & 2) hexdump(size, inData);
 }
 
@@ -205,7 +205,7 @@ SC_ComPort::~SC_ComPort()
     if (mSocket != -1) closesocket(mSocket);
 #else
     if (mSocket != -1) close(mSocket);
-#endif                  
+#endif
 }
 
 void* com_thread_func(void* arg);
@@ -225,7 +225,7 @@ void SC_CmdPort::Start()
 
 SC_UdpInPort::SC_UdpInPort(int inPortNum)
 	: SC_ComPort(inPortNum)
-{	
+{
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
 	}
@@ -260,7 +260,7 @@ SC_UdpInPort::~SC_UdpInPort()
 	if (mSocket != -1) closesocket(mSocket);
 #else
 	if (mSocket != -1) close(mSocket);
-#endif                  
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,11 +284,11 @@ int32 Hash(ReplyAddress *inReplyAddress)
 	int32 hash;
 	int32 *word = (int32*)&inReplyAddress->mSockAddr;
 	hash = Hash(inReplyAddress->mSockAddr.sin_addr.s_addr);
-	
-	hash += inReplyAddress->mSockAddr.sin_len << 24	
+
+	hash += inReplyAddress->mSockAddr.sin_len << 24
 		| inReplyAddress->mSockAddr.sin_family << 16
 		| inReplyAddress->mSockAddr.sin_port;
-	
+
 	hash = Hash(hash);
 	return hash;
 }
@@ -312,21 +312,21 @@ void* SC_UdpInPort::Run()
 {
 	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
-	
+
 	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
-	
-	while (true) {		
+
+	while (true) {
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}
 		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 		int size = recvfrom(mSocket, buf, kTextBufSize , 0,
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
-		
+
 		if (size > 0) {
 			//dumpOSC(3, size, buf);
 			//fflush(stdout);
-			
+
 			char *data = (char*)malloc(size);
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mSize = size;
@@ -343,20 +343,20 @@ void* SC_UdpInPort::Run()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
-	: SC_ComPort(inPortNum), mConnectionAvailable(inMaxConnections), 
+	: SC_ComPort(inPortNum), mConnectionAvailable(inMaxConnections),
         mBacklog(inBacklog)
 {
-    
+
     if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         throw std::runtime_error("failed to create tcp socket\n");
     }
     //setsockopt(mSocket, SOL_SOCKET, TCP_NODELAY);
-    
+
     bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
     mBindSockAddr.sin_family = AF_INET;
     mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     mBindSockAddr.sin_port = htons(mPortNum);
-    
+
     if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
     {
         throw std::runtime_error("unable to bind tcp socket\n");
@@ -365,7 +365,7 @@ SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
     {
         throw std::runtime_error("unable to listen tcp socket\n");
     }
-    
+
     Start();
 }
 
@@ -416,7 +416,7 @@ SC_TcpConnectionPort::~SC_TcpConnectionPort()
 	closesocket(mSocket);
 #else
 	close(mSocket);
-#endif                  
+#endif
     mParent->ConnectionTerminated();
 }
 
@@ -439,21 +439,21 @@ void* SC_TcpConnectionPort::Run()
 	// wait for login message
 	int32 size;
 	int32 msglen;
-		
-	while (true) {		
+
+	while (true) {
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}
 		size = recvall(mSocket, &msglen, sizeof(int32));
 		if (size < 0) goto leave;
-		
+
 		// sk: msglen is in network byte order
 		msglen = ntohl(msglen);
-		
+
 		char *data = (char*)malloc(msglen);
 		size = recvall(mSocket, data, msglen);
 		if (size < msglen) goto leave;
-		
+
 		packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 		packet->mSize = msglen;
 		packet->mData = data;
@@ -470,7 +470,7 @@ leave:
 
 #ifndef SC_WIN32
 # include <sys/select.h>
-#endif 
+#endif
 //SC_WIN32
 
 SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, void *clientData)
@@ -487,7 +487,7 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 		mReplySockAddr.sin_addr.s_addr = htonl(INADDR_NONE);
 		mReplySockAddr.sin_port = htons(0);
 	}
-	
+
 #if HAVE_SO_NOSIGPIPE
 	int sockopt = 1;
 	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt, sizeof(sockopt));
@@ -517,14 +517,14 @@ void* SC_TcpClientPort::Run()
 {
 	OSC_Packet *packet = 0;
 	int32 size;
-	int32 msglen;	
+	int32 msglen;
 
 	int cmdfd = mCmdFifo[0];
 	int sockfd = mSocket;
 	int nfds = sc_max(cmdfd, sockfd) + 1;
 
 	bool cmdClose = false;
-	
+
 	pthread_detach(mThread);
 
 	while (true) {
@@ -533,7 +533,7 @@ void* SC_TcpClientPort::Run()
 		FD_SET(cmdfd, &rfds);
 		FD_SET(sockfd, &rfds);
 
-		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds))) 
+		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds)))
 			goto leave;
 
 		if (!FD_ISSET(sockfd, &rfds))
@@ -546,16 +546,16 @@ void* SC_TcpClientPort::Run()
 
 		size = recvall(sockfd, &msglen, sizeof(int32));
 		if (size < (int32)sizeof(int32)) goto leave;
-		
+
 		// msglen is in network byte order
 		msglen = ntohl(msglen);
-		
+
 		packet->mData = (char*)malloc(msglen);
 		if (!packet->mData) goto leave;
-		
+
 		size = recvall(sockfd, packet->mData, msglen);
 		if (size < msglen) goto leave;
-		
+
 		memcpy(&packet->mReplyAddr.mSockAddr, &mReplySockAddr, sizeof(mReplySockAddr));
 		packet->mReplyAddr.mSockAddrLen = sizeof(mReplySockAddr);
 		packet->mReplyAddr.mSocket = sockfd;
@@ -655,7 +655,7 @@ int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, 
 int sendall(int socket, const void *msg, size_t len)
 {
 	size_t total = 0;
-	while (total < len) 
+	while (total < len)
 	{
 #if HAVE_MSG_NOSIGNAL
 		int flags = MSG_NOSIGNAL;

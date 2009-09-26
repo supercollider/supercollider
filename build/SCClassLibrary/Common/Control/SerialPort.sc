@@ -141,7 +141,7 @@ SerialPort
 	prCleanup{
 		if (this.isOpen) {
 			this.primCleanup;
-			allPorts.remove(this);		
+			allPorts.remove(this);
 		}
 	}
 	prPut { | byte |

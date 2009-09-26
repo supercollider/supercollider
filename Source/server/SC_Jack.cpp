@@ -175,7 +175,7 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
-    
+
 public:
     SC_JackDriver(struct World *inWorld);
 	virtual ~SC_JackDriver();
@@ -572,7 +572,7 @@ void SC_JackDriver::Run()
 		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
 			int32 *tch;
-			
+
 			// copy+touch inputs
 			tch = inTouched;
 			for (int k = 0; k < minInputs; ++k) {
@@ -587,16 +587,16 @@ void SC_JackDriver::Run()
 			// run engine
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
-			
+
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
 				float diffTimeFloor = floor(diffTime);
 				world->mSampleOffset = (int)diffTimeFloor;
 				world->mSubsampleOffset = diffTime - diffTimeFloor;
-				
+
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= world->mBufLength) world->mSampleOffset = world->mBufLength-1;
-				
+
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 			}

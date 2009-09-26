@@ -1,5 +1,5 @@
 UnaryOpFunctionProxy : UnaryOpFunction {
-	
+
 	valueFuncProxy { arg args;
 		^this.reduceFuncProxy(args)
 	}
@@ -12,8 +12,8 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 	valueArray { arg args;
 			^this.reduceFuncProxy(args)
 	}
-	
-	
+
+
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
@@ -26,7 +26,7 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
-	
+
 	// behave like a pattern
 	embedInStream { arg inval;
 		^this.value.embedInStream(inval)
@@ -36,7 +36,7 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 
 }
 BinaryOpFunctionProxy : BinaryOpFunction {
-	
+
 	valueFuncProxy { arg args;
 		^this.reduceFuncProxy(args)
 	}
@@ -50,8 +50,8 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 	valueArray { arg args;
 			^this.reduceFuncProxy(args)
 	}
-	
-	
+
+
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
@@ -64,7 +64,7 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
-	
+
 	// behave like a pattern
 	embedInStream { arg inval;
 		^this.value.embedInStream(inval)
@@ -72,7 +72,7 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 
 }
 NAryOpFunctionProxy : NAryOpFunction {
-	
+
 	reduceFuncProxy { arg args;
 		^a.reduceFuncProxy(args).performList(selector, arglist.collect(_.reduceFuncProxy(args)))
 	}
@@ -85,8 +85,8 @@ NAryOpFunctionProxy : NAryOpFunction {
 	valueArray { arg args;
 			^this.reduceFuncProxy(args)
 	}
-	
-	
+
+
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
@@ -99,7 +99,7 @@ NAryOpFunctionProxy : NAryOpFunction {
 	composeNAryOp { arg aSelector, anArgList;
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
 	}
-	
+
 	// behave like a pattern
 	embedInStream { arg inval;
 		^this.value.embedInStream(inval)

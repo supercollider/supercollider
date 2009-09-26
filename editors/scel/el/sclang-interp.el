@@ -180,7 +180,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   :group 'sclang-options
   :version "21.3"
   :type 'boolean)
-  
+
 (defcustom sclang-main-stop nil
   "*Call Main.stop on shutdown."
   :group 'sclang-options
@@ -659,7 +659,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 	    (setq default-directory sclang-runtime-directory))))
     (switch-to-buffer buffer)))
 
-(add-hook 'sclang-library-startup-hook 
+(add-hook 'sclang-library-startup-hook
 	  (lambda () (and sclang-show-workspace-on-startup
 			  (sclang-switch-to-workspace))))
 

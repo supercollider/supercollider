@@ -7,23 +7,23 @@ classvar fnt, fillColor, strokeColor;
 	*string { arg str;
 		^str.drawAtPoint( Point( 0, 0 ), fnt ? Font.default, fillColor ? Color.black );
 	}
-	
+
 	*stringAtPoint { arg str, point;
 		^str.drawAtPoint( point, fnt ? Font.default, fillColor ? Color.black );
 	}
-	
+
 	*stringInRect { arg str, rect;
 		^str.drawInRect( rect, fnt ? Font.default, fillColor ? Color.black );
 	}
-	
+
 	*stringCenteredIn { arg str, inRect;
 		^str.drawCenteredIn( inRect, fnt ? Font.default, fillColor ? Color.black );
 	}
-	
+
 	*stringLeftJustIn { arg str, inRect;
 		^str.drawLeftJustIn( inRect, fnt ? Font.default, fillColor ? Color.black );
 	}
-	
+
 	*stringRightJustIn { arg str, inRect;
 		^str.drawRightJustIn( inRect, fnt ? Font.default, fillColor ? Color.black );
 	}
@@ -37,7 +37,7 @@ classvar fnt, fillColor, strokeColor;
 		fillColor 	= color;
 		color.setFill;
 	}
-	
+
 	*color_ { arg color;
 		color = color ? Color.black;
 		fillColor	= color;
@@ -53,29 +53,29 @@ classvar fnt, fillColor, strokeColor;
 		this.pop;
 		^res
 	}
-	
+
 	*prReset{
 		this.color_(nil)
 	}
-	
+
 	*translate { arg x=0, y=0;
-		_Pen_Translate	
+		_Pen_Translate
 		^this.primitiveFailed
 	}
 	*scale { arg x=0, y=0;
-		_Pen_Scale	
+		_Pen_Scale
 		^this.primitiveFailed
 	}
 	*skew { arg x=0, y=0;
-		_Pen_Skew	
+		_Pen_Skew
 		^this.primitiveFailed
 	}
 	*rotate { arg angle=0, x=0, y=0;
-		_Pen_Rotate	
+		_Pen_Rotate
 		^this.primitiveFailed
 	}
 
-	
+
 	*width_ { arg width=1;
 		_Pen_SetWidth
 		^this.primitiveFailed
@@ -136,7 +136,7 @@ classvar fnt, fillColor, strokeColor;
 		_Pen_SetMatrix
 		^this.primitiveFailed
 	}
-	
+
 	*strokeRect { arg rect;
 		_Pen_StrokeRect
 		^this.primitiveFailed
@@ -153,48 +153,48 @@ classvar fnt, fillColor, strokeColor;
 		_Pen_FillOval
 		^this.primitiveFailed
 	}
-	
+
 	*drawAquaButton { arg rect, type=0, down=false, on=false;
 		_Pen_DrawAquaButton
 		^this.primitiveFailed
 	}
-	
+
 	*setSmoothing { arg flag=true;
 		_Pen_SetSmoothing
 		^this.primitiveFailed
 	}
-	
+
 	//ADDITIONS:
-	
+
 	*fillStroke {
 		this.draw(3);
 	}
-	
+
 	*clearRect {arg aRect=nil;
 		_Pen_ClearRect
 		^this.primitiveFailed
 	}
-	
+
 	*arcTo { arg point1, point2, radius;
 		_Pen_AddArcToPoint
 		^this.primitiveFailed
 	}
-	
+
 	*curveTo { arg point, cpoint1, cpoint2;
 		_Pen_AddCubicCurve
 		^this.primitiveFailed
 	}
-	
+
 	*quadCurveTo { arg point, cpoint1;
 		_Pen_AddQuadCurve
 		^this.primitiveFailed
 	}
-	
+
 	*alpha_ {arg opacity;
 		_Pen_SetAlpha
 		^this.primitiveFailed
 	}
-	
+
 	/*
 	different blend modes:
 	OS X 10.4 and > Only
@@ -215,7 +215,7 @@ classvar fnt, fillColor, strokeColor;
 	13 - Saturation
 	14 - Color
 	15 - Luminosity
-	
+
 	OS 10.5 and > Only
 	--------------------
 	16 - Clear
@@ -234,69 +234,69 @@ classvar fnt, fillColor, strokeColor;
 		_Pen_SetBlendMode
 		^this.primitiveFailed
 	}
-	
+
 	*setShadow {arg offsetPoint=Point(2,2), blur=0.5, color=Color.black;
 		this.prSetShadow(offsetPoint, blur, color);
 	}
-	
+
 	*prSetShadow {arg offsetPoint, blur, color;
 		_Pen_SetShadow
 		^this.primitiveFailed
 	}
-	
-	*beginTransparencyLayer{		
+
+	*beginTransparencyLayer{
 		_Pen_BeginTLayer
 		^this.primitiveFailed
 	}
-	
+
 	*endTransparencyLayer{ // will work only for Mac Os X >= 10.3 - does nothing for others
 		_Pen_EndTLayer
 		^this.primitiveFailed
 	}
-	
+
 	*draw {arg option=0;// 0 = fill, 1 = eofill, 2 = stroke, 3 = fillstroke, 4 = eofillstroke
 		_Pen_DrawPath
 		^this.primitiveFailed
 	}
-	
+
 	*joinStyle_ { arg style=0; // 0 = miter, 1 = round, 2 = bevel
 		_Pen_LineJoin
 		^this.primitiveFailed
 	}
-	
+
 	*capStyle_ { arg style=0; // 0 = butt, 1 = round, 2 = square
 		_Pen_LineCap
 		^this.primitiveFailed
 	}
-	
+
 	*lineDash_ {arg pattern; // should be a FloatArray
 		_Pen_LineDash
 		^this.primitiveFailed
 	}
-	
+
 	*addOval { arg rect;
 		_Pen_AddOval
 		^this.primitiveFailed
 	}
-	
+
 	*fillAxialGradient {arg startPoint, endPoint, color0, color1;
 		this.prFillAxialGradient(startPoint, endPoint, color0, color1);
 	}
-	
+
 	*fillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
 		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1);
 	}
-	
+
 	*prFillAxialGradient {arg startPoint, endPoint, color0, color1;
 		_Pen_DrawAxialGradient
 		^this.primitiveFailed
 	}
-	
+
 	*prFillRadialGradient {arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, color0, color1;
 		_Pen_DrawRadialGradient
 		^this.primitiveFailed
 	}
-	
+
 	//PRIVATE:
 	*push {
 		_Pen_Push

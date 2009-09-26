@@ -10,7 +10,7 @@
 		//	path = this.prOpenDialog(prompt);
 		//	if (path.notNil, { successFunc.value(path) },{ cancelFunc.value(path) });
 	}
-	
+
 	*saveDialog { arg prompt, defaultName, successFunc, cancelFunc;
 		var gui;
 		gui = GUI.current;
@@ -19,5 +19,5 @@
 			GUI.use( gui, { successFunc.value( args )})}, {
 			if(cancelFunc.notNil){GUI.use( gui, cancelFunc )}}
 		);
-	}	
+	}
 }

@@ -1,7 +1,7 @@
 
 + Main {
 	// a package is either a quark or a folder in SCClassLibrary or extensions folders
-	
+
 	// a class is in a 'package' determined by where its Class file is
 	// all folders in class library :
 		// Common
@@ -17,14 +17,14 @@
 
 	// [ name -> folderPath, name -> folderPath ... ]
 	*packages {
-		
+
 		var platform,scClassLibrary,looseFiles;
 		var packages,f;
 
 		// cache
 		packages = Library.at(Quarks,\packages);
 		if(packages.notNil,{ ^packages });
-		
+
 		platform = thisProcess.platform;
 
 		f = { arg dir;
@@ -41,7 +41,7 @@
 			packages
 		};
 
-		packages = 
+		packages =
 			(f.value(platform.classLibraryDir)
 
 			++
@@ -122,7 +122,7 @@
 	// of the classes you defined, what packages are the superclasses in ?
 	// of the extension methods you defined, what packages are the super classes in ?
 	/*	checkDependencies {
-		
+
 	}*/
 }
 
@@ -133,7 +133,7 @@
 		var myPath,end,package;
 		package = Main.packages.detect({ |pk| pk.key == packageName });
 		if(package.isNil,{ Error("Package not found:"+packageName).throw });
-		
+
 		myPath = package.value;
 		end = myPath.size-1;
 		^Class.allClasses.select({ |class|

@@ -158,7 +158,7 @@ Crucial {
 			}
 
 			so that command-r will pop open this menu
-			
+
 			call Crucial-initLibraryItems first
 		*/
 
@@ -200,7 +200,7 @@ Crucial {
 		},{
 			ServerLog.stop;
 		},false,minWidth: 250);
-		
+
 		ActionButton(menu.startRow,"ServerLog.report",{
 			ServerLog.gui(tail:500);
 		},minWidth: 250);
@@ -217,7 +217,7 @@ Crucial {
 		ActionButton(menu.startRow,"Gui debugger",{
 			Library.at(\menuItems,\tools,\guiDebugger).value;
 		},minWidth: 250);
-		
+
 		ActionButton(menu.startRow,"Annotated Nodes",{
 			Library.at(\menuItems,\tools,'Annotated Nodes Report').value;		},minWidth: 250);
 
@@ -284,7 +284,7 @@ Crucial {
 						layout.flow({ |f|
 							var ann;
 							ann = BusPool.getAnnotations(bus);
-							
+
 							if(ann.notNil,{
 								ann.keysValuesDo({ |client,name|
 									f.startRow;
@@ -319,7 +319,7 @@ Crucial {
 			})
 		});
 		Library.put(\menuItems,\tools,\guiDebugger,{
-			var g;		
+			var g;
 			CXMenu.newWith(
 				GUI.window.allWindows.collect({ |w|
 					w.name -> {
@@ -332,7 +332,7 @@ Crucial {
 					}
 				})
 			).gui;
-			
+
 			g = { arg view,f,indent=0;
 					f.startRow;
 					GUI.staticText.new(f,10@17).background_(Color.clear);
@@ -355,11 +355,11 @@ Crucial {
 							InspectorLink.icon(view,f);
 						},{
 							InspectorLink(view,f);
-						}); 
+						});
 						x = view.bounds.asString.gui(f);
-						if(view.respondsTo(\parent) 
+						if(view.respondsTo(\parent)
 							and: {view.parent.notNil}
-							and: {view.parent.respondsTo('absoluteBounds')} 
+							and: {view.parent.respondsTo('absoluteBounds')}
 							and: {view.parent.absoluteBounds.containsRect(view.absoluteBounds).not},{
 							x.background_(Color.red);
 							"View exceeds parent bounds !".gui(f);

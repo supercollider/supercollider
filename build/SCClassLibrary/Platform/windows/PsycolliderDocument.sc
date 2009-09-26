@@ -30,4 +30,3 @@ PsycolliderDocument : Document {
 	*postColor_ {
 	}
 }
-                    

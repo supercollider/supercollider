@@ -22,7 +22,7 @@
 
 
 #include "FFT_UGens.h"
-	
+
 
 extern "C"
 {
@@ -70,35 +70,35 @@ void PV_ConformalMap_next(PV_Unit *unit, int inNumSamples)
 	PV_GET_BUF
 
 	SCComplexBuf *p = ToComplexApx(buf);
-	
+
 	float real2 = ZIN0(1);
 	float imag2 = ZIN0(2);
-	
+
 	for (int i=0; i<numbins; ++i) {
 		float real1 = p->bin[i].real;
 		float imag1 = p->bin[i].imag;
-	
+
 		//apply conformal map z-> z-a/(1-za*) where z is the existing complex number in the bin and a is defined by inputs 1 and 2
 		float numr= real1-real2;
 		float numi= imag1-imag2;
 		float denomr= 1- (real1*real2+imag1*imag2);
 		float denomi= (real1*imag2- real2*imag1);
-		
+
 		numr= numr*denomr+numi*denomi;
-		numi= numi*denomr-numr*denomi; 
-		
+		numi= numi*denomr-numr*denomi;
+
 		//squared modulus
 		denomr= denomr*denomr+denomi*denomi;
-		
+
 		//avoid possible divide by zero
 		if(denomr<0.001) denomr=0.001;
 		denomr=1.0/denomr;
-						
+
 		p->bin[i].real = numr*denomr;
 		p->bin[i].imag = numi*denomr;
 	}
-	
-}	
+
+}
 
 
 #define DefinePVUnit(name) \

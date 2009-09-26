@@ -21,10 +21,10 @@
 //----------------------------------------------------------------------------//
 // Ran088: L'Ecuyer's 1996 three-component Tausworthe generator "taus88"
 //----------------------------------------------------------------------------//
-// 
+//
 // Returns an integer random number uniformly distributed within [0,4294967295]
 //
-// The period length is approximately 2^88 (which is 3*10^26). 
+// The period length is approximately 2^88 (which is 3*10^26).
 // This generator is very fast and passes all standard statistical tests.
 //
 // Reference:
@@ -38,7 +38,7 @@
 
 //----------------------------------------------------------------------------//
 // I chose this random number generator for the following reasons:
-//		fast. 
+//		fast.
 //		easier and faster to seed than other high quality rng's such as Mersenne Twister.
 //		the internal state is only 12 bytes.
 //		the period is long enough for music/audio.
@@ -55,17 +55,17 @@
 #include "Hash.h"
 #include <math.h>
 
-struct RGen 
+struct RGen
 {
 	void init(uint32 seed);
-	
+
 	uint32 trand();
 
 	int32 irand(int32 scale);
 	int32 irand2(int32 scale);
 	int32 ilinrand(int32 scale);
 	int32 ibilinrand(int32 scale);
-	
+
 	float fcoin();
 	float frand();
 	float frand2();
@@ -79,27 +79,27 @@ struct RGen
 	double exprand(double scale);
 	double biexprand(double scale);
 	double sum3rand(double scale);
-	
+
 	uint32 s1, s2, s3;		// random generator state
 };
 
 inline void RGen::init(uint32 seed)
-{	
+{
 	// humans tend to use small seeds - mess up the bits
 	seed = (uint32)Hash((int)seed);
-	
+
 	// initialize seeds using the given seed value taking care of
 	// the requirements. The constants below are arbitrary otherwise
 	s1 = 1243598713U ^ seed; if (s1 <  2) s1 = 1243598713U;
 	s2 = 3093459404U ^ seed; if (s2 <  8) s2 = 3093459404U;
-	s3 = 1821928721U ^ seed; if (s3 < 16) s3 = 1821928721U;	
+	s3 = 1821928721U ^ seed; if (s3 < 16) s3 = 1821928721U;
 }
 
 inline uint32 trand( uint32& s1, uint32& s2, uint32& s3 )
 {
-	// This function is provided for speed in inner loops where the 
+	// This function is provided for speed in inner loops where the
 	// state variables are loaded into registers.
-	// Thus updating the instance variables can 
+	// Thus updating the instance variables can
 	// be postponed until the end of the loop.
 	s1 = ((s1 &  -2) << 12) ^ (((s1 << 13) ^  s1) >> 19);
 	s2 = ((s2 &  -8) <<  4) ^ (((s2 <<  2) ^  s2) >> 25);
@@ -124,7 +124,7 @@ inline double RGen::drand()
 #else
 	union { struct { uint32 lo, hi; } i; double f; } du;
 #endif
-	du.i.hi = 0x41300000; 
+	du.i.hi = 0x41300000;
 	du.i.lo = trand();
 	return du.f - 1048576.;
 }
@@ -239,7 +239,7 @@ inline double RGen::sum3rand(double scale)
 inline double drand( uint32& s1, uint32& s2, uint32& s3 )
 {
 	union { struct { uint32 hi, lo; } i; double f; } u;
-	u.i.hi = 0x41300000; 
+	u.i.hi = 0x41300000;
 	u.i.lo = trand(s1,s2,s3);
 	return u.f - 1048576.;
 }

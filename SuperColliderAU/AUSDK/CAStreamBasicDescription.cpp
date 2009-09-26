@@ -1,12 +1,12 @@
 /*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
+
+	Disclaimer: IMPORTANT:  This Apple software is supplied to you by
 			Apple Inc. ("Apple") in consideration of your agreement to the
 			following terms, and your use, installation, modification or
 			redistribution of this Apple software constitutes acceptance of these
 			terms.  If you do not agree with these terms, please do not use,
 			install, modify or redistribute this Apple software.
-			
+
 			In consideration of your agreement to abide by the following terms, and
 			subject to these terms, Apple grants you a personal, non-exclusive
 			license, under Apple's copyrights in this original Apple software (the
@@ -14,21 +14,21 @@
 			Software, with or without modifications, in source and/or binary forms;
 			provided that if you redistribute the Apple Software in its entirety and
 			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
+			text and disclaimers in all such redistributions of the Apple Software.
+			Neither the name, trademarks, service marks or logos of Apple Inc.
 			may be used to endorse or promote products derived from the Apple
 			Software without specific prior written permission from Apple.  Except
 			as expressly stated in this notice, no other rights or licenses, express
 			or implied, are granted by Apple herein, including but not limited to
 			any patent rights that may be infringed by your derivative works or by
 			other works in which the Apple Software may be incorporated.
-			
+
 			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
 			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
 			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
 			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
 			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
+
 			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
 			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -40,7 +40,7 @@
 */
 /*=============================================================================
 	CAStreamBasicDescription.cpp
- 
+
 =============================================================================*/
 
 #include "CAStreamBasicDescription.h"
@@ -82,15 +82,15 @@ void CAStreamBasicDescription::PrintFormat2(FILE *f, const char *indent, const c
 	char formatID[5];
 	*(UInt32 *)formatID = CFSwapInt32HostToBig(mFormatID);
 	formatID[4] = '\0';
-	fprintf(f, "%2d ch, %6.0f Hz, '%-4.4s' (0x%08X) ",		
+	fprintf(f, "%2d ch, %6.0f Hz, '%-4.4s' (0x%08X) ",
 				(int)NumberChannels(), mSampleRate, formatID,
 				(int)mFormatFlags);
 	if (mFormatID == kAudioFormatLinearPCM) {
 		bool isInt = !(mFormatFlags & kLinearPCMFormatFlagIsFloat);
 		int wordSize = SampleWordSize();
-		const char *endian = (wordSize > 1) ? 
+		const char *endian = (wordSize > 1) ?
 			((mFormatFlags & kLinearPCMFormatFlagIsBigEndian) ? " big-endian" : " little-endian" ) : "";
-		const char *sign = isInt ? 
+		const char *sign = isInt ?
 			((mFormatFlags & kLinearPCMFormatFlagIsSignedInteger) ? " signed" : " unsigned") : "";
 		const char *floatInt = isInt ? "integer" : "float";
 		char packed[32];
@@ -105,9 +105,9 @@ void CAStreamBasicDescription::PrintFormat2(FILE *f, const char *indent, const c
 			((mFormatFlags & kLinearPCMFormatFlagIsAlignedHigh) ? " high-aligned" : " low-aligned") : "";
 		const char *deinter = (mFormatFlags & kAudioFormatFlagIsNonInterleaved) ? ", deinterleaved" : "";
 		const char *commaSpace = (packed[0]!='\0') || (align[0]!='\0') ? ", " : "";
-		
+
 		fprintf(f, "%d-bit%s%s %s%s%s%s%s",
-			(int)mBitsPerChannel, endian, sign, floatInt, 
+			(int)mBitsPerChannel, endian, sign, floatInt,
 			commaSpace, packed, align, deinter);
 	} else if (mFormatID == 'alac') {	//	kAudioFormatAppleLossless
 		int sourceBits = 0;
@@ -130,11 +130,11 @@ void CAStreamBasicDescription::PrintFormat2(FILE *f, const char *indent, const c
 			fprintf(f, "from %d-bit source, ", sourceBits);
 		else
 			fprintf(f, "from UNKNOWN source bit depth, ");
-			
+
 		fprintf(f, "%d frames/packet", (int)mFramesPerPacket);
 	}
 	else
-		fprintf(f, "%d bits/channel, %d bytes/packet, %d frames/packet, %d bytes/frame", 
+		fprintf(f, "%d bits/channel, %d bytes/packet, %d frames/packet, %d bytes/frame",
 			(int)mBitsPerChannel, (int)mBytesPerPacket, (int)mFramesPerPacket, (int)mBytesPerFrame);
 }
 
@@ -219,7 +219,7 @@ void	CAStreamBasicDescription::GetSimpleName(const AudioStreamBasicDescription& 
 						theEndianString = "Little Endian";
 					#endif
 				}
-				
+
 				const char* theKindString = NULL;
 				if((inDescription.mFormatFlags & kAudioFormatFlagIsFloat) != 0)
 				{
@@ -233,7 +233,7 @@ void	CAStreamBasicDescription::GetSimpleName(const AudioStreamBasicDescription& 
 				{
 					theKindString = (inAbbreviate ? "UInt" : "Unsigned Integer");
 				}
-				
+
 				const char* thePackingString = NULL;
 				if((inDescription.mFormatFlags & kAudioFormatFlagIsPacked) == 0)
 				{
@@ -246,7 +246,7 @@ void	CAStreamBasicDescription::GetSimpleName(const AudioStreamBasicDescription& 
 						thePackingString = "Low";
 					}
 				}
-				
+
 				const char* theMixabilityString = NULL;
 				if((inDescription.mFormatFlags & kIsNonMixableFlag) == 0)
 				{
@@ -256,7 +256,7 @@ void	CAStreamBasicDescription::GetSimpleName(const AudioStreamBasicDescription& 
 				{
 					theMixabilityString = "Unmixable";
 				}
-				
+
 				if(inAbbreviate)
 				{
 					if(theEndianString != NULL)
@@ -309,15 +309,15 @@ void	CAStreamBasicDescription::GetSimpleName(const AudioStreamBasicDescription& 
 				}
 			}
 			break;
-		
+
 		case kAudioFormatAC3:
 			strcpy(outName, "AC-3");
 			break;
-		
+
 		case kAudioFormat60958AC3:
 			strcpy(outName, "AC-3 for SPDIF");
 			break;
-		
+
 		default:
 			CACopy4CCToCString(outName, inDescription.mFormatID);
 			break;
@@ -344,9 +344,9 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 {
 	bool theAnswer = false;
 	bool isDone = false;
-	
+
 	//	note that if either side is 0, that field is skipped
-	
+
 	//	format ID is the first order sort
 	if((!isDone) && ((x.mFormatID != 0) && (y.mFormatID != 0)))
 	{
@@ -369,8 +369,8 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
-	
+
+
 	//  mixable is always better than non-mixable for linear PCM and should be the second order sort item
 	if((!isDone) && ((x.mFormatID == kAudioFormatLinearPCM) && (y.mFormatID == kAudioFormatLinearPCM)))
 	{
@@ -385,7 +385,7 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
+
 	//	floating point vs integer for linear PCM only
 	if((!isDone) && ((x.mFormatID == kAudioFormatLinearPCM) && (y.mFormatID == kAudioFormatLinearPCM)))
 	{
@@ -396,7 +396,7 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
+
 	//	bit depth
 	if((!isDone) && ((x.mBitsPerChannel != 0) && (y.mBitsPerChannel != 0)))
 	{
@@ -407,7 +407,7 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
+
 	//	sample rate
 	if((!isDone) && fnonzero(x.mSampleRate) && fnonzero(y.mSampleRate))
 	{
@@ -418,7 +418,7 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
+
 	//	number of channels
 	if((!isDone) && ((x.mChannelsPerFrame != 0) && (y.mChannelsPerFrame != 0)))
 	{
@@ -429,7 +429,7 @@ bool	operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescr
 			isDone = true;
 		}
 	}
-	
+
 	return theAnswer;
 }
 
@@ -437,29 +437,29 @@ static bool MatchFormatFlags(const AudioStreamBasicDescription& x, const AudioSt
 {
 	UInt32 xFlags = x.mFormatFlags;
 	UInt32 yFlags = y.mFormatFlags;
-	
+
 	// match wildcards
-	if (x.mFormatID == 0 || y.mFormatID == 0 || xFlags == 0 || yFlags == 0) 
+	if (x.mFormatID == 0 || y.mFormatID == 0 || xFlags == 0 || yFlags == 0)
 		return true;
-	
+
 	if (x.mFormatID == kAudioFormatLinearPCM)
-	{		 		
+	{
 		// knock off the all clear flag
 		xFlags = xFlags & ~kAudioFormatFlagsAreAllClear;
 		yFlags = yFlags & ~kAudioFormatFlagsAreAllClear;
-	
+
 		// if both kAudioFormatFlagIsPacked bits are set, then we don't care about the kAudioFormatFlagIsAlignedHigh bit.
 		if (xFlags & yFlags & kAudioFormatFlagIsPacked) {
 			xFlags = xFlags & ~kAudioFormatFlagIsAlignedHigh;
 			yFlags = yFlags & ~kAudioFormatFlagIsAlignedHigh;
 		}
-		
+
 		// if both kAudioFormatFlagIsFloat bits are set, then we don't care about the kAudioFormatFlagIsSignedInteger bit.
 		if (xFlags & yFlags & kAudioFormatFlagIsFloat) {
 			xFlags = xFlags & ~kAudioFormatFlagIsSignedInteger;
 			yFlags = yFlags & ~kAudioFormatFlagIsSignedInteger;
 		}
-		
+
 		//	if the bit depth is 8 bits or less and the format is packed, we don't care about endianness
 		if((x.mBitsPerChannel <= 8) && ((xFlags & kAudioFormatFlagIsPacked) == kAudioFormatFlagIsPacked))
 		{
@@ -469,7 +469,7 @@ static bool MatchFormatFlags(const AudioStreamBasicDescription& x, const AudioSt
 		{
 			yFlags = yFlags & ~kAudioFormatFlagIsBigEndian;
 		}
-		
+
 		//	if the number of channels is 0 or 1, we don't care about non-interleavedness
 		if (x.mChannelsPerFrame <= 1 && y.mChannelsPerFrame <= 1) {
 			xFlags &= ~kLinearPCMFormatFlagIsNonInterleaved;
@@ -484,31 +484,31 @@ bool	operator==(const AudioStreamBasicDescription& x, const AudioStreamBasicDesc
 	//	the semantics for equality are:
 	//		1) Values must match exactly
 	//		2) wildcard's are ignored in the comparison
-	
+
 #define MATCH(name) ((x.name) == 0 || (y.name) == 0 || (x.name) == (y.name))
-	
-	return 
+
+	return
 			//	check the sample rate
 		(fiszero(x.mSampleRate) || fiszero(y.mSampleRate) || fequal(x.mSampleRate, y.mSampleRate))
-		
+
 			//	check the format ids
 		&& MATCH(mFormatID)
-		
+
 			//	check the format flags
-		&& MatchFormatFlags(x, y)  
-			
+		&& MatchFormatFlags(x, y)
+
 			//	check the bytes per packet
-		&& MATCH(mBytesPerPacket) 
-		
+		&& MATCH(mBytesPerPacket)
+
 			//	check the frames per packet
-		&& MATCH(mFramesPerPacket) 
-		
+		&& MATCH(mFramesPerPacket)
+
 			//	check the bytes per frame
-		&& MATCH(mBytesPerFrame) 
-		
+		&& MATCH(mBytesPerFrame)
+
 			//	check the channels per frame
-		&& MATCH(mChannelsPerFrame) 
-		
+		&& MATCH(mChannelsPerFrame)
+
 			//	check the channels per frame
 		&& MATCH(mBitsPerChannel) ;
 }

@@ -28,7 +28,7 @@ typedef int socklen_t;
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
-#endif                  
+#endif
 
 #include "SC_Msg.h"
 #include "SC_Sem.h"
@@ -61,9 +61,9 @@ protected:
 public:
 	SC_ComPort(int inPortNum);
 	virtual ~SC_ComPort();
-	
+
 	int Socket() { return mSocket; }
-        
+
 	int PortNum() const { return mPortNum; }
 	int RealPortNum() const { return ntohs(mBindSockAddr.sin_port); }
 };
@@ -75,7 +75,7 @@ class SC_UdpInPort : public SC_ComPort
 protected:
 	struct sockaddr_in mReplySockAddr;
 	virtual ReplyFunc GetReplyFunc();
-	
+
 public:
 	SC_UdpInPort(int inPortNum);
 	~SC_UdpInPort();
@@ -94,12 +94,12 @@ class SC_TcpInPort : public SC_ComPort
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
-	
+
 public:
 	SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
 
         virtual void* Run();
-        
+
         void ConnectionTerminated();
 };
 
@@ -115,7 +115,7 @@ protected:
 public:
 	SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket);
         virtual ~SC_TcpConnectionPort();
-        
+
         virtual void* Run();
 };
 

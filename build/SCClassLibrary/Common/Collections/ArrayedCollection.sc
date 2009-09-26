@@ -1,7 +1,7 @@
 
 ArrayedCollection : SequenceableCollection {
-	*newClear { arg indexedSize = 0; 
-		_BasicNewClear 
+	*newClear { arg indexedSize = 0;
+		_BasicNewClear
 		^this.primitiveFailed
 		// creates a new instance with indexedSize indexable slots.
 		// the slots are filled with nil, zero or something else
@@ -9,59 +9,59 @@ ArrayedCollection : SequenceableCollection {
 		// object.
 	}
 
-	// ArrayedCollections are vectors which have a 
-	// fixed maximum capacity. 
+	// ArrayedCollections are vectors which have a
+	// fixed maximum capacity.
 
 	indexedSize { _BasicSize }
 	size { _BasicSize }
 	maxSize { _BasicMaxSize }
-		
+
 	swap { arg i, j; var temp;
 		_BasicSwap;
 		^this.primitiveFailed;
 	}
 
-	at { arg index; 
+	at { arg index;
 		_BasicAt;
 		^this.primitiveFailed;
 	}
-	clipAt { arg index; 
+	clipAt { arg index;
 		_BasicClipAt;
 		^this.primitiveFailed;
 	}
-	wrapAt { arg index; 
+	wrapAt { arg index;
 		_BasicWrapAt;
 		^this.primitiveFailed;
 	}
-	foldAt { arg index; 
+	foldAt { arg index;
 		_BasicFoldAt;
 		^this.primitiveFailed;
 	}
-	put { arg index, item; 
+	put { arg index, item;
 		_BasicPut;
 		^this.primitiveFailed;
 	}
-	clipPut { arg index, item; 
+	clipPut { arg index, item;
 		_BasicClipPut;
 		^this.primitiveFailed;
 	}
-	wrapPut { arg index, item; 
+	wrapPut { arg index, item;
 		_BasicWrapPut;
 		^this.primitiveFailed;
 	}
-	foldPut { arg index, item; 
+	foldPut { arg index, item;
 		_BasicFoldPut;
 		^this.primitiveFailed;
 	}
-	removeAt { arg index; 
+	removeAt { arg index;
 		_BasicRemoveAt;
 		^this.primitiveFailed;
 	}
-	takeAt { arg index; 
+	takeAt { arg index;
 		_BasicTakeAt;
 		^this.primitiveFailed;
 	}
-	
+
 	indexOf { arg item;
 		_ArrayIndexOf
 		^this.primitiveFailed;
@@ -77,15 +77,15 @@ ArrayedCollection : SequenceableCollection {
 		{
 			if (func.value(this[i], i)) {
 				this.takeAt(i)
-			}{ 
-				i = i + 1 
+			}{
+				i = i + 1
 			}
 		}
 	}
-			
+
 	replace { arg find, replace;
 		var index, out = [], array = this;
-		find = find.asArray; 
+		find = find.asArray;
 		replace = replace.asArray;
 		while {
 			(index = array.find(find)).notNil
@@ -96,7 +96,7 @@ ArrayedCollection : SequenceableCollection {
 		^out ++ array
 	}
 
-	// see counterparts to these in Object 
+	// see counterparts to these in Object
 	slotSize {
 		^this.size;
 	}
@@ -118,7 +118,7 @@ ArrayedCollection : SequenceableCollection {
 	setSlots { arg array;
 		this.overWrite(array)
 	}
-	
+
 	atModify { arg index, function; this.put(index, function.value(this.at(index), index)) }
 	atInc { arg index, inc=1; this.put(index, this.at(index)+inc); }
 	atDec { arg index, dec=1; this.put(index, this.at(index)-dec); }
@@ -126,63 +126,63 @@ ArrayedCollection : SequenceableCollection {
 	isArray { ^true }
 	asArray { ^this }
 
-	copyRange { arg start, end; 
+	copyRange { arg start, end;
 		// copies the fixed part of an object and the indexed slots
 		// from start to end.
 		_ObjectCopyRange;
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	copySeries { arg first, second, last; 
+	copySeries { arg first, second, last;
 		// copies elements from first to last, stepping by (second-first)
 		// copySeries(3,5,11) copies elements 3,5,7,9,11
 		// if second is nil then the step is 1.
 		// copySeries(3,nil,11) copies elements 3,4,5,6,7,8,9,10,11
 		_ObjectCopySeries;
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	putSeries { arg first, second, last, value; 
+	putSeries { arg first, second, last, value;
 		// puts value into array at indices defined by the series. see copySeries.
 		_ArrayPutSeries;
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
-	
-	add { arg item; 
+
+	add { arg item;
 		// add item to end of array.
 		// if the capacity is exceeded, this returns a new
 		// ArrayedCollection.
-		_ArrayAdd 
-		^this.primitiveFailed; 
+		_ArrayAdd
+		^this.primitiveFailed;
 	}
-	addAll { arg aCollection; 
+	addAll { arg aCollection;
 		var array;
 		_ArrayAddAll
 		array = this;
 		aCollection.asCollection.do({ arg item; array = array.add(item) }) ;
 		^array
 	}
-	putEach { arg keys, values; 
+	putEach { arg keys, values;
 		_ArrayPutEach
 		^super.putEach(keys, values)
 	}
-	extend { arg size, item; 
+	extend { arg size, item;
 		_ArrayExtend
 		^this.primitiveFailed
 	}
-	insert { arg index, item; 
+	insert { arg index, item;
 		// add item at specified index.
 		// if the capacity is exceeded, this returns a new
 		// ArrayedCollection.
 		_ArrayInsert
-		^this.primitiveFailed; 
+		^this.primitiveFailed;
 	}
 	addFirst { arg item; ^this.insert(0, item) }
 	addIfNotNil { arg item; if(item.notNil,{ ^this.add(item) }) }
-	pop { 
+	pop {
 		// remove and return last item in array
-		_ArrayPop 
-		^nil; 
+		_ArrayPop
+		^nil;
 	}
-	++ { arg anArray; 
+	++ { arg anArray;
 		// concatenate two arrays of the same type
 		// this primitive will handle all array element types
 		_ArrayCat;
@@ -202,14 +202,14 @@ ArrayedCollection : SequenceableCollection {
 	grow { arg sizeIncrease;
 		// returns an array of sufficient capacity.
 		// may return same object if it still has enough space or if sizeIncrease <= 0.
-		_ArrayGrow 
+		_ArrayGrow
 		^this.primitiveFailed
 	}
 	growClear { arg sizeIncrease;
 		// returns an array of sufficient capacity.
 		// may return same object if it still has enough space or if sizeIncrease <= 0.
 		// clears new space
-		_ArrayGrowClear 
+		_ArrayGrowClear
 		^this.primitiveFailed
 	}
 	seriesFill { arg start, step;
@@ -219,8 +219,8 @@ ArrayedCollection : SequenceableCollection {
 		});
 	}
 
-	fill { arg value; 
-		_ArrayFill 
+	fill { arg value;
+		_ArrayFill
 		^this.primitiveFailed
 		/* replaced by primitive
 		var i = 0, size;
@@ -243,7 +243,7 @@ ArrayedCollection : SequenceableCollection {
 		// special byte codes inserted by compiler for this method
 		var i=0, j=0;
 		i = this.size - 1;
-		while ({ i >= 0 },{ 
+		while ({ i >= 0 },{
 			function.value(this.at(i), j);
 			i = i - 1;
 			j = j + 1;
@@ -262,7 +262,7 @@ ArrayedCollection : SequenceableCollection {
 
 	windex {
 		_ArrayWIndex
-		^this.primitiveFailed 
+		^this.primitiveFailed
 		//		var r, sum = 0.0, index;
 		//		r = 1.0.rand;
 		//		this.detect({ arg weight, i;
@@ -283,10 +283,10 @@ ArrayedCollection : SequenceableCollection {
 		var maxItem = this.maxItem;
 		^this.collect { |el| el.linlin(minItem, maxItem, min, max) };
 	}
-	
+
 	asciiPlot {
 		// draw the waveform down the page as asterisks
-		var lo = this.minItem; 
+		var lo = this.minItem;
 		var hi = this.maxItem;
 		var scale = 80 / (hi - lo);
 		this.size.do { |i|
@@ -299,7 +299,7 @@ ArrayedCollection : SequenceableCollection {
 	perfectShuffle {
 		^this[(0 .. this.size div: 2 - 1).stutter + [0, this.size + 1 div: 2]]
 	}
-	
+
 	performInPlace { arg selector, from, to, argList;
 		^this.overWrite(this.copyRange(from, to).performList(selector, argList), from)
 	}
@@ -330,7 +330,7 @@ ArrayedCollection : SequenceableCollection {
 		^this.collect {|item| item.deepCollect(depth, function) }
 	}
 	reshapeLike { arg another, indexing=\wrapAt;
-		var index = 0;	
+		var index = 0;
 		var flat = this.flat;
 		^another.deepCollect(0x7FFFFFFF) {
 			var item = flat.perform(indexing, index);
@@ -338,7 +338,7 @@ ArrayedCollection : SequenceableCollection {
 			item;
 		};
 	}
-	
+
 	unbubble { arg depth=0, levels=1;
 		if (depth <= 0) {
 			// converts a size 1 array to the item.
@@ -346,17 +346,17 @@ ArrayedCollection : SequenceableCollection {
 			if (levels <= 1) { ^this[0] }
 			^this[0].unbubble(depth, levels-1)
 		};
-		^this.collect {|item| item.unbubble(depth-1) } 
+		^this.collect {|item| item.unbubble(depth-1) }
 	}
 	bubble { arg depth=0, levels=1;
-		if (depth <= 0) { 
+		if (depth <= 0) {
 			if (levels <= 1) { ^[this] }
 			^[this.bubble(depth,levels-1)]
 		};
-		^this.collect {|item| item.bubble(depth-1, levels) } 
+		^this.collect {|item| item.bubble(depth-1, levels) }
 	}
-	
-	
+
+
 	slice { arg ... cuts;
 		var firstCut, index, list;
 		if (cuts.size == 0) { ^this.copy };
@@ -409,16 +409,16 @@ ArrayedCollection : SequenceableCollection {
 		} {
 			dimensions = dimensions.drop(1);
 			n.do { |i|
-				var array2 = this.fillND(dimensions, function, args.put(argIndex, i)); 
+				var array2 = this.fillND(dimensions, function, args.put(argIndex, i));
 				array = array.add(array2);
 			}
 		};
 		^array
 	}
-	
+
 
 	// random distribution table
-	
+
 	asRandomTable { arg size;
 		var a=this, b;
 		if(size.isNil) { size = this.size } { a = a.resamp1(size) };
@@ -428,18 +428,18 @@ ArrayedCollection : SequenceableCollection {
         	b = b / size // rescale to 0..1
         	^b
 	}
-	
+
 	tableRand {
 		^this.blendAt((this.size - 1).asFloat.rand)
 	}
-	
+
 	// osc bundle support
-	
+
 	msgSize {
-		_NetAddr_MsgSize; 
-		^this.primitiveFailed 
+		_NetAddr_MsgSize;
+		^this.primitiveFailed
 	}
-	bundleSize { 
+	bundleSize {
 		// array of messages
 		^([nil] ++ this).prBundleSize;
 	}
@@ -455,8 +455,8 @@ ArrayedCollection : SequenceableCollection {
 	}
 
 	prBundleSize {
-		_NetAddr_BundleSize; 
-		^this.primitiveFailed 
+		_NetAddr_BundleSize;
+		^this.primitiveFailed
 	}
 	includes { |item| ^this.indexOf(item).notNil }}
 
@@ -466,7 +466,7 @@ RawArray : ArrayedCollection {
 	archiveAsObject { ^true }
 
 	rate { ^\scalar }
-	
+
 	readFromStream { |stream, method|
 		if(method.notNil) {
 			this.size.do({ |i|
@@ -481,7 +481,7 @@ RawArray : ArrayedCollection {
 Int8Array[int8] : RawArray {
 	unarchive {
 		_Unarchive
-		^this.primitiveFailed 
+		^this.primitiveFailed
 	}
 
 	readFromStream { |stream|

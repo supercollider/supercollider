@@ -70,7 +70,7 @@ void* gstate_update_func(void* arg)
 		GetKeys((BigEndianLong*)gstate->keys);
 		usleep(17000);
 	}
-	
+
 	return 0;
 }
 
@@ -85,10 +85,10 @@ void* gstate_update_func(void* arg)
 	KeyboardUGenGlobalState* gstate;
 
 	gstate = &gKeyStateGlobals;
-	
+
 	/* // "KeyState" is disabled for now, on Windows...
 	for(;;)	{
-		//GetKey((long*)gstate->keys); 
+		//GetKey((long*)gstate->keys);
 		::Sleep(17); // 17msec.
 	}
 	*/
@@ -100,7 +100,7 @@ static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
   KeyboardUGenGlobalState* gstate ;
-  Window r ;			
+  Window r ;
   struct timespec requested_time , remaining_time ;
 
   requested_time.tv_sec = 0 ;
@@ -108,16 +108,16 @@ void* gstate_update_func(void* arg)
 
   d = XOpenDisplay ( NULL ) ;
   if (!d) return 0;
-  
+
   gstate = &gKeyStateGlobals ;
-	
+
   for (;;) {
-    
+
     XQueryKeymap ( d , (char *) (gstate->keys) ) ;
 
     nanosleep ( &requested_time , &remaining_time ) ;
   }
-  
+
   return 0;
 }
 # endif
@@ -126,7 +126,7 @@ void* gstate_update_func(void* arg)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void KeyState_next(KeyState *unit, int inNumSamples)
-{	
+{
 	// minval, maxval, warp, lag
 	uint8 *keys = unit->gstate->keys;
 	int keynum = (int)ZIN0(0);
@@ -137,25 +137,25 @@ void KeyState_next(KeyState *unit, int inNumSamples)
 #endif
 	int bit = keynum & 7;
 	int val = keys[byte] & (1 << bit);
-		
+
 	float minval = ZIN0(1);
 	float maxval = ZIN0(2);
 	float lag = ZIN0(3);
 
 	float y1 = unit->m_y1;
 	float b1 = unit->m_b1;
-	
+
 	if (lag != unit->m_lag) {
 		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = val ? maxval : minval; 
+	float y0 = val ? maxval : minval;
 	ZOUT0(0) = y1 = y0 + b1 * (y1 - y0);
 	unit->m_y1 = zapgremlins(y1);
 }
 
 void KeyState_Ctor(KeyState *unit)
-{	
+{
 	SETCALC(KeyState_next);
 	unit->gstate = &gKeyStateGlobals;
 	unit->m_b1 = 0.f;
@@ -166,7 +166,7 @@ void KeyState_Ctor(KeyState *unit)
 void load(InterfaceTable *inTable)
 {
 	ft = inTable;
-	
+
 	pthread_t keybListenThread;
 	pthread_create (&keybListenThread, NULL, gstate_update_func, (void*)0);
 

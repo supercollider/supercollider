@@ -26,8 +26,8 @@
 
 typedef void (*NodeCalcFunc)(struct Node *inNode);
 
-struct Node 
-{	
+struct Node
+{
 	int32 mID;
 	int32 mHash;
 
@@ -37,7 +37,7 @@ struct Node
 
 	struct Node *mPrev, *mNext;
 	struct Group *mParent;
-	
+
 	int32 mIsGroup;
 };
 typedef struct Node Node;

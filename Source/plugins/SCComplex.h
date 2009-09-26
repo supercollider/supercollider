@@ -36,10 +36,10 @@ struct SCComplex
 
 	SCPolar ToPolar();
 	SCPolar ToPolarApx();
-	
+
 	void ToPolarInPlace();
 	void ToPolarApxInPlace();
-	
+
 	float real, imag;
 };
 
@@ -53,10 +53,10 @@ struct SCPolar
 
 	SCComplex ToComplex();
 	SCComplex ToComplexApx();
-	
+
 	void ToComplexInPlace();
 	void ToComplexApxInPlace();
-	
+
 	float mag, phase;
 };
 
@@ -76,7 +76,7 @@ inline SCComplex operator-(float a, SCComplex b) { return SCComplex(a - b.real, 
 inline SCComplex operator-=(SCComplex a, SCComplex b) { a.real -= b.real, a.imag -= b.imag; return a; }
 inline SCComplex operator-=(SCComplex a, float b) { a.real -= b; return a; }
 
-inline SCComplex operator*(SCComplex a, SCComplex b) 
+inline SCComplex operator*(SCComplex a, SCComplex b)
 {
 	return SCComplex(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real);
 }
@@ -91,7 +91,7 @@ inline SCComplex operator*(float a, SCComplex b)
 	return SCComplex(b.real * a, b.imag * a);
 }
 
-inline SCComplex operator*=(SCComplex a, SCComplex b) 
+inline SCComplex operator*=(SCComplex a, SCComplex b)
 {
 	a.Set(
 		a.real * b.real - a.imag * b.imag,
@@ -100,7 +100,7 @@ inline SCComplex operator*=(SCComplex a, SCComplex b)
 	return a;
 }
 
-inline SCComplex operator*=(SCComplex a, float b) 
+inline SCComplex operator*=(SCComplex a, float b)
 {
 	a.real *= b;
 	a.imag *= b;

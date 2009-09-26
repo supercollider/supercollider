@@ -20,7 +20,7 @@
 
 /*
  * Having SequencedCommands allows performing actions that might otherwise require
- * taking a mutex, which is undesirable in a real time thread. 
+ * taking a mutex, which is undesirable in a real time thread.
  * Some commands require several stages of processing at both the real time
  * and non real time levels. This class does the messaging between levels for you
  * so that you only need to write the functions.
@@ -48,38 +48,38 @@
 	} \
 	if (inWorld->mRealTime) cmd->CallNextStage(); \
 	else cmd->CallEveryStage();
-	
+
 
 class SC_SequencedCommand
 {
 public:
 	SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~SC_SequencedCommand();
-	
+
 	void Delete();
-		
+
 	void CallEveryStage();
 	void CallNextStage();
-		
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage1();	//     real time
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 	void SendDone(const char *inCommandName);
 	void SendDoneWithIntValue(const char *inCommandName, int value);
-	
-	
+
+
 protected:
 	int mNextStage;
 	ReplyAddress mReplyAddress;
 	World *mWorld;
-	
+
 	int mMsgSize;
 	char *mMsgData;
-	
+
 	virtual void CallDestructor()=0;
 };
 
@@ -89,13 +89,13 @@ class SyncCmd : public SC_SequencedCommand
 {
 public:
 	SyncCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	virtual void CallDestructor();
 	int mID;
@@ -108,13 +108,13 @@ class BufGenCmd : public SC_SequencedCommand
 public:
 	BufGenCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufGenCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	BufGen *mBufGen;
@@ -123,9 +123,9 @@ protected:
 	int mSize;
 	SndBuf mSndBuf;
 	float *mFreeData;
-	
+
 	virtual void CallDestructor();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -134,21 +134,21 @@ class BufAllocCmd : public SC_SequencedCommand
 {
 public:
 	BufAllocCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	SndBuf mSndBuf;
 	int mNumChannels, mNumFrames;
 	float *mFreeData;
-	
+
 	virtual void CallDestructor();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -158,17 +158,17 @@ class BufFreeCmd : public SC_SequencedCommand
 {
 public:
 	BufFreeCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	float *mFreeData;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -180,16 +180,16 @@ class BufCloseCmd : public SC_SequencedCommand
 {
 public:
 	BufCloseCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -201,16 +201,16 @@ class BufZeroCmd : public SC_SequencedCommand
 {
 public:
 	BufZeroCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -221,20 +221,20 @@ class BufAllocReadCmd : public SC_SequencedCommand
 public:
 	BufAllocReadCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufAllocReadCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	float *mFreeData;
 	SndBuf mSndBuf;
 	char *mFilename;
 	int mFileOffset, mNumFrames;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -245,13 +245,13 @@ class BufReadCmd : public SC_SequencedCommand
 public:
 	BufReadCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufReadCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	char *mFilename;
@@ -290,13 +290,13 @@ class BufAllocReadChannelCmd : public SC_BufReadCommand
 public:
 	BufAllocReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufAllocReadChannelCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	float *mFreeData;
@@ -313,13 +313,13 @@ class BufReadChannelCmd : public SC_BufReadCommand
 public:
 	BufReadChannelCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufReadChannelCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
 
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	char *mFilename;
@@ -336,13 +336,13 @@ class BufWriteCmd : public SC_SequencedCommand
 public:
 	BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~BufWriteCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	int mBufIndex;
 	char *mFilename;
@@ -351,7 +351,7 @@ protected:
 #endif
 	int mNumFrames, mBufOffset;
 	bool mLeaveFileOpen;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -361,13 +361,13 @@ class AudioQuitCmd : public SC_SequencedCommand
 {
 public:
 	AudioQuitCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
-	
+
 	virtual void CallDestructor();
 };
 
@@ -377,11 +377,11 @@ class AudioStatusCmd : public SC_SequencedCommand
 {
 public:
 	AudioStatusCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual bool Stage2();	// non real time
-	
+
 protected:
-	
+
 	virtual void CallDestructor();
 };
 
@@ -391,15 +391,15 @@ class NotifyCmd : public SC_SequencedCommand
 {
 public:
 	NotifyCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
-	
+
 protected:
-	
+
 	virtual void CallDestructor();
-	
+
 	int mOnOff;
 	int mID;
 };
@@ -422,12 +422,12 @@ public:
 	virtual ~SendFailureCmd();
 
 	virtual void InitSendFailureCmd(const char *inCmdName, const char* inErrString);
-	
+
 	virtual bool Stage2();	// non real time
-	
+
 protected:
 	char *mCmdName, *mErrString;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -440,17 +440,17 @@ class LoadSynthDefCmd : public SC_SequencedCommand
 public:
 	LoadSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~LoadSynthDefCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	char *mFilename;
 	GraphDef *mDefs;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -463,17 +463,17 @@ class RecvSynthDefCmd : public SC_SequencedCommand
 public:
 	RecvSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~RecvSynthDefCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	char *mBuffer;
 	GraphDef *mDefs;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -484,17 +484,17 @@ class LoadSynthDefDirCmd : public SC_SequencedCommand
 public:
 	LoadSynthDefDirCmd(World *inWorld, ReplyAddress *inReplyAddress);
 	virtual ~LoadSynthDefDirCmd();
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	char *mFilename;
 	GraphDef *mDefs;
-	
+
 	virtual void CallDestructor();
 };
 
@@ -504,13 +504,13 @@ class SendReplyCmd : public SC_SequencedCommand
 {
 public:
 	SendReplyCmd(World *inWorld, ReplyAddress *inReplyAddress);
-	
+
 	virtual int Init(char *inData, int inSize);
-	
+
 	virtual bool Stage2();	// non real time
-	
+
 protected:
-	
+
 	virtual void CallDestructor();
 };
 
@@ -523,7 +523,7 @@ typedef void (*AsyncFreeFn)(World *inWorld, void* cmdData);
 class AsyncPlugInCmd : public SC_SequencedCommand
 {
 public:
-	AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress, 
+	AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress,
 			const char* cmdName,
 			void *cmdData,
 			AsyncStageFn stage2, // stage2 is non real time
@@ -532,19 +532,19 @@ public:
 			AsyncFreeFn cleanup,
 			int completionMsgSize,
 			void* completionMsgData);
-			
+
 	virtual ~AsyncPlugInCmd();
-		
+
 	virtual bool Stage2();	// non real time
 	virtual bool Stage3();	//     real time
 	virtual void Stage4();	// non real time
-	
+
 protected:
 	const char *mCmdName;
 	void *mCmdData;
 	AsyncStageFn mStage2, mStage3, mStage4;
 	AsyncFreeFn mCleanup;
-	
+
 	virtual void CallDestructor();
 };
 

@@ -48,7 +48,7 @@ protected:
 public:
 	SC_CmdPort(struct World *inWorld);
 	virtual ~SC_CmdPort() {}
-	
+
 	virtual void* Run()=0;
 };
 
@@ -68,14 +68,14 @@ protected:
 public:
 	SC_ComPort(struct World *inWorld, int inPortNum);
 	virtual ~SC_ComPort();
-	
+
 	int Socket() { return mSocket; }
-        
+
 	int PortNum() const { return mPortNum; }
 #ifdef USE_RENDEZVOUS
 	// default implementation does nothing (this is correct for
 	// SC_TcpConnectionPort). Subclasses may override.
-	virtual void PublishToRendezvous() {  }; 
+	virtual void PublishToRendezvous() {  };
 #endif
 };
 
@@ -89,7 +89,7 @@ protected:
 	struct sockaddr_in mReplySockAddr;
 	unsigned char mReadBuf[kMaxUDPSize];
 	virtual ReplyFunc GetReplyFunc();
-	
+
 public:
 	SC_UdpInPort(struct World *inWorld, int inPortNum);
 	~SC_UdpInPort();
@@ -100,7 +100,7 @@ public:
 #ifdef USE_RENDEZVOUS
 	virtual void PublishToRendezvous();
 #endif
-	
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,12 +112,12 @@ class SC_TcpInPort : public SC_ComPort
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
-	
+
 public:
 	SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnections, int inBacklog);
 
         virtual void* Run();
-        
+
         void ConnectionTerminated();
 #ifdef USE_RENDEZVOUS
 	virtual void PublishToRendezvous();
@@ -137,7 +137,7 @@ protected:
 public:
 	SC_TcpConnectionPort(struct World *inWorld, SC_TcpInPort *inParent, int inSocket);
         virtual ~SC_TcpConnectionPort();
-        
+
         virtual void* Run();
 };
 
@@ -151,14 +151,14 @@ class SC_MachMessagePort : public SC_CmdPort
 {
     CFMessagePortRef mServerPort;
     CFMessagePortRef mReplyPort;
-    
+
 protected:
     virtual ReplyFunc GetReplyFunc();
-    
+
 public:
     SC_MachMessagePort(struct World *inWorld, CFStringRef serverPortName, CFStringRef replyPortName);
     virtual ~SC_MachMessagePort();
-    
+
     virtual void* Run();
 
 private:

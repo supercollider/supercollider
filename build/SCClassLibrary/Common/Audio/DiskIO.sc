@@ -2,7 +2,7 @@
 DiskOut : UGen {
 	*ar { arg bufnum, channelsArray;
 		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
-		//^0.0		// DiskOut has no output 
+		//^0.0		// DiskOut has no output
 		// now it does: the number of frames written
 	}
 	//	numOutputs { ^1 }

@@ -46,7 +46,7 @@ public:
 		if (next == mFreeHead) return false; // fifo is full
 		mItems[next] = data;
 #ifdef SC_DARWIN
-		// we don't really need a compare and swap, but this happens to call 
+		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
@@ -66,7 +66,7 @@ public:
 			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
 #ifdef SC_DARWIN
-			// we don't really need a compare and swap, but this happens to call 
+			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mReadHead, next, &mReadHead);
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
@@ -85,7 +85,7 @@ public:
 			unsigned int next = NextPos(mFreeHead);
 			mItems[next].Free();
 #ifdef SC_DARWIN
-			// we don't really need a compare and swap, but this happens to call 
+			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mFreeHead, next, &mFreeHead);
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
@@ -131,7 +131,7 @@ public:
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
 #ifdef SC_DARWIN
-			// we don't really need a compare and swap, but this happens to call 
+			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mWriteHead, next, &mWriteHead);
 #elif defined(SC_WIN32) && !defined(__MINGW32__)
@@ -151,7 +151,7 @@ public:
 			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
 #ifdef SC_DARWIN
-			// we don't really need a compare and swap, but this happens to call 
+			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mReadHead, next, &mReadHead);
 #elif defined(SC_WIN32) && !defined(__MINGW32__)

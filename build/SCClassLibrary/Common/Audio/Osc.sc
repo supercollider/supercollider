@@ -3,13 +3,13 @@
 	arguments :
 		bufnum - an index to a buffer
 		freq - frequency in cycles per second
-		pm - phase modulation 
+		pm - phase modulation
 		mul - multiply by signal or scalar
 		add - add to signal or scalar
 */
 
-Osc : UGen {	
-	*ar { 
+Osc : UGen {
+	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
 	}
@@ -19,8 +19,8 @@ Osc : UGen {
 	}
 }
 
-SinOsc : UGen {	
-	*ar { 
+SinOsc : UGen {
+	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
 	}
@@ -30,8 +30,8 @@ SinOsc : UGen {
 	}
 }
 
-SinOscFB : UGen {	
-	*ar { 
+SinOscFB : UGen {
+	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, feedback).madd(mul, add)
 	}
@@ -41,8 +41,8 @@ SinOscFB : UGen {
 	}
 }
 
-OscN : UGen {	
-	*ar { 
+OscN : UGen {
+	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
 	}
@@ -53,8 +53,8 @@ OscN : UGen {
 }
 
 
-VOsc : UGen {	
-	*ar { 
+VOsc : UGen {
+	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq, phase).madd(mul, add)
 	}
@@ -64,8 +64,8 @@ VOsc : UGen {
 	}
 }
 
-VOsc3 : UGen {	
-	*ar { 
+VOsc3 : UGen {
+	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq1, freq2, freq3).madd(mul, add)
 	}
@@ -75,8 +75,8 @@ VOsc3 : UGen {
 	}
 }
 
-COsc : UGen {	
-	*ar { 
+COsc : UGen {
+	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, beats).madd(mul, add)
 	}
@@ -117,11 +117,11 @@ LFTri : LFSaw
 }
 
 LFGauss : UGen {
-	*ar { 
+	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
 		^this.multiNew('audio', duration, width, iphase, loop, doneAction)
 	}
-	*kr { 
+	*kr {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
 		^this.multiNew('control', duration, width, iphase, loop, doneAction)
 	}
@@ -281,11 +281,11 @@ Vibrato : UGen {
 TChoose {
 	*ar { arg trig, array;
 		^Select.ar(TIRand.kr(0, array.lastIndex, trig), array)
-	
+
 	}
 	*kr { arg trig, array;
 		^Select.kr(TIRand.kr(0, array.lastIndex, trig), array)
-	
+
 	}
 }
 

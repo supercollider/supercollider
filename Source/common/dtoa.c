@@ -1538,7 +1538,7 @@ hexnan
 #endif /*No_Hex_NaN*/
 #endif /* INFNAN_CHECK */
 
-#if !HAVE_STRTOD && !defined(SC_WIN32) 
+#if !HAVE_STRTOD && !defined(SC_WIN32)
  double
 strtod
 #ifdef KR_headers

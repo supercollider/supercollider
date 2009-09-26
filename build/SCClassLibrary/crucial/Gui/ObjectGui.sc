@@ -10,7 +10,7 @@ ObjectGui : SCViewHolder {
 
 	guiBody { arg layout;
 		/* implement this method in your gui subclass */
-		
+
 		// if your model implement guiBody then call that
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
@@ -106,7 +106,7 @@ ObjectGui : SCViewHolder {
 		// each class returns instVarsForGui, a list of \symbols
 		// by default an empty array : "don't display any variables"
 		// some classes (Pattern so far) can return all of their instance var names
-		// and thus gui all of their internal vars	
+		// and thus gui all of their internal vars
 		var varNames,maxWidth=50,font;
 		font = GUI.font.new(*GUI.skin.fontSpecs);
 		object.class.instVarsForGui.do({ |ivar,i|

@@ -65,7 +65,7 @@ extern HashTable<struct BufGen, Malloc> *gBufGenLib;
 extern HashTable<PlugInCmd, Malloc> *gPlugInCmds;
 
 extern "C" {
-int sndfileFormatInfoFromStrings(struct SF_INFO *info, 
+int sndfileFormatInfoFromStrings(struct SF_INFO *info,
 	const char *headerFormatString, const char *sampleFormatString);
 bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
@@ -166,7 +166,7 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 
 #else // !SC_LINUX
 
-// replacement for calloc. 
+// replacement for calloc.
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
 void *zalloc(size_t n, size_t size)
 {
@@ -188,18 +188,18 @@ void InterfaceTable_Init();
 void InterfaceTable_Init()
 {
 	InterfaceTable *ft = &gInterfaceTable;
-	
+
 	ft->mSine = gSine;
 	ft->mCosecant = gInvSine;
 	ft->mSineSize = kSineSize;
 	ft->mSineWavetable = gSineWavetable;
-	
+
 	ft->fPrint = &scprintf;
-	
+
 	ft->fRanSeed = &server_timeseed;
 
 	ft->fNodeEnd = &Node_End;
-	
+
 	ft->fDefineUnit = &UnitDef_Create;
 	ft->fDefineBufGen = &BufGen_Create;
 	ft->fClearUnitOutputs = &Unit_ZeroOutputs;
@@ -211,29 +211,29 @@ void InterfaceTable_Init()
 	ft->fRTAlloc = &World_Alloc;
 	ft->fRTRealloc = &World_Realloc;
 	ft->fRTFree = &World_Free;
-	
+
 	ft->fNodeRun = &Node_SetRun;
-	
+
 	ft->fSendTrigger = &Node_SendTrigger;
 	ft->fSendNodeReply = &Node_SendReply;
 
-	
+
 	ft->fDefineUnitCmd = &UnitDef_AddCmd;
 	ft->fDefinePlugInCmd = &PlugIn_DefineCmd;
-	
+
 	ft->fSendMsgFromRT = &SendMsgFromEngine;
 	ft->fSendMsgToRT = &SendMsgToEngine;
-#ifdef NO_LIBSNDFILE		
+#ifdef NO_LIBSNDFILE
 	ft->fSndFileFormatInfoFromStrings = NULL;
 #else
 	ft->fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
 #endif
 	ft->fGetNode = &World_GetNode;
 	ft->fGetGraph = &World_GetGraph;
-	
+
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
-		
+
 	ft->mAltivecAvailable = sc_UseVectorUnit();
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
@@ -249,7 +249,7 @@ static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
 {
 	GraphDef *list = 0;
-	
+
 	if(getenv("SC_SYNTHDEF_PATH")){
 		if(world->mVerbosity > 0)
 			printf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
@@ -272,11 +272,11 @@ void World_LoadGraphDefs(World* world)
 		list = GraphDef_LoadDir(world, resourceDir, list);
 		GraphDef_Define(world, list);
 	}
-	
+
 }
 
 World* World_New(WorldOptions *inOptions)
-{	
+{
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 	if (inOptions->mMemoryLocking && inOptions->mRealTime)
 	{
@@ -305,7 +305,7 @@ World* World_New(WorldOptions *inOptions)
 #endif
 
 	World *world = 0;
-	
+
 	try {
 		static bool gLibInitted = false;
 		if (!gLibInitted) {
@@ -314,16 +314,16 @@ World* World_New(WorldOptions *inOptions)
 			initializeScheduler();
 			gLibInitted = true;
 		}
-	
+
 		world = (World*)zalloc(1, sizeof(World));
-		
+
 		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
-	
+
 		extern Malloc gMalloc;
-	
+
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
 		hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
@@ -332,12 +332,12 @@ World* World_New(WorldOptions *inOptions)
 		hw->mMaxUsers = inOptions->mMaxLogins;
 		hw->mHiddenID = -8;
 		hw->mRecentID = -8;
-		
-		
+
+
 		world->mNumUnits = 0;
 		world->mNumGraphs = 0;
 		world->mNumGroups = 0;
-	
+
 		world->mBufCounter = 0;
 		world->mBufLength = inOptions->mBufLength;
 		world->mSampleOffset = 0;
@@ -346,11 +346,11 @@ World* World_New(WorldOptions *inOptions)
 		world->mNumControlBusChannels = inOptions->mNumControlBusChannels;
 		world->mNumInputs = inOptions->mNumInputBusChannels;
 		world->mNumOutputs = inOptions->mNumOutputBusChannels;
-		
+
 		world->mVerbosity = inOptions->mVerbosity;
 		world->mErrorNotification = 1;  // i.e., 0x01 | 0x02
 		world->mLocalErrorNotification = 0;
-		
+
 		world->mNumSharedControls = inOptions->mNumSharedControls;
 		world->mSharedControls = inOptions->mSharedControls;
 
@@ -358,33 +358,33 @@ World* World_New(WorldOptions *inOptions)
 		world->mAudioBus = (float*)zalloc(numsamples, sizeof(float));
 
 		world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
-		
+
 		world->mAudioBusTouched = (int32*)zalloc(inOptions->mNumAudioBusChannels, sizeof(int32));
 		world->mControlBusTouched = (int32*)zalloc(inOptions->mNumControlBusChannels, sizeof(int32));
-		
+
 		world->mNumSndBufs = inOptions->mNumBuffers;
 		world->mSndBufs = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
 		world->mSndBufsNonRealTimeMirror = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
 		world->mSndBufUpdates = (SndBufUpdates*)zalloc(world->mNumSndBufs, sizeof(SndBufUpdates));
-		
+
 		GroupNodeDef_Init();
-		
+
 		int err = Group_New(world, 0, &world->mTopGroup);
 		if (err) throw err;
-		
+
 		world->mRealTime = inOptions->mRealTime;
-		
+
 		world->ft = &gInterfaceTable;
-		
+
 		world->mNumRGens = inOptions->mNumRGens;
 		world->mRGen = new RGen[world->mNumRGens];
 		for (uint32 i=0; i<world->mNumRGens; ++i) {
 			world->mRGen[i].init(server_timeseed());
 		}
-		
+
 		world->mNRTLock = new SC_Lock();
 		world->mDriverLock = new SC_Lock();
-		
+
 		if (inOptions->mPassword) {
 			strncpy(world->hw->mPassword, inOptions->mPassword, 31);
 			world->hw->mPassword[31] = 0;
@@ -395,16 +395,16 @@ World* World_New(WorldOptions *inOptions)
 #ifdef SC_DARWIN
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
-#endif 
+#endif
 		world->hw->mInDeviceName = inOptions->mInDeviceName;
 		world->hw->mOutDeviceName = inOptions->mOutDeviceName;
 		hw->mMaxWireBufs = inOptions->mMaxWireBufs;
 		hw->mWireBufSpace = 0;
 
 		world->mRendezvous = inOptions->mRendezvous;
-		
+
 		world->mRestrictedPath = inOptions->mRestrictedPath;
-		
+
 		if(inOptions->mVerbosity >= 1) {
 			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
 		}
@@ -418,7 +418,7 @@ World* World_New(WorldOptions *inOptions)
 			hw->mAudioDriver->SetPreferredSampleRate(
 					inOptions->mPreferredSampleRate
 			);
-			
+
 			if (inOptions->mLoadGraphDefs) {
 				World_LoadGraphDefs(world);
 			}
@@ -436,7 +436,7 @@ World* World_New(WorldOptions *inOptions)
 		}
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
-		World_Cleanup(world); 
+		World_Cleanup(world);
 		return 0;
 	} catch (...) {
 	}
@@ -449,14 +449,14 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 
 	SndBufUpdates *updates = world->mSndBufUpdates + index;
 	didChange = updates->reads != updates->writes;
-	
+
 	if (!onlyIfChanged || didChange)
 	{
 
 		world->mNRTLock->Lock();
-	
+
 		SndBuf *buf = world->mSndBufsNonRealTimeMirror + index;
-	
+
 		if (buf->data && buf->samples)
 		{
 			uint32 bufSize = buf->samples * sizeof(float);
@@ -472,7 +472,7 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 			outBuf->mask 		= buf->mask;
 			outBuf->mask1 		= buf->mask1;
 		}
-		else 
+		else
 		{
 			free(outBuf->data);
 			outBuf->data = 0;
@@ -482,17 +482,17 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 			outBuf->mask 		= 0;
 			outBuf->mask1 		= 0;
 		}
-		
+
 		outBuf->samplerate 	= buf->samplerate;
 		outBuf->sampledur 	= buf->sampledur;
 		outBuf->coord 		= buf->coord;
 		outBuf->sndfile 	= 0;
-		
+
 		updates->reads = updates->writes;
-		
+
 		world->mNRTLock->Unlock();
 	}
-	
+
 	return kSCErr_None;
 }
 
@@ -502,15 +502,15 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 	if (!fread(&msglen, 1, sizeof(int32), file)) return true;
 	// msglen is in network byte order
 	msglen = OSCint((char*)&msglen);
-	if (msglen > 8192) 
+	if (msglen > 8192)
 		throw std::runtime_error("OSC packet too long. > 8192 bytes\n");
-		
+
 	fread(packet->mData, 1, msglen, file);
 	if (strcmp(packet->mData, "#bundle")!=0)
 			throw std::runtime_error("OSC packet not a bundle\n");
-	
+
 	packet->mSize = msglen;
-	
+
 	outTime = OSCtime(packet->mData+8);
 	return false;
 }
@@ -523,38 +523,38 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	World_LoadGraphDefs(world);
 	int bufLength = world->mBufLength;
 	int fileBufFrames = inOptions->mPreferredHardwareBufferFrameSize;
-	if (fileBufFrames <= 0) fileBufFrames = 8192; 
+	if (fileBufFrames <= 0) fileBufFrames = 8192;
 	int bufMultiple = (fileBufFrames + bufLength - 1) / bufLength;
 	fileBufFrames = bufMultiple * bufLength;
 
-	// batch process non real time audio		
-	if (!inOptions->mNonRealTimeOutputFilename) 
+	// batch process non real time audio
+	if (!inOptions->mNonRealTimeOutputFilename)
 		throw std::runtime_error("Non real time output filename is NULL.\n");
-	
+
 	SF_INFO inputFileInfo, outputFileInfo;
 	float *inputFileBuf = 0;
 	float *outputFileBuf = 0;
 	int numInputChannels = 0;
 	int numOutputChannels;
-	
+
 	outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
 	numOutputChannels = outputFileInfo.channels = world->mNumOutputs;
-	sndfileFormatInfoFromStrings(&outputFileInfo, 
+	sndfileFormatInfoFromStrings(&outputFileInfo,
 		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
-	
+
 	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
-	if (!world->hw->mNRTOutputFile) 
+	if (!world->hw->mNRTOutputFile)
 		throw std::runtime_error("Couldn't open non real time output file.\n");
-	
+
 	outputFileBuf = (float*)calloc(1, world->mNumOutputs * fileBufFrames * sizeof(float));
-	
+
 	if (inOptions->mNonRealTimeInputFilename) {
 		world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
-		if (!world->hw->mNRTInputFile) 
+		if (!world->hw->mNRTInputFile)
 			throw std::runtime_error("Couldn't open non real time input file.\n");
 
 		inputFileBuf = (float*)calloc(1, inputFileInfo.channels * fileBufFrames * sizeof(float));
-		
+
 		if (world->mNumInputs != (uint32)inputFileInfo.channels)
 			scprintf("WARNING: input file channels didn't match number of inputs specified in options.\n");
 
@@ -562,11 +562,11 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 
 		if (inputFileInfo.samplerate != (int)inOptions->mPreferredSampleRate)
 			scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
-			
+
 	} else {
 		world->hw->mNRTInputFile = 0;
 	}
-	
+
 	FILE *cmdFile;
 	if (inOptions->mNonRealTimeCmdFilename) {
 #ifdef SC_WIN32
@@ -575,9 +575,9 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
 #endif
 	} else cmdFile = stdin;
-	if (!cmdFile) 
+	if (!cmdFile)
 		throw std::runtime_error("Couldn't open non real time command file.\n");
-		
+
 	char msgbuf[8192];
 	OSC_Packet packet;
 	memset(&packet, 0, sizeof(packet));
@@ -589,10 +589,10 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	if (nextOSCPacket(cmdFile, &packet, schedTime))
 		throw std::runtime_error("command file empty.\n");
 	int64 prevTime = schedTime;
-	        
+
 	World_SetSampleRate(world, inOptions->mPreferredSampleRate);
 	World_Start(world);
-	
+
 	int64 oscTime = 0;
         double oscToSeconds = 1. / pow(2.,32.);
 	double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
@@ -601,7 +601,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	if(inOptions->mVerbosity >= 0) {
         printf("start time %g\n", schedTime * oscToSeconds);
 	}
-	
+
 	bool run = true;
 	int inBufStep = numInputChannels * bufLength;
 	int outBufStep = numOutputChannels * bufLength;
@@ -613,18 +613,18 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 		int bufFramesCalculated = 0;
 		float* inBufPos = inputFileBuf;
 		float* outBufPos = outputFileBuf;
-		
+
 		if (world->hw->mNRTInputFile) {
 			int framesRead = sf_readf_float(world->hw->mNRTInputFile, inputFileBuf, fileBufFrames);
 			if (framesRead < fileBufFrames) {
-				memset(inputFileBuf + framesRead * numInputChannels, 0, 
+				memset(inputFileBuf + framesRead * numInputChannels, 0,
 					(fileBufFrames - framesRead) * numInputChannels * sizeof(float));
 			}
 		}
-		
+
 		for (int i=0; i<bufMultiple && run; ++i) {
 			int bufCounter = world->mBufCounter;
-			
+
 			// deinterleave input to input buses
 			if (inputFileBuf) {
 				float *inBus = inputBuses;
@@ -637,20 +637,20 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 					inputTouched[j] = bufCounter;
 				}
 			}
-			
+
 			// execute ready commands
 			int64 nextTime = oscTime + oscInc;
-			                        
+
 			while (schedTime <= nextTime) {
 				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
 				float diffTimeFloor = floor(diffTime);
 				world->mSampleOffset = (int)diffTimeFloor;
 				world->mSubsampleOffset = diffTime - diffTimeFloor;
-				
+
 				if (world->mSampleOffset < 0) world->mSampleOffset = 0;
 				else if (world->mSampleOffset >= bufLength) world->mSampleOffset = bufLength-1;
-				
-	
+
+
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
 	if(inOptions->mVerbosity >= 0) {
@@ -663,9 +663,9 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 				}
 				prevTime = schedTime;
 			}
-			
+
 			World_Run(world);
-			
+
 			// interleave output to output buffer
 			float *outBus = outputBuses;
 			for (int j=0; j<numOutputChannels; ++j, outBus += bufLength) {
@@ -693,16 +693,16 @@ Bail:
 		// write output
 		sf_writef_float(world->hw->mNRTOutputFile, outputFileBuf, bufFramesCalculated);
 	}
-	
+
         if (cmdFile != stdin) fclose(cmdFile);
 	sf_close(world->hw->mNRTOutputFile);
         world->hw->mNRTOutputFile = 0;
-        
+
 	if (world->hw->mNRTInputFile) {
             sf_close(world->hw->mNRTInputFile);
             world->hw->mNRTInputFile = 0;
         }
-	
+
 	World_Cleanup(world);
 }
 #endif   // !NO_LIBSNDFILE
@@ -974,9 +974,9 @@ void World_Start(World *inWorld)
 	inWorld->mBufCounter = 0;
 	for (uint32 i=0; i<inWorld->mNumAudioBusChannels; ++i) inWorld->mAudioBusTouched[i] = -1;
 	for (uint32 i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
-	
+
 	inWorld->hw->mWireBufSpace = (float*)malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
-	
+
 	inWorld->hw->mTriggers.MakeEmpty();
 	inWorld->hw->mNodeMsgs.MakeEmpty();
 	inWorld->hw->mNodeEnds.MakeEmpty();
@@ -986,15 +986,15 @@ void World_Start(World *inWorld)
 void World_Cleanup(World *world)
 {
 	if (!world) return;
-	
+
 	HiddenWorld *hw = world->hw;
-	
+
 	if (hw && world->mRealTime) hw->mAudioDriver->Stop();
-	
+
 	world->mRunning = false;
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
-	
+
 	world->mDriverLock->Lock(); // never unlock..
 	if (hw) {
 		free(hw->mWireBufSpace);
@@ -1004,35 +1004,35 @@ void World_Cleanup(World *world)
 	delete world->mNRTLock;
 	delete world->mDriverLock;
 	World_Free(world, world->mTopGroup);
-	
+
 	for (uint32 i=0; i<world->mNumSndBufs; ++i) {
 		SndBuf *nrtbuf = world->mSndBufsNonRealTimeMirror + i;
 		SndBuf * rtbuf = world->mSndBufs + i;
-		
+
 		if (nrtbuf->data) free(nrtbuf->data);
 		if (rtbuf->data && rtbuf->data != nrtbuf->data) free(rtbuf->data);
 
-#ifndef NO_LIBSNDFILE		
+#ifndef NO_LIBSNDFILE
 		if (nrtbuf->sndfile) sf_close(nrtbuf->sndfile);
 		if (rtbuf->sndfile && rtbuf->sndfile != nrtbuf->sndfile) sf_close(rtbuf->sndfile);
 #endif
 	}
-		
+
 	free(world->mSndBufsNonRealTimeMirror);
 	free(world->mSndBufs);
-	
+
 	free(world->mControlBusTouched);
 	free(world->mAudioBusTouched);
 	free(world->mControlBus);
 	free(world->mAudioBus);
 	delete [] world->mRGen;
 	if (hw) {
-	
-#ifndef NO_LIBSNDFILE		
+
+#ifndef NO_LIBSNDFILE
 		if (hw->mNRTInputFile) sf_close(hw->mNRTInputFile);
 		if (hw->mNRTOutputFile) sf_close(hw->mNRTOutputFile);
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
-#endif		
+#endif
 		free(hw->mUsers);
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
@@ -1063,12 +1063,12 @@ inline int32 BUFMASK(int32 x)
 }
 
 SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
-{		
+{
 	long numSamples = numFrames * numChannels;
 	if(numSamples < 1) return kSCErr_Failed;
 	buf->data = (float*)zalloc(numSamples, sizeof(float));
 	if (!buf->data) return kSCErr_Failed;
-	
+
 	buf->channels = numChannels;
 	buf->frames   = numFrames;
 	buf->samples  = numSamples;
@@ -1080,15 +1080,15 @@ SCErr bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
 	return kSCErr_None;
 }
 
-#ifndef NO_LIBSNDFILE		
+#ifndef NO_LIBSNDFILE
 int sampleFormatFromString(const char* name);
 int sampleFormatFromString(const char* name)
-{		
+{
 	if (!name) return SF_FORMAT_PCM_16;
 
 	size_t len = strlen(name);
 	if (len < 1) return 0;
-	
+
 	if (name[0] == 'u') {
 		if (len < 5) return 0;
 		if (name[4] == '8') return SF_FORMAT_PCM_U8; // uint8
@@ -1151,10 +1151,10 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 {
 	int headerFormat = headerFormatFromString(headerFormatString);
 	if (!headerFormat) return kSCErr_Failed;
-	
+
 	int sampleFormat = sampleFormatFromString(sampleFormatString);
 	if (!sampleFormat) return kSCErr_Failed;
-	
+
 	info->format = (unsigned int)(headerFormat | sampleFormat);
 	return kSCErr_None;
 }
@@ -1208,7 +1208,7 @@ void NodeReplyMsg::Perform()
 	for (int i=0; i<numUsers; ++i) {
 		SendReply(users+i, packet.data(), packet.size());
 	}
-	
+
 	// Free memory in realtime thread
 	FifoMsg msg;
 	msg.Set(mWorld, NodeReplyMsg_RTFree, 0, mRTMemory);
@@ -1270,7 +1270,7 @@ void NodeEndMsg::Perform()
 		packet.addi(mNextNodeID);
 		packet.addi(mIsGroup);
 	}
-	
+
 	ReplyAddress *users = mWorld->hw->mUsers;
 	int numUsers = mWorld->hw->mNumUsers;
 	for (int i=0; i<numUsers; ++i) {
@@ -1316,8 +1316,8 @@ void SetPrintFunc(PrintFunc func)
 int scprintf(const char *fmt, ...)
 {
 	va_list vargs;
-	va_start(vargs, fmt); 
-	
+	va_start(vargs, fmt);
+
 	if (gPrint) return (*gPrint)(fmt, vargs);
 	else return vprintf(fmt, vargs);
 }

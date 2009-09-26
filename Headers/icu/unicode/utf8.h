@@ -17,7 +17,7 @@
 /**
  * \file
  * \brief C API: 8-bit Unicode handling macros
- * 
+ *
  * This file defines macros to deal with 8-bit Unicode (UTF-8) code units (bytes) and strings.
  * utf8.h is included by utf.h after unicode/umachine.h
  * and some common definitions.
@@ -27,7 +27,7 @@
  *
  * <em>Usage:</em>
  * ICU coding guidelines for if() statements should be followed when using these macros.
- * Compound statements (curly braces {}) must be used  for if-else-while... 
+ * Compound statements (curly braces {}) must be used  for if-else-while...
  * bodies and all macro statements should be terminated with semicolon.
  */
 
@@ -48,11 +48,11 @@
  * @internal
  */
 #ifdef U_UTF8_IMPL
-U_INTERNAL const uint8_t 
+U_INTERNAL const uint8_t
 #elif defined(U_STATIC_IMPLEMENTATION)
 U_CFUNC const uint8_t
 #else
-U_CFUNC U_IMPORT const uint8_t /* U_IMPORT2? */ /*U_IMPORT*/ 
+U_CFUNC U_IMPORT const uint8_t /* U_IMPORT2? */ /*U_IMPORT*/
 #endif
 utf8_countTrailBytes[256];
 

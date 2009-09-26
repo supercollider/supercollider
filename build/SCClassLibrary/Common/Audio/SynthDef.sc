@@ -1,30 +1,30 @@
 
-SynthDef {	
+SynthDef {
 	var <>name;
-	
+
 	var <>controls, <>controlNames; // ugens add to this
 	var <>allControlNames;
 	var <>controlIndex=0;
 	var <>children;
-		
+
 	var <>constants;
 	var <>constantSet;
 	var <>maxLocalBufs;
-	
+
 	// topo sort
 	var <>available;
 	var <>variants;
 
 	var <>metadata;
-	
+
 	classvar <synthDefDir;
-	
+
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
 			{ dir = dir ++ thisProcess.platform.pathSeparator };
 		synthDefDir = dir;
 	}
-	
+
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
                 // Ensure exists:
@@ -33,7 +33,7 @@ SynthDef {
 			+ synthDefDir.quote
 		).systemCmd;
 	}
-	
+
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
 		^this.prNew(name).variants_(variants).metadata_(metadata)
 			.build(ugenGraphFunc, rates, prependArgs)
@@ -50,11 +50,11 @@ SynthDef {
 			UGen.buildSynthDef = nil;
 		}
 	}
-	
+
 	*wrap { arg func, rates, prependArgs;
-		if (UGen.buildSynthDef.isNil) { 
-			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error; 
-			^0 
+		if (UGen.buildSynthDef.isNil) {
+			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error;
+			^0
 		};
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
@@ -65,7 +65,7 @@ SynthDef {
 	writeOnce { arg dir;
 		this.writeDefFile(dir, false)
 	}
-	
+
 	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
@@ -78,28 +78,28 @@ SynthDef {
 		var result;
 		// save/restore controls in case of *wrap
 		var saveControlNames = controlNames;
-		
+
 		controlNames = nil;
-		
+
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
 		result = func.valueArray(prependArgs ++ this.buildControls);
-		
+
 		controlNames = saveControlNames
-		
+
 		^result
 
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames, specs;
-		
+
 		def = func.def;
 		argNames = def.argNames;
-		if(argNames.isNil) { ^nil }; 
+		if(argNames.isNil) { ^nil };
 		names = def.argNames[skipArgs..];
 		// OK what we do here is separate the ir, tr and kr rate arguments,
-		// create one Control ugen for all of each rate, 
-		// and then construct the argument array from combining 
+		// create one Control ugen for all of each rate,
+		// and then construct the argument array from combining
 		// the OutputProxies of these two Control ugens in the original order.
 		values = def.prototypeFrame[skipArgs..].extend( names.size );
 		if((specs = metadata.tryPerform(\at, \specs)).notNil) {
@@ -112,12 +112,12 @@ SynthDef {
 			values = values.collect {|value| value ? 0.0 };
 		};
 		rates = rates.asArray.extend(names.size, 0).collect {|lag| lag ? 0.0 };
-		names.do { arg name, i; 
+		names.do { arg name, i;
 			var c, c2, value, lag;
 			#c, c2 = name.asString;
 			value = values[i];
 			lag = rates[i];
-			case { (lag == \ir) or: { c == $i and: { c2 == $_ }}} 
+			case { (lag == \ir) or: { c == $i and: { c2 == $_ }}}
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
@@ -125,7 +125,7 @@ SynthDef {
 				};
 				this.addIr(name, value);
 			}
-			{(lag == \tr) or: { c == $t and: { c2 == $_ }}} 
+			{(lag == \tr) or: { c == $t and: { c2 == $_ }}}
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
@@ -133,7 +133,7 @@ SynthDef {
 				};
 				this.addTr(name, value);
 			}
-			{(lag == \ar) or: { c == $a and: { c2 == $_ }}} 
+			{(lag == \ar) or: { c == $a and: { c2 == $_ }}}
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for audio arg '"
@@ -147,40 +147,40 @@ SynthDef {
 			};
 		};
 	}
-	
+
 	addControlName { arg cn;
 		controlNames = controlNames.add(cn);
 		allControlNames = allControlNames.add(cn);
 	}
-	
+
 	// allow incremental building of controls
 	addNonControl { arg name, values;
-		this.addControlName(ControlName(name, nil, 'noncontrol', 
+		this.addControlName(ControlName(name, nil, 'noncontrol',
 			values.copy, controlNames.size));
 	}
 	addIr { arg name, values;
-		this.addControlName(ControlName(name, controls.size, 'scalar', 
+		this.addControlName(ControlName(name, controls.size, 'scalar',
 			values.copy, controlNames.size));
 	}
 	addKr { arg name, values, lags;
-		this.addControlName(ControlName(name, controls.size, 'control', 
+		this.addControlName(ControlName(name, controls.size, 'control',
 			values.copy, controlNames.size, lags.copy));
 	}
 	addTr { arg name, values;
-		this.addControlName(ControlName(name, controls.size, 'trigger', 
+		this.addControlName(ControlName(name, controls.size, 'trigger',
 			values.copy, controlNames.size));
 	}
 	addAr { arg name, values;
 		this.addControlName(ControlName(name, controls.size, 'audio',
 			values.copy, controlNames.size))
 	}
-	
+
 	buildControls {
 		var controlUGens, index, values, lags, valsize;
 		var def, argNames;
-		
+
 		var arguments = Array.newClear(controlNames.size);
-		
+
 		var nonControlNames = controlNames.select {|cn| cn.rate == 'noncontrol' };
 		var irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
 		var krControlNames = controlNames.select {|cn| cn.rate == 'control' };
@@ -194,7 +194,7 @@ SynthDef {
 		};
 		if (irControlNames.size > 0) {
 			values = nil;
-			irControlNames.do {|cn| 
+			irControlNames.do {|cn|
 				values = values.add(cn.defaultValue);
 			};
 			index = controlIndex;
@@ -208,7 +208,7 @@ SynthDef {
 		};
 		if (trControlNames.size > 0) {
 			values = nil;
-			trControlNames.do {|cn| 
+			trControlNames.do {|cn|
 				values = values.add(cn.defaultValue);
 			};
 			index = controlIndex;
@@ -222,7 +222,7 @@ SynthDef {
 		};
 		if (arControlNames.size > 0) {
 			values = nil;
-			arControlNames.do {|cn| 
+			arControlNames.do {|cn|
 				values = values.add(cn.defaultValue);
 			};
 			index = controlIndex;
@@ -237,7 +237,7 @@ SynthDef {
 		if (krControlNames.size > 0) {
 			values = nil;
 			lags = nil;
-			krControlNames.do {|cn| 
+			krControlNames.do {|cn|
 				valsize = cn.defaultValue.asArray.size;
 				values = values.add(cn.defaultValue);
 				lags = lags.addAll(cn.lag.asArray.wrapExtend(valsize));
@@ -256,10 +256,10 @@ SynthDef {
 			};
 		};
 		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };
-		
+
 		^arguments
 	}
-	
+
 	setControlNames {arg controlUGens, cn;
 		controlUGens.isArray.if({
 			controlUGens.do({arg thisCtrl;
@@ -269,17 +269,17 @@ SynthDef {
 			controlUGens.name_(cn.name)
 			});
 	}
-		
+
 	finishBuild {
 
 		this.optimizeGraph;
 		this.collectConstants;
 		this.checkInputs;// will die on error
-		
+
 		// re-sort graph. reindex.
 		this.topologicalSort;
 		this.indexUGens;
-		UGen.buildSynthDef = nil;		
+		UGen.buildSynthDef = nil;
 	}
 
 	asBytes {
@@ -295,14 +295,14 @@ SynthDef {
 		var allControlNamesTemp, allControlNamesMap;
 
 		file.putPascalString(name);
-		
+
 		this.writeConstants(file);
 
 		//controls have been added by the Control UGens
 		file.putInt16(controls.size);
 		controls.do { | item |
 			file.putFloat(item);
-		};		
+		};
 
 		allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
 		file.putInt16(allControlNamesTemp.size);
@@ -312,12 +312,12 @@ SynthDef {
 				file.putInt16(item.index);
 			};
 		};
-	
+
 		file.putInt16(children.size);
 		children.do { | item |
 			item.writeDef(file);
 		};
-		
+
 		file.putInt16(variants.size);
 		if (variants.size > 0) {
 			allControlNamesMap = ();
@@ -326,7 +326,7 @@ SynthDef {
 			};
 			variants.keysValuesDo {|varname, pairs|
 				var varcontrols;
-				
+
 				varname = name ++ "." ++ varname;
 				if (varname.size > 32) {
 					Post << "variant '" << varname << "' name too long.\n";
@@ -339,7 +339,7 @@ SynthDef {
 					if (cn.notNil) {
 						values = values.asArray;
 						if (values.size > cn.defaultValue.asArray.size) {
-							postf("variant: '%' control: '%' size mismatch.\n", 
+							postf("variant: '%' control: '%' size mismatch.\n",
 								varname, cname);
 							^nil
 						}{
@@ -349,7 +349,7 @@ SynthDef {
 							}
 						}
 					}{
-						postf("variant: '%' control: '%' not found.\n", 
+						postf("variant: '%' control: '%' not found.\n",
 								varname, cname);
 						^nil
 					}
@@ -357,7 +357,7 @@ SynthDef {
 				file.putPascalString(varname);
 				varcontrols.do { | item |
 					file.putFloat(item);
-				};		
+				};
 			};
 		}
 	}
@@ -368,16 +368,16 @@ SynthDef {
 		};
 
 		file.putInt16(constants.size);
-		array.do { | item | 
-			file.putFloat(item) 
+		array.do { | item |
+			file.putFloat(item)
 		};
 	}
-	
+
 	checkInputs {
 		var seenErr = false;
 		children.do { arg ugen;
 			var err;
-			if ((err = ugen.checkInputs).notNil) { 
+			if ((err = ugen.checkInputs).notNil) {
 				seenErr = true;
 				(ugen.class.asString + err).postln;
 				ugen.dumpArgs;
@@ -388,7 +388,7 @@ SynthDef {
 	}
 
 
-	
+
 	// UGens do these
 	addUGen { arg ugen;
 		ugen.synthIndex = children.size;
@@ -401,8 +401,8 @@ SynthDef {
 	replaceUGen { arg a, b;
 		children.remove(b);
 		children.do { arg item, i;
-			if (item === a and: { b.isKindOf(UGen) }) { 
-				children[i] = b; 
+			if (item === a and: { b.isKindOf(UGen) }) {
+				children[i] = b;
 			};
 			item.inputs.do { arg input, j;
 				if (input === a) { item.inputs[j] = b };
@@ -416,11 +416,11 @@ SynthDef {
 		};
 	}
 
-	
+
 	// multi channel expansion causes a non optimal breadth-wise ordering of the graph.
 	// the topological sort below follows branches in a depth first order,
 	// so that cache performance of connection buffers is optimized.
-	
+
 	optimizeGraph {
 		this.initTopoSort;
 		children.copy.do { arg ugen;
@@ -428,11 +428,11 @@ SynthDef {
 		};
 	}
 	collectConstants {
-		children.do { arg ugen; 
+		children.do { arg ugen;
 			ugen.collectConstants;
 		};
 	}
-	
+
 	initTopoSort {
 		available = nil;
 		children.do { arg ugen;
@@ -471,7 +471,7 @@ SynthDef {
 			ugen.synthIndex = i;
 		};
 	}
-	
+
 	dumpUGens {
 		name.postln;
 		children.do { arg ugen, i;
@@ -484,8 +484,8 @@ SynthDef {
 			[ugen.dumpName, ugen.rate, inputs].postln;
 		};
 	}
-	
-	
+
+
 	send { arg server,completionMsg;
 		server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
 		//server.sendMsg("/d_recv", this.asBytes,completionMsg);
@@ -534,8 +534,8 @@ SynthDef {
 			} {
 				AbstractMDPlugin.clearMetadata(path);
 			};
-		} { 
-			file.close 
+		} {
+			file.close
 		}
 	}
 

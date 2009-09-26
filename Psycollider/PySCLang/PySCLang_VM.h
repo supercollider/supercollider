@@ -1,14 +1,14 @@
 /*
  * File: PYSCLang_VM.h
  * Project : Psycollider
- * 
+ *
  * by:
  * Benjamin Golinvaux
  * benjamin.golinvaux@euresys.com
  * messenger: bgolinvaux@hotmail.com
- * 
+ *
  * currently maintained by:
- * Christopher Frauenberger 
+ * Christopher Frauenberger
  * frauenberger@iem.at
  *
  *  This program is free software; you can redistribute it and/or

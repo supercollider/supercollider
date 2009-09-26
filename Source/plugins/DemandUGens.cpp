@@ -47,7 +47,7 @@ struct DemandEnvGen : public Unit
 {
 	float m_phase;
 	float m_prevreset;
-	
+
 	double m_a1, m_a2, m_b1, m_y1, m_y2, m_grow, m_level, m_endLevel, m_curve;
 	int m_shape;
 	bool m_release, m_running;
@@ -56,7 +56,7 @@ struct DemandEnvGen : public Unit
 struct TDuty : public Unit
 {
 	float m_count;
-	float m_prevreset; 
+	float m_prevreset;
 };
 
 
@@ -171,13 +171,13 @@ struct Dstutter : public Unit
 
 struct Donce : public Unit
 {
-	int m_bufcounter; 
+	int m_bufcounter;
 	float m_prev;
 };
 
 struct Dpoll : public Unit
 {
-	char *m_id_string; 
+	char *m_id_string;
 	bool m_mayprint;
 	float m_id;
 };
@@ -265,12 +265,12 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 	float *out[MAXCHANNELS];
 	float prevout[MAXCHANNELS];
 	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
+		out[i] = OUT(i);
 		prevout[i] = unit->m_prevout[i];
 	}
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
-	
+
 	//Print("Demand_next_aa %d  %g\n", inNumSamples, prevtrig);
 	for (int i=0; i<inNumSamples; ++i) {
 		float ztrig = ZXP(trig);
@@ -297,7 +297,7 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
 	for (int i=0; i<unit->mNumOutputs; ++i) {
@@ -314,7 +314,7 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 	float *out[MAXCHANNELS];
 	float prevout[MAXCHANNELS];
 	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 		
+		out[i] = OUT(i);
 		prevout[i] = unit->m_prevout[i];
 	}
 
@@ -328,7 +328,7 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 				RESETINPUT(j);
 			}
 		}
-		
+
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT_A(j, i + 1);
@@ -336,17 +336,17 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 				else prevout[k] = x;
 				out[k][i] = x;
 			}
-			
+
 		} else {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				out[k][i] = prevout[k];
 			}
-			
+
 		}
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
 	for (int i=0; i<unit->mNumOutputs; ++i) {
@@ -363,13 +363,13 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 	float *out[MAXCHANNELS];
 	float prevout[MAXCHANNELS];
 	for (int i=0; i<unit->mNumOutputs; ++i) {
-		out[i] = OUT(i); 
+		out[i] = OUT(i);
 		prevout[i] = unit->m_prevout[i];
 	}
 
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
@@ -388,7 +388,7 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
 	for (int i=0; i<unit->mNumOutputs; ++i) {
@@ -435,7 +435,7 @@ enum {
 
 void Duty_next_da(Duty *unit, int inNumSamples)
 {
-	
+
 	float *reset = ZIN(duty_reset);
 
 	float *out = OUT(0);
@@ -443,13 +443,13 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
-			
-			RESETINPUT(duty_level); 
+
+			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
 		}
@@ -469,15 +469,15 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 				prevout = x;
 			}
 			out[i] = x;
-			
+
 		} else {
 			count--;
 			out[i] = prevout;
 		}
-		
+
 		prevreset = zreset;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
 	unit->m_prevout = prevout;
@@ -485,7 +485,7 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 
 void Duty_next_dk(Duty *unit, int inNumSamples)
 {
-	
+
 	float zreset = ZIN0(duty_reset);
 
 	float *out = OUT(0);
@@ -493,11 +493,11 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		if (zreset > 0.f && prevreset <= 0.f) {
-			
+
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
@@ -508,7 +508,7 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 				int doneAction = (int)ZIN0(duty_doneAction);
 				DoneAction(doneAction, unit);
 			}
-		
+
 			float x = DEMANDINPUT_A(duty_level, i + 1);
 			if(sc_isnan(x)) {
 				x = prevout;
@@ -517,17 +517,17 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 			} else {
 				prevout = x;
 			}
-			
+
 			out[i] = x;
-			
+
 		} else {
-			
+
 			out[i] = prevout;
 		}
 		count--;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
 	unit->m_prevout = prevout;
@@ -537,21 +537,21 @@ void Duty_next_dk(Duty *unit, int inNumSamples)
 
 void Duty_next_dd(Duty *unit, int inNumSamples)
 {
-	float *out = OUT(0); 	
+	float *out = OUT(0);
 	float prevout = unit->m_prevout;
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		if (reset <= 0.f) {
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
 			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + reset;
-		} else { 
-			reset--; 
+		} else {
+			reset--;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
@@ -569,11 +569,11 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 				prevout = x;
 			}
 		}
-				
+
 		out[i] = prevout;
 		count--;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = reset;
 	unit->m_prevout = prevout;
@@ -586,8 +586,8 @@ void Duty_Ctor(Duty *unit)
 
 			SETCALC(Duty_next_da);
 			unit->m_prevreset = 0.f;
-		
-	} else { 
+
+	} else {
 		if(INRATE(duty_reset) == calc_DemandRate) {
 			SETCALC(Duty_next_dd);
 			unit->m_prevreset = DEMANDINPUT(duty_reset) * SAMPLERATE;
@@ -596,11 +596,11 @@ void Duty_Ctor(Duty *unit)
 			unit->m_prevreset = 0.f;
 		}
 	}
-	
+
 	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
 	unit->m_prevout = DEMANDINPUT(duty_level);
 	OUT0(0) = unit->m_prevout;
-	
+
 }
 
 
@@ -617,7 +617,7 @@ enum {
 	d_env_levelBias,
 	d_env_timeScale,
 	d_env_doneAction
-	
+
 };
 
 enum {
@@ -636,7 +636,7 @@ enum {
 
 void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 {
-	
+
 	float zreset = ZIN0(d_env_reset);
 
 
@@ -647,68 +647,68 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 	bool release = unit->m_release;
 	bool running = unit->m_running;
 	int shape = unit->m_shape;
-	
+
 	// printf("phase %f level %f \n", phase, level);
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
-		
-		
+
+
+
 		if (zreset > 0.f && unit->m_prevreset <= 0.f) {
 			//printf("reset: %f %f \n", zreset, unit->m_prevreset);
 			RESETINPUT(d_env_level);
 			RESETINPUT(d_env_dur);
 			RESETINPUT(d_env_shape);
 			RESETINPUT(d_env_curve);
-			
-			if(zreset <= 1.f) { 
+
+			if(zreset <= 1.f) {
 				DEMANDINPUT(d_env_level); // remove first level
 			} else {
 				level = DEMANDINPUT(d_env_level); // jump to first level
 			}
-			
+
 			release = false;
 			running = true;
 			phase = 0.f;
-			
+
 		}
-		
-		
+
+
 		if (phase <= 0.f && running) {
-						
+
 			// was a release during last segment?
 			if(release) {
-				
+
 				running = false;
 				release = false;
 				// printf("release: %f %f \n", phase, level);
 				int doneAction = (int)ZIN0(d_env_doneAction);
 				DoneAction(doneAction, unit);
-				
-			} else {
-			
 
-				
+			} else {
+
+
+
 				// new time
-				
+
 				float dur = DEMANDINPUT(d_env_dur);
 				// printf("dur: %f \n", dur);
-				if(sc_isnan(dur)) { 
+				if(sc_isnan(dur)) {
 					release = true;
 					running = false;
 					phase = MAXFLOAT;
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
-				
-				
+
+
 				// new shape
-				
+
 				float count;
 				shape = (int)DEMANDINPUT(d_env_shape);
 				curve = DEMANDINPUT(d_env_curve);
-				
-				
+
+
 				if (sc_isnan(curve)) curve = unit->m_shape;
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
@@ -717,27 +717,27 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					count = phase;
 				}
 				if(dur * 0.5f < SAMPLEDUR) shape = 1;
-				
+
 				//printf("shape: %i, curve: %f, dur: %f \n", shape, curve, dur);
-				
-				
+
+
 				// new end level
-				
+
 				double endLevel = DEMANDINPUT(d_env_level);
 				// printf("levels: %f %f\n", level, endLevel);
-				if (sc_isnan(endLevel)) { 
+				if (sc_isnan(endLevel)) {
 					endLevel = unit->m_endLevel;
 					release = true;
 					phase = 0.f;
 					shape = 0;
-				} else  { 
+				} else  {
 					endLevel = endLevel * ZIN0(d_env_levelScale) + ZIN0(d_env_levelBias);
-					unit->m_endLevel = endLevel; 
+					unit->m_endLevel = endLevel;
 				}
-			
-				
+
+
 				// calculate shape parameters
-				
+
 				switch (shape) {
 					case shape_Step : {
 						level = endLevel;
@@ -750,7 +750,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Sine : {
 						double w = pi / count;
-			
+
 						unit->m_a2 = (endLevel + level) * 0.5;
 						unit->m_b1 = 2. * cos(w);
 						unit->m_y1 = (endLevel - level) * 0.5;
@@ -759,9 +759,9 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Welch : {
 						double w = (pi * 0.5) / count;
-						
+
 						unit->m_b1 = 2. * cos(w);
-						
+
 						if (endLevel >= level) {
 							unit->m_a2 = level;
 							unit->m_y1 = 0.;
@@ -778,30 +778,30 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 							unit->m_shape = 1; // shape_Linear
 							unit->m_grow = (endLevel - level) / count;
 						} else {
-							double a1 = (endLevel - level) / (1.0 - exp(curve));	
+							double a1 = (endLevel - level) / (1.0 - exp(curve));
 							unit->m_a2 = level + a1;
-							unit->m_b1 = a1; 
+							unit->m_b1 = a1;
 							unit->m_grow = exp(curve / count);
 						}
 					} break;
 					case shape_Squared : {
-						unit->m_y1 = sqrt(level); 
-						unit->m_y2 = sqrt(endLevel); 
+						unit->m_y1 = sqrt(level);
+						unit->m_y2 = sqrt(endLevel);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / count;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = pow(level, 0.33333333);
+						unit->m_y2 = pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / count;
 					} break;
 				}
-			
+
 			}
 			}
-			
-			
+
+
 			if(running) {
-			
+
 			switch (shape) {
 				case shape_Step : {
 				} break;
@@ -819,9 +819,9 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					double b1 = unit->m_b1;
 					double y2 = unit->m_y2;
 					double y1 = unit->m_y1;
-						double y0 = b1 * y1 - y2; 
+						double y0 = b1 * y1 - y2;
 						level = a2 - y0;
-						y2 = y1; 
+						y2 = y1;
 						y1 = y0;
 					unit->m_y1 = y1;
 					unit->m_y2 = y2;
@@ -831,9 +831,9 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					double b1 = unit->m_b1;
 					double y2 = unit->m_y2;
 					double y1 = unit->m_y1;
-						double y0 = b1 * y1 - y2; 
+						double y0 = b1 * y1 - y2;
 						level = a2 + y0;
-						y2 = y1; 
+						y2 = y1;
 						y1 = y0;
 					unit->m_y1 = y1;
 					unit->m_y2 = y2;
@@ -863,33 +863,33 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 				case shape_Sustain : {
 				} break;
 			}
-			
+
 			phase --;
-			
+
 			}
-			
-			
-			ZXP(out) = level;		
-			
+
+
+			ZXP(out) = level;
+
 	}
 			float zgate = ZIN0(d_env_gate);
-			if(zgate >= 1.f) { 
-				unit->m_running = true; 
+			if(zgate >= 1.f) {
+				unit->m_running = true;
 			} else if (zgate > 0.f) {
 				unit->m_running = true;
 				release = true;  // release next time.
-			} else { 
+			} else {
 				unit->m_running = false; // sample and hold
 			}
-			
+
 			unit->m_level = level;
 			unit->m_curve = curve;
-			unit->m_shape = shape;	
+			unit->m_shape = shape;
 			unit->m_prevreset = zreset;
 			unit->m_release = release;
-			
+
 			unit->m_phase = phase;
-	
+
 
 }
 
@@ -897,83 +897,83 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 
 void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 {
-	
+
 	float *reset = ZIN(d_env_reset);
 	float *gate = ZIN(d_env_gate);
-	
+
 	float *out = ZOUT(0);
-	
+
 	float prevreset = unit->m_prevreset;
 	double level = unit->m_level;
 	float phase = unit->m_phase;
 	double curve = unit->m_curve;
 	bool release = unit->m_release;
 	bool running = unit->m_running;
-	
+
 
 	int shape = unit->m_shape;
 	// printf("phase %f \n", phase);
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
 			// printf("reset: %f %f \n", zreset, unit->m_prevreset);
 			RESETINPUT(d_env_level);
-			if(zreset <= 1.f) { 
+			if(zreset <= 1.f) {
 				DEMANDINPUT_A(d_env_level, i + 1); // remove first level
 			} else {
 				level = DEMANDINPUT_A(d_env_level, i + 1); // jump to first level
 			}
-			
+
 			RESETINPUT(d_env_dur);
 			RESETINPUT(d_env_shape);
 			release = false;
 			running = true;
-			
+
 			phase = 0.f;
-			
+
 		}
-		
+
 		prevreset = zreset;
-		
-		
+
+
 		if (phase <= 0.f && running) {
-						
+
 			// was a release?
 			if(release) {
-				
+
 				running = false;
 				release = false;
 				// printf("release: %f %f \n", phase, level);
 				int doneAction = (int)ZIN0(d_env_doneAction);
 				DoneAction(doneAction, unit);
-				
-			} else {
-			
 
-				
+			} else {
+
+
+
 				// new time
-				
+
 				float dur = DEMANDINPUT_A(d_env_dur, i + 1);
 				// printf("dur: %f \n", dur);
-				if(sc_isnan(dur)) { 
-					release = true; 
+				if(sc_isnan(dur)) {
+					release = true;
 					running = false;
 					phase = MAXFLOAT;
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
-				
+
 				// new shape
 				float count;
 				curve = DEMANDINPUT_A(d_env_shape, i + 1);
 				shape = (int)DEMANDINPUT_A(d_env_shape, i + 1);
-				
+
 				// printf("shapes: %i \n", shape);
 				if (sc_isnan(curve)) curve = unit->m_shape;
 				if (sc_isnan(shape)) shape = unit->m_shape;
-				
+
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
 					count = 1.f;
@@ -981,25 +981,25 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					count = phase;
 				}
 				if(dur * 0.5f < SAMPLEDUR) shape = 1;
-				
-				
+
+
 				// new end level
-				
+
 				double endLevel = DEMANDINPUT_A(d_env_level, i + 1);
 				// printf("levels: %f %f\n", level, endLevel);
-				if (sc_isnan(endLevel)) { 
+				if (sc_isnan(endLevel)) {
 					endLevel = unit->m_endLevel;
 					release = true;
 					phase = 0.f;
 					shape = 0;
 				} else  {
 					endLevel = endLevel * ZIN0(d_env_levelScale) + ZIN0(d_env_levelBias);
-					unit->m_endLevel = endLevel; 
+					unit->m_endLevel = endLevel;
 				}
-			
-				
+
+
 				// calculate shape parameters
-				
+
 				switch (shape) {
 					case shape_Step : {
 						level = endLevel;
@@ -1012,7 +1012,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Sine : {
 						double w = pi / count;
-			
+
 						unit->m_a2 = (endLevel + level) * 0.5;
 						unit->m_b1 = 2. * cos(w);
 						unit->m_y1 = (endLevel - level) * 0.5;
@@ -1021,9 +1021,9 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Welch : {
 						double w = (pi * 0.5) / count;
-						
+
 						unit->m_b1 = 2. * cos(w);
-						
+
 						if (endLevel >= level) {
 							unit->m_a2 = level;
 							unit->m_y1 = 0.;
@@ -1040,31 +1040,31 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 							unit->m_shape = 1; // shape_Linear
 							unit->m_grow = (endLevel - level) / count;
 						} else {
-							double a1 = (endLevel - level) / (1.0 - exp(curve));	
+							double a1 = (endLevel - level) / (1.0 - exp(curve));
 							unit->m_a2 = level + a1;
-							unit->m_b1 = a1; 
+							unit->m_b1 = a1;
 							unit->m_grow = exp(curve / count);
 						}
 					} break;
 					case shape_Squared : {
-						unit->m_y1 = sqrt(level); 
-						unit->m_y2 = sqrt(endLevel); 
+						unit->m_y1 = sqrt(level);
+						unit->m_y2 = sqrt(endLevel);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / count;
 					} break;
 					case shape_Cubed : {
-						unit->m_y1 = pow(level, 0.33333333); 
-						unit->m_y2 = pow(endLevel, 0.33333333); 
+						unit->m_y1 = pow(level, 0.33333333);
+						unit->m_y2 = pow(endLevel, 0.33333333);
 						unit->m_grow = (unit->m_y2 - unit->m_y1) / count;
 					} break;
 				}
-			
+
 			}
 			}
-			
-			
-			
+
+
+
 			if(running) {
-			
+
 			switch (shape) {
 				case shape_Step : {
 				} break;
@@ -1082,9 +1082,9 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					double b1 = unit->m_b1;
 					double y2 = unit->m_y2;
 					double y1 = unit->m_y1;
-						double y0 = b1 * y1 - y2; 
+						double y0 = b1 * y1 - y2;
 						level = a2 - y0;
-						y2 = y1; 
+						y2 = y1;
 						y1 = y0;
 					unit->m_y1 = y1;
 					unit->m_y2 = y2;
@@ -1094,9 +1094,9 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					double b1 = unit->m_b1;
 					double y2 = unit->m_y2;
 					double y1 = unit->m_y1;
-						double y0 = b1 * y1 - y2; 
+						double y0 = b1 * y1 - y2;
 						level = a2 + y0;
-						y2 = y1; 
+						y2 = y1;
 						y1 = y0;
 					unit->m_y1 = y1;
 					unit->m_y2 = y2;
@@ -1126,30 +1126,30 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				case shape_Sustain : {
 				} break;
 			}
-			
+
 			phase--;
-			
+
 			}
-			
-			
+
+
 			ZXP(out) = level;
 			float zgate = ZXP(gate);
-			
-			if(zgate >= 1.f) { 
-				unit->m_running = true; 
+
+			if(zgate >= 1.f) {
+				unit->m_running = true;
 			} else if (zgate > 0.f) {
 				unit->m_running = true;
 				release = true;  // release next time.
-			} else { 
+			} else {
 				unit->m_running = false; // sample and hold
 			}
-			
-			
-			
+
+
+
 	}
 			unit->m_level = level;
 			unit->m_curve = curve;
-			unit->m_shape = shape;	
+			unit->m_shape = shape;
 			unit->m_prevreset = prevreset;
 			unit->m_release = release;
 			unit->m_phase = phase;
@@ -1160,7 +1160,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 void DemandEnvGen_Ctor(DemandEnvGen *unit)
 {
 	// derive the first level.
-	
+
 	unit->m_level = DEMANDINPUT(d_env_level);
 	if(sc_isnan(unit->m_level)) { unit->m_level = 0.f; }
 	unit->m_endLevel = unit->m_level;
@@ -1168,15 +1168,15 @@ void DemandEnvGen_Ctor(DemandEnvGen *unit)
 	unit->m_prevreset = 0.f;
 	unit->m_phase = 0.f;
 	unit->m_running = ZIN0(d_env_gate) > 0.f;
-	
+
 	if(INRATE(d_env_gate) == calc_FullRate) {
 			SETCALC(DemandEnvGen_next_a);
 	} else {
 			SETCALC(DemandEnvGen_next_k);
 	}
-	
+
 	DemandEnvGen_next_k(unit, 1);
-	
+
 }
 
 
@@ -1184,19 +1184,19 @@ void DemandEnvGen_Ctor(DemandEnvGen *unit)
 
 void TDuty_next_da(TDuty *unit, int inNumSamples)
 {
-	
+
 	float *reset = ZIN(duty_reset);
 	float *out = OUT(0);
 
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		float zreset = ZXP(reset);
 		if (zreset > 0.f && prevreset <= 0.f) {
-			
+
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
@@ -1217,26 +1217,26 @@ void TDuty_next_da(TDuty *unit, int inNumSamples)
 		count--;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
-	
+
 }
 
 void TDuty_next_dk(TDuty *unit, int inNumSamples)
 {
-	
+
 	float zreset = ZIN0(duty_reset);
 
 	float *out = OUT(0);
 	float count = unit->m_count;
 	float prevreset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		if (zreset > 0.f && prevreset <= 0.f) {
-			
+
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
@@ -1257,7 +1257,7 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 		count--;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = prevreset;
 }
@@ -1265,21 +1265,21 @@ void TDuty_next_dk(TDuty *unit, int inNumSamples)
 
 void TDuty_next_dd(TDuty *unit, int inNumSamples)
 {
-	
+
 	float *out = OUT(0);
 	float count = unit->m_count;
 	float reset = unit->m_prevreset;
 	float sr = (float) SAMPLERATE;
-	
+
 	for (int i=0; i<inNumSamples; ++i) {
-		
+
 		if (reset <= 0.f) {
 			RESETINPUT(duty_level);
 			RESETINPUT(duty_dur);
 			count = 0.f;
 			reset = DEMANDINPUT_A(duty_reset, i + 1) * sr + reset;
-		} else { 
-			reset--; 
+		} else {
+			reset--;
 		}
 		if (count <= 0.f) {
 			count = DEMANDINPUT_A(duty_dur, i + 1) * sr + count;
@@ -1292,12 +1292,12 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 			if (sc_isnan(x)) x = 0.f;
 			out[i] = x;
 		} else {
-			
+
 			out[i] = 0.f;
 		}
 		count--;
 	}
-	
+
 	unit->m_count = count;
 	unit->m_prevreset = reset;
 
@@ -1310,7 +1310,7 @@ void TDuty_Ctor(TDuty *unit)
 
 			SETCALC(TDuty_next_da);
 			unit->m_prevreset = 0.f;
-		
+
 	} else {
 		if(INRATE(1) == calc_DemandRate) {
 			SETCALC(TDuty_next_dd);
@@ -1369,7 +1369,7 @@ void Dgeom_next(Dgeom *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float grow = DEMANDINPUT_A(2, inNumSamples);
-		if(!sc_isnan(grow)) { unit->m_grow = grow; } 
+		if(!sc_isnan(grow)) { unit->m_grow = grow; }
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
@@ -1410,7 +1410,7 @@ void Dwhite_next(Dwhite *unit, int inNumSamples)
 		unit->m_repeatCount++;
 		float lo = DEMANDINPUT_A(1, inNumSamples);
 		float hi = DEMANDINPUT_A(2, inNumSamples);
-		
+
 		if(!sc_isnan(lo)) { unit->m_lo = lo;}
 		if(!sc_isnan(hi)) { unit->m_range = hi - lo; }
 		float x = unit->mParent->mRGen->frand() * unit->m_range + unit->m_lo;
@@ -1434,13 +1434,13 @@ void Diwhite_next(Diwhite *unit, int inNumSamples)
 	if (inNumSamples) {
 		float lo = DEMANDINPUT_A(1, inNumSamples);
 		float hi = DEMANDINPUT_A(2, inNumSamples);
-		
+
 		if(!sc_isnan(lo)) { unit->m_lo = (int32)floor(DEMANDINPUT_A(1, inNumSamples) + 0.5f); }
-		if(!sc_isnan(hi)) { 
+		if(!sc_isnan(hi)) {
 			int32 hi = (int32)floor(DEMANDINPUT_A(2, inNumSamples) + 0.5f);
-			unit->m_range = hi - unit->m_lo + 1; 
+			unit->m_range = hi - unit->m_lo + 1;
 		}
-			
+
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
@@ -1472,7 +1472,7 @@ void Dbrown_next(Dbrown *unit, int inNumSamples)
 			float lo = DEMANDINPUT_A(1, inNumSamples); if(!sc_isnan(lo)) { unit->m_lo = lo; }
 			float hi = DEMANDINPUT_A(2, inNumSamples); if(!sc_isnan(hi)) { unit->m_hi = hi; }
 			float step = DEMANDINPUT_A(3, inNumSamples); if(!sc_isnan(step)) { unit->m_step = step; }
-			
+
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
@@ -1503,11 +1503,11 @@ void Dbrown_Ctor(Dbrown *unit)
 void Dibrown_next(Dibrown *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-	
+
 		float lo   = DEMANDINPUT_A(1, inNumSamples);    if(!sc_isnan(lo))   { unit->m_lo   = (int32)lo; }
 		float hi   = DEMANDINPUT_A(2, inNumSamples);    if(!sc_isnan(hi))   { unit->m_hi   = (int32)hi; }
 		float step = DEMANDINPUT_A(3, inNumSamples);    if(!sc_isnan(step)) { unit->m_step = (int32)step; }
-		
+
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
@@ -1651,7 +1651,7 @@ void Dser_Ctor(Dser *unit)
 void Drand_next(Drand *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-		
+
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
@@ -1810,9 +1810,9 @@ void Dshuf_next(Dshuf *unit, int inNumSamples)
 void Dshuf_scramble(Dshuf *unit) {
 	int32 i, j, m, k, size;
 	int32 temp;
-	
+
 	size = (int32)(unit->mNumInputs) - 1;
-	
+
 	if (size > 1) {
 		k = size;
 		for (i=0, m=k; i<k-1; ++i, --m) {
@@ -1828,15 +1828,15 @@ void Dshuf_scramble(Dshuf *unit) {
 void Dshuf_Ctor(Dshuf *unit)
 {
 	int32 i, size;
-	
+
 	size = (int32)(unit->mNumInputs) - 1;
-	
+
 	unit->m_indices = (int32*)RTAlloc(unit->mWorld, size * sizeof(int32));
-	
+
 	for(i=0; i < size; ++i) {
 		unit->m_indices[i] = i + 1;
 	}
-		
+
 	SETCALC(Dshuf_next);
 	Dshuf_next(unit, 0);
 	OUT0(0) = 0.f;
@@ -1876,29 +1876,29 @@ void Dswitch1_Ctor(Dswitch1 *unit)
 
 void Dswitch_next(Dswitch *unit, int inNumSamples)
 {
-	int index; 
+	int index;
 	float ival;
 	if (inNumSamples) {
 		float val = DEMANDINPUT_A(unit->m_index, inNumSamples);
 		//printf("index: %i\n", (int) val);
 		if(sc_isnan(val)) {
 			ival = DEMANDINPUT_A(0, inNumSamples);
-		
-			if(sc_isnan(ival)) { 
-				OUT0(0) = ival; 
-				return; 
+
+			if(sc_isnan(ival)) {
+				OUT0(0) = ival;
+				return;
 			}
-			
+
 			index = (int32)floor(ival + 0.5f);
 			index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
 			val = DEMANDINPUT_A(unit->m_index, inNumSamples);
-			
+
 			RESETINPUT(unit->m_index);
 			// printf("resetting index: %i\n", unit->m_index);
 			unit->m_index = index;
 		}
 		OUT0(0) = val;
-		
+
 	} else {
 		printf("...\n");
 		for (int i=0; i<unit->mNumInputs; ++i) {
@@ -1925,12 +1925,12 @@ void Dswitch_Ctor(Dswitch *unit)
 void Dstutter_next(Dstutter *unit, int inNumSamples)
 {
 	if (inNumSamples) {
-	
+
 		if (unit->m_repeatCount >= unit->m_repeats) {
-			
+
 			float val = DEMANDINPUT_A(1, inNumSamples);
 			float repeats = DEMANDINPUT_A(0, inNumSamples);
-		
+
 			if(sc_isnan(repeats) || sc_isnan(val)) {
 				OUT0(0) = NAN;
 				return;
@@ -1940,17 +1940,17 @@ void Dstutter_next(Dstutter *unit, int inNumSamples)
 				unit->m_repeatCount = 0.f;
 			}
 		}
-		
+
 		OUT0(0) = unit->m_value;
 		unit->m_repeatCount++;
 
 	} else {
-	
+
 		unit->m_repeats = -1.f;
 		unit->m_repeatCount = 0.f;
 		RESETINPUT(0);
 		RESETINPUT(1);
-		
+
 	}
 }
 
@@ -1983,8 +1983,8 @@ void Dpoll_next(Dpoll *unit, int inNumSamples)
 void Dpoll_Ctor(Dpoll *unit)
 {
 	SETCALC(Dpoll_next);
-	unit->m_id = IN0(3); // number of chars in the id string 
-	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));	
+	unit->m_id = IN0(3); // number of chars in the id string
+	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));
 	for(int i = 0; i < (int)unit->m_id; i++) {
 		unit->m_id_string[i] = (char)IN0(4+i);
 	}
@@ -2025,7 +2025,7 @@ void Donce_Ctor(Donce *unit)
 }
 
 
-inline double sc_loop(Unit *unit, double in, double hi, int loop) 
+inline double sc_loop(Unit *unit, double in, double hi, int loop)
 {
 	// avoid the divide if possible
 	if (in >= hi) {
@@ -2043,8 +2043,8 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		in += hi;
 		if (in >= 0.) return in;
 	} else return in;
-	
-	return in - hi * floor(in/hi); 
+
+	return in - hi * floor(in/hi);
 }
 
 #define D_CHECK_BUF \
@@ -2053,7 +2053,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		ClearUnitOutputs(unit, 1); \
 		return; \
 	}
-	
+
 #define D_GET_BUF \
 	float fbufnum  = DEMANDINPUT_A(0, inNumSamples);; \
 	if (fbufnum != unit->m_fbufnum) { \
@@ -2080,18 +2080,18 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
 	int mask __attribute__((__unused__)) = buf->mask; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
 
 void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 {
-	int32 loop     = (int32)DEMANDINPUT_A(2, inNumSamples);	
-	
+	int32 loop     = (int32)DEMANDINPUT_A(2, inNumSamples);
+
 	D_GET_BUF
 	D_CHECK_BUF
-	
+
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
-	
+
 	double phase;
 	if (inNumSamples)
 		{
@@ -2101,10 +2101,10 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 					return;
 			}
 			phase = x;
-			
-			phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
-			int32 iphase = (int32)phase; 
-			float* table1 = bufData + iphase * bufChannels; 		
+
+			phase = sc_loop((Unit*)unit, phase, loopMax, loop);
+			int32 iphase = (int32)phase;
+			float* table1 = bufData + iphase * bufChannels;
 			OUT0(0) = table1[0];
 		}
 		else
@@ -2115,22 +2115,22 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 
 void Dbufrd_Ctor(Dbufrd *unit)
 {
-  
+
   SETCALC(Dbufrd_next);
 
   unit->m_fbufnum = -1e9f;
 
   Dbufrd_next(unit, 0);
-  OUT0(0) = 0.f;    
+  OUT0(0) = 0.f;
 }
 
 ////////////////////////////////////
 
 void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 {
- 
-	int32 loop     = (int32)DEMANDINPUT_A(3, inNumSamples);	
-	
+
+	int32 loop     = (int32)DEMANDINPUT_A(3, inNumSamples);
+
 	D_GET_BUF
 	D_CHECK_BUF
 
@@ -2149,11 +2149,11 @@ void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 			val = DEMANDINPUT_A(2, inNumSamples);
 			if (sc_isnan(val)) {
 					OUT0(0) = NAN;
-					return;	
+					return;
 			}
-			
-			phase = sc_loop((Unit*)unit, phase, loopMax, loop); 
-			int32 iphase = (int32)phase; 
+
+			phase = sc_loop((Unit*)unit, phase, loopMax, loop);
+			int32 iphase = (int32)phase;
 			float* table0 = bufData + iphase * bufChannels;
 			table0[0] = val;
 			OUT0(0) = val;
@@ -2167,7 +2167,7 @@ void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 
 void Dbufwr_Ctor(Dbufwr *unit)
 {
-  
+
   SETCALC(Dbufwr_next);
 
   unit->m_fbufnum = -1e9f;

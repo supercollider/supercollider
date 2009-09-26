@@ -37,22 +37,22 @@ int listDevices(struct VMGlobals *g, int type)
 {
 	int numDevices, num = 0;
     PyrSlot *a = g->sp-2;
-	
+
 //	unsigned long count;
     UInt32 count;
     OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
-	AudioDeviceID *devices = (AudioDeviceID*)malloc(count);	
+	AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
 	err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
 	if (err!=kAudioHardwareNoError)
 	{
 		free(devices);
 		return 0;
 	}
-	
+
 	numDevices = count / sizeof(AudioDeviceID);
-	
+
 	int i;
-	
+
 	if (type<BOTH)
 	{
 		for (i=0; i<numDevices; i++)
@@ -69,17 +69,17 @@ int listDevices(struct VMGlobals *g, int type)
 		}
 	}
 	else num = numDevices;
-	
+
     PyrObject* devArray = newPyrArray(g->gc, num * sizeof(PyrObject), 0, true);
 	SetObject(a, devArray);
-	
+
 	int j = 0;
 	for (i=0; i<numDevices; i++)
 	{
 		if (!devices[i]) continue;
-		
+
 		err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
-		if (err != kAudioHardwareNoError) 
+		if (err != kAudioHardwareNoError)
 		{
 			break;
 		}
@@ -91,12 +91,12 @@ int listDevices(struct VMGlobals *g, int type)
 			free(name);
 			break;
 		}
-		
+
         PyrString *string = newPyrString(g->gc, name, 0, true);
         SetObject(devArray->slots+j, string);
         devArray->size++;
         g->gc->GCWrite(devArray, (PyrObject*)string);
-		
+
 		free(name);
 		j++;
 	}
@@ -106,7 +106,7 @@ int listDevices(struct VMGlobals *g, int type)
 }
 
 int prListAudioDevices(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	int in = 0;
 	int out = 0;
 	slotIntVal(g->sp, &out);
@@ -122,6 +122,6 @@ int prListAudioDevices(struct VMGlobals *g, int numArgsPushed)
 }
 
 void initCoreAudioPrimitives()
-{	
+{
 	definePrimitive(nextPrimitiveIndex(), 0, "_ListAudioDevices", prListAudioDevices, 3, 0);
 }

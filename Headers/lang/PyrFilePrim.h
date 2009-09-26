@@ -22,7 +22,7 @@
 
 #include "PyrObject.h"
 
-struct PyrFile : public PyrObjectHdr 
+struct PyrFile : public PyrObjectHdr
 {
 	PyrSlot fileptr;
 };

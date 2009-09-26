@@ -57,7 +57,7 @@ void SndBuf_Init(SndBuf *buf)
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
-	//buf->sndfile = 0;	
+	//buf->sndfile = 0;
 }
 
 char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restrictBase);
@@ -65,7 +65,7 @@ char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restri
 	char strbuf[PATH_MAX];
 	int offset = 0;
 	int remain = PATH_MAX;
-	
+
 #ifdef HAVE_LIBCURL
 	// Not relevant for URLs
 	if(strncmp(inPath, "http://", 7)==0 || strncmp(inPath, "https://", 8)==0 || strncmp(inPath, "ftp://", 6)==0){
@@ -143,9 +143,9 @@ void SC_SequencedCommand::SendDoneWithIntValue(const char *inCommandName, int va
 void SC_SequencedCommand::CallEveryStage()
 {
 	switch (mNextStage) {
-		case 1 : if (!Stage1()) break; mNextStage++; 
-		case 2 : if (!Stage2()) break; mNextStage++; 
-		case 3 : if (!Stage3()) break; mNextStage++; 
+		case 1 : if (!Stage1()) break; mNextStage++;
+		case 2 : if (!Stage2()) break; mNextStage++;
+		case 3 : if (!Stage3()) break; mNextStage++;
 		case 4 : Stage4(); break;
 	}
 	Delete();
@@ -170,22 +170,22 @@ void SC_SequencedCommand::CallNextStage()
 {
 	bool sendAgain = false;
 	FifoMsg msg;
-	
+
 	int isRealTime = mNextStage & 1;
 	switch (mNextStage) {
-		case 1 : 
+		case 1 :
 			sendAgain = Stage1(); // RT
 			break;
-		case 2 : 
+		case 2 :
 			sendAgain = Stage2(); // NRT
 			break;
-		case 3 : 
+		case 3 :
 			sendAgain = Stage3(); // RT
 			break;
-		case 4 : 
+		case 4 :
 			Stage4(); 			// NRT
 			break;
-	} 
+	}
 	mNextStage++;
 	SC_AudioDriver *driver = AudioDriver(mWorld);
 	if (sendAgain) {
@@ -252,7 +252,7 @@ int SyncCmd::Init(char *inData, int inSize)
 	return kSCErr_None;
 }
 
-void SyncCmd::CallDestructor() 
+void SyncCmd::CallDestructor()
 {
 	this->~SyncCmd();
 }
@@ -276,7 +276,7 @@ void SyncCmd::Stage4()
 	packet.addtag('i');
 
 	packet.addi(mID);
-	
+
 	SendReply(&mReplyAddress, packet.data(), packet.size());
 }
 
@@ -293,13 +293,13 @@ int BufAllocCmd::Init(char *inData, int inSize)
 	mBufIndex = msg.geti();
 	mNumFrames = msg.geti();
 	mNumChannels = msg.geti(1);
-		
+
 	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
 
-void BufAllocCmd::CallDestructor() 
+void BufAllocCmd::CallDestructor()
 {
 	this->~BufAllocCmd();
 }
@@ -343,7 +343,7 @@ BufGenCmd::~BufGenCmd()
 {
 	World_Free(mWorld, mData);
 }
-	
+
 int BufGenCmd::Init(char *inData, int inSize)
 {
 	mSize = inSize;
@@ -352,19 +352,19 @@ int BufGenCmd::Init(char *inData, int inSize)
 
 	sc_msg_iter msg(mSize, mData);
 	mBufIndex = msg.geti();
-	
+
 	int32 *genName = msg.gets4();
 	if (!genName) return kSCErr_WrongArgType;
-	
+
 	mBufGen = GetBufGen(genName);
 	if (!mBufGen) return kSCErr_BufGenNotFound;
 
 	mMsg = msg;
-	
+
 	return kSCErr_None;
 }
 
-void BufGenCmd::CallDestructor() 
+void BufGenCmd::CallDestructor()
 {
 	this->~BufGenCmd();
 }
@@ -372,7 +372,7 @@ void BufGenCmd::CallDestructor()
 bool BufGenCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	
+
 	mFreeData = buf->data;
 	(*mBufGen->mBufGenFunc)(mWorld, buf, &mMsg);
 	if (buf->data == mFreeData) mFreeData = NULL;
@@ -410,13 +410,13 @@ int BufFreeCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
 
-void BufFreeCmd::CallDestructor() 
+void BufFreeCmd::CallDestructor()
 {
 	this->~BufFreeCmd();
 }
@@ -433,11 +433,11 @@ bool BufFreeCmd::Stage2()
 bool BufFreeCmd::Stage3()
 {
 	SndBuf *buf = World_GetBuf(mWorld, mBufIndex);
-	
+
 	SndBuf_Init(buf);
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
-	
+
 	return true;
 }
 
@@ -458,13 +458,13 @@ int BufZeroCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
 
-void BufZeroCmd::CallDestructor() 
+void BufZeroCmd::CallDestructor()
 {
 	this->~BufZeroCmd();
 }
@@ -499,7 +499,7 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -509,10 +509,10 @@ int BufAllocReadCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
@@ -523,7 +523,7 @@ BufAllocReadCmd::~BufAllocReadCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void BufAllocReadCmd::CallDestructor() 
+void BufAllocReadCmd::CallDestructor()
 {
 	this->~BufAllocReadCmd();
 }
@@ -566,21 +566,21 @@ bool BufAllocReadCmd::Stage2()
 	if (mFileOffset < 0) mFileOffset = 0;
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
-	
+
 	// alloc data size
 	mFreeData = buf->data;
 	SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames, fileinfo.samplerate);
 	if (err) goto leave;
-	
+
 	sf_seek(sf, mFileOffset, SEEK_SET);
 	sf_readf_float(sf, buf->data, mNumFrames);
-	
+
 leave:
 	mSndBuf = *buf;
 	sf_close(sf);
-	
+
 	return true;
-#endif	
+#endif
 }
 
 bool BufAllocReadCmd::Stage3()
@@ -588,11 +588,11 @@ bool BufAllocReadCmd::Stage3()
 #ifdef NO_LIBSNDFILE
 	return false;
 #else
-	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
-	
+
 	return true;
 #endif
 }
@@ -615,7 +615,7 @@ int BufReadCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -625,14 +625,14 @@ int BufReadCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
 	mLeaveFileOpen = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
-	
+
 	return kSCErr_None;
 }
 
@@ -641,7 +641,7 @@ BufReadCmd::~BufReadCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void BufReadCmd::CallDestructor() 
+void BufReadCmd::CallDestructor()
 {
 	this->~BufReadCmd();
 }
@@ -658,9 +658,9 @@ bool BufReadCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
-	
+
 #ifndef SC_WIN32
-	FILE* fp = fopenLocalOrRemote(mFilename, "r");	
+	FILE* fp = fopenLocalOrRemote(mFilename, "r");
 	if (!fp) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
@@ -690,18 +690,18 @@ bool BufReadCmd::Stage2()
 		scprintf(str);
 		return false;
 	}
-		
+
 	if (mFileOffset < 0) mFileOffset = 0;
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames < 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
-	
+
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
 	sf_seek(sf, mFileOffset, SEEK_SET);
 	if (mNumFrames > 0) {
 		sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
-	
+
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
 
@@ -715,7 +715,7 @@ bool BufReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
-	
+
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
@@ -787,7 +787,7 @@ int BufAllocReadChannelCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -797,7 +797,7 @@ int BufAllocReadChannelCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti();
 
@@ -813,7 +813,7 @@ BufAllocReadChannelCmd::~BufAllocReadChannelCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void BufAllocReadChannelCmd::CallDestructor() 
+void BufAllocReadChannelCmd::CallDestructor()
 {
 	this->~BufAllocReadChannelCmd();
 }
@@ -826,7 +826,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	return false;
 #else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-	
+
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
@@ -840,7 +840,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	if (mFileOffset < 0) mFileOffset = 0;
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
-	
+
 	if (mNumChannels == 0) {
 		// alloc data size
 		mFreeData = buf->data;
@@ -872,22 +872,22 @@ bool BufAllocReadChannelCmd::Stage2()
 		// free temp buffer
 		free(data);
 	}
-	
+
 leave:
 	mSndBuf = *buf;
 	sf_close(sf);
-	
+
 	return true;
 #endif
 }
 
 bool BufAllocReadChannelCmd::Stage3()
 {
-	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);	
+	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
-	
+
 	return true;
 }
 
@@ -909,7 +909,7 @@ int BufReadChannelCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -919,7 +919,7 @@ int BufReadChannelCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	mFileOffset = msg.geti();
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
@@ -928,7 +928,7 @@ int BufReadChannelCmd::Init(char *inData, int inSize)
 	InitChannels(msg);
 
 	GET_COMPLETION_MSG(msg);
-	
+
 	return kSCErr_None;
 }
 
@@ -937,7 +937,7 @@ BufReadChannelCmd::~BufReadChannelCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void BufReadChannelCmd::CallDestructor() 
+void BufReadChannelCmd::CallDestructor()
 {
 	this->~BufReadChannelCmd();
 }
@@ -1021,7 +1021,7 @@ bool BufReadChannelCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
-	
+
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 	return true;
@@ -1052,7 +1052,7 @@ int BufWriteCmd::Init(char *inData, int inSize)
 #else
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -1069,7 +1069,7 @@ int BufWriteCmd::Init(char *inData, int inSize)
 	mNumFrames = msg.geti(-1);
 	mBufOffset = msg.geti();
 	mLeaveFileOpen = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
 
 	memset(&mFileInfo, 0, sizeof(mFileInfo));
@@ -1082,7 +1082,7 @@ BufWriteCmd::~BufWriteCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void BufWriteCmd::CallDestructor() 
+void BufWriteCmd::CallDestructor()
 {
 	this->~BufWriteCmd();
 }
@@ -1110,13 +1110,13 @@ bool BufWriteCmd::Stage2()
 	}
 
 	if (mNumFrames < 0 || mNumFrames > buf->frames) mNumFrames = buf->frames;
-	
+
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
 	if (mNumFrames > 0) {
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
-	
+
 	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
 	else sf_close(sf);
 
@@ -1146,13 +1146,13 @@ int BufCloseCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mBufIndex = msg.geti();
-	
+
 	GET_COMPLETION_MSG(msg);
 
 	return kSCErr_None;
 }
 
-void BufCloseCmd::CallDestructor() 
+void BufCloseCmd::CallDestructor()
 {
 	this->~BufCloseCmd();
 }
@@ -1191,7 +1191,7 @@ AudioQuitCmd::AudioQuitCmd(World *inWorld, ReplyAddress *inReplyAddress)
 {
 }
 
-void AudioQuitCmd::CallDestructor() 
+void AudioQuitCmd::CallDestructor()
 {
 	this->~AudioQuitCmd();
 }
@@ -1209,7 +1209,7 @@ bool AudioQuitCmd::Stage3()
 	return false;
 #else
 	return true;
-#endif	
+#endif
 }
 
 void AudioQuitCmd::Stage4()
@@ -1225,7 +1225,7 @@ AudioStatusCmd::AudioStatusCmd(World *inWorld, ReplyAddress *inReplyAddress)
 {
 }
 
-void AudioStatusCmd::CallDestructor() 
+void AudioStatusCmd::CallDestructor()
 {
 	this->~AudioStatusCmd();
 }
@@ -1251,7 +1251,7 @@ bool AudioStatusCmd::Stage2()
 	packet.addi(mWorld->mNumGraphs);
 	packet.addi(mWorld->mNumGroups);
 	packet.addi(mWorld->hw->mGraphDefLib->NumItems());
-	
+
 	SC_AudioDriver *driver = mWorld->hw->mAudioDriver;
 	packet.addf(driver->GetAvgCPU());
 	packet.addf(driver->GetPeakCPU());
@@ -1274,11 +1274,11 @@ int NotifyCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mOnOff = msg.geti();
-	
+
 	return kSCErr_None;
 }
 
-void NotifyCmd::CallDestructor() 
+void NotifyCmd::CallDestructor()
 {
 	this->~NotifyCmd();
 }
@@ -1286,7 +1286,7 @@ void NotifyCmd::CallDestructor()
 bool NotifyCmd::Stage2()
 {
 	HiddenWorld *hw = mWorld->hw;
-	
+
 	if (mOnOff) {
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
@@ -1296,16 +1296,16 @@ bool NotifyCmd::Stage2()
 				return false;
 			}
 		}
-		
+
 		// add reply address to user table
 		if (hw->mNumUsers >= hw->mMaxUsers) {
 			SendFailure(&mReplyAddress, "/notify", "too many users\n");
 			scprintf("too many users\n");
 			return false;
 		}
-			
+
 		hw->mUsers[hw->mNumUsers++] = mReplyAddress;
-		
+
 		SendDone("/notify");
 	} else {
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
@@ -1316,7 +1316,7 @@ bool NotifyCmd::Stage2()
 				return false;
 			}
 		}
-		
+
 		SendFailure(&mReplyAddress, "/notify", "not registered\n");
 		scprintf("not registered\n");
 	}
@@ -1341,12 +1341,12 @@ void SendFailureCmd::InitSendFailureCmd(const char *inCmdName, const char* inErr
 {
 	mCmdName = (char*)World_Alloc(mWorld, strlen(inCmdName)+1);
 	strcpy(mCmdName, inCmdName);
-	
+
 	mErrString = (char*)World_Alloc(mWorld, strlen(inErrString)+1);
 	strcpy(mErrString, inErrString);
 }
 
-void SendFailureCmd::CallDestructor() 
+void SendFailureCmd::CallDestructor()
 {
 	this->~SendFailureCmd();
 }
@@ -1367,15 +1367,15 @@ RecvSynthDefCmd::RecvSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
 int RecvSynthDefCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
-	
+
 	int size = msg.getbsize();
 	if (!size) throw kSCErr_WrongArgType;
-	
+
 	mBuffer = (char*)World_Alloc(mWorld, size);
 	msg.getb(mBuffer, size);
-	
+
 	GET_COMPLETION_MSG(msg);
-	
+
 	mDefs = 0;
 	return kSCErr_None;
 }
@@ -1385,7 +1385,7 @@ RecvSynthDefCmd::~RecvSynthDefCmd()
 	World_Free(mWorld, mBuffer);
 }
 
-void RecvSynthDefCmd::CallDestructor() 
+void RecvSynthDefCmd::CallDestructor()
 {
 	this->~RecvSynthDefCmd();
 }
@@ -1393,7 +1393,7 @@ void RecvSynthDefCmd::CallDestructor()
 bool RecvSynthDefCmd::Stage2()
 {
 	mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
-	
+
 	return true;
 }
 
@@ -1419,7 +1419,7 @@ LoadSynthDefCmd::LoadSynthDefCmd(World *inWorld, ReplyAddress *inReplyAddress)
 int LoadSynthDefCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -1429,9 +1429,9 @@ int LoadSynthDefCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	GET_COMPLETION_MSG(msg);
-	
+
 	mDefs = 0;
 	return kSCErr_None;
 }
@@ -1441,7 +1441,7 @@ LoadSynthDefCmd::~LoadSynthDefCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void LoadSynthDefCmd::CallDestructor() 
+void LoadSynthDefCmd::CallDestructor()
 {
 	this->~LoadSynthDefCmd();
 }
@@ -1461,7 +1461,7 @@ bool LoadSynthDefCmd::Stage2()
 	}
 #endif
 	mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
-	
+
 #ifdef HAVE_LIBCURL
 	if(isRemote){
 		remove(fname);
@@ -1492,7 +1492,7 @@ LoadSynthDefDirCmd::LoadSynthDefDirCmd(World *inWorld, ReplyAddress *inReplyAddr
 int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
-	
+
 	const char *filename = msg.gets();
 	if (!filename) return kSCErr_WrongArgType;
 
@@ -1502,9 +1502,9 @@ int LoadSynthDefDirCmd::Init(char *inData, int inSize)
 		mFilename = (char*)World_Alloc(mWorld, strlen(filename)+1);
 		strcpy(mFilename, filename);
 	}
-	
+
 	GET_COMPLETION_MSG(msg);
-	
+
 	mDefs = 0;
 	return kSCErr_None;
 }
@@ -1514,7 +1514,7 @@ LoadSynthDefDirCmd::~LoadSynthDefDirCmd()
 	World_Free(mWorld, mFilename);
 }
 
-void LoadSynthDefDirCmd::CallDestructor() 
+void LoadSynthDefDirCmd::CallDestructor()
 {
 	this->~LoadSynthDefDirCmd();
 }
@@ -1522,7 +1522,7 @@ void LoadSynthDefDirCmd::CallDestructor()
 bool LoadSynthDefDirCmd::Stage2()
 {
 	mDefs = GraphDef_LoadDir(mWorld, mFilename, mDefs);
-	
+
 	return true;
 }
 
@@ -1553,7 +1553,7 @@ int SendReplyCmd::Init(char *inData, int inSize)
 	return kSCErr_None;
 }
 
-void SendReplyCmd::CallDestructor() 
+void SendReplyCmd::CallDestructor()
 {
 	this->~SendReplyCmd();
 }
@@ -1580,8 +1580,8 @@ int PerformAsynchronousCommand(
 )
 {
 	void* space = World_Alloc(inWorld, sizeof(AsyncPlugInCmd));
-	AsyncPlugInCmd *cmd = new (space) AsyncPlugInCmd(inWorld, (ReplyAddress*)replyAddr, 
-								cmdName, cmdData, stage2, stage3, stage4, cleanup, 
+	AsyncPlugInCmd *cmd = new (space) AsyncPlugInCmd(inWorld, (ReplyAddress*)replyAddr,
+								cmdName, cmdData, stage2, stage3, stage4, cleanup,
 								completionMsgSize, completionMsgData);
 	if (!cmd) return kSCErr_Failed;
 	if (inWorld->mRealTime) cmd->CallNextStage();
@@ -1591,7 +1591,7 @@ int PerformAsynchronousCommand(
 
 ///////////////////////////////////////////////////////////////////////////
 
-AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress, 
+AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress,
 			const char* cmdName,
 			void *cmdData,
 			AsyncStageFn stage2, // stage2 is non real time
@@ -1601,8 +1601,8 @@ AsyncPlugInCmd::AsyncPlugInCmd(World *inWorld, ReplyAddress *inReplyAddress,
 			int completionMsgSize,
 			void* completionMsgData)
 	: SC_SequencedCommand(inWorld, inReplyAddress),
-	mCmdName(cmdName), mCmdData(cmdData), 
-	mStage2(stage2), mStage3(stage3), mStage4(stage4), 
+	mCmdName(cmdName), mCmdData(cmdData),
+	mStage2(stage2), mStage3(stage3), mStage4(stage4),
 	mCleanup(cleanup)
 {
 	if (completionMsgSize && completionMsgData) {
@@ -1618,13 +1618,13 @@ AsyncPlugInCmd::~AsyncPlugInCmd()
 	if (mMsgData) World_Free(mWorld, mMsgData);
 }
 
-void AsyncPlugInCmd::CallDestructor() 
+void AsyncPlugInCmd::CallDestructor()
 {
 	this->~AsyncPlugInCmd();
 }
 
 bool AsyncPlugInCmd::Stage2()
-{	
+{
 	bool result = !mStage2 || (mStage2)(mWorld, mCmdData);
 	return result;
 }

@@ -39,25 +39,25 @@ class PyrDeepFreezer
 {
 public:
 	PyrDeepFreezer(VMGlobals *inG)
-		: g(inG), objectArray(initialObjectArray), numObjects(0), 
+		: g(inG), objectArray(initialObjectArray), numObjects(0),
 			objectArrayCapacity( kDeepCopierObjectArrayInitialCapacity )
 		{
 		}
-	
+
 	~PyrDeepFreezer()
 		{
 			if (objectArrayCapacity > kDeepCopierObjectArrayInitialCapacity) {
 				g->allocPool->Free(objectArray);
 			}
 		}
-			
+
 	long doDeepFreeze(PyrSlot *objectSlot)
 		{
 			long err = errNone;
-				
+
 			try {
 				if (IsObj(objectSlot)) {
-					constructObjectArray(objectSlot->uo);				
+					constructObjectArray(objectSlot->uo);
 					for (int i=0; i<numObjects; ++i) {
 						g->gc->BecomePermanent( objectArray[i] );
 					}
@@ -68,11 +68,11 @@ public:
 			}
 			return err;
 		}
-	
+
 private:
-			
+
 	void recurse(PyrObject *obj, int n)
-		{	
+		{
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
 				if (IsObj(slot)) constructObjectArray(slot->uo);
@@ -82,7 +82,7 @@ private:
 	void growObjectArray()
 		{
 			int32 newObjectArrayCapacity = objectArrayCapacity << 1;
-			
+
 			int32 newSize = newObjectArrayCapacity * sizeof(PyrObject*);
 			PyrObject** newArray = (PyrObject**)g->allocPool->Alloc(newSize);
 			memcpy(newArray, objectArray, numObjects * sizeof(PyrObject*));
@@ -92,15 +92,15 @@ private:
 			objectArrayCapacity = newObjectArrayCapacity;
 			objectArray = newArray;
 		}
-		
+
 	void putObject(PyrObject *obj)
 		{
 			obj->SetMark();
 			obj->scratch1 = numObjects;
-			
+
 			// expand array if needed
 			if (numObjects >= objectArrayCapacity) growObjectArray();
-			
+
 			// add to array
 			objectArray[numObjects++] = obj;
 		}
@@ -108,7 +108,7 @@ private:
 	void constructObjectArray(PyrObject *obj)
 			{
 				if (obj->IsPermanent()) return;
-				
+
 				if (!obj->IsMarked()) {
 					if (isKindOf(obj, class_process)) {
 						throw std::runtime_error("cannot freeze Process.\n");
@@ -137,13 +137,13 @@ private:
 					}
 				}
 			}
-			
+
 	VMGlobals *g;
-		
+
 	PyrObject **objectArray;
 	int32 numObjects;
 	int32 objectArrayCapacity;
-		
+
 	PyrObject *initialObjectArray[kDeepCopierObjectArrayInitialCapacity];
 };
 

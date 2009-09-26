@@ -2,7 +2,7 @@
 CXMenu : SCViewHolder { // multiple actions
 
 	var <nameFuncs, <layout, <>backColor, <>stringColor, <>closeOnSelect=true;
-		
+
 	var lastButton,buttonWidth=150,focus = 0,isMyLayout=false;
 
 	// name -> { }, name -> { }, ...
@@ -43,11 +43,11 @@ CXMenu : SCViewHolder { // multiple actions
 	addToGui { arg nf,resize=true;
 		var ab;
 		ab = ActionButton(view,nf.key,{
-				nf.value.value; 
-				if(closeOnSelect,{ 
+				nf.value.value;
+				if(closeOnSelect,{
 					layout.close
 				},{
-					if(lastButton.notNil,{ 
+					if(lastButton.notNil,{
 						lastButton.background_(Color.new255(112, 128, 144));
 						lastButton.labelColor_(Color.white).refresh;
 					});
@@ -90,10 +90,10 @@ CXMenu : SCViewHolder { // multiple actions
 	keyDownResponder {
 		var kdr;
 		kdr = UnicodeResponder.new;
-		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63233, { 
+		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63233, {
 			this.focusOn(focus + 1);
 		});
-		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63232 ,{ 
+		kdr.registerUnicode(KeyCodeResponder.functionKeyModifier , 63232 ,{
 			this.focusOn(focus - 1);
 		});
 		// enter

@@ -109,7 +109,7 @@ extern PyrSymbol *s_closed;
 - (IBAction)advancedFindReplaceAction:(id)sender;
 - (void) callSCLangWithMethod: (PyrSymbol*) method;
 - (BOOL) promptToSave;
-- (void) setPromptToSave: (BOOL) flag; 
+- (void) setPromptToSave: (BOOL) flag;
 - (void) keyUp: (NSEvent*) event;
 - (void) keyDown: (NSEvent*) event;
 - (BOOL) handleKeyDown: (NSEvent*) event;

@@ -1,6 +1,6 @@
 
 Trig1 : UGen {
-	
+
 	*ar { arg in = 0.0, dur = 0.1;
 		^this.multiNew('audio', in, dur)
 	}
@@ -36,7 +36,7 @@ SendReply : SendTrig {
 		};
 		^0.0		// SendReply has no output
 	}
-	
+
 	*ar { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		if(values.containsSeqColl.not) { values = values.bubble };
 		[trig, cmdName, values, replyID].flop.do { |args|
@@ -44,7 +44,7 @@ SendReply : SendTrig {
 		};
 		^0.0		// SendReply has no output
 	}
-	
+
 	*new1 { arg rate, trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		var ascii = cmdName.ascii;
 		^super.new1(*[rate, trig, replyID, ascii.size].addAll(ascii).addAll(values));
@@ -56,21 +56,21 @@ TDelay : Trig1 {
 }
 
 Latch : UGen {
-	
+
 	*ar { arg in = 0.0, trig = 0.0;
 		^this.multiNew('audio', in, trig)
 	}
 	*kr { arg in = 0.0, trig = 0.0;
 		^this.multiNew('control', in, trig)
 	}
-	
+
 }
 
-Gate : Latch {	
+Gate : Latch {
 }
 
 PulseCount : UGen {
-	
+
 	*ar { arg trig = 0.0, reset = 0.0;
 		^this.multiNew('audio', trig, reset)
 	}
@@ -105,7 +105,7 @@ RunningMax : Peak {
 
 
 Stepper : UGen {
-	
+
 	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
 		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
 	}
@@ -117,21 +117,21 @@ Stepper : UGen {
 
 
 PulseDivider : UGen {
-	
+
 	*ar { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('audio', trig, div, start)
 	}
 	*kr { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('control', trig, div, start)
 	}
-	
+
 }
 
 SetResetFF : PulseCount {
 }
 
 ToggleFF : UGen {
-	
+
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
 	}
@@ -183,7 +183,7 @@ Phasor : UGen {
 }
 
 PeakFollower : UGen {
-	
+
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
 	}
@@ -193,9 +193,9 @@ PeakFollower : UGen {
 }
 
 Pitch : MultiOutUGen {
-	
-	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0, 
-			execFreq = 100.0, maxBinsPerOctave = 16, median = 1, 
+
+	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0,
+			execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
 			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1;
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
 			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample)
@@ -219,11 +219,11 @@ InRange : UGen
 InRect : UGen
 {
 	*ar { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('audio', x, y, rect.left, rect.top, 
+		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
 	}
 	*kr { arg x = 0.0, y = 0.0, rect;
-		^this.multiNew('control', x, y, rect.left, rect.top, 
+		^this.multiNew('control', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
 	}
 }
@@ -257,7 +257,7 @@ MostChange : UGen
 LeastChange : MostChange {}
 
 LastValue : UGen {
-	
+
 	*ar { arg in=0.0, diff=0.01;
 		^this.multiNew('audio', in, diff)
 	}

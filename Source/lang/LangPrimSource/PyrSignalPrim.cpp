@@ -26,7 +26,7 @@
 #include "PyrMessage.h"
 #include "SC_Constants.h"
 #include "clz.h"
-extern "C" { 
+extern "C" {
 #include "fftlib.h"
 }
 #include <stdlib.h>
@@ -39,10 +39,10 @@ int prSignalFill(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int err;
 	float value;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
 	signal_fill(a->uo, value);
@@ -54,10 +54,10 @@ int prSignalScale(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int err;
 	float value;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
 	signal_scale(a->uo, value);
@@ -69,10 +69,10 @@ int prSignalOffset(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int err;
 	float value;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
 	signal_offset(a->uo, value);
@@ -86,7 +86,7 @@ int prSignalString(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *signal;
 	float *x;
 	char str[128];
-	
+
 	a = g->sp;
 	slotString(a, str);
 
@@ -106,9 +106,9 @@ int prSignalString(struct VMGlobals *g, int numArgsPushed)
 int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->uf = signal_findpeak(a->uo);
 	return errNone;
 }
@@ -117,23 +117,23 @@ int prSignalNormalize(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	err = slotIntVal(b, &start);
 	if (err) {
 		if (IsNil(c)) start = 0;
 		else return err;
 	}
-	
+
 	err = slotIntVal(c, &end);
 	if (err) {
 		if (IsNil(c)) end = a->uo->size;
 		else return err;
 	}
-	
+
 	signal_normalize_range(a->uo, start, end);
 	return errNone;
 }
@@ -141,9 +141,9 @@ int prSignalNormalize(struct VMGlobals *g, int numArgsPushed)
 int prSignalNormalizeTransferFn(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	signal_normalize_transfer_fn(a->uo);
 	return errNone;
 }
@@ -151,9 +151,9 @@ int prSignalNormalizeTransferFn(struct VMGlobals *g, int numArgsPushed)
 int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;
-	
+
 	a->uf = signal_integral(a->uo);
 	return errNone;
 }
@@ -162,23 +162,23 @@ int prSignalInvert(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	err = slotIntVal(b, &start);
 	if (err) {
 		if (IsNil(c)) start = 0;
 		else return err;
 	}
-	
+
 	err = slotIntVal(c, &end);
 	if (err) {
 		if (IsNil(c)) end = a->uo->size;
 		else return err;
 	}
-	
+
 	signal_invert_range(a->uo, start, end);
 	return errNone;
 }
@@ -187,23 +187,23 @@ int prSignalReverse(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	err = slotIntVal(b, &start);
 	if (err) {
 		if (IsNil(b)) start = 0;
 		else return err;
 	}
-	
+
 	err = slotIntVal(c, &end);
 	if (err) {
 		if (IsNil(c)) end = a->uo->size;
 		else return err;
 	}
-	
+
 	signal_reverse_range(a->uo, start, end);
 	return errNone;
 }
@@ -212,13 +212,13 @@ int prSignalRotate(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	int err, rot;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
-	
+
 	err = slotIntVal(b, &rot);
 	if (err) return err;
-	
+
 	a->uo = signal_rotate(g, a->uo, rot);
 	return errNone;
 }
@@ -228,15 +228,15 @@ int prSignalOverDub(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int err;
 	int index;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (b->utag != tagObj || !isKindOf(b->uo, class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
-	
+
 	signal_overdub(g, a->uo, b->uo, index);
 	return errNone;
 }
@@ -246,15 +246,15 @@ int prSignalOverWrite(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b, *c;
 	int err;
 	int index;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (b->utag != tagObj || !isKindOf(b->uo, class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
-	
+
 	signal_overwrite(g, a->uo, b->uo, index);
 	return errNone;
 }
@@ -265,31 +265,31 @@ int prSignalFade(struct VMGlobals *g, int numArgsPushed)
 	int err;
 	int start, end;
 	float lvl0, lvl1;
-	
+
 	a = g->sp - 4;
 	b = g->sp - 3;
 	c = g->sp - 2;
 	d = g->sp - 1;
 	e = g->sp;
-	
+
 	err = slotIntVal(b, &start);
 	if (err) {
 		if (IsNil(b)) start = 0;
 		else return err;
 	}
-	
+
 	err = slotIntVal(c, &end);
 	if (err) {
 		if (IsNil(c)) end = a->uo->size;
 		else return err;
 	}
-	
+
 	err = slotFloatVal(d, &lvl0);
 	if (err) return err;
-	
+
 	err = slotFloatVal(e, &lvl1);
 	if (err) return err;
-	
+
 	signal_fade_range(a->uo, start, end, lvl0, lvl1);
 	return errNone;
 }
@@ -302,24 +302,24 @@ int prSignalAddHarmonic(struct VMGlobals *g, int numArgsPushed)
 	double phase, step;
 	PyrObject *signal;
 	float *out;
-	
+
 	a = g->sp - 3;
 	b = g->sp - 2;
 	c = g->sp - 1;
 	d = g->sp;
-	
+
 	err = slotFloatVal(b, &harmonic);
-	if (err) return errWrongType;	
+	if (err) return errWrongType;
 	err = slotFloatVal(c, &amp);
-	if (err) return errWrongType;	
+	if (err) return errWrongType;
 	err = slotDoubleVal(d, &phase);
-	if (err) return errWrongType;	
-	
+	if (err) return errWrongType;
+
 	signal = a->uo;
 	out = (float*)(signal->slots) - 1;
 	step = twopi * harmonic / signal->size;
 	UNROLL_CODE(signal->size, out, *++out += sin(phase) * amp; phase += step; );
-	
+
 	return errNone;
 }
 
@@ -332,22 +332,22 @@ int prSignalAddChebyshev(struct VMGlobals *g, int numArgsPushed)
 	double x, step;
 	PyrObject *signal;
 	float *out;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	err = slotFloatVal(b, &harmonic);
-	if (err) return errWrongType;	
+	if (err) return errWrongType;
 	err = slotFloatVal(c, &amp);
-	if (err) return errWrongType;	
-	
+	if (err) return errWrongType;
+
 	signal = a->uo;
 	out = (float*)(signal->slots) - 1;
 	x = -1.0;
 	step = 2.0 / (signal->size - 1);
 	UNROLL_CODE(signal->size, out, *++out += cos(harmonic * acos(x)) * amp; x += step; );
-	
+
 	return errNone;
 }
 
@@ -358,7 +358,7 @@ void signalAsWavetable(float *signal, float *wavetable, int size)
 	int i, imax;
 	float *in, *out;
 	float val1, val2;
-	
+
 	in = signal;
 	out = wavetable - 1;
 	imax = size-1;
@@ -384,7 +384,7 @@ void wavetableAsSignal(float *wavetable, float *signal, int size)
 	for (i=0; i<size; ++i) {
 		*++out = in[0] + in[1];
 		in += 2;
-	}	
+	}
 }
 
 
@@ -395,20 +395,20 @@ int prSignalAsWavetable(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	int size;
 	PyrObject *signal, *wavetable;
-	
+
 	a = g->sp;
-		
+
 	signal = a->uo;
-	
+
 	size = signal->size;
 	if ((size & (size - 1)) != 0) {
 		error("Signal size not a power of two.\n");
 		return errFailed;
 	}
 	wavetable = newPyrSignal(g, signal->size * 2);
-	wavetable->classptr = class_wavetable;	
+	wavetable->classptr = class_wavetable;
 	signalAsWavetable((float*)signal->slots, (float*)wavetable->slots, signal->size);
-	
+
 	SetObject(a, wavetable);
 	return errNone;
 }
@@ -418,9 +418,9 @@ int prWavetableAsSignal(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrObject *signal, *wavetable;
-	
+
 	a = g->sp;
-		
+
 	wavetable = a->uo;
 	signal = newPyrSignal(g, wavetable->size / 2);
 	wavetableAsSignal((float*)wavetable->slots, (float*)signal->slots, signal->size);
@@ -438,7 +438,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	int i, M, fftsize, fftbufsize, asize;
 	float *inreal, *inimag, *fftbuf, *costable, *outreal, *outimag;
 	PyrObject *fftoutobj, *complexobj, *realobj, *imagobj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
@@ -448,10 +448,10 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 		error("Signal::fft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
-	
+
 	M =  LOG2CEIL(asize);
 	fftsize = 1L << M;
-	
+
 	if (!(isKindOfSlot(c, class_floatarray))) {
 		error("Signal::fft must be provided a table containing 1/4 cycle of a cosine.\n");
 		return errFailed;
@@ -466,18 +466,18 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	fftoutobj = newPyrSignal(g, fftbufsize);
 	fftoutobj->size = fftbufsize;
 	++g->sp; SetObject(g->sp, fftoutobj);
-	
+
 	complexobj = instantiateObject(g->gc, s_complex->u.classobj, 0, false, true);
 	++g->sp; SetObject(g->sp, complexobj);
-	
+
 	realobj = newPyrSignal(g, fftbufsize);
 	SetObject(complexobj->slots + 0, realobj);
 	g->gc->GCWriteNew(complexobj, realobj);
-	
+
 	imagobj = newPyrSignal(g, fftbufsize);
 	SetObject(complexobj->slots + 1, imagobj);
 	g->gc->GCWriteNew(complexobj, imagobj);
-	
+
 	inreal = (float*)a->uo->slots - 1;
 	if (b->uf == 0.0) {
 
@@ -488,7 +488,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 		for (i=asize; i<fftsize; ++i) {
 			*++fftbuf = 0.f;
 		}
-		
+
 		fftbuf = (float*)fftoutobj->slots;
 		rffts(fftbuf, M, 1, costable);
 	} else {
@@ -503,7 +503,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 			*++fftbuf = 0.f;
 			*++fftbuf = 0.f;
 		}
-		
+
 		fftbuf = (float*)fftoutobj->slots;
 		ffts(fftbuf, M, 1, costable);
 	}
@@ -516,10 +516,10 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	}
 	realobj->size = fftsize;
 	imagobj->size = fftsize;
-	
+
 	g->sp -= 2;
 	a->uo = complexobj;
-	
+
 	return errNone;
 }
 
@@ -531,7 +531,7 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	int i, M, fftsize, fftbufsize, asize;
 	float *inreal, *inimag, *fftbuf, *costable, *outreal, *outimag;
 	PyrObject *fftoutobj, *complexobj, *realobj, *imagobj;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
@@ -541,7 +541,7 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 		error("Signal::ifft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
-	
+
 	M = LOG2CEIL(asize);
 	fftsize = 1L << M;
 
@@ -559,18 +559,18 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	fftoutobj = newPyrSignal(g, fftbufsize);
 	fftoutobj->size = fftbufsize;
 	++g->sp; SetObject(g->sp, fftoutobj);
-	
+
 	complexobj = instantiateObject(g->gc, s_complex->u.classobj, 0, false, true);
 	++g->sp; SetObject(g->sp, complexobj);
-	
+
 	realobj = newPyrSignal(g, fftbufsize);
 	SetObject(complexobj->slots + 0, realobj);
 	g->gc->GCWriteNew(complexobj, realobj);
-	
+
 	imagobj = newPyrSignal(g, fftbufsize);
 	SetObject(complexobj->slots + 1, imagobj);
 	g->gc->GCWriteNew(complexobj, imagobj);
-	
+
 	inreal = (float*)a->uo->slots - 1;
 	inimag = (float*)b->uo->slots - 1;
 
@@ -583,7 +583,7 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 		*++fftbuf = 0.f;
 		*++fftbuf = 0.f;
 	}
-	
+
 	fftbuf = (float*)fftoutobj->slots;
 	iffts(fftbuf, M, 1, costable);
 
@@ -599,7 +599,7 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 
 	g->sp -= 2;
 	a->uo = complexobj;
-	
+
 	return errNone;
 }
 #endif
@@ -607,31 +607,31 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 void initSignalPrimitives()
 {
 	int base, index;
-	
+
 	base = nextPrimitiveIndex();
 	index = 0;
-	definePrimitive(base, index++, "_SignalPeak", prSignalPeak, 1, 0);	
-	definePrimitive(base, index++, "_SignalNormalize", prSignalNormalize, 3, 0);	
-	definePrimitive(base, index++, "_SignalNormalizeTransferFn", prSignalNormalizeTransferFn, 1, 0);	
-	definePrimitive(base, index++, "_SignalIntegral", prSignalIntegral, 1, 0);	
-	definePrimitive(base, index++, "_SignalReverse", prSignalReverse, 3, 0);	
+	definePrimitive(base, index++, "_SignalPeak", prSignalPeak, 1, 0);
+	definePrimitive(base, index++, "_SignalNormalize", prSignalNormalize, 3, 0);
+	definePrimitive(base, index++, "_SignalNormalizeTransferFn", prSignalNormalizeTransferFn, 1, 0);
+	definePrimitive(base, index++, "_SignalIntegral", prSignalIntegral, 1, 0);
+	definePrimitive(base, index++, "_SignalReverse", prSignalReverse, 3, 0);
 	definePrimitive(base, index++, "_SignalInvert", prSignalInvert, 3, 0);
 	definePrimitive(base, index++, "_SignalRotate", prSignalRotate, 2, 0);
-		
-	definePrimitive(base, index++, "_SignalFill", prSignalFill, 2, 0);	
-	definePrimitive(base, index++, "_SignalScale", prSignalScale, 2, 0);	
-	definePrimitive(base, index++, "_SignalOffset", prSignalOffset, 2, 0);	
-	definePrimitive(base, index++, "_SignalOverDub", prSignalOverDub, 3, 0);	
-	definePrimitive(base, index++, "_SignalOverWrite", prSignalOverWrite, 3, 0);	
-	definePrimitive(base, index++, "_SignalFade", prSignalFade, 5, 0);	
-	definePrimitive(base, index++, "_SignalAddHarmonic", prSignalAddHarmonic, 4, 0);	
-	definePrimitive(base, index++, "_SignalAddChebyshev", prSignalAddChebyshev, 3, 0);	
-	definePrimitive(base, index++, "_SignalString", prSignalString, 1, 0);	
-	definePrimitive(base, index++, "_SignalAsWavetable", prSignalAsWavetable, 1, 0);	
-	definePrimitive(base, index++, "_WavetableAsSignal", prWavetableAsSignal, 1, 0);	
 
-	definePrimitive(base, index++, "_Signal_FFT", prSignal_FFT, 3, 0);	
-	definePrimitive(base, index++, "_Signal_IFFT", prSignal_IFFT, 3, 0);	
+	definePrimitive(base, index++, "_SignalFill", prSignalFill, 2, 0);
+	definePrimitive(base, index++, "_SignalScale", prSignalScale, 2, 0);
+	definePrimitive(base, index++, "_SignalOffset", prSignalOffset, 2, 0);
+	definePrimitive(base, index++, "_SignalOverDub", prSignalOverDub, 3, 0);
+	definePrimitive(base, index++, "_SignalOverWrite", prSignalOverWrite, 3, 0);
+	definePrimitive(base, index++, "_SignalFade", prSignalFade, 5, 0);
+	definePrimitive(base, index++, "_SignalAddHarmonic", prSignalAddHarmonic, 4, 0);
+	definePrimitive(base, index++, "_SignalAddChebyshev", prSignalAddChebyshev, 3, 0);
+	definePrimitive(base, index++, "_SignalString", prSignalString, 1, 0);
+	definePrimitive(base, index++, "_SignalAsWavetable", prSignalAsWavetable, 1, 0);
+	definePrimitive(base, index++, "_WavetableAsSignal", prWavetableAsSignal, 1, 0);
+
+	definePrimitive(base, index++, "_Signal_FFT", prSignal_FFT, 3, 0);
+	definePrimitive(base, index++, "_Signal_IFFT", prSignal_IFFT, 3, 0);
 }
 
 

@@ -17,7 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
- 
+
 
 #ifndef _SC_Unit_
 #define _SC_Unit_
@@ -29,7 +29,7 @@ typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
 typedef void (*UnitCalcFunc)(struct Unit *inThing, int inNumSamples);
 
-struct Unit 
+struct Unit
 {
 	struct World *mWorld;
 	struct UnitDef *mUnitDef;
@@ -39,20 +39,20 @@ struct Unit
 	int16 mSpecialIndex;		// used by unary and binary ops
 	int16 mParentIndex;
 	int16 mDone;
-	
+
 	struct Wire **mInput, **mOutput;
 	struct Rate *mRate;
 	struct SC_Dimension *mDimension;
 	float **mInBuf, **mOutBuf;
-	
+
 	UnitCalcFunc mCalcFunc;
 	int mBufLength;
 };
 
 typedef struct Unit Unit;
 
-enum { 
-	kUnitDef_CantAliasInputsToOutputs = 1 
+enum {
+	kUnitDef_CantAliasInputsToOutputs = 1
 };
 
 // easy macros, the unit variable must be named 'unit'.
@@ -128,9 +128,9 @@ enum {
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
 	int mask __attribute__((__unused__)) = buf->mask; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; 
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
-	
+
 #define SIMPLE_GET_BUF \
 	float fbufnum  = ZIN0(0); \
 	fbufnum = sc_max(0.f, fbufnum); \

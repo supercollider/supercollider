@@ -2,7 +2,7 @@
 
 Rect {
 	var <>left=0, <>top=0, <>width=0, <>height=0;
-	
+
 	*new { arg left=0, top=0, width=0, height=0;
 		^super.newCopyArgs(left, top, width, height)
 	}
@@ -11,7 +11,7 @@ Rect {
 	}
 	*fromPoints { arg pt1, pt2;
 		^super.newCopyArgs(
-			pt1.x min: pt2.x, 
+			pt1.x min: pt2.x,
 			pt1.y min: pt2.y,
 			absdif(pt1.x, pt2.x),
 			absdif(pt1.y, pt2.y)
@@ -26,7 +26,7 @@ Rect {
 	*aboutPoint { arg point, dx, dy;
 		^this.new(point.x-dx, point.y-dy, 2*dx, 2*dy)
 	}
-	
+
 	set { arg argLeft=0, argTop=0, argWidth=0, argHeight=0;
 		left = argLeft;
 		top = argTop;
@@ -37,24 +37,24 @@ Rect {
 		width = argWidth;
 		height = argHeight;
 	}
-        
+
 	origin { ^Point.new(left, top) }
 	origin_ { | pt | left = pt.x; top = pt.y }
 	extent { ^Point.new(width, height) }
 	extent_ { | pt | width = pt.x; height = pt.y }
 	center { ^Point.new(left + (width * 0.5), top + (height * 0.5)) }
 	center_ { arg center; ^this.class.aboutPoint(center, width * 0.5, height * 0.5) }
-	
+
 	bottom { ^top + height }
 	bottom_ { |b| top = top - (this.bottom - b) }
 	right { ^left + width }
 	right_ { |r| left = left - (this.right - r) }
-	
+
 	leftTop { ^Point.new(this.left, this.top) }
 	rightTop { ^Point.new(this.right, this.top) }
 	leftBottom { ^Point.new(this.left, this.bottom) }
 	rightBottom { ^Point.new(this.right, this.bottom) }
-	
+
 	moveBy { arg h, v;
 		^this.class.new(left + h, top + v, width, height)
 	}
@@ -82,7 +82,7 @@ Rect {
 	}
 	centerSquare {
 		var pos, center;
-		if (width > height, { 
+		if (width > height, {
 			pos = (width - height) * 0.5 + left;
 			^Rect(pos, top, height, height)
 		},{
@@ -105,7 +105,7 @@ Rect {
 	}
 
 	containsPoint { arg aPoint;
-		^(aPoint.x.inclusivelyBetween(left, left + width) 
+		^(aPoint.x.inclusivelyBetween(left, left + width)
 			and: { aPoint.y.inclusivelyBetween(top, top + height) })
 	}
 	containsRect { arg aRect;
@@ -118,10 +118,10 @@ Rect {
 		if (aRect.top >= this.bottom, { ^false });
 		^true
 	}
-	
+
 	& { arg aRect; ^this sect: aRect }
 	| { arg aRect; ^this union: aRect }
-	
+
 	union { arg aRect;
 		^this.class.newSides( left min: aRect.left, top min: aRect.top,
 			this.right max: aRect.right, this.bottom max: aRect.bottom)
@@ -134,36 +134,36 @@ Rect {
 	printOn { arg stream;
 		stream << this.class.name << "(" <<* [left, top, width, height] << ")";
 	}
-	
+
 	// the drawing routine here use Quickdraw.
 	// If you want CoreGraphics drawing, use methods in Pen.
 	draw { arg color, operation=2;
 		_Rect_Draw
 		^this.primitiveFailed
 	}
-	
+
 	asRect { ^this }
 	bounds { ^Rect.new(left, top, width, height) }
-	== { arg that; 
-		^that respondsTo: #[\left, \top, \width, \height] 
+	== { arg that;
+		^that respondsTo: #[\left, \top, \width, \height]
 			and: { left == that.left
 			and: { top == that.top
 			and: { width == that.width
 			and: { height == that.height }}}}
 	}
 	hash { ^left.hash bitXor: top.hash bitXor: width.hash bitXor: height.hash }
-	
+
 	// deprec
-	layout { arg argBounds; 
+	layout { arg argBounds;
 		this.set(argBounds.left, argBounds.top, argBounds.width, argBounds.height);
 	}
-	
+
 	asArray { ^[this.left, this.top, this.width, this.height] }
-	
+
 	+ {|that|
 		var thatRect;
 		thatRect = that.asRect;
-		
+
 		^Rect(
 			this.left + thatRect.left,
 			this.top + thatRect.top,
@@ -174,7 +174,7 @@ Rect {
 	- {|that|
 		var thatRect;
 		thatRect = that.asRect;
-	
+
 		^Rect(
 			this.left - thatRect.left,
 			this.top - thatRect.top,

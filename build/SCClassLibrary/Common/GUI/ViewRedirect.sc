@@ -1,7 +1,7 @@
 ViewRedirect { // Abstract class
 
 	classvar <>redirectQueries = false;
-	
+
 	*implClass {
 		^GUI.scheme.perform(this.key)
 	}
@@ -15,7 +15,7 @@ ViewRedirect { // Abstract class
 		}
 	}
 	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
-	*doesNotUnderstand{|selector ... args|	
+	*doesNotUnderstand{|selector ... args|
 		var	impl;
 		if((impl = this.implClass).notNil) {
 			^this.implClass.perform(selector, *args)
@@ -26,7 +26,7 @@ ViewRedirect { // Abstract class
 	*classRedirect { ^redirectQueries.if({this.implClass ? this}, this)}
 }
 
-Window : ViewRedirect { 
+Window : ViewRedirect {
 	*key { ^\window }
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
 		^this.implClass.new(name, bounds, resizable, border, server, scroll)
@@ -46,7 +46,7 @@ Slider : ViewRedirect { *key { ^\slider }}
 //Font : ViewRedirect { *key { ^\font }}
 Pen : ViewRedirect { *key { ^\pen }}
 
-Stethoscope : ViewRedirect { 
+Stethoscope : ViewRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
 		}
@@ -61,7 +61,7 @@ FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
 		^this.implClass.new(width, height, busNum, scopeColor)
 		}
 	*key { ^\freqScope }
-} 
+}
 
 Dialog : ViewRedirect { *key { ^\dialog }}
 View : ViewRedirect { *key { ^\view }}

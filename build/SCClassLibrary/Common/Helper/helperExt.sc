@@ -1,5 +1,5 @@
-// Extension for Helper and AutoClassHelper classes: documentation autogeneration 
-// so that 
+// Extension for Helper and AutoClassHelper classes: documentation autogeneration
+// so that
 // 		Help.makeHelp(MyClass)
 // 		Help.makeAutoHelp(MyClass)
 // is allowed
@@ -11,12 +11,12 @@
 		Helper( undocumentedObject, path )
 
 	}
-	
-	
+
+
 	*makeAutoHelp { arg andocumentedClass, path ;
 		AutoClassHelper( andocumentedClass, path )
 	}
-	
+
 
 }
 */

@@ -56,7 +56,7 @@ inline float DemandInput(Unit* unit, int index)
 inline float DemandInputA(Unit* unit, int index, int offset)
 {
 	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	if(!fromUnit) { return IN0(index); } 
+	if(!fromUnit) { return IN0(index); }
 	if (fromUnit->mCalcRate == calc_DemandRate) {
 		(fromUnit->mCalcFunc)(fromUnit, offset);
 		return IN0(index);

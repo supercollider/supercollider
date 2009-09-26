@@ -55,7 +55,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *slot, *slots1, *slots2, *slots3, *slots4;
 	PyrObject *obj1, *obj2, *obj3, *obj4;
 	int i, j, size, len, maxlen;
-	
+
 	a = g->sp;
 	obj1 = a->uo;
 	size = obj1->size;
@@ -72,7 +72,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 	}
-	
+
 	obj2 = newPyrArray(g->gc, maxlen, 0, true);
 	obj2->size = maxlen;
 	slots2 = obj2->slots;
@@ -108,7 +108,7 @@ int arrayAtIdentityHash(PyrObject *array, PyrSlot *key)
 {
 	PyrSlot *slots, *test;
 	unsigned int i, start, end, hash, maxHash;
-	
+
 	hash = calcHash(key);
 	maxHash = array->size;
 	start = hash % maxHash;
@@ -128,7 +128,7 @@ int arrayAtIdentityHash(PyrObject *array, PyrSlot *key)
 		}
 	}
 	return -1;
-} 
+}
 
 
 int prArray_AtIdentityHash(struct VMGlobals *g, int numArgsPushed);
@@ -137,7 +137,7 @@ int prArray_AtIdentityHash(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	PyrObject *array;
 	int index;
-	
+
 	a = g->sp - 1;  // array
 	b = g->sp;		// key
 
@@ -153,7 +153,7 @@ int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key)
 {
 	PyrSlot *slots, *test;
 	unsigned int i, start, end, hash, maxHash;
-	
+
 	hash = calcHash(key);
 	maxHash = array->size >> 1;
 	start = (hash % maxHash) << 1;
@@ -173,14 +173,14 @@ int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key)
 		}
 	}
 	return -2;
-} 
+}
 
 
 int arrayAtIdentityHashInPairsWithHash(PyrObject *array, PyrSlot *key, int hash)
 {
 	PyrSlot *slots, *test;
 	unsigned int i, start, end, maxHash;
-	
+
 	maxHash = array->size >> 1;
 	start = (hash % maxHash) << 1;
 	end = array->size;
@@ -199,7 +199,7 @@ int arrayAtIdentityHashInPairsWithHash(PyrObject *array, PyrSlot *key, int hash)
 		}
 	}
 	return -2;
-} 
+}
 
 
 int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *value);
@@ -208,7 +208,7 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 	PyrSlot *slot, *newslot;
 	int i, index, size;
 	PyrObject *array;
-	
+
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
@@ -224,7 +224,7 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 	}
 	array = dict->slots[ivxIdentDict_array].uo;
 	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
-	
+
 	index = arrayAtIdentityHashInPairs(array, key);
 	slot = array->slots + index;
 	slot[1].ucopy = value->ucopy;
@@ -258,14 +258,14 @@ int prIdentDict_Put(struct VMGlobals *g, int numArgsPushed);
 int prIdentDict_Put(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	
+
 	a = g->sp - 2;  // dict
 	b = g->sp - 1;	// key
 	c = g->sp;		// value
 	if(IsNil(b)) return errWrongType;
 	if(IsNil(c)) return errFailed; // will call removeAt
 	return identDictPut(g, a->uo, b, c);
-}	
+}
 
 int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed);
 int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
@@ -274,12 +274,12 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 	int i, index, size;
 	PyrObject *dict;
 	PyrObject *array;
-	
+
 	a = g->sp - 2;  // dict
 	b = g->sp - 1;	// key
 	c = g->sp;		// value
 	d = ++g->sp;	// push the stack to save the receiver
-	
+
 	d->ucopy = a->ucopy;
 	dict = d->uo;
 	array = dict->slots[ivxIdentDict_array].uo;
@@ -288,7 +288,7 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 		--g->sp;
 		return errFailed;
 	}
-	
+
 	index = arrayAtIdentityHashInPairs(array, b);
 	slot = array->slots + index;
 	a->ucopy = slot[1].ucopy;
@@ -318,7 +318,7 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 	}
 	--g->sp;
 	return errNone;
-}	
+}
 
 
 
@@ -327,10 +327,10 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	unsigned int i;
-	
+
 	a = g->sp - 1;  // array
 	b = g->sp;		// key
-	
+
 	if(a->uo->size < 2) return errFailed;
 	i = arrayAtIdentityHashInPairs(a->uo, b);
 	SetInt(a, i);
@@ -341,13 +341,13 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals *g, int numArgsPushed)
 bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
 bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result)
 {
-again:	
+again:
 	PyrSlot *dictslots = dict->slots;
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
-	
+
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrObject *array = arraySlot->uo;
-	
+
 		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
 		if (SlotEq(key, array->slots + index)) {
 			result->ucopy = array->slots[index + 1].ucopy;
@@ -363,7 +363,7 @@ again:
 			// recursive call.
 			if (identDict_lookupNonNil(protoSlot->uo, key, hash, result)) return true;
 		}
-	
+
 		dict = parentSlot->uo;
 		goto again; // tail call
 	} else {
@@ -378,13 +378,13 @@ again:
 bool identDict_lookup(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
 bool identDict_lookup(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result)
 {
-again:	
+again:
 	PyrSlot *dictslots = dict->slots;
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
-	
+
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrObject *array = arraySlot->uo;
-	
+
 		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
 		if (SlotEq(key, array->slots + index)) {
 			result->ucopy = array->slots[index + 1].ucopy;
@@ -400,7 +400,7 @@ again:
 			// recursive call.
 			if (identDict_lookup(protoSlot->uo, key, hash, result)) return true;
 		}
-	
+
 		dict = parentSlot->uo;
 		goto again; // tail call
 	} else {
@@ -415,11 +415,11 @@ again:
 
 int prIdentDict_At(struct VMGlobals *g, int numArgsPushed);
 int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot* a = g->sp - 1;  // dict
 	PyrSlot* key = g->sp;		// key
 	PyrObject *dict = a->uo;
-	
+
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
@@ -431,7 +431,7 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 			return errNone;
 		}
 	}
-	
+
 	identDict_lookup(dict, key, calcHash(key), a);
 	return errNone;
 }
@@ -441,19 +441,19 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, result;
 	int objClassIndex;
-	
+
 	a = g->sp;  // key
-	
+
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
 	PyrObject *dict = currentEnvironmentSlot->uo;
-	
+
 	if (!IsObj(currentEnvironmentSlot)) return errFailed;
 
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
 	identDict_lookup(dict, a, calcHash(a), &result);
 	a->ucopy = result.ucopy;
-	
+
 	return errNone;
 }
 
@@ -463,22 +463,22 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	int objClassIndex;
-	
+
 	a = g->sp - 1;  // key
 	b = g->sp;  // value
-	
+
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
 	PyrObject *dict = currentEnvironmentSlot->uo;
 
 	if (!IsObj(currentEnvironmentSlot)) return errFailed;
 
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
-	
+
 	int err = identDictPut(g, dict, a, b);
 	if (err) return err;
-	
+
 	a->ucopy = b->ucopy;
-	
+
 	return errNone;
 }
 
@@ -489,38 +489,38 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
 	int err;
-		
+
 	a = g->sp;  // dict
-	
+
 	SetSymbol(&key, s_delta);
 	identDict_lookup(a->uo, &key, calcHash(&key), &delta);
-	
+
 	if (NotNil(&delta)) {
 		a->ucopy = delta.ucopy;
 	} else {
 		SetSymbol(&key, s_dur);
 		identDict_lookup(a->uo, &key, calcHash(&key), &dur);
-		
+
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) {
 			if (NotNil(&dur)) return err;
 			SetNil(a);
 			return errNone;
 		}
-		
+
 		SetSymbol(&key, s_stretch);
 		identDict_lookup(a->uo, &key, calcHash(&key), &stretch);
-		
+
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) {
 			if (NotNil(&stretch)) return err;
 			SetFloat(a, fdur);
 			return errNone;
 		}
-				
+
 		SetFloat(a, fdur * fstretch );
 	}
-		
+
 	return errNone;
 }
 
@@ -545,33 +545,33 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 
 			newschedq = newPyrArray(g->gc, maxsize*2, 0, true);
 			newschedq->size = size;
-			
+
 			pslot = (double*)schedq->slots - 1;
 			qslot = (double*)newschedq->slots - 1;
 			for (int i=0; i<size; ++i) *++qslot = *++pslot;
-			
+
 			SetObject(schedqSlot, newschedq);
 			g->gc->GCWrite(queueobj, newschedq);
-			
+
 			schedq = newschedq;
 		}
 	}
-	
+
 	addheap(g, schedq, time, item);
 }
 
 int prPriorityQueueAdd(struct VMGlobals *g, int numArgsPushed);
 int prPriorityQueueAdd(struct VMGlobals *g, int numArgsPushed)
 {
-	
+
 	PyrSlot *a = g->sp - 2;	// priority queue
 	PyrSlot *b = g->sp - 1;	// time
 	PyrSlot *c = g->sp;		// item
-	
+
 	double time;
 	int err = slotDoubleVal(b, &time);
 	if (err) return errNone;	// nil is OK, nothing gets added
-	
+
 	PriorityQueueAdd(g, a->uo, c, time);
 	return errNone;
 }
@@ -581,7 +581,7 @@ void PriorityQueuePop(VMGlobals *g, PyrObject *queueobj, PyrSlot *result);
 void PriorityQueuePop(VMGlobals *g, PyrObject *queueobj, PyrSlot *result)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
-	
+
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		double time;
@@ -597,7 +597,7 @@ void PriorityQueueTop(PyrObject *queueobj, PyrSlot *result);
 void PriorityQueueTop(PyrObject *queueobj, PyrSlot *result)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
-	
+
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		if (schedq->size > 0) {
@@ -614,7 +614,7 @@ void PriorityQueueClear(PyrObject *queueobj);
 void PriorityQueueClear(PyrObject *queueobj)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
-	
+
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		schedq->size = 0;
@@ -625,7 +625,7 @@ bool PriorityQueueEmpty(PyrObject *queueobj);
 bool PriorityQueueEmpty(PyrObject *queueobj)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
-	
+
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		if (schedq->size > 0) {
@@ -639,7 +639,7 @@ int prPriorityQueuePop(struct VMGlobals *g, int numArgsPushed);
 int prPriorityQueuePop(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;	// priority queue
-	
+
 	PriorityQueuePop(g, a->uo, a);
 	return errNone;
 }
@@ -648,7 +648,7 @@ int prPriorityQueueTop(struct VMGlobals *g, int numArgsPushed);
 int prPriorityQueueTop(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;	// priority queue
-	
+
 	PriorityQueueTop(a->uo, a);
 	return errNone;
 }
@@ -657,7 +657,7 @@ int prPriorityQueueClear(struct VMGlobals *g, int numArgsPushed);
 int prPriorityQueueClear(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;	// priority queue
-	
+
 	PriorityQueueClear(a->uo);
 	return errNone;
 }
@@ -666,9 +666,9 @@ int prPriorityQueueEmpty(struct VMGlobals *g, int numArgsPushed);
 int prPriorityQueueEmpty(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
-	
+
 	a = g->sp;	// priority queue
-	
+
 	if (PriorityQueueEmpty(a->uo)) {
 		SetTrue(a);
 	} else {
@@ -681,7 +681,7 @@ void PriorityQueuePostpone(PyrObject* queueobj, double time);
 void PriorityQueuePostpone(PyrObject* queueobj, double time)
 {
 	PyrSlot *schedqSlot = queueobj->slots;
-	
+
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		PyrSlot* slots = schedq->slots;
@@ -696,11 +696,11 @@ int prPriorityQueuePostpone(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;	// priority queue
 	PyrSlot *b = g->sp;		// time
-	
+
 	double time;
 	int err = slotDoubleVal(b, &time);
 	if (err) return err;
-	
+
 	PyrObject *queueobj = a->uo;
 	PriorityQueuePostpone(queueobj, time);
 	return errNone;
@@ -711,7 +711,7 @@ void initListPrimitives();
 void initListPrimitives()
 {
 	int base, index;
-		
+
 	base = nextPrimitiveIndex();
 	index = 0;
 	definePrimitive(base, index++, "_Array_AtIdentityHash", prArray_AtIdentityHash, 2, 0);
@@ -729,7 +729,7 @@ void initListPrimitives()
 	definePrimitive(base, index++, "_PriorityQueueClear", prPriorityQueueClear, 1, 0);
 	definePrimitive(base, index++, "_PriorityQueueEmpty", prPriorityQueueEmpty, 1, 0);
 	definePrimitive(base, index++, "_PriorityQueuePostpone", prPriorityQueuePostpone, 2, 0);
-	
+
 	definePrimitive(base, index++, "_Event_Delta", prEvent_Delta, 1, 0);
 }
 
@@ -743,7 +743,7 @@ void initPatterns()
 	ivxIdentDict_parent = instVarOffset("IdentityDictionary", "parent");
 	ivxIdentDict_proto = instVarOffset("IdentityDictionary", "proto");
 	ivxIdentDict_know = instVarOffset("IdentityDictionary", "know");
-	
+
 	sym = getsym("IdentityDictionary");
 	class_identdict = sym ? sym->u.classobj : NULL;
 	class_identdict_index = class_identdict->classIndex.ui;
@@ -751,7 +751,7 @@ void initPatterns()
 
 	class_array_index = class_array->classIndex.ui;
 	class_array_maxsubclassindex = class_array->maxSubclassIndex.ui;
-	
+
 	s_parent = getsym("parent");
 	s_proto = getsym("proto");
 	s_delta = getsym("delta");

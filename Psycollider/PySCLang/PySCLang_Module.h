@@ -1,14 +1,14 @@
 /*
  * File: PYSCLang_Module.h
  * Project : Psycollider
- * 
+ *
  * by:
  * Benjamin Golinvaux
  * benjamin.golinvaux@euresys.com
  * messenger: bgolinvaux@hotmail.com
- * 
+ *
  * currently maintained by:
- * Christopher Frauenberger 
+ * Christopher Frauenberger
  * frauenberger@iem.at
  *
  *  This program is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ public:
   static PyObject* PyPrOpenWinTextFile_s;
 
 	void appClock();
-	
+
 private:
   Py::Object sendMain(const Py::Tuple &a);
   Py::Object compileLibrary(const Py::Tuple &a);

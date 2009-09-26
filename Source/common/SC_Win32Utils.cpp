@@ -58,28 +58,28 @@ void win32_gettimeofday(timeval* tv, void*)
 	GetSystemTimeAsFileTime(&fileTime);
 	tv->tv_sec  = (* (unsigned __int64 *) &fileTime / (unsigned __int64)10000000) - secBetween1601and1970;
 	tv->tv_usec = (* (unsigned __int64 *) &fileTime % (unsigned __int64)10000000)/(unsigned __int64)10;
-	
+
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)
 {
   char homeFolder_[_MAX_PATH];
   const char *h = 0;
-  if (!(h = ::getenv("home"))) 
+  if (!(h = ::getenv("home")))
     h = ::getenv("HOME");
- 
-  if (h) 
+
+  if (h)
     strcpy(homeFolder_,h);
   else {
     // for Windows NT HOME might be defined as either $(HOMESHARE)/$(HOMEPATH)
     //                                         or     $(HOMEDRIVE)/$(HOMEPATH)
     h = ::getenv("HOMESHARE");
-    if (!h)  
+    if (!h)
       h = ::getenv("HOMEDRIVE");
     if (h) {
       strcpy(homeFolder_,h);
       h = ::getenv("HOMEPATH");
-      if (h) 
+      if (h)
         strcat(homeFolder_,h);
     }
   }
@@ -91,13 +91,13 @@ void win32_GetHomeFolder(char* homeFolder, int bufLen)
 }
 
 char* win32_basename(char* path)
-{ 
+{
   int pathLen = strlen(path);
   int lastPathSepFoundPos = -1;
   int pos = 0;
-  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') { 
+  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') {
 	  path[pathLen-1]=0; pathLen--;
-  }; 
+  };
   while(path[pos] != 0) {
     if (path[pos] == '\\' || path[pos] == '/') {
       lastPathSepFoundPos = pos;
@@ -115,7 +115,7 @@ char* win32_dirname(char* path)
   int pathLen = strlen(path);
   int lastPathSepFoundPos = -1;
   int pos = 0;
-  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') { 
+  while (path[pathLen-1] == '\\' || path[pathLen-1] == '/') {
 	  path[pathLen-1]=0; pathLen--;
   };
   while(path[pos] != 0) {
@@ -227,5 +227,5 @@ int win32_pipewrite(int s, char *buf, int len)
 	return ret;
 }
 
-#endif 
+#endif
 // SC_WIN32

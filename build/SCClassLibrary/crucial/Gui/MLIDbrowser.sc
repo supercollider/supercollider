@@ -2,7 +2,7 @@
 MLIDbrowser { // MultiLevelIdentityDictionary browser
 
 	var <>onSelect,menu,kdr;
-	
+
 	*new { arg ... args;
 		var onSelect;
 		if(args.size > 1,{
@@ -12,18 +12,18 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 			.onSelect_(onSelect ? { arg item;  item.gui })
 			.browse(Library.atList(args) ?? {Library.global.dictionary})
 	}
-	
+
 	browse { arg item,parent;
 		if(kdr.isNil,{
 			kdr = UnicodeResponder.new;
-			kdr.registerUnicode( 
-				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier, 
+			kdr.registerUnicode(
+				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier,
 				63232 , // cntrl up
 				{
 					this.browse(parent); // find parent's parent
 				});
-			kdr.registerUnicode( 
-				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier , 
+			kdr.registerUnicode(
+				KeyCodeResponder.controlModifier | KeyCodeResponder.functionKeyModifier ,
 				63233 , // cntrl down
 				{
 					// go down on selected
@@ -35,7 +35,7 @@ MLIDbrowser { // MultiLevelIdentityDictionary browser
 		},{
 			menu = nil;
 			if(menu.isNil,{ menu = CXMenu.new });
-			menu.nameFuncs = 
+			menu.nameFuncs =
 				item.keys.asList.collect({ arg key;
 					key->{ this.browse(item.at(key),item) }
 				});

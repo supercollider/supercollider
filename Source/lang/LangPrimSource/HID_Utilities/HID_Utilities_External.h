@@ -2,7 +2,7 @@
 	File:		HID_Utilities_External.h
 
 	Contains:   Definition of the HID Utilities exported functions
-    
+
 	DRI: George Warner
 
 	Copyright:	Copyright © 2002 Apple Computer, Inc., All Rights Reserved
@@ -107,8 +107,8 @@ struct recElement
     long calMin; 							// min returned value
     long calMax; 							// max returned value (calibrate call)
     long userMin; 							// user set value to scale to (scale call)
-    long userMax;							
-    
+    long userMax;
+
 	struct recElement * pPrevious;			// previous element (NULL at list head)
     struct recElement * pChild;				// next child (only of collections)
     struct recElement * pSibling;			// next sibling (for elements and collections)
@@ -146,7 +146,7 @@ struct recDevice
     long sliders;							// number of sliders (calculated, not reported by device)
     long dials;								// number of dials (calculated, not reported by device)
     long wheels;							// number of wheels (calculated, not reported by device)
-    recElement* pListElements; 				// head of linked list of elements 
+    recElement* pListElements; 				// head of linked list of elements
     struct recDevice* pNext; 				// next device
 };
 typedef struct recDevice recDevice;
@@ -340,12 +340,12 @@ extern Boolean HIDFindDevice(const pRecDevice pSearchDevice, pRecDevice *ppFound
 
 // find the device and element for this action
 // Device: serial, vendorID, productID, location, usagePage, usage
-// Element: cookie, usagePage, usage, 
+// Element: cookie, usagePage, usage,
 extern Boolean HIDFindActionDeviceAndElement(const pRecDevice pSearchDevice, const pRecElement pSearchElement,
 										  pRecDevice *ppFoundDevice, pRecElement *ppFoundElement);
 // find the device and element for this action
 // Device: serial, vendorID, productID, location, usagePage, usage
-// Element: cookie, usagePage, usage, 
+// Element: cookie, usagePage, usage,
 
 extern Boolean HIDFindSubElement(const pRecElement pStartElement, const pRecElement pSearchElement, pRecElement *ppFoundElement);
 

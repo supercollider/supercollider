@@ -1,7 +1,7 @@
 
-/* 
+/*
 	Noise Generators
-	
+
 	WhiteNoise.ar(mul, add)
 	BrownNoise.ar(mul, add)
 	PinkNoise.ar(mul, add)
@@ -11,12 +11,12 @@
 	LFNoise2.ar(freq, mul, add)
 	Dust.ar(density, mul, add)
 	Dust2.ar(density, mul, add)
-	
+
 	White, Brown, Pink generators have no modulatable parameters
 	other than multiply and add inputs.
-	
+
 	The chaos param for ChaosNoise should be from 1.0 to 2.0
-	
+
 */
 
 RandSeed : UGen {
@@ -136,7 +136,7 @@ TWindex : UGen {
 }
 
 WhiteNoise : UGen {
-	
+
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
 		if (mul.isArray, {
@@ -152,7 +152,7 @@ WhiteNoise : UGen {
 			^this.multiNew('control').madd(mul, add)
 		});
 	}
-	
+
 }
 
 BrownNoise : WhiteNoise {
@@ -172,7 +172,7 @@ GrayNoise : WhiteNoise {
 //}
 
 Crackle : UGen {
-	
+
 	*ar { arg chaosParam=1.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam).madd(mul, add)
 	}
@@ -182,7 +182,7 @@ Crackle : UGen {
 }
 
 Logistic : UGen {
-	
+
 	*ar { arg chaosParam=3.0, freq = 1000.0, init= 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam, freq, init).madd(mul, add)
 	}
@@ -192,7 +192,7 @@ Logistic : UGen {
 }
 /* not installed
 Rossler : UGen {
-	
+
 	*ar { arg chaosParam=1.5, dt = 0.04, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam, dt).madd(mul, add)
 	}
@@ -203,7 +203,7 @@ Rossler : UGen {
 */
 
 LFNoise0 : UGen {
-	
+
 	*ar { arg freq=500.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
 	}
@@ -252,7 +252,7 @@ MantissaMask : UGen {
 }
 
 Dust : UGen {
-	
+
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', density).madd(mul, add)
 	}
@@ -260,7 +260,7 @@ Dust : UGen {
 		^this.multiNew('control', density).madd(mul, add)
 	}
 	signalRange { ^\unipolar }
-	
+
 }
 
 Dust2 : UGen {
@@ -274,7 +274,7 @@ Dust2 : UGen {
 /* not installed
 LinCong : UGen {
 	var iseed, imul, iadd, imod;
-	
+
 	*ar { arg iseed, imul, iadd, imod, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', iseed, imul, iadd, imod).madd(mul, add)
 	}
@@ -292,7 +292,7 @@ LinCong : UGen {
 */
 //
 //Latoocarfian : UGen {
-//	
+//
 //	*ar { arg a, b, c, d, mul = 1.0, add = 0.0;
 //		^this.multiNew('audio', a, b, c, d).madd(mul, add)
 //	}

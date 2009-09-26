@@ -28,18 +28,18 @@ SFPGui : AbstractSFPGui {
 
 	sfpBody { arg layout;
 		var pathLabel,hf,ch,sr;
-		
+
 		// click on the path to select a different sound file
 		pathLabel=ActionButton(layout,model.fileName ? "click here to select a soundfile",
 					{ this.replaceFile },minWidth:150);
 		hf=CXLabel(layout,("__________________"));
 		ch=CXLabel(layout,("_____________"));
 		sr=CXLabel(layout,"_____________");
-		
+
 		//ActionButton(layout,"clip maker...",{ SFPClipMaker(model).topGui });
 		//LabelledNumericalView(layout.win,layout.layRight(40,30),\tempo,model.tempo,0,2000,0)
 		//		.action_({ arg th; model.tempo = th.value; model.changed; });
-		
+
 		layout.removeOnClose(Updater(model,{
 			// in case the file gets swapped
 			pathLabel.label_(model.fileName).refresh;
@@ -48,7 +48,7 @@ SFPGui : AbstractSFPGui {
 			sr.label_(model.file.sampleRate).refresh;
 		}).update);
 	}
-	
+
 	replaceFile {
 		GetFileDialog({ arg ok,sfPath;
 			if(ok,{
@@ -57,6 +57,6 @@ SFPGui : AbstractSFPGui {
 			});
 		})
 	}
-	// it dont get more underlying than me	
+	// it dont get more underlying than me
 	underlyingFileGui { }
 }

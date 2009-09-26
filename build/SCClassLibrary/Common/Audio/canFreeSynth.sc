@@ -22,7 +22,7 @@
 				inputs.at(0).isNumber.not or: //variable gate
 				{ inputs.at(7) == -99 }		//or self releasing envelope
 			}
-		
+
 	}
 }
 
@@ -64,8 +64,8 @@
 	canReleaseSynth { ^this.hasGateControl and: { this.canFreeSynth } }
 	hasGateControl {
 		if(allControlNames.isNil) { ^false };
-		^allControlNames.any { arg cn; 
-			cn.notNil and: { cn.name == 'gate' } and: { cn.rate !== 'scalar' } 
+		^allControlNames.any { arg cn;
+			cn.notNil and: { cn.name == 'gate' } and: { cn.rate !== 'scalar' }
 		};
 	}
 }

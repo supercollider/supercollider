@@ -53,12 +53,12 @@ int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
 
 	memcpy(strp, a->uos->s, len);
 	strp[len] = 0;
-		
+
 	a->us = getsym(strp);
 	a->utag = tagSym;
-	
+
 	if (len > 1023) free(strp);
-	
+
 	return errNone;
 }
 
@@ -70,9 +70,9 @@ int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
 	char str[256];
 	int err = slotStrVal(a, str, 255);
 	if (err) return err;
-	
+
 	SetInt(a, atoi(str));
-		
+
 	return errNone;
 }
 
@@ -84,9 +84,9 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	char str[256];
 	int err = slotStrVal(a, str, 255);
 	if (err) return err;
-	
+
 	SetFloat(a, atof(str));
-		
+
 	return errNone;
 }
 
@@ -117,24 +117,24 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 	if (!isKindOfSlot(b, class_array)) return errWrongType;
-	
+
 	char *fmt = a->uos->s;
-	
+
 	int asize = a->uo->size;
 	int bsize = b->uo->size;
 	int csize = asize;
-	
+
 	PyrSlot *slots = b->uo->slots;
 	for (int i=0; i<bsize; ++i) {
 		PyrSlot *slot = slots + i;
-		if (!isKindOfSlot(slot, class_string)) return errWrongType; 
+		if (!isKindOfSlot(slot, class_string)) return errWrongType;
 		csize += slot->uos->size;
 	}
 	PyrString *newString = newPyrStringN(g->gc, csize, 0, true);
 	char* buf = newString->s;
-	
+
 	int k=0;
 	int index = 0;
 	for (int i=0; i<asize;) {
@@ -184,27 +184,27 @@ int matchRegexp(char *string, char *pattern)
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
 	int err, start, end;
-	
+
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
 	PyrSlot *d = g->sp;
-	
+
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (c->utag != tagInt || d->utag != tagInt && d->utag != tagNil) return errWrongType;
 	start = c->ui;
-	
-	if(d->utag == tagNil) { 
+
+	if(d->utag == tagNil) {
 		end = b->uo->size - 1; // last char index instead of size
 	} else {
 		end = d->ui;
 	}
-	
-	if(end - start <= 0) { 
-		SetFalse(a); 
-		return errNone; 
+
+	if(end - start <= 0) {
+		SetFalse(a);
+		return errNone;
 	}
-	
+
 	int stringlen = end - start + 1;
 	char *string = (char*)malloc(stringlen + 1);
 	memcpy(string, (char*)(b->uos->s) + start, stringlen);
@@ -213,7 +213,7 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	char *pattern = (char*)malloc(a->uo->size + 1);
 	err = slotStrVal(a, pattern, a->uo->size + 1);
 	if (err) return err;
-	
+
 	int res = matchRegexp(string, pattern);
 	switch (res) {
 		 case 0 : SetTrue(a); break;
@@ -233,7 +233,7 @@ int memcmpi(char *a, char *b, int len)
 		if (aa < bb) return -1;
 		if (aa > bb) return 1;
 	}
-	return 0;	
+	return 0;
 }
 
 int prStringCompare(struct VMGlobals *g, int numArgsPushed);
@@ -241,11 +241,11 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	int cmp, length;
-	
+
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	
+
 	if (b->utag != tagObj || !isKindOf(b->uo, class_string)) {
 		SetNil(a);
 		return errNone;
@@ -277,11 +277,11 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	
+
 	char pattern[1024];
 	int err = slotStrVal(a, pattern, 1023);
 	if (err) return err;
-	
+
 	glob_t pglob;
 
 	int gflags = GLOB_MARK | GLOB_TILDE;
@@ -296,16 +296,16 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	PyrObject* array = newPyrArray(g->gc, pglob.gl_pathc, 0, true);
 	SetObject(a, array);
 	if (gerr) return errNone;
-	
+
 	for (unsigned int i=0; i<pglob.gl_pathc; ++i) {
 		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
 		SetObject(array->slots+i, string);
 		g->gc->GCWrite(array, string);
 		array->size++;
 	}
-	
+
 	globfree(&pglob);
-	
+
 	return errNone;
 }
 #else //#ifndef SC_WIN32
@@ -345,7 +345,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	SetObject(a, array);
     return errNone;
   }
-    
+
   do {
 	  if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
 	    nbPaths++;
@@ -365,7 +365,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
   if (hFind == INVALID_HANDLE_VALUE) {
     return errNone;
   }
-    
+
   int i = 0;
   do {
 	if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
@@ -397,7 +397,7 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
 
 	err = slotStrVal(arg, key, 256);
 	if (err) return err;
-	
+
 	value = getenv(key);
 
 	if (value) {
@@ -420,7 +420,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 
 	err = slotStrVal(args+0, key, 256);
 	if (err) return err;
-	
+
 	if (IsNil(args+1)) {
 #ifdef SC_WIN32
 		SetEnvironmentVariable(key,NULL);
@@ -434,10 +434,10 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 #ifdef SC_WIN32
 		SetEnvironmentVariable(key, value);
 #else
-		setenv(key, value, 1); 
+		setenv(key, value, 1);
 #endif
 	}
-	
+
 	return errNone;
 }
 
@@ -450,11 +450,11 @@ int prStripRtf(struct VMGlobals *g, int numArgsPushed)
 	memcpy(chars, a->uos->s, len);
 	chars[len] = 0;
 	rtf2txt(chars);
-	
+
 	PyrString* string = newPyrString(g->gc, chars, 0, false);
 	SetObject(a, string);
 	free(chars);
-	
+
 	return errNone;
 }
 
@@ -467,11 +467,11 @@ int prStripHtml(struct VMGlobals *g, int numArgsPushed)
 	memcpy(chars, a->uos->s, len);
 	chars[len] = 0;
 	html2txt(chars);
-	
+
 	PyrString* string = newPyrString(g->gc, chars, 0, false);
 	SetObject(a, string);
 	free(chars);
-	
+
 	return errNone;
 }
 
@@ -483,23 +483,23 @@ int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed)
 
 	char * chars = (char*)malloc(MAXPATHLEN - 32);
 	sc_GetResourceDirectory(chars, MAXPATHLEN - 32);
-	
+
 	PyrString* string = newPyrString(g->gc, chars, 0, false);
 	SetObject(a, string);
 	free(chars);
-	
+
 	return errNone;
 }
 
 
 int prString_Find(struct VMGlobals *g, int numArgsPushed);
 int prString_Find(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp - 3; // source string
 	PyrSlot *b = g->sp - 2; // search string
 	PyrSlot *c = g->sp - 1; // ignoreCase
 	PyrSlot *d = g->sp;		// offset
-	
+
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
@@ -511,16 +511,16 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 
 	int alength = a->uo->size - offset;
 	int blength = b->uo->size;
-	
+
 	if ((alength <= 0)
 		|| (blength == 0)
 			// should also return nil if search string is longer than source
-		|| (blength > alength)) 
+		|| (blength > alength))
 	{
 		SetNil(a);
 		return errNone;
 	}
-            
+
 	int cmp = 1;	// assume contains will be false
 	char *achar = a->uos->s + offset;
 	char *bchar = b->uos->s;
@@ -552,12 +552,12 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 
 int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed);
 int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
-{	
+{
 	PyrSlot *a = g->sp - 3; // source string
 	PyrSlot *b = g->sp - 2; // search string
 	PyrSlot *c = g->sp - 1; // ignoreCase
 	PyrSlot *d = g->sp;		// offset
-	
+
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
@@ -569,16 +569,16 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 
 	int alength = sc_min(offset + 1, a->uo->size);
 	int blength = b->uo->size;
-	
+
 	if ((alength <= 0)
 		|| (blength == 0)
 			// should also return nil if search string is longer than source
-		|| (blength > alength)) 
+		|| (blength > alength))
 	{
 		SetNil(a);
 		return errNone;
 	}
-            
+
 	int cmp = 1;	// assume contains will be false
 	char *achar = a->uos->s + (alength - blength);
 	char *bchar = b->uos->s;
@@ -620,7 +620,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	char opathbuf[PATH_MAX];
 	char* opath = opathbuf;
 	int err;
-	
+
 	err = slotStrVal(arg, ipath, PATH_MAX);
 	if (err) return err;
 
@@ -648,16 +648,16 @@ void initStringPrimitives();
 void initStringPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
 
-	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);	
-	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);	
-	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);	
-	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);	
-	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);	
-	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);	
-	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);	
+	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);
+	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);
+	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);
+	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);
+	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);
+	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);
+	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);
 	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
     definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
@@ -669,7 +669,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
-	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);	
+	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
 }
 
 #if _SC_PLUGINS_
@@ -689,7 +689,7 @@ class APlugIn : public SCPlugIn
 public:
 	APlugIn();
 	virtual ~APlugIn();
-	
+
 	virtual void AboutToCompile();
 };
 

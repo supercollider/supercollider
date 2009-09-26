@@ -26,7 +26,7 @@ BufferProxy { // blank space for delays, loopers etc.
 				^this
 			})
 		});
-		
+
 		buffer = Buffer.new(server,this.size,numChannels);
 		buffer.numFrames = this.size;
 		buffer.numChannels = numChannels;
@@ -54,7 +54,7 @@ BufferProxy { // blank space for delays, loopers etc.
 		buffer.free; // release bufnum to allocator
 		buffer = nil;
 	}
-	
+
 	// each synth def, multiple usage in a synth def ok
 	initForSynthDef { arg synthDef,argi;
 		forArgi = argi;// for buffer etc. to build a control
@@ -67,19 +67,19 @@ BufferProxy { // blank space for delays, loopers etc.
 		/*if(InstrSynthDef.buildSynthDef.notNil,{
 			("Use bufnumIr, not bufnum to obtain a buffer number inside of a synth def. in:" + InstrSynthDef.buildSynthDef.instrName).warn;
 		});*/
-		^if(buffer.notNil,{ buffer.bufnum }, nil) 
+		^if(buffer.notNil,{ buffer.bufnum }, nil)
 	}
 
 	asUgenInput { ^this.bufnumIr }
 	synthArg { ^this.bufnum }
-	
+
 	bufnumIr {
 		// add a secret ir control
 		^bufnumControl ?? {
 			bufnumControl = InstrSynthDef.buildSynthDef.addSecretIr(this,0,\bufnum);
 		}
 	}
-	
+
 	// the only reason to use the kr version is if you wish to modulate which buffer to use
 	bufnumKr {
 		// add a secret kr control
@@ -94,7 +94,7 @@ BufferProxy { // blank space for delays, loopers etc.
 	sampleRateKr {
 		^BufSampleRate.kr(this.bufnumKr)
 	}
-	
+
 	bufRateScaleKr {
 		^BufRateScale.kr(this.bufnumKr)
 	}
@@ -108,28 +108,28 @@ BufferProxy { // blank space for delays, loopers etc.
 	bufFramesIr {
 		^BufFrames.ir(this.bufnumIr)
 	}
-	
+
 	bufSamplesKr {
 		^BufSamples.kr(this.bufnumKr)
 	}
 	bufSamplesIr {
 		^BufSamples.ir(this.bufnumIr)
 	}
-		
+
 	bufDurKr {
 		^BufDur.kr(this.bufnumKr)
 	}
 	bufDurIr {
 		^BufDur.kr(this.bufnumIr)
 	}
-		
+
 	bufChannelsKr {
 		^BufChannels.kr(this.bufnumKr)
 	}
 	bufChannelsIr {
 		^BufChannels.ir(this.bufnumIr)
 	}
-	
+
 	rate { ^\noncontrol }
 }
 
@@ -139,16 +139,16 @@ AbstractSample : BufferProxy {
 	classvar <dir="sounds/";
 
 	var <soundFilePath,<>name,<>startFrame,<>endFrame= -1;
-	
+
 	size {
 		// actual size loaded on server, not total size of file
 		^if(endFrame == -1,{
 			size
 		},{
 			endFrame - startFrame + 1
-		})	
+		})
 	}
-	
+
 	*dir_ { arg p;
 		dir = p.standardizePath.withTrailingSlash;
 	}
@@ -175,7 +175,7 @@ AbstractSample : BufferProxy {
 			name=PathName(soundFilePath).fileName;
 		});
 	}
-	
+
 	duration { ^this.size / this.sampleRate }
 	asString { ^(name ?? { super.asString }) }
 	// yeah but how many doubles ?
@@ -213,11 +213,11 @@ AbstractSample : BufferProxy {
 }
 
 Sample : AbstractSample { // a small sound loaded from disk
-	
+
 	var <>soundFile,<beats=4.0,<tempo=1.0;
 	var <beatsize,pchk,beatsizek,tempoi;
 	var <end=0; // last possible frame for looping
-		
+
 	*new { arg soundFilePath,tempo,startFrame = 0,endFrame = -1;
 		var new;
 		new = super.new;
@@ -237,7 +237,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 		this.prLoad(thing,tempo);
 		this.calculate;
 		if(readyForPlay,{ // if already loaded, on server
-			if(buffer.server == server 
+			if(buffer.server == server
 				and: {buffer.numFrames >= this.size}
 				and: {buffer.numChannels == numChannels},{
 					if(soundFilePath.notNil and: {buffer.server.serverRunning},{
@@ -249,10 +249,10 @@ Sample : AbstractSample { // a small sound loaded from disk
 				readyForPlay = false;
 				if(buffer.server.serverRunning,{
 					buffer = Buffer.alloc(server,size,numChannels);
-					{ 		
+					{
 						buffer.read(this.soundFilePath,startFrame,endFrame,0,false);
-						readyForPlay = true; 
-						nil 
+						readyForPlay = true;
+						nil
 					}.defer(0.1);
 				}); // else wait for prepare
 			});
@@ -282,7 +282,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 			if(soundFile.openRead(soundFilePath),{
 				soundFile.close; // got it
 			},{
-				("Sample failed to load SoundFile at path: " 
+				("Sample failed to load SoundFile at path: "
 					+ soundFilePath).error;
 			});
 			this.calculate;
@@ -296,7 +296,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 			sampleRate = soundFile.sampleRate;
 			^this
 		});
-		
+
 		if(thing.isKindOf(SoundFile),{
 			soundFile=thing;
 			this.soundFilePath = this.class.standardizePath( soundFile.path );
@@ -320,9 +320,9 @@ Sample : AbstractSample { // a small sound loaded from disk
 			this.prepareForPlay(server);
 		});
 	}
-						
+
 	tempo_ { arg tm;
-		tempo = tm; 
+		tempo = tm;
 		beats = tempo * (size/soundFile.sampleRate);
 		if(beats > 0,{
 			beatsize = size / beats;
@@ -370,7 +370,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 		beatsizek = pchk = tempoi = nil;
 	}
 	pchRatioKr {
-		^pchk ?? { 
+		^pchk ?? {
 			pchk =
 				(this.bufRateScaleIr * InstrSynthDef.buildSynthDef.tempoKr(this,\getTempoBus))
 					.madd(this.sampleTempoIr.reciprocal)
@@ -378,10 +378,10 @@ Sample : AbstractSample { // a small sound loaded from disk
 	}
 	getTempoBus {
 		^TempoBus(buffer.server).index
-	}	
+	}
 	beatsizeIr {
 		^beatsizek ?? {
-			beatsizek = 
+			beatsizek =
 				InstrSynthDef.buildSynthDef.addSecretIr( this,beatsize,\beatsize);
 		}
 	}
@@ -403,7 +403,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 			TempoBus(buffer.server).prepareToBundle(group,bundle)
 		});
 	}
-	
+
 	guiClass { ^SampleGui }
 
 	play { // for testing
@@ -414,7 +414,7 @@ Sample : AbstractSample { // a small sound loaded from disk
 						1.0,
 						0.0,
 						1.0)
-			
+
 			},[
 				this
 			]).play
@@ -438,11 +438,11 @@ Sample : AbstractSample { // a small sound loaded from disk
 ArrayBuffer : BufferProxy {
 
 	var <array;
-	
+
 	*new { arg array;
 		^super.new(array.size).array_(array.as(Array))
 	}
-	storeArgs { ^[array] }	
+	storeArgs { ^[array] }
 
 	prepareToBundle { arg group,bundle;
 		buffer = Buffer.new(group.asGroup.server,array.size,1);
@@ -460,7 +460,7 @@ ArrayBuffer : BufferProxy {
 	}
 	at { arg i; ^array.at(i) }
 	zero { if(readyForPlay,{ buffer.zero }); array = Array.fill(array.size,0) }
-	array_ { arg a; 
+	array_ { arg a;
 		var r;
 		array = a;
 		if(readyForPlay,{

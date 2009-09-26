@@ -3,7 +3,7 @@
   * Subversion based package repository and package manager
   * sk, cx, danstowell, LFSaw
   *
-  *  this is the interface class for 
+  *  this is the interface class for
   *   accessing the SVN repository, (eg. the sourceforge quarks project)
   *   downloading those to the local quarks folder (Platform.userAppSupportDir/quarks)
   *   installing individual quarks by symlinking from the local quark folder into the [Platform dependent]/Extensions folder
@@ -31,11 +31,11 @@ Quarks
 		allInstances.add(newQ);
 		^newQ;
 	}
-	initQuarks{|reposPath, localPath| 
+	initQuarks{|reposPath, localPath|
 		local = LocalQuarks(localPath, this);
 		repos = QuarkSVNRepository(reposPath, local);
 	}
-	
+
 	*initClass {
 		Class.initClassTree( Platform );
 		allInstances = List(1);
@@ -80,7 +80,7 @@ Quarks
 		if((q = local.findQuark(name)).isNil,{
 			Error("Local Quark code not found, cannot commit to repository").throw;
 		});
-		if(message.isNil,{ 
+		if(message.isNil,{
 			Error("svn log message required to commit").throw;
 		});
 		repos.svn("commit","-m",message,"-F",local.path +/+ q.path);
@@ -108,7 +108,7 @@ Quarks
 			inform("Quark "++name++" already checked out");
 			^this
 		});
-		
+
 		q = repos.findQuark(name,version);
 		if(q.isNil,{
 			Error("Quark not found in repository.").throw;
@@ -140,8 +140,8 @@ Quarks
 	installed {
 		// of quarks in local, select those also present in userExtensionDir
 		^local.quarks.select{|q|
-			(Platform.userExtensionDir.escapeChar($ ) 
-				+/+ local.name 
+			(Platform.userExtensionDir.escapeChar($ )
+				+/+ local.name
 				+/+ q.path
 			).pathMatch.notEmpty
 		}
@@ -153,7 +153,7 @@ Quarks
 			(name + "already installed").inform;
 			^this
 		});
-			
+
 		q = local.findQuark(name);
 		if(q.isNil,{
 			if(checkoutIfNeeded) {
@@ -168,21 +168,21 @@ Quarks
 				Error(name.asString + "not found in local quarks.  Not yet downloaded from the repository ?").throw;
 			};
 		});
-		
+
 		if(q.isCompatible.not,{
 			(q.name + " reports that it is not compatible with your current class library.  See the help file for further information.").inform;
 			^this
 		});
-				
+
 		// create /quarks/ directory if needed
 		if(this.repos.checkDir.not){this.checkoutDirectory};
-		
+
 		// Now ensure that the dependencies are installed (if available given the current active reposses)
-		if(includeDependencies, {	
+		if(includeDependencies, {
 			q.dependencies(true).do({ |dep|
 				quarksForDep = if(dep.repos.isNil, {this}, {Quarks.forUrl(dep.repos)});
 				if(quarksForDep.isNil, {
-					("Quarks:install - unable to find repository for dependency '" ++ dep.name 
+					("Quarks:install - unable to find repository for dependency '" ++ dep.name
 						++ "' - you may need to satisfy this dependency manually. No repository detected locally with URL "++dep.repos).warn;
 				}, {
 					if(quarksForDep.isInstalled(dep.name).not, {
@@ -196,13 +196,13 @@ Quarks
 				});
 			});
 		});
-		
+
 		// Ensure the correct folder-hierarchy exists first
 		dirname = (Platform.userExtensionDir +/+  local.name +/+ q.path).dirname;
 		if(File.exists(dirname).not, {
 			("mkdir -p " + dirname.escapeChar($ )).systemCmd;
 		});
-		
+
 		// install via symlink to Extensions/<quarks-dir>
 		("ln -s " +  (local.path +/+ q.path).escapeChar($ ) +  (Platform.userExtensionDir +/+ local.name +/+ q.path).escapeChar($ )).systemCmd;
 		(q.name + "installed").inform;
@@ -223,7 +223,7 @@ Quarks
 		q = local.findQuark(name);
 		if(q.isNil,{
 			Error(
-				name + 
+				name +
 				"is not found in Local quarks in order to look up its relative path.  You may remove the symlink manually."
 			).throw;
 		});
@@ -232,20 +232,20 @@ Quarks
 		("rm " +  (Platform.userExtensionDir +/+ local.name +/+ q.path).escapeChar($ )).systemCmd;
 		(q.name + "uninstalled").inform;
 	}
-	
+
 	help { |name|
 		var q, helpdoc, path;
-		
+
 		q = local.findQuark(name);
 		if(q.isNil,{
 			Error(
-				name.asString + 
+				name.asString +
 				"not found in local quarks.  Not yet downloaded from the repository ?"
 			).throw;
 		});
-		
+
 		helpdoc = q.info.helpdoc;
-		
+
 		if(helpdoc.isNil, {
 			("No primary helpdoc listed for Quark"+name).inform;
 		}, {
@@ -253,18 +253,18 @@ Quarks
 				+/+ q.path +/+ helpdoc;
 			Document.open(path);
 		});
-	}	
+	}
 
 	name { ^local.name }
 
 	///// convenience methods for Quarks.global
-	
+
 	*checkoutAll { this.global.repos.checkoutAll(this.global.local.path) }
 	*checkout { | name, version, sync | this.global.checkout(name,version, sync); }
-	
-	/* 
+
+	/*
 	 return Quark objects for each in App Support/SuperCollider/Quarks
-	 (so actually this would list any Quarks that are in local development 
+	 (so actually this would list any Quarks that are in local development
 	 and not yet checked in) */
 	*checkedOut { ^this.global.checkedOut }
 	*listCheckedOut {
@@ -273,26 +273,26 @@ Quarks
 	*listAvailable {
 		this.global.listAvailable
 	}
-	/* 
-	  download/update only the quark specification files from remote repos 
+	/*
+	  download/update only the quark specification files from remote repos
 	  and not the quarks themselves */
-	*updateDirectory { 
-		^this.global.repos.updateDirectory 
+	*updateDirectory {
+		^this.global.repos.updateDirectory
 	}
 	*checkoutDirectory {
 		^this.global.checkoutDirectory
 	}
 	*update { |quarkName| this.global.update(quarkName) }
 
-	/* 
-	  this symlinks from {App Support}/SuperCollider/Quarks to 
+	/*
+	  this symlinks from {App Support}/SuperCollider/Quarks to
 	  {App Support}/SuperCollider/Extensions
 	  it is then in the SC compile path */
-	*install { |name, includeDependencies=true, checkoutIfNeeded=true| 
-		this.global.install(name, includeDependencies, checkoutIfNeeded) 
+	*install { |name, includeDependencies=true, checkoutIfNeeded=true|
+		this.global.install(name, includeDependencies, checkoutIfNeeded)
 	}
-	
-	/* 
+
+	/*
 	  return Quark objects for each installed */
 	*installed { ^this.global.installed }
 	*listInstalled { ^this.global.listInstalled }
@@ -300,17 +300,17 @@ Quarks
 	/*
 	  removes the symlink */
 	*uninstall { |name| ^this.global.uninstall(name) }
-	
-	/* 
+
+	/*
 	  add code in {App Support}/SuperCollider/Quarks to the remote repos
 	  and also adds the quarks file in DIRECTORY */
 	//*add { |name| this.global.add(name) }
-	/* 
+	/*
 	  you may also use standard svn tools within {App Support}/SuperCollider/Quarks */
 	*commit { |name,message| this.global.commit(name,message) }
 	// post the SVN status
 	*status { |name| this.global.status(name) }
-	
+
 	*local { ^this.global.local }
 	*repos { ^this.global.repos }
 	*help  {|name| ^this.global.help(name) }
@@ -343,14 +343,14 @@ Quarks
 		// it only reads the DIRECTORY entries you've already checked out
 		quarks = this.repos.quarks.copy
 			.sort({ |a, b| a.name < b.name });
-		
+
 		scrB = GUI.window.screenBounds;
 		height = min(quarks.size * 25 + 120, scrB.height - 60);
 
 		window = GUI.window.new(this.name, Rect.aboutPoint( scrB.center, 250, height.div( 2 )));
 		flowLayout = FlowLayout( window.view.bounds );
 		window.view.decorator = flowLayout;
-		
+
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
 		caption.font_( GUI.font.new( GUI.font.defaultSansFace, 24 ));
 		caption.string = this.name;
@@ -368,7 +368,7 @@ Quarks
 
 		GUI.button.new(window, Rect(0, 0, 200, 20))
 		.states_([["refresh Quarks listing", Color.black, Color.gray(0.5)]])
-		.action_({ 
+		.action_({
 			window.close;
 			this.gui;
 		});
@@ -385,7 +385,7 @@ Quarks
 				"open %".format(this.local.path.escapeChar($ )).unixCmd;
 			};
 		};
-		
+
 		resetButton = GUI.button.new(window, Rect(15,15,75,20));
 		resetButton.states = [
 			["reset", Color.black, Color.gray(0.5)]
@@ -393,7 +393,7 @@ Quarks
 		resetButton.action = { arg butt;
 			views.do(_.reset);
 		};
-		
+
 		saveButton = GUI.button.new(window, Rect(15,15,75,20));
 		saveButton.states = [
 			["save", Color.black, Color.blue(1, 0.5)]
@@ -417,7 +417,7 @@ Quarks
 				warning.background_(Color(0.9, 1.0, 0.9));
 			}.play(AppClock);
 		};
-		
+
 		window.view.decorator.nextLine;
 		explanation = GUI.staticText.new(window, Rect(20,15,500,20));
 		explanation.string = "\"+\" -> installed, \"-\" -> not installed, \"*\" -> marked to install, \"x\" -> marked to uninstall";
@@ -425,7 +425,7 @@ Quarks
 
 		warning = GUI.staticText.new(window, Rect(20,15,400,30));
 		warning.font_( GUI.font.new( GUI.font.defaultSansFace, 18 ));
-		
+
 		window.view.decorator.nextLine;
 		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );		window.view.decorator.nextLine;
 
@@ -434,10 +434,10 @@ Quarks
 			.resize_( 5 )
 			.autohidesScrollers_(true);
 		scrollview.decorator = FlowLayout( Rect( 0, 0, 500, quarks.size * 25 + 20 ));
-		
+
 		window.front;
 		fillPage.(pageStart);
 		^window;
 	}
-	
+
 }

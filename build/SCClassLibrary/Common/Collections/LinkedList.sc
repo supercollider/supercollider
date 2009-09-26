@@ -1,7 +1,7 @@
-LinkedListNode { 
+LinkedListNode {
 	var <>prev, <>next, <>obj;
 	// this class supports the LinkedList class
-	
+
 	*new { arg item;
 		^super.new.obj_(item)
 	}
@@ -9,13 +9,13 @@ LinkedListNode {
 		if (prev.notNil, { prev.next_(next); });
 		if (next.notNil, { next.prev_(prev); });
 		next = prev = nil;
-	}		
+	}
 }
 
 LinkedList : SequenceableCollection {
 	var head, tail, <size = 0;
-	
-	
+
+
 	copy {
 		var copy = LinkedList.new;
 		this.do {|item| copy.add(item) }
@@ -73,7 +73,7 @@ LinkedList : SequenceableCollection {
 			size = size - 1;
 		});
 	}
-	pop { 
+	pop {
 		var node;
 		if ( tail.notNil, {
 			node = tail;
@@ -85,9 +85,9 @@ LinkedList : SequenceableCollection {
 		},{
 			^nil
 		});
-		
+
 	}
-	popFirst { 
+	popFirst {
 		var node;
 		if ( head.notNil, {
 			node = head;
@@ -99,12 +99,12 @@ LinkedList : SequenceableCollection {
 		},{
 			^nil
 		});
-		
+
 	}
-	
+
 	first { if (head.notNil, { ^head.obj },{ ^nil }) }
 	last  { if (tail.notNil, { ^tail.obj },{ ^nil }) }
-	
+
 	at { arg index;
 		var node = this.nodeAt(index);
 		if (node.notNil, {
@@ -156,7 +156,7 @@ LinkedList : SequenceableCollection {
 			^nil
 		})
 	}
-	
+
 	findNodeOfObj { arg obj;
 		var node = head;
 		while ({ node.notNil },{

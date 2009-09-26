@@ -21,7 +21,7 @@
 /*
 	compound formulas :
 	amclip	out = B<=0 ? 0 : A*B;		// two quadrant amplitude modulation
-	ring1	out = A*(B+1) = A*B + A;	// amplitude modulation of a by b.		
+	ring1	out = A*(B+1) = A*B + A;	// amplitude modulation of a by b.
 	ring2	out = A*B + A + B;			// ring modulation plus both original signals
 	ring3	out = A*A*B;				// ring modulation variant
 	ring4	out = A*A*B - A*B*B;		// ring modulation variant
@@ -60,16 +60,16 @@ void signal_init_globs()
 	int i;
 	double phaseoffset, d, pmf;
 	long sz, sz2;
-	
+
 	/* setup slopes and wrap masks */
 	for (i=0; i<32; ++i) {
 		long length = 1L<<i;
 		gSlopeFactor[i] = 1./length;
 		gWrapMask[i] = length - 1;
 	}
-	
+
 	/* fill sine wave */
-	// pyrmalloc: 
+	// pyrmalloc:
 	// lifetime: forever. initialized at startup.
 	sineCycle    = (float*)pyr_pool_runtime->Alloc((SINESIZE+1) * sizeof(float));
 	MEMFAIL(sineCycle);
@@ -79,7 +79,7 @@ void signal_init_globs()
 	MEMFAIL(pmSineCycle);
 	//gFracTable = (float*)pyr_pool_runtime->Alloc(FRACTABLESIZE * sizeof(float));
 	//MEMFAIL(gFracTable);
-	
+
 	sineIndexToPhase = 2. * 3.1415926535897932384626433832795 / SINESIZE;
 	phaseToSineIndex = 1. / sineIndexToPhase;
 	phaseoffset = sineIndexToPhase * 0.5;
@@ -110,7 +110,7 @@ void signal_init_globs()
 PyrObject* newPyrSignal(VMGlobals *g, long size)
 {
 	PyrObject *signal;
-	long numbytes = size * sizeof(float);	
+	long numbytes = size * sizeof(float);
 	signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);
 	if (signal) {
 		signal->classptr = class_signal;
@@ -118,19 +118,19 @@ PyrObject* newPyrSignal(VMGlobals *g, long size)
 	}
 	// note: signal is filled with garbage
 	return signal;
-}	
+}
 
 /*PyrObject* newPyrSignalFrom(VMGlobals *g, PyrObject* inSignal, long size)
 {
 	PyrObject *signal;
 	double *pslot, *qslot, *endptr;
 	long set, m, mmax;
-	long numbytes = size * sizeof(float);	
+	long numbytes = size * sizeof(float);
 	signal = (PyrObject*)g->gc->New(numbytes, 0, obj_float, true);
 	signal->classptr = inSignal->classptr;
 	signal->size = size;
 	return signal;
-}	
+}
 */
 
 PyrObject* signal_fill(PyrObject *outSignal, float inValue)
@@ -178,7 +178,7 @@ PyrObject* signal_sub_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 PyrObject* signal_ring1_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 {
 	BINOP_LOOP2(
-		++a; *++c = *a * *++b + *a; 
+		++a; *++c = *a * *++b + *a;
 	);
 }
 
@@ -785,7 +785,7 @@ PyrObject* signal_normalize_transfer_fn(PyrObject *inPyrSignal)
 	halflength = length >> 1;
 	offset = (out[halflength-1] + out[halflength]) * 0.5;
 
-	UNROLL1_CODE(inPyrSignal->size, out, ++out; 
+	UNROLL1_CODE(inPyrSignal->size, out, ++out;
 		x = *out - offset;
 		x = (x < 0.) ? -x : x;
 		if (x > maxval) maxval = x;
@@ -793,7 +793,7 @@ PyrObject* signal_normalize_transfer_fn(PyrObject *inPyrSignal)
 	if (maxval) {
 		out = (float*)(inPyrSignal->slots) - 1;
 		scale = 1.0 / maxval;
-		UNROLL1_CODE(inPyrSignal->size, out, ++out; 
+		UNROLL1_CODE(inPyrSignal->size, out, ++out;
 			*out = (*out - offset) * scale;
 		);
 	}
@@ -899,7 +899,7 @@ PyrObject* signal_wrap_f(VMGlobals *g, PyrObject *inPyrSignal, float lo, float h
 	float *out = (float*)(inPyrSignal->slots) - 1;
 	float *endptr = out + inPyrSignal->size;
 	while (out < endptr) {
-		++out; *out = sc_wrap(*out, lo, hi);	
+		++out; *out = sc_wrap(*out, lo, hi);
 	}
 	return inPyrSignal;
 }
@@ -918,7 +918,7 @@ PyrObject* signal_wrap_x(VMGlobals *g, PyrObject *ina, PyrObject *inb, PyrObject
 	endptr = d + outd->size;
 	while (d < endptr) {
 		a++;	b++;	c++;	d++;
-		++d; *d = sc_wrap(*a, *b, *c);	
+		++d; *d = sc_wrap(*a, *b, *c);
 	}
 	return outd;
 }
@@ -928,7 +928,7 @@ PyrObject* signal_fold_f(VMGlobals *g, PyrObject *inPyrSignal, float lo, float h
 	float *out = (float*)(inPyrSignal->slots) - 1;
 	float *endptr = out + inPyrSignal->size;
 	while (out < endptr) {
-		++out; *out = sc_fold(*out, lo, hi);	
+		++out; *out = sc_fold(*out, lo, hi);
 	}
 	return inPyrSignal;
 }
@@ -947,7 +947,7 @@ PyrObject* signal_fold_x(VMGlobals *g, PyrObject *ina, PyrObject *inb, PyrObject
 	endptr = d + outd->size;
 	while (d < endptr) {
 		a++;	b++;	c++;	d++;
-		*d = sc_fold(*a, *b, *c);	
+		*d = sc_fold(*a, *b, *c);
 	}
 	return outd;
 }
@@ -1094,7 +1094,7 @@ PyrObject* signal_sqrt(VMGlobals *g, PyrObject *inPyrSignal)
 }
 
 PyrObject* signal_distort(VMGlobals *g, PyrObject *inPyrSignal)
-{	
+{
 	float *in = (float*)(inPyrSignal->slots) - 1;
 	PyrObject *outc = newPyrSignal(g, inPyrSignal->size);
 	float *out = (float*)(outc->slots) - 1;
@@ -1108,7 +1108,7 @@ PyrObject* signal_distort(VMGlobals *g, PyrObject *inPyrSignal)
 }
 
 PyrObject* signal_softclip(VMGlobals *g, PyrObject *inPyrSignal)
-{	
+{
 	float *in = (float*)(inPyrSignal->slots) - 1;
 	PyrObject *outc = newPyrSignal(g, inPyrSignal->size);
 	float *out = (float*)(outc->slots) - 1;
@@ -1154,12 +1154,12 @@ PyrObject* signal_reverse_range(PyrObject* ina, long start, long end)
 	float *b = (float*)(ina->slots) + end;
 	float temp;
 	for (i=0; i<size2; ++i) {
-		temp = *++a; 
-		*a = *--b; 
+		temp = *++a;
+		*a = *--b;
 		*b = temp;
 	}
 	return ina;
-}	
+}
 
 PyrObject* signal_normalize_range(PyrObject* ina, long start, long end)
 {
@@ -1174,14 +1174,14 @@ PyrObject* signal_normalize_range(PyrObject* ina, long start, long end)
 	a = a0;
 	maxlevel = 0.f;
 	for (i=0; i<size; ++i) {
-		z = fabs(*++a); 
+		z = fabs(*++a);
 		if (z > maxlevel) maxlevel = z;
 	}
 	a = a0;
 	if (maxlevel != 0.f) {
 		scale = 1./maxlevel;
 		for (i=0; i<size; ++i) {
-			z = *++a; 
+			z = *++a;
 			*a = scale * z;
 		}
 	}
@@ -1217,31 +1217,31 @@ PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, f
 	slope = (lvl1 - lvl0) / size;
 	level = lvl0;
 	for (i=0; i<size; ++i) {
-		z = *++a; 
+		z = *++a;
 		*a = z * level;
 		level += slope;
 	}
 	return ina;
 }
 
-	
+
 PyrObject* signal_overdub(VMGlobals *g, PyrObject* ina, PyrObject* inb, long index)
 {
 	float *a, *b;
 	long len;
-	
-	if (index > 0) { 
+
+	if (index > 0) {
 		a = (float*)(ina->slots) + index - 1;
 		b = (float*)(inb->slots) - 1;
-		len = sc_min(inb->size, ina->size - index);	
-	} else { 
+		len = sc_min(inb->size, ina->size - index);
+	} else {
 		a = (float*)(ina->slots) - 1;
 		b = (float*)(inb->slots) - index - 1;
-		len = sc_min(ina->size, inb->size + index);	
+		len = sc_min(ina->size, inb->size + index);
 	}
-	
+
 	UNROLL_CODE(len, a,  *++a += *++b;);
-	
+
 	return ina;
 }
 
@@ -1249,16 +1249,16 @@ PyrObject* signal_overwrite(VMGlobals *g, PyrObject* ina, PyrObject* inb, long i
 {
 	float *a, *b;
 	long len;
-	if (index > 0) { 
+	if (index > 0) {
 		a = (float*)(ina->slots) + index - 1;
 		b = (float*)(inb->slots) - 1;
-		len = sc_min(inb->size, ina->size - index);	
-	} else { 
+		len = sc_min(inb->size, ina->size - index);
+	} else {
 		a = (float*)(ina->slots) - 1;
 		b = (float*)(inb->slots) - index - 1;
-		len = sc_min(ina->size, inb->size + index);	
+		len = sc_min(ina->size, inb->size + index);
 	}
-	
+
 	UNROLL_CODE(len, a,  *++a = *++b;);
 
 	return ina;

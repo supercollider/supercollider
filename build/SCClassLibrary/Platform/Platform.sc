@@ -12,7 +12,7 @@ Platform
 	}
 
 	name { ^this.subclassResponsibility }
-	
+
 	recompile { ^this.subclassResponsibility }
 	*case { | ... cases |
 		^thisProcess.platform.name.switch(*cases)
@@ -33,24 +33,24 @@ Platform
 
 	userExtensionDir { _Platform_userExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
-	
-	// The "ideName" is for ide-dependent compilation. 
+
+	// The "ideName" is for ide-dependent compilation.
 	// From SC.app, the value is "scapp" meaning "scide_scapp" folders will be compiled and other "scide_*" ignored.
 	ideName { _Platform_ideName }
 	*ideName { ^thisProcess.platform.ideName }
 
 	platformDir { ^this.name.asString }
 	*platformDir { ^thisProcess.platform.platformDir }
-	
+
 	pathSeparator { ^this.subclassResponsibility }
 	*pathSeparator { ^thisProcess.platform.pathSeparator }
 
 	isPathSeparator { |char| ^this.subclassResponsibility }
 	*isPathSeparator { |char| ^thisProcess.platform.isPathSeparator(char) }
-	
+
 	clearMetadata { |path| ^this.subclassResponsibility }
 	*clearMetadata { |path| ^thisProcess.platform.clearMetadata(path) }
-	
+
 	// startup/shutdown hooks
 	startup { }
 	shutdown { }
@@ -62,7 +62,7 @@ Platform
 	declareFeature { | aFeature |
 		var str = aFeature.asString;
 		if (str.first.isUpper) {
-			Error("cannot declare class name features").throw;			
+			Error("cannot declare class name features").throw;
 		};
 		if (str.first == $_) {
 			Error("cannot declare primitive name features").throw;
@@ -90,7 +90,7 @@ Platform
 	// swing is compatible with all platforms; so declare it as global default
 	defaultGUIScheme { ^\swing }
 	defaultHIDScheme { ^\none }
-	
+
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
@@ -107,11 +107,11 @@ Platform
 UnixPlatform : Platform
 {
 	pathSeparator { ^$/ }
-	
+
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)
 	}
-	
+
 	clearMetadata { |path|
 		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
 	}

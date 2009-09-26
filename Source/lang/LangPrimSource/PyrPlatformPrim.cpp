@@ -73,7 +73,7 @@ void initPlatformPrimitives();
 void initPlatformPrimitives()
 {
 	int base, index = 0;
-		
+
 	base = nextPrimitiveIndex();
 
 	definePrimitive(base, index++, "_Platform_systemAppSupportDir", prPlatform_systemAppSupportDir, 1, 0);
