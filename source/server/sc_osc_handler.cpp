@@ -1457,9 +1457,9 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
     size_t arg_count = msg.ArgumentCount();
 
     size_t size = elem_size * arg_count + 128; /* should be more than required */
-    char * data = (char*)rt_pool.malloc(size);
+    sized_array<char, rt_pool_allocator<char> > data(size);
 
-    osc::OutboundPacketStream p(data, size);
+    osc::OutboundPacketStream p(data.c_array(), size);
     p << osc::BeginMessage("/b_info");
 
     while (!args.Eos()) {
@@ -1476,8 +1476,7 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
 
     p << osc::EndMessage;
 
-    movable_array<char> message(p.Size(), data);
-    rt_pool.free(data);
+    movable_array<char> message(p.Size(), data.c_array());
 
     fire_system_callback(boost::bind(b_query_nrt, message, endpoint));
 }
@@ -1495,6 +1494,49 @@ void handle_b_close(received_message const & msg, udp::endpoint const & endpoint
     args >> index;
 
     fire_system_callback(boost::bind(b_close_nrt_1, index));
+}
+
+void b_get_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
+{
+    instance->send_udp(data.data(), data.length(), endpoint);
+}
+
+void handle_b_get(received_message const & msg, udp::endpoint const & endpoint)
+{
+    const size_t elem_size = sizeof(int) * sizeof(float);
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    const size_t index_count = msg.ArgumentCount() - 1;
+    const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    osc::int32 buffer_index;
+    args >> buffer_index;
+
+    const SndBuf * buf = ugen_factory.get_buffer_struct(buffer_index);
+    const sample * data = buf->data;
+    const int max_sample = buf->frames * buf->channels;
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/b_set")
+      << buffer_index;
+
+    while (!args.Eos())
+    {
+        osc::int32 index;
+        args >> index;
+        p << index;
+
+        if (index < max_sample)
+            p << data[index];
+        else
+            p << 0.f;
+    }
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    fire_system_callback(boost::bind(b_get_nrt, message, endpoint));
 }
 
 void handle_c_set(received_message const & msg)
@@ -1936,6 +1978,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_query(message, endpoint);
         break;
 
+    case cmd_b_get:
+        handle_b_get(message, endpoint);
+        break;
+
     case cmd_c_set:
         handle_c_set(message);
         break;
@@ -2107,6 +2153,11 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "query") == 0) {
         handle_b_query(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "get") == 0) {
+        handle_b_get(message, endpoint);
         return;
     }
 }
