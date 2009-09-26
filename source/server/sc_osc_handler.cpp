@@ -1539,6 +1539,74 @@ void handle_b_get(received_message const & msg, udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(b_get_nrt, message, endpoint));
 }
 
+template<typename Alloc>
+struct getn_data
+{
+    getn_data(int start, int count, const float * data):
+        start_index_(start), data_(count)
+    {
+        data_.reserve(count);
+        for (int i = 0; i != count; ++i)
+            data_[i] = data[i];
+    }
+
+    int start_index_;
+    std::vector<float, Alloc> data_;
+};
+
+void b_getn_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
+{
+    instance->send_udp(data.data(), data.length(), endpoint);
+}
+
+void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    typedef getn_data<rt_pool_allocator<float> > getn_data;
+    std::vector<getn_data, rt_pool_allocator<getn_data> > return_data;
+
+    osc::int32 buffer_index;
+    args >> buffer_index;
+
+    const SndBuf * buf = ugen_factory.get_buffer_struct(buffer_index);
+    const sample * data = buf->data;
+    const int max_sample = buf->frames * buf->channels;
+
+
+    while (!args.Eos())
+    {
+        osc::int32 index, sample_count;
+        args >> index >> sample_count;
+
+        if (index + sample_count < max_sample)
+            return_data.push_back(getn_data(index, sample_count, data + index));
+    }
+
+    size_t alloc_size = 128;
+    for (size_t i = 0; i != return_data.size(); ++i)
+        alloc_size += return_data[i].data_.size() * sizeof(float) + 2*sizeof(int);
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/b_setn")
+      << buffer_index;
+
+    for (size_t i = 0; i != return_data.size(); ++i) {
+        p << return_data[i].start_index_
+          << int(return_data[i].data_.size());
+
+        for (size_t j = 0; j != return_data[i].data_.size(); ++j)
+            p << return_data[i].data_[j];
+    }
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    fire_system_callback(boost::bind(b_getn_nrt, message, endpoint));
+}
+
 void handle_c_set(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -1982,6 +2050,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_get(message, endpoint);
         break;
 
+    case cmd_b_getn:
+        handle_b_getn(message, endpoint);
+        break;
+
     case cmd_c_set:
         handle_c_set(message);
         break;
@@ -2158,6 +2230,11 @@ void dispatch_buffer_commands(received_message const & message,
 
     if (strcmp(address+3, "get") == 0) {
         handle_b_get(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "getn") == 0) {
+        handle_b_getn(message, endpoint);
         return;
     }
 }
