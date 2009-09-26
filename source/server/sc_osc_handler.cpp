@@ -733,6 +733,26 @@ void handle_n_fill(received_message const & msg)
     }
 }
 
+void handle_n_run(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_id, run_flag;
+        args >> node_id >> run_flag;
+
+        server_node * node = find_node(node_id);
+        if(!node)
+            continue;
+
+        if (run_flag)
+            node->resume();
+        else
+            node->pause();
+    }
+}
+
 /** wrapper class for osc completion message
  */
 struct completion_message
@@ -1998,6 +2018,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_fill(message);
         break;
 
+    case cmd_n_run:
+        handle_n_run(message);
+        break;
+
     case cmd_b_alloc:
         handle_b_alloc(message, endpoint);
         break;
@@ -2157,6 +2181,11 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "fill") == 0) {
         handle_n_fill(message);
+        return;
+    }
+
+    if (strcmp(address+3, "run") == 0) {
+        handle_n_run(message);
         return;
     }
 }
