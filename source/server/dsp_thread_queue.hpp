@@ -39,7 +39,7 @@ namespace nova
 template <typename runnable, typename Alloc>
 class dsp_queue_interpreter;
 
-template <typename runnable>
+template <typename runnable, typename Alloc>
 class dsp_threads;
 
 /*
@@ -348,7 +348,7 @@ private:
         return (remaining == 1);
     }
 
-    friend class nova::dsp_threads<runnable>;
+    friend class nova::dsp_threads<runnable, Alloc>;
 
     void mark_as_runnable(dsp_thread_queue_item * item)
     {
@@ -356,7 +356,7 @@ private:
         sem.post();
     }
 
-    friend class nova::dsp_thread_queue_item<runnable>;
+    friend class nova::dsp_thread_queue_item<runnable, Alloc>;
 
 private:
     dsp_thread_queue_ptr queue;
