@@ -22,7 +22,6 @@
 #include <boost/thread.hpp>
 
 #include "buffer_manager.hpp"
-#include "control_bus_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "sc_osc_handler.hpp"
@@ -97,7 +96,6 @@ class nova_server:
 #endif
     public synth_factory,
     public buffer_manager,
-    public control_bus_manager,
     public sc_osc_handler
 {
 public:

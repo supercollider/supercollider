@@ -1636,7 +1636,7 @@ void handle_c_set(received_message const & msg)
         float value;
         args >> bus_index >> value;
 
-        instance->set_control_bus(bus_index, value);
+        ugen_factory.controlbus_set(bus_index, value);
     }
 }
 
@@ -1651,7 +1651,7 @@ void handle_c_setn(received_message const & msg)
         for (int i = 0; i != bus_count; ++i) {
             float value;
             args >> value;
-            instance->set_control_bus(bus_index + i, value);
+            ugen_factory.controlbus_set(bus_index + i, value);
         }
     }
 }
@@ -1665,8 +1665,7 @@ void handle_c_fill(received_message const & msg)
         float value;
         args >> bus_index >> bus_count >> value;
 
-        for (int i = 0; i != bus_count; ++i)
-            instance->set_control_bus(bus_index + i, value);
+        ugen_factory.controlbus_fill(bus_index, bus_count, value);
     }
 }
 
@@ -1691,7 +1690,7 @@ public:
             osc::int32 bus_index;
             args >> bus_index;
 
-            float value = instance->get_control_bus(bus_index);
+            float value = ugen_factory.controlbus_get(bus_index);
 
             p << bus_index
               << value;
@@ -1716,77 +1715,81 @@ private:
     size_t msg_size_;
 };
 
+void c_get_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
+{
+    instance->send_udp(data.data(), data.length(), endpoint);
+}
 
 void handle_c_get(received_message const & msg,
                   udp::endpoint const & endpoint)
 {
-    instance->add_system_callback(new c_get_callback(msg, endpoint));
+    const size_t elem_size = sizeof(int) + sizeof(float);
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    const size_t index_count = msg.ArgumentCount();
+    const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/c_set");
+
+    while (!args.Eos())
+    {
+        osc::int32 index;
+        args >> index;
+
+        p << index << ugen_factory.controlbus_get(index);
+    }
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    fire_system_callback(boost::bind(b_get_nrt, message, endpoint));
 }
 
-struct c_getn_callback:
-    public sc_response_callback
+void c_getn_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
 {
-    static const int reply_base_size = 2 * sizeof(int);
-
-public:
-    c_getn_callback(received_message const & msg, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint)
-    {
-        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-        size_t size = 128; /* more than required */
-
-        while (!args.Eos()) {
-            osc::int32 bus_index, bus_count;
-            args >> bus_index >> bus_count;
-
-            size += bus_count * sizeof(float) + reply_base_size;
-        }
-
-        data_ = (char*)allocate(size);
-
-        osc::OutboundPacketStream p(data_, size);
-
-        args = msg.ArgumentStream();
-        p << osc::BeginMessage("/c_setn");
-        while (!args.Eos()) {
-            osc::int32 bus_index, bus_count;
-            args >> bus_index >> bus_count;
-
-            p << bus_index
-              << bus_count;
-
-            for (int i = 0; i != bus_count; ++i) {
-                float value = instance->get_control_bus(bus_index);
-                p << value;
-            }
-        }
-
-        p << osc::EndMessage;
-        msg_size_ = p.Size();
-    }
-
-private:
-    void run(void)
-    {
-        instance->send_udp(data_, msg_size_, endpoint_);
-    }
-
-    ~c_getn_callback(void)
-    {
-        deallocate(data_);
-    }
-
-    char * data_;
-    size_t msg_size_;
-};
-
-
-void handle_c_getn(received_message const & msg,
-                  udp::endpoint const & endpoint)
-{
-    instance->add_system_callback(new c_getn_callback(msg, endpoint));
+    instance->send_udp(data.data(), data.length(), endpoint);
 }
 
+void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    size_t alloc_size = 128;
+
+    while (!args.Eos())
+    {
+        osc::int32 index, bus_count;
+        args >> index >> bus_count;
+
+        alloc_size += 2 * sizeof(int) + bus_count * sizeof(float);
+    }
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    args = msg.ArgumentStream();
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/c_setn");
+
+    while (!args.Eos())
+    {
+        osc::int32 bus_index, bus_count;
+        args >> bus_index >> bus_count;
+        p << bus_index << bus_count;
+
+        for (int i = 0; i != bus_count; ++i) {
+            float value = ugen_factory.controlbus_get(bus_index + i);
+            p << value;
+        }
+    }
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    fire_system_callback(boost::bind(c_getn_nrt, message, endpoint));
+}
 
 struct d_recv_callback:
     public sc_async_callback
