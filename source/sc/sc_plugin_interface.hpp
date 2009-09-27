@@ -86,6 +86,11 @@ public:
 
     audio_bus_manager audio_busses;
 
+    int buf_counter(void) const
+    {
+        return world.mBufCounter;
+    }
+
     /* @{ */
     /* audio buffer handling */
     SndBuf* allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels);
@@ -129,6 +134,52 @@ public:
 
     /* copies nrt mirror to rt buffers */
     void buffer_sync(uint32_t index);
+
+    /* @{ */
+    /* control bus handling */
+
+private:
+    void controlbus_set_unchecked(uint32_t bus, float value)
+    {
+        world.mControlBus[bus] = value;
+        world.mControlBusTouched[bus] = world.mBufCounter;
+    }
+
+public:
+    void controlbus_set(uint32_t bus, float value)
+    {
+        if (bus < world.mNumControlBusChannels)
+            controlbus_set_unchecked(bus, value);
+    }
+
+    void controlbus_fill(uint32_t bus, size_t count, float value)
+    {
+        if (bus + count >= world.mNumControlBusChannels)
+            count = world.mNumAudioBusChannels - bus;
+
+        for (size_t i = 0; i != count; ++i)
+            controlbus_set_unchecked(i, value);
+    }
+
+    sample controlbus_get(uint32_t bus)
+    {
+        if (bus < world.mNumControlBusChannels)
+            return world.mControlBus[bus];
+        else
+            return 0.f;
+    }
+
+    void controlbus_getn(uint32_t bus, size_t count, size_t * r_count, float * r_values)
+    {
+        size_t remain = count;
+        if (bus + count >= world.mNumControlBusChannels)
+            remain = world.mNumAudioBusChannels - bus;
+        *r_count = remain;
+
+        for (size_t i = 0; i != remain; ++i)
+            r_values[i] = world.mControlBus[i];
+    }
+    /* @}*/
 };
 
 } /* namespace nova */

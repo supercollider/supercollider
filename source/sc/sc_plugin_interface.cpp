@@ -495,6 +495,7 @@ void sc_plugin_interface::initialize(void)
     /* initialize world */
     /* control busses */
     world.mControlBus = new float[args.control_busses];
+    world.mNumControlBusChannels = args.control_busses;
     world.mControlBusTouched = new int32[args.control_busses];
     for (size_t i = 0; i != args.control_busses; ++i)
         world.mControlBusTouched[i] = -1;
@@ -948,5 +949,6 @@ void sc_plugin_interface::free_buffer(uint32_t index)
 {
     sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
 }
+
 
 } /* namespace nova */
