@@ -177,7 +177,7 @@ private:
 
 inline void run_scheduler_tick(void)
 {
-    const int blocksize = 64;
+    const int blocksize = instance->get_audio_blocksize();
     const int input_channels = instance->get_input_count();
     const int output_channels = instance->get_output_count();
     const int buf_counter = ++ugen_factory.world.mBufCounter;

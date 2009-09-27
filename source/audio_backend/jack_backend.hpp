@@ -94,14 +94,16 @@ public:
     }
     /* @} */
 
-    uint get_audio_blocksize(void)
+    uint32_t get_audio_blocksize(void) const
     {
-        return 64;
+        return blocksize_;
     }
 
 public:
-    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count)
+    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count, uint32_t blocksize)
     {
+        blocksize_ = blocksize;
+
         /* open client */
         client = jack_client_open(name.c_str(), JackNoStartServer, &status);
         if (status & JackServerFailed)
@@ -141,8 +143,8 @@ public:
         samplerate_ = jack_get_sample_rate(client);
         jack_frames = jack_get_buffer_size(client);
 
-        if (jack_frames % 64)
-            throw std::runtime_error("jack buffer size is not a multiple of 64");
+        if (jack_frames % blocksize_)
+            throw std::runtime_error("jack buffer size is not a multiple of blocksize");
     }
 
     void close_client(void)
@@ -218,15 +220,15 @@ private:
         {
             (*dsp_cb)();
 
-            i += 64;
+            i += blocksize_;
             if (i == frames)
                 break;
 
             /* increment cached port regions */
             for (uint16_t i = 0; i != input_channels; ++i)
-                input_samples[i] += 64;
+                input_samples[i] += blocksize_;
             for (uint16_t i = 0; i != output_channels; ++i)
-                output_samples[i] += 64;
+                output_samples[i] += blocksize_;
         }
 
         return 0;
@@ -240,8 +242,8 @@ private:
     int buffer_size_callback(jack_nframes_t frames)
     {
         jack_frames = frames;
-        if (jack_frames % 64)
-            /* we need a multiple of 64 */
+        if (jack_frames % blocksize_)
+            /* we need a multiple of the blocksize */
             return 1;
         return 0;
     }
@@ -252,6 +254,7 @@ private:
     bool is_active;
     float samplerate_;
     uint16_t input_channels, output_channels;
+    uint32_t blocksize_;
 
     std::vector<jack_default_audio_sample_t*> input_samples, output_samples;
     std::vector<jack_port_t*> input_ports, output_ports;

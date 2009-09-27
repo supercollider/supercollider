@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
     register_handles();
 
 #if defined (JACK_BACKEND)
-    server.open_client("supernova", args.input_channels, args.output_channels);
+    server.open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
     server.activate_audio();
 
     if (args.samplerate == 0)
