@@ -36,7 +36,7 @@ class abstract_group:
     public server_node
 {
 public:
-    typedef std::vector<thread_queue_item*> successor_container;
+    typedef thread_queue_item::successor_list successor_container;
 
 protected:
     server_node_list child_nodes;

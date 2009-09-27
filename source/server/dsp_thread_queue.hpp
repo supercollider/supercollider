@@ -36,7 +36,7 @@
 namespace nova
 {
 
-template <typename runnable>
+template <typename runnable, typename Alloc>
 class dsp_queue_interpreter;
 
 template <typename runnable>
@@ -52,15 +52,19 @@ concept runnable
 
 */
 
-/** item of a dsp thread queue */
-template <typename runnable>
+/** item of a dsp thread queue
+ *
+ * \tparam Alloc allocator for successor list
+ */
+template <typename runnable,
+          typename Alloc = std::allocator<void*> >
 class dsp_thread_queue_item
 {
     typedef boost::uint_fast16_t activation_limit_t;
-    typedef nova::dsp_queue_interpreter<runnable> dsp_queue_interpreter;
+    typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
 public:
-    typedef std::vector<dsp_thread_queue_item*> successor_list;
+    typedef std::vector<dsp_thread_queue_item*, Alloc> successor_list;
 
     dsp_thread_queue_item(runnable const & job, successor_list const & successors,
                           activation_limit_t activation_limit):
@@ -111,12 +115,12 @@ private:
     const activation_limit_t activation_limit;                 /**< number of precedessors */
 };
 
-template <typename runnable>
+template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread_queue
 {
     typedef boost::uint_fast16_t node_count_t;
 
-    typedef nova::dsp_thread_queue_item<runnable> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
 
 public:
     dsp_thread_queue(void):
@@ -153,18 +157,20 @@ public:
 private:
     node_count_t total_node_count;      /* total number of nodes */
 
-    std::vector<dsp_thread_queue_item*> initially_runnable_items; /* nodes without precedessor */
+    typename dsp_thread_queue_item::successor_list initially_runnable_items; /* nodes without precedessor */
     boost::ptr_vector<dsp_thread_queue_item> queue_items;         /* all nodes */
 
-    friend class dsp_queue_interpreter<runnable>;
+    friend class dsp_queue_interpreter<runnable, Alloc>;
 };
 
-template <typename runnable>
+template <typename runnable,
+          typename Alloc = std::allocator<void*> >
 class dsp_queue_interpreter
 {
 protected:
-    typedef nova::dsp_thread_queue<runnable> dsp_thread_queue;
-    typedef nova::dsp_thread_queue_item<runnable> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue<runnable, Alloc> dsp_thread_queue;
+    typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
+    typedef typename dsp_thread_queue_item::successor_list successor_list;
     typedef std::size_t size_t;
 
 public:
@@ -219,7 +225,7 @@ public:
         assert(node_count == 0);
         node_count += queue->get_total_node_count(); /* this is definitely atomic! */
 
-        std::vector<dsp_thread_queue_item*> const & initially_runnable_items = queue->initially_runnable_items;
+        successor_list const & initially_runnable_items = queue->initially_runnable_items;
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
             mark_as_runnable(initially_runnable_items[i]);
 
