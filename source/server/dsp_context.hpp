@@ -52,6 +52,10 @@ class dsp_context
     typedef boost::uint_fast16_t uint16;
 
 public:
+    /* don't initialize anything ... only for supercollider wrapper */
+    dsp_context(void)
+    {}
+
     dsp_context(sample sr, uint16 blocksize, uint8 thread_index):
         blocksize_(blocksize), samplerate_(sr), inv_samplerate_(sample(1) / sr), thread_index_(thread_index)
     {}

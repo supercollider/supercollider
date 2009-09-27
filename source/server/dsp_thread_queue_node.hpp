@@ -47,7 +47,7 @@ public:
     {
         if (unlikely(!node->is_running()))
             return;
-        dsp_context context(44100, 64, index);
+        dsp_context context;
         node->run(context);
     }
 
