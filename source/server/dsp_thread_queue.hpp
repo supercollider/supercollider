@@ -26,7 +26,6 @@
 #include <boost/lockfree/atomic_int.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <boost/lockfree/fifo.hpp>
 
@@ -54,16 +53,31 @@ concept runnable
 
 /** item of a dsp thread queue
  *
- * \tparam Alloc allocator for successor list
+ * \tparam Alloc allocator for successor list and operator new/delete
+ *
+ * \todo operator new doesn't support stateful allocators
  */
 template <typename runnable,
           typename Alloc = std::allocator<void*> >
-class dsp_thread_queue_item
+class dsp_thread_queue_item:
+    private Alloc
 {
     typedef boost::uint_fast16_t activation_limit_t;
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
+    typedef typename Alloc::template rebind<dsp_thread_queue_item>::other new_allocator;
+
 public:
+    void* operator new(std::size_t size)
+    {
+        return new_allocator().allocate(size);
+    }
+
+    inline void operator delete(void * p)
+    {
+        new_allocator().deallocate((dsp_thread_queue_item*)p, sizeof(dsp_thread_queue_item));
+    }
+
     typedef std::vector<dsp_thread_queue_item*, Alloc> successor_list;
 
     dsp_thread_queue_item(runnable const & job, successor_list const & successors,
@@ -127,6 +141,12 @@ public:
         total_node_count(0)
     {}
 
+    ~dsp_thread_queue(void)
+    {
+        for (std::size_t i = 0; i != queue_items.size(); ++i)
+            delete queue_items[i];
+    }
+
     void add_initially_runnable(dsp_thread_queue_item * item)
     {
         initially_runnable_items.push_back(item);
@@ -146,7 +166,7 @@ public:
         assert(total_node_count == queue_items.size());
 
         for (node_count_t i = 0; i != total_node_count; ++i)
-            queue_items[i].reset_activation_count();
+            queue_items[i]->reset_activation_count();
     }
 
     node_count_t get_total_node_count(void) const
@@ -158,7 +178,7 @@ private:
     node_count_t total_node_count;      /* total number of nodes */
 
     typename dsp_thread_queue_item::successor_list initially_runnable_items; /* nodes without precedessor */
-    boost::ptr_vector<dsp_thread_queue_item> queue_items;         /* all nodes */
+    std::vector<dsp_thread_queue_item*> queue_items;                         /* all nodes */
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
 };
