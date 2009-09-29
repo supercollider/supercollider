@@ -28,7 +28,7 @@
 #include <boost/thread.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include <lockfree/fifo.hpp>
+#include <boost/lockfree/fifo.hpp>
 
 #include "utilities/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
@@ -108,7 +108,7 @@ private:
             interpreter.mark_as_runnable(this);
     }
 
-    lockfree::atomic_int<activation_limit_t> activation_count; /**< current activation count */
+    boost::lockfree::atomic_int<activation_limit_t> activation_count; /**< current activation count */
 
     runnable job;
     successor_list successors;                                 /**< list of successing nodes */
@@ -180,7 +180,7 @@ public:
     typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc):
-        node_count(0)
+        fifo(1024), node_count(0)
     {
         set_thread_count(tc);
     }
@@ -369,8 +369,8 @@ private:
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
-    lockfree::fifo<dsp_thread_queue_item*> fifo;
-    lockfree::atomic_int<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    boost::lockfree::fifo<dsp_thread_queue_item*> fifo;
+    boost::lockfree::atomic_int<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
 };
 
 } /* namespace nova */
