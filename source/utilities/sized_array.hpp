@@ -22,6 +22,8 @@
 #include <cassert>
 #include <memory>               /* std::allocator */
 
+#include <stdint.h>
+
 namespace nova
 {
 
@@ -38,8 +40,10 @@ namespace nova
 template<typename T,
          class Alloc = std::allocator<T> >
 class sized_array:
-    private Alloc
+    private Alloc::template rebind<T>::other
 {
+    typedef typename Alloc::template rebind<T>::other Allocator;
+
 public:
     // types
     typedef T                                     value_type;
@@ -53,36 +57,44 @@ public:
     typedef std::ptrdiff_t                        difference_type;
 
     // construct/copy/destruct
-    explicit sized_array(size_type size, T const & def = T()):
-        data_(Alloc::allocate(size)), size_(size)
+    explicit sized_array(size_type size, T const & def):
+        data_(Allocator::allocate(size)), size_(size)
     {
         for (size_type i = 0; i != size; ++i)
-            Alloc::construct(data_ + i, def);
+            Allocator::construct(data_ + i, def);
     }
 
-    template<typename U, typename V>
-    explicit sized_array(const sized_array<U, V>& rhs):
-        data_(Alloc::allocate(rhs.size())), size_(rhs.size())
-    {
-        for (size_type i = 0; i != size(); ++i)
-            Alloc::construct(data_ + i, rhs[i]);
+#define EXPLICIT_CONSTRUCTOR(INT_TYPE)                  \
+    explicit sized_array(INT_TYPE size):                \
+        data_(Allocator::allocate(size)), size_(size)   \
+    {                                                   \
+        for (size_type i = 0; i != size_type(size); ++i)\
+            Alloc::construct(data_ + i, T());           \
     }
 
-    template<typename ConstIterator>
-    explicit sized_array(ConstIterator begin, ConstIterator const & end, size_type size):
-        data_(Alloc::allocate(size)), size_(size)
+    EXPLICIT_CONSTRUCTOR(int32_t);
+    EXPLICIT_CONSTRUCTOR(uint32_t);
+    EXPLICIT_CONSTRUCTOR(int64_t);
+    EXPLICIT_CONSTRUCTOR(uint64_t);
+
+#undef EXPLICIT_CONSTRUCTOR
+
+    template<typename Container>
+    explicit sized_array(Container const & container):
+        data_(Allocator::allocate(container.size())), size_(container.size())
     {
         size_type index = 0;
-        for (; begin != end; ++begin)
-            Alloc::construct(data_ + index++, *begin);
-        assert(index == size);
+        typedef typename Container::const_iterator iterator;
+        for (iterator it = container.begin(); it != container.end(); ++it)
+            Allocator::construct(data_ + index++, *it);
+        assert(index == size());
     }
 
     ~sized_array(void)
     {
         for (size_type i = 0; i != size(); ++i)
-            Alloc::destroy(data_ + i);
-        Alloc::deallocate(data_, size());
+            Allocator::destroy(data_ + i);
+        Allocator::deallocate(data_, size());
     }
 
     // iterator support
@@ -205,7 +217,6 @@ private:
     T * const data_;
     const size_type size_;
 };
-
 
 } /* namespace nova */
 
