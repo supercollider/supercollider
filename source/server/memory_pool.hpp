@@ -70,6 +70,9 @@ public:
                      void* hint = 0)
     {
         pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
+        if (ret == NULL)
+            throw std::bad_alloc();
+
         return ret;
     }
 
