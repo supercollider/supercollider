@@ -62,7 +62,8 @@ env.Append(CPPPATH=Dir("#/libs/."))
 #
 # tlsf
 
-env.Append(CPPPATH=Dir("#/libs/tlsf/src"))
+env.Append(CPPPATH=Dir("#/libs/tlsf/src"),
+           CPPDEFINES="TLSF_STATISTIC=1")
 tlsf_sources = [File("tlsf/src/tlsf.c")]
 
 ######################################################################

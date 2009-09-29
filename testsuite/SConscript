@@ -54,7 +54,8 @@ unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
                                      "#libs/tlsf/src"],
-                            CCFLAGS=unit_test_cflags)
+                            CCFLAGS=unit_test_cflags,
+                            CPPDEFINES="TLSF_STATISTIC=1")
 
 unit_test_common = ["boost_test.cpp",
                     "#libs/tlsf/src/tlsf.c",
@@ -96,6 +97,7 @@ unit_test_sources = ["mutex_test.cpp",
                      "buffer_manager_test.cpp",
                      "sized_array_test.cpp",
                      "control_bus_test.cpp",
+                     "memory-pool_test.cpp"
                      ]
 
 

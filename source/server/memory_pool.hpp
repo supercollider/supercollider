@@ -69,14 +69,16 @@ public:
     pointer allocate(size_type size,
                      void* hint = 0)
     {
-        return static_cast<pointer>(rt_pool.malloc(size));
+        pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
+        return ret;
     }
 
     pointer reallocate(pointer p,
                        size_type size,
                        void* hint = 0)
     {
-        return static_cast<pointer>(rt_pool.realloc(p, size));
+        pointer ret = static_cast<pointer>(rt_pool.realloc(p, size * sizeof(T)));
+        return ret;
     }
 
     void deallocate(pointer p, size_type n)
