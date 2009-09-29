@@ -1,5 +1,5 @@
 //  synth
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -103,10 +103,11 @@ public:
 
     void run(dsp_context const & context)
     {
-        samplecount_t samples = context.blocksize();
+        samplecount_t samples = 64;
         /** \todo run control rate */
+        /** \todo currently we are using hardcoded values, since dsp_context is currently not in use */
 
-        const time_tag end_time = current_time() + time_tag::from_samples_small(samples, context.samplerate());
+        const time_tag end_time = current_time() + time_tag::from_samples_small(samples, 44100);
         if (check_time(end_time))
             run_sample_accurate(end_time, samples, context);
         else
