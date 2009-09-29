@@ -65,17 +65,31 @@ HistoryGui {
 				this.setStrFilter(txvw.string);
 				if (this.filtering) { this.filterLines; }
 			});
-		topBut = Button(w, Rect(0, 0, 32, 20))
+		topBut = Button(w, Rect(0, 0, 24, 20))
 			.states_([["top"], ["keep"]]).value_(0)
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |but| this.stickMode_(but.value) });
 
-		Button(w, Rect(0, 0, 32, 20)) ////
+		Button(w, Rect(0, 0, 24, 20)) ////
 			.states_([["rip"]])
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |btn| this.findDoc; doc.string_(textV.string); doc.front; });
+		
+		Button(w, Rect(0,0, 16, 20))
+			.states_([["v"], ["^"]])
+			.action_ { |btn| 
+				var views = w.view.children; 
+				var resizes = [ 
+					[2, 1, 1, 1, 2, 3, 3, 3, 5], 
+					[5, 7, 7, 7, 8, 9, 9, 9, 8]
+				][btn.value.asInteger];
+				
+				views.do { |v, i| v.resize_(resizes[i]) };
+			
+			};
+		
 		listV = ListView(w, bounds.copy.insetBy(2).height_(230))
 			.font_(font)
 			.items_([])

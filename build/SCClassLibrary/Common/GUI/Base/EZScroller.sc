@@ -12,7 +12,6 @@ EZScroller {
 			this.valueAction_(spec.map(sl.value));
 		};
 		slider.keyDownAction { arg char, modifiers, unicode,keycode;
-			"yo, keydown!".postln;
 			if (unicode == 16rF700, { this.increment; ^this });
 			if (unicode == 16rF703, { this.increment; ^this });
 			if (unicode == 16rF701, { this.decrement; ^this });
@@ -28,7 +27,7 @@ EZScroller {
 	adjust {
 		var slBounds = slider.bounds;
 		var maxLength = slBounds.width max: slBounds.height + 2;
-		var numTooMany = (numItems - maxItems).max(0);
+		var numTooMany = (numItems - maxItems).max(1);
 		var fractionToShow = (maxItems / numItems).min(1);
 		if (GUI.scheme.id == \cocoa) {
 			// swingOSC posts a 'not implemented yet' warning.
