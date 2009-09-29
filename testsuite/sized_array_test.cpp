@@ -27,3 +27,20 @@ BOOST_AUTO_TEST_CASE( sized_array_test_1 )
     BOOST_REQUIRE_EQUAL( long_array[1], 3 );
     BOOST_REQUIRE_EQUAL( long_array[0], -1 );
 }
+
+
+
+BOOST_AUTO_TEST_CASE( sized_array_test_2 )
+{
+    std::vector<int> vec(5);
+    vec[0] = -1;
+    vec[1] = -2;
+    vec[2] = -3;
+    vec[3] = -4;
+    vec[4] = -5;
+
+    sized_array<int> array(vec.begin(), vec.end(), vec.size());
+
+    for (int i = 0; i != 5; ++i)
+        BOOST_REQUIRE_EQUAL( vec[i], array[i] );
+}

@@ -19,6 +19,7 @@
 #ifndef UTILITIES_SIZED_ARRAY_HPP
 #define UTILITIES_SIZED_ARRAY_HPP
 
+#include <cassert>
 #include <memory>               /* std::allocator */
 
 namespace nova
@@ -55,7 +56,7 @@ public:
     explicit sized_array(size_type size, T const & def = T()):
         data_(Alloc::allocate(size)), size_(size)
     {
-        for (size_t i = 0; i != size; ++i)
+        for (size_type i = 0; i != size; ++i)
             Alloc::construct(data_ + i, def);
     }
 
@@ -63,13 +64,23 @@ public:
     explicit sized_array(const sized_array<U, V>& rhs):
         data_(Alloc::allocate(rhs.size())), size_(rhs.size())
     {
-        for (size_t i = 0; i != size(); ++i)
+        for (size_type i = 0; i != size(); ++i)
             Alloc::construct(data_ + i, rhs[i]);
+    }
+
+    template<typename ConstIterator>
+    explicit sized_array(ConstIterator begin, ConstIterator const & end, size_type size):
+        data_(Alloc::allocate(size)), size_(size)
+    {
+        size_type index = 0;
+        for (; begin != end; ++begin)
+            Alloc::construct(data_ + index++, *begin);
+        assert(index == size);
     }
 
     ~sized_array(void)
     {
-        for (size_t i = 0; i != size(); ++i)
+        for (size_type i = 0; i != size(); ++i)
             Alloc::destroy(data_ + i);
         Alloc::deallocate(data_, size());
     }
@@ -186,7 +197,7 @@ public:
     // modifiers
     void assign(const T& t)
     {
-        for (size_t i = 0; i != size_; ++i)
+        for (size_type i = 0; i != size_; ++i)
             data_[i] = t;
     }
 
