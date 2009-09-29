@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../source/server/dsp_thread.hpp"
+#include "../source/server/memory_pool.hpp"
 
 namespace
 {
@@ -33,47 +34,66 @@ struct dummy_runnable
 dummy_runnable dummy;
 }
 
-typedef nova::dsp_queue_interpreter<dummy_runnable> dsp_queue_interpreter;
-typedef nova::dsp_thread_queue_item<dummy_runnable> dsp_thread_queue_item;
-typedef nova::dsp_thread_queue<dummy_runnable> dsp_thread_queue;
-
-typedef nova::dsp_threads<dummy_runnable> dsp_threads;
+template <typename Alloc>
+void run_test_1(void)
+{
+    nova::dsp_threads<dummy_runnable, Alloc> t(1);
+}
 
 BOOST_AUTO_TEST_CASE( dsp_thread_test_1 )
 {
-    dsp_threads t(1);
+    nova::rt_pool.init(1024*1024*128);
+    run_test_1<std::allocator<void*> >();
+    run_test_1<nova::rt_pool_allocator<void*> >();
+}
+
+template <typename Alloc>
+void run_test_2(void)
+{
+    nova::dsp_threads<dummy_runnable, Alloc> t(5);
+    t.start_threads();
+    t.terminate_threads();
 }
 
 
 BOOST_AUTO_TEST_CASE( dsp_thread_test_2 )
 {
-    dsp_threads t(5);
-    t.start_threads();
-    t.terminate_threads();
+    run_test_2<std::allocator<void*> >();
+    run_test_2<nova::rt_pool_allocator<void*> >();
 }
 
+template <typename Alloc>
+void run_test_3(void)
+{
+    nova::dsp_threads<dummy_runnable, Alloc> t(2);
+    t.start_threads();
+    t.run();
+    t.terminate_threads();
+}
 
 BOOST_AUTO_TEST_CASE( dsp_thread_test_3 )
 {
-    dsp_threads t(2);
-    t.start_threads();
-
-    t.run();
-
-    t.terminate_threads();
+    run_test_3<std::allocator<void*> >();
+    run_test_3<nova::rt_pool_allocator<void*> >();
 }
 
-BOOST_AUTO_TEST_CASE( dsp_thread_test_4 )
+template <typename Alloc>
+void run_test_4(void)
 {
+    typedef typename nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
+    typedef typename nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
+
+    typedef typename nova::dsp_threads<dummy_runnable, Alloc> dsp_threads;
+
     dsp_threads t(1);
     t.start_threads();
 
     std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
 
-    dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
+    dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, typename dsp_thread_queue_item::successor_list(), 1);
     q->add_queue_item(item1);
 
-    dsp_thread_queue_item::successor_list sl;
+    typename dsp_thread_queue_item::successor_list sl;
     sl.push_back(item1);
 
     dsp_thread_queue_item * item2 = new dsp_thread_queue_item(dummy, sl, 0);
@@ -88,19 +108,32 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_4 )
 
     BOOST_REQUIRE_EQUAL(item1->get_job().i, 1);
     BOOST_REQUIRE_EQUAL(item2->get_job().i, 1);
+
 }
 
-BOOST_AUTO_TEST_CASE( dsp_thread_test_5 )
+
+BOOST_AUTO_TEST_CASE( dsp_thread_test_4 )
 {
+    run_test_4<std::allocator<void*> >();
+    run_test_4<nova::rt_pool_allocator<void*> >();
+}
+
+template <typename Alloc>
+void run_test_5(void)
+{
+    typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
+    typedef nova::dsp_threads<dummy_runnable, Alloc> dsp_threads;
+
     dsp_threads t(2);
     t.start_threads();
 
     std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
 
-    dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 4);
+    dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, typename dsp_thread_queue_item::successor_list(), 4);
     q->add_queue_item(item1);
 
-    dsp_thread_queue_item::successor_list sl;
+    typename dsp_thread_queue_item::successor_list sl;
     sl.push_back(item1);
 
     dsp_thread_queue_item * item2 = new dsp_thread_queue_item(dummy, sl, 0);
@@ -133,8 +166,20 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_5 )
 }
 
 
-BOOST_AUTO_TEST_CASE( dsp_thread_test_6 )
+
+BOOST_AUTO_TEST_CASE( dsp_thread_test_5 )
 {
+    run_test_5<std::allocator<void*> >();
+    run_test_5<nova::rt_pool_allocator<void*> >();
+}
+
+template <typename Alloc>
+void run_test_6(void)
+{
+    typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
+    typedef nova::dsp_threads<dummy_runnable, Alloc> dsp_threads;
+
     dsp_threads t(2);
     t.start_threads();
 
@@ -144,7 +189,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_6 )
 
     for (int i = 0; i != 20; ++i)
     {
-        items.push_back(new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 0));
+        items.push_back(new dsp_thread_queue_item(dummy, typename dsp_thread_queue_item::successor_list(), 0));
         q->add_queue_item(items.back());
         q->add_initially_runnable(items.back());
     }
@@ -164,4 +209,10 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_6 )
 
     for (int i = 0; i != 20; ++i)
         BOOST_REQUIRE_EQUAL(items[i]->get_job().i, iterations);
+}
+
+BOOST_AUTO_TEST_CASE( dsp_thread_test_6 )
+{
+    run_test_6<std::allocator<void*> >();
+    run_test_6<nova::rt_pool_allocator<void*> >();
 }

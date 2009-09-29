@@ -8,6 +8,8 @@ using namespace std;
 
 BOOST_AUTO_TEST_CASE( simple_synth_test_1 )
 {
+    rt_pool.init(1024 * 1024);
+
     node_graph n;
 
     node_position_constraint to_root = std::make_pair(n.root_group(), insert);

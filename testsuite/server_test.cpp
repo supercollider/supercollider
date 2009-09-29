@@ -26,6 +26,8 @@ struct test_synth_prototype:
 
 BOOST_AUTO_TEST_CASE( server_test_1 )
 {
+    rt_pool.init(1024 * 1024);
+
     nova_server server;
     server_arguments::initialize(0, 0);
     rt_pool.init(1024*1024);

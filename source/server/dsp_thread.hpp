@@ -38,11 +38,11 @@ namespace nova
 
 using boost::uint16_t;
 
-template <typename runnable>
+template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread:
     public boost::noncopyable
 {
-    typedef nova::dsp_queue_interpreter<runnable> dsp_queue_interpreter;
+    typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
 public:
     dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index):
@@ -86,18 +86,18 @@ private:
  *  - no care is taken, that dsp_threads::run is executed on a valid instance
  *
  * */
-template <typename runnable>
+template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_threads
 {
-    typedef nova::dsp_queue_interpreter<runnable> dsp_queue_interpreter;
+    typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
-    typedef nova::dsp_thread<runnable> dsp_thread;
+    typedef nova::dsp_thread<runnable, Alloc> dsp_thread;
 
 public:
     typedef typename dsp_queue_interpreter::node_count_t node_count_t;
     typedef typename dsp_queue_interpreter::thread_count_t thread_count_t;
 
-    typedef std::auto_ptr<dsp_thread_queue<runnable> > dsp_thread_queue_ptr;
+    typedef std::auto_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
     dsp_threads(thread_count_t count = boost::thread::hardware_concurrency()):
         interpreter(count)

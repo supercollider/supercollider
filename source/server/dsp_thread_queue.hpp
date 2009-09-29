@@ -26,9 +26,8 @@
 #include <boost/lockfree/atomic_int.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
-#include <lockfree/fifo.hpp>
+#include <boost/lockfree/fifo.hpp>
 
 #include "utilities/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
@@ -36,10 +35,10 @@
 namespace nova
 {
 
-template <typename runnable>
+template <typename runnable, typename Alloc>
 class dsp_queue_interpreter;
 
-template <typename runnable>
+template <typename runnable, typename Alloc>
 class dsp_threads;
 
 /*
@@ -52,15 +51,34 @@ concept runnable
 
 */
 
-/** item of a dsp thread queue */
-template <typename runnable>
-class dsp_thread_queue_item
+/** item of a dsp thread queue
+ *
+ * \tparam Alloc allocator for successor list and operator new/delete
+ *
+ * \todo operator new doesn't support stateful allocators
+ */
+template <typename runnable,
+          typename Alloc = std::allocator<void*> >
+class dsp_thread_queue_item:
+    private Alloc
 {
     typedef boost::uint_fast16_t activation_limit_t;
-    typedef nova::dsp_queue_interpreter<runnable> dsp_queue_interpreter;
+    typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
+
+    typedef typename Alloc::template rebind<dsp_thread_queue_item>::other new_allocator;
 
 public:
-    typedef std::vector<dsp_thread_queue_item*> successor_list;
+    void* operator new(std::size_t size)
+    {
+        return new_allocator().allocate(size);
+    }
+
+    inline void operator delete(void * p)
+    {
+        new_allocator().deallocate((dsp_thread_queue_item*)p, sizeof(dsp_thread_queue_item));
+    }
+
+    typedef std::vector<dsp_thread_queue_item*, Alloc> successor_list;
 
     dsp_thread_queue_item(runnable const & job, successor_list const & successors,
                           activation_limit_t activation_limit):
@@ -104,24 +122,30 @@ private:
             interpreter.mark_as_runnable(this);
     }
 
-    lockfree::atomic_int<activation_limit_t> activation_count; /**< current activation count */
+    boost::lockfree::atomic_int<activation_limit_t> activation_count; /**< current activation count */
 
     runnable job;
     successor_list successors;                                 /**< list of successing nodes */
     const activation_limit_t activation_limit;                 /**< number of precedessors */
 };
 
-template <typename runnable>
+template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread_queue
 {
     typedef boost::uint_fast16_t node_count_t;
 
-    typedef nova::dsp_thread_queue_item<runnable> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
 
 public:
     dsp_thread_queue(void):
         total_node_count(0)
     {}
+
+    ~dsp_thread_queue(void)
+    {
+        for (std::size_t i = 0; i != queue_items.size(); ++i)
+            delete queue_items[i];
+    }
 
     void add_initially_runnable(dsp_thread_queue_item * item)
     {
@@ -142,7 +166,7 @@ public:
         assert(total_node_count == queue_items.size());
 
         for (node_count_t i = 0; i != total_node_count; ++i)
-            queue_items[i].reset_activation_count();
+            queue_items[i]->reset_activation_count();
     }
 
     node_count_t get_total_node_count(void) const
@@ -153,18 +177,20 @@ public:
 private:
     node_count_t total_node_count;      /* total number of nodes */
 
-    std::vector<dsp_thread_queue_item*> initially_runnable_items; /* nodes without precedessor */
-    boost::ptr_vector<dsp_thread_queue_item> queue_items;         /* all nodes */
+    typename dsp_thread_queue_item::successor_list initially_runnable_items; /* nodes without precedessor */
+    std::vector<dsp_thread_queue_item*> queue_items;                         /* all nodes */
 
-    friend class dsp_queue_interpreter<runnable>;
+    friend class dsp_queue_interpreter<runnable, Alloc>;
 };
 
-template <typename runnable>
+template <typename runnable,
+          typename Alloc = std::allocator<void*> >
 class dsp_queue_interpreter
 {
 protected:
-    typedef nova::dsp_thread_queue<runnable> dsp_thread_queue;
-    typedef nova::dsp_thread_queue_item<runnable> dsp_thread_queue_item;
+    typedef nova::dsp_thread_queue<runnable, Alloc> dsp_thread_queue;
+    typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
+    typedef typename dsp_thread_queue_item::successor_list successor_list;
     typedef std::size_t size_t;
 
 public:
@@ -174,7 +200,7 @@ public:
     typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc):
-        node_count(0)
+        fifo(1024), node_count(0)
     {
         set_thread_count(tc);
     }
@@ -219,7 +245,7 @@ public:
         assert(node_count == 0);
         node_count += queue->get_total_node_count(); /* this is definitely atomic! */
 
-        std::vector<dsp_thread_queue_item*> const & initially_runnable_items = queue->initially_runnable_items;
+        successor_list const & initially_runnable_items = queue->initially_runnable_items;
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
             mark_as_runnable(initially_runnable_items[i]);
 
@@ -342,7 +368,7 @@ private:
         return (remaining == 1);
     }
 
-    friend class nova::dsp_threads<runnable>;
+    friend class nova::dsp_threads<runnable, Alloc>;
 
     void mark_as_runnable(dsp_thread_queue_item * item)
     {
@@ -350,7 +376,7 @@ private:
         sem.post();
     }
 
-    friend class nova::dsp_thread_queue_item<runnable>;
+    friend class nova::dsp_thread_queue_item<runnable, Alloc>;
 
 private:
     dsp_thread_queue_ptr queue;
@@ -363,8 +389,8 @@ private:
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
-    lockfree::fifo<dsp_thread_queue_item*> fifo;
-    lockfree::atomic_int<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    boost::lockfree::fifo<dsp_thread_queue_item*> fifo;
+    boost::lockfree::atomic_int<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
 };
 
 } /* namespace nova */

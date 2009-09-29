@@ -21,6 +21,7 @@
 
 #include "dsp_thread.hpp"
 #include "dsp_thread_queue_node.hpp"
+#include "memory_pool.hpp"
 #include "utilities/branch_hints.hpp"
 #include "utilities/callback_system.hpp"
 #include "utilities/static_pooled_class.hpp"
@@ -53,7 +54,7 @@ struct audio_sync_callback:
  * */
 class scheduler
 {
-    typedef nova::dsp_threads<dsp_queue_node> dsp_threads;
+    typedef nova::dsp_threads<dsp_queue_node, rt_pool_allocator<void*> > dsp_threads;
 
     struct reset_queue_cb:
         public audio_sync_callback

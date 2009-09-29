@@ -21,6 +21,7 @@
 
 #include <set>
 
+#include "memory_pool.hpp"
 #include "node_types.hpp"
 #include "utilities/exists.hpp"
 
@@ -29,14 +30,14 @@ namespace nova
 
 class synth;
 
-typedef nova::dsp_thread_queue_item<dsp_queue_node> thread_queue_item;
-typedef nova::dsp_thread_queue<dsp_queue_node> thread_queue;
+typedef nova::dsp_thread_queue_item<dsp_queue_node, rt_pool_allocator<void*> > thread_queue_item;
+typedef nova::dsp_thread_queue<dsp_queue_node, rt_pool_allocator<void*> > thread_queue;
 
 class abstract_group:
     public server_node
 {
 public:
-    typedef std::vector<thread_queue_item*> successor_container;
+    typedef thread_queue_item::successor_list successor_container;
 
 protected:
     server_node_list child_nodes;
