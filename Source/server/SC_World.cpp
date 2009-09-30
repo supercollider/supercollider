@@ -804,10 +804,12 @@ int32 GetHash(GraphDef *inGraphDef)
 
 void World_AddGraphDef(World *inWorld, GraphDef* inGraphDef)
 {
-	inWorld->hw->mGraphDefLib->Add(inGraphDef);
+	bool added = inWorld->hw->mGraphDefLib->Add(inGraphDef);
+	if(!added) scprintf("ERROR: Could not add SynthDef %s.\nTry adjusting ServerOptions:maxSynthDefs or the -d cmdline flag.\n", (char*)inGraphDef->mNodeDef.mName);
 	for (uint32 i=0; i<inGraphDef->mNumVariants; ++i) {
 		GraphDef* var = inGraphDef->mVariants + i;
-		inWorld->hw->mGraphDefLib->Add(var);
+		added = inWorld->hw->mGraphDefLib->Add(var);
+		if(!added) scprintf("ERROR: Could not add SynthDef %s.\nTry adjusting ServerOptions:maxSynthDefs or the -d cmdline flag.\n", (char*)var->mNodeDef.mName);
 	}
 }
 
