@@ -178,6 +178,7 @@ void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 		float rabs = (p->bin[i].real);
 		float iabs = (p->bin[i].imag);
 		float amp = sqrt((rabs*rabs) + (iabs*iabs));
+		if(amp==0.f) amp = 0.0000000000000000000000001f; // zeroes lead to NaNs
 		geommean += log(amp);
 		mean += amp;
 	}
