@@ -18,4 +18,4 @@
 	url = git://tim.klingt.org/nova-simd.git
 [submodule "source/sc/supercollider"]
 	path = source/sc/supercollider
-	url = ssh://tim.klingt.org/home/tim/git/nova-sc.git/
+	url = git://tim.klingt.org/nova-sc.git
