@@ -27,7 +27,6 @@
 #include "sc_osc_handler.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
-#include "../audio_backend/audio_frontend.hpp"
 #include "../sc/sc_ugen_factory.hpp"
 #include "../utilities/callback_interpreter.hpp"
 #include "../utilities/static_pooled_class.hpp"
