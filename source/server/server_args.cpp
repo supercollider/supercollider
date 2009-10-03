@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <boost/program_options.hpp>
+#include <boost/thread.hpp>
 
 #include <iostream>
 
