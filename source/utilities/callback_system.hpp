@@ -25,7 +25,7 @@
 
 #include <boost/checked_delete.hpp>
 
-#include "lockfree/fifo.hpp"
+#include "boost/lockfree/fifo.hpp"
 
 
 namespace nova
@@ -97,7 +97,7 @@ private:
     }
 
 protected:
-    ::lockfree::fifo<callback_type*> callbacks;   /**< \brief fifo for callbacks */
+    boost::lockfree::fifo<callback_type*> callbacks;   /**< \brief fifo for callbacks */
 };
 
 } /* namespace nova */
