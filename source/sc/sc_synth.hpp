@@ -24,6 +24,7 @@
 #include "supercollider/Headers/plugin_interface/SC_Graph.h"
 #include "supercollider/Headers/plugin_interface/SC_Rate.h"
 #include "supercollider/Headers/plugin_interface/SC_RGen.h"
+#include "supercollider/Headers/plugin_interface/SC_Wire.h"
 
 #include "sc_synth_prototype.hpp"
 
