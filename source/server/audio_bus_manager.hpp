@@ -24,7 +24,7 @@
 #include "sample_types.hpp"
 
 #include "../utilities/malloc_aligned.hpp"
-#include "../utilities/spin_lock.hpp"
+#include "../utilities/rw_spinlock.hpp"
 
 namespace nova
 {
@@ -48,7 +48,7 @@ public:
         count = c;
         blocksize = b;
         buffers = calloc_aligned<sample>(count * blocksize);
-        locks = new spin_lock[count];
+        locks = new rw_spinlock[count];
     }
 
     ~audio_bus_manager(void)
@@ -80,7 +80,7 @@ private:
     uint16_t count;
     uint16_t blocksize;
     sample * buffers;
-    spin_lock * locks;
+    rw_spinlock * locks;
 };
 
 } /* namespace nova */
