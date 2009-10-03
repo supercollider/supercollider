@@ -56,14 +56,14 @@ public:
     {
         for(;;)
         {
-            if (boost::lockfree::atomic_cas(&state, unlocked_state, locked_state))
+            if (boost::lockfree::cas(&state, uint32_t(unlocked_state), uint32_t(locked_state)))
                 return;
         }
     }
 
     bool try_lock(void)
     {
-        if (boost::lockfree::atomic_cas(&state, unlocked_state, locked_state))
+        if (boost::lockfree::cas(&state, uint32_t(unlocked_state), uint32_t(locked_state)))
             return true;
         else
             return false;
@@ -72,11 +72,8 @@ public:
     void unlock(void)
     {
         assert(locked_state);
+        boost::lockfree::memory_barrier(); /* the previous write operations need to be completed  */
         state = unlocked_state;
-        boost::lockfree::memory_barrier(); /* probably cheaper to have a memory barrier than a cas instruction
-                                            * it is actually not completely necessary, but prbly helps other threads
-                                            * later: we don't need a full barrier, but only a write barrier
-                                            */
     }
 
     void lock_shared(void)
@@ -93,7 +90,7 @@ public:
         const uint32_t current_state = state & reader_mask; /* with the mask, the cas will fail, locked exclusively */
         const uint32_t next_state    = current_state + 1;
 
-        if (likely(boost::lockfree::atomic_cas(&state, current_state, next_state)))
+        if (likely(boost::lockfree::cas(&state, current_state, next_state)))
             return true;
         else
             return false;
@@ -106,7 +103,7 @@ public:
             const uint32_t current_state = state; /* we don't need the reader_mask */
             const uint32_t next_state    = current_state - 1;
 
-            if (likely(boost::lockfree::atomic_cas(&state, current_state, next_state)))
+            if (likely(boost::lockfree::cas(&state, current_state, next_state)))
                 return;
         }
     }
