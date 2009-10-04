@@ -68,7 +68,12 @@ Env {
 	}
 
 	at { arg time;
-		^this.asArray.envAt(time)
+		var array = this.asArray;
+		^if(time.isSequenceableCollection) {
+			time.collect { |t| array.envAt(t) }
+		} {
+			array.envAt(time)
+		}
 	}
 
 	asPseg {
