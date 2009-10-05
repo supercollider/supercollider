@@ -78,6 +78,7 @@ for source in sources:
                                          "supercollider/Headers/common",
                                          "#source",
                                          "#libs/boost",
+                                         "#libs/boost_lockfree",
                                         ],
                                 SHLIBPREFIX="",
                                 )
