@@ -47,7 +47,12 @@ VimDocument : Document {
     
 
     // if range is -1 apply to whole doc
-    setFont { | font, rangeStart= -1, rangeSize=100 | }
+    setFont { | font, rangeStart= -1, rangeSize=100 | 
+		//XXX this only works for the whole server as that is the way vim works
+		//only works with graphical vim
+		Vim.remote_send(servername, "<Esc>:set guifont=" ++ 
+			font.replace(" ", "\\\\\\ ")  ++ "<CR>");
+	}
     setTextColor { | color,  rangeStart = -1, rangeSize = 0 | }
     
     text {
