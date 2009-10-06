@@ -83,10 +83,10 @@ end
 puts "scvim: sourcing #{rcloc}"
 
 unless graphical
-  exec(vim, "--cmd", "source #{rcloc}", 
+  exec(vim, "--servername", "scvim", "--cmd", "source #{rcloc}", 
   "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
 else
-  exec(vim, "-g", "--cmd", "source #{rcloc}", 
+  exec(vim, "--servername", "scvim", "-g", "--cmd", "source #{rcloc}", 
   "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
 end
 
