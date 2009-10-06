@@ -82,11 +82,17 @@ end
 
 puts "scvim: sourcing #{rcloc}"
 
-unless graphical
-  exec(vim, "--servername", "scvim", "--cmd", "source #{rcloc}", 
-  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
-else
-  exec(vim, "--servername", "scvim", "-g", "--cmd", "source #{rcloc}", 
-  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
+vimops = ["--cmd", "source #{rcloc}", 
+	  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", 
+	  *ARGV]
+
+#add -g if we're going graphical
+vimops = ["-g"] + vimops if graphical
+
+#see if the vim install supports servers
+if IO.popen("vim --version") {|f| f.readlines.flatten.join(" ").include?("+clientserver")}
+	vimops = ["--servername", "scvim"] + vimops
 end
 
+#actually execute
+exec(vim, *vimops)
