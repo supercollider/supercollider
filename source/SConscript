@@ -74,7 +74,7 @@ def build_nova_server():
         for obj in objects:
             serverenv.Depends(obj[0], pch)
 
-    program = serverenv.Program("nova_server", objects+lib_objects)
+    program = serverenv.Program("supernova", objects+lib_objects)
 
     return program
 

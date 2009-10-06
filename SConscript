@@ -41,6 +41,7 @@ opt.AddOptions(
     ('python_version', 'version of Python', None),
     BoolOption('optimize_testsuite', 'Optimize testsuite', False),
     BoolOption('native_jack', 'Use native jack backend', True),
+    PathOption('prefix', 'Install prefix', '/usr/local'),
     )
 
 opt.Update(env)
@@ -160,10 +161,12 @@ server = [release_server, debug_server]
 #
 # build sc plugins
 #
-BuildDir('plugins', 'source/sc')
-plugins = env.SConscript("source/sc/SConscript", exports={'env':debug_env}, build_dir="plugins")
+BuildDir('debug_plugins', 'source/sc')
+BuildDir('release_plugins', 'source/sc')
+debug_plugins = env.SConscript("source/sc/SConscript", exports={'env':debug_env}, build_dir="debug_plugins")
+release_plugins = env.SConscript("source/sc/SConscript", exports={'env':release_env}, build_dir="release_plugins")
 
-Alias("plugins", plugins)
+Alias("plugins", debug_plugins + release_plugins)
 
 
 ######################################################################
@@ -173,6 +176,19 @@ Alias("plugins", plugins)
 
 BuildDir('test', 'testsuite', duplicate=0)
 testsuite = env.SConscript("./testsuite/SConscript", "env", build_dir="test")
+
+
+######################################################################
+#
+# install
+#
+
+installs = [
+    Install(Dir("bin", env['prefix']), release_server),
+    Install(Dir("lib/supernova/plugins", env['prefix']), [x for x in release_plugins])
+    ]
+
+Alias('install', installs)
 
 ret = dict()
 
