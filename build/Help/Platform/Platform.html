@@ -10,19 +10,20 @@
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bb9}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0026b4}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3d6d1d}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4; min-height: 12.0px}
 span.s1 {color: #000000}
 span.s2 {font: 12.0px Helvetica; color: #000000}
-span.s3 {color: #2c7014}
+span.s3 {color: #3d6d1d}
 span.s4 {color: #606060}
-span.s5 {text-decoration: underline ; color: #0029e1}
-span.s6 {color: #001bb9}
+span.s5 {color: #0000ff}
+span.s6 {text-decoration: underline ; color: #0035db}
+span.s7 {color: #0026b4}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -53,6 +54,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">\windows</span>, <span class="Apple-tab-span">	</span>{ <span class="s4">"Windows"</span>.postln }</p>
 <p class="p7"><span class="Apple-tab-span">	</span>);</p>
 <p class="p2"><br></p>
+<p class="p3"><b>*ideName</b> - returns a <a href="../Collections/String.html"><span class="s5">String</span></a> indicating which IDE the language believes it is running in. (Often this is determined via the "-i" option to the ./sclang executable.) This is determined when sclang starts and cannot be changed dynamically.</p>
+<p class="p3">The main purpose of this is to include/exclude folders from the class search patch depending on which IDE is in use: for example, if the value of ideName is "scapp" then folders named "scide_scapp" are included and all other folders beginning with "scide_" are excluded. The default value of this is "none". Known IDE names in use are "scapp" (SuperCollider.app on Mac), "scvim" (vim), "scel" (emacs). Others may be used.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p5"><b>Directories and filesystem stuff</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>classLibraryDir</b></p>
@@ -68,13 +73,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>*userAppSupportDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- user application support directory</p>
 <p class="p2"><br></p>
 <p class="p3"><b>systemExtensionDir</b></p>
-<p class="p3"><b>*systemExtensionDir<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>- system extension directory (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s5">Using-Extensions</span></a>)</p>
+<p class="p3"><b>*systemExtensionDir<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>- system extension directory (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s6">Using-Extensions</span></a>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>userExtensionDir</b></p>
-<p class="p3"><b>*userExtensionDir<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>- user extension directory (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s5">Using-Extensions</span></a>)</p>
+<p class="p3"><b>*userExtensionDir<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>- user extension directory (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s6">Using-Extensions</span></a>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>platformDir</b></p>
-<p class="p3"><b>*platformDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- platform specific directory for class files (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s5">Using-Extensions</span></a>)</p>
+<p class="p3"><b>*platformDir</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- platform specific directory for class files (see <a href="../Extending and Customizing SC/Using-Extensions.html"><span class="s6">Using-Extensions</span></a>)</p>
 <p class="p2"><br></p>
 <p class="p3"><b>pathSeparator</b></p>
 <p class="p3"><b>*pathSeparator</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- platform specific path separator</p>
@@ -96,18 +101,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b>Return true if the feature <b>aSymbol</b> is present in the runtime system. <b>aSymbol </b>can refer to explicitly declared features as well as class and primitive names.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">thisProcess</span>.platform.hasFeature(<span class="s3">\Object</span>);</p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'_SCWindow_BeginFullScreen'<span class="s1">);</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">thisProcess</span>.platform.hasFeature(<span class="s3">'_myFuncyPrimitive'</span>);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">thisProcess</span>.platform.hasFeature(<span class="s3">\Object</span>);</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s7">thisProcess</span><span class="s1">.platform.hasFeature(</span>'_SCWindow_BeginFullScreen'<span class="s1">);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">thisProcess</span>.platform.hasFeature(<span class="s3">'_myFuncyPrimitive'</span>);</p>
 <p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.declareFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s6">thisProcess</span><span class="s1">.platform.hasFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s7">thisProcess</span><span class="s1">.platform.declareFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s7">thisProcess</span><span class="s1">.platform.hasFeature(</span>'superCrazyCompositionSystem'<span class="s1">);</span></p>
 <p class="p10"><br></p>
 <p class="p3"><b>when(features, ifFunction, elseFunction)</b></p>
 <p class="p3"><b>*when(features, ifFunction, elseFunction)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span></b>Evaluate <b>ifFunction</b> if all <b>features</b> are present, otherwise evaluate <b>elseFunction</b>.</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">Platform</span>.when(#[<span class="s3">\Document</span>, <span class="s3">\SCWindow</span>], { <span class="s4">"yeehah!"</span>.postln });</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s7">Platform</span>.when(#[<span class="s3">\Document</span>, <span class="s3">\SCWindow</span>], { <span class="s4">"yeehah!"</span>.postln });</p>
 </body>
 </html>
