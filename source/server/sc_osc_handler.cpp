@@ -393,13 +393,14 @@ void handle_notify(received_message const & message, udp::endpoint const & endpo
 void status_perform(udp::endpoint const & endpoint)
 {
     char buffer[1024];
+    typedef osc::int32 i32;
     osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("status.reply")
-      << 1                                    /* unused */
-      << (int32_t)ugen_factory.ugen_count()   /* ugens */
-      << (int32_t)instance->synth_count()     /* synths */
-      << (int32_t)instance->group_count()     /* groups */
-      << (int32_t)instance->prototype_count() /* synthdefs */
+      << (i32)1                                    /* unused */
+      << (i32)ugen_factory.ugen_count()   /* ugens */
+      << (i32)instance->synth_count()     /* synths */
+      << (i32)instance->group_count()     /* groups */
+      << (i32)instance->prototype_count() /* synthdefs */
       << instance->cpu_load()                 /* average cpu % */
       << instance->cpu_load()                 /* peak cpu % */
       << instance->get_samplerate()           /* nominal samplerate */
@@ -422,7 +423,7 @@ void handle_dumpOSC(received_message const & message)
     instance->dumpOSC(val);     /* thread-safe */
 }
 
-void sync_perform(int id, udp::endpoint const & endpoint)
+void sync_perform(osc::int32 id, udp::endpoint const & endpoint)
 {
     char buffer[128];
     osc::OutboundPacketStream p(buffer, 128);
@@ -1090,7 +1091,7 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
     const void * data = 0;
-    size_t length = 0;
+    unsigned long length = 0;
     for (uint i = 0; i != channel_args; ++i)
     {
         if (arg->IsInt32()) {
@@ -1144,7 +1145,7 @@ void handle_b_write(received_message const & msg, udp::endpoint const & endpoint
     osc::int32 start = 0;
     osc::int32 leave_open = 0;
 
-    size_t length = 0;
+    unsigned long length = 0;
     const void * data = 0;
 
     if (arg != end) {
@@ -1225,7 +1226,7 @@ void handle_b_read(received_message const & msg, udp::endpoint const & endpoint)
     osc::int32 start_buffer = 0;
     osc::int32 leave_open = 0;
 
-    size_t length = 0;
+    unsigned long length = 0;
     const void * data = 0;
 
     if (arg != end) {
@@ -1313,10 +1314,10 @@ void handle_b_readChannel(received_message const & msg, udp::endpoint const & en
     osc::int32 start_buffer = 0;
     osc::int32 leave_open = 0;
 
-    sized_array<uint32_t, rt_pool_allocator<uint32_t> > channel_mapping(msg.ArgumentCount()); /* larger than required */
+    sized_array<uint32_t, rt_pool_allocator<uint32_t> > channel_mapping(int32_t(msg.ArgumentCount())); /* larger than required */
     uint32_t channel_count = 0;
 
-    size_t length = 0;
+    unsigned long length = 0;
     const void * data = 0;
 
     if (arg != end) {
@@ -1489,8 +1490,8 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
         SndBuf * buf = ugen_factory.get_buffer_struct(buffer_index);
 
         p << buffer_index
-          << int(buf->frames)
-          << int(buf->channels)
+          << osc::int32(buf->frames)
+          << osc::int32(buf->channels)
           << float (buf->samplerate);
     }
 
@@ -1614,8 +1615,8 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
       << buffer_index;
 
     for (size_t i = 0; i != return_data.size(); ++i) {
-        p << return_data[i].start_index_
-          << int(return_data[i].data_.size());
+        p << osc::int32(return_data[i].start_index_)
+          << osc::int32(return_data[i].data_.size());
 
         for (size_t j = 0; j != return_data[i].data_.size(); ++j)
             p << return_data[i].data_[j];
