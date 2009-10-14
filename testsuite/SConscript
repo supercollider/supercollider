@@ -53,7 +53,7 @@ libboost_po = Environment().StaticLibrary("boost_po", Glob("../libs/boost/libs/p
 if env['optimize_testsuite']:
     unit_test_cflags = env['CCFLAGS'] + "-O3 -Wall"
 else:
-    unit_test_cflags = "-g -Wall"
+    unit_test_cflags = env['CCFLAGS'] + "-g -Wall"
 
 
 
