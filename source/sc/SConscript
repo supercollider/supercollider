@@ -75,6 +75,7 @@ for source in sources:
     plugin_name = source.abspath.split('/')[-1][:-4]
     plugin = pluginenv.SharedLibrary(plugin_name, source,
                                 CPPPATH=["supercollider/Headers/plugin_interface",
+                                         "supercollider/Headers/server",
                                          "supercollider/Headers/common",
                                          "#source",
                                          "#libs/boost",
