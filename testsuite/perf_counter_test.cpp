@@ -1,7 +1,7 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 
-#include "../benchmarks/perf_counter.hpp"
+#include "../source/simd/benchmarks/perf_counter.hpp"
 
 BOOST_AUTO_TEST_CASE( perf_count_test )
 {

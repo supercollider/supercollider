@@ -8,8 +8,8 @@
 #include "../source/dsp/cache_aligned_array.hpp"
 #include "../source/dsp/sample_extractor.hpp"
 #include "../source/dsp/fast_sinosc.hpp"
-#include "../source/dsp/simd_sse.hpp"
-#include "../source/dsp/simd_static.hpp"
+#include "../source/simd/simd_binary_arithmetic.hpp"
+#include "../source/simd/simd_ternary_arithmetic.hpp"
 
 using namespace nova;
 
@@ -179,7 +179,7 @@ void __attribute__ ((noinline)) bench_mul_c_add_c(unsigned int n)
 void __attribute__ ((noinline)) bench_mul_c_add_c_external(unsigned int n)
 {
     osc.perform(buffer, n);
-    muladd_vec_simd(buffer.begin(), buffer.begin(), 0.5, 0.5, n);
+    muladd_vec_simd(buffer.begin(), buffer.begin(), 0.5f, 0.5f, n);
 }
 
 void __attribute__ ((noinline)) bench_mul_c_add_c_external_mp(unsigned int n)
@@ -218,7 +218,7 @@ void __attribute__ ((noinline)) bench_mul_c_add_v(unsigned int n)
 void __attribute__ ((noinline)) bench_mul_c_add_v_external(unsigned int n)
 {
     osc.perform(buffer, n);
-    muladd_vec_simd(buffer.begin(), buffer.begin(), 0.5, ramp.begin(), n);
+    muladd_vec_simd(buffer.begin(), buffer.begin(), 0.5f, ramp.begin(), n);
 }
 
 void __attribute__ ((noinline)) bench_mul_c_add_v_external_mp(unsigned int n)
@@ -300,7 +300,7 @@ void __attribute__ ((noinline)) bench_mul_v_add_c(unsigned int n)
 void __attribute__ ((noinline)) bench_mul_v_add_c_external(unsigned int n)
 {
     osc.perform(buffer, n);
-    muladd_vec_simd(buffer.begin(), buffer.begin(), ramp.begin(), 0.5, n);
+    muladd_vec_simd(buffer.begin(), buffer.begin(), ramp.begin(), 0.5f, n);
 }
 
 void __attribute__ ((noinline)) bench_mul_v_add_c_external_mp(unsigned int n)
