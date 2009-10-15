@@ -71,8 +71,8 @@ public:
 
     void unlock(void)
     {
-        assert(locked_state);
-        boost::lockfree::memory_barrier(); /* the previous write operations need to be completed  */
+        assert(state == locked_state);
+        boost::lockfree::memory_barrier(); /* the previous write operations need to be completed */
         state = unlocked_state;
     }
 
