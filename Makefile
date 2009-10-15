@@ -13,5 +13,8 @@ debug:
 release:
 	scons release_server -j 4
 
+benchmarks:
+	scons benchmarks -j 4
+
 clean:
 	scons -c
