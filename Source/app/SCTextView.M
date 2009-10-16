@@ -630,4 +630,17 @@ void showHelpFor(NSString* selection);
     [[self delegate] sendSelection: "methodReferences"];
 }
 
+- (void)print:(id)sender
+{
+	NSPrintInfo *printInfo = [[[NSPrintInfo sharedPrintInfo] copy] autorelease];
+	if( ! printInfo)
+		return;
+	
+	[printInfo setHorizontalPagination: NSFitPagination];
+	[printInfo setHorizontallyCentered: YES];
+	[printInfo setVerticallyCentered: NO];
+	[[NSPrintOperation printOperationWithView:self printInfo:printInfo] runOperation];
+		
+}
+
 @end
