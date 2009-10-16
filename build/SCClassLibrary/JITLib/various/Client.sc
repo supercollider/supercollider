@@ -38,6 +38,7 @@ Client {
 		if(args.bundleSize > 65535) { "bundle too large (> 65535)".warn; ^nil };
 		^args
 	}
+
 	send { arg ... args;
 		if (verbose, { ["Client-send:", args].postln });
 		this.sendBundle(nil, args);
@@ -70,7 +71,7 @@ Client {
 LocalClient : Client {
 
 	classvar <>named, >default;
-	var <resp, <isListening=false;
+	var <resp, <isListening=false, <replyAddr;
 
 	*default { ^default ?? { default = this.new } }
 
@@ -86,8 +87,9 @@ LocalClient : Client {
 	minit { arg argAddr;
 		super.minit(argAddr);
 		resp = addr.collect { arg netaddr;
-				OSCresponderNode(netaddr, cmdName, { arg time, responder, msg;
+				OSCresponderNode(netaddr, cmdName, { arg time, responder, msg, addr;
 				var key, func;
+				replyAddr = addr;
 				key = msg[1];
 				func = ClientFunc.at(key);
 				if(verbose) { "LocalClient % received: %\n".postf(name, msg) };
@@ -96,6 +98,13 @@ LocalClient : Client {
 		};
 
 	}
+	
+	reply { | ...args| 
+		args = this.prepareSendBundle([args]);
+		if (verbose) { ("LocalClient % replys: %\n").postf(name, args) };
+		replyAddr.do({ arg a; a.sendBundle(nil, *args) })
+	}
+
 
 	defaultAddr { ^[nil] } // default: listen to all.
 
@@ -107,6 +116,7 @@ LocalClient : Client {
 		resp.do { arg u; u.remove };
 		isListening = false;
 	}
+	
 	*stop {
 		named.do { arg u; u.stop }
 	}
