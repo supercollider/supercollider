@@ -185,7 +185,9 @@ testsuite = env.SConscript("./testsuite/SConscript", "env", build_dir="test")
 
 installs = [
     Install(Dir("bin", env['prefix']), release_server),
-    Install(Dir("lib/supernova/plugins", env['prefix']), [x for x in release_plugins])
+    Install(Dir("lib/supernova/plugins", env['prefix']), [x for x in release_plugins]),
+    Install(Dir("share/SuperCollider/SCClassLibrary/Common/Control/", env['prefix']), 
+		"source/sc/supercollider/build/SCClassLibrary/Common/Control/PGroup.sc")
     ]
 
 Alias('install', installs)
