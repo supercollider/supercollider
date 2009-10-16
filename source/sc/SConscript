@@ -25,15 +25,10 @@ BeatTrack2.cpp
 BeatTrack.cpp
 BinaryOpUGens.cpp
 ChaosUGens.cpp
-Convolution.cpp
 DelayUGens.cpp
 DemandUGens.cpp
 DiskIO_UGens.cpp
 DynNoiseUGens.cpp
-FeatureDetection.cpp
-FFT2InterfaceTable.cpp
-FFTInterfaceTable.cpp
-FFT_UGens.cpp
 FilterUGens.cpp
 GendynUGens.cpp
 GrainUGens.cpp
@@ -51,38 +46,61 @@ NoiseUGens.cpp
 Onsets.cpp
 OscUGens.cpp
 PanUGens.cpp
-PartitionedConvolution.cpp
 PhysicalModelingUGens.cpp
-PV_ThirdParty.cpp
-PV_UGens.cpp
 ReverbUGens.cpp
-SCComplex.cpp
 TestUGens.cpp
 TriggerUGens.cpp
 UnaryOpUGens.cpp
-UnpackFFTUGens.cpp
 """)
 
 sources = [File(x, "supercollider/Source/plugins") for x in sources]
 
-pluginenv = env.Clone()
-
-pluginenv.Append(CPPDEFINES=['SUPERNOVA'])
+pluginenv = Environment(SHLIBPREFIX="",
+                        CFLAGS=env['CFLAGS'],
+                        CCFLAGS=env['CCFLAGS'],
+                        CXXFLAGS=env['CXXFLAGS'],
+                        )
+#pluginenv = env.Clone(SHLIBPREFIX="")
+pluginenv.Append(CPPDEFINES=['SUPERNOVA'],
+                 CPPPATH=["supercollider/Headers/plugin_interface",
+                          "supercollider/Headers/server",
+                          "supercollider/Headers/common",
+                          "#source",
+                          "#libs/boost",
+                          "#libs/boost_lockfree",
+                          ],
+                 )
 
 plugins = []
 
 for source in sources:
     plugin_name = source.abspath.split('/')[-1][:-4]
-    plugin = pluginenv.SharedLibrary(plugin_name, source,
-                                CPPPATH=["supercollider/Headers/plugin_interface",
-                                         "supercollider/Headers/server",
-                                         "supercollider/Headers/common",
-                                         "#source",
-                                         "#libs/boost",
-                                         "#libs/boost_lockfree",
-                                        ],
-                                SHLIBPREFIX="",
-                                )
+    plugin = pluginenv.SharedLibrary(plugin_name, source)
     plugins.append(plugin)
+
+
+scfft_sources = Split("""supercollider/Source/common/SC_fftlib.cpp
+                         supercollider/Source/plugins/SCComplex.cpp""")
+
+#todo: later build a shared libary
+scfftobjs = [env.SharedObject(x,
+                             CPPPATH=env["CPPPATH"] + ["supercollider/Headers/common",
+                                                       "supercollider/Headers/plugin_interface"
+                             ],
+                             )
+            for x in scfft_sources]
+
+scfftenv = pluginenv.Clone()
+
+fft_plugins = dict()
+
+fft_plugins["FFT_UGens"] = Split("FFTInterfaceTable.cpp FFT_UGens.cpp PV_UGens.cpp PartitionedConvolution.cpp")
+fft_plugins["PV_ThirdParty"] = Split("Convolution.cpp FFT2InterfaceTable.cpp FeatureDetection.cpp PV_ThirdParty.cpp")
+fft_plugins["UnpackFFTUGens"] = Split("UnpackFFTUGens.cpp")
+
+for plugin in fft_plugins:
+    name = plugin
+    sources = [File(x, "supercollider/Source/plugins") for x in fft_plugins[plugin] ]
+    plugins.append(scfftenv.SharedLibrary(name, sources + scfftobjs))
 
 Return("plugins")
