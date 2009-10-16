@@ -5,23 +5,23 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.44">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #98281a}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #882c20}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {text-decoration: underline}
 span.s3 {font: 9.0px Monaco}
 span.s4 {color: #000000}
-span.s5 {color: #0023b2}
-span.s6 {color: #406c1d}
+span.s5 {color: #0528af}
+span.s6 {color: #4b6a1f}
 span.s7 {color: #606060}
-span.s8 {color: #98281a}
+span.s8 {color: #882c20}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -82,6 +82,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b><span class="Apple-tab-span">	</span>stop<span class="Apple-converted-space"> </span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>stop listening to the world</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>reply( key, args...)</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>reply to a sender with a message</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-converted-space"> </span></b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>remove<span class="Apple-converted-space"> </span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>remove from client list</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -188,12 +191,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">e.keyDownAction_({ <span class="s5">arg</span> doc, char;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s5">var</span> string;</p>
-<p class="p6"><span class="Apple-tab-span">	</span> if(char === <span class="s5">Char</span>.tab)<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span> {<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>string = n + <span class="s7">":"</span> + e.currentLine;<span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span>b.send(<span class="s6">\chat</span>, string.copy);<span class="Apple-converted-space"> </span></p>
-<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span> <span class="Apple-tab-span">	</span></span><span class="s5">AppClock</span><span class="s4">.sched(0.1, { e.string = </span><span class="s7">""</span><span class="s4"> }); </span>// time is the original crime. remove the tab.</p>
-<p class="p6"><span class="Apple-tab-span">	</span> }<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>if(char === <span class="s5">Char</span>.tab)<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>{<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>string = n + <span class="s7">":"</span> + e.currentLine;<span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.send(<span class="s6">\chat</span>, string.copy);<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">AppClock</span><span class="s4">.sched(0.1, { e.string = </span><span class="s7">""</span><span class="s4"> }); </span>// time is the original crime. remove the tab.</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
 <p class="p6">});</p>
 <p class="p6">e.onClose_({ <span class="s5">AppClock</span>.sched(0.1, { a.remove; d.close; <span class="s5">nil</span> }) }); <span class="s8">// sched, otherwise sc crashes</span></p>
 <p class="p6">)</p>
