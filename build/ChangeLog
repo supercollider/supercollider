@@ -28,7 +28,8 @@ Bugfixes:
 * 2009-09-13 fix PV_MagShift argument handling, so that the defaults mean no-change, matching the behaviour of PV_BinShift - ds
 * 2009-09-20 warn about weirdness of Float:switch - ds
 * 2009-09-30 prevent NaN output from SpecFlatness when input is silence - ds
-* 2009-10-17 fix cropping issue in printing SuperCollider.app documents - cq
+* 2009-10-16 fix cropping issue in printing SuperCollider.app documents - cq
+* 2009-10-17 many phase-vocoder (PV_) ugens previously didn't handle the DC/nyquist bins as expected. fixed most of these (PV_MagAbove, PV_MagBelow, PV_MagClip, PV_LocalMax, PV_BrickWall, PV_MagSquared, PV_BinWipe, PV_CopyPhase, PV_Max, PV_RandComb) - ds
 
 Other additions/improvements:
 -----------------------------
