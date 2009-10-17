@@ -246,9 +246,12 @@ void PV_MagAbove_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf);
 
 	float thresh = ZIN0(1);
+
+	if(std::abs(p->dc ) < thresh) p->dc  = 0.f;
+	if(std::abs(p->nyq) < thresh) p->nyq = 0.f;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
-		if (mag < thresh) p->bin[i].mag = 0.;
+		if (mag < thresh) p->bin[i].mag = 0.f;
 	}
 }
 
@@ -266,9 +269,11 @@ void PV_MagBelow_next(PV_Unit *unit, int inNumSamples)
 
 	float thresh = ZIN0(1);
 
+	if(std::abs(p->dc ) > thresh) p->dc  = 0.f;
+	if(std::abs(p->nyq) > thresh) p->nyq = 0.f;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
-		if (mag > thresh) p->bin[i].mag = 0.;
+		if (mag > thresh) p->bin[i].mag = 0.f;
 	}
 }
 
@@ -286,6 +291,8 @@ void PV_MagClip_next(PV_Unit *unit, int inNumSamples)
 
 	float thresh = ZIN0(1);
 
+	if(std::abs(p->dc ) > thresh) p->dc  = p->dc  < 0.f ? -thresh : thresh;
+	if(std::abs(p->nyq) > thresh) p->nyq = p->nyq < 0.f ? -thresh : thresh;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag > thresh) p->bin[i].mag = thresh;
@@ -305,13 +312,27 @@ void PV_LocalMax_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf);
 
 	float thresh = ZIN0(1);
-
+	float dc, nyq, mag;
+	
+	// DC is only compared with the one above it
+	dc = std::abs(p->dc);
+	mag = p->bin[0].mag;
+	if(dc < thresh || dc < mag) p->dc = 0.f;
+	// 0th bin compared against DC and 1th
+	if(mag < thresh || mag < dc || mag < p->bin[1].mag) p->bin[0].mag = 0.f;
+	// All the middling bins
 	for (int i=1; i<numbins-1; ++i) {
 		float mag = p->bin[i].mag;
 		if (mag < thresh || mag < p->bin[i-1].mag || mag < p->bin[i+1].mag) {
-			p->bin[i].mag = 0.;
+			p->bin[i].mag = 0.f;
 		}
 	}
+	// Penultimate is compared against the one below and the nyq
+	nyq = std::abs(p->nyq);
+	mag = p->bin[numbins-1].mag;
+	if(mag < thresh || mag < nyq || mag < p->bin[numbins-2].mag) p->bin[numbins-1].mag = 0.f;
+	// Nyquist compared against penultimate
+	if(nyq < thresh || nyq < mag) p->nyq = 0.f;
 }
 
 void PV_LocalMax_Ctor(PV_Unit *unit)
@@ -374,7 +395,7 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 
 	// initialize output buf to zeroes
 	for (int i=0; i<numbins; ++i) {
-		q->bin[i] = 0.;
+		q->bin[i] = 0.f;
 	}
 
 	float fpos;
@@ -417,7 +438,7 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 
 	// initialize output buf to zeroes
 	for (int i=0; i<numbins; ++i) {
-		q->bin[i].mag = 0.;
+		q->bin[i].mag = 0.f;
 		q->bin[i].phase = p->bin[i].phase;
 	}
 
@@ -458,12 +479,16 @@ void PV_MagNoise_next(PV_Unit *unit, int inNumSamples)
 			p->bin[i].real *= r;
 			p->bin[i].imag *= r;
 		}
+		p->dc  *= frand2(s1, s2, s3);
+		p->nyq *= frand2(s1, s2, s3);
 	} else {
 		SCPolarBuf *p = (SCPolarBuf*)buf->data;
 		for (int i=0; i<numbins; ++i) {
 			float r = frand2(s1, s2, s3);
 			p->bin[i].mag *= r;
 		}
+		p->dc  *= frand2(s1, s2, s3);
+		p->nyq *= frand2(s1, s2, s3);
 	}
 	RPUT
 }
@@ -537,6 +562,8 @@ void PV_MagSquared_next(PV_Unit *unit, int inNumSamples)
 
 	SCPolarBuf *p = ToPolarApx(buf);
 
+	p->dc  = p->dc  * p->dc;
+	p->nyq = p->nyq * p->nyq;
 	for (int i=0; i<numbins; ++i) {
 		float mag = p->bin[i].mag;
 		p->bin[i].mag = mag * mag;
@@ -558,14 +585,18 @@ void PV_BrickWall_next(PV_Unit *unit, int inNumSamples)
 	int wipe = (int)(ZIN0(1) * numbins);
 	if (wipe > 0) {
 		wipe = sc_min(wipe, numbins);
+		p->dc = 0.f;
 		for (int i=0; i < wipe; ++i) {
-			p->bin[i] = 0.;
+			p->bin[i] = 0.f;
 		}
+		if(wipe==numbins) p->nyq = 0.f;
 	} else if (wipe < 0) {
 		wipe = sc_max(wipe, -numbins);
+		if(wipe==-numbins) p->dc = 0.f;
 		for (int i=numbins+wipe; i < numbins; ++i) {
-			p->bin[i] = 0.;
+			p->bin[i] = 0.f;
 		}
+		p->nyq = 0.f;
 	}
 }
 
@@ -585,14 +616,18 @@ void PV_BinWipe_next(PV_Unit *unit, int inNumSamples)
 	int wipe = (int)(ZIN0(2) * numbins);
 	if (wipe > 0) {
 		wipe = sc_min(wipe, numbins);
+		p->dc = q->dc;
 		for (int i=0; i < wipe; ++i) {
 			p->bin[i] = q->bin[i];
 		}
+		if(wipe==numbins) p->nyq = q->nyq;
 	} else if (wipe < 0) {
 		wipe = sc_max(wipe, -numbins);
+		if(wipe==-numbins) p->dc = q->dc;
 		for (int i=numbins+wipe; i < numbins; ++i) {
 			p->bin[i] = q->bin[i];
 		}
+		p->nyq = q->nyq;
 	}
 }
 
@@ -700,8 +735,8 @@ void PV_CopyPhase_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
 
-	p->dc *= q->dc;
-	p->nyq *= q->nyq;
+	if((p->dc  > 0.f) == (q->dc  < 0.f)) p->dc  = -p->dc ;
+	if((p->nyq > 0.f) == (q->nyq < 0.f)) p->nyq = -p->nyq;
 	for (int i=0; i<numbins; ++i) {
 		p->bin[i].phase = q->bin[i].phase;
 	}
@@ -797,6 +832,8 @@ void PV_Max_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
 
+	if(std::abs(q->dc ) > std::abs(p->dc )) p->dc  = q->dc ;
+	if(std::abs(q->nyq) > std::abs(p->nyq)) p->nyq = q->nyq;
 	for (int i=0; i<numbins; ++i) {
 		if (q->bin[i].mag > p->bin[i].mag) {
 			p->bin[i] = q->bin[i];
@@ -817,6 +854,8 @@ void PV_Min_next(PV_Unit *unit, int inNumSamples)
 	SCPolarBuf *p = ToPolarApx(buf1);
 	SCPolarBuf *q = ToPolarApx(buf2);
 
+	if(std::abs(q->dc ) < std::abs(p->dc )) p->dc  = q->dc ;
+	if(std::abs(q->nyq) < std::abs(p->nyq)) p->nyq = q->nyq;
 	for (int i=0; i<numbins; ++i) {
 		if (q->bin[i].mag < p->bin[i].mag) {
 			p->bin[i] = q->bin[i];
@@ -942,7 +981,12 @@ void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 
 	int *ordering = unit->m_ordering;
 	for (int i=0; i<n; ++i) {
-		p->bin[ordering[i]] = 0.;
+		p->bin[ordering[i]] = 0.f;
+	}
+	if(n==numbins){
+		// including dc and nyq in the above shuffle would add too much complexity. but at full "wipe" we should get silence.
+		p->dc  = 0.f;
+		p->nyq = 0.f;
 	}
 
 }
