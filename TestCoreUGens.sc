@@ -90,11 +90,6 @@ test_ugen_generator_equivalences {
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
 	 
-	 //////////////////////////////////////////
-	 // Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
-	 // Note: This is NOT an "equivalence"; maybe it should move to a separate method.
-	 "Pan2.ar(ar, , kr) should converge properly to zero amp when set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
-
 	]
 	.keysValuesDo{|name, func| 
 		func.loadToFloatArray(1, Server.default, { |data|
@@ -106,6 +101,29 @@ test_ugen_generator_equivalences {
 	
 	1.6.wait; // enough time for 1-second generators to run and to report back.
 }
+
+test_exact_convergence {
+	var n, v;
+	this.bootServer;
+	
+	// Tests for things that should converge exactly to zero
+	Dictionary[
+	 //////////////////////////////////////////
+	 // Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
+	 "Pan2.ar(ar, , kr) should converge properly to zero when amp set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
+
+	]
+	.keysValuesDo{|name, func| 
+		func.loadToFloatArray(1, Server.default, { |data|
+			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true)
+		});
+		rrand(0.12, 0.35).wait;
+	};
+	
+	
+	1.6.wait; // enough time for 1-second generators to run and to report back.
+}
+
 
 
 test_bufugens{
