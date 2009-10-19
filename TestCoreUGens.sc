@@ -89,12 +89,18 @@ test_ugen_generator_equivalences {
 	 // FFT:
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
+	 
+	 //////////////////////////////////////////
+	 // Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
+	 // Note: This is NOT an "equivalence"; maybe it should move to a separate method.
+	 "Pan2.ar(ar, , kr) should converge properly to zero amp when set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
 
 	]
-	.keysValuesDo{|name, func| func.loadToFloatArray(1, Server.default, { |data|
+	.keysValuesDo{|name, func| 
+		func.loadToFloatArray(1, Server.default, { |data|
 			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true)
 		});
-		0.12.wait;
+		rrand(0.12, 0.35).wait;
 	};
 	
 	
