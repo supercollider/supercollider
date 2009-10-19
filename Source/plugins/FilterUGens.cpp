@@ -101,7 +101,7 @@ struct Decay2 : public Unit
 
 struct LeakDC : public Unit
 {
-	float m_b1, m_x1, m_y1;
+	double m_b1, m_x1, m_y1;
 };
 
 struct TwoPole : public Unit
@@ -348,6 +348,7 @@ extern "C"
 	void Decay2_Ctor(Decay2* unit);
 
 	void LeakDC_next(LeakDC *unit, int inNumSamples);
+	void LeakDC_next_1(LeakDC* unit, int inNumSamples);
 	void LeakDC_Ctor(LeakDC* unit);
 
 	void TwoPole_next(TwoPole *unit, int inNumSamples);
@@ -1240,11 +1241,14 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 void LeakDC_Ctor(LeakDC *unit)
 {
 	//printf("LeakDC_Ctor\n");
-	SETCALC(LeakDC_next);
-	unit->m_b1 = 0.f;
-	unit->m_x1 = 0.f;
-	unit->m_y1 = 0.f;
-	LeakDC_next(unit, 1);
+	if (BUFLENGTH == 1)
+		SETCALC(LeakDC_next_1);
+	else
+		SETCALC(LeakDC_next);
+	unit->m_b1 = 0.0;
+	unit->m_x1 = 0.0;
+	unit->m_y1 = 0.0;
+	LeakDC_next_1(unit, 1);
 }
 
 
@@ -1254,22 +1258,22 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float b1 = unit->m_b1;
+	double b1 = unit->m_b1;
 	unit->m_b1 = ZIN0(1);
 
-	float y1 = unit->m_y1;
-	float x1 = unit->m_x1;
+	double y1 = unit->m_y1;
+	double x1 = unit->m_x1;
 
 	if (b1 == unit->m_b1) {
 		LOOP(inNumSamples,
-			float x0 = ZXP(in);
+			double x0 = ZXP(in);
 			ZXP(out) = y1 = x0 - x1 + b1 * y1;
 			x1 = x0;
 		);
 	} else {
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		LOOP(inNumSamples,
-			float x0 = ZXP(in);
+			double x0 = ZXP(in);
 			ZXP(out) = y1 = x0 - x1 + b1 * y1;
 			x1 = x0;
 			b1 += b1_slope;
@@ -1280,6 +1284,20 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 
 }
 
+void LeakDC_next_1(LeakDC* unit, int inNumSamples)
+{
+	double b1 = unit->m_b1 = ZIN0(1);
+
+	double y1 = unit->m_y1;
+	double x1 = unit->m_x1;
+
+	double x0 = ZIN0(0);
+	ZOUT0(0) = y1 = x0 - x1 + b1 * y1;
+	x1 = x0;
+
+	unit->m_x1 = x1;
+	unit->m_y1 = zapgremlins(y1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
