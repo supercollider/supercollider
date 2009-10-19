@@ -494,15 +494,53 @@ void Graph_NullFirstCalc(Graph *inGraph)
 	inGraph->mNode.mCalcFunc = &Node_NullCalc;
 }
 
+inline void Graph_Calc_unit(Unit * unit)
+{
+	(unit->mCalcFunc)(unit, unit->mBufLength);
+}
+
 void Graph_Calc(Graph *inGraph)
 {
 	//scprintf("->Graph_Calc\n");
 	int numCalcUnits = inGraph->mNumCalcUnits;
 	Unit **calcUnits = inGraph->mCalcUnits;
-	for (int i=0; i<numCalcUnits; ++i) {
-		Unit *unit = calcUnits[i];
-		(unit->mCalcFunc)(unit, unit->mBufLength);
+
+	int unroll8 = numCalcUnits / 8;
+	int remain8 = numCalcUnits % 8;
+	int i = 0;
+
+	for (int j = 0; j!=unroll8; i += 8, ++j) {
+		Graph_Calc_unit(calcUnits[i]);
+		Graph_Calc_unit(calcUnits[i+1]);
+		Graph_Calc_unit(calcUnits[i+2]);
+		Graph_Calc_unit(calcUnits[i+3]);
+		Graph_Calc_unit(calcUnits[i+4]);
+		Graph_Calc_unit(calcUnits[i+5]);
+		Graph_Calc_unit(calcUnits[i+6]);
+		Graph_Calc_unit(calcUnits[i+7]);
 	}
+
+	int unroll4 = remain8 / 4;
+	int remain4 = remain8 % 4;
+	if (unroll4) {
+		Graph_Calc_unit(calcUnits[i]);
+		Graph_Calc_unit(calcUnits[i+1]);
+		Graph_Calc_unit(calcUnits[i+2]);
+		Graph_Calc_unit(calcUnits[i+3]);
+		i+=4;
+	}
+
+	int unroll2 = remain4 / 2;
+	int remain2 = remain4 % 2;
+	if (unroll2) {
+		Graph_Calc_unit(calcUnits[i]);
+		Graph_Calc_unit(calcUnits[i+1]);
+		i += 2;
+	}
+
+	if (remain2)
+		Graph_Calc_unit(calcUnits[i]);
+
 	//scprintf("<-Graph_Calc\n");
 }
 
