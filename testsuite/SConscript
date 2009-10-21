@@ -61,7 +61,7 @@ unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboos
                             CC=env['CC'], CXX=env['CXX'],
                             CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
                                      "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
-                                     "#libs/tlsf/src", "#libs/endian"],
+                                     "#libs/tlsf/src", "#libs/endian", "#libs/nova-tt/nova-tt/", ],
                             CCFLAGS=unit_test_cflags,
                             CPPDEFINES=["SUPERNOVA", "TLSF_STATISTIC=1"] + env['CPPDEFINES'])
 
@@ -76,8 +76,6 @@ unit_test_common = ["boost_test.cpp",
 
 # simple standalone tests
 unit_test_sources = ["mutex_test.cpp",
-                     "rw_mutex_test.cpp",
-                     "rw_spinlock_test.cpp",
                      "string_resource_test.cpp",
                      "interpolation.cpp",
                      "parameter.cpp",
@@ -90,7 +88,6 @@ unit_test_sources = ["mutex_test.cpp",
                      "muladd_helpers_test.cpp",
                      "xfade_test.cpp",
                      "approximation_test.cpp",
-                     "spin_lock_test.cpp",
                      "interpolated_value_test.cpp",
                      "filter.cpp",
                      "callback_interpreter_system.cpp",

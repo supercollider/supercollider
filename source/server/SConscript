@@ -32,7 +32,6 @@ sources = Split("""buffer_manager.cpp
                    ../sc/sc_ugen_factory.cpp
                    ../sc/sc_synthdef.cpp
                    ../sc/sc_synth.cpp
-                   ../utilities/thread.cpp
                    """)
 
 sources = [File(x) for x in sources]

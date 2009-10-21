@@ -29,7 +29,7 @@
 
 #include "simd/simd_memory.hpp"
 
-#include "utilities/spin_lock.hpp"
+#include "spin_lock.hpp"
 #include "utilities/branch_hints.hpp"
 
 namespace nova
