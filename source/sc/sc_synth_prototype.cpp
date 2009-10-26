@@ -30,15 +30,20 @@ namespace nova
 
 using namespace std;
 
+void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> const & defs)
+{
+    foreach(sc_synthdef const & def, defs) {
+        auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(def));
+        factory.register_prototype(sp.get());
+        sp.release();
+    }
+}
+
 void sc_read_synthdefs_file(synth_factory & factory, path const & file)
 {
     try {
         std::vector<sc_synthdef> defs = read_synthdef_file(file.string());
-        foreach(sc_synthdef const & def, defs) {
-            auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(def));
-            factory.register_prototype(sp.get());
-            sp.release();
-        }
+        register_synthdefs(factory, defs);
     }
     catch(std::exception & e)
     {

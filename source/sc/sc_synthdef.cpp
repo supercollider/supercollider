@@ -87,6 +87,21 @@ int32_t read_int32(const char *& ptr)
 
 } /* namespace */
 
+std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
+{
+    /* int32 header = */ read_int32(buf_ptr);
+    /* int32 version = */ read_int32(buf_ptr);
+
+    int16 definition_count = read_int16(buf_ptr);
+
+    std::vector<sc_synthdef> ret;
+
+    for (int i = 0; i != definition_count; ++i) {
+        sc_synthdef def(buf_ptr);
+        ret.push_back(def);
+    }
+    return ret;
+}
 
 std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename)
 {
@@ -95,11 +110,9 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
     ifstream stream;
     stream.open(filename.string().c_str());
 
-    std::vector<sc_synthdef> ret;
-
     if (!stream.is_open()) {
         cout << "cannot open file " << filename << endl;
-        return ret;
+        return std::vector<sc_synthdef>();
     }
 
     /* get length of file */
@@ -111,19 +124,7 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
     stream.read(buffer.c_array(), length);
     stream.close();
 
-    const char * buf_ptr = buffer.c_array();
-
-    /* int32 header = */ read_int32(buf_ptr);
-    /* int32 version = */ read_int32(buf_ptr);
-
-    int16 definition_count = read_int16(buf_ptr);
-
-    for (int i = 0; i != definition_count; ++i) {
-        sc_synthdef def(buf_ptr);
-        ret.push_back(def);
-    }
-
-    return ret;
+    return read_synthdefs(buffer.c_array());
 }
 
 sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer)

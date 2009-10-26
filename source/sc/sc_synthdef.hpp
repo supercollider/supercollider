@@ -108,6 +108,7 @@ private:
     boost::uint16_t buffer_count;
 };
 
+std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr);
 std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename);
 
 } /* namespace nova */

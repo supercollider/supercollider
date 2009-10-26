@@ -2122,9 +2122,9 @@ struct d_recv_callback:
 
     void run(void)
     {
-        const char * def = def_;
-        sc_synthdef synthdef(def);
-        instance->register_prototype(new sc_synth_prototype(synthdef));
+        std::vector<sc_synthdef> synthdefs = read_synthdefs(def_);
+        register_synthdefs(*instance, synthdefs);
+
         schedule_async_message();
         send_done();
     }
