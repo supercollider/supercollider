@@ -2137,11 +2137,18 @@ struct d_recv_callback:
 void handle_d_recv(received_message const & msg,
                    udp::endpoint const & endpoint)
 {
-    osc::Blob synthdef(0, 0), blob(0, 0);
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    const void * synthdef_data;
+    const void * blob_data = 0;
+    size_t synthdef_size, blob_size = 0;
 
-    args >> synthdef >> blob;
-    instance->add_system_callback(new d_recv_callback(synthdef.size, synthdef.data, blob.size, blob.data, endpoint));
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
+
+    args->AsBlob(synthdef_data, synthdef_size); ++args;
+
+    if (args->IsBlob())
+        args->AsBlobUnchecked(blob_data, blob_size);
+
+    instance->add_system_callback(new d_recv_callback(synthdef_size, synthdef_data, blob_size, blob_data, endpoint));
 }
 
 struct d_load_callback:
@@ -2723,10 +2730,6 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
                                                 udp::endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
-
-#ifndef NDEBUG
-    cerr << "handling message " << address << endl;
-#endif
 
     assert(address[0] == '/');
 
