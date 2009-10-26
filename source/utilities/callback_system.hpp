@@ -25,7 +25,7 @@
 
 #include <boost/checked_delete.hpp>
 
-#include "boost/lockfree/fifo.hpp"
+#include <boost/lockfree/fifo.hpp>
 
 
 namespace nova

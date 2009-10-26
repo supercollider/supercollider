@@ -25,8 +25,6 @@
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/list.hpp>
 
-#include <boost/lockfree/fifo.hpp>
-
 #include "osc/OscReceivedElements.h"
 
 #include "memory_pool.hpp"

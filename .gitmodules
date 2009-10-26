@@ -19,3 +19,6 @@
 [submodule "source/sc/supercollider"]
 	path = source/sc/supercollider
 	url = git://tim.klingt.org/nova-sc.git
+[submodule "libs/nova-tt"]
+	path = libs/nova-tt
+	url = git://tim.klingt.org/nova-tt.git

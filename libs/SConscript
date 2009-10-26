@@ -73,6 +73,12 @@ env.Append(CPPPATH=Dir("#/libs/tlsf/src"),
 tlsf_sources = [File("tlsf/src/tlsf.c")]
 
 ######################################################################
+#
+# nova thread tools
+
+env.Append(CPPPATH=Dir("#/libs/nova-tt/nova-tt/"))
+
+######################################################################
 
 build_sources = env.Combine("build.cpp", sources) + boost_sources + tlsf_sources
 sources += boost_sources + tlsf_sources
