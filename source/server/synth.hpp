@@ -83,6 +83,16 @@ public:
             this->set(slot_id, val);
     }
 
+    void set(const char * slot_str, size_t count, sample * val)
+    {
+        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str);
+        if (unlikely(slot_id < 0))
+            std::cerr << "cannot resolve slot " << slot_str << std::endl;
+        else
+            for (int i = 0; i != count; ++i)
+                this->set(slot_id+i, val[i]);
+    }
+
     virtual void set(slot_index_t slot_id, sample val) = 0;
     /* @} */
 };
@@ -128,6 +138,9 @@ public:
     }
 
     virtual void set(slot_index_t slot_id, sample val)
+    {}
+
+    virtual void set(slot_index_t slot_id, size_t count, sample * val)
     {}
 
 private:

@@ -670,6 +670,30 @@ void handle_n_set(received_message const & msg)
     }
 }
 
+void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 index = it->AsInt32Unchecked(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+
+        for (int i = 0; i != count; ++i) {
+            float value = it->AsFloat(); ++it;
+            node->set(index + i, value);
+        }
+    }
+    else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+
+        sized_array<float> values(count);
+        for (int i = 0; i != count; ++i) {
+            values[i] = it->AsFloat(); ++it;
+        }
+
+        node->set(str, count, values.c_array());
+    }
+}
+
 /** \todo handle array arguments */
 void handle_n_setn(received_message const & msg)
 {
@@ -683,23 +707,35 @@ void handle_n_setn(received_message const & msg)
     while(it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 index = it->AsInt32Unchecked(); ++it;
-                osc::int32 count = it->AsInt32(); ++it;
-
-                for (int i = 0; i != count; ++i) {
-                    float value = it->AsFloat(); ++it;
-                    node->set(index + i, value);
-                }
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            set_control_n(node, it);
         }
         catch(std::exception & e)
         {
             cout << "Exception during /n_setn handler: " << e.what() << endl;
         }
+    }
+}
+
+void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 index = it->AsInt32Unchecked(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+        float value = it->AsFloat(); ++it;
+
+        for (int i = 0; i != count; ++i)
+            node->set(index + i, value);
+    }
+    else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+        float value = it->AsFloat(); ++it;
+
+        sized_array<float> values(count);
+        for (int i = 0; i != count; ++i)
+            values[i] = value;
+
+        node->set(str, count, values.c_array());
     }
 }
 
@@ -709,23 +745,13 @@ void handle_n_fill(received_message const & msg)
     osc::int32 id = it->AsInt32(); ++it;
 
     server_node * node = find_node(id);
-    if(!node)
+    if (!node)
         return;
 
-    while(it != msg.ArgumentsEnd())
+    while (it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 index = it->AsInt32Unchecked(); ++it;
-                osc::int32 count = it->AsInt32(); ++it;
-                float value = it->AsFloat(); ++it;
-
-                for (int i = 0; i != count; ++i)
-                    node->set(index + i, value);
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            fill_control(node, it);
         }
         catch(std::exception & e)
         {
@@ -734,13 +760,42 @@ void handle_n_fill(received_message const & msg)
     }
 }
 
-static void handle_n_map_group(server_node & node, int slot_index, int control_bus_index)
+template <typename slot_type>
+void handle_n_map_group(server_node & node, slot_type slot, int control_bus_index)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus(slot_index, control_bus_index);
+        static_cast<sc_synth&>(node).map_control_bus(slot, control_bus_index);
     else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_map_group, _1,
-                                                                         slot_index, control_bus_index));
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_map_group<slot_type>, _1,
+                                                                         slot, control_bus_index));
+}
+
+void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+        osc::int32 control_bus_index = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_bus(control_index, control_bus_index);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<slot_index_t>, _1,
+                                                                              control_index, control_bus_index));
+    }
+    else if (it->IsString()) {
+        const char * control_name = it->AsStringUnchecked(); ++it;
+        osc::int32 control_bus_index = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_bus(control_name, control_bus_index);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<const char*>, _1,
+                                                                              control_name, control_bus_index));
+    }
 }
 
 void handle_n_map(received_message const & msg)
@@ -755,21 +810,7 @@ void handle_n_map(received_message const & msg)
     while (it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-                osc::int32 control_bus_index = it->AsInt32(); ++it;
-
-                if (node->is_synth()) {
-                    sc_synth * synth = static_cast<sc_synth*>(node);
-                    synth->map_control_bus(control_index, control_bus_index);
-                }
-                else
-                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group, _1,
-                                                                                      control_index, control_bus_index));
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            map_control(node, it);
         }
         catch(std::exception & e)
         {
@@ -778,13 +819,46 @@ void handle_n_map(received_message const & msg)
     }
 }
 
-static void handle_n_mapn_group(server_node & node, int slot_index, int control_bus_index, int count)
+template <typename slot_type>
+void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_index, int count)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses(slot_index, control_bus_index, count);
+        static_cast<sc_synth&>(node).map_control_buses(slot, control_bus_index, count);
     else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapn_group, _1,
-                                                                         slot_index, control_bus_index, count));
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapn_group<slot_type>, _1,
+                                                                         slot, control_bus_index, count));
+}
+
+void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        if (it->IsInt32()) {
+            osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+            osc::int32 control_bus_index = it->AsInt32(); ++it;
+            osc::int32 count = it->AsInt32(); ++it;
+
+            if (node->is_synth()) {
+                sc_synth * synth = static_cast<sc_synth*>(node);
+                synth->map_control_buses(control_index, control_bus_index, count);
+            }
+            else
+                static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<slot_index_t>, _1,
+                                                                                  control_index, control_bus_index, count));
+    }
+    else if (it->IsString()) {
+        const char * control_name = it->AsStringUnchecked(); ++it;
+        osc::int32 control_bus_index = it->AsInt32(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_buses(control_name, control_bus_index, count);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<const char*>, _1,
+                                                                              control_name, control_bus_index, count));
+        }
+    }
 }
 
 void handle_n_mapn(received_message const & msg)
@@ -799,22 +873,7 @@ void handle_n_mapn(received_message const & msg)
     while (it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-                osc::int32 control_bus_index = it->AsInt32(); ++it;
-                osc::int32 count = it->AsInt32(); ++it;
-
-                if (node->is_synth()) {
-                    sc_synth * synth = static_cast<sc_synth*>(node);
-                    synth->map_control_buses(control_index, control_bus_index, count);
-                }
-                else
-                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group, _1,
-                                                                                      control_index, control_bus_index, count));
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            mapn_control(node, it);
         }
         catch(std::exception & e)
         {
@@ -823,13 +882,42 @@ void handle_n_mapn(received_message const & msg)
     }
 }
 
-static void handle_n_mapa_group(server_node & node, int slot_index, int audio_bus_index)
+template <typename slot_type>
+void handle_n_mapa_group(server_node & node, slot_type slot, int audio_bus_index)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus_audio(slot_index, audio_bus_index);
+        static_cast<sc_synth&>(node).map_control_bus_audio(slot, audio_bus_index);
     else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapa_group, _1,
-                                                                         slot_index, audio_bus_index));
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapa_group<slot_type>, _1,
+                                                                         slot, audio_bus_index));
+}
+
+void mapa_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+        osc::int32 audio_bus_index = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_bus_audio(control_index, audio_bus_index);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<slot_index_t>, _1,
+                                                                                control_index, audio_bus_index));
+    }
+    else if (it->IsString()) {
+        const char * control_name = it->AsStringUnchecked(); ++it;
+        osc::int32 audio_bus_index = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_bus_audio(control_name, audio_bus_index);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<const char *>, _1,
+                                                                              control_name, audio_bus_index));
+    }
 }
 
 void handle_n_mapa(received_message const & msg)
@@ -844,21 +932,7 @@ void handle_n_mapa(received_message const & msg)
     while (it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-                osc::int32 audio_bus_index = it->AsInt32(); ++it;
-
-                if (node->is_synth()) {
-                    sc_synth * synth = static_cast<sc_synth*>(node);
-                    synth->map_control_bus_audio(control_index, audio_bus_index);
-                }
-                else
-                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group, _1,
-                                                                                      control_index, audio_bus_index));
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            mapa_control(node, it);
         }
         catch(std::exception & e)
         {
@@ -867,13 +941,46 @@ void handle_n_mapa(received_message const & msg)
     }
 }
 
-static void handle_n_mapan_group(server_node & node, int slot_index, int audio_bus_index, int count)
+template <typename slot_type>
+void handle_n_mapan_group(server_node & node, slot_type slot, int audio_bus_index, int count)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses_audio(slot_index, audio_bus_index, count);
+        static_cast<sc_synth&>(node).map_control_buses_audio(slot, audio_bus_index, count);
     else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapan_group, _1,
-                                                                         slot_index, audio_bus_index, count));
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapan_group<slot_type>, _1,
+                                                                         slot, audio_bus_index, count));
+}
+
+void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        if (it->IsInt32()) {
+            osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+            osc::int32 audio_bus_index = it->AsInt32(); ++it;
+            osc::int32 count = it->AsInt32(); ++it;
+
+            if (node->is_synth()) {
+                sc_synth * synth = static_cast<sc_synth*>(node);
+                synth->map_control_buses_audio(control_index, audio_bus_index, count);
+            }
+            else
+                static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<slot_index_t>, _1,
+                                                                                  control_index, audio_bus_index, count));
+    }
+    else if (it->IsString()) {
+        const char * control_name = it->AsStringUnchecked(); ++it;
+        osc::int32 audio_bus_index = it->AsInt32(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
+
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_buses_audio(control_name, audio_bus_index, count);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<const char *>, _1,
+                                                                              control_name, audio_bus_index, count));
+        }
+    }
 }
 
 void handle_n_mapan(received_message const & msg)
@@ -888,22 +995,7 @@ void handle_n_mapan(received_message const & msg)
     while (it != msg.ArgumentsEnd())
     {
         try {
-            if (it->IsInt32()) {
-                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-                osc::int32 audio_bus_index = it->AsInt32(); ++it;
-                osc::int32 count = it->AsInt32(); ++it;
-
-                if (node->is_synth()) {
-                    sc_synth * synth = static_cast<sc_synth*>(node);
-                    synth->map_control_buses_audio(control_index, audio_bus_index, count);
-                }
-                else
-                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group, _1,
-                                                                                      control_index, audio_bus_index, count));
-            }
-            else if (it->IsString()) {
-                /** \todo how to resolve arrayed arguments ? */
-            }
+            mapan_control(node, it);
         }
         catch(std::exception & e)
         {

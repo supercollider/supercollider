@@ -151,11 +151,25 @@ void abstract_group::set(const char * slot_str, float val)
         it->set(slot_str, val);
 }
 
+void abstract_group::set(const char * slot_str, size_t count, float * val)
+{
+    for(server_node_list::iterator it = child_nodes.begin();
+        it != child_nodes.end(); ++it)
+        it->set(slot_str, count, val);
+}
+
 void abstract_group::set(slot_index_t slot_id, float val)
 {
     for(server_node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
         it->set(slot_id, val);
+}
+
+void abstract_group::set(slot_index_t slot_id, size_t count, float * val)
+{
+    for(server_node_list::iterator it = child_nodes.begin();
+        it != child_nodes.end(); ++it)
+        it->set(slot_id, count, val);
 }
 
 namespace

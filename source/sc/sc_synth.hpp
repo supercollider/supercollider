@@ -60,11 +60,17 @@ public:
     void run(dsp_context const & context);
 
     void set(slot_index_t slot_index, sample val);
+    void set(slot_index_t slot_index, size_t count, sample * val);
 
     void map_control_bus(int slot_index, int control_bus_index);
     void map_control_buses(int slot_index, int control_bus_index, int n);
     void map_control_bus_audio(int slot_index, int audio_bus_index);
     void map_control_buses_audio(int slot_index, int audio_bus_index, int n);
+
+    void map_control_bus(const char * slot_name, int control_bus_index);
+    void map_control_buses(const char * slot_name, int control_bus_index, int n);
+    void map_control_bus_audio(const char * slot_name, int audio_bus_index);
+    void map_control_buses_audio(const char * slot_name, int audio_bus_index, int n);
 
 private:
     sample get_constant(size_t index)
