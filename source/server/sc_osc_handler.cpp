@@ -262,6 +262,7 @@ enum {
 
     cmd_n_mapa = 60,
     cmd_n_mapan = 61,
+    cmd_n_order = 62,
 
     cmd_p_new = 63,
 
@@ -937,6 +938,43 @@ void handle_n_after(received_message const & msg)
         /** \todo this can be optimized if a_parent == b_parent */
         a_parent->remove_child(a);
         b_parent->add_child(a, make_pair(b_parent, after));
+    }
+}
+
+void handle_n_order(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    osc::int32 action, target_id;
+    args >> action >> target_id;
+
+    server_node * target = find_node(target_id);
+
+    abstract_group * target_parent;
+    if (action == before ||
+        action == after)
+        target_parent = target->get_parent();
+    else {
+        if (target->is_synth())
+            throw std::runtime_error("invalid argument for n_order: argument is no synth");
+        target_parent = static_cast<abstract_group*>(target);
+    }
+
+    while (!args.Eos())
+    {
+        osc::int32 node_id;
+        args >> node_id;
+
+        server_node * node = find_node(node_id);
+        abstract_group * node_parent = node->get_parent();
+
+        /** \todo this can be optimized if node_parent == target_parent */
+        node_parent->remove_child(node);
+        if (action == before ||
+            action == after)
+            target_parent->add_child(node, make_pair(target, node_position(action)));
+        else
+            target_parent->add_child(node, node_position(action));
     }
 }
 
@@ -2245,6 +2283,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_mapan(message);
         break;
 
+    case cmd_n_order:
+        handle_n_order(message);
+        break;
+
     case cmd_n_run:
         handle_n_run(message);
         break;
@@ -2451,6 +2493,11 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "after") == 0) {
         handle_n_after(message);
+        return;
+    }
+
+    if (strcmp(address+3, "order") == 0) {
+        handle_n_order(message);
         return;
     }
 }
