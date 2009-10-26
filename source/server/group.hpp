@@ -85,6 +85,13 @@ public:
         return child_nodes.empty();
     }
 
+    template<typename functor>
+    void apply_on_children(functor const & f)
+    {
+        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
+            f(*it);
+    }
+
 public:
     server_node * next_node(server_node * node)
     {
