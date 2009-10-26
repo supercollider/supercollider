@@ -130,6 +130,7 @@ public:
         }
     }
 
+    /** remove node from child_nodes, clear node->parent */
     void remove_child(server_node * node);
     /* @} */
 

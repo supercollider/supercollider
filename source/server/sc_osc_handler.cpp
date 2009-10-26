@@ -463,7 +463,7 @@ server_node * find_node(int target_id)
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL) {
-        cerr << "node not found\n" << endl;
+        cerr << "node not found" << endl;
         return NULL;
     }
     return node;
@@ -897,6 +897,48 @@ void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it
 }
 
 HANDLE_N_DECORATOR(mapan, mapan_control)
+
+void handle_n_before(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_a, node_b;
+        args >> node_a >> node_b;
+
+        server_node * a = find_node(node_a);
+        server_node * b = find_node(node_b);
+
+        abstract_group * a_parent = a->get_parent();
+        abstract_group * b_parent = b->get_parent();
+
+        /** \todo this can be optimized if a_parent == b_parent */
+        a_parent->remove_child(a);
+        b_parent->add_child(a, make_pair(b_parent, before));
+    }
+}
+
+void handle_n_after(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_a, node_b;
+        args >> node_a >> node_b;
+
+        server_node * a = find_node(node_a);
+        server_node * b = find_node(node_b);
+
+        abstract_group * a_parent = a->get_parent();
+        abstract_group * b_parent = b->get_parent();
+
+        /** \todo this can be optimized if a_parent == b_parent */
+        a_parent->remove_child(a);
+        b_parent->add_child(a, make_pair(b_parent, after));
+    }
+}
 
 
 void handle_n_run(received_message const & msg)
@@ -2207,6 +2249,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_run(message);
         break;
 
+    case cmd_n_before:
+        handle_n_before(message);
+        break;
+
+    case cmd_n_after:
+        handle_n_after(message);
+        break;
+
     case cmd_b_alloc:
         handle_b_alloc(message, endpoint);
         break;
@@ -2391,6 +2441,16 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "run") == 0) {
         handle_n_run(message);
+        return;
+    }
+
+    if (strcmp(address+3, "before") == 0) {
+        handle_n_before(message);
+        return;
+    }
+
+    if (strcmp(address+3, "after") == 0) {
+        handle_n_after(message);
         return;
     }
 }

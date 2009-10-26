@@ -128,6 +128,11 @@ public:
         return parent_;
     }
 
+    abstract_group * get_parent(void)
+    {
+        return parent_;
+    }
+
     void set_parent(abstract_group * parent)
     {
         add_ref();
