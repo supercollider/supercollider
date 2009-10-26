@@ -21,7 +21,6 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
 #include <map>
 
 #include <boost/cstdint.hpp>
@@ -55,7 +54,7 @@ public:
 
     struct unit_spec_t
     {
-        explicit unit_spec_t(std::istream & istream);
+        explicit unit_spec_t(const char *& buffer);
 
         unit_spec_t(string const & name, int16_t rate, int16_t special_index,
                     std::vector<input_spec> const & in_specs,
@@ -80,8 +79,7 @@ public:
 
     typedef std::vector<unit_spec_t> graph_t;
 
-    explicit sc_synthdef(std::istream & istream);
-    explicit sc_synthdef(boost::filesystem::path const & path);
+    explicit sc_synthdef(const char *& buffer);
 
     string dump(void) const;
 
@@ -97,7 +95,7 @@ public:
     }
 
 private:
-    void read_synthdef(std::istream & istream);
+    void read_synthdef(const char *&);
 
     void assign_buffers(void);
 

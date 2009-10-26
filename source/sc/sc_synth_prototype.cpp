@@ -30,19 +30,21 @@ namespace nova
 
 using namespace std;
 
-void sc_read_synthdef(synth_factory & factory, path const & file)
+void sc_read_synthdefs_file(synth_factory & factory, path const & file)
 {
     try {
-        auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(sc_synthdef(file)));
-        factory.register_prototype(sp.get());
-        sp.release();
+        std::vector<sc_synthdef> defs = read_synthdef_file(file.string());
+        foreach(sc_synthdef const & def, defs) {
+            auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(def));
+            factory.register_prototype(sp.get());
+            sp.release();
+        }
     }
     catch(std::exception & e)
     {
         cout << "Exception when parsing synthdef: " << e.what() << endl;
     }
 }
-
 
 void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
 {
@@ -58,20 +60,7 @@ void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
         if (is_directory(it->status()))
             sc_read_synthdefs_dir(factory, it->path());
         else
-        {
-            try {
-                std::vector<sc_synthdef> defs = read_synthdef_file(it->path().string());
-                foreach(sc_synthdef const & def, defs) {
-                    auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(def));
-                    factory.register_prototype(sp.get());
-                    sp.release();
-                }
-            }
-            catch(std::exception & e)
-            {
-                cout << "Exception when parsing synthdef: " << e.what() << endl;
-            }
-        }
+            sc_read_synthdefs_file(factory, it->path());
     }
 }
 

@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <utilities/sized_array.hpp>
 
 namespace nova
 {
@@ -38,51 +39,49 @@ using std::size_t;
 
 namespace {
 
-std::string read_pstring(std::istream & stream)
+std::string read_pstring(const char *& buffer)
 {
     char str[256+1];
-    char name_size;
-    stream.get(name_size);
-    stream.read(str, name_size);
+    char name_size = *buffer++;
+    memcpy(str, buffer, name_size);
     str[int(name_size)] = 0;
 
+    buffer += name_size;
     return std::string(str);
 }
 
-float read_float(std::istream & stream)
+float read_float(const char *& ptr)
 {
-    big32_t data;
+    big32_t data = *(big32_t*)ptr;
+    ptr += 4;
 
     union {
         int32_t i;
         float f;
     } cast;
 
-    stream.read((char*)&data, 4);
-
     cast.i = data;
-
     return cast.f;
 }
 
-int8_t read_int8(std::istream & stream)
+int8_t read_int8(const char *& ptr)
 {
-    big8_t data;
-    stream.read((char*)&data, 1);
+    big8_t data = *(big8_t*)ptr;
+    ptr += 1;
     return data;
 }
 
-int16_t read_int16(std::istream & stream)
+int16_t read_int16(const char *& ptr)
 {
-    big16_t data;
-    stream.read((char*)&data, 2);
+    big16_t data = *(big16_t*)ptr;
+    ptr += 2;
     return data;
 }
 
-int32_t read_int32(std::istream & stream)
+int32_t read_int32(const char *& ptr)
 {
-    big32_t data;
-    stream.read((char*)&data, 4);
+    big32_t data = *(big32_t*)ptr;
+    ptr += 4;
     return data;
 }
 
@@ -103,91 +102,96 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
         return ret;
     }
 
-    /* int32 header = */ read_int32(stream);
-    /* int32 version = */ read_int32(stream);
+    /* get length of file */
+    stream.seekg (0, ios::end);
+    size_t length = stream.tellg();
+    stream.seekg (0, ios::beg);
 
-    int16 definition_count = read_int16(stream);
+    sized_array<char> buffer(length);
+    stream.read(buffer.c_array(), length);
+    stream.close();
+
+    const char * buf_ptr = buffer.c_array();
+
+    /* int32 header = */ read_int32(buf_ptr);
+    /* int32 version = */ read_int32(buf_ptr);
+
+    int16 definition_count = read_int16(buf_ptr);
 
     for (int i = 0; i != definition_count; ++i) {
-        sc_synthdef def(stream);
+        sc_synthdef def(buf_ptr);
         ret.push_back(def);
     }
 
     return ret;
 }
 
-sc_synthdef::unit_spec_t::unit_spec_t(std::istream & stream)
+sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer)
 {
-    name = read_pstring(stream);
-    rate = read_int8(stream);
-    int16 inputs = read_int16(stream);
-    int16 outputs = read_int16(stream);
-    special_index = read_int16(stream);
+    name = read_pstring(buffer);
+    rate = read_int8(buffer);
+    int16 inputs = read_int16(buffer);
+    int16 outputs = read_int16(buffer);
+    special_index = read_int16(buffer);
 
     for (int i = 0; i != inputs; ++i)
     {
-        int16_t source = read_int16(stream);
-        int16_t index = read_int16(stream);
+        int16_t source = read_int16(buffer);
+        int16_t index = read_int16(buffer);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 
     for (int i = 0; i != outputs; ++i)
     {
-        char rate = read_int8(stream);
+        char rate = read_int8(buffer);
         output_specs.push_back(rate);
     }
 }
 
-sc_synthdef::sc_synthdef(std::istream & stream)
+sc_synthdef::sc_synthdef(const char*& data)
 {
-    read_synthdef(stream);
+    read_synthdef(data);
 }
 
-sc_synthdef::sc_synthdef(boost::filesystem::path const & path)
-{
-    std::ifstream stream(path.string().c_str());
-    read_synthdef(stream);
-}
-
-void sc_synthdef::read_synthdef(std::istream& stream)
+void sc_synthdef::read_synthdef(const char *& ptr)
 {
     using namespace std;
 
     /* read name */
-    name_ = read_pstring(stream);
+    name_ = read_pstring(ptr);
 
     /* read constants */
-    int16_t consts = read_int16(stream);
+    int16_t consts = read_int16(ptr);
 
     for (int i = 0; i != consts; ++i) {
-        float data = read_float(stream);
+        float data = read_float(ptr);
         constants.push_back(data);
     }
 
     /* read parameters */
-    int16_t pars = read_int16(stream);
+    int16_t pars = read_int16(ptr);
 
     for (int i = 0; i != pars; ++i) {
-        float data = read_float(stream);
+        float data = read_float(ptr);
         parameters.push_back(data);
     }
 
     /* read parameter names */
-    int16_t par_names = read_int16(stream);
+    int16_t par_names = read_int16(ptr);
 
     for (int i = 0; i != par_names; ++i) {
-        string data = read_pstring(stream);
-        int16_t index = read_int16(stream);
+        string data = read_pstring(ptr);
+        int16_t index = read_int16(ptr);
 
         parameter_map[data] = index;
     }
 
-    int16_t ugens = read_int16(stream);
+    int16_t ugens = read_int16(ptr);
     graph.reserve(ugens);
 
     for (int i = 0; i != ugens; ++i) {
-        unit_spec_t data(stream);
+        unit_spec_t data(ptr);
         graph.push_back(data);
     }
 

@@ -2122,9 +2122,8 @@ struct d_recv_callback:
 
     void run(void)
     {
-        std::string def_string(def_);
-        std::stringstream stream(def_string);
-        sc_synthdef synthdef(stream);
+        const char * def = def_;
+        sc_synthdef synthdef(def);
         instance->register_prototype(new sc_synth_prototype(synthdef));
         schedule_async_message();
         send_done();
@@ -2167,7 +2166,7 @@ struct d_load_callback:
 
     void run(void)
     {
-        sc_read_synthdef(*instance, path_); /* todo: we need to implment some file name pattern matching */
+        sc_read_synthdefs_file(*instance, path_); /* todo: we need to implment some file name pattern matching */
         schedule_async_message();
         send_done();
     }
