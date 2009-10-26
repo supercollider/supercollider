@@ -729,7 +729,51 @@ void handle_n_fill(received_message const & msg)
         }
         catch(std::exception & e)
         {
-            cout << "Exception during /n_setn handler: " << e.what() << endl;
+            cout << "Exception during /n_fill handler: " << e.what() << endl;
+        }
+    }
+}
+
+static void handle_n_map_group(server_node & node, int slot_index, int control_bus_index)
+{
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_bus(slot_index, control_bus_index);
+    else
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_map_group, _1,
+                                                                         slot_index, control_bus_index));
+}
+
+void handle_n_map(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+
+    server_node * node = find_node(id);
+    if (!node)
+        return;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+                osc::int32 control_bus_index = it->AsInt32(); ++it;
+
+                if (node->is_synth()) {
+                    sc_synth * synth = static_cast<sc_synth*>(node);
+                    synth->map_control_bus(control_index, control_bus_index);
+                }
+                else
+                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group, _1,
+                                                                                      control_index, control_bus_index));
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_map handler: " << e.what() << endl;
         }
     }
 }
@@ -2022,6 +2066,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_fill(message);
         break;
 
+    case cmd_n_map:
+        handle_n_map(message);
+        break;
+
     case cmd_n_run:
         handle_n_run(message);
         break;
@@ -2185,6 +2233,11 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "fill") == 0) {
         handle_n_fill(message);
+        return;
+    }
+
+    if (strcmp(address+3, "map") == 0) {
+        handle_n_map(message);
         return;
     }
 

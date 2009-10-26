@@ -105,6 +105,22 @@ void sc_synth::set(slot_index_t slot_index, sample val)
     mControls[slot_index] = val;
 }
 
+void sc_synth::map_control_bus (int slot_index, int control_bus_index)
+{
+    if (slot_index >= mNumControls)
+        return;
+
+    World *world = mNode.mWorld;
+    if (control_bus_index >= 0x80000000) {
+        mControlRates[slot_index] = 0;
+        mMapControls[slot_index] = mControls + slot_index;
+    }
+    else if (control_bus_index < world->mNumControlBusChannels) {
+        mControlRates[slot_index] = 1;
+        mMapControls[slot_index] = world->mControlBus + slot_index;
+    }
+}
+
 
 void sc_synth::run(dsp_context const & context)
 {
