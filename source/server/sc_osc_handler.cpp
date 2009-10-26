@@ -485,6 +485,7 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 }
 
 /* set control values of node from string/float or int/float pair */
+/** \todo handle array arguments */
 void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
@@ -647,28 +648,34 @@ void handle_n_free(received_message const & msg)
     }
 }
 
-/** \todo handle array arguments */
-void handle_n_set(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
-
-    server_node * node = find_node(id);
-    if(!node)
-        return;
-
-    while(it != msg.ArgumentsEnd())
-    {
-        try
-        {
-            set_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_set handler: " << e.what() << endl;
-        }
-    }
+/** macro to define an os command handler with a starting node id
+ *
+ 8  it is mainly intended as decorator to avoid duplicate error handling code
+ */
+#define HANDLE_N_DECORATOR(cmd, function)                               \
+void handle_n_##cmd(received_message const & msg)                       \
+{                                                                       \
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();     \
+    osc::int32 id = it->AsInt32(); ++it;                                \
+                                                                        \
+    server_node * node = find_node(id);                                 \
+    if(!node)                                                           \
+        return;                                                         \
+                                                                        \
+    while(it != msg.ArgumentsEnd())                                     \
+    {                                                                   \
+        try                                                             \
+        {                                                               \
+            function(node, it);                                         \
+        }                                                               \
+        catch(std::exception & e)                                       \
+        {                                                               \
+            cout << "Exception during /n_" #cmd "handler: " << e.what() << endl; \
+        }                                                               \
+    }                                                                   \
 }
+
+HANDLE_N_DECORATOR(set, set_control)
 
 void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
@@ -694,27 +701,7 @@ void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it
     }
 }
 
-/** \todo handle array arguments */
-void handle_n_setn(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
-
-    server_node * node = find_node(id);
-    if(!node)
-        return;
-
-    while(it != msg.ArgumentsEnd())
-    {
-        try {
-            set_control_n(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_setn handler: " << e.what() << endl;
-        }
-    }
-}
+HANDLE_N_DECORATOR(setn, set_control_n)
 
 void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
@@ -739,26 +726,8 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     }
 }
 
-void handle_n_fill(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
+HANDLE_N_DECORATOR(fill, fill_control)
 
-    server_node * node = find_node(id);
-    if (!node)
-        return;
-
-    while (it != msg.ArgumentsEnd())
-    {
-        try {
-            fill_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_fill handler: " << e.what() << endl;
-        }
-    }
-}
 
 template <typename slot_type>
 void handle_n_map_group(server_node & node, slot_type slot, int control_bus_index)
@@ -798,26 +767,8 @@ void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     }
 }
 
-void handle_n_map(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
+HANDLE_N_DECORATOR(map, map_control)
 
-    server_node * node = find_node(id);
-    if (!node)
-        return;
-
-    while (it != msg.ArgumentsEnd())
-    {
-        try {
-            map_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_map handler: " << e.what() << endl;
-        }
-    }
-}
 
 template <typename slot_type>
 void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_index, int count)
@@ -861,26 +812,7 @@ void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     }
 }
 
-void handle_n_mapn(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
-
-    server_node * node = find_node(id);
-    if (!node)
-        return;
-
-    while (it != msg.ArgumentsEnd())
-    {
-        try {
-            mapn_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_mapn handler: " << e.what() << endl;
-        }
-    }
-}
+HANDLE_N_DECORATOR(mapn, mapn_control)
 
 template <typename slot_type>
 void handle_n_mapa_group(server_node & node, slot_type slot, int audio_bus_index)
@@ -920,26 +852,7 @@ void mapa_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     }
 }
 
-void handle_n_mapa(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
-
-    server_node * node = find_node(id);
-    if (!node)
-        return;
-
-    while (it != msg.ArgumentsEnd())
-    {
-        try {
-            mapa_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_mapa handler: " << e.what() << endl;
-        }
-    }
-}
+HANDLE_N_DECORATOR(mapa, mapa_control)
 
 template <typename slot_type>
 void handle_n_mapan_group(server_node & node, slot_type slot, int audio_bus_index, int count)
@@ -983,26 +896,8 @@ void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it
     }
 }
 
-void handle_n_mapan(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
-    osc::int32 id = it->AsInt32(); ++it;
+HANDLE_N_DECORATOR(mapan, mapan_control)
 
-    server_node * node = find_node(id);
-    if (!node)
-        return;
-
-    while (it != msg.ArgumentsEnd())
-    {
-        try {
-            mapan_control(node, it);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /n_mapan handler: " << e.what() << endl;
-        }
-    }
-}
 
 void handle_n_run(received_message const & msg)
 {
