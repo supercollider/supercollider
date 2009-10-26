@@ -111,7 +111,7 @@ void sc_synth::map_control_bus (int slot_index, int control_bus_index)
         return;
 
     World *world = mNode.mWorld;
-    if (control_bus_index >= 0x80000000) {
+    if (control_bus_index < 0) {
         mControlRates[slot_index] = 0;
         mMapControls[slot_index] = mControls + slot_index;
     }
@@ -130,6 +130,33 @@ void sc_synth::map_control_buses (int slot_index, int control_bus_index, int n)
 
     for (int i = 0; i != slots_to_set; ++i)
         map_control_bus(slot_index+i, control_bus_index+i);
+}
+
+void sc_synth::map_control_bus_audio (int slot_index, int audio_bus_index)
+{
+    if (slot_index >= mNumControls)
+        return;
+
+    World *world = mNode.mWorld;
+
+    if (audio_bus_index < 0) {
+        mControlRates[slot_index] = 0;
+        mMapControls[slot_index] = mControls + slot_index;
+    } else if (audio_bus_index < world->mNumAudioBusChannels) {
+        mControlRates[slot_index] = 2;
+        mMapControls[slot_index] = world->mAudioBus + (audio_bus_index * world->mBufLength);
+    }
+}
+
+void sc_synth::map_control_buses_audio (int slot_index, int audio_bus_index, int n)
+{
+    if (slot_index >= mNumControls)
+        return;
+
+    int slots_to_set = std::min(n, int(mNumControls - slot_index));
+
+    for (int i = 0; i != slots_to_set; ++i)
+        map_control_bus(slot_index+i, audio_bus_index+i);
 }
 
 

@@ -818,7 +818,96 @@ void handle_n_mapn(received_message const & msg)
         }
         catch(std::exception & e)
         {
-            cout << "Exception during /n_setn handler: " << e.what() << endl;
+            cout << "Exception during /n_mapn handler: " << e.what() << endl;
+        }
+    }
+}
+
+static void handle_n_mapa_group(server_node & node, int slot_index, int audio_bus_index)
+{
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_bus_audio(slot_index, audio_bus_index);
+    else
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapa_group, _1,
+                                                                         slot_index, audio_bus_index));
+}
+
+void handle_n_mapa(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+
+    server_node * node = find_node(id);
+    if (!node)
+        return;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+                osc::int32 audio_bus_index = it->AsInt32(); ++it;
+
+                if (node->is_synth()) {
+                    sc_synth * synth = static_cast<sc_synth*>(node);
+                    synth->map_control_bus_audio(control_index, audio_bus_index);
+                }
+                else
+                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group, _1,
+                                                                                      control_index, audio_bus_index));
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_mapa handler: " << e.what() << endl;
+        }
+    }
+}
+
+static void handle_n_mapan_group(server_node & node, int slot_index, int audio_bus_index, int count)
+{
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_buses_audio(slot_index, audio_bus_index, count);
+    else
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapan_group, _1,
+                                                                         slot_index, audio_bus_index, count));
+}
+
+void handle_n_mapan(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+
+    server_node * node = find_node(id);
+    if (!node)
+        return;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+                osc::int32 audio_bus_index = it->AsInt32(); ++it;
+                osc::int32 count = it->AsInt32(); ++it;
+
+                if (node->is_synth()) {
+                    sc_synth * synth = static_cast<sc_synth*>(node);
+                    synth->map_control_buses_audio(control_index, audio_bus_index, count);
+                }
+                else
+                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group, _1,
+                                                                                      control_index, audio_bus_index, count));
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_mapan handler: " << e.what() << endl;
         }
     }
 }
@@ -2119,6 +2208,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_mapn(message);
         break;
 
+    case cmd_n_mapa:
+        handle_n_mapa(message);
+        break;
+
+    case cmd_n_mapan:
+        handle_n_mapan(message);
+        break;
+
     case cmd_n_run:
         handle_n_run(message);
         break;
@@ -2292,6 +2389,16 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "mapn") == 0) {
         handle_n_mapn(message);
+        return;
+    }
+
+    if (strcmp(address+3, "mapa") == 0) {
+        handle_n_mapa(message);
+        return;
+    }
+
+    if (strcmp(address+3, "mapan") == 0) {
+        handle_n_mapan(message);
         return;
     }
 
