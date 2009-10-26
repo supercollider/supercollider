@@ -2479,11 +2479,9 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 namespace
 {
 
-void dispatch_group_commands(received_message const & message,
+void dispatch_group_commands(const char * address, received_message const & message,
                              udp::endpoint const & endpoint)
 {
-    const char * address = message.AddressPattern();
-    assert(address[0] == '/');
     assert(address[1] == 'g');
     assert(address[2] == '_');
 
@@ -2513,11 +2511,9 @@ void dispatch_group_commands(received_message const & message,
     }
 }
 
-void dispatch_node_commands(received_message const & message,
+void dispatch_node_commands(const char * address, received_message const & message,
                             udp::endpoint const & endpoint)
 {
-    const char * address = message.AddressPattern();
-    assert(address[0] == '/');
     assert(address[1] == 'n');
     assert(address[2] == '_');
 
@@ -2582,11 +2578,9 @@ void dispatch_node_commands(received_message const & message,
     }
 }
 
-void dispatch_buffer_commands(received_message const & message,
+void dispatch_buffer_commands(const char * address, received_message const & message,
                               udp::endpoint const & endpoint)
 {
-    const char * address = message.AddressPattern();
-    assert(address[0] == '/');
     assert(address[1] == 'b');
     assert(address[2] == '_');
 
@@ -2660,11 +2654,9 @@ void dispatch_buffer_commands(received_message const & message,
     }
 }
 
-void dispatch_control_bus_commands(received_message const & message,
+void dispatch_control_bus_commands(const char * address, received_message const & message,
                                    udp::endpoint const & endpoint)
 {
-    const char * address = message.AddressPattern();
-    assert(address[0] == '/');
     assert(address[1] == 'c');
     assert(address[2] == '_');
 
@@ -2694,11 +2686,9 @@ void dispatch_control_bus_commands(received_message const & message,
     }
 }
 
-void dispatch_synthdef_commands(received_message const & message,
+void dispatch_synthdef_commands(const char * address, received_message const & message,
                                 udp::endpoint const & endpoint)
 {
-    const char * address = message.AddressPattern();
-    assert(address[0] == '/');
     assert(address[1] == 'd');
     assert(address[2] == '_');
 
@@ -2730,32 +2720,34 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 {
     const char * address = message.AddressPattern();
 
-    assert(address[0] == '/');
+    /* scsynth doesn't require the leading / */
+    if(address[0] != '/')
+        address -= 1;
 
     if (address[2] == '_')
     {
         if (address[1] == 'g') {
-            dispatch_group_commands(message, endpoint);
+            dispatch_group_commands(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'n') {
-            dispatch_node_commands(message, endpoint);
+            dispatch_node_commands(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'b') {
-            dispatch_buffer_commands(message, endpoint);
+            dispatch_buffer_commands(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'c') {
-            dispatch_control_bus_commands(message, endpoint);
+            dispatch_control_bus_commands(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'd') {
-            dispatch_synthdef_commands(message, endpoint);
+            dispatch_synthdef_commands(address, message, endpoint);
             return;
         }
     }
