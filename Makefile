@@ -1,5 +1,5 @@
 all:
-	scons debug=1 -j 4 server plugins
+	scons debug=1 -j 4 server plugins run_tests
 
 run_tests:
 	scons debug=1 -j 4 run_tests

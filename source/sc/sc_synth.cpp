@@ -114,7 +114,7 @@ void sc_synth::set(slot_index_t slot_index, size_t count, sample * val)
 }
 
 
-void sc_synth::map_control_bus (int slot_index, int control_bus_index)
+void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
 {
     if (slot_index >= mNumControls)
         return;
@@ -130,7 +130,7 @@ void sc_synth::map_control_bus (int slot_index, int control_bus_index)
     }
 }
 
-void sc_synth::map_control_buses (int slot_index, int control_bus_index, int count)
+void sc_synth::map_control_buses (unsigned int slot_index, int control_bus_index, int count)
 {
     if (slot_index >= mNumControls)
         return;
@@ -141,7 +141,7 @@ void sc_synth::map_control_buses (int slot_index, int control_bus_index, int cou
         map_control_bus(slot_index+i, control_bus_index+i);
 }
 
-void sc_synth::map_control_bus_audio (int slot_index, int audio_bus_index)
+void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_index)
 {
     if (slot_index >= mNumControls)
         return;
@@ -157,7 +157,7 @@ void sc_synth::map_control_bus_audio (int slot_index, int audio_bus_index)
     }
 }
 
-void sc_synth::map_control_buses_audio (int slot_index, int audio_bus_index, int count)
+void sc_synth::map_control_buses_audio (unsigned int slot_index, int audio_bus_index, int count)
 {
     if (slot_index >= mNumControls)
         return;

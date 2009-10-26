@@ -64,10 +64,10 @@ public:
 
     /* @{ */
     /** control mapping */
-    void map_control_bus(int slot_index, int control_bus_index);
-    void map_control_buses(int slot_index, int control_bus_index, int count);
-    void map_control_bus_audio(int slot_index, int audio_bus_index);
-    void map_control_buses_audio(int slot_index, int audio_bus_index, int count);
+    void map_control_bus(unsigned int slot_index, int control_bus_index);
+    void map_control_buses(unsigned int slot_index, int control_bus_index, int count);
+    void map_control_bus_audio(unsigned int slot_index, int audio_bus_index);
+    void map_control_buses_audio(unsigned int slot_index, int audio_bus_index, int count);
 
     void map_control_bus(const char * slot_name, int control_bus_index);
     void map_control_buses(const char * slot_name, int control_bus_index, int count);
