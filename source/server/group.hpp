@@ -85,6 +85,11 @@ public:
         return child_nodes.empty();
     }
 
+    std::size_t child_count(void) const
+    {
+        return child_nodes.size();
+    }
+
     template<typename functor>
     void apply_on_children(functor const & f)
     {

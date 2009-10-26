@@ -48,6 +48,11 @@ public:
         return class_ptr->resolve_slot(str);
     }
 
+    std::string const & prototype_name(void) const
+    {
+        return class_ptr->name();
+    }
+
 protected:
     synth_prototype_ptr class_ptr;
 };

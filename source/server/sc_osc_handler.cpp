@@ -269,6 +269,85 @@ enum {
     NUMBER_OF_COMMANDS = 64
 };
 
+struct movable_string
+{
+    /** allocate new string, only allowed to be called from the rt thread */
+    explicit movable_string(const char * str)
+    {
+        size_t length = strlen(str);
+        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        strcpy(ret, str);
+    }
+
+    /** copy constructor has move semantics!!! */
+    movable_string(movable_string const & rhs)
+    {
+        data_ = rhs.data_;
+        const_cast<movable_string&>(rhs).data_ = NULL;
+    }
+
+    ~movable_string(void)
+    {
+        if (data_)
+            system_callback::deallocate((char*)data_);
+    }
+
+    const char * c_str(void) const
+    {
+        return data_;
+    }
+
+private:
+    const char * data_;
+};
+
+template <typename T>
+struct movable_array
+{
+    /** allocate new array, only allowed to be called from the rt thread */
+    movable_array(size_t length, T * data):
+        length_(length)
+    {
+        data_ = (T*)system_callback::allocate(length * sizeof(T));
+        for (size_t i = 0; i != length; ++i)
+            data_[i] = data[i];
+    }
+
+    /** copy constructor has move semantics!!! */
+    movable_array(movable_array const & rhs)
+    {
+        length_ = rhs.length_;
+        data_ = rhs.data_;
+        const_cast<movable_array&>(rhs).data_ = NULL;
+    }
+
+    ~movable_array(void)
+    {
+        if (data_)
+            system_callback::deallocate((char*)data_);
+    }
+
+    const T * data(void) const
+    {
+        return data_;
+    }
+
+    const size_t length(void) const
+    {
+        return length_;
+    }
+
+private:
+    size_t length_;
+    T * data_;
+};
+
+void send_udp_message(movable_array<char> data, udp::endpoint const & endpoint)
+{
+    instance->send_udp(data.data(), data.length(), endpoint);
+}
+
+
 int first_arg_as_int(received_message const & message)
 {
     osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
@@ -628,6 +707,92 @@ void handle_g_deepFree(received_message const & msg)
         abstract_group * group = static_cast<abstract_group*>(node);
 
         group->free_synths_deep();
+    }
+}
+
+void q_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_node const & node)
+{
+    p << osc::int32(node.node_id);
+    if (node.is_synth())
+        p << -1;
+    else
+        p << osc::int32(static_cast<abstract_group const &>(node).child_count());
+
+    if (node.is_synth()) {
+        sc_synth const & scsynth = static_cast<sc_synth const&>(node);
+        p << scsynth.prototype_name().c_str();
+
+        if (flag) {
+            osc::int32 controls = scsynth.mNumControls;
+            p << controls;
+
+            for (int i = 0; i != controls; ++i) {
+                p << osc::int32(i); /** \todo later we can return symbols */
+
+                if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
+                    /* we use a bus mapping */
+                    int bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
+                    char str[10];
+                    sprintf(str, "s%d", bus);
+                    p << str;
+                }
+                else
+                    p << scsynth.mControls[i];
+            }
+        }
+    }
+}
+
+void g_query_tree(int node_id, bool flag, udp::endpoint const & endpoint)
+{
+    server_node * node = find_node(node_id);
+    if (!node || node->is_synth())
+        return;
+
+    abstract_group * group = static_cast<abstract_group*>(node);
+
+    size_t max_msg_size = 1<<16;
+    for(;;) {
+        try {
+            if (max_msg_size > 1<<22)
+                return;
+
+            sized_array<char, rt_pool_allocator<char> > data(max_msg_size);
+
+            osc::OutboundPacketStream p(data.c_array(), max_msg_size);
+            p << osc::BeginMessage("/g_queryTree.reply")
+              << (flag ? 1 : 0)
+              << node_id
+              << osc::int32(group->child_count());
+
+            group->apply_on_children(boost::bind(q_query_tree_fill_node, boost::ref(p), flag, _1));
+            p << osc::EndMessage;
+
+            movable_array<char> message(p.Size(), data.c_array());
+            fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+            return;
+        }
+        catch(...)
+        {
+            max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */
+        }
+    }
+}
+
+void handle_g_queryTree(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        try {
+            osc::int32 id, flag;
+            args >> id >> flag;
+            g_query_tree(id, flag, endpoint);
+        }
+        catch (std::exception & e) {
+            cerr << e.what() << endl;
+        }
     }
 }
 
@@ -1053,80 +1218,6 @@ struct completion_message
     size_t size_;
     void * data_;
 };
-
-struct movable_string
-{
-    /** allocate new string, only allowed to be called from the rt thread */
-    explicit movable_string(const char * str)
-    {
-        size_t length = strlen(str);
-        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
-        strcpy(ret, str);
-    }
-
-    /** copy constructor has move semantics!!! */
-    movable_string(movable_string const & rhs)
-    {
-        data_ = rhs.data_;
-        const_cast<movable_string&>(rhs).data_ = NULL;
-    }
-
-    ~movable_string(void)
-    {
-        if (data_)
-            system_callback::deallocate((char*)data_);
-    }
-
-    const char * c_str(void) const
-    {
-        return data_;
-    }
-
-private:
-    const char * data_;
-};
-
-template <typename T>
-struct movable_array
-{
-    /** allocate new array, only allowed to be called from the rt thread */
-    movable_array(size_t length, T * data):
-        length_(length)
-    {
-        data_ = (T*)system_callback::allocate(length * sizeof(T));
-        for (size_t i = 0; i != length; ++i)
-            data_[i] = data[i];
-    }
-
-    /** copy constructor has move semantics!!! */
-    movable_array(movable_array const & rhs)
-    {
-        length_ = rhs.length_;
-        data_ = rhs.data_;
-        const_cast<movable_array&>(rhs).data_ = NULL;
-    }
-
-    ~movable_array(void)
-    {
-        if (data_)
-            system_callback::deallocate((char*)data_);
-    }
-
-    const T * data(void) const
-    {
-        return data_;
-    }
-
-    const size_t length(void) const
-    {
-        return length_;
-    }
-
-private:
-    size_t length_;
-    T * data_;
-};
-
 
 
 /** responding callback, which is executing an osc message when done */
@@ -2251,6 +2342,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_g_deepFree(message);
         break;
 
+    case cmd_g_queryTree:
+        handle_g_queryTree(message, endpoint);
+        break;
+
     case cmd_n_free:
         handle_n_free(message);
         break;
@@ -2429,6 +2524,10 @@ void dispatch_group_commands(received_message const & message,
     }
     if (strcmp(address+3, "deepFree") == 0) {
         handle_g_deepFree(message);
+        return;
+    }
+    if (strcmp(address+3, "queryTree") == 0) {
+        handle_g_queryTree(message, endpoint);
         return;
     }
 }
