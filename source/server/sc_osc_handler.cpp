@@ -778,6 +778,51 @@ void handle_n_map(received_message const & msg)
     }
 }
 
+static void handle_n_mapn_group(server_node & node, int slot_index, int control_bus_index, int count)
+{
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_buses(slot_index, control_bus_index, count);
+    else
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapn_group, _1,
+                                                                         slot_index, control_bus_index, count));
+}
+
+void handle_n_mapn(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::int32 id = it->AsInt32(); ++it;
+
+    server_node * node = find_node(id);
+    if (!node)
+        return;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        try {
+            if (it->IsInt32()) {
+                osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+                osc::int32 control_bus_index = it->AsInt32(); ++it;
+                osc::int32 count = it->AsInt32(); ++it;
+
+                if (node->is_synth()) {
+                    sc_synth * synth = static_cast<sc_synth*>(node);
+                    synth->map_control_buses(control_index, control_bus_index, count);
+                }
+                else
+                    static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group, _1,
+                                                                                      control_index, control_bus_index, count));
+            }
+            else if (it->IsString()) {
+                /** \todo how to resolve arrayed arguments ? */
+            }
+        }
+        catch(std::exception & e)
+        {
+            cout << "Exception during /n_setn handler: " << e.what() << endl;
+        }
+    }
+}
+
 void handle_n_run(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2070,6 +2115,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_map(message);
         break;
 
+    case cmd_n_mapn:
+        handle_n_mapn(message);
+        break;
+
     case cmd_n_run:
         handle_n_run(message);
         break;
@@ -2238,6 +2287,11 @@ void dispatch_node_commands(received_message const & message,
 
     if (strcmp(address+3, "map") == 0) {
         handle_n_map(message);
+        return;
+    }
+
+    if (strcmp(address+3, "mapn") == 0) {
+        handle_n_mapn(message);
         return;
     }
 

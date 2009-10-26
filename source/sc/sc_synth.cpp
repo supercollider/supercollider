@@ -121,6 +121,17 @@ void sc_synth::map_control_bus (int slot_index, int control_bus_index)
     }
 }
 
+void sc_synth::map_control_buses (int slot_index, int control_bus_index, int n)
+{
+    if (slot_index >= mNumControls)
+        return;
+
+    int slots_to_set = std::min(n, int(mNumControls - slot_index));
+
+    for (int i = 0; i != slots_to_set; ++i)
+        map_control_bus(slot_index+i, control_bus_index+i);
+}
+
 
 void sc_synth::run(dsp_context const & context)
 {

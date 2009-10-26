@@ -62,6 +62,7 @@ public:
     void set(slot_index_t slot_index, sample val);
 
     void map_control_bus (int slot_index, int control_bus_index);
+    void map_control_buses (int slot_index, int control_bus_index, int n);
 
 private:
     sample get_constant(size_t index)
