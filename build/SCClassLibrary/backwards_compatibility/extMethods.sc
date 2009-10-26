@@ -94,7 +94,7 @@
 	asOSCArgEmbeddedArray { | array| ^this.asArray.asOSCArgEmbeddedArray(array) }
 }
 
-+Object {Ê
++Object {
 	asOSCArgEmbeddedArray { | array| ^array.add(this.asControlInput) }
 	asOSCArgArray { ^this.asControlInput }
 	asOSCArgBundle { ^this.asControlInput }
