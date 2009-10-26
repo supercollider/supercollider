@@ -1801,11 +1801,6 @@ void handle_b_fill(received_message const & msg)
     }
 }
 
-void b_query_nrt(movable_array<char> data, udp::endpoint const & endpoint)
-{
-    instance->send_udp(data.data(), data.length(), endpoint);
-}
-
 void handle_b_query(received_message const & msg, udp::endpoint const & endpoint)
 {
     const size_t elem_size = 3*sizeof(int) * sizeof(float);
@@ -1835,7 +1830,7 @@ void handle_b_query(received_message const & msg, udp::endpoint const & endpoint
 
     movable_array<char> message(p.Size(), data.c_array());
 
-    fire_system_callback(boost::bind(b_query_nrt, message, endpoint));
+    fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 void b_close_nrt_1(uint32_t index)
@@ -1851,11 +1846,6 @@ void handle_b_close(received_message const & msg, udp::endpoint const & endpoint
     args >> index;
 
     fire_system_callback(boost::bind(b_close_nrt_1, index));
-}
-
-void b_get_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
-{
-    instance->send_udp(data.data(), data.length(), endpoint);
 }
 
 void handle_b_get(received_message const & msg, udp::endpoint const & endpoint)
@@ -1893,7 +1883,7 @@ void handle_b_get(received_message const & msg, udp::endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    fire_system_callback(boost::bind(b_get_nrt, message, endpoint));
+    fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 template<typename Alloc>
@@ -1910,11 +1900,6 @@ struct getn_data
     int start_index_;
     std::vector<float, Alloc> data_;
 };
-
-void b_getn_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
-{
-    instance->send_udp(data.data(), data.length(), endpoint);
-}
 
 void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
 {
@@ -1961,7 +1946,7 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    fire_system_callback(boost::bind(b_getn_nrt, message, endpoint));
+    fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 void handle_c_set(received_message const & msg)
@@ -2052,11 +2037,6 @@ private:
     size_t msg_size_;
 };
 
-void c_get_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
-{
-    instance->send_udp(data.data(), data.length(), endpoint);
-}
-
 void handle_c_get(received_message const & msg,
                   udp::endpoint const & endpoint)
 {
@@ -2081,12 +2061,7 @@ void handle_c_get(received_message const & msg,
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    fire_system_callback(boost::bind(b_get_nrt, message, endpoint));
-}
-
-void c_getn_nrt(movable_array<char> const & data, udp::endpoint const & endpoint)
-{
-    instance->send_udp(data.data(), data.length(), endpoint);
+    fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
@@ -2125,7 +2100,7 @@ void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    fire_system_callback(boost::bind(c_getn_nrt, message, endpoint));
+    fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 struct d_recv_callback:
