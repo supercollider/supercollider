@@ -710,7 +710,7 @@ void handle_g_deepFree(received_message const & msg)
     }
 }
 
-void q_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_node const & node)
+void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_node const & node)
 {
     p << osc::int32(node.node_id);
     if (node.is_synth())
@@ -765,7 +765,7 @@ void g_query_tree(int node_id, bool flag, udp::endpoint const & endpoint)
               << node_id
               << osc::int32(group->child_count());
 
-            group->apply_on_children(boost::bind(q_query_tree_fill_node, boost::ref(p), flag, _1));
+            group->apply_on_children(boost::bind(g_query_tree_fill_node, boost::ref(p), flag, _1));
             p << osc::EndMessage;
 
             movable_array<char> message(p.Size(), data.c_array());
