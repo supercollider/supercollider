@@ -796,6 +796,60 @@ void handle_g_queryTree(received_message const & msg, udp::endpoint const & endp
     }
 }
 
+void fill_spaces(int level)
+{
+    for (int i = 0; i != level*3; ++i)
+        cout << ' ';
+}
+
+void g_dump_node(server_node & node, bool flag, int level)
+{
+    using namespace std;
+    fill_spaces(level);
+
+    if (node.is_synth()) {
+        abstract_synth const & synth = static_cast<abstract_synth const &>(node);
+        cout << synth.node_id << " " << synth.prototype_name() << endl;
+
+        if (flag) {
+            /* dump controls */
+        }
+    } else {
+        abstract_group & group = static_cast<abstract_group &>(node);
+        cout << group.node_id << " group" << endl;
+        group.apply_on_children(boost::bind(g_dump_node, _1, flag, level + 1));
+    }
+}
+
+void g_dump_tree(int id, bool flag)
+{
+    if (id == 0)
+        id = 1;
+    std::cout << "NODE TREE Group " << id << std::endl;
+    server_node * node = find_node(id);
+    if (!node)
+        return;
+
+    g_dump_node(*node, flag, 1);
+}
+
+void handle_g_dumpTree(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        try {
+            osc::int32 id, flag;
+            args >> id >> flag;
+            g_dump_tree(id, flag);
+        }
+        catch (std::exception & e) {
+            cerr << e.what() << endl;
+        }
+    }
+}
+
 void handle_n_free(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2327,6 +2381,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_g_queryTree(message, endpoint);
         break;
 
+    case cmd_g_dumpTree:
+        handle_g_dumpTree(message);
+        break;
+
     case cmd_n_free:
         handle_n_free(message);
         break;
@@ -2507,6 +2565,11 @@ void dispatch_group_commands(const char * address, received_message const & mess
     }
     if (strcmp(address+3, "queryTree") == 0) {
         handle_g_queryTree(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "dumpTree") == 0) {
+        handle_g_dumpTree(message);
         return;
     }
 }
