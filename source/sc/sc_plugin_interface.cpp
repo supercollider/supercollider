@@ -551,6 +551,7 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mControlBus;
     delete[] world.mControlBusTouched;
     delete[] world.mSndBufs;
+    delete[] world.mSndBufsNonRealTimeMirror;
     delete[] world.mSndBufUpdates;
 }
 
