@@ -826,7 +826,13 @@ void g_dump_node(server_node & node, bool flag, int level)
         }
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
-        cout << group.node_id << " group" << endl;
+        cout << group.node_id;
+
+        if (group.is_parallel())
+            cout << " parallel group";
+        else
+            cout << " group";
+        cout << endl;
         group.apply_on_children(boost::bind(g_dump_node, _1, flag, level + 1));
     }
 }
