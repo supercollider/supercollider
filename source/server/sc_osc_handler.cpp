@@ -97,7 +97,7 @@ void sc_osc_handler::handle_packet(const char * data, size_t length)
 
     if (dump_osc_packets == 1) {
         osc_received_packet packet (data, length);
-        cout << "received osc packet " << packet;
+        cout << "received osc packet " << packet << endl;
     }
 
     instance->add_sync_callback(p);
