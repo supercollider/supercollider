@@ -27,7 +27,6 @@ BinaryOpUGens.cpp
 ChaosUGens.cpp
 DelayUGens.cpp
 DemandUGens.cpp
-DiskIO_UGens.cpp
 DynNoiseUGens.cpp
 FilterUGens.cpp
 GendynUGens.cpp
@@ -58,7 +57,7 @@ sources = [File(x, "supercollider/Source/plugins") for x in sources]
 pluginenv = Environment(SHLIBPREFIX="",
                         CFLAGS=env['CFLAGS'],
                         CCFLAGS=env['CCFLAGS'],
-                        CXXFLAGS=env['CXXFLAGS'],
+                        CXXFLAGS=env['CXXFLAGS']
                         )
 #pluginenv = env.Clone(SHLIBPREFIX="")
 pluginenv.Append(CPPDEFINES=['SUPERNOVA'],
@@ -102,5 +101,12 @@ for plugin in fft_plugins:
     name = plugin
     sources = [File(x, "supercollider/Source/plugins") for x in fft_plugins[plugin] ]
     plugins.append(scfftenv.SharedLibrary(name, sources + scfftobjs))
+
+
+diskio_env = pluginenv.Clone()
+diskio_sources = Split("supercollider/Source/plugins/DiskIO_UGens.cpp supercollider/Source/server/SC_SyncCondition.cpp")
+diskio_plugins = diskio_env.SharedLibrary("DiskIO_UGens", diskio_sources)
+
+plugins.append(diskio_plugins)
 
 Return("plugins")
