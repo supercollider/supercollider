@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
     nova_server server;
     server.synth_factory::register_prototype(new test_synth_prototype());
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     server.add_node(g);
 
