@@ -564,19 +564,29 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
     return static_cast<sc_synth*>(synth);
 }
 
+/* extract float or int32 as float from argument iterator */
+float extract_float_argument(osc::ReceivedMessageArgumentIterator const & it)
+{
+    if (it->IsFloat())
+        return it->AsFloatUnchecked();
+    if (it->IsInt32())
+        return it->AsInt32Unchecked();
+    return it->AsFloat();
+}
+
 /* set control values of node from string/float or int/float pair */
 /** \todo handle array arguments */
 void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
-        float value = it->AsFloat(); ++it;
+        float value = extract_float_argument(it++);
 
         node->set(index, value);
     }
     else if (it->IsString()) {
         const char * str = it->AsString(); ++it;
-        float value = it->AsFloat(); ++it;
+        float value = extract_float_argument(it++);
 
         node->set(str, value);
     }
