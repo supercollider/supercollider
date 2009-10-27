@@ -86,15 +86,24 @@ const double kOSCtoSecs = 2.328306436538696e-10;
 
 struct SC_ScheduledEvent
 {
+	/// Callback function responsible for freeing the OSC packet in the correct thread.
+	typedef void (*PacketFreeFunc)(struct World* world, OSC_Packet* packet);
+
+	/// Frees an OSC packet in the realtime thread (to be used as a PacketFreeFunc).
+	static void FreeInRT(struct World* world, OSC_Packet* packet);
+	/// Frees an OSC packet in the non-realtime thread (to be used as a PacketFreeFunc).
+	static void FreeInNRT(struct World* world, OSC_Packet* packet);
+
 	SC_ScheduledEvent() : mTime(0), mPacket(0) {}
-	SC_ScheduledEvent(struct World *inWorld, int64 inTime, OSC_Packet *inPacket)
-		: mTime(inTime), mPacket(inPacket), mWorld(inWorld) {}
+	SC_ScheduledEvent(struct World *inWorld, int64 inTime, OSC_Packet *inPacket, PacketFreeFunc freeFunc)
+		: mTime(inTime), mPacket(inPacket), mPacketFreeFunc(freeFunc), mWorld(inWorld) {}
 
 	int64 Time() { return mTime; }
 	void Perform();
 
 	int64 mTime;
 	OSC_Packet *mPacket;
+	PacketFreeFunc mPacketFreeFunc;
 	struct World *mWorld;
 };
 
@@ -105,7 +114,24 @@ extern "C" {
 	int32 server_timeseed();
 	int64 oscTimeNow();
 };
+
 void initializeScheduler();
+
+/** Denotes whether an OSC packet has been performed immediately or has been scheduled for later execution.
+
+	If the package has been scheduled, memory ownership is transferred from the caller to the scheduler.
+*/
+enum PacketStatus
+{
+	PacketPerformed,
+	PacketScheduled
+};
+
+/** Perform a completion message in the realtime thread.
+
+	The return value denotes whether ownership is transferred to the scheduler or not.
+ */
+PacketStatus PerformCompletionMsg(World *world, const OSC_Packet& packet);
 
 class SC_AudioDriver
 {
