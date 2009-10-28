@@ -244,7 +244,7 @@ Server : Model {
 
 	initTree {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		this.sendMsg("/g_new", 1);
+		this.sendMsg("/g_new", 1, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
