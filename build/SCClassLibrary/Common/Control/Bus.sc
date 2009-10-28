@@ -51,12 +51,29 @@ Bus {
 	setnMsg { arg values;
 		^["/c_setn",index,values.size] ++ values;
 	}
-	get { arg action;
+	setAt { |offset ... values|  
+		// shouldn't be larger than this.numChannels - offset
+		server.sendBundle(nil,(["/c_set"]
+			++ values.collect({ arg v,i; [index + offset + i ,v] }).flat));
+	}
+	setnAt { |offset, values| 
+		// could throw an error if values.size > numChannels
+		server.sendBundle(nil,
+			["/c_setn",index + offset, values.size] ++ values);
+	}
+	setPairs { | ... pairs| 
+		server.sendBundle(nil,(["/c_set"]
+			++ pairs.clump(2).collect({ arg pair; [pair[0] + index, pair[1]] }).flat));
+	}
+
+	get { arg action; 
+		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals); };
 		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
 			action.value(msg.at(2)); r.remove }).add;
 		server.listSendMsg(["/c_get",index]);
 	}
 	getn { arg count, action;
+		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals); };
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg;
 			action.value(msg.copyToEnd(3)); r.remove } ).add;
 		server.listSendMsg(this.getnMsg(count));
