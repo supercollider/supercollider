@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.11">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -13,15 +13,21 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2b7000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e20000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #008900}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e20000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0016bd}
+span.s2 {color: #0000bf}
 span.s3 {color: #000000}
-span.s4 {color: #2b7000}
+span.s4 {color: #007300}
 span.s5 {color: #606060}
+span.s6 {color: #0000cf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -105,10 +111,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1"><b>setn(values) </b>- As <b>set</b> but takes an array as an argument.</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p1"><b>get(action)</b> - Get the current value of this control bus. This command is asynchronous. <b>action </b>is a function that will be evaluated when the server responds, with the current value of the bus passed as an argument. For multichannel buses use getN.</p>
+<p class="p1"><b>get(action)</b> - Get the current value of this control bus. This command is asynchronous. <b>action </b>is a function that will be evaluated when the server responds, with the current value of the bus passed as an argument. the default action posts the bus values. For multichannel buses use getN.</p>
 <p class="p3"><br></p>
 <p class="p1"><b>getn(count, action)</b> - Get the current values of this control bus. This command is asynchronous. <b>count</b> is the number of channels to read, starting from this bus' first channel. <b>action </b>is a function that will be evaluated when the server responds, with the current values of the bus in an array passed as an argument.</p>
 <p class="p3"><br></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span>conveniences for multichannel buses:<span class="Apple-converted-space"> </span></b></p>
+<p class="p6">setAt(offset, values) -<span class="Apple-converted-space"> </span></p>
+<p class="p6">setnAt(pos, values) -<span class="Apple-converted-space"> </span></p>
+<p class="p6">setPairs(index1, value1, index2, value2 ... indexN, valueN) -<span class="Apple-converted-space"> </span></p>
+<p class="p5"><b></b><br></p>
 <p class="p4"><b>OSC Bundle Methods</b></p>
 <p class="p3"><br></p>
 <p class="p1"><b>getMsg</b> - Returns a msg of the type /c_get for use in osc bundles.</p>
@@ -164,10 +175,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(<span class="s5">"a is now:"</span> + a).postln;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p6">x.free;</p>
-<p class="p2"><br></p>
-<p class="p8"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
-<p class="p2"><br></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p11">x.free;</p>
+<p class="p12"><br></p>
+<p class="p13"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
+<p class="p12"><br></p>
+<p class="p13">// setting multichannel buses:<span class="Apple-converted-space"> </span></p>
+<p class="p12"><br></p>
+<p class="p11">(</p>
+<p class="p11">b = <span class="s6">Bus</span>.control(s, 4);</p>
+<p class="p14"><span class="s3">x = </span><span class="s6">SynthDef</span><span class="s3">(</span>\helpBusMulti<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, <span class="s6">Splay</span>.ar(<span class="s6">SinOsc</span>.ar(b.kr) * <span class="s6">Decay2</span>.ar(<span class="s6">Dust</span>.ar(10 ! 4), 0.001, 0.1)) * 0.5);</p>
+<p class="p11">}).play;</p>
+<p class="p11">)</p>
+<p class="p12"><br></p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>// set bus beginning at index 0:<span class="Apple-converted-space"> </span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>// none of these methods checks whether the indexes remain<span class="Apple-converted-space"> </span></p>
+<p class="p13"><span class="Apple-tab-span">	</span>// within the bus's range.<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="Apple-tab-span">	</span></p>
+<p class="p11">b.set(234, 345, 456, 567);</p>
+<p class="p11">b.getn;</p>
+<p class="p11">b.setn([100, 200, 300, 400]);</p>
+<p class="p11">b.getn;</p>
+<p class="p12"><br></p>
+<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>// get to individual channels</p>
+<p class="p11">b.setAt(3, 500);</p>
+<p class="p11">b.getn;</p>
+<p class="p11">b.setAt(1, 300, 400);</p>
+<p class="p11">b.getn;</p>
+<p class="p11">b.setnAt(1, [250, 350]);</p>
+<p class="p11">b.getn;</p>
+<p class="p11">b.setPairs(3, 600, 0, 200);</p>
+<p class="p11">b.getn;</p>
+<p class="p12"><br></p>
 </body>
 </html>
