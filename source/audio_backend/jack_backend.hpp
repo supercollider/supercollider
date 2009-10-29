@@ -30,12 +30,15 @@
 #include "simd/simd_memory.hpp"
 
 #include "spin_lock.hpp"
+#include "thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
 
 namespace nova
 {
 
-/** \brief jack backend
+/** jack backend
+ *
+ *  the jack callback thread is pinned to the first cpu of the system
  *
  *  \todo later it may be interesting to directly map the io busses to the jack port regions
  *  \todo rethink the use of output port lock
@@ -113,6 +116,7 @@ public:
         }
 
         /* initialize callbacks */
+        jack_set_thread_init_callback (client, jack_thread_init_callback, NULL);
         jack_set_process_callback (client, jack_process_callback, this);
 
         /* register ports */
@@ -189,6 +193,12 @@ public:
     }
 
 private:
+    static void jack_thread_init_callback(void * arg)
+    {
+        if (!thread_set_affinity(0))
+            std::cerr << "Warning: cannot set thread affinity of jack thread" << std::endl;
+    }
+
     static int jack_process_callback(jack_nframes_t frames, void * arg)
     {
         return static_cast<jack_backend*>(arg)->perform(frames);

@@ -19,6 +19,8 @@
 #ifndef SERVER_DSP_THREAD_HPP
 #define SERVER_DSP_THREAD_HPP
 
+#include <iostream>
+
 #include <boost/bind.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/foreach.hpp>
@@ -30,15 +32,21 @@
 #define foreach BOOST_FOREACH
 #endif
 
-#include "dsp_thread_queue.hpp"
-
+#include "thread_affinity.hpp"
 #include "thread_priority.hpp"
+
+#include "dsp_thread_queue.hpp"
 
 namespace nova
 {
 
 using boost::uint16_t;
 
+/** dsp helper thread
+ *
+ *  the dsp helper threads are running with a high real-time priority and are
+ *  pinned to a specific cpu
+ */
 template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread:
     public boost::noncopyable
@@ -60,6 +68,10 @@ public:
         priority = std::max(min, priority);
 
         thread_set_priority_rt(priority);
+
+        if (!thread_set_affinity(index))
+            std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
+
         for (;;)
         {
             cycle_sem.wait();
