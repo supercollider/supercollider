@@ -1,5 +1,5 @@
 //  dsp thread
-//  Copyright (C) 2007, 2008 Tim Blechmann
+//  Copyright (C) 2007, 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,25 +19,34 @@
 #ifndef SERVER_DSP_THREAD_HPP
 #define SERVER_DSP_THREAD_HPP
 
+#include <iostream>
+
 #include <boost/bind.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/foreach.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/tuple/tuple.hpp> /* for boost::tie */
 
 #ifndef foreach
 #define foreach BOOST_FOREACH
 #endif
 
-#include "dsp_thread_queue.hpp"
-
+#include "thread_affinity.hpp"
 #include "thread_priority.hpp"
+
+#include "dsp_thread_queue.hpp"
 
 namespace nova
 {
 
 using boost::uint16_t;
 
+/** dsp helper thread
+ *
+ *  the dsp helper threads are running with a high real-time priority and are
+ *  pinned to a specific cpu
+ */
 template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread:
     public boost::noncopyable
@@ -53,7 +62,16 @@ public:
      * */
     void run(void)
     {
-        thread_set_priority(95);
+        int min, max;
+        boost::tie(min, max) = thread_priority_interval_rt();
+        int priority = max - 3;
+        priority = std::max(min, priority);
+
+        thread_set_priority_rt(priority);
+
+        if (!thread_set_affinity(index))
+            std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
+
         for (;;)
         {
             cycle_sem.wait();
