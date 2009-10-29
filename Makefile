@@ -8,7 +8,7 @@ server:
 	scons server -j 4
 
 debug:
-	scons debug_server debug_plugins -j 4
+	scons debug_server debug_plugins run_tests -j 4
 
 release:
 	scons release_server release_plugins -j 4
