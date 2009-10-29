@@ -94,7 +94,7 @@ public:
         if (unlikely(slot_id < 0))
             std::cerr << "cannot resolve slot " << slot_str << std::endl;
         else
-            for (int i = 0; i != count; ++i)
+            for (size_t i = 0; i != count; ++i)
                 this->set(slot_id+i, val[i]);
     }
 
