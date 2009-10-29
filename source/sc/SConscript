@@ -59,7 +59,6 @@ pluginenv = Environment(SHLIBPREFIX="",
                         CCFLAGS=env['CCFLAGS'],
                         CXXFLAGS=env['CXXFLAGS']
                         )
-#pluginenv = env.Clone(SHLIBPREFIX="")
 pluginenv.Append(CPPDEFINES=['SUPERNOVA'],
                  CPPPATH=["supercollider/Headers/plugin_interface",
                           "supercollider/Headers/server",
@@ -69,6 +68,9 @@ pluginenv.Append(CPPDEFINES=['SUPERNOVA'],
                           "#libs/boost_lockfree",
                           ],
                  )
+
+if not env['debug']:
+    pluginenv.Append(CPPDEFINES = "NDEBUG")
 
 plugins = []
 
