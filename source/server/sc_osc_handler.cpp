@@ -839,8 +839,6 @@ void g_dump_node(server_node & node, bool flag, int level)
 
 void g_dump_tree(int id, bool flag)
 {
-    if (id == 0)
-        id = 1;
     std::cout << "NODE TREE Group " << id << std::endl;
     server_node * node = find_node(id);
     if (!node)
