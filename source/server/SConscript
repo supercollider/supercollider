@@ -24,7 +24,6 @@ sources = Split("""node_graph.cpp
                    dsp_context.cpp
                    memory_pool.cpp
                    server.cpp
-                   ../utilities/thread.cpp
                    """)
 
 sources = [File(x) for x in sources]

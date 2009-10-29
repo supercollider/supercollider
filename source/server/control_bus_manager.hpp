@@ -23,7 +23,7 @@
 
 #include "sample_types.hpp"
 
-#include "utilities/spin_lock.hpp"
+#include "spin_lock.hpp"
 
 namespace nova
 {

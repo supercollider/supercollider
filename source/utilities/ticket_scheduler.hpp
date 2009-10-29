@@ -21,8 +21,9 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/lockfree/atomic_int.hpp>
+#include <boost/thread/condition.hpp>
+#include <boost/date_time/posix_time/ptime.hpp>
 
-#include "thread.hpp"
 #include <cstddef>
 
 namespace nova
@@ -54,13 +55,15 @@ public:
     template <class functor>
     void run(size_t ticket, functor const & f)
     {
+        boost::mutex::scoped_lock lock(mutex);
         while (ticket != current_ticket)
         {
-            cond.timed_wait(1); /* now this is ugly ... however, just waiting for the event results in a deadlock
-                                 * if the notification occurs before the wait operation
-                                 * semaphores are resistant against this problem, but harder to use for a ticket
-                                 * scheduling algorithm (would require thread-specific semaphores)
-                                 * */
+             /* now this is ugly ... however, just waiting for the event results in a deadlock
+              * if the notification occurs before the wait operation
+              * semaphores are resistant against this problem, but harder to use for a ticket
+              * scheduling algorithm (would require thread-specific semaphores)
+              * */
+            cond.timed_wait(lock, boost::posix_time::milliseconds(100));
         }
 
         run_functor(f);
@@ -75,14 +78,12 @@ private:
         cond.notify_all();
     }
 
-
     atomic_int ticket_source;
     atomic_int current_ticket;
 
-    condition cond;
+    boost::mutex mutex;
+    boost::condition cond;
 };
-
-
 
 } /* namespace nova */
 

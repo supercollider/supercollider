@@ -23,7 +23,7 @@
 
 #include "audio_backend.hpp"
 #include "portaudio.hpp"
-#include "utilities/spin_lock.hpp"
+#include "spin_lock.hpp"
 #include <stdint.h>
 
 namespace nova

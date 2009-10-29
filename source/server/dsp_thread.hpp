@@ -31,7 +31,7 @@
 
 #include "dsp_thread_queue.hpp"
 
-#include "../utilities/thread.hpp"
+#include "thread_priority.hpp"
 
 namespace nova
 {
@@ -53,7 +53,7 @@ public:
      * */
     void run(void)
     {
-        SetRTPriority(85);
+        thread_set_priority(95);
         for (;;)
         {
             cycle_sem.wait();

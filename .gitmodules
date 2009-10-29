@@ -16,3 +16,6 @@
 [submodule "source/simd"]
 	path = source/simd
 	url = git://tim.klingt.org/nova-simd.git
+[submodule "libs/nova-tt"]
+	path = libs/nova-tt
+	url = git://tim.klingt.org/nova-tt.git
