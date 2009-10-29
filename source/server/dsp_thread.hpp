@@ -1,5 +1,5 @@
 //  dsp thread
-//  Copyright (C) 2007, 2008 Tim Blechmann
+//  Copyright (C) 2007, 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <boost/foreach.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/tuple/tuple.hpp> /* for boost::tie */
 
 #ifndef foreach
 #define foreach BOOST_FOREACH
@@ -53,7 +54,12 @@ public:
      * */
     void run(void)
     {
-        thread_set_priority(95);
+        int min, max;
+        boost::tie(min, max) = thread_priority_interval_rt();
+        int priority = max - 3;
+        priority = std::max(min, priority);
+
+        thread_set_priority_rt(priority);
         for (;;)
         {
             cycle_sem.wait();
