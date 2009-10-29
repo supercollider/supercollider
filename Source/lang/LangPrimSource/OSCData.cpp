@@ -221,7 +221,14 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 
-	addMsgSlot(packet, slots); // msg address
+	// First component: OSC Address Pattern.
+	// For convenience, we allow the user to omit the initial '/', when
+	//  expressing it as a symbol (e.g. \g_new) - we add it back on here, for OSC compliance.
+	if(slots->utag == tagSym && slots->us->name[0]!='/'){
+		packet->adds_slpre(slots->us->name);
+	}else{
+		addMsgSlot(packet, slots);
+	}
 
 	// skip space for tags
 	packet->maketags(size);

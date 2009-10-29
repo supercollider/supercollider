@@ -88,7 +88,18 @@ struct scpacket {
 		size_t len4 = (len + 4) >> 2;
 		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
 		wrpos[len4 - 1] = 0;
-		memcpy(wrpos, src, (size_t)len);
+		memcpy(wrpos, src, len);
+		wrpos += len4;
+	}
+	void adds_slpre(const char *src) // prepends a slash
+	{
+		size_t len = strlen(src);
+		size_t len4 = (len + 5) >> 2;
+		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		wrpos[len4 - 1] = 0;
+		char* wrpos_c = (char*)wrpos;
+		*wrpos_c = '/';
+		memcpy(wrpos_c+1, src, len);
 		wrpos += len4;
 	}
 	void adds(const char *src, size_t len)
@@ -96,7 +107,7 @@ struct scpacket {
 		size_t len4 = (len + 4) >> 2;
 		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
 		wrpos[len4 - 1] = 0;
-		memcpy(wrpos, src, (size_t)len);
+		memcpy(wrpos, src, len);
 		wrpos += len4;
 	}
 	void addb(uint8 *src, size_t len)
@@ -106,7 +117,7 @@ struct scpacket {
 		wrpos[len4 - 1] = 0;
 		int32 swaplen = len;
 		*wrpos++ = htonl(swaplen);
-		memcpy(wrpos, src, (size_t)len);
+		memcpy(wrpos, src, len);
 		wrpos += len4;
 	}
 	void addtag(char c) { *tagwrpos++ = c; }
