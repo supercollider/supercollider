@@ -181,7 +181,10 @@ private:
 
     virtual int tail_nodes(void) const
     {
-        return 1;
+        if (empty())
+            return 0;
+        else
+            return 1;
     }
 };
 
