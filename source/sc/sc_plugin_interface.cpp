@@ -504,6 +504,7 @@ void sc_plugin_interface::initialize(void)
     audio_busses.initialize(args.audio_busses, args.blocksize);
 
     world.mAudioBus = audio_busses.buffers;
+    world.mNumAudioBusChannels = args.audio_busses;
     world.mAudioBusTouched = new int32[args.audio_busses];
     world.mAudioBusLocks = audio_busses.locks;
     for (size_t i = 0; i != args.audio_busses; ++i)
@@ -521,12 +522,15 @@ void sc_plugin_interface::initialize(void)
 
     /* audio settings */
     world.mBufLength = args.blocksize;
+    world.mSampleRate = args.samplerate;
 
     Rate_Init(&world.mFullRate, args.samplerate, args.blocksize);
     Rate_Init(&world.mBufRate, float(args.samplerate)/args.blocksize, 1);
 
     world.mNumInputs = args.input_channels;
     world.mNumOutputs = args.output_channels;
+
+    world.mRealTime = true; /* todo: for now we just support real-time synthesis */
 }
 
 void sc_done_action_handler::update_nodegraph(void)
