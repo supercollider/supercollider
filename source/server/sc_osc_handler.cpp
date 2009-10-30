@@ -574,21 +574,42 @@ float extract_float_argument(osc::ReceivedMessageArgumentIterator const & it)
     return it->AsFloat();
 }
 
+template <typename control_id_type>
+void set_control_array(server_node * node, control_id_type control, osc::ReceivedMessageArgumentIterator & it)
+{
+    size_t array_size = it->ArraySize();
+    sized_array<float, rt_pool_allocator<float> > control_array(array_size);
+
+    ++it; // advance to first element
+    for (size_t i = 0; i != array_size; ++i)
+        control_array[i] = extract_float_argument(it++);
+    assert(it->IsArrayEnd());
+    ++it; // skip array end
+
+    node->set(control, array_size, control_array.c_array());
+}
+
 /* set control values of node from string/float or int/float pair */
-/** \todo handle array arguments */
 void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
-        float value = extract_float_argument(it++);
-
-        node->set(index, value);
+        if (it->IsArrayStart())
+            set_control_array(node, index, it);
+        else {
+            float value = extract_float_argument(it++);
+            node->set(index, value);
+        }
     }
     else if (it->IsString()) {
         const char * str = it->AsString(); ++it;
-        float value = extract_float_argument(it++);
 
-        node->set(str, value);
+        if (it->IsArrayStart())
+            set_control_array(node, str, it);
+        else {
+            float value = extract_float_argument(it++);
+            node->set(str, value);
+        }
     }
 }
 

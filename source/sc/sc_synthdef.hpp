@@ -90,7 +90,6 @@ public:
 
     std::size_t parameter_count(void) const
     {
-        assert(parameters.size() == parameter_map.size());
         return parameters.size();
     }
 
