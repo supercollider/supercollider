@@ -21,8 +21,6 @@
 Import("env")
 
 sources = Split("""
-BeatTrack2.cpp
-BeatTrack.cpp
 BinaryOpUGens.cpp
 ChaosUGens.cpp
 DelayUGens.cpp
@@ -32,17 +30,9 @@ FilterUGens.cpp
 GendynUGens.cpp
 GrainUGens.cpp
 IOUGens.cpp
-KeyboardUGens.cpp
-KeyTrack.cpp
 LFUGens.cpp
-Loudness.cpp
-MFCC.cpp
-ML.cpp
-ML_SpecStats.cpp
-MouseUGens.cpp
 MulAddUGens.cpp
 NoiseUGens.cpp
-Onsets.cpp
 OscUGens.cpp
 PanUGens.cpp
 PhysicalModelingUGens.cpp
@@ -92,6 +82,7 @@ scfftobjs = [env.SharedObject(x,
             for x in scfft_sources]
 
 scfftenv = pluginenv.Clone()
+scfftenv.Append(LIBS="fftw3f")
 
 fft_plugins = dict()
 
@@ -105,10 +96,29 @@ for plugin in fft_plugins:
     plugins.append(scfftenv.SharedLibrary(name, sources + scfftobjs))
 
 
+mlsources = Split("""ML.cpp Loudness.cpp BeatTrack.cpp Onsets.cpp onsetsds.c KeyTrack.cpp MFCC.cpp
+                     BeatTrack2.cpp ML_SpecStats.cpp""")
+mlsources = [File(x, "supercollider/Source/plugins") for x in mlsources]
+ml_plugins = scfftenv.SharedLibrary("ML_UGens", mlsources + scfftobjs)
+
+plugins.append(ml_plugins)
+
+
 diskio_env = pluginenv.Clone()
 diskio_sources = Split("supercollider/Source/plugins/DiskIO_UGens.cpp supercollider/Source/server/SC_SyncCondition.cpp")
 diskio_plugins = diskio_env.SharedLibrary("DiskIO_UGens", diskio_sources)
 
 plugins.append(diskio_plugins)
+
+
+uisources = Split("KeyboardUGens.cpp MouseUGens.cpp")
+uisources = [File(x, "supercollider/Source/plugins") for x in uisources]
+ui_env = pluginenv.Clone()
+ui_env.Append(LIBS="X11")
+
+for source in uisources:
+    plugin_name = source.abspath.split('/')[-1][:-4]
+    plugin = ui_env.SharedLibrary(plugin_name, source)
+    plugins.append(plugin)
 
 Return("plugins")
