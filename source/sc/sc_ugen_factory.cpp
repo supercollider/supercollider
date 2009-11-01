@@ -117,7 +117,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
             unit->mInput[i] = &unit->mParent->mWire[index];
         else
         {
-            Unit * prev = s->units[source].unit;
+            Unit * prev = s->units[source];
             unit->mInput[i] = prev->mOutput[index];
         }
 
@@ -209,7 +209,7 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
     bufgen_map.insert(*def);
 }
 
-sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
+struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
                                        sc_synthdef::unit_spec_t const & unit_spec)
 {
     ugen_map_t::iterator it = ugen_map.find(unit_spec.name,
@@ -224,7 +224,7 @@ sc_unit sc_ugen_factory::allocate_ugen(sc_synth * synth,
         throw std::runtime_error("cannot allocate ugen, out of memory");
 
     ++ugen_count_;
-    return sc_unit(unit);
+    return unit;
 }
 
 bool sc_ugen_factory::ugen_can_alias(const char * name)
@@ -239,10 +239,10 @@ bool sc_ugen_factory::ugen_can_alias(const char * name)
 }
 
 
-void sc_ugen_factory::free_ugen(sc_unit const & unit)
+void sc_ugen_factory::free_ugen(struct Unit * unit)
 {
-    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit.unit->mUnitDef);
-    def->destruct(unit.unit);
+    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+    def->destruct(unit);
     --ugen_count_;
 }
 

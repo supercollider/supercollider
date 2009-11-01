@@ -29,25 +29,16 @@
 #include "sc_synth_prototype.hpp"
 
 #include "../server/synth.hpp"
+#include "../server/memory_pool.hpp"
 
 namespace nova
 {
-
-class sc_unit
-{
-public:
-    sc_unit(struct Unit * unit = NULL):
-        unit(unit)
-    {}
-
-    struct Unit * unit;
-};
 
 class sc_synth:
     public abstract_synth,
     public Graph
 {
-    typedef std::vector<sc_unit> unit_vector;
+    typedef std::vector<struct Unit*, rt_pool_allocator<void*> > unit_vector;
     typedef sc_synthdef::graph_t graph_t;
 
     friend class sc_synth_prototype;
@@ -83,7 +74,7 @@ private:
 
     friend class sc_ugen_def;
 
-    unit_vector units;
+    unit_vector units, calc_units;
     sample * unit_buffers;
 
     Rate full_rate;

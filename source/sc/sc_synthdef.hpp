@@ -78,6 +78,7 @@ public:
     friend class sc_ugen_def;
 
     typedef std::vector<unit_spec_t> graph_t;
+    typedef std::vector<int32_t> calc_units_t;
 
     explicit sc_synthdef(const char *& buffer);
 
@@ -105,6 +106,7 @@ private:
 
     graph_t graph;
     boost::uint16_t buffer_count;
+    calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
 };
 
 std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr);

@@ -144,8 +144,8 @@ public:
         close_handles();
     }
 
-    sc_unit allocate_ugen(sc_synth * synth, sc_synthdef::unit_spec_t const & unit_spec);
-    void free_ugen(sc_unit const & unit);
+    struct Unit * allocate_ugen(sc_synth * synth, sc_synthdef::unit_spec_t const & unit_spec);
+    void free_ugen(struct Unit * unit);
 
     void load_plugin_folder(boost::filesystem::path const & path);
     void load_plugin(boost::filesystem::path const & path);

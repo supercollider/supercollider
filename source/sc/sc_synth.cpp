@@ -84,9 +84,13 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        sc_unit unit = ugen_factory.allocate_ugen(this, *it);
+        struct Unit * unit = ugen_factory.allocate_ugen(this, *it);
         units.push_back(unit);
     }
+
+    for (sc_synthdef::calc_units_t::const_iterator it = synthdef.calc_unit_indices.begin();
+         it != synthdef.calc_unit_indices.end(); ++it)
+        calc_units.push_back(units[*it]);
 }
 
 sc_synth::~sc_synth(void)
@@ -195,11 +199,9 @@ void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_in
 
 void sc_synth::run(dsp_context const & context)
 {
-    for (size_t i = 0; i != units.size(); ++i) {
-        Unit * unit = units[i].unit;
-        if (unit->mCalcRate == calc_FullRate or
-            unit->mCalcRate == calc_BufRate)
-            (unit->mCalcFunc)(unit, unit->mBufLength);
+    for (size_t i = 0; i != calc_units.size(); ++i) {
+        Unit * unit = calc_units[i];
+        (unit->mCalcFunc)(unit, unit->mBufLength);
     }
 }
 
