@@ -275,8 +275,9 @@ struct movable_string
     explicit movable_string(const char * str)
     {
         size_t length = strlen(str);
-        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
-        strcpy(ret, str);
+        char * data = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        strcpy(data, str);
+        data_ = data;
     }
 
     /** copy constructor has move semantics!!! */
@@ -1474,7 +1475,7 @@ void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * 
                              udp::endpoint const & endpoint);
 void b_allocReadChannel_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
 
-void b_allocReadChannel_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames,
+void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, uint32_t start, uint32_t frames,
                               movable_array<uint32_t> const & channels, completion_message & msg,
                               udp::endpoint const & endpoint)
 {

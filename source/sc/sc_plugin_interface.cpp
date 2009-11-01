@@ -651,10 +651,10 @@ int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename
 
     const size_t sf_frames = f.frames();
 
-    if (sf_frames > start)
+    if (start > sf_frames)
         start = sf_frames;
 
-    if (frames == 0 || frames + start > sf_frames)
+    if (frames == 0 || frames > sf_frames - start)
         frames = sf_frames - start;
 
     SndBuf * buf = World_GetNRTBuf(&world, index);
@@ -676,10 +676,10 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
 
     const size_t sf_frames = f.frames();
 
-    if (sf_frames > start)
+    if (start > sf_frames)
         start = sf_frames;
 
-    if (frames == 0 || frames + start > sf_frames)
+    if (frames == 0 || frames > sf_frames - start)
         frames = sf_frames - start;
 
     SndBuf * buf = World_GetNRTBuf(&world, index);
