@@ -260,8 +260,8 @@ TaskProxyAllGui {
 	init { | size, w|
 		var zone, flow;
 		var name = "" ++ this.observedClass ++ "AllGui";
-		win = w ?? { Window(name, Rect(0, 0, 210, 16 * size + 5)) };
-		zone = CompositeView(win, Rect(0, 0, 210, 16 * size + 5));
+		win = w ?? { Window(name, Rect(0, 0, 210, 16 * (size + 1.2) + 5)) };
+		zone = CompositeView(win, Rect(0, 0, 210, 16 * (size + 1.2) + 5));
 //		zone.background_(skin.foreground);
 		zone.resize_(2);
 
