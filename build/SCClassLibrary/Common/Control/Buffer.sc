@@ -53,11 +53,11 @@ Buffer {
 	alloc { arg completionMessage;
 		server.listSendMsg( this.allocMsg(completionMessage) )
 	}
-	allocRead { arg argpath,startFrame,numFrames, completionMessage;
+	allocRead { arg argpath,startFrame = 0,numFrames = -1, completionMessage;
 		path = argpath;
 		server.listSendMsg(this.allocReadMsg( argpath,startFrame,numFrames, completionMessage));
 	}
-	allocReadChannel { arg argpath,startFrame,numFrames, channels, completionMessage;
+	allocReadChannel { arg argpath,startFrame,numFrames = 0, channels = -1, completionMessage;
 		path = argpath;
 		server.listSendMsg(this.allocReadChannelMsg( argpath,startFrame,numFrames, channels,
 			completionMessage));
@@ -66,12 +66,12 @@ Buffer {
 		this.cache;
 		^["/b_alloc", bufnum, numFrames.asInt, numChannels, completionMessage.value(this)]
 	}
-	allocReadMsg { arg argpath,startFrame,numFrames, completionMessage;
+	allocReadMsg { arg argpath,startFrame = 0,numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
 		^["/b_allocRead",bufnum, path,startFrame,numFrames.asInt ? -1, completionMessage.value(this)]
 	}
-	allocReadChannelMsg { arg argpath,startFrame,numFrames, channels, completionMessage;
+	allocReadChannelMsg { arg argpath,startFrame = 0,numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
 		^["/b_allocReadChannel",bufnum, path,startFrame, numFrames.asInt ? -1] ++ channels ++ 			[completionMessage.value(this)]
@@ -79,7 +79,7 @@ Buffer {
 
 	// read whole file into memory for PlayBuf etc.
 	// adds a query as a completion message
-	*read { arg server,path,startFrame = 0,numFrames, action, bufnum;
+	*read { arg server,path,startFrame = 0,numFrames = -1, action, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
 		if(bufnum.isNil) {
@@ -89,7 +89,7 @@ Buffer {
 					.doOnInfo_(action).cache
 					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]});
 	}
-	read { arg argpath, fileStartFrame = 0, numFrames,
+	read { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, action;
 		this.cache;
 		doOnInfo = action;
@@ -98,7 +98,7 @@ Buffer {
 						leaveOpen,{|buf|["/b_query",buf.bufnum]} )
 		);
 	}
-	*readChannel { arg server,path,startFrame = 0,numFrames, channels, action, bufnum;
+	*readChannel { arg server,path,startFrame = 0,numFrames = -1, channels, action, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
 		if(bufnum.isNil) {
@@ -109,7 +109,7 @@ Buffer {
 					.allocReadChannel(path,startFrame,numFrames,channels,
 						{|buf|["/b_query",buf.bufnum]});
 	}
-	readChannel { arg argpath, fileStartFrame = 0, numFrames,
+	readChannel { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, action;
 		this.cache;
 		doOnInfo = action;
@@ -118,7 +118,7 @@ Buffer {
 						leaveOpen,channels,{|buf|["/b_query",buf.bufnum]} )
 		);
 	}
-	*readNoUpdate { arg server,path,startFrame = 0,numFrames, bufnum, completionMessage;
+	*readNoUpdate { arg server,path,startFrame = 0,numFrames = -1, bufnum, completionMessage;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.bufferAllocator.alloc(1) };
 		if(bufnum.isNil) {
@@ -127,14 +127,14 @@ Buffer {
 		^super.newCopyArgs(server, bufnum)
 					.allocRead(path,startFrame,numFrames, completionMessage);
 	}
-	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames,
+	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
 			this.readMsg(argpath,fileStartFrame,numFrames,bufStartFrame,
 				leaveOpen, completionMessage)
 		);
 	}
-	readMsg { arg argpath, fileStartFrame = 0, numFrames,
+	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
 		^["/b_read", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
@@ -142,7 +142,7 @@ Buffer {
 		// doesn't set my numChannels etc.
 	}
 
-	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames,
+	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
 		^["/b_readChannel", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
