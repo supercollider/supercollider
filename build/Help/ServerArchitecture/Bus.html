@@ -19,9 +19,8 @@ p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e20000}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #008900}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e20000; min-height: 12.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #008900}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e20000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #000000}
@@ -116,10 +115,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>getn(count, action)</b> - Get the current values of this control bus. This command is asynchronous. <b>count</b> is the number of channels to read, starting from this bus' first channel. <b>action </b>is a function that will be evaluated when the server responds, with the current values of the bus in an array passed as an argument.</p>
 <p class="p3"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>conveniences for multichannel buses:<span class="Apple-converted-space"> </span></b></p>
-<p class="p6">setAt(offset, values) -<span class="Apple-converted-space"> </span></p>
-<p class="p6">setnAt(pos, values) -<span class="Apple-converted-space"> </span></p>
-<p class="p6">setPairs(index1, value1, index2, value2 ... indexN, valueN) -<span class="Apple-converted-space"> </span></p>
-<p class="p5"><b></b><br></p>
+<p class="p1"><b>setAt(offset, value1, value2, ... valueN) </b>- set the bus value(s) beginning at offset. asynchronous.</p>
+<p class="p3"><b></b><br></p>
+<p class="p1"><b>setnAt(pos, values)</b> - set the bus to the list of values supplied. asynchronous.</p>
+<p class="p3"><b></b><br></p>
+<p class="p1"><b>setPairs(index1, value1, index2, value2 ... indexN, valueN)</b> - set the bus values by pairs of index, value, index value. asynchronous</p>
+<p class="p3"><br></p>
+<p class="p4"><b>Using Buses like UGens</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p1"><b>kr(numChannels, offset),</b></p>
+<p class="p1"><b>ar(numChannels, offset)</b> - use a bus like a UGen. The numChannels and offset arguments can be used to get a subset of the bus.</p>
+<p class="p1"><span class="Apple-tab-span">	</span>By default, all the bus channels are used. E.g. in an 8 channel bus,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.kr will return an In ugen reading from all the 8 channels of the bus;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.kr(4) will return the first four channels, and<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.kr(2, 5) will return two channels, starting from the bus's channels at index 5 and 6.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><b></b><br></p>
+<p class="p5"><br></p>
 <p class="p4"><b>OSC Bundle Methods</b></p>
 <p class="p3"><br></p>
 <p class="p1"><b>getMsg</b> - Returns a msg of the type /c_get for use in osc bundles.</p>
@@ -133,6 +144,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>fillMsg(value)</b> - Returns a msg of the type /c_fill for use in osc bundles. <b>value </b>is the value to which this bus' channels will be set.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
+<p class="p1"><b>Examples</b></p>
+<p class="p2"><br></p>
 <p class="p6">s = <span class="s2">Server</span>.local;</p>
 <p class="p6">s.boot;</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
@@ -175,37 +188,76 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">(<span class="s5">"a is now:"</span> + a).postln;</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p11">x.free;</p>
-<p class="p12"><br></p>
-<p class="p13"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
-<p class="p12"><br></p>
-<p class="p13">// setting multichannel buses:<span class="Apple-converted-space"> </span></p>
-<p class="p12"><br></p>
+<p class="p6">x.free;</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>// buses can also be used with kr or ar like UGens:<span class="Apple-converted-space"> </span></p>
 <p class="p11">(</p>
-<p class="p11">b = <span class="s6">Bus</span>.control(s, 4);</p>
-<p class="p14"><span class="s3">x = </span><span class="s6">SynthDef</span><span class="s3">(</span>\helpBusMulti<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, <span class="s6">Splay</span>.ar(<span class="s6">SinOsc</span>.ar(b.kr) * <span class="s6">Decay2</span>.ar(<span class="s6">Dust</span>.ar(10 ! 4), 0.001, 0.1)) * 0.5);</p>
+<p class="p12"><br></p>
+<p class="p13"><span class="s6">SynthDef</span><span class="s3">(</span>\help_Bus<span class="s3">, {</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">var</span> ffreq = b.kr;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0,<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">RLPF</span>.ar(</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">LFPulse</span>.ar(<span class="s6">SinOsc</span>.kr(0.2, 0, 10, 21), [0,0.1], 0.1),<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).clip2(0.4)</p>
+<p class="p11"><span class="Apple-tab-span">	</span>);</p>
 <p class="p11">}).play;</p>
 <p class="p11">)</p>
-<p class="p12"><br></p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>// set bus beginning at index 0:<span class="Apple-converted-space"> </span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>// none of these methods checks whether the indexes remain<span class="Apple-converted-space"> </span></p>
-<p class="p13"><span class="Apple-tab-span">	</span>// within the bus's range.<span class="Apple-converted-space"> </span></p>
-<p class="p15"><span class="Apple-tab-span">	</span></p>
-<p class="p11">b.set(234, 345, 456, 567);</p>
-<p class="p11">b.getn;</p>
-<p class="p11">b.setn([100, 200, 300, 400]);</p>
-<p class="p11">b.getn;</p>
-<p class="p12"><br></p>
-<p class="p13"><span class="s3"><span class="Apple-tab-span">	</span></span>// get to individual channels</p>
-<p class="p11">b.setAt(3, 500);</p>
-<p class="p11">b.getn;</p>
-<p class="p11">b.setAt(1, 300, 400);</p>
-<p class="p11">b.getn;</p>
-<p class="p11">b.setnAt(1, [250, 350]);</p>
-<p class="p11">b.getn;</p>
-<p class="p11">b.setPairs(3, 600, 0, 200);</p>
-<p class="p11">b.getn;</p>
-<p class="p12"><br></p>
+<p class="p2"><br></p>
+<p class="p14"><span class="s3">b.free; </span>// release it so it may be reallocated!</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><b>// using and setting multichannel buses:<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><br></p>
+<p class="p6">(</p>
+<p class="p6">b = <span class="s6">Bus</span>.control(s, 4);</p>
+<p class="p2"><br></p>
+<p class="p13"><span class="s3">x = </span><span class="s6">SynthDef</span><span class="s3">(</span>\helpBusMulti<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>var freqs = b.kr;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, <span class="s6">Splay</span>.ar(<span class="s6">SinOsc</span>.ar(freqs) * <span class="s6">Decay2</span>.ar(<span class="s6">Dust</span>.ar(10 ! 4), 0.001, 0.1)) * 0.5);</p>
+<p class="p6">}).play;</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>// set bus beginning at index 0:<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>// none of these methods checks whether the indexes remain<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>// within the bus's range.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6">b.set(234, 345, 456, 567);</p>
+<p class="p6">b.getn;</p>
+<p class="p6">b.setn([100, 200, 300, 400]);</p>
+<p class="p6">b.getn;</p>
+<p class="p2"><br></p>
+<p class="p14"><span class="s3"><span class="Apple-tab-span">	</span></span>// get to individual channels</p>
+<p class="p6">b.setAt(3, 500);</p>
+<p class="p6">b.getn;</p>
+<p class="p6">b.setAt(1, 300, 400);</p>
+<p class="p6">b.getn;</p>
+<p class="p6">b.setnAt(1, [250, 350]);</p>
+<p class="p6">b.getn;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>// set by pairs of index, value ...</p>
+<p class="p6">b.setPairs(3, 600, 0, 200);</p>
+<p class="p6">b.getn;</p>
+<p class="p2"><br></p>
+<p class="p6">b.set(300, 500, 700, 900);</p>
+<p class="p2"><br></p>
+<p class="p14"><span class="s3">(<span class="Apple-tab-span">	</span></span>// just get the first 2 channels</p>
+<p class="p13"><span class="s3">x = </span><span class="s6">SynthDef</span><span class="s3">(</span>\helpBusMulti<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, <span class="s6">SinOsc</span>.ar(b.kr(2)) * 0.2);</p>
+<p class="p11">}).play;</p>
+<p class="p11">)</p>
+<p class="p6">b.set(300, 303);</p>
+<p class="p6">x.free;</p>
+<p class="p2"><br></p>
+<p class="p14"><span class="s3">(<span class="Apple-tab-span">	</span></span>// just channels[[2, 3]];</p>
+<p class="p13"><span class="s3">y = </span><span class="s6">SynthDef</span><span class="s3">(</span>\helpBusMulti<span class="s3">, {<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(0, <span class="s6">LFNoise2</span>.ar(b.kr(2, 2)) * 0.2);</p>
+<p class="p11">}).play;</p>
+<p class="p11">)</p>
+<p class="p6">b.setAt(2, 1200);</p>
+<p class="p6">b.setAt(3, 2400);</p>
+<p class="p2"><br></p>
+<p class="p6">y.free;</p>
+<p class="p6">b.free;</p>
+<p class="p2"><br></p>
 </body>
 </html>
