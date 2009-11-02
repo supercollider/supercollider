@@ -16,7 +16,6 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-
 #include <iostream>
 
 #include "osc/OscOutboundPacketStream.h"
@@ -1270,6 +1269,11 @@ struct completion_message
         }
     }
 
+    /** default constructor creates uninitialized object */
+    completion_message(void):
+        size_(0)
+    {}
+
     /** copy constructor has move semantics!!! */
     completion_message(completion_message const & rhs)
     {
@@ -1310,14 +1314,40 @@ struct completion_message
     void * data_;
 };
 
+completion_message extract_completion_message(osc::ReceivedMessageArgumentStream & args)
+{
+    osc::Blob blob(0, 0);
+
+    if (!args.Eos()) {
+        try {
+            args >> blob;
+        }
+        catch (osc::WrongArgumentTypeException & e)
+        {}
+    }
+
+    return completion_message (blob.size, blob.data);
+}
+
+completion_message extract_completion_message(osc::ReceivedMessageArgumentIterator & it)
+{
+    const void * data = 0;
+    unsigned long length = 0;
+
+    if (it->IsBlob())
+        it->AsBlobUnchecked(data, length);
+    ++it;
+    return completion_message(length, data);
+}
+
 
 /** responding callback, which is executing an osc message when done */
 struct sc_async_callback:
     public sc_response_callback
 {
 protected:
-    sc_async_callback(size_t msg_size, const void * data, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint), msg_(msg_size, data)
+    sc_async_callback(completion_message & msg, udp::endpoint const & endpoint):
+        sc_response_callback(endpoint), msg_(msg)
     {}
 
     static char * copy_string(const char * str)
@@ -1365,14 +1395,10 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index, frames, channels;
-    osc::Blob blob(0, 0);
 
     args >> index >> frames >> channels;
+    completion_message message = extract_completion_message(args);
 
-    if (!args.Eos())
-        args >> blob;
-
-    completion_message message(blob.size, blob.data);
     fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint));
 }
 
@@ -1406,14 +1432,10 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index;
-    osc::Blob blob(0, 0);
-
     args >> index;
 
-    if (!args.Eos())
-        args >> blob;
+    completion_message message = extract_completion_message(args);
 
-    completion_message message(blob.size, blob.data);
     fire_system_callback(boost::bind(b_free_1_nrt, index, message, endpoint));
 }
 
@@ -1454,7 +1476,6 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
 
     osc::int32 start = 0;
     osc::int32 frames = 0;
-    osc::Blob blob (0, 0);
 
     args >> index >> filename;
 
@@ -1464,10 +1485,8 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
     if (!args.Eos())
         args >> frames;
 
-    if (!args.Eos())
-        args >> blob;
+    completion_message message = extract_completion_message(args);
 
-    completion_message message(blob.size, blob.data);
     movable_string fname(filename);
     fire_system_callback(boost::bind(b_allocRead_1_nrt, index, fname, start, frames, message, endpoint));
 }
@@ -1517,8 +1536,8 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
-    const void * data = 0;
-    unsigned long length = 0;
+    completion_message message;
+
     for (uint i = 0; i != channel_args; ++i)
     {
         if (arg->IsInt32()) {
@@ -1527,16 +1546,12 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
         }
         else {
             /* we reached the message blob */
-            if (!arg->IsBlob())
-                throw std::runtime_error("wrong arguments for /b_allocReadChannel");
-
-            arg->AsBlobUnchecked(data, length);
+            message = extract_completion_message(arg);
             break;
         }
     }
 
     movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
-    completion_message message(length, data);
     movable_string fname(filename);
 
     fire_system_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
@@ -1572,8 +1587,7 @@ void handle_b_write(received_message const & msg, udp::endpoint const & endpoint
     osc::int32 start = 0;
     osc::int32 leave_open = 0;
 
-    unsigned long length = 0;
-    const void * data = 0;
+    completion_message message;
 
     if (arg != end) {
         if (!arg->IsInt32())
@@ -1599,14 +1613,10 @@ void handle_b_write(received_message const & msg, udp::endpoint const & endpoint
     else
         goto fire_callback;
 
-    if (arg != end) {
-        if (!arg->IsBlob())
-            fire_b_write_exception();
-        arg->AsBlobUnchecked(data, length);
-    }
+    if (arg != end)
+        message = extract_completion_message(arg);
 
 fire_callback:
-    completion_message message(length, data);
     movable_string fname(filename);
     movable_string header_f(header_format);
     movable_string sample_f(sample_format);
@@ -1653,8 +1663,7 @@ void handle_b_read(received_message const & msg, udp::endpoint const & endpoint)
     osc::int32 start_buffer = 0;
     osc::int32 leave_open = 0;
 
-    unsigned long length = 0;
-    const void * data = 0;
+    completion_message message;
 
     if (arg != end) {
         if (!arg->IsInt32())
@@ -1688,14 +1697,10 @@ void handle_b_read(received_message const & msg, udp::endpoint const & endpoint)
     else
         goto fire_callback;
 
-    if (arg != end) {
-        if (!arg->IsBlob())
-            fire_b_read_exception();
-        arg->AsBlobUnchecked(data, length);
-    }
+    if (arg != end)
+        message = extract_completion_message(arg);
 
 fire_callback:
-    completion_message message(length, data);
     movable_string fname(filename);
 
     fire_system_callback(boost::bind(b_read_nrt_1, index, fname, start_file, frames, start_buffer,
@@ -1744,8 +1749,7 @@ void handle_b_readChannel(received_message const & msg, udp::endpoint const & en
     sized_array<uint32_t, rt_pool_allocator<uint32_t> > channel_mapping(int32_t(msg.ArgumentCount())); /* larger than required */
     uint32_t channel_count = 0;
 
-    unsigned long length = 0;
-    const void * data = 0;
+    completion_message message;
 
     if (arg != end) {
         if (!arg->IsInt32())
@@ -1782,7 +1786,7 @@ void handle_b_readChannel(received_message const & msg, udp::endpoint const & en
     while (arg != end)
     {
         if (arg->IsBlob()) {
-            arg->AsBlobUnchecked(data, length);
+            message = extract_completion_message(arg);
             goto fire_callback;
         }
         else if (arg->IsInt32()) {
@@ -1794,7 +1798,6 @@ void handle_b_readChannel(received_message const & msg, udp::endpoint const & en
     }
 
 fire_callback:
-    completion_message message(length, data);
     movable_string fname(filename);
     movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
 
@@ -1823,14 +1826,8 @@ void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     osc::int32 index;
-    osc::Blob blob(0, 0);
-
     args >> index;
-
-    if (!args.Eos())
-        args >> blob;
-
-    completion_message message(blob.size, blob.data);
+    completion_message message = extract_completion_message(args);
 
     fire_system_callback(boost::bind(b_zero_nrt_1, index, message, endpoint));
 }
@@ -2005,7 +2002,6 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
     const SndBuf * buf = ugen_factory.get_buffer_struct(buffer_index);
     const sample * data = buf->data;
     const int max_sample = buf->frames * buf->channels;
-
 
     while (!args.Eos())
     {
@@ -2197,9 +2193,9 @@ void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
 struct d_recv_callback:
     public sc_async_callback
 {
-    d_recv_callback(size_t def_size, const void * def, size_t msg_size, const void * msg,
+    d_recv_callback(size_t def_size, const void * def, completion_message & msg,
                     udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, msg, endpoint), def_size_(def_size_)
+        sc_async_callback(msg, endpoint), def_size_(def_size_)
     {
         def_ = (char*)allocate(def_size + 1);
         memcpy(def_, def, def_size);
@@ -2228,25 +2224,22 @@ void handle_d_recv(received_message const & msg,
                    udp::endpoint const & endpoint)
 {
     const void * synthdef_data;
-    const void * blob_data = 0;
-    size_t synthdef_size, blob_size = 0;
+    size_t synthdef_size;
 
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
 
     args->AsBlob(synthdef_data, synthdef_size); ++args;
+    completion_message message = extract_completion_message(args);
 
-    if (args->IsBlob())
-        args->AsBlobUnchecked(blob_data, blob_size);
-
-    instance->add_system_callback(new d_recv_callback(synthdef_size, synthdef_data, blob_size, blob_data, endpoint));
+    instance->add_system_callback(new d_recv_callback(synthdef_size, synthdef_data, message, endpoint));
 }
 
 struct d_load_callback:
     public sc_async_callback
 {
-    d_load_callback(const char * path, size_t msg_size, const void * msg,
+    d_load_callback(const char * path, completion_message & msg,
                     udp::endpoint const & endpoint):
-        sc_async_callback(msg_size, msg, endpoint),
+        sc_async_callback(msg, endpoint),
         path_(copy_string(path))
     {}
 
@@ -2270,22 +2263,20 @@ void handle_d_load(received_message const & msg,
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const char * path;
-    osc::Blob blob(0, 0);
 
     args >> path;
-    if (!args.Eos())
-        args >> blob;
+    completion_message message = extract_completion_message(args);
 
-    instance->add_system_callback(new d_load_callback(path, blob.size, blob.data, endpoint));
+    instance->add_system_callback(new d_load_callback(path, message, endpoint));
 }
 
 
 struct d_loadDir_callback:
     public d_load_callback
 {
-    d_loadDir_callback(const char * path, size_t msg_size, const void * msg,
+    d_loadDir_callback(const char * path, completion_message & msg,
                        udp::endpoint const & endpoint):
-        d_load_callback(path, msg_size, msg, endpoint)
+        d_load_callback(path, msg, endpoint)
     {}
 
     void run(void)
@@ -2301,13 +2292,11 @@ void handle_d_loadDir(received_message const & msg,
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const char * path;
-    osc::Blob blob(0, 0);
 
     args >> path;
-    if (!args.Eos())
-        args >> blob;
+    completion_message message = extract_completion_message(args);
 
-    instance->add_system_callback(new d_loadDir_callback(path, blob.size, blob.data, endpoint));
+    instance->add_system_callback(new d_loadDir_callback(path, message, endpoint));
 }
 
 
