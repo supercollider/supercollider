@@ -7597,7 +7597,7 @@ PluginLoad(Delay)
 	DefineBufInfoUnit(BufChannels);
 	DefineBufInfoUnit(BufDur);
 
-	DefineDtorUnit(PlayBuf);
+	DefineDtorCantAliasUnit(PlayBuf);
 #if NOTYET
 	DefineDtorUnit(SimpleLoopBuf);
 #endif
