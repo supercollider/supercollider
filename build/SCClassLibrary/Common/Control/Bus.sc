@@ -159,21 +159,22 @@ Bus {
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
 	}
 
-	ar {
+	ar { |numChannels=(this.numChannels), offset=0|
 		if(rate == \audio,{
-			^In.ar(index,numChannels)
+			^In.ar(index + offset, numChannels)
 		},{
 			//"Bus converting control to audio rate".inform;
-			^K2A.ar( In.kr(index,numChannels) )
+			^K2A.ar( In.kr(index + offset, numChannels) )
 		})
 	}
-	kr {
+	kr { |numChannels=(this.numChannels), offset=0|
 		if(rate == \audio,{
-			^A2K.kr( In.ar(index,numChannels) )
+			^A2K.kr( In.ar(index + offset, numChannels) )
 		},{
-			^In.kr(index,numChannels)
+			^In.kr(index + offset, numChannels)
 		})
 	}
+
 	play { arg target=0, outbus, fadeTime, addAction=\addToTail;
 		if(this.isAudioOut.not,{ // returns a Synth
 			^{ this.ar }.play(target, outbus, fadeTime, addAction);
