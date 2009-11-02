@@ -180,8 +180,8 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 		);
 		unit->m_pos = pos;
 		unit->m_level = level;
-		unit->m_leftamp = leftamp;
-		unit->m_rightamp = rightamp;
+		unit->m_leftamp = nextleftamp;
+		unit->m_rightamp = nextrightamp;
 	} else {
 		LOOP(inNumSamples,
 			float zin = ZXP(in);
@@ -263,8 +263,8 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 		);
 		unit->m_pos = pos;
 		unit->m_level = level;
-		unit->m_leftamp = leftamp;
-		unit->m_rightamp = rightamp;
+		unit->m_leftamp = nextleftamp;
+		unit->m_rightamp = nextrightamp;
 	} else {
 		LOOP(inNumSamples,
 			ZXP(leftout)  = ZXP(leftin) * leftamp;
@@ -357,8 +357,8 @@ void XFade2_next_ak(XFade2 *unit, int inNumSamples)
 		);
 		unit->m_pos = pos;
 		unit->m_level = level;
-		unit->m_leftamp = leftamp;
-		unit->m_rightamp = rightamp;
+		unit->m_leftamp = nextleftamp;
+		unit->m_rightamp = nextrightamp;
 	} else {
 		LOOP(inNumSamples,
 			ZXP(out) = ZXP(leftin) * leftamp + ZXP(rightin) * rightamp;
@@ -498,8 +498,8 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 		);
 		unit->m_pos = pos;
 		unit->m_level = level;
-		unit->m_leftamp = leftamp;
-		unit->m_rightamp = rightamp;
+		unit->m_leftamp = nextleftamp;
+		unit->m_rightamp = nextrightamp;
 	} else {
 		LOOP(inNumSamples,
 			float zin = ZXP(in);

@@ -31,7 +31,8 @@ Bugfixes:
 * 2009-09-30 prevent NaN output from SpecFlatness when input is silence - ds
 * 2009-10-16 fix cropping issue in printing SuperCollider.app documents - cq
 * 2009-10-17 many phase-vocoder (PV_) ugens previously didn't handle the DC/nyquist bins as expected. fixed most of these (PV_MagAbove, PV_MagBelow, PV_MagClip, PV_LocalMax, PV_BrickWall, PV_MagSquared, PV_BinWipe, PV_CopyPhase, PV_Max, PV_RandComb) - ds
-* 2009-11-01 fix audio rate arg problem in PlayBuf
+* 2009-11-01 fix audio rate arg problem in PlayBuf - jp
+* 2009-11-02 fix amplitude-convergence issue in Pan2, Balance2, LinPan2, XFade2, which could sometimes result in sound despite zero amp, as discovered by jh - ds
 
 Other additions/improvements:
 -----------------------------
