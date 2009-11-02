@@ -64,17 +64,17 @@ Buffer {
 	}
 	allocMsg { arg completionMessage;
 		this.cache;
-		^["/b_alloc", bufnum, numFrames, numChannels, completionMessage.value(this)]
+		^["/b_alloc", bufnum, numFrames.asInt, numChannels, completionMessage.value(this)]
 	}
 	allocReadMsg { arg argpath,startFrame,numFrames, completionMessage;
 		this.cache;
 		path = argpath;
-		^["/b_allocRead",bufnum, path,startFrame,numFrames ? -1, completionMessage.value(this)]
+		^["/b_allocRead",bufnum, path,startFrame,numFrames.asInt ? -1, completionMessage.value(this)]
 	}
 	allocReadChannelMsg { arg argpath,startFrame,numFrames, channels, completionMessage;
 		this.cache;
 		path = argpath;
-		^["/b_allocReadChannel",bufnum, path,startFrame, numFrames ? -1] ++ channels ++ 			[completionMessage.value(this)]
+		^["/b_allocReadChannel",bufnum, path,startFrame, numFrames.asInt ? -1] ++ channels ++ 			[completionMessage.value(this)]
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -137,7 +137,7 @@ Buffer {
 	readMsg { arg argpath, fileStartFrame = 0, numFrames,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
-		^["/b_read", bufnum, path, fileStartFrame, numFrames ? -1,
+		^["/b_read", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -145,7 +145,7 @@ Buffer {
 	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames,
 					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
-		^["/b_readChannel", bufnum, path, fileStartFrame, numFrames ? -1,
+		^["/b_readChannel", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
 			bufStartFrame, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -164,7 +164,7 @@ Buffer {
 		)
 	}
 	cueSoundFileMsg { arg path,startFrame = 0,completionMessage;
-		^["/b_read", bufnum,path,startFrame,numFrames,0,1,completionMessage.value(this) ]
+		^["/b_read", bufnum,path,startFrame,numFrames.asInt,0,1,completionMessage.value(this) ]
 	}
 
 	// transfer a collection of numbers to a buffer through a file
@@ -428,11 +428,11 @@ Buffer {
 
 
 	fill { arg startAt,numFrames,value ... more;
-		server.listSendMsg(["/b_fill",bufnum,startAt,numFrames,value]
+		server.listSendMsg(["/b_fill",bufnum,startAt,numFrames.asInt,value]
 			 ++ more);
 	}
 	fillMsg { arg startAt,numFrames,value ... more;
-		^["/b_fill",bufnum,startAt,numFrames,value]
+		^["/b_fill",bufnum,startAt,numFrames.asInt,value]
 			 ++ more;
 	}
 
