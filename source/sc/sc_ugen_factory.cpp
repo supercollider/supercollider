@@ -127,8 +127,6 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
             unit->mInBuf[i] = &unit->mInput[i]->mScalarValue;
     }
 
-    (*ctor)(unit);
-
     return unit;
 }
 

@@ -53,6 +53,12 @@ public:
     }
 
     Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world);
+
+    void initialize(Unit * unit)
+    {
+        (*ctor)(unit);
+    }
+
     void destruct(Unit * unit);
 
     bool cant_alias(void) const

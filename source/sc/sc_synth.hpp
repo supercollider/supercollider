@@ -48,6 +48,12 @@ public:
 
     ~sc_synth(void);
 
+    /** run ugen constructors and initialize first sample
+     *
+     *  to be executed after preparing the synth and setting the controls
+     */
+    void prepare(void);
+
     void run(dsp_context const & context);
 
     void set(slot_index_t slot_index, sample val);

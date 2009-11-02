@@ -101,6 +101,14 @@ sc_synth::~sc_synth(void)
     std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &ugen_factory, _1));
 }
 
+void sc_synth::prepare(void)
+{
+    for (size_t i = 0; i != units.size(); ++i) {
+        struct Unit * unit = units[i];
+        sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+        def->initialize(unit);
+    }
+}
 
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
@@ -128,7 +136,7 @@ void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
         mControlRates[slot_index] = 0;
         mMapControls[slot_index] = mControls + slot_index;
     }
-    else if (control_bus_index < world->mNumControlBusChannels) {
+    else if (uint32(control_bus_index) < world->mNumControlBusChannels) {
         mControlRates[slot_index] = 1;
         mMapControls[slot_index] = world->mControlBus + slot_index;
     }
@@ -155,7 +163,7 @@ void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_ind
     if (audio_bus_index < 0) {
         mControlRates[slot_index] = 0;
         mMapControls[slot_index] = mControls + slot_index;
-    } else if (audio_bus_index < world->mNumAudioBusChannels) {
+    } else if (uint(audio_bus_index) < world->mNumAudioBusChannels) {
         mControlRates[slot_index] = 2;
         mMapControls[slot_index] = world->mAudioBus + (audio_bus_index * world->mBufLength);
     }

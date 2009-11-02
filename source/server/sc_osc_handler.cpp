@@ -638,6 +638,7 @@ void handle_s_new(received_message const & msg)
             cout << "Exception during /s_new handler: " << e.what() << endl;
         }
     }
+    synth->prepare();
 }
 
 
