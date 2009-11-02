@@ -27,20 +27,24 @@ TestBuffer : UnitTest {
 		
 		// send then load
 		b = Buffer.sendCollection(Server.default, d);
+		0.2.wait;
 		Server.default.sync;
-		b.loadToFloatArray(0, -1, action:{|data| 
-			this.assertArrayFloatEquals(data - d, 0, report: true)
+		b.loadToFloatArray(0, -1, action:{|data|
+			this.assertArrayFloatEquals(data, d, "test_serverlang_dataexchange sendCollection->loadToFloatArray", report: true)
 		});
 		Server.default.sync;
 		b.free;
 		Server.default.sync;
+
 		// load then load
 		b = Buffer.loadCollection(Server.default, d);
+		0.2.wait;
 		Server.default.sync;
 		b.loadToFloatArray(0, -1, action:{|data| 
-			this.assertArrayFloatEquals(data - d, 0, report: true)
+			this.assertArrayFloatEquals(data, d, "test_serverlang_dataexchange loadCollection->loadToFloatArray", report: true)
 		});
 		Server.default.sync;
+
 		// zero the Buffer and check that it worked
 		b.zero;
 		Server.default.sync;
