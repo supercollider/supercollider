@@ -15,15 +15,20 @@ Headlines:
 * 2009-08-16 add emergency escape route: if sclang is caught in an infinite loop, send it a USR1 signal to break out of it - ds
 * 2009-09-12 String:findRegexp and other regular expressions now available on linux as well as mac - mb,ds
 * 2009-09-20 simplify the Server recording interface. prepareForRecord is now optional (will be automatically invoked if you don't), and the server gui button is now just two-state "record" "stop" - ds
+* 2009-10-04 support multichannel indices for Env:at - jr
 * 2009-10-29 improve OSC message correctness: for convenience, sclang allows command names as symbols with no leading slash e.g. \g_new. To improve compliance with the OSC standard, the leading slash is now added to those symbols before dispatch - ds
 
 Bugfixes:
 ---------
 
+* 2009-06-23 avoid memory corruption when unknown OSC type tags are received. Instead forward them to sclang - jr
+* 2009-06-23 Fix server crash with negative buffer numbers. - jr
+* 2009-07-20 factors(): no prime factors exist below the first prime - jr
 * 2009-07-21 Loudness ugen now supports LocalBuf - nc
 * 2009-07-23 Fix very nasty bug in Pbindf: if a key is an array, new values were written into the incoming event, instead of the outgoing event - jh
 * 2009-07-28 catch unintialised value in sc_GetUserHomeDirectory(), fixing potential memory corruption if HOME not set - ds
 * 2009-08-01 SpecCentroid, fix its reaction to silence (output zero instead of NaN) - ds
+* 2009-08-01 NamedControl: single default value now returns instance, not array, default values are obtained in a consistent way - jr
 * 2009-08-04 fix the CPU-usage issue when calling plain "./sclang" from the terminal on OSX (seems it was caused by a bug in how OSX handles poll() calls) - ds
 * 2009-08-15 LinPan2: fix initialisation issue - panning was not correctly applied during the first calc block - ds
 * 2009-09-13 fix PV_MagShift argument handling, so that the defaults mean no-change, matching the behaviour of PV_BinShift - ds
@@ -33,16 +38,21 @@ Bugfixes:
 * 2009-10-17 many phase-vocoder (PV_) ugens previously didn't handle the DC/nyquist bins as expected. fixed most of these (PV_MagAbove, PV_MagBelow, PV_MagClip, PV_LocalMax, PV_BrickWall, PV_MagSquared, PV_BinWipe, PV_CopyPhase, PV_Max, PV_RandComb) - ds
 * 2009-11-01 fix audio rate arg problem in PlayBuf - jp
 * 2009-11-02 fix amplitude-convergence issue in Pan2, Balance2, LinPan2, XFade2, which could sometimes result in sound despite zero amp, as discovered by jh - ds
+* 2009-11-03 fix unsafe implementation of methods that allow sending collections to buffers - jr
+
 
 Other additions/improvements:
 -----------------------------
 
+* 2009-06-23 allow remote apps to send type chars - jr
 * 2009-06-27 build 32bit sclang on x86_64 - tb
 * 2009-07-xx efficiency improvements on some UGens - tb
 * 2009-07-xx improve Quarks use of svn for smoother user experience - ds
 * 2009-07-22 catch the case when a user tries to compile into a synthdef, a unary/binary operator that the server can't apply - jh
 * 2009-08-29 String:toUpper and String:toLower - ds
 * 2009-09-06 Boolean:while now throws an informative error, since Boolean:while has no particular use but is often used in error by beginners in code where Function:while is intended - ds
+* 2009-09-12 method FunctionDef:makeEnvirFromArgs allows to create template events from a function - jr
+* 2009-11-03 TwoWayIdentityDictionary has a removeAt method now - jr
 
 SuperCollider v3.3.1, released 2009-06-19
 =========================================
@@ -63,6 +73,7 @@ Bugfixes:
 * 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
 * 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
 * 2009-05-25 mac icons for document types .quark .scd .rtfd were omitted from the app bundle, now fixed - ds
+* 2009-06-02 EnvGen: fix off by one block latency in envelope attacks and releases - jr
 * 2009-06-12 bug fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
 * 2009-06-12 mouse coordinates fix, deprecate SCUserView:mousePosition - sw
 * 2009-06-17 some issues fixed in SCUserView - cq
