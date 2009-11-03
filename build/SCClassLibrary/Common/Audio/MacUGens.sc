@@ -10,6 +10,7 @@ MouseX : UGen
 
 		^this.multiNew('control', minval, maxval, warp, lag)
 	}
+	signalRange { ^\unipolar }
 }
 
 MouseY : MouseX {}
@@ -19,6 +20,7 @@ MouseButton : UGen {
 		arg minval=0, maxval=1, lag=0.2;
 		^this.multiNew('control', minval, maxval, lag)
 	}
+	signalRange { ^\unipolar }
 }
 
 KeyState : UGen {
@@ -26,5 +28,6 @@ KeyState : UGen {
 		arg keycode=0, minval=0, maxval=1, lag=0.2;
 		^this.multiNew('control', keycode, minval, maxval, lag)
 	}
+	signalRange { ^\unipolar }
 }
 
