@@ -39,6 +39,8 @@ Bugfixes:
 * 2009-11-01 fix audio rate arg problem in PlayBuf - jp
 * 2009-11-02 fix amplitude-convergence issue in Pan2, Balance2, LinPan2, XFade2, which could sometimes result in sound despite zero amp, as discovered by jh - ds
 * 2009-11-03 fix unsafe implementation of methods that allow sending collections to buffers - jr
+* 2009-11-04 fix signalRange for MouseX, MouseY and KeyState, so that the range message works now - jr
+
 
 
 Other additions/improvements:
