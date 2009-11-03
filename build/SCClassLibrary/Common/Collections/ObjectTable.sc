@@ -21,6 +21,8 @@ TwoWayIdentityDictionary : Collection
 		idToObj.removeAt(key);
 		objToID.removeAt(obj);
 	}
+	
+	removeAt { arg key;		var obj = this.at(key);		idToObj.removeAt(key);		objToID.removeAt(obj);	}
 
 	do { arg function;
 		^idToObj.do(function);
