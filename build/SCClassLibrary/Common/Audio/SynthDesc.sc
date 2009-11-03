@@ -346,6 +346,16 @@ SynthDescLib {
 	}
 	at { arg i; ^synthDescs.at(i) }
 	*at { arg i; ^global.at(i) }
+	
+	add { |synthdesc|
+		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
+	}
+	addServer { |server|
+		servers = servers.add(server).as(IdentityBag).asArray; // one server only once.
+	}
+	removeServer { |server|
+		servers.remove(server);
+	}
 
 	match { |key|
 		var	keyString = key.asString, dotIndex = keyString.indexOf($.), desc;

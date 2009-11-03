@@ -9,17 +9,6 @@
 	}
 }
 
-+ SynthDescLib {
-	add { |synthdesc|
-		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
-	}
-	addServer { |server|
-		servers = servers.asArray.add(server);
-	}
-	removeServer { |server|
-		servers.tryPerform(\remove, server);
-	}
-}
 
 + SynthDef {
 		// dir argument is not needed because no file will be written
