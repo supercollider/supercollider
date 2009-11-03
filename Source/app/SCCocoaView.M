@@ -1784,7 +1784,7 @@ int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	//GetMovieDuration([[mMovieView movie] QTMovie]);
 	if (strcmp(name, "getCurrentTime")==0) {
 		float time;
-		post("timescale: %d  \n",  mTimeRecord.scale);
+		//post("timescale: %d  \n",  mTimeRecord.scale);
 		time = (float) ((float)GetMovieTime(mMovie, NULL) / mTimeRecord.scale);
 		SetFloat(slot, time);
 		return errNone;		
