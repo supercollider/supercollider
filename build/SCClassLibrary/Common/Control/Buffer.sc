@@ -260,7 +260,7 @@ Buffer {
 			while { pos < collsize } {
 				// 1626 max size for setn under udp
 				bundsize = min(1626, collsize - pos);
-				server.listSendMsg(["b_setn", bufnum, pos + startFrame, bundsize]
+				server.listSendMsg(['/b_setn', bufnum, pos + startFrame, bundsize]
 					++ Array.fill(bundsize, { collstream.next }));
 				pos = collstream.pos;
 				if(wait >= 0) { wait.wait } { server.sync };
