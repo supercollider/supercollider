@@ -176,16 +176,14 @@ Buffer {
 			Error("No more buffer numbers -- free some buffers before allocating more.").throw
 		};
 		server.isLocal.if({
-			if(collection.isKindOf(RawArray).not,
-				{data = collection.collectAs({|item| item}, FloatArray)}, {data = collection;}
-			);
+			if(collection.isKindOf(RawArray).not) { collection = collection.as(FloatArray) };
 			sndfile = SoundFile.new;
 			sndfile.sampleRate = server.sampleRate;
 			sndfile.numChannels = numChannels;
 			path = PathName.tmp ++ sndfile.hash.asString;
 			if(sndfile.openWrite(path),
 				{
-					sndfile.writeData(data);
+					sndfile.writeData(collection);
 					sndfile.close;
 					^super.newCopyArgs(server, bufnum)
 						.cache.doOnInfo_({ |buf|
@@ -228,30 +226,17 @@ Buffer {
 
 	// send a Collection to a buffer one UDP sized packet at a time
 	*sendCollection { arg server, collection, numChannels = 1, wait = 0.0, action;
-		var collstream, buffer, collsize, bufnum, bundsize, pos;
-
-		collstream = CollStream.new;
-		collstream.collection = collection;
-		collsize = collection.size;
-		server = server ? Server.default;
-		bufnum = server.bufferAllocator.alloc(1);
-		if(bufnum.isNil) {
-			Error("No more buffer numbers -- free some buffers before allocating more.").throw
-		};
-		buffer = super.newCopyArgs(server, bufnum, (collsize/numChannels).ceil, numChannels)
-			.cache.sampleRate_(server.sampleRate);
-
-		// first send with alloc
-		// 1626 largest setn size with an alloc
-		bundsize = min(1626, collsize - collstream.pos);
-		server.listSendMsg(buffer.allocMsg({["b_setn", bufnum, 0, bundsize]
-			++ Array.fill(bundsize, {collstream.next})}));
-
-		buffer.streamCollection(collstream, collsize, 0, wait, action);
+		var buffer = this.alloc(server, ceil(collection.size / numChannels), numChannels);
+		forkIfNeeded {
+			buffer.alloc(collection.size, numChannels);
+			server.sync;
+			buffer.sendCollection(collection, 0, wait, action);
+		
+		}
 		^buffer;
 	}
 
-	sendCollection { arg collection, startFrame = 0, wait = 0.0, action;
+	sendCollection { arg collection, startFrame = 0, wait = -1, action;
 		var collstream, collsize, bundsize;
 
 		collstream = CollStream.new;
@@ -265,43 +250,48 @@ Buffer {
 	}
 
 	// called internally
-	streamCollection { arg collstream, collsize, startFrame, wait, action;
+	streamCollection { arg collstream, collsize, startFrame = 0, wait = -1, action;
 		var bundsize, pos;
 		{
+			// wait = -1 sends each packet when the previous has arrived
 			// wait = 0 might not be safe in a high traffic situation
 			// maybe okay with tcp
 			pos = collstream.pos;
-			while({pos < collsize}, {
-				wait.wait;
-				// 1633 max size for setn under udp
-				bundsize = min(1633, collsize - pos);
+			while { pos < collsize } {
+				// 1626 max size for setn under udp
+				bundsize = min(1626, collsize - pos);
 				server.listSendMsg(["b_setn", bufnum, pos + startFrame, bundsize]
-					++ Array.fill(bundsize, {collstream.next}));
+					++ Array.fill(bundsize, { collstream.next }));
 				pos = collstream.pos;
-			});
+				if(wait >= 0) { wait.wait } { server.sync };
+			};
 
 			action.value(this);
 
-		}.fork(SystemClock);
+		}.forkIfNeeded;
 	}
 
 	// these next two get the data and put it in a float array which is passed to action
 
 	loadToFloatArray { arg index = 0, count = -1, action;
 		var msg, cond, path, file, array;
-		Routine.run({
-			cond = Condition.new;
+		{
 			path = PathName.tmp ++ this.hash.asString;
-			msg = this.writeMsg(path, "aiff", "float", count, index);
-			server.sendMsgSync(cond, *msg);
+			msg = this.write(path, "aiff", "float", count, index);
+			server.sync;
 			file = SoundFile.new;
-			file.openRead(path);
-			array = FloatArray.newClear(file.numFrames * file.numChannels);
-			file.readData(array);
-			file.close;
-			if(File.delete(path).not, {("Could not delete data file:" + path).warn;});
+			protect {
+				file.openRead(path);
+				array = FloatArray.newClear(file.numFrames * file.numChannels);
+				file.readData(array);
+			} {
+				file.close;
+				if(File.delete(path).not) { ("Could not delete data file:" + path).warn };
+			};
+			
 			action.value(array, this);
-		});
+			
+		}.forkIfNeeded;
 	}
 
 	// risky without wait
@@ -329,10 +319,10 @@ Buffer {
 				//("sending from" + pos).postln;
 				server.listSendMsg(this.getnMsg(pos, getsize));
 				pos = pos + getsize;
-				wait.wait;
+				if(wait >= 0) { wait.wait } { server.sync };
 			});
 
-		}.fork;
+		}.forkIfNeeded;
 		// lose the responder if the network choked
 		SystemClock.sched(timeout,
 			{ done.not.if({ resp.remove; "Buffer-streamToFloatArray failed!".warn;
