@@ -329,10 +329,15 @@ Document {
 	}
 
 	currentLine {
+		^this.getSelectedLines(this.selectionStart, 0);
+	}
+	
+	getSelectedLines { | rangestart = -1, rangesize = 0 |
 		var start, end, str, max;
 		str = this.string;
 		max = str.size;
-		end = start = this.selectionStart;
+		start = rangestart;
+		end = start + rangesize;
 		while {
 			str[start] !== Char.nl and: { start >= 0 }
 		} { start = start - 1 };
