@@ -939,19 +939,16 @@ void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it
         osc::int32 index = it->AsInt32Unchecked(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
 
-        for (int i = 0; i != count; ++i) {
-            float value = it->AsFloat(); ++it;
-            node->set(index + i, value);
-        }
+        for (int i = 0; i != count; ++i)
+            node->set(index + i, extract_float_argument(it++));
     }
     else if (it->IsString()) {
         const char * str = it->AsStringUnchecked(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
 
         sized_array<float> values(count);
-        for (int i = 0; i != count; ++i) {
-            values[i] = it->AsFloat(); ++it;
-        }
+        for (int i = 0; i != count; ++i)
+            values[i] = extract_float_argument(it++);
 
         node->set(str, count, values.c_array());
     }
@@ -964,7 +961,7 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
-        float value = it->AsFloat(); ++it;
+        float value = extract_float_argument(it++);
 
         for (int i = 0; i != count; ++i)
             node->set(index + i, value);
@@ -972,7 +969,7 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
     else if (it->IsString()) {
         const char * str = it->AsStringUnchecked(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
-        float value = it->AsFloat(); ++it;
+        float value = extract_float_argument(it++);
 
         sized_array<float> values(count);
         for (int i = 0; i != count; ++i)
@@ -1536,20 +1533,16 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
-    completion_message message;
-
-    for (uint i = 0; i != channel_args; ++i)
+    for (uint i = 0; i != channel_args - 1; ++i) // sclang fromats the last completion message as int, so we skip the last element
     {
         if (arg->IsInt32()) {
-            channels[i] = arg->AsInt32Unchecked();
+            channels[i] = arg->AsInt32Unchecked(); arg++;
             ++channel_count;
         }
-        else {
-            /* we reached the message blob */
-            message = extract_completion_message(arg);
-            break;
-        }
     }
+
+    /* we reached the message blob */
+    completion_message message = extract_completion_message(arg);
 
     movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
     movable_string fname(filename);
@@ -2038,12 +2031,11 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
 
 void handle_c_set(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
-    while (!args.Eos()) {
-        osc::int32 bus_index;
-        float value;
-        args >> bus_index >> value;
+    while (it != msg.ArgumentsEnd()) {
+        osc::int32 bus_index = it->AsInt32(); ++it;
+        float value = extract_float_argument(it++);
 
         ugen_factory.controlbus_set(bus_index, value);
     }
@@ -2051,15 +2043,15 @@ void handle_c_set(received_message const & msg)
 
 void handle_c_setn(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
-    while (!args.Eos()) {
+    while (it != msg.ArgumentsEnd()) {
         osc::int32 bus_index, bus_count;
-        args >> bus_index >> bus_count;
+        bus_index = it->AsInt32(); ++it;
+        bus_count = it->AsInt32(); ++it;
 
         for (int i = 0; i != bus_count; ++i) {
-            float value;
-            args >> value;
+            float value = extract_float_argument(it++);
             ugen_factory.controlbus_set(bus_index + i, value);
         }
     }
@@ -2067,13 +2059,13 @@ void handle_c_setn(received_message const & msg)
 
 void handle_c_fill(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
-    while (!args.Eos()) {
+    while (it != msg.ArgumentsEnd()) {
         osc::int32 bus_index, bus_count;
-        float value;
-        args >> bus_index >> bus_count >> value;
-
+        bus_index = it->AsInt32(); ++it;
+        bus_count = it->AsInt32(); ++it;
+        float value = extract_float_argument(it++);
         ugen_factory.controlbus_fill(bus_index, bus_count, value);
     }
 }
