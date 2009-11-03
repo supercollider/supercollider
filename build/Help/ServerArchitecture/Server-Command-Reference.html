@@ -179,7 +179,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>int - node ID</p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - a control value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - a control value</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Takes a list of pairs of control indices and values and sets the controls to those values. If the node is a group, then it sets the controls of every node in the group.</p>
@@ -192,7 +192,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of sequential controls to change (M)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - a control value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - a control value</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>] * M</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -203,7 +203,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of values to fill (M)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int- value</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Set contiguous ranges of control indices to single values. For each range, the starting control index is given followed by the number of controls to change, followed by the value to fill. If the node is a group, then it sets the controls of every node in the group.</p>
@@ -300,7 +300,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>int - add target ID</p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int or string - a control index or name</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - a control value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - a control value</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Create a new synth from a synth definition, give it an ID, and add it to the tree of nodes. There are four ways to add the node to the tree as determined by the add action argument which is defined as follows:</p>
@@ -620,7 +620,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>/c_set<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set bus value(s)</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - a bus index</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - a control value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - a control value</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Takes a list of pairs of bus indices and values and sets the buses to those values.<span class="Apple-converted-space"> </span></p>
@@ -630,7 +630,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - starting bus index</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of sequential buses to change (M)</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - a control value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - a control value</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>] * M</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
@@ -640,7 +640,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - starting bus index</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - number of buses to fill (M)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float - value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>float or int - value</p>
 <p class="p3"><span class="Apple-tab-span">	</span>] * N</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">Set contiguous ranges of buses to single values. For each range, the starting sample index is given followed by the number of buses to change, followed by the value to fill.</p>
