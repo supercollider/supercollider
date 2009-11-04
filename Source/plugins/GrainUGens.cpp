@@ -56,9 +56,12 @@ struct GrainInG
 
 struct GrainIn : public Unit
 {
-	int mNumActive, m_channels;
+	int mNumActive, m_channels, mMaxGrains;
 	float curtrig;
-	GrainInG mGrains[kMaxSynthGrains];
+	bool mFirst;
+//	GrainInG mGrains[kMaxSynthGrains];
+	GrainInG *mGrains;
+
 };
 
 struct GrainSinG
@@ -72,11 +75,13 @@ struct GrainSinG
 
 struct GrainSin : public Unit
 {
-	int mNumActive, m_channels;
+	int mNumActive, m_channels, mMaxGrains;
 	uint32 m_lomask;
 	float curtrig;
+	bool mFirst;
 	double m_cpstoinc, m_radtoinc;
-	GrainSinG mGrains[kMaxSynthGrains];
+//	GrainSinG mGrains[kMaxSynthGrains];
+	GrainSinG *mGrains;
 };
 
 struct GrainFMG
@@ -91,11 +96,13 @@ struct GrainFMG
 
 struct GrainFM : public Unit
 {
-	int mNumActive, m_channels;
+	int mNumActive, m_channels, mMaxGrains;
 	uint32 m_lomask;
 	float curtrig;
+	bool mFirst;
 	double m_cpstoinc, m_radtoinc;
-	GrainFMG mGrains[kMaxSynthGrains];
+//	GrainFMG mGrains[kMaxSynthGrains];
+	GrainFMG *mGrains;
 };
 
 struct GrainBufG
@@ -108,9 +115,11 @@ struct GrainBufG
 
 struct GrainBuf : public Unit
 {
-	int mNumActive, m_channels;
+	int mNumActive, m_channels, mMaxGrains;
 	float curtrig;
-	GrainBufG mGrains[kMaxSynthGrains];
+	bool mFirst;
+//	GrainBufG mGrains[kMaxSynthGrains];
+	GrainBufG *mGrains;
 };
 
 struct WarpWinGrain
@@ -138,18 +147,22 @@ extern "C"
 	void load(InterfaceTable *inTable);
 
 	void GrainIn_Ctor(GrainIn* unit);
+	void GrainIn_Dtor(GrainIn* unit);
 	void GrainIn_next_a(GrainIn *unit, int inNumSamples);
 	void GrainIn_next_k(GrainIn *unit, int inNumSamples);
 
 	void GrainSin_Ctor(GrainSin* unit);
+	void GrainSin_Dtor(GrainSin* unit);
 	void GrainSin_next_a(GrainSin *unit, int inNumSamples);
 	void GrainSin_next_k(GrainSin *unit, int inNumSamples);
 
 	void GrainFM_Ctor(GrainFM* unit);
+	void GrainFM_Dtor(GrainFM* unit);
 	void GrainFM_next_a(GrainFM *unit, int inNumSamples);
 	void GrainFM_next_k(GrainFM *unit, int inNumSamples);
 
 	void GrainBuf_Ctor(GrainBuf* unit);
+	void GrainBuf_Dtor(GrainBuf* unit);
 	void GrainBuf_next_a(GrainBuf *unit, int inNumSamples);
 	void GrainBuf_next_k(GrainBuf *unit, int inNumSamples);
 
@@ -603,7 +616,7 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; ++i) {
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) {
 			// start a grain
-			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
+			if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
 			if((windowData) || (winType < 0.)) {
@@ -651,6 +664,12 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
+	if(unit->mFirst){
+	    unit->mFirst = false;
+	    float maxGrains = IN0(5);
+	    unit->mMaxGrains = (int)maxGrains;
+	    unit->mGrains = (GrainInG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainInG));
+	}
 	// begin add //
 	SETUP_GRAIN_OUTS
 	// end add
@@ -699,7 +718,7 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 
 	if ((unit->curtrig <= 0) && (trig > 0.0)) {
 		    // start a grain
-		    if (unit->mNumActive+1 >= kMaxSynthGrains)
+		    if (unit->mNumActive+1 >= unit->mMaxGrains)
 		    {
 		    Print("Too many grains!\n");
 		    } else {
@@ -753,9 +772,15 @@ void GrainIn_Ctor(GrainIn *unit)
 	    SETCALC(GrainIn_next_a);
 	    else
 	    SETCALC(GrainIn_next_k);
+	unit->mFirst = true;
 	unit->mNumActive = 0;
 	unit->curtrig = 0.f;
 	GrainIn_next_k(unit, 1);
+}
+
+void GrainIn_Dtor(GrainIn *unit)
+{
+    RTFree(unit->mWorld, unit->mGrains);
 }
 
 void GrainSin_next_a(GrainSin *unit, int inNumSamples)
@@ -817,7 +842,8 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; ++i) {
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) {
 			// start a grain
-			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
+//			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
+			if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
 			if((windowData) || (winType < 0.)) {
@@ -871,6 +897,12 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
+    	if(unit->mFirst){
+		    unit->mFirst = false;
+		    float maxGrains = IN0(5);
+		    unit->mMaxGrains = (int)maxGrains;
+		    unit->mGrains = (GrainSinG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainSinG));
+		}
 	// begin add //
 	SETUP_GRAIN_OUTS
 	// end add
@@ -927,7 +959,8 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 
 	if ((unit->curtrig <= 0) && (trig > 0.0)) {
 		    // start a grain
-		    if (unit->mNumActive+1 >= kMaxSynthGrains)
+//		    if (unit->mNumActive+1 >= kMaxSynthGrains)
+		    if (unit->mNumActive+1 >= unit->mMaxGrains)
 		    {
 		    Print("Too many grains!\n");
 		    } else {
@@ -993,9 +1026,14 @@ void GrainSin_Ctor(GrainSin *unit)
 	unit->m_cpstoinc = tableSizeSin * SAMPLEDUR * 65536.;
 	unit->curtrig = 0.f;
 	unit->mNumActive = 0;
+	unit->mFirst = true;
 	GrainSin_next_k(unit, 1);
 }
 
+void GrainSin_Dtor(GrainSin *unit)
+{
+	RTFree(unit->mWorld, unit->mGrains);
+}
 
 void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 {
@@ -1063,7 +1101,8 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; ++i) {
 	    if ((unit->curtrig <= 0) && (trig[i] > 0.0)) {
 		// start a grain
-		if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
+//		if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
+		if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 		float winType = GRAIN_IN_AT(unit, 6, i);
 		GET_GRAIN_WIN
 		if((windowData) || (winType < 0.)) {
@@ -1126,6 +1165,14 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
+    
+    	if(unit->mFirst){
+		    unit->mFirst = false;
+		    float maxGrains = IN0(7);
+		    unit->mMaxGrains = (int)maxGrains;
+	    	    unit->mGrains = (GrainFMG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainFMG));
+		}
+    
 	// begin add //
 	SETUP_GRAIN_OUTS
 	// end add
@@ -1188,7 +1235,8 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 
 	    if ((unit->curtrig <= 0) && (trig > 0.0)) {
 		// start a grain
-		if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n");
+//		if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n");
+		if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n");
 		} else {
 		float winType = IN0(6);
 		GET_GRAIN_WIN
@@ -1257,7 +1305,13 @@ void GrainFM_Ctor(GrainFM *unit)
 	unit->m_cpstoinc = tableSizeSin * SAMPLEDUR * 65536.;
 	unit->curtrig = 0.f;
 	unit->mNumActive = 0;
+	unit->mFirst = true;
 	GrainFM_next_k(unit, 1);
+}
+
+void GrainFM_Dtor(GrainFM *unit)
+{
+        RTFree(unit->mWorld, unit->mGrains);
 }
 
 #define GRAIN_BUF_LOOP_BODY_4 \
@@ -1386,7 +1440,8 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; i++) {
 		if ((trig[i] > 0) && (unit->curtrig <=0)) {
 			// start a grain
-			if (unit->mNumActive+1 >= kMaxSynthGrains) {
+//			if (unit->mNumActive+1 >= kMaxSynthGrains) {
+			if (unit->mNumActive+1 >= unit->mMaxGrains) {
 			Print("Too many grains!\n");
 			} else {
 
@@ -1471,6 +1526,12 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
+    	if(unit->mFirst){
+		    unit->mFirst = false;
+		    float maxGrains = IN0(8);
+		    unit->mMaxGrains = (int)maxGrains;
+		    unit->mGrains = (GrainBufG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainBufG));
+		}
 	//begin add
 	SETUP_GRAIN_OUTS
 
@@ -1546,7 +1607,8 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 
 	    if ((trig > 0) && (unit->curtrig <=0)) {
 		    // start a grain
-		    if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n");
+//		    if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n");
+		    if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n");
 		    } else {
 		    GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 		    float winType = IN0(7);
@@ -1628,8 +1690,15 @@ void GrainBuf_Ctor(GrainBuf *unit)
 	    SETCALC(GrainBuf_next_k);
 	unit->mNumActive = 0;
 	unit->curtrig = 0.f;
+	unit->mFirst = true;
 	GrainBuf_next_k(unit, 1); // should be _k
 }
+
+void GrainBuf_Dtor(GrainBuf *unit)
+{
+        RTFree(unit->mWorld, unit->mGrains);
+}
+
 
 #define BUF_GRAIN_LOOP_BODY_4_N \
 		phase = sc_gloop(phase, loopMax); \
@@ -1833,10 +1902,14 @@ PluginLoad(Grain)
 {
 	ft = inTable;
 
-	DefineSimpleCantAliasUnit(GrainIn);
-	DefineSimpleCantAliasUnit(GrainSin);
-	DefineSimpleCantAliasUnit(GrainFM);
-	DefineSimpleCantAliasUnit(GrainBuf);
+	DefineDtorCantAliasUnit(GrainIn);
+//	DefineSimpleCantAliasUnit(GrainIn);
+	DefineDtorCantAliasUnit(GrainSin);
+//	DefineSimpleCantAliasUnit(GrainSin);
+	DefineDtorCantAliasUnit(GrainFM);
+//	DefineSimpleCantAliasUnit(GrainFM);
+	DefineDtorCantAliasUnit(GrainBuf);
+//	DefineSimpleCantAliasUnit(GrainBuf);
 	DefineSimpleCantAliasUnit(Warp1);
 
 }
