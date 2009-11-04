@@ -1420,6 +1420,24 @@ SCUserView : SCView {
 	}
 
 }
+
+SCAnimationView : SCUserView {
+	var <>counter= 0;
+	var <showInfo= false;
+	showInfo_ {|bool|
+		showInfo= bool;
+		this.setProperty(\showInfo, bool);
+	}
+	draw {
+		counter= counter+1;
+		drawFunc.value(this, counter);
+	}
+	drawFunc_ {|func|
+		counter= 0;
+		drawFunc= func;
+	}
+}
+
 //
 //SCFuncUserView : SCUserView {
 //	var <>keyDownFunc, <>drawFunc;

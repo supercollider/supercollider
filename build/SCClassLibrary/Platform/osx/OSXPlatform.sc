@@ -8,6 +8,7 @@ OSXPlatform : UnixPlatform
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
 		this.declareFeature(\findHelpFile); // Announce that we have our own way of finding helpfiles
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
+		this.setDeferredTaskInterval(1/60);
 	}
 
 	name { ^\osx }
@@ -65,6 +66,8 @@ OSXPlatform : UnixPlatform
 		currentFullScreen = SCWindow.currentFullScreen;
 		currentFullScreen.notNil.if({currentFullScreen.endFullScreen;});
 	}
+
+	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
 
 	findHelpFile { | string |
 		_Cocoa_HelpFileForString_

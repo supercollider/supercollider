@@ -88,7 +88,7 @@ static id sharedSCVM = nil;
 {
 	gIdeName = "scapp"; // declare that code specific to SC.app IDE will be compiled in
 	deferredTaskTimer = 
-			[NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:
+			[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
 				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
         
 	appClockTimer = 
@@ -130,6 +130,25 @@ static id sharedSCVM = nil;
 	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self 
 			selector: @selector(receiveWakeNote:) name: NSWorkspaceDidWakeNotification object: NULL];
 
+}
+
+-(void)setDeferredTaskInterval: (float) interval
+{
+	
+	[deferredTaskTimer invalidate];
+	[deferredTaskTimer release];
+	deferredTaskInterval = interval;
+	deferredTaskTimer = 
+	[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
+	 @selector(doPeriodicTask:) userInfo: nil repeats: YES];        
+	
+	[deferredTaskTimer retain];
+	
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+								 forMode: NSModalPanelRunLoopMode];
+	
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+								 forMode: NSEventTrackingRunLoopMode];
 }
 
 - (void)doPeriodicTask: (NSTimer*) timer
