@@ -26,12 +26,14 @@
     NSMutableArray *guiWindows;
 	NSTimer *deferredTaskTimer;
 	NSTimer *appClockTimer;
+	float deferredTaskInterval;
 }
 
 + (id)sharedInstance;
 
 - (id)init;
 - (void)start;
+- (void)setDeferredTaskInterval: (float) interval;
 - (void)doPeriodicTask: (NSTimer*) timer;
 - (void)doClockTask: (NSTimer*) timer;
 - (void)setCmdLine: (const char*) text length: (int)length;

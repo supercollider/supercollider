@@ -4074,6 +4074,24 @@ int prRecompile(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSetDeferredTaskInterval(struct VMGlobals *g, int numArgsPushed);
+int prSetDeferredTaskInterval(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *intv = g->sp;
+	
+	int err;
+	float interval;
+	
+	err = slotFloatVal(intv, &interval);
+	if (err) return err;
+	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+	[scvm setDeferredTaskInterval: interval];
+	
+	return errNone;
+}
+
 void initSCImagePrimitives();
 
 void initGUIPrimitives()
@@ -4251,6 +4269,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
 	definePrimitive(base, index++, "_Recompile", prRecompile, 1, 0);
+	definePrimitive(base, index++, "_SetDeferredTaskInterval", prSetDeferredTaskInterval, 2, 0);
 
 	initSCImagePrimitives();
 }

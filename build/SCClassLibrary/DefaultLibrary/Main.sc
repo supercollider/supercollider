@@ -142,4 +142,6 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 	escapeWindow { platform.escapeWindow }
 
 	exitFullScreen { platform.exitFullScreen }
+	
+	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
 }

@@ -81,6 +81,7 @@ DragSink : ViewRedirect { *key { ^\dragSink }}
 DragBoth : ViewRedirect { *key { ^\dragBoth }}
 
 UserView : ViewRedirect { *key { ^\userView }}
+AnimationView : ViewRedirect { *key {^\animationView}}
 MultiSliderView : ViewRedirect { *key { ^\multiSliderView }}
 EnvelopeView : ViewRedirect { *key { ^\envelopeView }}
 
