@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.11">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -27,7 +27,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><b>GrainBuf<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Granular synthesis with sound stored in a buffer</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>GrainBuf.ar(numChannels, trigger, dur, sndbuf, rate, pos, interp, pan, envbufnum, mul, add)</b></p>
+<p class="p3"><b>GrainBuf.ar(numChannels, trigger, dur, sndbuf, rate, pos, interp, pan, envbufnum, maxGrains, mul, add)</b></p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>numChannels</b> - the number of channels to output. If 1, mono is returned and pan is ignored.</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>trigger </b>- a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.</p>
@@ -43,6 +43,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if numChannels &gt; 2, pannins is the same as PanAz.<span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>envbufnum</b> - the buffer number containing a singal to use for the grain envelope. -1 uses a built-in<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Hanning envelope.</p>
+<p class="p3"><b><span class="Apple-tab-span">	</span>maxGrains </b>- the maximum number of overlapping grains that can be used at a given time. This value</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>efficient use of memory.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>*WARNING*</b> The above parameter is new (post SC 3.3.1) and has the potential to break code written</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>&lt;= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>for this difference.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Examples:</b></p>
