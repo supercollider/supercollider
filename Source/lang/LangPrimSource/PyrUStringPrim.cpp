@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#ifndef SC_WIN32
+#if !defined(SC_WIN32) && !defined(SC_IPHONE)
 
 struct URegularExpression;
 /**

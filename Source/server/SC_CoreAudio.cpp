@@ -1738,13 +1738,13 @@ OSStatus RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlag
 {
 	SC_iCoreAudioDriver *driver = (SC_iCoreAudioDriver *) inRefCon;
 
-
+#ifndef SC_IPHONE
 	if (!driver->receivedIn)
 	{
 		//printf("exit output with no data \n");
 		return noErr;
 	}
-
+#endif
 
 	//float *fbuffer = (float *) driver->converter_buffer;
 
@@ -2012,6 +2012,14 @@ bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* out
 {
 	AudioSessionInitialize(0, 0, AudioSessionInterruptionCbk, 0);
 	unsigned long category = kAudioSessionCategory_PlayAndRecord;
+#ifdef SC_IPHONE
+	UInt32 micInputSize, micInput;
+	AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &micInputSize, &micInput);
+	if(!micInput) {
+		category = kAudioSessionCategory_MediaPlayback;
+		scprintf("SC_IPHONE: WARNING - no audio input available\n");
+	}
+#endif
 	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
 
 	if (mPreferredHardwareBufferFrameSize)
