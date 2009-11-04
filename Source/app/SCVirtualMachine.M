@@ -76,7 +76,8 @@ static id sharedSCVM = nil;
 
     deferredOperations = [NSMutableArray arrayWithCapacity: 8];
     [deferredOperations retain];
-    
+    deferredTaskInterval = 1.f/60;
+	
     guiWindows = [NSMutableArray arrayWithCapacity: 8];
     [guiWindows retain];
     [NSApp setDelegate: self]; //just to get a notification when sc quits. jan.t
