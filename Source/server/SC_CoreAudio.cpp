@@ -2013,7 +2013,7 @@ bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* out
 	AudioSessionInitialize(0, 0, AudioSessionInterruptionCbk, 0);
 	unsigned long category = kAudioSessionCategory_PlayAndRecord;
 #ifdef SC_IPHONE
-	UInt32 micInputSize, micInput;
+	UInt32 micInput, micInputSize = sizeof(&micInput);
 	AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &micInputSize, &micInput);
 	if(!micInput) {
 		category = kAudioSessionCategory_MediaPlayback;
