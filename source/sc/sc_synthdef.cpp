@@ -22,6 +22,7 @@
 #include <boost/integer/endian.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <utilities/sized_array.hpp>
 
