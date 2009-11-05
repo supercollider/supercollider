@@ -138,7 +138,7 @@ static id sharedSCVM = nil;
 	
 	[deferredTaskTimer invalidate];
 	[deferredTaskTimer release];
-	deferredTaskInterval = interval;
+	deferredTaskInterval = sc_max(interval, 1.f/600);
 	deferredTaskTimer = 
 	[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
 	 @selector(doPeriodicTask:) userInfo: nil repeats: YES];        
