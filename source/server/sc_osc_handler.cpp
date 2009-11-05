@@ -418,7 +418,30 @@ void send_done_message(udp::endpoint const & endpoint)
     char buffer[128];
     osc::OutboundPacketStream p(buffer, 128);
     p << osc::BeginMessage("/done")
-    << osc::EndMessage;
+      << osc::EndMessage;
+
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
+
+void send_done_message(udp::endpoint const & endpoint, const char * cmd)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+      << cmd
+      << osc::EndMessage;
+
+    instance->send_udp(p.Data(), p.Size(), endpoint);
+}
+
+void send_done_message(udp::endpoint const & endpoint, const char * cmd, osc::int32 index)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+      << cmd
+      << index
+      << osc::EndMessage;
 
     instance->send_udp(p.Data(), p.Size(), endpoint);
 }
@@ -429,6 +452,15 @@ void fire_done_message(udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(send_done_message, endpoint));
 }
 
+void fire_done_message(udp::endpoint const & endpoint, const char * cmd)
+{
+    fire_system_callback(boost::bind(send_done_message, endpoint, cmd));
+}
+
+void fire_done_message(udp::endpoint const & endpoint, const char * cmd, osc::int32 index)
+{
+    fire_system_callback(boost::bind(send_done_message, endpoint, cmd, index));
+}
 
 struct sc_response_callback:
     public system_callback
@@ -447,7 +479,7 @@ struct sc_response_callback:
 
 void quit_perform(udp::endpoint const & endpoint)
 {
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/quit");
     instance->terminate();
 }
 
@@ -462,7 +494,7 @@ void notify_perform(bool enable, udp::endpoint const & endpoint)
         instance->add_observer(endpoint);
     else
         instance->remove_observer(endpoint);
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/notify");
 }
 
 void handle_notify(received_message const & message, udp::endpoint const & endpoint)
@@ -1366,7 +1398,7 @@ protected:
 
 
 void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
-void b_alloc_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+void b_alloc_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
 
 void b_alloc_1_nrt(uint32_t index, uint32_t frames, uint32_t channels, completion_message & msg, udp::endpoint const & endpoint)
 {
@@ -1379,13 +1411,13 @@ void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, u
 {
     ugen_factory.buffer_sync(index);
     msg.handle(endpoint);
-    fire_system_callback(boost::bind(b_alloc_3_nrt, free_buf, endpoint));
+    fire_system_callback(boost::bind(b_alloc_3_nrt, index, free_buf, endpoint));
 }
 
-void b_alloc_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+void b_alloc_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/b_alloc", index);
 }
 
 void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint)
@@ -1402,7 +1434,7 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
 void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, udp::endpoint const & endpoint);
-void b_free_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+void b_free_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
@@ -1414,14 +1446,14 @@ void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const 
 void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, udp::endpoint const & endpoint)
 {
     ugen_factory.buffer_sync(index);
-    fire_system_callback(boost::bind(b_free_3_nrt, free_buf, endpoint));
+    fire_system_callback(boost::bind(b_free_3_nrt, index, free_buf, endpoint));
     msg.handle(endpoint);
 }
 
-void b_free_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+void b_free_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/b_free", index);
 }
 
 
@@ -1438,7 +1470,7 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
 }
 
 void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
-void b_allocRead_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+void b_allocRead_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
 
 void b_allocRead_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
                        udp::endpoint const & endpoint)
@@ -1456,13 +1488,13 @@ void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_bu
 {
     ugen_factory.buffer_sync(index);
     msg.handle(endpoint);
-    fire_system_callback(boost::bind(b_allocRead_3_nrt, free_buf, endpoint));
+    fire_system_callback(boost::bind(b_allocRead_3_nrt, index, free_buf, endpoint));
 }
 
-void b_allocRead_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+void b_allocRead_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/b_allocRead", index);
 }
 
 void handle_b_allocRead(received_message const & msg, udp::endpoint const & endpoint)
@@ -1491,7 +1523,7 @@ void handle_b_allocRead(received_message const & msg, udp::endpoint const & endp
 
 void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
                              udp::endpoint const & endpoint);
-void b_allocReadChannel_3_nrt(sample * free_buf, udp::endpoint const & endpoint);
+void b_allocReadChannel_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
 
 void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, uint32_t start, uint32_t frames,
                               movable_array<uint32_t> const & channels, completion_message & msg,
@@ -1509,13 +1541,13 @@ void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * 
 {
     ugen_factory.buffer_sync(index);
     msg.handle(endpoint);
-    fire_system_callback(boost::bind(b_allocReadChannel_3_nrt, free_buf, endpoint));
+    fire_system_callback(boost::bind(b_allocReadChannel_3_nrt, index, free_buf, endpoint));
 }
 
-void b_allocReadChannel_3_nrt(sample * free_buf, udp::endpoint const & endpoint)
+void b_allocReadChannel_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint);
+    send_done_message(endpoint, "/b_allocReadChannel", index);
 }
 
 
@@ -1551,13 +1583,15 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     fire_system_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
 }
 
+const char * b_write = "/b_write";
+
 void b_write_nrt_1(uint32_t index, movable_string const & filename, movable_string const & header_format,
                    movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
                    completion_message & msg, udp::endpoint const & endpoint)
 {
     ugen_factory.buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
     msg.trigger_async(endpoint);
-    fire_done_message(endpoint);
+    fire_done_message(endpoint, b_write, index);
 }
 
 void fire_b_write_exception(void)
@@ -1630,11 +1664,12 @@ void b_read_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file
     fire_rt_callback(boost::bind(b_read_rt_2, index, msg, endpoint));
 }
 
+const char * b_read = "/b_read";
 void b_read_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
     ugen_factory.buffer_sync(index);
     msg.handle(endpoint);
-    fire_done_message(endpoint);
+    fire_done_message(endpoint, b_read, index);
 }
 
 void fire_b_read_exception(void)
@@ -1713,11 +1748,12 @@ void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t sta
     fire_rt_callback(boost::bind(b_readChannel_rt_2, index, msg, endpoint));
 }
 
+const char * b_readChannel = "/b_readChannel";
 void b_readChannel_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
     ugen_factory.buffer_sync(index);
     msg.handle(endpoint);
-    fire_done_message(endpoint);
+    fire_done_message(endpoint, b_readChannel, index);
 }
 
 void fire_b_readChannel_exception(void)
@@ -1808,11 +1844,12 @@ void b_zero_nrt_1(uint32_t index, completion_message & msg, udp::endpoint const 
     fire_rt_callback(boost::bind(b_zero_rt_2, index, msg, endpoint));
 }
 
+const char * b_zero = "/b_zero";
 void b_zero_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
     ugen_factory.increment_write_updates(index);
     msg.handle(endpoint);
-    fire_done_message(endpoint);
+    fire_done_message(endpoint, b_zero, index);
 }
 
 void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
@@ -2032,7 +2069,7 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
 
 
 void b_gen_rt_2(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
-void b_gen_nrt_3(sample * free_buf, udp::endpoint const & endpoint);
+void b_gen_nrt_3(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
 
 void b_gen_nrt_1(movable_array<char> & message, udp::endpoint const & endpoint)
 {
@@ -2050,13 +2087,14 @@ void b_gen_nrt_1(movable_array<char> & message, udp::endpoint const & endpoint)
 void b_gen_rt_2(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     ugen_factory.buffer_sync(index);
-    fire_system_callback(boost::bind(b_gen_nrt_3, free_buf, endpoint));
+    fire_system_callback(boost::bind(b_gen_nrt_3, index, free_buf, endpoint));
 }
 
-void b_gen_nrt_3(sample * free_buf, udp::endpoint const & endpoint)
+const char * b_free = "/b_free";
+void b_gen_nrt_3(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint);
+    send_done_message(endpoint, b_free, index);
 }
 
 void handle_b_gen(received_message const & msg, udp::endpoint const & endpoint)
@@ -2219,35 +2257,15 @@ void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
-struct d_recv_callback:
-    public sc_async_callback
+
+void d_recv_nrt(movable_array<char> & def, completion_message & msg, udp::endpoint const & endpoint)
 {
-    d_recv_callback(size_t def_size, const void * def, completion_message & msg,
-                    udp::endpoint const & endpoint):
-        sc_async_callback(msg, endpoint), def_size_(def_size_)
-    {
-        def_ = (char*)allocate(def_size + 1);
-        memcpy(def_, def, def_size);
-        def_[def_size] = 0;
-    }
+    std::vector<sc_synthdef> synthdefs = read_synthdefs(def.data());
+    register_synthdefs(*instance, synthdefs);
 
-    ~d_recv_callback(void)
-    {
-        deallocate(def_);
-    }
-
-    void run(void)
-    {
-        std::vector<sc_synthdef> synthdefs = read_synthdefs(def_);
-        register_synthdefs(*instance, synthdefs);
-
-        schedule_async_message();
-        send_done();
-    }
-
-    char * def_;
-    const size_t def_size_;
-};
+    msg.trigger_async(endpoint);
+    send_done_message(endpoint, "/d_recv");
+}
 
 void handle_d_recv(received_message const & msg,
                    udp::endpoint const & endpoint)
@@ -2258,63 +2276,38 @@ void handle_d_recv(received_message const & msg,
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
 
     args->AsBlob(synthdef_data, synthdef_size); ++args;
+    movable_array<char> def(synthdef_size, (const char*)synthdef_data);
     completion_message message = extract_completion_message(args);
 
-    instance->add_system_callback(new d_recv_callback(synthdef_size, synthdef_data, message, endpoint));
+    fire_system_callback(boost::bind(d_recv_nrt, def, message, endpoint));
 }
 
-struct d_load_callback:
-    public sc_async_callback
+
+void d_load_nrt(movable_string & path, completion_message & msg, udp::endpoint const & endpoint)
 {
-    d_load_callback(const char * path, completion_message & msg,
-                    udp::endpoint const & endpoint):
-        sc_async_callback(msg, endpoint),
-        path_(copy_string(path))
-    {}
+    sc_read_synthdefs_file(*instance, path.c_str()); /* todo: we need to implment some file name pattern matching */
+    msg.trigger_async(endpoint);
+    send_done_message(endpoint, "/d_load");
+}
 
-    ~d_load_callback(void)
-    {
-        deallocate((char*)path_);
-    }
-
-    void run(void)
-    {
-        sc_read_synthdefs_file(*instance, path_); /* todo: we need to implment some file name pattern matching */
-        schedule_async_message();
-        send_done();
-    }
-
-    const char * const path_;
-};
 
 void handle_d_load(received_message const & msg,
                    udp::endpoint const & endpoint)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-    const char * path;
-
-    args >> path;
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
+    const char * path = args->AsString(); args++;
     completion_message message = extract_completion_message(args);
 
-    instance->add_system_callback(new d_load_callback(path, message, endpoint));
+    fire_system_callback(boost::bind(d_load_nrt, movable_string(path), message, endpoint));
 }
 
 
-struct d_loadDir_callback:
-    public d_load_callback
+void d_loadDir_nrt(movable_string & path, completion_message & msg, udp::endpoint const & endpoint)
 {
-    d_loadDir_callback(const char * path, completion_message & msg,
-                       udp::endpoint const & endpoint):
-        d_load_callback(path, msg, endpoint)
-    {}
-
-    void run(void)
-    {
-        sc_read_synthdefs_dir(*instance, path_);
-        schedule_async_message();
-        send_done();
-    }
-};
+    sc_read_synthdefs_dir(*instance, path.c_str());
+    msg.trigger_async(endpoint);
+    send_done_message(endpoint, "/d_loadDir");
+}
 
 void handle_d_loadDir(received_message const & msg,
                       udp::endpoint const & endpoint)
@@ -2325,7 +2318,7 @@ void handle_d_loadDir(received_message const & msg,
     args >> path;
     completion_message message = extract_completion_message(args);
 
-    instance->add_system_callback(new d_loadDir_callback(path, message, endpoint));
+    fire_system_callback(boost::bind(d_loadDir_nrt, movable_string(path), message, endpoint));
 }
 
 
