@@ -36,6 +36,7 @@
 #include "supercollider/Headers/server/SC_Prototypes.h"
 #include "supercollider/Headers/server/SC_Errors.h"
 #include "supercollider/Headers/plugin_interface/clz.h"
+#include "supercollider/Headers/plugin_interface/sc_msg_iter.h"
 
 namespace nova
 {
@@ -942,6 +943,19 @@ void sc_plugin_interface::buffer_zero(uint32_t index)
 
     zerovec_simd(buf->data, unrolled);
     zerovec(buf->data + unrolled, remain);
+}
+
+sample * sc_plugin_interface::buffer_generate(uint32_t index, const char* cmd_name, struct sc_msg_iter & msg)
+{
+    SndBuf * buf = World_GetNRTBuf(&world, index);
+    sample * data = buf->data;
+
+    BufGenFunc bufgen = ugen_factory.find_bufgen(cmd_name);
+    (bufgen)(&world, buf, &msg);
+    if (data == buf->data)
+        return NULL;
+    else
+        return data;
 }
 
 void sc_plugin_interface::buffer_sync(uint32_t index)

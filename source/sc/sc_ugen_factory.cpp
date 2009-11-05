@@ -207,6 +207,17 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
     bufgen_map.insert(*def);
 }
 
+BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
+{
+    bufgen_map_t::iterator it = bufgen_map.find(name,
+                                                compare_def<sc_bufgen_def>());
+    if (it == bufgen_map.end()) {
+        std::cerr << "unable to find buffer generator: " << name << std::endl;
+        throw std::runtime_error("unable to create ugen");
+    }
+    return it->func;
+}
+
 struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
                                        sc_synthdef::unit_spec_t const & unit_spec)
 {

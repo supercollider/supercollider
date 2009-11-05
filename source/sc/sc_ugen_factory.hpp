@@ -79,9 +79,10 @@ class sc_bufgen_def:
     public bi::set_base_hook<>
 {
     const std::string name_;
-    const BufGenFunc func;
 
 public:
+    const BufGenFunc func;
+
     sc_bufgen_def(const char * name, BufGenFunc func):
         name_(name), func(func)
     {}
@@ -160,6 +161,7 @@ public:
                        UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 
     void register_bufgen(const char * name, BufGenFunc func);
+    BufGenFunc find_bufgen(const char * name);
 
     uint32_t ugen_count(void) const
     {

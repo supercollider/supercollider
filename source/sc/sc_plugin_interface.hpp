@@ -124,6 +124,8 @@ public:
     void buffer_zero(uint32_t index);
     void buffer_close(uint32_t index);
 
+    sample * buffer_generate(uint32_t index, const char * cmd_name, struct sc_msg_iter & msg);
+
     void increment_write_updates(uint32_t index)
     {
         world.mSndBufUpdates[index].writes++;

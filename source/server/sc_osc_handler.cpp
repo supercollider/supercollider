@@ -21,6 +21,7 @@
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPrintReceivedElements.h"
 
+#include "sc/supercollider/Headers/plugin_interface/sc_msg_iter.h"
 #include "sc_osc_handler.hpp"
 #include "server.hpp"
 #include "utilities/sized_array.hpp"
@@ -305,7 +306,7 @@ template <typename T>
 struct movable_array
 {
     /** allocate new array, only allowed to be called from the rt thread */
-    movable_array(size_t length, T * data):
+    movable_array(size_t length, const T * data):
         length_(length)
     {
         data_ = (T*)system_callback::allocate(length * sizeof(T));
@@ -2029,6 +2030,42 @@ void handle_b_getn(received_message const & msg, udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
+
+void b_gen_rt_2(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
+void b_gen_nrt_3(sample * free_buf, udp::endpoint const & endpoint);
+
+void b_gen_nrt_1(movable_array<char> & message, udp::endpoint const & endpoint)
+{
+    sc_msg_iter msg(message.length(), (char*)message.data());
+
+    int index = msg.geti();
+    const char * generator = (const char*)msg.gets4();
+    if (!generator)
+        return;
+
+    sample * free_buf = ugen_factory.buffer_generate(index, generator, msg);
+    fire_rt_callback(boost::bind(b_gen_rt_2, index, free_buf, endpoint));
+}
+
+void b_gen_rt_2(uint32_t index, sample * free_buf, udp::endpoint const & endpoint)
+{
+    ugen_factory.buffer_sync(index);
+    fire_system_callback(boost::bind(b_gen_nrt_3, free_buf, endpoint));
+}
+
+void b_gen_nrt_3(sample * free_buf, udp::endpoint const & endpoint)
+{
+    free_aligned(free_buf);
+    send_done_message(endpoint);
+}
+
+void handle_b_gen(received_message const & msg, udp::endpoint const & endpoint)
+{
+    movable_array<char> cmd (msg.MessageSize(), msg.TypeTags()-1);
+    fire_system_callback(boost::bind(b_gen_nrt_1, cmd, endpoint));
+}
+
+
 void handle_c_set(received_message const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
@@ -2507,6 +2544,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_getn(message, endpoint);
         break;
 
+    case cmd_b_gen:
+        handle_b_gen(message, endpoint);
+        break;
+
     case cmd_c_set:
         handle_c_set(message);
         break;
@@ -2731,6 +2772,11 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
 
     if (strcmp(address+3, "getn") == 0) {
         handle_b_getn(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "gen") == 0) {
+        handle_b_gen(message, endpoint);
         return;
     }
 }
