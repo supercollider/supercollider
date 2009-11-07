@@ -12,22 +12,24 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41919}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #36701f}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001ab2}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0020de}
-span.s1 {color: #001ab2}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+span.s1 {color: #0000bf}
 span.s2 {color: #000000}
-span.s3 {color: #36701f}
+span.s3 {color: #007300}
 span.s4 {color: #007300}
 span.s5 {color: #0000bf}
-span.s6 {color: #606060}
-span.s7 {font: 12.0px Helvetica}
+span.s6 {color: #0000bf}
+span.s7 {color: #007300}
+span.s8 {color: #606060}
+span.s9 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -113,7 +115,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>set:</b> Send new values to the control inputs of existing nodes.</p>
 <ul>
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> The node ID(s) must be given explicitly.</li>
+<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> The node ID(s) must be given explicitly. This may be an integer ID or Synth/Group node object.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3">There are two ways to specify argument names: by <i>instrument</i> and by <i>argument array</i>.</p>
@@ -125,29 +127,30 @@ span.Apple-tab-span {white-space:pre}
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>args:</b> By default, the \args key contains the control names for the default synthdef. To take argument names from the instrument name, you must override this default with an empty array (or any non-collection object).</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p9">(</p>
-<p class="p10">SynthDef<span class="s2">(</span><span class="s4">\event_set</span><span class="s2">, { </span>|freq = 440, gate = 1, amp = 0.1, lagTime = 0.1,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq = 2000, detune = 1.005, out = 0|</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s5">var</span><span class="Apple-tab-span">	</span>sig = <span class="s5">Saw</span>.ar(Lag.kr(freq, lagTime) * [1, detune]).sum * amp</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.adsr, gate, doneAction: 2);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, sig ! 2);</p>
-<p class="p9">}).memStore;</p>
-<p class="p9">)</p>
-<p class="p11"><br></p>
-<p class="p12"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
-<p class="p11"><br></p>
-<p class="p9">(</p>
-<p class="p9">p = <span class="s5">Pbind</span>(</p>
+<p class="p5">(</p>
+<p class="p9">SynthDef<span class="s2">(</span><span class="s4">\event_set</span><span class="s2">, { </span>|freq = 440, gate = 1, amp = 0.1, lagTime = 0.1,</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq = 2000, detune = 1.005, out = 0|</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">var</span><span class="Apple-tab-span">	</span>sig = <span class="s5">Saw</span>.ar(Lag.kr(freq, lagTime) * [1, detune]).sum * amp</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.adsr, gate, doneAction: 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, sig ! 2);</p>
+<p class="p5">}).memStore;</p>
+<p class="p5">)</p>
+<p class="p8"><br></p>
+<p class="p10"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
+<p class="p8"><br></p>
+<p class="p5">(</p>
+<p class="p11">p = <span class="s6">Pbind</span>(</p>
 <p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">\id</span>, a,</p>
 <p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\event_set<span class="s2">,</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">\args</span>, #[],</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s5">Pexprand</span>(200, 600, <span class="s5">inf</span>),</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s5">Pwhite</span>(1, 5, <span class="s5">inf</span>) * 0.125</p>
-<p class="p9">).play;</p>
-<p class="p9">)</p>
-<p class="p11"><br></p>
-<p class="p9">p.stop;</p>
-<p class="p9">a.free;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\args</span>, #[],</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\freq</span>, <span class="s6">Pexprand</span>(200, 600, <span class="s6">inf</span>),</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\dur</span>, <span class="s6">Pwhite</span>(1, 5, <span class="s6">inf</span>) * 0.125</p>
+<p class="p11">).play;</p>
+<p class="p5">)</p>
+<p class="p8"><br></p>
+<p class="p5">p.stop;</p>
+<p class="p5">a.free;</p>
 <p class="p2"><br></p>
 <p class="p3"><i>By argument names:</i></p>
 <p class="p2"><br></p>
@@ -155,19 +158,20 @@ span.Apple-tab-span {white-space:pre}
 <li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>args:</b> Provide a list of the Synth argument names as an array here, e.g. [\freq, \amp, \pan]. There is no need to provide the instrument name this way.</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p12"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
-<p class="p11"><br></p>
-<p class="p9">(</p>
-<p class="p9">p = <span class="s5">Pbind</span>(</p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\args<span class="s2">, #[</span>\freq<span class="s2">],</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s5">Pexprand</span>(200, 600, <span class="s5">inf</span>),</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s5">Pwhite</span>(1, 5, <span class="s5">inf</span>) * 0.125</p>
-<p class="p9">).play;</p>
-<p class="p9">)</p>
-<p class="p11"><br></p>
-<p class="p9">p.stop;</p>
-<p class="p9">a.free;</p>
+<p class="p10"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
+<p class="p8"><br></p>
+<p class="p5">(</p>
+<p class="p5">p = <span class="s5">Pbind</span>(</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">\id</span>, a,</p>
+<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>\args<span class="s2">, #[</span>\freq<span class="s2">],</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s5">Pexprand</span>(200, 600, <span class="s5">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s5">Pwhite</span>(1, 5, <span class="s5">inf</span>) * 0.125</p>
+<p class="p5">).play;</p>
+<p class="p5">)</p>
+<p class="p8"><br></p>
+<p class="p5">p.stop;</p>
+<p class="p5">a.free;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>monoNote</b></p>
 <p class="p3"><b>monoOff</b></p>
@@ -243,7 +247,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">These event types uniquely have automatic cleanup event types associated with them. Playing one of these event types allocates a server resource. Later, the resource may be freed by changing the event type to the corresponding cleanup type and playing the event again. While the resource is active, the event can be used as a reference to the resource in other events or Synth messaging.</p>
 <p class="p2"><br></p>
 <p class="p6">// create a buffer</p>
-<p class="p5">b = (type: <span class="s3">\allocRead</span>, path: <span class="s6">"sounds/a11wlk01.wav"</span>).play;</p>
+<p class="p5">b = (type: <span class="s3">\allocRead</span>, path: <span class="s8">"sounds/a11wlk01.wav"</span>).play;</p>
 <p class="p8"><br></p>
 <p class="p5">a = { <span class="s1">PlayBuf</span>.ar(1, b, doneAction: 2) }.play;</p>
 <p class="p8"><br></p>
@@ -440,7 +444,7 @@ span.Apple-tab-span {white-space:pre}
 </ul>
 <p class="p2"><br></p>
 <p class="p6">// Visualize Brownian motion</p>
-<p class="p5">w = <span class="s1">Window</span>(<span class="s6">"Brownian motion"</span>, <span class="s1">Rect</span>(10, 100, 500, 50));</p>
+<p class="p5">w = <span class="s1">Window</span>(<span class="s8">"Brownian motion"</span>, <span class="s1">Rect</span>(10, 100, 500, 50));</p>
 <p class="p5">x = <span class="s1">Slider</span>(w, <span class="s1">Rect</span>(10, 15, 480, 20));</p>
 <p class="p5">w.front;</p>
 <p class="p8"><br></p>
@@ -457,7 +461,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">p.stop;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_07_Value_Conversions.html"><span class="s7">PG_07_Value_Conversions</span></a></span></p>
-<p class="p14"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s7">PG_Cookbook01_Basic_Sequencing</span></a></span></p>
+<p class="p14"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_07_Value_Conversions.html"><span class="s9">PG_07_Value_Conversions</span></a></span></p>
+<p class="p14"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s9">PG_Cookbook01_Basic_Sequencing</span></a></span></p>
 </body>
 </html>
