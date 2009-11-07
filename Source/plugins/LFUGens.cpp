@@ -22,6 +22,11 @@
 #include "SC_PlugIn.h"
 #include <limits.h>
 
+#ifdef NOVA_SIMD
+#include "simd_memory.hpp"
+#include "simd_ternary_arithmetic.hpp"
+#endif
+
 static InterfaceTable *ft;
 
 struct Vibrato : public Unit
@@ -1287,8 +1292,31 @@ void K2A_next(K2A *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
+#ifdef NOVA_SIMD
+void K2A_next_nova(K2A *unit, int inNumSamples)
+{
+	float in = ZIN0(0);
+	float level = unit->mLevel;
+
+	if (level == in)
+		nova::setvec_simd(OUT(0), level, inNumSamples);
+	else
+	{
+		float slope = CALCSLOPE(in, level);
+		nova::set_slope_vec_simd(OUT(0), level, slope, inNumSamples);
+	}
+
+	unit->mLevel = in;
+}
+#endif
+
 void K2A_Ctor(K2A* unit)
 {
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(K2A_next_nova);
+	else
+#endif
 	SETCALC(K2A_next);
 	unit->mLevel = ZIN0(0);
 
@@ -1358,18 +1386,59 @@ void T2A_next(T2A *unit, int inNumSamples)
 
 }
 
+#ifdef NOVA_SIMD
+void T2A_next_nova(T2A *unit, int inNumSamples)
+{
+	float level = IN0(0);
+	int offset = (int) IN0(1);
+
+	if((unit->mLevel <= 0.f && level > 0.f)) {
+		float *out = ZOUT(0);
+		for(int i = 0; i < inNumSamples; i++) {
+			if(i == offset) {
+				ZXP(out) = level;
+			} else {
+				ZXP(out) = 0.f;
+			}
+		}
+	} else {
+		nova::zerovec_simd(OUT(0), inNumSamples);
+	}
+
+	unit->mLevel = level;
+}
+#endif
+
 void T2A_Ctor(T2A* unit)
 {
-	SETCALC(T2A_next);
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(T2A_next_nova);
+	else
+#endif
+    SETCALC(T2A_next);
 	T2A_next(unit, 1);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef NOVA_SIMD
+void DC_next_nova(DC *unit, int inNumSamples)
+{
+	float val = unit->m_val;
+	nova::setvec_simd(OUT(0), val, inNumSamples);
+}
+#endif
+
 void DC_Ctor(DC* unit)
 {
 	unit->m_val = IN0(0);
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(DC_next_nova);
+	else
+#endif
 	SETCALC(DC_next);
 	ZOUT0(0) = unit->m_val;
 }
@@ -1428,8 +1497,66 @@ void Line_next(Line *unit, int inNumSamples)
 
 }
 
+#ifdef NOVA_SIMD
+void Line_next_nova(Line *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+
+	double slope = unit->mSlope;
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	int remain = inNumSamples;
+	if (counter == 0)
+	{
+		nova::setvec_simd(OUT(0), unit->mEndLevel, inNumSamples);
+		return;
+	}
+
+	if (counter > inNumSamples)
+	{
+		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, inNumSamples);
+		unit->mLevel = level + inNumSamples * slope;
+		unit->mCounter = counter - inNumSamples;
+		return;
+	}
+
+	do {
+		if (counter==0) {
+			int nsmps = remain;
+			remain = 0;
+			float endlevel = unit->mEndLevel;
+			LOOP(nsmps,
+				ZXP(out) = endlevel;
+			);
+		} else {
+			int nsmps = sc_min(remain, counter);
+			counter -= nsmps;
+			remain -= nsmps;
+			LOOP(nsmps,
+				ZXP(out) = level;
+				level += slope;
+			);
+			if (counter == 0) {
+				unit->mDone = true;
+				int doneAction = (int)ZIN0(3);
+				DoneAction(doneAction, unit);
+			}
+		}
+	} while (remain);
+	unit->mCounter = counter;
+	unit->mLevel = level;
+
+}
+#endif
+
 void Line_Ctor(Line* unit)
 {
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(Line_next_nova);
+	else
+#endif
 	SETCALC(Line_next);
 	double start = ZIN0(0);
 	double end = ZIN0(1);
@@ -1489,8 +1616,67 @@ void XLine_next(XLine *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
+#ifdef NOVA_SIMD
+void XLine_next_nova(XLine *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+
+	double grow = unit->mGrowth;
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	int remain = inNumSamples;
+
+	if (counter == 0)
+	{
+		nova::setvec_simd(OUT(0), level, inNumSamples);
+		return;
+	}
+	if (counter >= inNumSamples)
+	{
+		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
+		level *= sc_powi(grow, inNumSamples);
+		counter -= inNumSamples;
+	}
+	else
+	{
+		do {
+			if (counter==0) {
+				int nsmps = remain;
+				remain = 0;
+				float endlevel = unit->mEndLevel;
+				LOOP(nsmps,
+					ZXP(out) = endlevel;
+					);
+			} else {
+				int nsmps = sc_min(remain, counter);
+				counter -= nsmps;
+				remain -= nsmps;
+				LOOP(nsmps,
+					ZXP(out) = level;
+					 level *= grow;
+					);
+				if (counter == 0) {
+					unit->mDone = true;
+					int doneAction = (int)ZIN0(3);
+					DoneAction(doneAction, unit);
+				}
+			}
+		} while (remain);
+	}
+	unit->mCounter = counter;
+	unit->mLevel = level;
+}
+#endif
+
 void XLine_Ctor(XLine* unit)
 {
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(XLine_next_nova);
+	else
+#endif
+
 	SETCALC(XLine_next);
 	double start = ZIN0(0);
 	double end = ZIN0(1);
@@ -1786,9 +1972,23 @@ void Clip_next(Clip* unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void Clip_next_nova(Clip* unit, int inNumSamples)
+{
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	nova::clip_vec_simd(OUT(0), IN(0), lo, hi, inNumSamples);
+}
+#endif
+
 void Clip_Ctor(Clip* unit)
 {
-
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+		SETCALC(Clip_next_nova);
+	else
+#endif
 	SETCALC(Clip_next);
 	unit->m_lo = ZIN0(1);
 	unit->m_hi = ZIN0(2);
@@ -2313,8 +2513,59 @@ void LinLin_next_ka(LinLin *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void LinLin_next_nova(LinLin *unit, int inNumSamples)
+{
+	float scale = unit->m_scale;
+	float offset = unit->m_offset;
+
+	nova::muladd_vec_simd(OUT(0), IN(0), scale, offset, inNumSamples);
+}
+
+void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
+{
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	float scale = (dsthi - dstlo) / (srchi - srclo);
+	float offset = dstlo - scale * srclo;
+
+	nova::muladd_vec_simd(OUT(0), IN(0), scale, offset, inNumSamples);
+}
+#endif
+
 void LinLin_SetCalc(LinLin* unit)
 {
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15))
+	{
+		if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
+			if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+				SETCALC(LinLin_next_aa); return;
+			} else {
+				SETCALC(LinLin_next_ak); return;
+			}
+		} else {
+			if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+				SETCALC(LinLin_next_ka); return;
+			}
+		}
+		for(int i = 1; i<5; i++) {
+			if(INRATE(i) != calc_ScalarRate) {
+				SETCALC(LinLin_next_kk_nova); return;
+			}
+		};
+		SETCALC(LinLin_next_nova);
+		float srclo = ZIN0(1);
+		float srchi = ZIN0(2);
+		float dstlo = ZIN0(3);
+		float dsthi = ZIN0(4);
+
+		unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
+		unit->m_offset = dstlo - unit->m_scale * srclo;
+	}
+#endif
 
 	if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
 		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
@@ -2367,6 +2618,10 @@ enum {
 	kEnvGen_nodeOffset
 };
 
+#ifdef NOVA_SIMD
+void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
+#endif
+
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -2374,6 +2629,11 @@ void EnvGen_Ctor(EnvGen *unit)
 		if (INRATE(0) == calc_FullRate) {
 			SETCALC(EnvGen_next_aa);
 		} else {
+#ifdef NOVA_SIMD
+			if (!(BUFLENGTH & 15))
+				SETCALC(EnvGen_next_ak_nova);
+			else
+#endif
 			SETCALC(EnvGen_next_ak);
 		}
 	} else {
@@ -2859,6 +3119,267 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 
 }
 
+#ifdef NOVA_SIMD
+void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float gate = ZIN0(kEnvGen_gate);
+	int counter = unit->m_counter;
+	double level = unit->m_level;
+
+	if (unit->m_prevGate <= 0. && gate > 0.) {
+		unit->m_stage = -1;
+		unit->mDone = false;
+		unit->m_released = false;
+		counter = 0;
+	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
+		// cutoff
+		int numstages = (int)ZIN0(kEnvGen_numStages);
+		float dur = -gate - 1.f;
+		counter	 = (int32)(dur * SAMPLERATE);
+		counter	 = sc_max(1, counter);
+		unit->m_stage = numstages;
+		unit->m_shape = shape_Linear;
+		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+		unit->m_grow = (unit->m_endLevel - level) / counter;
+	} else if (unit->m_prevGate > 0.f && gate <= 0.f
+			&& unit->m_releaseNode >= 0 && !unit->m_released) {
+		counter = 0;
+		unit->m_stage = unit->m_releaseNode - 1;
+		unit->m_released = true;
+	}
+	unit->m_prevGate = gate;
+
+	int remain = inNumSamples;
+	if (counter > inNumSamples)
+	{
+		switch (unit->m_shape) {
+		case shape_Step :
+		case shape_Sustain :
+			nova::setvec_simd(OUT(0), (float)level, inNumSamples);
+			remain = 0;
+			counter -= inNumSamples;
+			break;
+		case shape_Linear : {
+			double slope = unit->m_grow;
+			nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, inNumSamples);
+			level += 64 * slope;
+			remain = 0;
+			counter -= inNumSamples;
+		} break;
+        case shape_Exponential : {
+            double grow = unit->m_grow;
+            nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
+            level *= sc_powi(grow, inNumSamples);
+            remain = 0;
+            counter -= inNumSamples;
+        } break;
+        }
+	}
+
+	while (remain)
+	{
+		if (counter == 0) {
+			int numstages = (int)ZIN0(kEnvGen_numStages);
+
+			if (unit->m_stage+1 >= numstages) { // num stages
+				counter = INT_MAX;
+				unit->m_shape = 0;
+				level = unit->m_endLevel;
+				unit->mDone = true;
+				int doneAction = (int)ZIN0(kEnvGen_doneAction);
+				DoneAction(doneAction, unit);
+			} else if (unit->m_stage+1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
+				int loopNode = (int)ZIN0(kEnvGen_loopNode);
+				if (loopNode >= 0 && loopNode < numstages) {
+					unit->m_stage = loopNode;
+					goto initSegment;
+				} else {
+					counter = INT_MAX;
+					unit->m_shape = shape_Sustain;
+					level = unit->m_endLevel;
+				}
+			} else {
+				unit->m_stage++;
+	initSegment:
+				int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
+
+				if (stageOffset + 4 > unit->mNumInputs) {
+					// oops.
+					Print("envelope went past end of inputs.\n");
+					ClearUnitOutputs(unit, 1);
+					NodeEnd(&unit->mParent->mNode);
+					return;
+				}
+
+				float** envPtr	= unit->mInBuf + stageOffset;
+				double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
+				double dur		= *envPtr[1] * ZIN0(kEnvGen_timeScale);
+				unit->m_shape	= (int32)*envPtr[2];
+				double curve	= *envPtr[3];
+				unit->m_endLevel = endLevel;
+
+				counter	 = (int32)(dur * SAMPLERATE);
+				counter	 = sc_max(1, counter);
+
+				if (counter == 1) unit->m_shape = 1; // shape_Linear
+				switch (unit->m_shape) {
+					case shape_Step : {
+						level = endLevel;
+					} break;
+					case shape_Linear : {
+						unit->m_grow = (endLevel - level) / counter;
+					} break;
+					case shape_Exponential : {
+						unit->m_grow = std::pow(endLevel / level, 1.0 / counter);
+					} break;
+					case shape_Sine : {
+						double w = pi / counter;
+
+						unit->m_a2 = (endLevel + level) * 0.5;
+						unit->m_b1 = 2. * cos(w);
+						unit->m_y1 = (endLevel - level) * 0.5;
+						unit->m_y2 = unit->m_y1 * sin(pi * 0.5 - w);
+						level = unit->m_a2 - unit->m_y1;
+					} break;
+					case shape_Welch : {
+						double w = (pi * 0.5) / counter;
+
+						unit->m_b1 = 2. * cos(w);
+
+						if (endLevel >= level) {
+							unit->m_a2 = level;
+							unit->m_y1 = 0.;
+							unit->m_y2 = -sin(w) * (endLevel - level);
+						} else {
+							unit->m_a2 = endLevel;
+							unit->m_y1 = level - endLevel;
+							unit->m_y2 = cos(w) * (level - endLevel);
+						}
+						level = unit->m_a2 + unit->m_y1;
+					} break;
+					case shape_Curve : {
+						if (fabs(curve) < 0.001) {
+							unit->m_shape = 1; // shape_Linear
+							unit->m_grow = (endLevel - level) / counter;
+						} else {
+							double a1 = (endLevel - level) / (1.0 - exp(curve));
+							unit->m_a2 = level + a1;
+							unit->m_b1 = a1;
+							unit->m_grow = exp(curve / counter);
+						}
+					} break;
+					case shape_Squared : {
+						unit->m_y1 = sqrt(level);
+						unit->m_y2 = sqrt(endLevel);
+						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+					} break;
+					case shape_Cubed : {
+						unit->m_y1 = std::pow(level, 0.33333333);
+						unit->m_y2 = std::pow(endLevel, 0.33333333);
+						unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+					} break;
+				}
+			}
+		}
+
+		int nsmps = sc_min(remain, counter);
+		switch (unit->m_shape) {
+			case shape_Step : {
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+				}
+			} break;
+			case shape_Linear : {
+				double grow = unit->m_grow;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					level += grow;
+				}
+			} break;
+			case shape_Exponential : {
+				double grow = unit->m_grow;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					level *= grow;
+				}
+			} break;
+			case shape_Sine : {
+				double a2 = unit->m_a2;
+				double b1 = unit->m_b1;
+				double y2 = unit->m_y2;
+				double y1 = unit->m_y1;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					double y0 = b1 * y1 - y2;
+					level = a2 - y0;
+					y2 = y1;
+					y1 = y0;
+				}
+				unit->m_y1 = y1;
+				unit->m_y2 = y2;
+			} break;
+			case shape_Welch : {
+				double a2 = unit->m_a2;
+				double b1 = unit->m_b1;
+				double y2 = unit->m_y2;
+				double y1 = unit->m_y1;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					double y0 = b1 * y1 - y2;
+					level = a2 + y0;
+					y2 = y1;
+					y1 = y0;
+				}
+				unit->m_y1 = y1;
+				unit->m_y2 = y2;
+			} break;
+			case shape_Curve : {
+				double a2 = unit->m_a2;
+				double b1 = unit->m_b1;
+				double grow = unit->m_grow;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					b1 *= grow;
+					level = a2 - b1;
+				}
+				unit->m_b1 = b1;
+			} break;
+			case shape_Squared : {
+				double grow = unit->m_grow;
+				double y1 = unit->m_y1;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					y1 += grow;
+					level = y1*y1;
+				}
+				unit->m_y1 = y1;
+			} break;
+			case shape_Cubed : {
+				double grow = unit->m_grow;
+				double y1 = unit->m_y1;
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+					y1 += grow;
+					level = y1*y1*y1;
+				}
+				unit->m_y1 = y1;
+			} break;
+			case shape_Sustain : {
+				for (int i=0; i<nsmps; ++i) {
+					ZXP(out) = level;
+				}
+			} break;
+		}
+		remain -= nsmps;
+		counter -= nsmps;
+	}
+	//Print("x %d %d %d %g\n", unit->m_stage, counter, unit->m_shape, ZOUT0(0));
+	unit->m_level = level;
+	unit->m_counter = counter;
+
+}
+#endif
 
 #define CHECK_GATE \
         prevGate = gate; \

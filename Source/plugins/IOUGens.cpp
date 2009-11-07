@@ -21,6 +21,10 @@
 
 #include "SC_PlugIn.h"
 
+#ifdef NOVA_SIMD
+#include "simd_memory.hpp"
+#endif
+
 static InterfaceTable *ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,6 +368,39 @@ void LagControl_Ctor(LagControl* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef NOVA_SIMD
+void In_next_a_nova(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (uint32)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		if (touched[i] == bufCounter) 
+			nova::copyvec_simd(out, in, inNumSamples);
+		else 
+			nova::zerovec_simd(out, inNumSamples);
+	}
+}
+#endif
+
 void In_next_a(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
@@ -462,7 +499,14 @@ void In_Ctor(IOUnit* unit)
 	unit->m_fbusChannel = -1.;
 
 	if (unit->mCalcRate == calc_FullRate) {
+#ifdef NOVA_SIMD
+		if (!(BUFLENGTH & 15))
+			SETCALC(In_next_a_nova);
+		else
+			SETCALC(In_next_a);
+#else
 		SETCALC(In_next_a);
+#endif
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
 //#ifdef IPHONE_VEC
@@ -795,6 +839,43 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 }
 #endif
 
+
+#ifdef NOVA_SIMD
+void Out_next_a_nova(IOUnit *unit, int inNumSamples)
+{
+	//Print("Out_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 1;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+
+	float *out = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i+1);
+		if (touched[i] == bufCounter) 
+			nova::addvec_simd(out, in, inNumSamples);
+		else {
+			nova::copyvec_simd(out, in, inNumSamples);
+			touched[i] = bufCounter;
+		}
+		//Print("out %d %g %g\n", i, in[0], out[0]);
+	}
+}
+#endif
+
 #if __VEC__
 
 void vOut_next_a(IOUnit *unit, int inNumSamples)
@@ -882,6 +963,11 @@ void Out_Ctor(IOUnit* unit)
 		} else {
 			SETCALC(Out_next_a);
 		}
+#elif defined(NOVA_SIMD)
+		if (!(BUFLENGTH & 15))
+			SETCALC(Out_next_a_nova);
+		else
+			SETCALC(Out_next_a);
 #else
 
 #ifdef IPHONE_VEC
