@@ -4255,7 +4255,7 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 		selectors = func->selectors.uo;
 	}
 	slot2 = selectors->slots + selectors->size++;
-	*(double*)slot2 = *(double*)slot;
+    slotCopy(slot2, slot);
 
 	return selectors->size-1;
 }

@@ -272,11 +272,11 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -285,11 +285,11 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -299,11 +299,11 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methForwardInstVar : /* forward to an instance variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -317,11 +317,11 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -592,11 +592,11 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -605,11 +605,11 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -619,11 +619,11 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methForwardInstVar : /* forward to an instance variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -637,11 +637,11 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methForwardClassVar : /* forward to a class variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
 					/* push default arg values */
-					double *pslot, *qslot;
+					PyrSlot *pslot, *qslot;
 					long m, mmax;
-					pslot = (double*)g->sp;
-					qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+					pslot = g->sp;
+					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
@@ -702,7 +702,7 @@ extern PyrClass *class_identdict;
 void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	long numArgsPushed, long numKeyArgsPushed)
 {
-	double *qslot, *pslot, *pend;
+	PyrSlot *qslot, *pslot, *pend;
 	long i, index;
 	PyrSlot *uniqueMethodSlot, *arraySlot, *recvrSlot, *selSlot, *slot;
 	PyrClass *classobj;
@@ -713,8 +713,8 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	g->gc->SanityCheck();
 #endif
 	// move args up by one to make room for selector
-	qslot = (double*)(g->sp + 1);
-	pslot = (double*)(g->sp + 2);
+	qslot = g->sp + 1;
+	pslot = g->sp + 2;
 	pend = pslot - numArgsPushed + 1;
 	while (pslot > pend) *--pslot = *--qslot;
 
@@ -775,7 +775,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed);
 void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	long numArgsPushed)
 {
-	double *qslot, *pslot, *pend;
+	PyrSlot *qslot, *pslot, *pend;
 	long i, index;
 	PyrSlot *uniqueMethodSlot, *arraySlot, *recvrSlot, *selSlot, *slot;
 	PyrClass *classobj;
@@ -786,8 +786,8 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	g->gc->SanityCheck();
 #endif
 	// move args up by one to make room for selector
-	qslot = (double*)(g->sp + 1);
-	pslot = (double*)(g->sp + 2);
+	qslot = g->sp + 1;
+	pslot = g->sp + 2;
 	pend = pslot - numArgsPushed + 1;
 	while (pslot > pend) *--pslot = *--qslot;
 
@@ -848,7 +848,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	PyrMethodRaw *methraw;
 	PyrFrame *frame;
 	PyrFrame *caller;
-	double *pslot, *qslot;
+	PyrSlot *pslot, *qslot;
 	PyrSlot *rslot;
 	PyrSlot *vars;
 	PyrObject *proto;
@@ -920,53 +920,53 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	g->block = (PyrBlock*)meth;
 
 	g->sp -= allArgsPushed;
-	qslot = (double*)(g->sp);
-	pslot = (double*)(vars);
+	qslot = g->sp;
+	pslot = vars;
 
 	if (numArgsPushed <= numargs) {	/* not enough args pushed */
 		/* push all args to frame */
-		for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		/* push default arg & var values */
-		pslot = (double*)(vars + numArgsPushed);
-		qslot = (double*)(proto->slots + numArgsPushed - 1);
-		for (m=0, mmax=numtemps - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+		pslot = vars + numArgsPushed;
+		qslot = proto->slots + numArgsPushed - 1;
+		for (m=0, mmax=numtemps - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 	} else if (methraw->varargs) {
 		PyrObject *list;
-		double *lslot;
+		PyrSlot *lslot;
 
 		/* push all normal args to frame */
-		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numargs; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		/* push list */
 		i = numArgsPushed - numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
 
-		rslot = (PyrSlot*)pslot+1;
+		rslot = pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + numargs + 1, list);
 
 		/* put extra args into list */
-		lslot = (double*)(list->slots - 1);
+		lslot = (list->slots - 1);
 		// fixed and raw sizes are zero
-		for (m=0,mmax=i; m<mmax; ++m) *++lslot = *++qslot;
+		for (m=0,mmax=i; m<mmax; ++m) slotCopy(++lslot, ++qslot);
 
 		if (methraw->numvars) {
 			/* push default keyword and var values */
-			pslot = (double*)(vars + numargs + 1);
-			qslot = (double*)(proto->slots + numargs);
-			for (m=0,mmax=methraw->numvars; m<mmax; ++m) *++pslot = *++qslot;
+			pslot = vars + numargs + 1;
+			qslot = proto->slots + numargs;
+			for (m=0,mmax=methraw->numvars; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 		}
 	} else {
 		/* push all args to frame */
-		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numargs; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		if (methraw->numvars) {
 			/* push default keyword and var values */
-			pslot = (double*)(vars + numargs);
-			qslot = (double*)(proto->slots + numargs - 1);
-			for (m=0,mmax=methraw->numvars; m<mmax; ++m) *++pslot = *++qslot;
+			pslot = vars + numargs;
+			qslot = proto->slots + numargs - 1;
+			for (m=0,mmax=methraw->numvars; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 		}
 	}
 	// do keyword lookup:
@@ -1004,7 +1004,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	PyrMethodRaw *methraw;
 	PyrFrame *frame;
 	PyrFrame *caller;
-	double *pslot, *qslot;
+	PyrSlot *pslot, *qslot;
 	PyrSlot *rslot;
 	PyrSlot *vars;
 	PyrObject *proto;
@@ -1075,53 +1075,53 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	g->block = (PyrBlock*)meth;
 
 	g->sp -= numArgsPushed;
-	qslot = (double*)(g->sp);
-	pslot = (double*)(vars);
+	qslot = g->sp;
+	pslot = vars;
 
 	if (numArgsPushed <= numargs) {	/* not enough args pushed */
 		/* push all args to frame */
-		for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		/* push default arg & var values */
-		pslot = (double*)(vars + numArgsPushed);
-		qslot = (double*)(proto->slots + numArgsPushed - 1);
-		for (m=0, mmax=numtemps - numArgsPushed; m<mmax; ++m) *++pslot = *++qslot;
+		pslot = vars + numArgsPushed;
+		qslot = proto->slots + numArgsPushed - 1;
+		for (m=0, mmax=numtemps - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 	} else if (methraw->varargs) {
 		PyrObject *list;
-		double *lslot;
+		PyrSlot *lslot;
 
 		/* push all normal args to frame */
-		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numargs; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		/* push list */
 		i = numArgsPushed - numargs;
 		list = newPyrArray(g->gc, i, 0, false);
 		list->size = i;
 
-		rslot = (PyrSlot*)pslot+1;
+		rslot = pslot+1;
 		SetObject(rslot, list);
 		//SetObject(vars + numargs + 1, list);
 
 		/* put extra args into list */
-		lslot = (double*)(list->slots - 1);
+		lslot = (list->slots - 1);
 		// fixed and raw sizes are zero
-		for (m=0,mmax=i; m<mmax; ++m) *++lslot = *++qslot;
+		for (m=0,mmax=i; m<mmax; ++m) slotCopy(++lslot, ++qslot);
 
 		if (methraw->numvars) {
 			/* push default keyword and var values */
-			pslot = (double*)(vars + numargs + 1);
-			qslot = (double*)(proto->slots + numargs);
-			for (m=0,mmax=methraw->numvars; m<mmax; ++m) *++pslot = *++qslot;
+			pslot = vars + numargs + 1;
+			qslot = proto->slots + numargs;
+			for (m=0,mmax=methraw->numvars; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 		}
 	} else {
 		/* push all args to frame */
-		for (m=0,mmax=numargs; m<mmax; ++m) *++pslot = *++qslot;
+		for (m=0,mmax=numargs; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 
 		if (methraw->numvars) {
 			/* push default keyword and var values */
-			pslot = (double*)(vars + numargs);
-			qslot = (double*)(proto->slots + numargs - 1);
-			for (m=0,mmax=methraw->numvars; m<mmax; ++m) *++pslot = *++qslot;
+			pslot = vars + numargs;
+			qslot = proto->slots + numargs - 1;
+			for (m=0,mmax=methraw->numvars; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 		}
 	}
 	slotCopy(&g->receiver, &vars[1]);
@@ -1324,13 +1324,13 @@ if (gTraceInterpreter) {
 int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed,
 		long numKeyArgsPushed)
 {
-	double *pslot, *qslot;
+	PyrSlot *pslot, *qslot;
 	long i, j, m, diff, numArgsPushed, numArgsNeeded;
 
 	if (numKeyArgsPushed) {
 		// evacuate keyword args to separate area
-		pslot = (double*)(keywordstack + (numKeyArgsPushed<<1));
-		qslot = (double*)(g->sp + 1);
+		pslot = keywordstack + (numKeyArgsPushed<<1);
+		qslot = g->sp + 1;
 		for (m=0; m<numKeyArgsPushed; ++m) {
 			*--pslot = *--qslot;
 			*--pslot = *--qslot;
@@ -1343,9 +1343,9 @@ int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long a
 	numArgsNeeded = methraw->numargs;
 	diff = numArgsNeeded - numArgsPushed;
 	if (diff > 0) {  // not enough args
-		pslot = (double*)(vars + numArgsPushed - 1);
-		qslot = (double*)(meth->prototypeFrame.uo->slots + numArgsPushed - 1);
-		for (m=0; m<diff; ++m) *++pslot = *++qslot;
+		pslot = vars + numArgsPushed - 1;
+		qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+		for (m=0; m<diff; ++m) slotCopy(++pslot, ++qslot);
 		numArgsPushed = numArgsNeeded;
 	}
 
