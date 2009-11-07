@@ -651,7 +651,7 @@ void Trig_next_nova(Trig *unit, int inNumSamples)
 	float level = unit->mLevel;
 	unsigned long counter = unit->mCounter;
 
-	if (counter > 0)
+	if (counter > inNumSamples)
 	{
 		nova::setvec_simd(OUT(0), level, inNumSamples);
 		counter -= inNumSamples;
