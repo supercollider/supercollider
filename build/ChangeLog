@@ -56,6 +56,8 @@ Other additions/improvements:
 * 2009-09-06 Boolean:while now throws an informative error, since Boolean:while has no particular use but is often used in error by beginners in code where Function:while is intended - ds
 * 2009-09-12 method FunctionDef:makeEnvirFromArgs allows to create template events from a function - jr
 * 2009-11-03 TwoWayIdentityDictionary has a removeAt method now - jr
+* 2009-11-07 improved PyrSlot typesafety - tb
+
 
 SuperCollider v3.3.1, released 2009-06-19
 =========================================
