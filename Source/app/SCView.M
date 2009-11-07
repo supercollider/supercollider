@@ -844,23 +844,24 @@ void SCView::refreshInRect(SCRect b)
 // cannot call from primitives. i.e. new view, or get/set property
 void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot *result)
 {    
-    //CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-    //CGContextSaveGState(cgc);
-    pthread_mutex_lock (&gLangMutex);
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        for (int i=0; i<numargs; ++i) {
-            ++g->sp;  g->sp->ucopy = args[i].ucopy; 
-        }
-        runInterpreter(g, method, numargs+1);
-        g->canCallOS = false;
-        if (result) result->ucopy = g->result.ucopy;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	//CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	//CGContextSaveGState(cgc);
+	pthread_mutex_lock (&gLangMutex);
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj); 
+		for (int i=0; i<numargs; ++i) {
+			++g->sp;
+			slotCopy(g->sp, &args[i]);
+		}
+		runInterpreter(g, method, numargs+1);
+		g->canCallOS = false;
+		if (result) slotCopy(result, &g->result);
+	}
+	pthread_mutex_unlock (&gLangMutex);
 
-    //CGContextRestoreGState(cgc);
+	//CGContextRestoreGState(cgc);
 }
 
 bool SCView::isDragSource() const
@@ -1055,8 +1056,8 @@ void SCView::beginDrag(SCPoint where)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
-        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+        slotCopy(&slot, &g->classvars->slots[classVarIndex]);
+        slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
 			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
 		}
@@ -6741,7 +6742,7 @@ int prSCView_SetProperty(struct VMGlobals *g, int numArgsPushed)
 	int err = view->setProperty(args[1].us, args+2);
         if (err) SetNil(args+2);
         
-        args[0].ucopy = args[2].ucopy;
+        slotCopy(&args[0], &args[2]);
         
 	return err;
 }
@@ -6761,7 +6762,7 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 	int err = view->getProperty(args[1].us, args+2);
         if (err) SetNil(args+2);
         
-        args[0].ucopy = args[2].ucopy;
+        slotCopy(&args[0], &args[2]);
         
 	return errNone;
 }

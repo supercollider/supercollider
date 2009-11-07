@@ -153,7 +153,7 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &index);
 	if (!err) {
 		if (index < 0 || index >= obj->size) {
-			a->ucopy = o_nil.ucopy;
+			slotCopy(a,&o_nil);
 		} else {
 			getIndexedSlot(obj, a, index);
 		}
@@ -166,7 +166,7 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 			int err = getIndexedInt(indexArray, i, &index);
 			if (err) return err;
 			if (index < 0 || index >= obj->size) {
-				outArraySlots[i].ucopy = o_nil.ucopy;
+				slotCopy(&outArraySlots[i],&o_nil);
 			} else {
 				getIndexedSlot(obj, outArraySlots + i, index);
 			}
@@ -638,7 +638,7 @@ int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
 		for (int i=0; i<size; i+=2) {
 			if (SlotEq(slots+i, b)) {
 				if (i+1 >= size) return errFailed;
-				a->ucopy = slots[i+1].ucopy;
+				slotCopy(a,&slots[i+1]);
 				found = true;
 				break;
 			}
@@ -650,7 +650,7 @@ int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
 			if (SlotEq(&slot, b)) {
 				if (i+1 >= size) return errFailed;
 				getIndexedSlot(obj, &slot, i+1);
-				a->ucopy = slot.ucopy;
+				slotCopy(a,&slot);
 				found = true;
 				break;
 			}
@@ -680,7 +680,7 @@ int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
 		for (int i=0; i<size; i+=2) {
 			if (SlotEq(slots+i, b)) {
 				if (i+1 >= size) return errFailed;
-				slots[i+1].ucopy = c->ucopy;
+				slotCopy(&slots[i+1],c);
 				g->gc->GCWrite(obj, c);
 				found = true;
 				break;
@@ -835,7 +835,7 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	slots = array->slots;
 	switch (format) {
 		case obj_slot :
-			slots[array->size++].ucopy = b->ucopy;
+			slotCopy(&slots[array->size++],b);
 			g->gc->GCWrite(array, b);
 			break;
 		case obj_int32 :
@@ -921,7 +921,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		switch (format) {
 			case obj_slot :
 
-				slots1[index].ucopy = c->ucopy;
+				slotCopy(&slots1[index],c);
 				if (remain) memcpy(slots1 + index + 1, slots2 + index, remain * elemsize);
 				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
 				break;
@@ -993,7 +993,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		switch (format) {
 			case obj_slot :
 				if (remain) memmove(slots1 + index + 1, slots1 + index, remain * elemsize);
-				slots1[index].ucopy = c->ucopy;
+				slotCopy(&slots1[index],c);
 				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
 				break;
 			case obj_int32 :
@@ -1090,7 +1090,7 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 		case obj_slot :
 			if (array->obj_flags & obj_immutable) return errImmutableObject;
 			for (i=0; i<array->size; ++i) {
-				slots[i].ucopy = b->ucopy;
+				slotCopy(&slots[i],b);
 			}
 			g->gc->GCWrite(array, b);
 			break;
@@ -1165,7 +1165,7 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 		slots = array->slots;
 		switch (format) {
 			case obj_slot :
-				a->ucopy = slots[--array->size].ucopy;
+				slotCopy(a,&slots[--array->size]);
 				break;
 			case obj_int32 :
 				z = ((int32*)slots)[--array->size];
@@ -1195,7 +1195,7 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 				break;
 		}
 	} else {
-		a->ucopy = o_nil.ucopy;
+		slotCopy(a,&o_nil);
 	}
 	return errNone;
 }
@@ -1481,7 +1481,7 @@ int prArrayReverse(struct VMGlobals *g, int numArgsPushed)
 	slots1 = obj1->slots;
 	slots2 = obj2->slots;
 	for (i=0, j=size-1; i<size; ++i,--j) {
-		slots2[j].ucopy = slots1[i].ucopy;
+		slotCopy(&slots2[j],&slots1[i]);
 	}
 	obj2->size = size;
 	a->uo = obj2;
@@ -1505,9 +1505,9 @@ int prArrayScramble(struct VMGlobals *g, int numArgsPushed)
 		k = size;
 		for (i=0, m=k; i<k-1; ++i, --m) {
 			j = i + g->rgen->irand(m);
-			temp.ucopy = slots2[i].ucopy;
-			slots2[i].ucopy = slots2[j].ucopy;
-			slots2[j].ucopy = temp.ucopy;
+			slotCopy(&temp,&slots2[i]);
+			slotCopy(&slots2[i],&slots2[j]);
+			slotCopy(&slots2[j],&temp);
 		}
 	}
 	obj2->size = size;
@@ -1531,7 +1531,7 @@ int prArrayRotate(struct VMGlobals *g, int numArgsPushed)
 	slots = obj1->slots;
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
 	for (i=0, j=n; i<size; ++i) {
-		obj2->slots[j].ucopy = slots[i].ucopy;
+		slotCopy(&obj2->slots[j],&slots[i]);
 		if (++j >= size) j=0;
 	}
 	obj2->size = size;
@@ -1558,7 +1558,7 @@ int prArrayStutter(struct VMGlobals *g, int numArgsPushed)
 	slots2 = obj2->slots;
 	for (i=0,j=0; i<m; ++i) {
 		for (k=0; k<n; ++k,++j) {
-			slots2[j].ucopy = slots1[i].ucopy;
+			slotCopy(&slots2[j],&slots1[i]);
 		}
 	}
 	obj2->size = size;
@@ -1584,7 +1584,7 @@ int prArrayMirror(struct VMGlobals *g, int numArgsPushed)
 	// copy second part
 	k = size/2;
 	for (i=0, j=size-1; i<k; ++i,--j) {
-		obj2->slots[j].ucopy = slots[i].ucopy;
+		slotCopy(&obj2->slots[j],&slots[i]);
 	}
 	a->uo = obj2;
 	return errNone;
@@ -1608,7 +1608,7 @@ int prArrayMirror1(struct VMGlobals *g, int numArgsPushed)
 	// copy second part
 	k = size/2;
 	for (i=1, j=size-1; i<k; ++i,--j) {
-		obj2->slots[j].ucopy = slots[i].ucopy;
+		slotCopy(&obj2->slots[j],&slots[i]);
 	}
 	a->uo = obj2;
 	return errNone;
@@ -1632,7 +1632,7 @@ int prArrayMirror2(struct VMGlobals *g, int numArgsPushed)
 	// copy second part
 	k = size/2;
 	for (i=0, j=size-1; i<k; ++i,--j) {
-		obj2->slots[j].ucopy = slots[i].ucopy;
+		slotCopy(&obj2->slots[j],&slots[i]);
 	}
 	a->uo = obj2;
 	return errNone;
@@ -1661,7 +1661,7 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 		    // copy second part
 		    m = obj1->size;
 		    for (i=0,j=m; j<size; ++i,++j) {
-			    slots[j].ucopy = slots[i].ucopy;
+			    slotCopy(&slots[j],&slots[i]);
 		    }
 		}
 	    } else {
@@ -1693,7 +1693,7 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 		    // copy second part
 		    m = obj1->size;
 		    for (i=0,j=m; j<size; ++i,++j) {
-			    slots[j].ucopy = slots[sc_fold(j,0,m-1)].ucopy;
+			    slotCopy(&slots[j],&slots[sc_fold(j,0,m-1)]);
 		    }
 		}
 	    } else {
@@ -1724,9 +1724,9 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 	    if (size > obj1->size) {
 		    // copy second part
 		    m = obj1->size;
-		    last.ucopy = slots[m-1].ucopy;
+		    slotCopy(&last,&slots[m-1]);
 		    for (i=0,j=m; j<size; ++i,++j) {
-			    slots[j].ucopy = last.ucopy;
+			    slotCopy(&slots[j],&last);
 		    }
 		}
 	    } else {
@@ -1757,9 +1757,9 @@ int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
 	for (i=0, m=size; i<size-1; ++i, --m) {
 		j = i + sc_mod((int)z, (int)(size-i));
 		z = sc_div(z,size-i);
-		temp.ucopy = slots2[i].ucopy;
-		slots2[i].ucopy = slots2[j].ucopy;
-		slots2[j].ucopy = temp.ucopy;
+		slotCopy(&temp,&slots2[i]);
+		slotCopy(&slots2[i],&slots2[j]);
+		slotCopy(&slots2[j],&temp);
 	}
 	a->uo = obj2;
 	return errNone;
@@ -1797,11 +1797,11 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 		for (int j=tupSize-1; j >= 0; --j) {
 			if (isKindOfSlot(slots1+j, class_arrayed_collection)) {
 				PyrObject *obj4 = slots1[j].uo;
-				slots3[j].ucopy = obj4->slots[k % obj4->size].ucopy;
+				slotCopy(&slots3[j],&obj4->slots[k % obj4->size]);
 				g->gc->GCWrite(obj3, obj3);
 				k /= obj4->size;
 			} else {
-				slots3[j].ucopy = slots1[j].ucopy;
+				slotCopy(&slots3[j],&slots1[j]);
 			}
 		}
 		obj3->size = tupSize;
@@ -1833,7 +1833,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=0; j<=i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1843,7 +1843,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=numslots-1-i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1853,7 +1853,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=0; j<=numslots-1-i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1863,7 +1863,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1873,12 +1873,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=0; j<=i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=0; i<numslots-1; ++i) {
 				for (j=0; j<=numslots-2-i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1888,12 +1888,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=numslots-1-i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=0; i<numslots-1; ++i) {
 				for (j=i+1; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1903,12 +1903,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=0; j<=numslots-1-i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=1; i<numslots; ++i) {
 				for (j=0; j<=i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1918,12 +1918,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=1; i<numslots; ++i) {
 				for (j=numslots-1-i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1933,12 +1933,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=0; j<=i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=0; i<numslots-1; ++i) {
 				for (j=i+1; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1948,12 +1948,12 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 			obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, n, false, true);
 			for (i=0,k=0; i<numslots; ++i) {
 				for (j=numslots-1-i; j<=numslots-1; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			for (i=0; i<numslots-1; ++i) {
 				for (j=0; j<=numslots-2-i; ++j, ++k) {
-					obj2->slots[k].ucopy = slots[j].ucopy;
+					slotCopy(&obj2->slots[k],&slots[j]);
 				}
 			}
 			obj2->size = k;
@@ -1984,7 +1984,7 @@ int prArraySlide(struct VMGlobals *g, int numArgsPushed)
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, numslots, false, true);
 	for (i=h=k=0; i<numwin; ++i,h+=n) {
 		for (j=h; j<m+h; ++j) {
-			obj2->slots[k++].ucopy = slots[j].ucopy;
+			slotCopy(&obj2->slots[k++],&slots[j]);
 		}
 	}
 	obj2->size = k;
@@ -2034,12 +2034,12 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 			    }
 			    if (obj3 && isKindOf((PyrObject*)obj3, class_array)) {
 				    m = j % obj3->size;
-				    obj2->slots[i].ucopy = obj3->slots[m].ucopy;
+				    slotCopy(&obj2->slots[i],&obj3->slots[m]);
 			    } else {
-				    obj2->slots[i].ucopy = slots[k].ucopy;
+				    slotCopy(&obj2->slots[i],&slots[k]);
 			    }
 		    } else {
-			    obj2->slots[i].ucopy = slots[k].ucopy;
+			    slotCopy(&obj2->slots[i],&slots[k]);
 		    }
 		    k = (k+1) % obj1->size;
 		    if (k == 0) j++;
@@ -2339,7 +2339,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 		slots3 = obj3->slots;
 		for(j=0; j<size3; j+=clump) {
 			for(k=0; k<clump; ++k) {
-				slots3[j+k].ucopy = slots[i*clump + k + j*numLists].ucopy;
+				slotCopy(&slots3[j+k],&slots[i*clump + k + j*numLists]);
 			}
 		}
 		SetObject(slots2 + i, obj3);

@@ -138,7 +138,7 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 	if (IsInt(b)) {
 		index = b->ui;
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
-		a->ucopy = obj->slots[index].ucopy;
+		slotCopy(a,&obj->slots[index]);
 	} else if (IsSym(b)) {
 		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
 		if (!isKindOfSlot(instVarNamesSlot, class_symbolarray)) return errFailed;
@@ -147,7 +147,7 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 		PyrSymbol *name = b->us;
 		for (int i=0; i<instVarNames->size; ++i) {
 			if (names[i] == name) {
-				a->ucopy = obj->slots[i].ucopy;
+				slotCopy(a,&obj->slots[i]);
 				return errNone;
 			}
 		}
@@ -174,7 +174,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 		index = b->ui;
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 		slot = obj->slots + index;
-		slot->ucopy = c->ucopy;
+		slotCopy(slot,c);
 		g->gc->GCWrite(obj, slot);
 	} else if (IsSym(b)) {
 		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
@@ -185,7 +185,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 		for (int i=0; i<instVarNames->size; ++i) {
 			if (names[i] == name) {
 				slot = obj->slots + i;
-				slot->ucopy = c->ucopy;
+				slotCopy(slot,c);
 				g->gc->GCWrite(obj, slot);
 				return errNone;
 			}
@@ -244,7 +244,7 @@ int prPrimitiveError(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	a->ucopy = g->thread->primitiveError.ucopy;
+	slotCopy(a,&g->thread->primitiveError);
 	return errNone;
 }
 
@@ -587,7 +587,7 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 
 	int length = sc_min(numArgsPushed-1, newobj->size);
 	for (int i=0; i<length; ++i) {
-		newobj->slots[i].ucopy = b[i].ucopy;
+		slotCopy(&newobj->slots[i],&b[i]);
 	}
 
 	return errNone;
@@ -658,8 +658,8 @@ int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed)
 
 	closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 	closure->size = 2;
-	closure->block.ucopy = a->ucopy;
-	closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+	slotCopy(&closure->block,a);
+	slotCopy(&closure->context,&g->process->interpreter.uoi->context);
 	SetObject(a, closure);
 	return errNone;
 }
@@ -863,8 +863,8 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	frame->classptr = class_frame;
 	frame->size = FRAMESIZE + numtemps;
 	SetObject(&frame->method, block);
-	frame->homeContext.ucopy = context->homeContext.ucopy;
-	frame->context.ucopy = closure->context.ucopy;
+	slotCopy(&frame->homeContext,&context->homeContext);
+	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
@@ -940,9 +940,9 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 		PyrMethodRaw *methraw;
 		g->method = homeContext->method.uom;
 		methraw = METHRAW(g->method);
-		g->receiver.ucopy = homeContext->vars[0].ucopy;
+		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
-		g->receiver.ucopy = g->process->interpreter.ucopy;
+		slotCopy(&g->receiver,&g->process->interpreter);
 	}
 
 	return errNone;
@@ -998,8 +998,8 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	frame->classptr = class_frame;
 	frame->size = FRAMESIZE + numtemps;
 	SetObject(&frame->method, block);
-	frame->homeContext.ucopy = context->homeContext.ucopy;
-	frame->context.ucopy = closure->context.ucopy;
+	slotCopy(&frame->homeContext,&context->homeContext);
+	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
@@ -1084,7 +1084,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
 				if (*name == key->us) {
-					vars[j+1].ucopy = key[1].ucopy;
+					slotCopy(&vars[j+1],&key[1]);
 					goto found1;
 				}
 			}
@@ -1101,9 +1101,9 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 		PyrMethodRaw *methraw;
 		g->method = homeContext->method.uom;
 		methraw = METHRAW(g->method);
-		g->receiver.ucopy = homeContext->vars[0].ucopy;
+		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
-		g->receiver.ucopy = g->process->interpreter.ucopy;
+		slotCopy(&g->receiver,&g->process->interpreter);
 	}
 	return errNone;
 }
@@ -1159,8 +1159,8 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	frame->classptr = class_frame;
 	frame->size = FRAMESIZE + numtemps;
 	SetObject(&frame->method, block);
-	frame->homeContext.ucopy = context->homeContext.ucopy;
-	frame->context.ucopy = closure->context.ucopy;
+	slotCopy(&frame->homeContext,&context->homeContext);
+	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
@@ -1250,9 +1250,9 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 		PyrMethodRaw *methraw;
 		g->method = homeContext->method.uom;
 		methraw = METHRAW(g->method);
-		g->receiver.ucopy = homeContext->vars[0].ucopy;
+		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
-		g->receiver.ucopy = g->process->interpreter.ucopy;
+		slotCopy(&g->receiver,&g->process->interpreter);
 	}
 	return errNone;
 }
@@ -1308,8 +1308,8 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	frame->classptr = class_frame;
 	frame->size = FRAMESIZE + numtemps;
 	SetObject(&frame->method, block);
-	frame->homeContext.ucopy = context->homeContext.ucopy;
-	frame->context.ucopy = closure->context.ucopy;
+	slotCopy(&frame->homeContext,&context->homeContext);
+	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
 		SetInt(&caller->ip, (int)g->ip);
@@ -1411,7 +1411,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
 				if (*name == key->us) {
-					vars[j+1].ucopy = key[1].ucopy;
+					slotCopy(&vars[j+1],&key[1]);
 					goto found1;
 				}
 			}
@@ -1428,9 +1428,9 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 		PyrMethodRaw *methraw;
 		g->method = homeContext->method.uom;
 		methraw = METHRAW(g->method);
-		g->receiver.ucopy = homeContext->vars[0].ucopy;
+		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
-		g->receiver.ucopy = g->process->interpreter.ucopy;
+		slotCopy(&g->receiver,&g->process->interpreter);
 	}
 	return errNone;
 }
@@ -1890,7 +1890,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 
 	selector = selSlot->us;
 
-	arraySlot->ucopy = recvrSlot->ucopy;
+	slotCopy(arraySlot,recvrSlot);
 
 	if (numargslots>0) {
 		qslot = (double*)arraySlot + numargslots + 1;
@@ -2061,7 +2061,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 		PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
 		SetObject(debugFrameObj->slots + 1, argArray);
 		for (i=0; i<numargs; ++i) {
-			argArray->slots[i].ucopy = frame->vars[i].ucopy;
+			slotCopy(&argArray->slots[i],&frame->vars[i]);
 		}
 		argArray->size = numargs;
 	} else {
@@ -2071,7 +2071,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 		PyrObject* varArray = (PyrObject*)newPyrArray(g->gc, numvars, 0, false);
 		SetObject(debugFrameObj->slots + 2, varArray);
 		for (i=0,j=numargs; i<numvars; ++i,++j) {
-			varArray->slots[i].ucopy = frame->vars[j].ucopy;
+			slotCopy(&varArray->slots[i],&frame->vars[j]);
 		}
 		varArray->size = numvars;
 	} else {
@@ -2311,7 +2311,7 @@ int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 	switchToThread(g, g->process->mainThread.uot, tDone, &numArgsPushed);
 	// return all the way out.
 	//PyrSlot *bottom = g->gc->Stack()->slots;
-	//bottom->ucopy = g->sp->ucopy;
+	//slotCopy(bottom,g->sp);
 	//g->sp = bottom; // ??!! pop everybody
 	g->method = NULL;
 	g->block = NULL;
@@ -2449,17 +2449,17 @@ int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->utag != tagObj) a->ucopy = o_false.ucopy;
+	if (a->utag != tagObj) slotCopy(a,&o_false);
 	else {
 		obj = a->uo;
 		for (i=0; i<obj->size; ++i) {
 			getIndexedSlot(obj, &temp, i);
 			if (temp.utag == b->utag && temp.ui == b->ui) {
-				a->ucopy = o_true.ucopy;
+				slotCopy(a,&o_true);
 				return errNone;
 			}
 		}
-		a->ucopy = o_false.ucopy;
+		slotCopy(a,&o_false);
 	}
 	return errNone;
 }
@@ -2484,9 +2484,9 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 		index = classobj->classIndex.ui + selector->u.index;
 		meth = gRowTable[index];
 		if (meth->name.us != selector) {
-			a->ucopy = o_false.ucopy;
+			slotCopy(a,&o_false);
 		} else {
-			a->ucopy = o_true.ucopy;
+			slotCopy(a,&o_true);
 		}
 	} else if (isKindOfSlot(b, class_array)) {
 		int size = b->uo->size;
@@ -2499,11 +2499,11 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 			index = classobj->classIndex.ui + selector->u.index;
 			meth = gRowTable[index];
 			if (meth->name.us != selector) {
-				a->ucopy = o_false.ucopy;
+				slotCopy(a,&o_false);
 				return errNone;
 			}
 		}
-		a->ucopy = o_true.ucopy;
+		slotCopy(a,&o_true);
 	} else return errWrongType;
 	return errNone;
 }
@@ -2589,7 +2589,7 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 			closure->classptr = class_func;
 			closure->size = 2;
 			SetObject(&closure->block, block);
-			closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+			slotCopy(&closure->context,&g->process->interpreter.uoi->context);
 			SetObject(a, closure);
 		}
 	} else {
@@ -2794,7 +2794,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 
         // save environment in oldthread
         PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
-        oldthread->environment.ucopy = currentEnvironmentSlot->ucopy;
+        slotCopy(&oldthread->environment,currentEnvironmentSlot);
         gc->GCWrite(oldthread, currentEnvironmentSlot);
 
 	oldthread->state.ui = oldstate;
@@ -2839,7 +2839,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetObject(&oldthread->frame, g->frame);
 		oldthread->ip.ui = (int)g->ip;
 		oldthread->sp.ui = (int)g->sp;
-		oldthread->receiver.ucopy = g->receiver.ucopy;
+		slotCopy(&oldthread->receiver,&g->receiver);
 		oldthread->numArgsPushed.ui = *numArgsPushed;
 		oldthread->numpop.ui = g->numpop;
 
@@ -2870,7 +2870,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	g->frame = newthread->frame.uof;
 	g->ip = (unsigned char *)newthread->ip.ui;
 	g->sp = (PyrSlot*)newthread->sp.ui;
-	g->receiver.ucopy = newthread->receiver.ucopy;
+	slotCopy(&g->receiver,&newthread->receiver);
 
 	g->rgen = (RGen*)(newthread->randData.uo->slots);
 
@@ -2898,7 +2898,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 
 
         // set new environment
-        currentEnvironmentSlot->ucopy = g->thread->environment.ucopy;
+        slotCopy(currentEnvironmentSlot,&g->thread->environment);
         g->gc->GCWrite(g->classvars, currentEnvironmentSlot);
 
 	//post("old thread %08X stack %08X\n", oldthread, oldthread->stack.uo);
@@ -2921,7 +2921,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	PyrObject *array;
 	PyrGC* gc = g->gc;
 
-	thread->func.ucopy = func->ucopy;
+	slotCopy(&thread->func,func);
 	gc->GCWrite(thread, func);
 
 	array = newPyrArray(gc, stacksize, 0, collect);
@@ -2938,12 +2938,12 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	if (IsNil(clock)) {
 		SetObject(&thread->clock, s_systemclock->u.classobj);
 	} else {
-		thread->clock.ucopy = clock->ucopy;
+		slotCopy(&thread->clock,clock);
 		gc->GCWrite(thread, clock);
 	}
 
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
-        thread->environment.ucopy = currentEnvironmentSlot->ucopy;
+        slotCopy(&thread->environment,currentEnvironmentSlot);
         gc->GCWrite(thread, currentEnvironmentSlot);
 }
 
@@ -3076,7 +3076,7 @@ int transformMainThreadToRoutine(VMGlobals *g)
 
 	curthread->classptr = class_routine;
 	PyrSlot *cmdFunc = &process->interpreter.uoi->cmdFunc;
-	curthread->func.ucopy = cmdFunc->ucopy;
+	slotCopy(&curthread->func,cmdFunc);
 	g->gc->GCWrite(curthread, cmdFunc);
 
 	return errNone;
@@ -3096,7 +3096,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	//CallStackSanity(g, "prRoutineYield");
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
 
-	value.ucopy = g->sp->ucopy;
+	slotCopy(&value,g->sp);
 
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
 		error ("yield was called outside of a Routine.\n");
@@ -3109,7 +3109,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	switchToThread(g, parent, tSuspended, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
-	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+	slotCopy((g->sp - numArgsPushed + 1),&value);
 
 	//postfl("<-numArgsPushed %d\n", numArgsPushed);
 	//postfl("<-prRoutineYield\n");
@@ -3131,8 +3131,8 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	value.ucopy = g->sp->ucopy;
-	g->thread->terminalValue.ucopy = value.ucopy;
+	slotCopy(&value,g->sp);
+	slotCopy(&g->thread->terminalValue,&value);
 	g->gc->GCWrite(g->thread, g->sp);
 
 	PyrThread *parent = g->thread->parent.uot;
@@ -3141,7 +3141,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	switchToThread(g, parent, tDone, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
-	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+	slotCopy((g->sp - numArgsPushed + 1),&value);
 
 	//postfl("<-prRoutineAlwaysYield ip %08X\n", g->ip);
 	//assert(g->gc->SanityCheck());
@@ -3165,8 +3165,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	state = thread->state.ui;
 	//postfl("->prRoutineResume %d\n", state);
 	if (state == tInit) {
-		threadSlot.ucopy = a->ucopy;
-		value.ucopy = b->ucopy;
+		slotCopy(&threadSlot,a);
+		slotCopy(&value,b);
 
 	//post("g->thread %08X\n", g->thread);
 	//post("thread %08X\n", thread);
@@ -3175,8 +3175,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
-		thread->clock.ucopy = g->thread->clock.ucopy;
- 		g->gc->GCWrite(thread, &g->thread->clock);
+		slotCopy(&thread->clock,&g->thread->clock);
+		g->gc->GCWrite(thread, &g->thread->clock);
 
 		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tSuspended, &numArgsPushed);
@@ -3184,8 +3184,9 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		// set stack
 		//post("set stack %08X %08X\n", g->sp, g->gc->Stack()->slots - 1);
 		g->sp = g->gc->Stack()->slots - 1;
-		g->receiver.ucopy = (++g->sp)->uf = threadSlot.ucopy;
-		(++g->sp)->ucopy = value.ucopy;
+		slotCopy((++g->sp), &threadSlot);
+		slotCopy(&g->receiver, &threadSlot);
+		slotCopy((++g->sp),&value);
 
 		sendMessage(g, s_prstart, 2);
 	} else if (state == tSuspended) {
@@ -3197,16 +3198,16 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 
 		thread->beats.uf = g->thread->beats.uf;
 		thread->seconds.uf = g->thread->seconds.uf;
-		thread->clock.ucopy = g->thread->clock.ucopy;
+		slotCopy(&thread->clock,&g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
-		value.ucopy = b->ucopy;
+		slotCopy(&value,b);
 	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);
 		switchToThread(g, thread, tSuspended, &numArgsPushed);
 		// on the other side of the looking glass, put the yielded value on the stack as the result..
-		(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+		slotCopy((g->sp - numArgsPushed + 1),&value);
 	} else if (state == tDone) {
-		a->ucopy = thread->terminalValue.ucopy;
+		slotCopy(a,&thread->terminalValue);
 	} else if (state == tRunning) {
 		error("Tried to resume the running thread.\n");
 		return errFailed;
@@ -3321,7 +3322,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 		error ("yieldAndReset was called from a thread with no parent.\n");
 		return errFailed;
 	}*/
-	value.ucopy = a->ucopy;
+	slotCopy(&value,a);
 
 	if (IsFalse(b)) state = tSuspended;
 	else state = tInit;
@@ -3330,7 +3331,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	SetNil(&g->thread->parent);
 	switchToThread(g, parent, state, &numArgsPushed);
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
-	(g->sp - numArgsPushed + 1)->ucopy = value.ucopy;
+	slotCopy((g->sp - numArgsPushed + 1),&value);
 
 	//post("<-prRoutineYieldAndReset\n");
 	//assert(g->gc->SanityCheck());
@@ -3630,7 +3631,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 				name = name0;
 				for (j=1; j<methraw->posargs; ++j, ++name) {
 					if (*name == key->us) {
-						vars[j].ucopy = key[1].ucopy;
+						slotCopy(&vars[j],&key[1]);
 						goto found;
 					}
 				}

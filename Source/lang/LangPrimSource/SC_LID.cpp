@@ -638,7 +638,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	SetSymbol(infoObj->slots+5, getsym(namePhys));
 	SetSymbol(infoObj->slots+6, getsym(nameUniq));
 
-	args[0].ucopy = args[1].ucopy;
+	slotCopy(&args[0], &args[1]);
 
 	return errNone;
 }
@@ -692,7 +692,7 @@ int prLID_GetAbsInfo(VMGlobals *g, int numArgsPushed)
 	SetInt(infoObj->slots+3, info.fuzz);
 	SetInt(infoObj->slots+4, info.flat);
 
-	args[0].ucopy = args[2].ucopy;
+	slotCopy(&args[0], &args[2]);
 
 	return errNone;
 }

@@ -460,7 +460,7 @@ int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		b->uos->size = strlen(b->uos->s);
 		if (b->uos->s[b->uos->size-1] == '\n') b->uos->size--;
-		a->ucopy = b->ucopy;
+		slotCopy(a,b);
 	}
 	return errNone;
 }
@@ -1007,7 +1007,7 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 #endif
 
 	if (b->uo->size==0) SetNil(a);
-	else a->ucopy = b->ucopy;
+	else slotCopy(a,b);
 	return errNone;
 }
 
@@ -1088,7 +1088,7 @@ int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
 #endif
 
 	if (b->uo->size==0) SetNil(a);
-	else a->ucopy = b->ucopy;
+	else slotCopy(a,b);
 	return errNone;
 }
 
@@ -1672,7 +1672,7 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 	if (isDirectory) { SetTrue(entryIsDir); } else { SetFalse(entryIsDir); }
 	if (isVisible) { SetTrue(entryIsVisible); } else { SetFalse(entryIsVisible); }
 
-	a->ucopy = b->ucopy;
+	slotCopy(a,b);
 
 	return errNone;
 }

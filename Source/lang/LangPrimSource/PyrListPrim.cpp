@@ -88,12 +88,12 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 				if (slot->uo->classptr == class_array && slot->uo->size > 0) {
 					obj4 = slot->uo;
 					slots4 = obj4->slots;
-					slots3[j].ucopy = slots4[i % obj4->size].ucopy;
+					slotCopy(&slots3[j],&slots4[i % obj4->size]);
 				} else {
-					slots3[j].ucopy = slot->ucopy;
+					slotCopy(&slots3[j],slot);
 				}
 			} else {
-				slots3[j].ucopy = slot->ucopy;
+				slotCopy(&slots3[j],slot);
 			}
 		}
 	}
@@ -212,12 +212,12 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
-			dict->slots[ivxIdentDict_parent].ucopy = value->ucopy;
+			slotCopy(&dict->slots[ivxIdentDict_parent],value);
 			g->gc->GCWrite(dict, value);
 			return errNone;
 		}
 		if (key->us == s_proto) {
-			dict->slots[ivxIdentDict_proto].ucopy = value->ucopy;
+			slotCopy(&dict->slots[ivxIdentDict_proto],value);
 			g->gc->GCWrite(dict, value);
 			return errNone;
 		}
@@ -227,10 +227,10 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 
 	index = arrayAtIdentityHashInPairs(array, key);
 	slot = array->slots + index;
-	slot[1].ucopy = value->ucopy;
+	slotCopy(&slot[1],value);
 	g->gc->GCWrite(array, value);
 	if (IsNil(slot)) {
-		slot->ucopy = key->ucopy;
+		slotCopy(slot,key);
 		g->gc->GCWrite(array, key);
 		size = ++dict->slots[ivxIdentDict_size].ui;
 		if (array->size < size*3) {
@@ -243,8 +243,8 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 				if (NotNil(slot)) {
 					index = arrayAtIdentityHashInPairs(newarray, slot);
 					newslot = newarray->slots + index;
-					newslot[0].ucopy = slot[0].ucopy;
-					newslot[1].ucopy = slot[1].ucopy;
+					slotCopy(&newslot[0],&slot[0]);
+					slotCopy(&newslot[1],&slot[1]);
 				}
 			}
 			dict->slots[ivxIdentDict_array].uo = newarray;
@@ -280,7 +280,7 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;		// value
 	d = ++g->sp;	// push the stack to save the receiver
 
-	d->ucopy = a->ucopy;
+	slotCopy(d,a);
 	dict = d->uo;
 	array = dict->slots[ivxIdentDict_array].uo;
 	if (!isKindOf((PyrObject*)array, class_array)) {
@@ -291,11 +291,11 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 
 	index = arrayAtIdentityHashInPairs(array, b);
 	slot = array->slots + index;
-	a->ucopy = slot[1].ucopy;
-	slot[1].ucopy = c->ucopy;
+	slotCopy(a,&slot[1]);
+	slotCopy(&slot[1],c);
 	g->gc->GCWrite(array, c);
 	if (IsNil(slot)) {
-		slot->ucopy = b->ucopy;
+		slotCopy(slot,b);
 		g->gc->GCWrite(array, b);
 		size = ++dict->slots[ivxIdentDict_size].ui;
 		if (array->size < size*3) {
@@ -308,8 +308,8 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 				if (NotNil(slot)) {
 					index = arrayAtIdentityHashInPairs(newarray, slot);
 					newslot = newarray->slots + index;
-					newslot[0].ucopy = slot[0].ucopy;
-					newslot[1].ucopy = slot[1].ucopy;
+					slotCopy(&newslot[0],&slot[0]);
+					slotCopy(&newslot[1],&slot[1]);
 				}
 			}
 			dict->slots[ivxIdentDict_array].uo = newarray;
@@ -350,7 +350,7 @@ again:
 
 		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
 		if (SlotEq(key, array->slots + index)) {
-			result->ucopy = array->slots[index + 1].ucopy;
+			slotCopy(result,&array->slots[index + 1]);
 			return true;
 		}
 	}
@@ -387,7 +387,7 @@ again:
 
 		int index = arrayAtIdentityHashInPairsWithHash(array, key, hash);
 		if (SlotEq(key, array->slots + index)) {
-			result->ucopy = array->slots[index + 1].ucopy;
+			slotCopy(result,&array->slots[index + 1]);
 			return true;
 		}
 	}
@@ -423,11 +423,11 @@ int prIdentDict_At(struct VMGlobals *g, int numArgsPushed)
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
-			a->ucopy = dict->slots[ivxIdentDict_parent].ucopy;
+			slotCopy(a,&dict->slots[ivxIdentDict_parent]);
 			return errNone;
 		}
 		if (key->us == s_proto) {
-			a->ucopy = dict->slots[ivxIdentDict_proto].ucopy;
+			slotCopy(a,&dict->slots[ivxIdentDict_proto]);
 			return errNone;
 		}
 	}
@@ -452,7 +452,7 @@ int prSymbol_envirGet(struct VMGlobals *g, int numArgsPushed)
 	if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex)) return errFailed;
 
 	identDict_lookup(dict, a, calcHash(a), &result);
-	a->ucopy = result.ucopy;
+	slotCopy(a,&result);
 
 	return errNone;
 }
@@ -477,7 +477,7 @@ int prSymbol_envirPut(struct VMGlobals *g, int numArgsPushed)
 	int err = identDictPut(g, dict, a, b);
 	if (err) return err;
 
-	a->ucopy = b->ucopy;
+	slotCopy(a,b);
 
 	return errNone;
 }
@@ -496,7 +496,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	identDict_lookup(a->uo, &key, calcHash(&key), &delta);
 
 	if (NotNil(&delta)) {
-		a->ucopy = delta.ucopy;
+		slotCopy(a,&delta);
 	} else {
 		SetSymbol(&key, s_dur);
 		identDict_lookup(a->uo, &key, calcHash(&key), &dur);
@@ -601,7 +601,7 @@ void PriorityQueueTop(PyrObject *queueobj, PyrSlot *result)
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = schedqSlot->uo;
 		if (schedq->size > 0) {
-			result->ucopy = schedq->slots[0].ucopy;
+			slotCopy(result,&schedq->slots[0]);
 		} else {
 			SetNil(result);
 		}
