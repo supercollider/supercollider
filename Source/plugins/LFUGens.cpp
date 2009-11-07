@@ -1629,7 +1629,7 @@ void XLine_next_nova(XLine *unit, int inNumSamples)
 
 	if (counter == 0)
 	{
-		nova::setvec_simd(OUT(0), level, inNumSamples);
+		nova::setvec_simd(OUT(0), (float)level, inNumSamples);
 		return;
 	}
 	if (counter >= inNumSamples)
