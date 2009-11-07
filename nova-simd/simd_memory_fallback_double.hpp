@@ -58,24 +58,6 @@ inline void copyvec_simd_mp(double * dest, const double * src)
     copyvec_simd(dest, src, n);
 }
 
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double * in)
-{
-    addvec_simd(dest, in, n);
-}
-
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double in)
-{
-    addvec_simd(dest, in, n);
-}
-
-template <unsigned int n>
-inline void addvec_simd(double * dest, const double in, const double slope)
-{
-    addvec_simd(dest, in, slope, n);
-}
-
 } /* namespace nova */
 
 #endif /* SIMD_MEMORY_FALLBACK_DOUBLE_HPP */
