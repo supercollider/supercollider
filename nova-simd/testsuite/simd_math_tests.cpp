@@ -133,4 +133,4 @@ BOOST_AUTO_TEST_CASE( tanh_tests_float_2 )
     tanh_vec_simd(sseval.begin(), args.begin(), size);
 
     compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);
-    }
+}
