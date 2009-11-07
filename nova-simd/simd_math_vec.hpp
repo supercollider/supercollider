@@ -41,7 +41,7 @@
             function(out, in);                                          \
             in += 4;                                                    \
             out += 4;                                                   \
-        } while (--n);                                                  \
+        } while (--loops);                                              \
     }
 
 #define WRAP_MATH_FUNCTION_BINARY(name, function)                       \
@@ -54,7 +54,7 @@
             in0 += 4;                                                   \
             in1 += 4;                                                   \
             out += 4;                                                   \
-        } while (--n);                                                  \
+        } while (--loops);                                              \
     }                                                                   \
                                                                         \
     template <>                                                         \
@@ -65,7 +65,7 @@
             function(out, in0, in1);                                    \
             in0 += 4;                                                   \
             out += 4;                                                   \
-        } while (--n);                                                  \
+        } while (--loops);                                              \
     }                                                                   \
                                                                         \
     template <>                                                         \
@@ -76,7 +76,7 @@
             function(out, in0, in1);                                    \
             in1 += 4;                                                   \
             out += 4;                                                   \
-        } while (--n);                                                  \
+        } while (--loops);                                              \
     }
 
 namespace nova

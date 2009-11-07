@@ -623,7 +623,8 @@ public:
         {
             u64 cnt;
             ssize_t res = read(fd[i], (char*)&cnt, sizeof(cnt));
-            assert(res == sizeof(cnt));
+            if (res != sizeof(cnt))
+                throw std::runtime_error("read error");
             count[i] = cnt;
         }
 
