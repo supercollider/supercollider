@@ -22,7 +22,7 @@
 #include "simd_math_generic.hpp"
 
 #if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 0)))
+    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 1))) && defined(__SSE__)
 #include "simd_math_vec.hpp"
 #endif
 

@@ -27,11 +27,13 @@
 #include "simd_utils.hpp"
 #endif
 
+#include "simd_unroll_constraints.hpp"
+
 namespace nova
 {
 
 template <typename float_type>
-inline void softclip(float_type * out, const float_type * in, unsigned int n)
+inline void softclip_vec(float_type * out, const float_type * in, unsigned int n)
 {
     for (unsigned int i = 0; i != n; ++i)
     {
@@ -45,12 +47,47 @@ inline void softclip(float_type * out, const float_type * in, unsigned int n)
 }
 
 template <typename float_type>
-inline void softclip4(float_type * out, const float_type * in, unsigned int n)
+inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned int n)
 {
     softclip(out, in, n);
 }
 
 #ifdef __SSE__
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
+#define samples_per_loop nova::unroll_constraints<float>::samples_per_loop
+
+namespace detail {
+
+template <int n>
+always_inline void softclip_vec_simd_mp(float * out, const float * in,
+                                        __m128 const & abs_mask, __m128 const & const05, __m128 const & const025)
+{
+    __m128 x = _mm_load_ps(in);
+    __m128 abs_x = _mm_and_ps(x, abs_mask);
+    __m128 selecter = _mm_cmplt_ps(abs_x, const05);
+    __m128 alt_ret = _mm_div_ps(_mm_sub_ps(abs_x, const025),
+                                x);
+    __m128 result = detail::select_vector(alt_ret, x, selecter);
+
+    _mm_store_ps(out, result);
+
+    softclip_vec_simd_mp<n-4>(out+4, in+4, abs_mask, const05, const025);
+}
+
+template <>
+always_inline void softclip_vec_simd_mp<0>(float * out, const float * in,
+                                           __m128 const & abs_mask, __m128 const & const05, __m128 const & const025)
+{}
+
+} /* namespace detail */
+
+
 /* this computes both parts of the branch
  *
  * benchmarks (core2) showed:
@@ -59,30 +96,28 @@ inline void softclip4(float_type * out, const float_type * in, unsigned int n)
  * 17 seconds                    when 50% of the samples have abs(sample) < 0.5
  * 26 seconds                    for samples with abs(sample) > 0.5
  *
+ * on intel nethalem cpus, the simdfied code is faster than all non-simd code
  * */
 template <>
-inline void softclip4(float * out, const float * in, unsigned int n)
+inline void softclip_vec_simd(float * out, const float * in, unsigned int n)
 {
-    n = n >> 2;
-    const __m128 abs_mask = (__m128)detail::gen_abs_mask();
+    n = n / samples_per_loop;
 
+    const __m128 abs_mask = (__m128)detail::gen_abs_mask();
     const __m128 const05  = detail::gen_05();
-    const __m128 const025 = _mm_set1_ps(0.25);
+    const __m128 const025 = detail::gen_025();
 
     do
     {
-        __m128 x = _mm_load_ps(in);
-        in += 4;
-        __m128 abs_x = _mm_and_ps(x, abs_mask);
-        __m128 selecter = _mm_cmplt_ps(abs_x, const05);
-        __m128 alt_ret = _mm_div_ps(_mm_sub_ps(abs_x, const025),
-                                    x);
-        __m128 result = detail::select_vector(alt_ret, x, selecter);
-        _mm_store_ps(out, result);
-        out += 4;
+        detail::softclip_vec_simd_mp<samples_per_loop>(out, in, abs_mask, const05, const025);
+        in += samples_per_loop;
+        out += samples_per_loop;
     }
     while (--n);
 }
+
+#undef always_inline
+#undef samples_per_loop
 
 #endif /* __SSE__ */
 

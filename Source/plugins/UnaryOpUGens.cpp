@@ -33,25 +33,7 @@
 #define NOVA_WRAPPER(NAME, NOVANAME)                        \
 	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
 	{                                                       \
-		float * out = OUT(0);                               \
-		float * a = IN(0);                                  \
-															\
-		int n = inNumSamples >> 2;                          \
-															\
-		do                                                  \
-		{                                                   \
-			nova::NOVANAME##4(out, a);                      \
-			out += 4;                                       \
-			a += 4;                                         \
-			--n;                                            \
-		}                                                   \
-		while (n);                                          \
-	}
-
-#define NOVA_FN_WRAPPER(NAME, NOVANAME)						\
-	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)	\
-	{														\
-		nova::NAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
+		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
 	}
 
 
@@ -420,8 +402,8 @@ void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 #endif // __VEC__
 
 #ifdef NOVA_SIMD
-NOVA_FN_WRAPPER(floor, floor)
-NOVA_FN_WRAPPER(ceil, ceil)
+NOVA_WRAPPER(floor, floor)
+NOVA_WRAPPER(ceil, ceil)
 #endif
 
 void sin_a(UnaryOpUGen *unit, int inNumSamples)
@@ -569,8 +551,8 @@ void exp_a(UnaryOpUGen *unit, int inNumSamples)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER(log, log)
-NOVA_WRAPPER(log2, log2_)
-NOVA_WRAPPER(log10, log10_)
+NOVA_WRAPPER(log2, log2)
+NOVA_WRAPPER(log10, log10)
 NOVA_WRAPPER(exp, exp)
 #endif
 
@@ -680,7 +662,7 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-NOVA_FN_WRAPPER(frac, frac)
+NOVA_WRAPPER(frac, frac)
 #endif
 
 #if __VEC__
@@ -848,10 +830,7 @@ void softclip_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void softclip_nova(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::softclip4(OUT(0), IN(0), inNumSamples);
-}
+NOVA_WRAPPER(softclip, softclip)
 #endif
 
 void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)

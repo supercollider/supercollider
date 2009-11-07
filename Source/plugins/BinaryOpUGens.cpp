@@ -2738,20 +2738,7 @@ void pow_ai(BinaryOpUGen *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void pow_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 {
-	float * out = OUT(0);
-	float * a = IN(0);
-	float * b = IN(1);
-	int n = inNumSamples >> 2;
-
-	do
-	{
-		nova::spow4(out, a, b);
-		out += 4;
-		a += 4;
-		b += 4;
-		--n;
-	}
-	while (n);
+	nova::spow_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);
 }
 
 void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
@@ -2762,17 +2749,7 @@ void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		float *out = OUT(0);
-		float *a = IN(0);
-		int n = inNumSamples >> 2;
-		do
-		{
-			nova::spow4(out, a, xb);
-			out += 4;
-			a += 4;
-			--n;
-		}
-		while (n);
+		nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
 		LOOP(inNumSamples,
@@ -2792,27 +2769,10 @@ void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		float *out = OUT(0);
-		float *b = IN(1);
-		int n = inNumSamples >> 2;
 		if (xa >= 0.f) {
-			do
-			{
-				nova::pow4(out, xa, b);
-				out += 4;
-				b += 4;
-				--n;
-			}
-			while (n);
+			nova::pow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 		} else {
-			do
-			{
-				nova::spow4(out, xa, b);
-				out += 4;
-				b += 4;
-				--n;
-			}
-			while (n);
+			nova::spow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
@@ -2828,53 +2788,19 @@ void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void pow_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 {
-	float * out = OUT(0);
 	float xa = ZIN0(0);
-	float * b = IN(1);
-	int n = inNumSamples >> 2;
-
 	if (xa > 0.f)
-	{
-		do
-		{
-			nova::pow4(out, xa, b);
-			out += 4;
-			b += 4;
-			--n;
-		}
-		while (n);
-	}
+		nova::pow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	else
-	{
-		do
-		{
-			nova::spow4(out, xa, b);
-			out += 4;
-			b += 4;
-			--n;
-		}
-		while (n);
-	}
+		nova::spow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	unit->mPrevA = xa;
 }
 
 
 void pow_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
-	float * out = OUT(0);
-	float * a = IN(0);
 	float xb = ZIN0(1);
-	int n = inNumSamples >> 2;
-
-	do
-	{
-		nova::spow4(out, a, xb);
-		out += 4;
-		a += 4;
-		--n;
-	}
-	while (n);
-
+	nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);
 	unit->mPrevB = xb;
 }
 #endif

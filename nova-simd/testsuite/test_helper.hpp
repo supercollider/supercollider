@@ -27,10 +27,10 @@ void randomize_buffer(float_type * buffer, std::size_t size, float_type offset)
 }
 
 template <typename float_type>
-void compare_buffers(const float_type * ref, const float_type * test, std::size_t size)
+void compare_buffers(const float_type * ref, const float_type * test, std::size_t size, float difference = 1e-9)
 {
     for (std::size_t i = 0; i != size; ++i)
-        BOOST_REQUIRE_CLOSE_FRACTION( ref[i], test[i], 1e-9 );
+        BOOST_REQUIRE_CLOSE_FRACTION( ref[i], test[i], difference );
 }
 
 template <typename float_type>

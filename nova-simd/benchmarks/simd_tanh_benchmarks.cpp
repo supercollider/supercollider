@@ -11,8 +11,7 @@ aligned_array<float, 64> out, in;
 
 void __noinline__ bench_1_simd(unsigned int n)
 {
-    for (int i = 0; i != n; i += 4)
-        tanh4(out.begin()+i, in.begin()+i);
+    tanh_vec_simd(out.begin(), in.begin(), n);
 }
 
 void __noinline__ bench_1(unsigned int n)

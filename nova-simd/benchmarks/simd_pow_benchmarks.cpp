@@ -9,36 +9,24 @@ using namespace std;
 
 aligned_array<float, 64> out, in, in2;
 
-float spow(float arg, float e)
-{
-    if (arg > 0)
-        return std::pow(arg, e);
-    else
-        return -std::pow(-arg, e);
-}
-
 void __noinline__ bench_1(unsigned int n)
 {
-    for (int i = 0; i != n; ++i)
-        out[i] = spow(in[i], 2.3);
+    spow_vec(out.begin(), in.begin(), 2.3f, n);
 }
 
 void __noinline__ bench_1_simd(unsigned int n)
 {
-    for (int i = 0; i != n; i += 4)
-        spow4(out.begin()+i, in.begin()+i, 2.3f);
+    spow_vec_simd(out.begin(), in.begin(), 2.3f, n);
 }
 
 void __noinline__ bench_2(unsigned int n)
 {
-    for (int i = 0; i != n; ++i)
-        out[i] = spow(in[i], in2[i]);
+    spow_vec(out.begin(), in.begin(), in2.begin(), n);
 }
 
 void __noinline__ bench_2_simd(unsigned int n)
 {
-    for (int i = 0; i != n; i += 4)
-        spow4(out.begin()+i, in.begin()+i, in2.begin()+i);
+    spow_vec_simd(out.begin(), in.begin(), in2.begin(), n);
 }
 
 

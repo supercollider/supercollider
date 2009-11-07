@@ -32,10 +32,59 @@
 
 #define vec_xor(a,b)           ((a)^(b))
 
+#define WRAP_MATH_FUNCTION(name, function)                              \
+    template <>                                                         \
+    inline void name##_vec_simd<float>(float * out, const float * in, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            function(out, in);                                          \
+            in += 4;                                                    \
+            out += 4;                                                   \
+        } while (--n);                                                  \
+    }
+
+#define WRAP_MATH_FUNCTION_BINARY(name, function)                       \
+    template <>                                                         \
+    inline void name##_vec_simd<float>(float * out, const float * in0, const float * in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            function(out, in0, in1);                                    \
+            in0 += 4;                                                   \
+            in1 += 4;                                                   \
+            out += 4;                                                   \
+        } while (--n);                                                  \
+    }                                                                   \
+                                                                        \
+    template <>                                                         \
+    inline void name##_vec_simd<float>(float * out, const float * in0, const float in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            function(out, in0, in1);                                    \
+            in0 += 4;                                                   \
+            out += 4;                                                   \
+        } while (--n);                                                  \
+    }                                                                   \
+                                                                        \
+    template <>                                                         \
+    inline void name##_vec_simd<float>(float * out, const float in0, const float * in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            function(out, in0, in1);                                    \
+            in1 += 4;                                                   \
+            out += 4;                                                   \
+        } while (--n);                                                  \
+    }
+
 namespace nova
 {
 
-template<>
+namespace detail
+{
+
 inline void sin4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -43,7 +92,6 @@ inline void sin4(float * out, const float * in)
     *op = _sinf4(*ip);
 }
 
-template<>
 inline void cos4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -51,7 +99,6 @@ inline void cos4(float * out, const float * in)
     *op = _cosf4(*ip);
 }
 
-template<>
 inline void tan4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -59,7 +106,6 @@ inline void tan4(float * out, const float * in)
     *op = _tanf4(*ip);
 }
 
-template<>
 inline void asin4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -67,7 +113,6 @@ inline void asin4(float * out, const float * in)
     *op = _asinf4(*ip);
 }
 
-template<>
 inline void acos4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -75,7 +120,6 @@ inline void acos4(float * out, const float * in)
     *op = _acosf4(*ip);
 }
 
-template<>
 inline void atan4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -83,7 +127,6 @@ inline void atan4(float * out, const float * in)
     *op = _atanf4(*ip);
 }
 
-template<>
 inline void log4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -91,7 +134,6 @@ inline void log4(float * out, const float * in)
     *op = _logf4(*ip);
 }
 
-template<>
 inline void log2_4(float * out, const float * in)
 {
     const float rlog2 = 1.f/std::log(2.f);
@@ -101,7 +143,6 @@ inline void log2_4(float * out, const float * in)
     *op = _logf4(*ip) * rlog2v;
 }
 
-template<>
 inline void log10_4(float * out, const float * in)
 {
     const float rlog10 = 1.f/std::log(10.f);
@@ -111,80 +152,12 @@ inline void log10_4(float * out, const float * in)
     *op = _logf4(*ip) * rlog10v;
 }
 
-template<>
 inline void exp4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
     vec_float4 * op = (vec_float4*)out;
     *op = _expf4(*ip);
 }
-
-/** pow */
-/* @{ */
-template<>
-inline void pow4(float * out, const float * in1, const float * in2)
-{
-    const vec_float4 * ip1 = (const vec_float4*)in1;
-    const vec_float4 * ip2 = (const vec_float4*)in2;
-    vec_float4 * op = (vec_float4*)out;
-    *op = _powf4(*ip1, *ip2);
-}
-
-template<>
-inline void pow4(float * out, const float * in1, const float in2)
-{
-    const vec_float4 ip2 = {in2, in2, in2, in2};
-    pow4(out, in1, (float*)&ip2);
-}
-
-template<>
-inline void pow4(float * out, const float in1, const float * in2)
-{
-    const vec_float4 ip1 = {in1, in1, in1, in1};
-    pow4(out, (float*)&ip1, in2);
-}
-/* @} */
-
-
-/** signed pow:
- *
- *  if (in1 > 0)
- *      return std::pow(in1, in2);
- *  else
- *      return -std::pow(-in1, in2);
- *
- * */
-/* @{ */
-template<>
-inline void spow4(float * out, const float * in1, const float * in2)
-{
-    const vec_float4 * ip1 = (const vec_float4*)in1;
-    const vec_float4 * ip2 = (const vec_float4*)in2;
-
-    const vec_int4   sign_in1 = _signf4(*ip1);
-    const vec_float4 abs_in1 = (vec_float4)vec_xor((vec_int4)*ip1, sign_in1);
-
-    vec_float4 * op = (vec_float4*)out;
-
-    vec_float4 result = _powf4(abs_in1, *ip2);
-
-    *op = (vec_float4)(sign_in1 | (vec_int4)result);
-}
-
-template<>
-inline void spow4(float * out, const float * in1, const float in2)
-{
-    const vec_float4 ip2 = {in2, in2, in2, in2};
-    spow4(out, in1, (float*)&ip2);
-}
-
-template<>
-inline void spow4(float * out, const float in1, const float * in2)
-{
-    const vec_float4 ip1 = {in1, in1, in1, in1};
-    spow4(out, (float*)&ip1, in2);
-}
-/* @} */
 
 /** signed sqrt
  *  if (in > 0)
@@ -193,7 +166,6 @@ inline void spow4(float * out, const float in1, const float * in2)
  *      return -sqrt(-in);
  *
  */
-template<>
 inline void ssqrt4(float * out, const float * in)
 {
     const vec_float4 * ip = (const vec_float4*)in;
@@ -209,7 +181,6 @@ inline void ssqrt4(float * out, const float * in)
 }
 
 
-template<>
 inline void tanh4(float * out, const float * in)
 {
     /* this order of computation (large->small->medium) seems to be the most efficient */
@@ -260,6 +231,92 @@ inline void tanh4(float * out, const float * in)
     *op = result;
 }
 
+} /* namespace detail */
+
+WRAP_MATH_FUNCTION(sin, detail::sin4)
+WRAP_MATH_FUNCTION(cos, detail::cos4)
+WRAP_MATH_FUNCTION(tan, detail::tan4)
+WRAP_MATH_FUNCTION(asin, detail::asin4)
+WRAP_MATH_FUNCTION(acos, detail::acos4)
+WRAP_MATH_FUNCTION(atan, detail::atan4)
+WRAP_MATH_FUNCTION(log, detail::log4)
+WRAP_MATH_FUNCTION(log2, detail::log2_4)
+WRAP_MATH_FUNCTION(log10, detail::log10_4)
+WRAP_MATH_FUNCTION(exp, detail::exp4)
+WRAP_MATH_FUNCTION(ssqrt, detail::ssqrt4)
+WRAP_MATH_FUNCTION(tanh, detail::tanh4)
+
+namespace detail
+{
+
+/** pow */
+/* @{ */
+inline void pow4(float * out, const float * in1, const float * in2)
+{
+    const vec_float4 * ip1 = (const vec_float4*)in1;
+    const vec_float4 * ip2 = (const vec_float4*)in2;
+    vec_float4 * op = (vec_float4*)out;
+    *op = _powf4(*ip1, *ip2);
+}
+
+inline void pow4(float * out, const float * in1, const float in2)
+{
+    const vec_float4 ip2 = {in2, in2, in2, in2};
+    pow4(out, in1, (float*)&ip2);
+}
+
+inline void pow4(float * out, const float in1, const float * in2)
+{
+    const vec_float4 ip1 = {in1, in1, in1, in1};
+    pow4(out, (float*)&ip1, in2);
+}
+/* @} */
+
+
+/** signed pow:
+ *
+ *  if (in1 > 0)
+ *      return std::pow(in1, in2);
+ *  else
+ *      return -std::pow(-in1, in2);
+ *
+ * */
+/* @{ */
+inline void spow4(float * out, const float * in1, const float * in2)
+{
+    const vec_float4 * ip1 = (const vec_float4*)in1;
+    const vec_float4 * ip2 = (const vec_float4*)in2;
+
+    const vec_int4   sign_in1 = _signf4(*ip1);
+    const vec_float4 abs_in1 = (vec_float4)vec_xor((vec_int4)*ip1, sign_in1);
+
+    vec_float4 * op = (vec_float4*)out;
+
+    vec_float4 result = _powf4(abs_in1, *ip2);
+
+    *op = (vec_float4)(sign_in1 | (vec_int4)result);
+}
+
+inline void spow4(float * out, const float * in1, const float in2)
+{
+    const vec_float4 ip2 = {in2, in2, in2, in2};
+    spow4(out, in1, (float*)&ip2);
+}
+
+inline void spow4(float * out, const float in1, const float * in2)
+{
+    const vec_float4 ip1 = {in1, in1, in1, in1};
+    spow4(out, (float*)&ip1, in2);
+}
+/* @} */
+
+} /* namespace detail */
+
+WRAP_MATH_FUNCTION_BINARY(pow, detail::pow4)
+WRAP_MATH_FUNCTION_BINARY(spow, detail::spow4)
+
+
 } /* namespace nova */
+
 
 #endif /* SIMD_MATH_VEC_HPP */

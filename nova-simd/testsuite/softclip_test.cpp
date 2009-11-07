@@ -7,6 +7,7 @@
 
 #include "../softclip.hpp"
 #include "../benchmarks/cache_aligned_array.hpp"
+#include "test_helper.hpp"
 
 using namespace nova;
 using namespace std;
@@ -22,9 +23,8 @@ BOOST_AUTO_TEST_CASE( softclip_tests_float )
         init += 10/10000.f;
     }
 
-    softclip4(simd_val.begin(), arguments.begin(), 10000);
-    softclip (normal_val.begin(), arguments.begin(), 10000);
+    softclip_vec_simd(simd_val.begin(), arguments.begin(), 10000);
+    softclip_vec (normal_val.begin(), arguments.begin(), 10000);
 
-    for (int i = 0; i != 10000; ++i)
-        BOOST_CHECK_SMALL( simd_val[i] - normal_val[i], 1e-8f );
+    compare_buffers(normal_val.begin(), simd_val.begin(), 1e-8f);
 }
