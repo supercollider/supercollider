@@ -1765,6 +1765,8 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	
 	[image lock];
 	unsigned char alpha;
+	height = height + region.origin.y; //padding h and w to meet origin
+	width = width + region.origin.x;
 	for(y=(int)region.origin.y; y < height; y++) {
 		for(x=(int)region.origin.x; x < width; x++) {
 			
