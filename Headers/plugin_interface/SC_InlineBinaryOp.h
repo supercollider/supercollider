@@ -220,6 +220,23 @@ inline double sc_pow(double a, double b)
 	return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b);
 }
 
+template <typename F>
+inline F sc_powi (F x, unsigned int n)
+{
+	F z = 1;
+	while (n != 0)
+	{
+		if ((n & 1) != 0)
+		{
+			z *= x;
+		}
+		n >>= 1;
+		x *= x;
+	}
+
+	return z;
+}
+
 template <class T>
 inline T sc_thresh(T a, T b)
 {

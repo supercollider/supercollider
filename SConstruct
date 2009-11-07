@@ -325,8 +325,10 @@ opts.AddOptions(
                'Build with terminal client interface', 1),
     BoolOption('CURL',
                'Build with libcurl - allows server to load files from remote servers by URL', 0),
+    BoolOption('GPL3',
+               'Allow the inclusion of gpl-3 licensed code. Makes the license of the whole package gpl-3', 0),
     PackageOption('X11',
-                  'Build with X11 support', 1)
+                  'Build with X11 support', 1),
     )
 
 if PLATFORM == 'darwin':
@@ -351,6 +353,13 @@ env = Environment(options = opts,
                   URL = 'http://supercollider.sourceforge.net',
                   TARBALL = PACKAGE + VERSION + '.tbz2')
 env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
+
+# for nova-simd
+env.Append(CPPPATH = ["nova-simd"])
+env.Append(CPPDEFINES = ["NOVA_SIMD"])
+
+if not env['GPL3']:
+    env.Append(CPPDEFINES = ["NO_GPL3_CODE"])
 
 # checks for DISTCC and CCACHE as used in modern linux-distros:
 

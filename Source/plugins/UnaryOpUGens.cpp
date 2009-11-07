@@ -21,6 +21,43 @@
 
 #include "SC_PlugIn.h"
 
+#ifdef NOVA_SIMD
+#include "simd_unary_arithmetic.hpp"
+#include "simd_binary_arithmetic.hpp"
+#include "simd_ternary_arithmetic.hpp"
+#include "simd_math.hpp"
+#include "simd_memory.hpp"
+#include "simd_round.hpp"
+#include "softclip.hpp"
+
+#define NOVA_WRAPPER(NAME, NOVANAME)                        \
+	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
+	{                                                       \
+		float * out = OUT(0);                               \
+		float * a = IN(0);                                  \
+															\
+		int n = inNumSamples >> 2;                          \
+															\
+		do                                                  \
+		{                                                   \
+			nova::NOVANAME##4(out, a);                      \
+			out += 4;                                       \
+			a += 4;                                         \
+			--n;                                            \
+		}                                                   \
+		while (n);                                          \
+	}
+
+#define NOVA_FN_WRAPPER(NAME, NOVANAME)						\
+	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)	\
+	{														\
+		nova::NAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
+	}
+
+
+#endif
+
+
 static InterfaceTable *ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,12 +231,13 @@ extern "C"
 
 }
 
-void ChooseOperatorFunc(UnaryOpUGen *unit);
+bool ChooseOperatorFunc(UnaryOpUGen *unit);
 
 void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
-{
-	ChooseOperatorFunc(unit);
-	(unit->mCalcFunc)(unit, 1);
+{	
+	bool initialized = ChooseOperatorFunc(unit);
+	if (!initialized)
+		(unit->mCalcFunc)(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +252,13 @@ void invert_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = -ZXP(a);
 	);
 }
+
+#ifdef NOVA_SIMD
+void invert_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::minus_vec_simd(OUT(0), 0.f, IN(0), inNumSamples);
+}
+#endif
 
 #if __VEC__
 void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
@@ -265,6 +310,23 @@ void abs_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void zero_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::zerovec_simd(OUT(0), inNumSamples);
+}
+
+void thru_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
+}
+
+void abs_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::abs_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+#endif
+
 #if __VEC__
 void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -289,6 +351,14 @@ void recip_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = 1.f / ZXP(a);
 	);
 }
+
+#ifdef NOVA_SIMD
+void recip_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::over_vec_simd(OUT(0), 1.f, IN(0), inNumSamples);
+}
+#endif
+
 
 #if __VEC__
 void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
@@ -348,6 +418,11 @@ void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 	}
 }
 #endif // __VEC__
+
+#ifdef NOVA_SIMD
+NOVA_FN_WRAPPER(floor, floor)
+NOVA_FN_WRAPPER(ceil, ceil)
+#endif
 
 void sin_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -439,6 +514,18 @@ void tanh_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+NOVA_WRAPPER(sin, sin)
+NOVA_WRAPPER(cos, cos)
+NOVA_WRAPPER(tan, tan)
+NOVA_WRAPPER(asin, asin)
+NOVA_WRAPPER(acos, acos)
+NOVA_WRAPPER(atan, atan)
+NOVA_WRAPPER(tanh, tanh)
+#endif
+
+
+
 void log_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -479,6 +566,14 @@ void exp_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+
+#ifdef NOVA_SIMD
+NOVA_WRAPPER(log, log)
+NOVA_WRAPPER(log2, log2_)
+NOVA_WRAPPER(log10, log10_)
+NOVA_WRAPPER(exp, exp)
+#endif
+
 void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -488,6 +583,10 @@ void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = sc_sqrt(ZXP(a));
 	);
 }
+
+#ifdef NOVA_SIMD
+NOVA_WRAPPER(sqrt, ssqrt)
+#endif
 
 void ampdb_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -580,6 +679,10 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+NOVA_FN_WRAPPER(frac, frac)
+#endif
+
 #if __VEC__
 void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -604,6 +707,13 @@ void squared_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = xa * xa;
 	);
 }
+
+#ifdef NOVA_SIMD
+void squared_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::square_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+#endif
 
 #if __VEC__
 void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
@@ -646,6 +756,13 @@ void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
+#ifdef NOVA_SIMD
+void cubed_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::cube_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+#endif
+
 void sign_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -656,6 +773,13 @@ void sign_a(UnaryOpUGen *unit, int inNumSamples)
 		ZXP(out) = xa < 0.f ? -1.f : (xa > 0.f ? 1.f : 0.f);
 	);
 }
+
+#ifdef NOVA_SIMD
+void sign_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::sgn_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+#endif
 
 void distort_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -723,6 +847,12 @@ void softclip_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void softclip_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::softclip4(OUT(0), IN(0), inNumSamples);
+}
+#endif
 
 void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -790,6 +920,12 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void ramp_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::clip_vec_simd(OUT(0), IN(0), 0.f, 1.f, inNumSamples);
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1403,11 +1539,70 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 }
 #endif // __VEC__
 
-void ChooseOperatorFunc(UnaryOpUGen *unit)
+#ifdef NOVA_SIMD
+UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
+{
+	void (*func)(UnaryOpUGen *unit, int inNumSamples);
+
+	switch (unit->mSpecialIndex) {
+		case opSilence : func = &zero_nova; break;
+		case opThru : func = &thru_nova; break;
+		case opNeg : func = &invert_nova; break;
+		case opNot : func = &not_a; break;
+		case opAbs : func = &abs_nova; break;
+		case opCeil : func = &ceil_nova; break;
+		case opFloor : func = &floor_nova; break;
+		case opFrac : func = &frac_nova; break;
+		case opSign : func = &sign_nova; break;
+		case opSquared : func = &squared_nova; break;
+		case opCubed : func = &cubed_nova; break;
+		case opSqrt : func = &sqrt_nova; break;
+		case opExp : func = &exp_nova; break;
+		case opRecip : func = &recip_nova; break;
+		case opMIDICPS : func = &midicps_a; break;
+		case opCPSMIDI : func = &cpsmidi_a; break;
+
+		case opMIDIRatio : func = &midiratio_a; break;
+		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opDbAmp : func = &dbamp_a; break;
+		case opAmpDb : 	func = &ampdb_a; break;
+		case opOctCPS : func = &octcps_a; break;
+		case opCPSOct : func = &cpsoct_a; break;
+		case opLog : func = &log_nova; break;
+		case opLog2 : func = &log2_nova; break;
+		case opLog10 : func = &log10_nova; break;
+		case opSin : func = &sin_nova; break;
+		case opCos : func = &cos_nova; break;
+		case opTan : func = &tan_nova; break;
+		case opArcSin : func = &asin_nova; break;
+		case opArcCos : func = &acos_nova; break;
+		case opArcTan : func = &atan_nova; break;
+		case opSinH : func = &sinh_a; break;
+		case opCosH : func = &cosh_a; break;
+		case opTanH : func = &tanh_nova; break;
+
+		case opDistort : func = &distort_a; break;
+		case opSoftClip : func = &softclip_nova; break;
+
+		case opRectWindow : func = &rectwindow_a; break;
+		case opHanWindow : func = &hanwindow_a; break;
+		case opWelchWindow : func = &welwindow_a; break;
+		case opTriWindow : func = &triwindow_a; break;
+
+		case opSCurve : func = &scurve_a; break;
+		case opRamp : func = &ramp_nova; break;
+
+		default : func = &thru_nova; break;
+	}
+	return func;
+}
+#endif
+
+bool ChooseOperatorFunc(UnaryOpUGen *unit)
 {
 	//Print("->ChooseOperatorFunc %d\n", unit->mSpecialIndex);
 	UnaryOpFunc func;
-
+	bool ret = false;
 	if (unit->mCalcRate == calc_DemandRate) {
 		func = ChooseDemandFunc(unit);
 	} else if (BUFLENGTH == 1) {
@@ -1415,6 +1610,15 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 #if __VEC__
 	} else if (USEVEC) {
 		func = ChooseVectorFunc(unit);
+#elif defined(NOVA_SIMD)
+	} else if (!(BUFLENGTH & 15)) {
+		/* select normal function for initialization */
+		func = ChooseNormalFunc(unit);
+		func(unit, 1);
+
+		/* select simd function */
+		func = ChooseNovaSimdFunc(unit);
+		ret = true;
 #endif
 	} else {
 		func = ChooseNormalFunc(unit);
@@ -1422,6 +1626,7 @@ void ChooseOperatorFunc(UnaryOpUGen *unit)
 	unit->mCalcFunc = (UnitCalcFunc)func;
 	//Print("<-ChooseOperatorFunc %08X\n", func);
 	//Print("calc %d\n", unit->mCalcRate);
+	return ret;
 }
 
 
