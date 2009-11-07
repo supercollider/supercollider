@@ -536,7 +536,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 			}
 		} break;
 		case tagChar : {
-			if (b->utag == tagChar) {
+			if (IsChar(b)) {
 				switch (opcode) {
 					case opEQ  : res = BOOL(a->ui == b->ui); break;
 					case opNE  : res = BOOL(a->ui != b->ui); break;
@@ -560,7 +560,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			if (b->utag == tagSym) {
+			if (IsSym(b)) {
 				switch (opcode) {
 					case opEQ  : res = BOOL(a->us == b->us); break;
 					case opNE  : res = BOOL(a->us != b->us); break;

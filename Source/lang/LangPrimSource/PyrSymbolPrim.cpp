@@ -37,7 +37,7 @@ int prSymbolString(struct VMGlobals *g, int numArgsPushed)
 	PyrString *string;
 
 	a = g->sp;
-	if (a->utag != tagSym) return errWrongType;
+	if (NotSym(a)) return errWrongType;
 	string = newPyrString(g->gc, a->us->name, 0, true);
 	SetObject(a, string);
 	return errNone;

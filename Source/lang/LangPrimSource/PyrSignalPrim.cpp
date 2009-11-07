@@ -233,7 +233,7 @@ int prSignalOverDub(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (b->utag != tagObj || !isKindOf(b->uo, class_signal)) return errWrongType;
+	if (NotObj(b) || !isKindOf(b->uo, class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
 
@@ -251,7 +251,7 @@ int prSignalOverWrite(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (b->utag != tagObj || !isKindOf(b->uo, class_signal)) return errWrongType;
+	if (NotObj(b) || !isKindOf(b->uo, class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
 

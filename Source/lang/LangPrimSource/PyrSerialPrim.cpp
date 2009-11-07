@@ -619,7 +619,7 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot* src = args+1;
 
 	int val;
-	if (src->utag == tagChar) {
+	if (IsChar(src)) {
 		val = src->uc;
 	} else {
 		int err = slotIntVal(src, &val);

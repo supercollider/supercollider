@@ -536,11 +536,11 @@ void reallocClassObj(PyrClass* classobj,
 void fixClassArrays(PyrClass *classobj);
 void fixClassArrays(PyrClass *classobj)
 {
-	if (classobj->methods.utag == tagObj) classobj->methods.uo->classptr = class_array;
-	if (classobj->instVarNames.utag == tagObj) classobj->instVarNames.uo->classptr = class_symbolarray;
-	if (classobj->classVarNames.utag == tagObj) classobj->classVarNames.uo->classptr = class_symbolarray;
-	if (classobj->iprototype.utag == tagObj) classobj->iprototype.uo->classptr = class_array;
-	if (classobj->cprototype.utag == tagObj) classobj->cprototype.uo->classptr = class_array;
+	if (IsObj(&classobj->methods)) classobj->methods.uo->classptr = class_array;
+	if (IsObj(&classobj->instVarNames)) classobj->instVarNames.uo->classptr = class_symbolarray;
+	if (IsObj(&classobj->classVarNames)) classobj->classVarNames.uo->classptr = class_symbolarray;
+	if (IsObj(&classobj->iprototype)) classobj->iprototype.uo->classptr = class_array;
+	if (IsObj(&classobj->cprototype)) classobj->cprototype.uo->classptr = class_array;
 }
 
 int numInstVars(PyrClass* classobj)
@@ -612,7 +612,7 @@ int numSuperInstVars(PyrClass *superclassobj)
 {
 	int superinstvars = 0;
 	if (superclassobj) {
-		if (superclassobj->iprototype.utag == tagObj) {
+		if (IsObj(&superclassobj->iprototype)) {
 			superinstvars = superclassobj->iprototype.uo->size;
 		}
 	}
@@ -705,7 +705,7 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index)
 				}
 			}
 		}
-		if (localclassobj->superclass.utag == tagSym) {
+		if (IsSym(&localclassobj->superclass)) {
 			localclassobj = localclassobj->superclass.us->u.classobj;
 		} else {
 			localclassobj = NULL;
@@ -741,7 +741,7 @@ bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index)
 				}
 			}
 		}
-		if (localclassobj->superclass.utag == tagSym) {
+		if (IsSym(&localclassobj->superclass)) {
 			localclassobj = localclassobj->superclass.us->u.classobj;
 		} else {
 			localclassobj = NULL;
@@ -1615,7 +1615,7 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 			newobj->size = 0;
 		}
 	} else {
-		if (classobj->iprototype.utag == tagObj) {
+		if (IsObj(&classobj->iprototype)) {
 			proto = classobj->iprototype.uo;
 			size = proto->size;
 			numbytes = size * sizeof(PyrSlot);
@@ -1646,7 +1646,7 @@ PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size,
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
 		numbytes = size * gFormatElemSize[format];
 	} else {
-		if (classobj->iprototype.utag == tagObj) {
+		if (IsObj(&classobj->iprototype)) {
 			proto = classobj->iprototype.uo;
 			size = proto->size;
 			numbytes = size * sizeof(PyrSlot);
@@ -1903,7 +1903,7 @@ void dumpBadObject(PyrObject *obj)
 
 void dumpObjectSlot(PyrSlot *slot)
 {
-	if (slot->utag == tagObj) {
+	if (IsObj(slot)) {
 		dumpObject(slot->uo);
 	} else {
 		dumpPyrSlot(slot);
@@ -1937,7 +1937,7 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 {
 	bool failed = false;
 	if (frame==NULL) return false;
-	if (frame->method.utag != tagObj) {
+	if (NotObj(&frame->method)) {
 		postfl("Frame %X method tag wrong %X\n", frame, frame->method.utag);
 		failed = true;
 	//} else if (!isKindOf((PyrObject*)frame->method.uo->classptr, class_fundef)) {
@@ -1949,7 +1949,7 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 		///} else {
 		//	postfl("not even a class\n");
 		//}
-	} else if (frame->method.uoblk->code.utag != tagObj) {
+	} else if (NotObj(&frame->method.uoblk->code)) {
 		postfl("Method %X code tag wrong %X\n", frame->method.uoblk, frame->method.uoblk->code.utag);
 		failed = true;
 	} else if (frame->method.uoblk->code.uo->classptr != class_int8array) {
@@ -2347,7 +2347,7 @@ int getIndexedInt(PyrObject *obj, int index, int *value)
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
 				*value = (int)slot->uf;
-			} else if (slot->utag == tagInt) {
+			} else if (IsInt(slot)) {
 				*value = slot->ui;
 			} else {
 				err = errWrongType;
@@ -2384,7 +2384,7 @@ int getIndexedFloat(PyrObject *obj, int index, float *value)
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
 				*value = slot->uf;
-			} else if (slot->utag == tagInt) {
+			} else if (IsInt(slot)) {
 				*value = slot->ui;
 			} else {
 				err = errWrongType;
@@ -2421,7 +2421,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
 				*value = slot->uf;
-			} else if (slot->utag == tagInt) {
+			} else if (IsInt(slot)) {
 				*value = slot->ui;
 			} else {
 				err = errWrongType;
@@ -2496,7 +2496,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			break;
 		case obj_double :
 			if (NotFloat(c)) {
-				if (c->utag != tagInt) return errWrongType;
+				if (NotInt(c)) return errWrongType;
 				else {
 					obj->slots[index].uf = c->ui;
 				}
@@ -2506,7 +2506,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			break;
 		case obj_float :
 			if (NotFloat(c)) {
-				if (c->utag != tagInt) return errWrongType;
+				if (NotInt(c)) return errWrongType;
 				else {
 					((float*)(obj->slots))[index] = c->ui;
 				}
@@ -2515,23 +2515,23 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			}
 			break;
 		case obj_int32 :
-			if (c->utag != tagInt) return errWrongType;
+			if (NotInt(c)) return errWrongType;
 			((int32*)(obj->slots))[index] = c->ui;
 			break;
 		case obj_int16 :
-			if (c->utag != tagInt) return errWrongType;
+			if (NotInt(c)) return errWrongType;
 			((int16*)(obj->slots))[index] = c->ui;
 			break;
 		case obj_int8 :
-			if (c->utag != tagInt) return errWrongType;
+			if (NotInt(c)) return errWrongType;
 			((int8*)(obj->slots))[index] = c->ui;
 			break;
 		case obj_symbol :
-			if (c->utag != tagSym) return errWrongType;
+			if (NotSym(c)) return errWrongType;
 			((int*)(obj->slots))[index] = c->ui;
 			break;
 		case obj_char :
-			if (c->utag != tagChar) return errWrongType;
+			if (NotChar(c)) return errWrongType;
 			((unsigned char*)(obj->slots))[index] = c->ui;
 			break;
 	}

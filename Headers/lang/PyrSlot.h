@@ -182,6 +182,9 @@ inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return ((a)->ui == (b)->ui && (a)->
 inline bool IsSym(PyrSlot* slot) { return ((slot)->utag == tagSym); }
 inline bool NotSym(PyrSlot* slot) { return ((slot)->utag != tagSym); }
 
+inline bool IsChar(PyrSlot* slot) { return ((slot)->utag == tagChar); }
+inline bool NotChar(PyrSlot* slot) { return ((slot)->utag != tagChar); }
+
 inline bool IsInt(PyrSlot* slot) { return ((slot)->utag == tagInt); }
 inline bool NotInt(PyrSlot* slot) { return ((slot)->utag != tagInt); }
 

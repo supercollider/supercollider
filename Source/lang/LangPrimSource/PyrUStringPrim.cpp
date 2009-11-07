@@ -58,7 +58,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1; // pattern
 	PyrSlot *c = g->sp;     // offset
 
-	if (!isKindOfSlot(b, class_string) || (c->utag != tagInt)) return errWrongType;
+	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
 //	post("prString_FindRegexp\n");
 	int maxfind = MAXREGEXFIND;
 	int offset = c->ui;

@@ -63,7 +63,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 	maxlen = 1;
 	for (j=0; j<size; ++j) {
 		slot = slots1 + j;
-		if (slot->utag == tagObj) {
+		if (IsObj(slot)) {
 			if (slot->uo->classptr == class_array) {
 				len = slot->uo->size;
 				maxlen = len > maxlen ? len : maxlen;
@@ -84,7 +84,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 		slots3 = obj3->slots;
 		for (j=0; j<size; ++j) {
 			slot = slots1 + j;
-			if (slot->utag == tagObj) {
+			if (IsObj(slot)) {
 				if (slot->uo->classptr == class_array && slot->uo->size > 0) {
 					obj4 = slot->uo;
 					slots4 = obj4->slots;
