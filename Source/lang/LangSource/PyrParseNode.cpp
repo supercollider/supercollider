@@ -517,7 +517,7 @@ PyrClass* getNodeSuperclass(PyrClassNode *node)
 //	postfl("getNodeSuperclass node->mSuperClassName %d\n", node->mSuperClassName);
 //	postfl("getNodeSuperclass node->mSuperClassName->mSlot.utag %d\n",
 //		node->mSuperClassName->mSlot.utag);
-	if (node->mSuperClassName && node->mSuperClassName->mSlot.utag == tagSym) {
+	if (node->mSuperClassName && IsSym(&node->mSuperClassName->mSlot)) {
 		superclassobj = node->mSuperClassName->mSlot.us->u.classobj;
 		if (superclassobj == NULL) {
 			error("Cannot find superclass '%s' for class '%s'\n",
@@ -1452,7 +1452,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				rtype = xnode->mClassno;
 				if (rtype == pn_PushLitNode) { // return literal ?
 					compilePyrLiteralNode((PyrLiteralNode*)xnode, &rslot);
-					if (rslot.utag == tagObj && rslot.uo->classptr == class_fundef) {
+					if (IsObj(&rslot) && rslot.uo->classptr == class_fundef) {
 						methType = methNormal;
 					} else {
 						methType = methReturnLiteral;
@@ -1683,7 +1683,7 @@ bool PyrVarDefNode::hasExpr(PyrSlot *result)
 	}
 	PyrPushLitNode *node = (PyrPushLitNode*)mDefVal;
 
-	if (node->mSlot.utag == tagPtr) {
+	if (IsPtr(&node->mSlot)) {
 		PyrParseNode* litnode = (PyrParseNode*)node->mSlot.uo;
 		if (litnode) {
 			if (litnode->mClassno == pn_BlockNode) {
@@ -2113,12 +2113,12 @@ gCompilingBlock, &mSelector->mSlot);
 				//}
 				argnode2 = argnode->mNext;
 				if (index == opAdd && argnode2->mClassno == pn_PushLitNode
-					&& ((PyrPushLitNode*)argnode2)->mSlot.utag == tagInt
+					&& IsInt(&((PyrPushLitNode*)argnode2)->mSlot)
 					&& ((PyrPushLitNode*)argnode2)->mSlot.ui == 1) {
 					COMPILENODE(argnode, &dummy, false);
 					compileOpcode(opPushSpecialValue, opsvPlusOne);
 				} else if (index == opSub && argnode2->mClassno == pn_PushLitNode
-					&& ((PyrPushLitNode*)argnode2)->mSlot.utag == tagInt
+					&& IsInt(&((PyrPushLitNode*)argnode2)->mSlot)
 					&& ((PyrPushLitNode*)argnode2)->mSlot.ui == 1) {
 					COMPILENODE(argnode, &dummy, false);
 					compileOpcode(opPushSpecialValue, opsvMinusOne);
@@ -2241,7 +2241,7 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		PyrPushLitNode *anode;
 		PyrBlockNode *bnode;
 		anode = (PyrPushLitNode*)node;
-		if (anode->mSlot.utag == tagPtr
+		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(anode->mSlot.uo))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
 				post("WARNING: FunctionDef contains variable declarations and so"
@@ -2264,7 +2264,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		PyrPushLitNode *anode;
 		PyrBlockNode *bnode;
 		anode = (PyrPushLitNode*)node;
-		if (anode->mSlot.utag == tagPtr
+		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(anode->mSlot.uo))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
 				post("WARNING: FunctionDef contains variable declarations and so"
@@ -2288,7 +2288,7 @@ bool isAtomicLiteral(PyrParseNode *node)
 	if (node->mClassno == pn_PushLitNode) {
 		PyrPushLitNode *anode;
 		anode = (PyrPushLitNode*)node;
-		if (anode->mSlot.utag != tagObj && anode->mSlot.utag != tagPtr) res = true;
+		if (NotObj(&anode->mSlot) && !IsPtr(&anode->mSlot)) res = true;
 	}
 	return res;
 }
@@ -2300,7 +2300,7 @@ bool isWhileTrue(PyrParseNode *node)
 		PyrPushLitNode *anode;
 		PyrBlockNode *bnode;
 		anode = (PyrPushLitNode*)node;
-		if (anode->mSlot.utag == tagPtr
+		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(anode->mSlot.uo))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
 				/*
@@ -2315,7 +2315,7 @@ bool isWhileTrue(PyrParseNode *node)
 					res = true;
 				}
 			}
-		} else if (anode->mSlot.utag == tagTrue) {
+		} else if (IsTrue(&anode->mSlot)) {
 			res = true;
 		}
 	}
@@ -2994,12 +2994,12 @@ void PyrBinopCallNode::compileCall(PyrSlot *result)
 					compileOpcode(opSpecialOpcode, opcSpecialBinaryOpWithAdverb);
 					compileByte(index);
 				} else if (index == opAdd && arg2->mClassno == pn_PushLitNode
-					&& ((PyrPushLitNode*)arg2)->mSlot.utag == tagInt
+					&& IsInt(&((PyrPushLitNode*)arg2)->mSlot)
 					&& ((PyrPushLitNode*)arg2)->mSlot.ui == 1) {
 					COMPILENODE(arg1, &dummy, false);
 					compileOpcode(opPushSpecialValue, opsvPlusOne);
 				} else if (index == opSub && arg2->mClassno == pn_PushLitNode
-					&& ((PyrPushLitNode*)arg2)->mSlot.utag == tagInt
+					&& IsInt(&((PyrPushLitNode*)arg2)->mSlot)
 					&& ((PyrPushLitNode*)arg2)->mSlot.ui == 1) {
 					COMPILENODE(arg1, &dummy, false);
 					compileTail();
@@ -3311,13 +3311,13 @@ void PyrReturnNode::compile(PyrSlot *result)
 		compileOpcode(opSpecialOpcode, opcReturnSelf);
 	} else if (mExpr->mClassno == pn_PushLitNode) {
 		lit = (PyrPushLitNode*)mExpr;
-		if (lit->mSlot.us == s_this && lit->mSlot.utag == tagSym) {
+		if (lit->mSlot.us == s_this && IsSym(&(lit->mSlot))) {
 			compileOpcode(opSpecialOpcode, opcReturnSelf);
-		} else if (lit->mSlot.utag == tagNil) {
+		} else if (IsNil(&lit->mSlot)) {
 			compileOpcode(opSpecialOpcode, opcReturnNil);
-		} else if (lit->mSlot.utag == tagTrue) {
+		} else if (IsTrue(&lit->mSlot)) {
 			compileOpcode(opSpecialOpcode, opcReturnTrue);
-		} else if (lit->mSlot.utag == tagFalse) {
+		} else if (IsFalse(&lit->mSlot)) {
 			compileOpcode(opSpecialOpcode, opcReturnFalse);
 		} else {
 			COMPILENODE(lit, &dummy, false);
@@ -4168,7 +4168,7 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 	selectors = func->selectors.uo;
 	if (selectors) {
 		for (i=0; i<selectors->size; ++i) {
-			if (selectors->slots[i].utag == tagSym && selectors->slots[i].us == selector) {
+			if (IsSym(&selectors->slots[i]) && selectors->slots[i].us == selector) {
 				*selType = selNormal;
 				return i;
 			}

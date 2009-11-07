@@ -149,7 +149,7 @@ void PyrDropNode::dump(int level)
 void PyrSlotNode::dumpPushLit(int level)
 {
 	postfl("%2d PushLit\n", level);
-	if (mSlot.utag != tagPtr) dumpPyrSlot(&mSlot);
+	if (!IsPtr(&mSlot)) dumpPyrSlot(&mSlot);
 	else {
 		DUMPNODE((PyrParseNode*)mSlot.uo, level);
 	}
@@ -158,7 +158,7 @@ void PyrSlotNode::dumpPushLit(int level)
 void PyrSlotNode::dumpLiteral(int level)
 {
 	postfl("%2d Literal\n", level);
-	if (mSlot.utag != tagPtr) dumpPyrSlot(&mSlot);
+	if (!IsPtr(&mSlot)) dumpPyrSlot(&mSlot);
 	else {
 		DUMPNODE((PyrParseNode*)mSlot.uo, level);
 	}
@@ -299,7 +299,7 @@ void slotString(PyrSlot *slot, char *str)
 						do {
 							context = nextcontext;
 							nextcontext = &context->uoblk->contextDef;
-						} while (nextcontext->utag != tagNil);
+						} while (NotNil(nextcontext));
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "instance of FunctionDef in Method %s:%s",
 								context->uom->ownerclass.uoc->name.us->name,
@@ -403,7 +403,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 						do {
 							context = nextcontext;
 							nextcontext = &context->uoblk->contextDef;
-						} while (nextcontext->utag != tagNil);
+						} while (NotNil(nextcontext));
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "< FunctionDef in Method %s:%s >",
 								context->uom->ownerclass.uoc->name.us->name,
@@ -514,7 +514,7 @@ bool postString(PyrSlot *slot, char *str)
 						do {
 							context = nextcontext;
 							nextcontext = &context->uoblk->contextDef;
-						} while (nextcontext->utag != tagNil);
+						} while (NotNil(nextcontext));
 						if (isKindOf(context->uo, class_method)) {
 							sprintf(str, "a FunctionDef in Method %s:%s",
 								context->uom->ownerclass.uoc->name.us->name,

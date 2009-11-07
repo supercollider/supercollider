@@ -191,10 +191,10 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *d = g->sp;
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	if (c->utag != tagInt || d->utag != tagInt && d->utag != tagNil) return errWrongType;
+	if (NotInt(c) || NotInt(d) && NotNil(d)) return errWrongType;
 	start = c->ui;
 
-	if(d->utag == tagNil) {
+	if(IsNil(d)) {
 		end = b->uo->size - 1; // last char index instead of size
 	} else {
 		end = d->ui;
@@ -246,7 +246,7 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (b->utag != tagObj || !isKindOf(b->uo, class_string)) {
+	if (NotObj(b) || !isKindOf(b->uo, class_string)) {
 		SetNil(a);
 		return errNone;
 	}

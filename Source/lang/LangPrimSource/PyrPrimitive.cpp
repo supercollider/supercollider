@@ -131,7 +131,7 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->utag != tagObj) return errWrongType;
+	if (NotObj(a)) return errWrongType;
 
 	PyrObject *obj = a->uo;
 
@@ -166,7 +166,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (a->utag != tagObj) return errWrongType;
+	if (NotObj(a)) return errWrongType;
 	obj = a->uo;
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
 
@@ -202,7 +202,7 @@ int instVarSize(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *obj;
 
 	a = g->sp;
-	if (a->utag != tagObj) {
+	if (NotObj(a)) {
 		SetInt(a, 0);
 		return errNone;
 	}
@@ -309,7 +309,7 @@ int prPostString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	//if (a->utag != tagObj) return errWrongType;
+	//if (NotObj(a)) return errWrongType;
 	// assume it is a string!
 	postText(a->uos->s, a->uos->size);
 	return errNone;
@@ -320,7 +320,7 @@ int prPostLine(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	//if (a->utag != tagObj) return errWrongType;
+	//if (NotObj(a)) return errWrongType;
 	// assume it is a string!
 	postText(a->uos->s, a->uos->size);
 	postChar('\n');
@@ -448,7 +448,7 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (b->utag != tagObj) return errWrongType;
+	if (NotObj(b)) return errWrongType;
 	testclass = (PyrClass*)b->uo;
 	classobj = classOfSlot(a);
 #if 0
@@ -493,7 +493,7 @@ int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (b->utag != tagObj) return errWrongType;
+	if (NotObj(b)) return errWrongType;
 	testclass = (PyrClass*)b->uo;
 	classobj = classOfSlot(a);
 	if (classobj == testclass) {
@@ -545,11 +545,11 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->utag != tagObj) return errWrongType;
+	if (NotObj(a)) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
 		// create an indexable object
-		if (b->utag != tagInt) {
+		if (NotInt(b)) {
 			if (IsFloat(b)) {
 				size = (int)b->uf;
 			} else if (NotNil(b)) return errIndexNotAnInteger;
@@ -576,7 +576,7 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - numArgsPushed + 1;
 	b = a + 1;
 
-	if (a->utag != tagObj) return errWrongType;
+	if (NotObj(a)) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
 		error("CopyArgs : object has no instance variables.\n");
@@ -605,11 +605,11 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->utag != tagObj) return errWrongType;
+	if (NotObj(a)) return errWrongType;
 	classobj = (PyrClass*)a->uo;
 	if (classobj->classFlags.ui & classHasIndexableInstances) {
 		// create an indexable object
-		if (b->utag != tagInt) {
+		if (NotInt(b)) {
 			if (IsFloat(b)) {
 				size = (int)b->uf;
 			} else if (NotNil(b)) return errIndexNotAnInteger;
@@ -725,7 +725,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
 
-	if (b->utag == tagObj) {
+	if (IsObj(b)) {
 		if (b->uo->classptr == class_array) {
 			array = (PyrObject*)b->uo;
 			above:
@@ -751,7 +751,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 
 		} else if (b->uo->classptr == class_list) {
 			list = b->uol;
-			if (list->array.utag != tagObj) return errWrongType;
+			if (NotObj(&list->array)) return errWrongType;
 			array = list->array.uo;
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
@@ -777,7 +777,7 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
 
-	if (b->utag == tagObj) {
+	if (IsObj(b)) {
 		if (b->uo->classptr == class_array) {
 			array = (PyrObject*)b->uo;
 			above:
@@ -803,7 +803,7 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 
 		} else if (b->uo->classptr == class_list) {
 			list = b->uol;
-			if (list->array.utag != tagObj) return errWrongType;
+			if (NotObj(&list->array)) return errWrongType;
 			array = list->array.uo;
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
@@ -1459,7 +1459,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 		if (listSlot->uo->classptr == class_list) {
 			listSlot = listSlot->uo->slots;
 		}
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			goto badselector;
 		}
 		PyrObject *array = listSlot->uo;
@@ -1520,7 +1520,7 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 		if (listSlot->uo->classptr == class_list) {
 			listSlot = listSlot->uo->slots;
 		}
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			goto badselector;
 		}
 		PyrObject *array = listSlot->uo;
@@ -1571,13 +1571,13 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 	selSlot = recvrSlot + 1;
 	listSlot = g->sp;
 	numargslots = numArgsPushed - 3;
-	if (selSlot->utag != tagSym) {
+	if (NotSym(selSlot)) {
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
 	selector = selSlot->us;
 
-	if (listSlot->utag != tagObj) {
+	if (NotObj(listSlot)) {
 		return objectPerform(g, numArgsPushed);
 	}
 	if (listSlot->uo->classptr == class_array) {
@@ -1603,7 +1603,7 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		for (m=0,mmax=array->size; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 	} else if (listSlot->uo->classptr == class_list) {
 		listSlot = listSlot->uo->slots;
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1653,7 +1653,7 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 		if (listSlot->uo->classptr == class_list) {
 			listSlot = listSlot->uo->slots;
 		}
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			goto badselector;
 		}
 		PyrObject *array = listSlot->uo;
@@ -1721,7 +1721,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 		if (listSlot->uo->classptr == class_list) {
 			listSlot = listSlot->uo->slots;
 		}
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			goto badselector;
 		}
 		PyrObject *array = listSlot->uo;
@@ -1771,12 +1771,12 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 	selSlot = recvrSlot + 1;
 	listSlot = g->sp;
 	numargslots = numArgsPushed - 3;
-	if (selSlot->utag != tagSym) {
+	if (NotSym(selSlot)) {
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
 	selector = selSlot->us;
-	if (listSlot->utag != tagObj) {
+	if (NotObj(listSlot)) {
 		return objectPerform(g, numArgsPushed);
 	}
 	if (listSlot->uo->classptr == class_array) {
@@ -1791,7 +1791,7 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 		for (m=0,mmax=array->size; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 	} else if (listSlot->uo->classptr == class_list) {
 		listSlot = listSlot->uo->slots;
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1823,7 +1823,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 	recvrSlot = g->sp - 1;
 	listSlot = g->sp;
 
-	if (listSlot->utag != tagObj) {
+	if (NotObj(listSlot)) {
 		error("Expected Array or List.. Got :\n");
 		dumpObjectSlot(listSlot);
 		return errWrongType;
@@ -1833,7 +1833,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 		array = listSlot->uo;
 
 		selSlot = array->slots;
-		if (selSlot->utag != tagSym) {
+		if (NotSym(selSlot)) {
 			error("Selector not a Symbol :\n");
 			return errWrongType;
 		}
@@ -1844,7 +1844,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 		for (m=0,mmax=array->size-1; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 	} else if (listSlot->uo->classptr == class_list) {
 		listSlot = listSlot->uo->slots;
-		if (listSlot->utag != tagObj || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1883,7 +1883,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 	recvrSlot = array->slots;
 	selSlot = recvrSlot + 1;
 	numargslots = numArgsPushed - 1;
-	if (selSlot->utag != tagSym) {
+	if (NotSym(selSlot)) {
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
@@ -2084,7 +2084,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 		SetNil(debugFrameObj->slots + 3);
 	}
 
-	if (frame->context.utag == tagObj && frame->context.uof == frame) {
+	if (IsObj(&frame->context) && frame->context.uof == frame) {
 		SetObject(debugFrameObj->slots + 4,  debugFrameObj);
 	} else if (NotNil(&frame->context)) {
 		MakeDebugFrame(g, frame->context.uof, debugFrameObj->slots + 4);
@@ -2141,7 +2141,7 @@ int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	if (a->utag == tagObj) {
+	if (IsObj(a)) {
 		if (a->uo->obj_flags & obj_immutable) {
 			SetFalse(a);
 		} else {
@@ -2159,7 +2159,7 @@ int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	if (a->utag == tagObj) {
+	if (IsObj(a)) {
 		if (a->uo->gc_color == obj_permanent) {
 			SetTrue(a);
 		} else {
@@ -2225,9 +2225,9 @@ int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (a->utag != tagObj) return errWrongType;
-	if (b->utag != tagInt) return errWrongType;
-	if (c->utag != tagInt) return errWrongType;
+	if (NotObj(a)) return errWrongType;
+	if (NotInt(b)) return errWrongType;
+	if (NotInt(c)) return errWrongType;
 	a->uo = copyObjectRange(g->gc, a->uo, b->ui, c->ui, true);
 
 	return errNone;
@@ -2449,7 +2449,7 @@ int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->utag != tagObj) slotCopy(a,&o_false);
+	if (NotObj(a)) slotCopy(a,&o_false);
 	else {
 		obj = a->uo;
 		for (i=0; i<obj->size; ++i) {
@@ -2478,7 +2478,7 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 
 	classobj = classOfSlot(a);
 
-	if (b->utag == tagSym) {
+	if (IsSym(b)) {
 
 		selector = b->us;
 		index = classobj->classIndex.ui + selector->u.index;
@@ -2493,7 +2493,7 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *slot = b->uo->slots;
 		for (int i=0; i<size; ++i, ++slot) {
 
-			if (slot->utag != tagSym) return errWrongType;
+			if (NotSym(slot)) return errWrongType;
 
 			selector = slot->us;
 			index = classobj->classIndex.ui + selector->u.index;
@@ -2546,7 +2546,7 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	// check b is a string
-	if (b->utag != tagObj) return errWrongType;
+	if (NotObj(b)) return errWrongType;
 	if (!isKindOf(b->uo,  class_string)) return errWrongType;
 	string = b->uos;
 
@@ -2572,7 +2572,7 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 		SetNil(&slotResult);
 		COMPILENODE(gRootParseNode, &slotResult, true);
 
-		if (slotResult.utag != tagObj
+		if (NotObj(&slotResult)
 			|| slotResult.uo->classptr != class_fundef) {
 				compileErrors++;
 			error("Compile did not return a FunctionDef..\n");
@@ -2965,7 +2965,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 
 	thread = a->uot;
 
-	if (b->utag != tagObj || !isKindOf(b->uo, class_func)) {
+	if (NotObj(b) || !isKindOf(b->uo, class_func)) {
 		error("Thread function arg not a Function.\n");
 		return errWrongType;
 	}

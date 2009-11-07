@@ -599,7 +599,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ++ip; // get literal index
 			// push a block as a closure if it is one
 			slot = g->block->selectors.uo->slots + op2;
-			if (slot->utag == tagObj && slot->uo->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
+			if (IsObj(slot) && slot->uo->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
 				// push a closure
 				g->sp = sp; // gc may push the stack
 				closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, true);
@@ -758,10 +758,10 @@ void Interpret(VMGlobals *g)
 
 		case 32 : // JumpIfTrue
 			// cannot compare with o_false because it is NaN
-			if ( sp->utag == tagTrue ) {
+			if ( IsTrue(sp) ) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-			} else if ( sp->utag == tagFalse) {
+			} else if ( IsFalse(sp)) {
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
@@ -880,7 +880,7 @@ void Interpret(VMGlobals *g)
 		// opPushSpecialValue
 		case  96 : slotCopy(++sp, &g->receiver); break;
 		case  97 : // push one and subtract
-			if (sp->utag == tagInt) {
+			if (IsInt(sp)) {
 				sp->ui--;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
@@ -903,7 +903,7 @@ void Interpret(VMGlobals *g)
 		case 105 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFOne]); break;
 		case 106 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFTwo]); break;
 		case 107 : // push one and add
-			if (sp->utag == tagInt) {
+			if (IsInt(sp)) {
 				sp->ui++;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
@@ -1335,7 +1335,7 @@ void Interpret(VMGlobals *g)
 					}
 					tag = vars[1].utag;
 					if ((tag != tagInt)
-							|| vars[2].utag != tagInt) {
+							|| NotInt(&vars[2])) {
 						error("Integer-forBy : endval or stepval not an Integer.\n");
 
 						slotCopy(++sp, &g->receiver);
@@ -1533,12 +1533,12 @@ void Interpret(VMGlobals *g)
 					break;
 				case 22 : // ? question mark method
 					--sp;
-					if (sp->utag == tagNil) {
+					if (IsNil(sp)) {
 						*sp = *(sp+1);
 					}
 					break;
 				case 23 : // if not nil push this and jump. used to implement ??
-					if (sp->utag != tagNil) {
+					if (NotNil(sp)) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1547,7 +1547,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 				case 24 : // ifNil
-					if ( sp->utag != tagNil ) {
+					if ( NotNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1556,7 +1556,7 @@ void Interpret(VMGlobals *g)
 					--sp;
 					break;
 				case 25 : // ifNotNil
-					if ( sp->utag == tagNil ) {
+					if ( IsNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1565,7 +1565,7 @@ void Interpret(VMGlobals *g)
 					--sp;
 					break;
 				case 26 : // ifNotNilPushNil
-					if ( sp->utag != tagNil ) {
+					if ( NotNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 						slotCopy(sp, (PyrSlot*)&gSpecialValues[svNil]);
@@ -1575,7 +1575,7 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 				case 27 : // ifNilPushNil
-					if ( sp->utag == tagNil ) {
+					if ( IsNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
 					} else {
@@ -1798,7 +1798,7 @@ void Interpret(VMGlobals *g)
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else if (sp[0].utag == tagInt) {
+			} else if (IsInt(&sp[0])) {
 				sp[0].ui = -sp[0].ui;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
@@ -1806,12 +1806,12 @@ void Interpret(VMGlobals *g)
 			} else goto unary_send;
 			break;
 		case 209 : // opNot
-			if (sp[0].utag == tagTrue) {
+			if (IsTrue(&sp[0])) {
 				sp[0].utag = tagFalse;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else if (sp[0].utag == tagFalse) {
+			} else if (IsFalse(&sp[0])) {
 				sp[0].utag = tagTrue;
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
@@ -1819,7 +1819,7 @@ void Interpret(VMGlobals *g)
 			} else goto unary_send;
 			break;
 		case 210 : // opIsNil
-			if (sp[0].utag == tagNil) {
+			if (IsNil(&sp[0])) {
 				sp[0].utag = tagTrue;
 			} else {
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svFalse]);
@@ -1829,7 +1829,7 @@ void Interpret(VMGlobals *g)
 #endif
 			break;
 		case 211 : // opNotNil
-			if (sp[0].utag != tagNil) {
+			if (NotNil(&sp[0])) {
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svTrue]);
 			} else {
 				sp[0].utag = tagFalse;
@@ -1851,8 +1851,8 @@ void Interpret(VMGlobals *g)
 
 		// opSendSpecialBinaryArithMsg
 		case 224 : // add
-			if (sp[-1].utag == tagInt) {
-				if (sp[0].utag == tagInt) {
+			if (IsInt(&sp[-1])) {
+				if (IsInt(&sp[0])) {
 					--sp; sp[0].ui += sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
@@ -1871,8 +1871,8 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 225 : // subtract
-			if (sp[-1].utag == tagInt) {
-				if (sp[0].utag == tagInt) {
+			if (IsInt(&sp[-1])) {
+				if (IsInt(&sp[0])) {
 					--sp; sp[0].ui -= sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
@@ -1891,8 +1891,8 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 226 :  // multiply
-			if (sp[-1].utag == tagInt) {
-				if (sp[0].utag == tagInt) {
+			if (IsInt(&sp[-1])) {
+				if (IsInt(&sp[0])) {
 					--sp; sp[0].ui *= sp[1].ui;
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
@@ -1962,10 +1962,10 @@ void Interpret(VMGlobals *g)
 
 		case 248 : // opcJumpIfFalse
 			// cannot compare with o_false because it is NaN
-			if ( sp->utag == tagFalse ) {
+			if ( IsFalse(sp) ) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-			} else if ( sp->utag == tagTrue) {
+			} else if ( IsTrue(sp)) {
 				ip+=2;
 			} else {
 				numArgsPushed = 1;
@@ -1977,11 +1977,11 @@ void Interpret(VMGlobals *g)
 			--sp;
 			break;
 		case 249 : // opcJumpIfFalsePushNil
-			if ( sp->utag == tagFalse) {
+			if ( IsFalse(sp)) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svNil]);
-			} else if ( sp->utag == tagTrue) {
+			} else if ( IsTrue(sp)) {
 				--sp;
 				ip+=2;
 			} else {
@@ -1993,11 +1993,11 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 250 : // opcJumpIfFalsePushFalse
-			if (sp->utag == tagFalse) {
+			if (IsFalse(sp)) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				//*sp = r_false;
-			} else if (sp->utag == tagTrue) {
+			} else if (IsTrue(sp)) {
 				--sp;
 				ip+=2;
 			} else {
@@ -2009,10 +2009,10 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 251 : // opcJumpIfTruePushTrue
-			if (sp->utag == tagFalse) {
+			if (IsFalse(sp)) {
 				--sp;
 				ip+=2;
-			} else if (sp->utag == tagTrue) {
+			} else if (IsTrue(sp)) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svTrue]);

@@ -35,8 +35,8 @@
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 
-inline bool IsSignal(PyrSlot* slot) { return ((slot)->utag == tagObj && (slot)->uo->classptr == class_signal); }
-inline bool NotSignal(PyrSlot* slot) { return ((slot)->utag != tagObj || (slot)->uo->classptr != class_signal); }
+inline bool IsSignal(PyrSlot* slot) { return (IsObj(slot) && slot->uo->classptr == class_signal); }
+inline bool NotSignal(PyrSlot* slot) { return (NotObj(slot) || slot->uo->classptr != class_signal); }
 
 int prAddNum(VMGlobals *g, int numArgsPushed)
 {

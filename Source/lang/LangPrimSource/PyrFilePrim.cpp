@@ -65,7 +65,7 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp - 1;
 	b = g->sp;
-	if (b->utag != tagObj || !isKindOf(b->uo, class_string))
+	if (NotObj(b) || !isKindOf(b->uo, class_string))
 		return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
 
@@ -90,8 +90,8 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	if (c->utag != tagObj || !isKindOf(c->uo, class_string)
-		|| b->utag != tagObj || !isKindOf(b->uo, class_string))
+	if (NotObj(c) || !isKindOf(c->uo, class_string)
+		|| NotObj(b) || !isKindOf(b->uo, class_string))
 		return errWrongType;
 	if (b->uo->size > PATH_MAX - 1) return errFailed;
 	if (c->uo->size > 11) return errFailed;
@@ -222,8 +222,8 @@ int prFileSeek(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 2;
 	b = g->sp - 1;
 	c = g->sp;
-	if (b->utag != tagInt) return errWrongType;
-	if (c->utag != tagInt) return errWrongType;
+	if (NotInt(b)) return errWrongType;
+	if (NotInt(c)) return errWrongType;
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
@@ -597,7 +597,7 @@ int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	if (b->utag != tagChar) return errWrongType;
+	if (NotChar(b)) return errWrongType;
 
 	z = b->ui;
 
@@ -720,7 +720,7 @@ int prFilePutString(struct VMGlobals *g, int numArgsPushed)
 	pfile = (PyrFile*)a->uo;
 	file = (FILE*)pfile->fileptr.ui;
 	if (file == NULL) return errFailed;
-	if (b->utag != tagObj || b->uo->classptr != class_string) return errWrongType;
+	if (NotObj(b) || b->uo->classptr != class_string) return errWrongType;
 	string = b->uos;
 	if (string->size) {
 		fwrite(string->s, 1, string->size, file);
@@ -1119,8 +1119,8 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (c->utag != tagObj || !isKindOf(c->uo, class_string)
-		|| b->utag != tagObj || !isKindOf(b->uo, class_string))
+	if (NotObj(c) || !isKindOf(c->uo, class_string)
+		|| NotObj(b) || !isKindOf(b->uo, class_string))
 		return errWrongType;
 	if (c->uo->size > 11) return errFailed;
 	pfile = (PyrFile*)a->uo;
