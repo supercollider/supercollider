@@ -541,14 +541,14 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 		maxsize = ARRAYMAXINDEXSIZE(schedq);
 		size = schedq->size;
 		if (size+2 > maxsize) {
-			double *pslot, *qslot;
+			PyrSlot *pslot, *qslot;
 
 			newschedq = newPyrArray(g->gc, maxsize*2, 0, true);
 			newschedq->size = size;
 
-			pslot = (double*)schedq->slots - 1;
-			qslot = (double*)newschedq->slots - 1;
-			for (int i=0; i<size; ++i) *++qslot = *++pslot;
+			pslot = schedq->slots - 1;
+			qslot = newschedq->slots - 1;
+			for (int i=0; i<size; ++i) slotCopy(++qslot, ++pslot);
 
 			SetObject(schedqSlot, newschedq);
 			g->gc->GCWrite(queueobj, newschedq);
