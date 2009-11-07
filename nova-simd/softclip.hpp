@@ -49,7 +49,7 @@ inline void softclip_vec(float_type * out, const float_type * in, unsigned int n
 template <typename float_type>
 inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned int n)
 {
-    softclip(out, in, n);
+    softclip_vec(out, in, n);
 }
 
 #ifdef __SSE__
@@ -120,7 +120,6 @@ inline void softclip_vec_simd(float * out, const float * in, unsigned int n)
 #undef samples_per_loop
 
 #endif /* __SSE__ */
-
 
 } /* namespace nova */
 

@@ -1,0 +1,56 @@
+nova simd
+
+nova simd provides a framework of simdfied vector functions, designed
+mainly for computer music applications.
+
+
+coding conventions:
+
+nova simd makes use of generic c++ programming. beside a generic
+implementation, platform-specific simdfied implementations are provided
+as template specializations.
+
+for an unary operation `foo', the following functions must be:
+
+/* arbitrary number of iterations */
+template <typename float_type>
+inline void foo_vec(float_type * out, const float_type * in, unsigned int n);
+
+/* number of iterations must be a multiple of
+ * unroll_constraints<float_type>::unroll_constraints
+ */
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, const float_type * in, unsigned int n);
+
+in addition to this interface, functions for compile-time loop
+unrolling may be provided. these functions use template metaprogramming
+for generating sequencial for a known number of iterations. while
+producing larger code, it is usually more efficient than looping code
+on current pipelined cpus.
+
+/* number of iterations must be a multiple of
+ * unroll_constraints<float_type>::unroll_constraints
+ */
+template <int n>
+void foo_vec_simd(float * out, const float * in);
+
+
+libsimdmath:
+
+nova simd provides a wrapper to the parallel implementation of math
+functions of libsimdmath. the use of libsimdmath introduces some license
+implications, though, since it is using GPL-3. nova simd is licensed as
+GPL-2 or later, however including libsimdmath code makes nova simd GPL-3.
+to avoid this, the code can be compiled with the preprocessor symbol
+NO_GPL3_CODE, which avoids the inclusion of any GPL-3 code.
+
+libsimdmath it maintained in a separate git repository, which is linked
+as git submodule. the script ./init_submodules.sh takes care of fetching
+the code from a nova simd git checkout.
+
+
+building and testing:
+
+nova simd is a header-only library, so it cannot be compiled as
+standalone libray. however some benchmark and test programs are
+provided, using a cmake build system.

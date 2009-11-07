@@ -113,7 +113,7 @@ namespace nova
             *out++ = function(in0, *in1++);                             \
         }                                                               \
         while (--n);                                                    \
-}
+    }
 
 
 namespace detail
@@ -131,7 +131,7 @@ float_type log2(float_type arg)
 }
 
 /** signed sqrt */
-template<typename F>
+template <typename F>
 inline F ssqrt(F in0)
 {
     if (in0 >= 0)
