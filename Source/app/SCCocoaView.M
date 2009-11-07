@@ -2597,8 +2597,8 @@ void SCTextField::beginDrag(SCPoint where)
     if (mObj) {
         VMGlobals *g = gMainVMGlobals;
         int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-        slot.ucopy = g->classvars->slots[classVarIndex].ucopy;
-        stringSlot.ucopy = g->classvars->slots[classVarIndex+1].ucopy;
+        slotCopy(&slot, &g->classvars->slots[classVarIndex]);
+        slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
 			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
 		}

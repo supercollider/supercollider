@@ -369,7 +369,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 bool initAwakeMessage(VMGlobals *g)
 {
 	//post("initAwakeMessage %08X %08X\n", g->thread, g->process->mainThread.uot);
-	g->process->curThread.ucopy = g->process->mainThread.ucopy; //??
+	slotCopy(&g->process->curThread, &g->process->mainThread); //??
 	g->thread = g->process->mainThread.uot; //??
 
 	// these will be set up when the run method is called
@@ -381,11 +381,11 @@ bool initAwakeMessage(VMGlobals *g)
 
 	// set process as the receiver
 	PyrSlot *slot = g->sp - 3;
-	g->receiver.ucopy = slot->ucopy;
+	slotCopy(&g->receiver, slot);
 
 	g->thread->beats.uf = slot[1].uf;
 	g->thread->seconds.uf = slot[2].uf;
-	g->thread->clock.ucopy = slot[3].ucopy;
+	slotCopy(&g->thread->clock, &slot[3]);
 	g->gc->GCWrite(g->thread, slot+3);
 
 	// start it
@@ -396,7 +396,7 @@ bool initAwakeMessage(VMGlobals *g)
 
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
-	g->process->curThread.ucopy = g->process->mainThread.ucopy;
+	slotCopy(&g->process->curThread, &g->process->mainThread);
 	g->thread = g->process->mainThread.uot;
 
 	// these will be set up when the run method is called
@@ -414,7 +414,7 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 	// set process as the receiver
 	PyrSlot *slot = g->sp - numArgsPushed + 1;
-	g->receiver.ucopy = slot->ucopy;
+	slotCopy(&g->receiver, slot);
 
 	// start it
 	sendMessage(g, selector, numArgsPushed);
@@ -425,7 +425,7 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 void endInterpreter(VMGlobals *g)
 {
-	g->result.ucopy = g->sp->ucopy;
+	slotCopy(&g->result, g->sp);
 //	dumpObjectSlot(&g->result);
 	g->gc->Stack()->size = 0;
 	g->sp = g->gc->Stack()->slots - 1;
@@ -436,8 +436,8 @@ void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
 void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 {
 	// only the value is on the stack
-	sp[1].ucopy = sp[0].ucopy; // copy value up one
-	sp[0].ucopy = g->receiver.ucopy; // put receiver in place
+	slotCopy(&sp[1], &sp[0]); // copy value up one
+	slotCopy(&sp[0], &g->receiver); // put receiver in place
 	sp++;
 	g->sp = sp;
 	g->ip = ip;
@@ -606,9 +606,9 @@ void Interpret(VMGlobals *g)
 				sp = (double*)g->sp;
 				closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 				closure->size = 2;
-				closure->block.ucopy = slot->ucopy;
+				slotCopy(&closure->block, slot);
 				if (IsNil(&slot->uoblk->contextDef)) {
-					closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+					slotCopy(&closure->context, &g->process->interpreter.uoi->context);
 				} else {
 					SetObject(&closure->context, g->frame);
 				}
@@ -1299,7 +1299,7 @@ void Interpret(VMGlobals *g)
 					} else {
 						vars[5].ui = -1;
 					}
-					vars[3].ucopy = g->receiver.ucopy;
+					slotCopy(&vars[3], &g->receiver);
 
 					break;
 				case 6 :
@@ -1345,7 +1345,7 @@ void Interpret(VMGlobals *g)
 
 						goto class_lookup;
 					}
-					vars[4].ucopy = g->receiver.ucopy;
+					slotCopy(&vars[4], &g->receiver);
 					break;
 				case 8 :
 					vars = g->frame->vars;
@@ -1606,7 +1606,7 @@ void Interpret(VMGlobals *g)
 							}
 							SetInt(vars+1, vars[1].ui - vars[0].ui);
 						}
-						vars[4].ucopy = vars[0].ucopy;
+						slotCopy(&vars[4], &vars[0]);
 					} else {
 						if (IsInt(vars+0)) {
 							vars[4].uf = vars[0].ui;
@@ -2157,7 +2157,7 @@ void Interpret(VMGlobals *g)
 						}
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						slot->ucopy = slot->uo->slots[index].ucopy;
+						slotCopy(slot, &slot->uo->slots[index]);
 
 						classobj = classOfSlot(slot);
 
@@ -2172,7 +2172,7 @@ void Interpret(VMGlobals *g)
 							numArgsPushed = methraw->numargs;
 						}
 						selector = meth->selectors.us;
-						slot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+						slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
 
 						classobj = classOfSlot(slot);
 
@@ -2293,7 +2293,7 @@ void Interpret(VMGlobals *g)
 						sp = (double*)g->sp;
 						selector = meth->selectors.us;
 						index = methraw->specialIndex;
-						slot->ucopy = slot->uo->slots[index].ucopy;
+						slotCopy(slot, &slot->uo->slots[index]);
 
 						classobj = classOfSlot(slot);
 
@@ -2304,7 +2304,7 @@ void Interpret(VMGlobals *g)
 						numKeyArgsPushed = 0;
 						sp = (double*)g->sp;
 						selector = meth->selectors.us;
-						slot->ucopy = g->classvars->slots[methraw->specialIndex].ucopy;
+						slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
 
 						classobj = classOfSlot(slot);
 

@@ -95,7 +95,7 @@ public:
 			long err = errNone;
 
 			try {
-				mTopSlot.ucopy = objectSlot->ucopy;
+				slotCopy(&mTopSlot, objectSlot);
 				if (IsObj(objectSlot)) constructObjectArray(objectSlot->uo);
 			} catch (std::exception &ex) {
 				error(ex.what());
@@ -364,7 +364,7 @@ private:
 				readSlot(&closure->block);
 				readSlot(&closure->context);
 				if (IsNil(&closure->context)) {
-					closure->context.ucopy = g->process->interpreter.uoi->context.ucopy;
+					slotCopy(&closure->context, &g->process->interpreter.uoi->context);
 				}
 			} else {
 				for (int i=0; i<obj->size; ++i) {

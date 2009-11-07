@@ -580,7 +580,7 @@ void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot)
 			obj = newobj;
 		}
 	}
-	obj->slots[obj->size++].ucopy = addSlot->ucopy;
+	slotCopy(&obj->slots[obj->size++], addSlot);
 }
 
 void addMethod(PyrClass *classobj, PyrMethod *method)
@@ -2118,7 +2118,7 @@ bool isSubclassOf(PyrClass *classobj, PyrClass *testclass)
 bool objAddIndexedSlot(PyrObject *obj, PyrSlot *slot)
 {
 	if (obj->size < ARRAYMAXINDEXSIZE(obj)) {
-		obj->slots[obj->size++].ucopy = slot->ucopy;
+		slotCopy(&obj->slots[obj->size++], slot);
 		return true;
 	} else {
 		return false;
@@ -2302,8 +2302,8 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 	method->rawData1.uf = 0.0;
 	method->rawData2.uf = 0.0;
 	nilSlots(&method->code,  numSlots-2);
-	//method->byteMeter.ucopy = o_zero.ucopy;
-	//method->callMeter.ucopy = o_zero.ucopy;
+	//slotCopy(&method->byteMeter, &o_zero);
+	//slotCopy(&method->callMeter, &o_zero);
 	//post("<- newPyrMethod %08X %08X\n", method, methraw);
 	return method;
 }
@@ -2456,7 +2456,7 @@ void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
 	switch (obj->obj_format) {
 		case obj_slot :
 		case obj_double :
-			a->ucopy = obj->slots[index].ucopy;
+			slotCopy(a, &obj->slots[index]);
 			break;
 		case obj_float :
 			a->uf = ((float*)(obj->slots))[index];
@@ -2491,7 +2491,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 		case obj_slot :
 			if (obj->obj_flags & obj_immutable) return errImmutableObject;
 			slot = obj->slots + index;
-			slot->ucopy = c->ucopy;
+			slotCopy(slot, c);
 			g->gc->GCWrite(obj, slot);
 			break;
 		case obj_double :

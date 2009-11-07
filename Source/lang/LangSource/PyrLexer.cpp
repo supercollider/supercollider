@@ -2317,7 +2317,7 @@ void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
 //#if __profile__
 //		ProfilerInit(collectSummary, microsecondsTimeBase, 500, 100);
 //#endif
-		(++gMainVMGlobals->sp)->ucopy = slot.ucopy;
+		slotCopy((++gMainVMGlobals->sp), &slot);
 		runInterpreter(gMainVMGlobals, getsym(methodname), 1);
 //#if __profile__
 //		ProfilerDump("\pErase2.prof");

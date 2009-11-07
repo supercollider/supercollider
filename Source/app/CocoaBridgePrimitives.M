@@ -1515,7 +1515,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 				return errNone; // should returning nil be considered as an error ?
 			}
 			
-			receiver->uo->slots[0].ucopy = retslot.ucopy;
+			slotCopy(&receiver->uo->slots[0], &retslot);
 			newThing = (id) (receiver->uo->slots[0].uptr);
 			
 			if([newThing isKindOfClass:[NSWindow class]])
@@ -1529,7 +1529,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 				[newThing release]; // retained and added already in ObjcTypeFillPyrSlot
 		}
 		else
-			receiver->ucopy = retslot.ucopy;
+			slotCopy(receiver, &retslot);
 			
 		if(retval)
 			free(retval);

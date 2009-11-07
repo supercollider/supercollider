@@ -135,8 +135,6 @@ typedef union pyrslot {
 #define uf s.u.f
 #endif
 
-#define ucopy f
-
 /*
 	Note that on the PowerPC, the fastest way to copy a slot is to
 	copy the double field, not the struct.
@@ -258,6 +256,13 @@ inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)
 	if (!IsSym(slot)) return errWrongType;
 	*symbol = slot->us;
 	return errNone;
+}
+
+inline void slotCopy(PyrSlot *dst, PyrSlot *src)
+{
+	double *dstp = (double*)dst;
+	double *srcp = (double*)src;
+	*dstp = *srcp;
 }
 
 inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)

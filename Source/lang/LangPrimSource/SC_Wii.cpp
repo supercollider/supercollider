@@ -1393,7 +1393,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 #endif
 	}
 
-	args[0].ucopy = args[1].ucopy;
+	slotCopy(&args[0], &args[1]);
 	return errNone;
 }
 

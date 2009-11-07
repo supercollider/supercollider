@@ -61,13 +61,13 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 		mom = (mom - 2 >> 1) & ~1;
 		pmom = heap->slots + mom;
 		if (schedtime < pmom->uf) {
-			pme[0].ucopy = pmom[0].ucopy;
-			pme[1].ucopy = pmom[1].ucopy;
+			slotCopy(&pme[0], &pmom[0]);
+			slotCopy(&pme[1], &pmom[1]);
 			pme = pmom;
 		} else break;
 	}
 	pme[0].uf = schedtime;
-	pme[1].ucopy = task->ucopy;
+	slotCopy(&pme[1], task);
 	g->gc->GCWrite(heap, task);
 	heap->size += 2;
 
@@ -84,7 +84,7 @@ bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	if (heap->size) {
 		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
+		slotCopy(task, &heap->slots[1]);
 		return true;
 	} else return false;
 }
@@ -103,10 +103,10 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 	//post("->getheap\n");
 	if (heap->size>0) {
 		*schedtime = heap->slots[0].uf;
-		task->ucopy = heap->slots[1].ucopy;
+		slotCopy(task, &heap->slots[1]);
 		size = heap->size -= 2;
-		heap->slots[0].ucopy = heap->slots[size].ucopy;
-		heap->slots[1].ucopy = heap->slots[size+1].ucopy;
+		slotCopy(&heap->slots[0], &heap->slots[size]);
+		slotCopy(&heap->slots[1], &heap->slots[size+1]);
 		mom = 0;
 		me = 2;
 		pmom = heap->slots + mom;
@@ -119,8 +119,8 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 				me += 2; pme += 2;
 			}
 			if (timetemp > pme[0].uf) {
-				pmom[0].ucopy = pme[0].ucopy;
-				pmom[1].ucopy = pme[1].ucopy;
+				slotCopy(&pmom[0], &pme[0]);
+				slotCopy(&pmom[1], &pme[1]);
 				if (isPartialScanObj) {
 					gc->GCWriteBlack(pmom+1);
 				}
@@ -444,7 +444,7 @@ void* schedRunFunc(void* arg)
 				SetNil(&task.uot->nextBeat);
 			}
 
-			(++g->sp)->ucopy = task.ucopy;
+			slotCopy((++g->sp), &task);
 			(++g->sp)->uf = schedtime;
 			(++g->sp)->uf = schedtime;
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
@@ -878,7 +878,7 @@ void* TempoClock::Run()
 				SetNil(&task.uot->nextBeat);
 			}
 
-			(++g->sp)->ucopy = task.ucopy;
+			slotCopy((++g->sp), &task);
 			(++g->sp)->uf = mBeats;
 			(++g->sp)->uf = BeatsToSecs(mBeats);
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
@@ -909,7 +909,7 @@ void TempoClock::Flush()
 
 		getheap(g, mQueue, &mBeats, &task);
 
-		(++g->sp)->ucopy = task.ucopy;
+		slotCopy((++g->sp), &task);
 		(++g->sp)->uf = mBeats;
 		(++g->sp)->uf = BeatsToSecs(mBeats);
 		++g->sp;	SetObject(g->sp, mTempoClockObj);

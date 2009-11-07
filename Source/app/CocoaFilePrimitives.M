@@ -127,7 +127,7 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
             
             PyrSlot slot;
             SetObject(&slot, pyrPathString);
-            returnObject->slots[i].ucopy = slot.ucopy;
+            slotCopy(&returnObject->slots[i], &slot);
             g->gc->GCWrite(returnObject,pyrPathString);
             returnObject->size = i+1;
             i++;
@@ -145,7 +145,7 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
                 PyrSlot slot;
                 SetObject(&slot, pyrPathString);
                 
-                returnObject->slots[i].ucopy = slot.ucopy;
+                slotCopy(&returnObject->slots[i], &slot);
         
                 g->gc->GCWrite(returnObject,pyrPathString);
                 returnObject->size = i+1;

@@ -612,7 +612,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetObject(&method->ownerclass, classobj);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						slotCopy(&method->name, &vardef->mVarName->mSlot);
 						methraw->methType = methReturnInstVar;
 						methraw->specialIndex = instVarIndex;
 						addMethod(classobj, method);
@@ -674,7 +674,7 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						slotCopy(&method->name, &vardef->mVarName->mSlot);
 						SetSymbol(&method->selectors, classobj->name.us);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
@@ -739,12 +739,12 @@ void fillClassPrototypes(PyrClassNode *node, PyrClass *classobj, PyrClass *super
 						SetNil(&method->contextDef);
 						SetNil(&method->varNames);
 						SetObject(&method->ownerclass, metaclassobj);
-						method->name.ucopy = vardef->mVarName->mSlot.ucopy;
+						slotCopy(&method->name, &vardef->mVarName->mSlot);
 						if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
 						SetInt(&method->charPos, linestarts[vardef->mVarName->mLineno] + errCharPosOffset);
 
 						methraw->methType = methReturnLiteral;
-						method->selectors.ucopy = litslot.ucopy;
+						slotCopy(&method->selectors, &litslot);
 						addMethod(metaclassobj, method);
 					}
 				}
@@ -1289,8 +1289,8 @@ void PyrMethodNode::compile(PyrSlot *result)
 	numArgNames = methraw->posargs;
 
 	if (numSlots == 1) {
-		method->argNames.ucopy = o_argnamethis.ucopy;
-		method->prototypeFrame.ucopy = o_onenilarray.ucopy;
+		slotCopy(&method->argNames, &o_argnamethis);
+		slotCopy(&method->prototypeFrame, &o_onenilarray);
 	} else {
 		argNames = newPyrSymbolArray(NULL, numArgNames, obj_permanent | obj_immutable, false);
 		argNames->size = numArgNames;
@@ -1364,7 +1364,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				*slot = litval;
 			}
 			if (funcVarArgs) {
-				method->prototypeFrame.uo->slots[numArgs].ucopy = o_emptyarray.ucopy;
+				slotCopy(&method->prototypeFrame.uo->slots[numArgs], &o_emptyarray);
 			}
 		}
 	}
@@ -2765,7 +2765,7 @@ void compileSwitchMsg(PyrCallNode* node)
 
 				int index = arrayAtIdentityHashInPairs(array, key);
 				PyrSlot *slot = array->slots + index;
-				slot->ucopy = key->ucopy;
+				slotCopy(slot, key);
 				SetInt(slot+1, offset);
 
 				if (byteCodes) {
@@ -3735,11 +3735,11 @@ int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value)
 	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
 	if (knows && IsSym(key)) {
 		if (key->us == s_parent) {
-			dict->slots[ivxIdentDict_parent].ucopy = value->ucopy;
+			slotCopy(&dict->slots[ivxIdentDict_parent], value);
 			return errNone;
 		}
 		if (key->us == s_proto) {
-			dict->slots[ivxIdentDict_proto].ucopy = value->ucopy;
+			slotCopy(&dict->slots[ivxIdentDict_proto], value);
 			return errNone;
 		}
 	}
@@ -3748,9 +3748,9 @@ int litDictPut(PyrObject *dict, PyrSlot *key, PyrSlot *value)
 
 	index = arrayAtIdentityHashInPairs(array, key);
 	slot = array->slots + index;
-	slot[1].ucopy = value->ucopy;
+	slotCopy(&slot[1], value);
 	if (IsNil(slot)) {
-		slot->ucopy = key->ucopy;
+		slotCopy(slot, key);
 	}
 #endif
 	return errNone;
@@ -3995,7 +3995,7 @@ void PyrBlockNode::compile(PyrSlot* result)
 
 	if (funcVarArgs) {
 		//SetNil(&block->prototypeFrame.uo->slots[numArgs]);
-		block->prototypeFrame.uo->slots[numArgs].ucopy = o_emptyarray.ucopy;
+		slotCopy(&block->prototypeFrame.uo->slots[numArgs], &o_emptyarray);
 	}
 
 	if (numVars) {
@@ -4296,7 +4296,7 @@ int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 		freePyrObject((PyrObject*)constants);
 		constants = func->constants.uo;
 	}
-	constants->slots[constants->size++].ucopy = slot->ucopy;
+	slotCopy(&constants->slots[constants->size++], slot);
 
 	return constants->size-1;
 }

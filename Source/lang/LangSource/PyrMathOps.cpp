@@ -279,7 +279,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 			break;
 	}
 
-	g->sp[0].ucopy = res.ucopy;
+	slotCopy(&g->sp[0], &res);
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
@@ -884,7 +884,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		} break;
 	}
 	g->sp -= numArgsPushed - 1; // drop
-	g->sp[0].ucopy = res.ucopy;
+	slotCopy(&g->sp[0], &res);
 	g->numpop = 0;
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
