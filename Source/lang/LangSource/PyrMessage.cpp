@@ -907,12 +907,12 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	SetObject(&frame->context, frame);
 
 	if (caller) {
-		SetInt(&caller->ip, (long)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, caller);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 	g->method = meth;
 
 	g->ip = meth->code.uob->b - 1;
@@ -1062,12 +1062,12 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	SetObject(&frame->context, frame);
 
 	if (caller) {
-		SetInt(&caller->ip, (long)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, caller);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 	g->method = meth;
 
 	g->ip = meth->code.uob->b - 1;
