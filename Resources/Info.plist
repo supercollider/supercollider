@@ -136,7 +136,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>SuperCollider (sclang)</string>
+	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
 	<string>SCcube</string>
 	<key>CFBundleIdentifier</key>
@@ -144,7 +144,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SuperCollider (sclang)</string>
+	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
