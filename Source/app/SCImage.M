@@ -1744,7 +1744,7 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	bitmap = [image bitmapRepresentation];
 	
 	if(IsNil(regionSlot)) {
-		region = NSIntegralRect(NSMakeRect(0.f, 0.f, [bitmap pixelsHigh], [bitmap pixelsWide]));
+		region = NSIntegralRect(NSMakeRect(0.f, 0.f, [bitmap pixelsWide], [bitmap pixelsHigh]));
 	}else{
 		if(slotGetNSRect(regionSlot, &region) != errNone)
 			return errWrongType;
