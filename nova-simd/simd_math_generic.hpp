@@ -24,142 +24,139 @@
 namespace nova
 {
 
-#define RUN_UNARY(in, out, fn) \
-    F out0 = fn(in[0]);  \
-    F out1 = fn(in[1]);  \
-    F out2 = fn(in[2]);  \
-    F out3 = fn(in[3]);  \
-    out[0] = out0;       \
-    out[1] = out1;       \
-    out[2] = out2;       \
-    out[3] = out3;       \
 
-#define RUN_BINARY_VV(in0, in1, out, fn)        \
-    F out0 = fn(in0[0], in1[0]);                \
-    F out1 = fn(in0[1], in1[1]);                \
-    F out2 = fn(in0[2], in1[2]);                \
-    F out3 = fn(in0[3], in1[3]);                \
-    out[0] = out0;                              \
-    out[1] = out1;                              \
-    out[2] = out2;                              \
-    out[3] = out3;                              \
+#define WRAP_MATH_FUNCTION(name, function)                              \
+    template <typename float_type>                                      \
+    inline void name##_vec(float_type * out, const float_type * in, unsigned int n) \
+    {                                                                   \
+        do {                                                            \
+            *out++ = function(*in++);                                   \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec_simd(float_type * out, const float_type * in, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            *out++ = function(*in++);                                   \
+            *out++ = function(*in++);                                   \
+            *out++ = function(*in++);                                   \
+            *out++ = function(*in++);                                   \
+        }                                                               \
+        while (--n);                                                    \
+    }
 
-#define RUN_BINARY_VS(in0, in1, out, fn)        \
-    F out0 = fn(in0[0], in1);                   \
-    F out1 = fn(in0[1], in1);                   \
-    F out2 = fn(in0[2], in1);                   \
-    F out3 = fn(in0[3], in1);                   \
-    out[0] = out0;                              \
-    out[1] = out1;                              \
-    out[2] = out2;                              \
-    out[3] = out3;                              \
-
-#define RUN_BINARY_SV(in0, in1, out, fn)        \
-    F out0 = fn(in0, in1[0]);                   \
-    F out1 = fn(in0, in1[1]);                   \
-    F out2 = fn(in0, in1[2]);                   \
-    F out3 = fn(in0, in1[3]);                   \
-    out[0] = out0;                              \
-    out[1] = out1;                              \
-    out[2] = out2;                              \
-    out[3] = out3;                              \
-
-template<typename F>
-inline void sin4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::sin);
+#define WRAP_MATH_FUNCTION_BINARY(name, function)                       \
+    template <typename float_type>                                      \
+    inline void name##_vec(float_type * out, const float_type * in0, const float_type * in1, unsigned int n) \
+    {                                                                   \
+        do {                                                            \
+            *out++ = function(*in0++, *in1++);                          \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec_simd(float_type * out, const float_type * in0, const float_type * in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            *out++ = function(*in0++, *in1++);                          \
+            *out++ = function(*in0++, *in1++);                          \
+            *out++ = function(*in0++, *in1++);                          \
+            *out++ = function(*in0++, *in1++);                          \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec(float_type * out, const float_type * in0, const float_type in1, unsigned int n) \
+    {                                                                   \
+        do {                                                            \
+            *out++ = function(*in0++, in1);                             \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec_simd(float_type * out, const float_type * in0, const float_type in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            *out++ = function(*in0++, in1);                             \
+            *out++ = function(*in0++, in1);                             \
+            *out++ = function(*in0++, in1);                             \
+            *out++ = function(*in0++, in1);                             \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec(float_type * out, const float_type in0, const float_type * in1, unsigned int n) \
+    {                                                                   \
+        do {                                                            \
+            *out++ = function(in0, *in1++);                             \
+        }                                                               \
+        while (--n);                                                    \
+    }                                                                   \
+                                                                        \
+    template <typename float_type>                                      \
+    inline void name##_vec_simd(float_type * out, const float_type in0, const float_type * in1, unsigned int n) \
+    {                                                                   \
+        unsigned int loops = n/4;                                       \
+        do {                                                            \
+            *out++ = function(in0, *in1++);                             \
+            *out++ = function(in0, *in1++);                             \
+            *out++ = function(in0, *in1++);                             \
+            *out++ = function(in0, *in1++);                             \
+        }                                                               \
+        while (--n);                                                    \
 }
 
-template<typename F>
-inline void cos4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::cos);
-}
 
-template<typename F>
-inline void tan4(F * out, const F * in)
+namespace detail
 {
-    RUN_UNARY(in, out, std::tan);
-}
 
-template<typename F>
-inline void asin4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::asin);
-}
-
-template<typename F>
-inline void acos4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::acos);
-}
-
-template<typename F>
-inline void atan4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::atan);
-}
-
-template<typename F>
-inline void log4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::log);
-}
-
-template<typename F>
-inline void log2_4(F * out, const F * in)
+template <typename float_type>
+float_type log2(float_type arg)
 {
 #if defined(__GXX_EXPERIMENTAL_CXX0X__)
-    RUN_UNARY(in, out, std::log2);
+    return std::log2(arg);
 #else
     const float rlog2 = 1.f/std::log(2.f);
-    F out0 = std::log(in[0]);
-    F out1 = std::log(in[1]);
-    F out2 = std::log(in[2]);
-    F out3 = std::log(in[3]);
-    out[0] = out0 * rlog2;
-    out[1] = out1 * rlog2;
-    out[2] = out2 * rlog2;
-    out[3] = out3 * rlog2;
+    return std::log(arg) * rlog2;
 #endif
 }
 
+/** signed sqrt */
 template<typename F>
-inline void log10_4(F * out, const F * in)
+inline F ssqrt(F in0)
 {
-    RUN_UNARY(in, out, std::log10);
+    if (in0 >= 0)
+        return std::sqrt(in0);
+    else
+        return -std::sqrt(-in0);
 }
 
-template<typename F>
-inline void exp4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::exp);
-}
+} /* namespace detail */
 
-/** pow */
-/* @{ */
-template<typename F>
-inline void pow4(F * out, const F * in1, const F * in2)
-{
-    RUN_BINARY_VV(in1, in2, out, std::pow);
-}
-
-template<typename F>
-inline void pow4(F * out, const F * in1, const F in2)
-{
-    RUN_BINARY_VS(in1, in2, out, std::pow);
-}
-
-template<typename F>
-inline void pow4(F * out, const F in1, const F * in2)
-{
-    RUN_BINARY_SV(in1, in2, out, std::pow);
-}
-/* @} */
+WRAP_MATH_FUNCTION(sin, std::sin)
+WRAP_MATH_FUNCTION(cos, std::cos)
+WRAP_MATH_FUNCTION(tan, std::tan)
+WRAP_MATH_FUNCTION(asin, std::asin)
+WRAP_MATH_FUNCTION(acos, std::acos)
+WRAP_MATH_FUNCTION(atan, std::atan)
+WRAP_MATH_FUNCTION(log, std::log)
+WRAP_MATH_FUNCTION(log2, detail::log2)
+WRAP_MATH_FUNCTION(log10, std::log10)
+WRAP_MATH_FUNCTION(exp, std::exp)
+WRAP_MATH_FUNCTION(ssqrt, detail::ssqrt)
+WRAP_MATH_FUNCTION(tanh, std::tanh)
 
 
-/* @{ */
-/** signed pow */
+
 namespace detail
 {
 
@@ -174,58 +171,13 @@ inline F spow(F in0, F in1)
 
 } /* namespace detail */
 
-template <typename F>
-inline void spow4(F * out, const F * in1, const F * in2)
-{
-    RUN_BINARY_VV(in1, in2, out, detail::spow);
-}
-
-template <typename F>
-inline void spow4(F * out, const F * in1, const F in2)
-{
-    RUN_BINARY_VS(in1, in2, out, detail::spow);
-}
-
-template <typename F>
-inline void spow4(F * out, const F in1, const F * in2)
-{
-    RUN_BINARY_SV(in1, in2, out, detail::spow);
-}
-/* @} */
-
-/** signed sqrt */
-
-namespace detail
-{
-
-template <typename F>
-inline F ssqrt(F in0)
-{
-    if (in0 >= 0)
-        return std::sqrt(in0);
-    else
-        return -std::sqrt(-in0);
-}
-
-} /* namespace detail */
-
-template <typename F>
-inline void ssqrt4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, detail::ssqrt);
-}
-
-template <typename F>
-inline void tanh4(F * out, const F * in)
-{
-    RUN_UNARY(in, out, std::tanh);
-}
+WRAP_MATH_FUNCTION_BINARY(pow, std::pow)
+WRAP_MATH_FUNCTION_BINARY(spow, detail::spow)
 
 } /* namespace nova */
 
-#undef RUN_UNARY
-#undef RUN_BINARY_VV
-#undef RUN_BINARY_SV
-#undef RUN_BINARY_VS
+#undef WRAP_MATH_FUNCTION
+#undef WRAP_MATH_FUNCTION_BINARY
+
 
 #endif /* SIMD_MATH_GENERIC_HPP */

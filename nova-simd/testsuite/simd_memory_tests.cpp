@@ -18,7 +18,7 @@ static const unsigned int size = 64;
 template <typename float_type>
 void zero_tests(void)
 {
-    aligned_array<float_type, size> out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
     randomize_buffer<float_type>(out.c_array(), size);
     randomize_buffer<float_type>(out_simd.c_array(), size);
     randomize_buffer<float_type>(out_mp.c_array(), size);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( zero_test )
 template <typename float_type>
 void set_tests(void)
 {
-    aligned_array<float_type, size> out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
     randomize_buffer<float_type>(out.c_array(), size);
     randomize_buffer<float_type>(out_simd.c_array(), size);
     randomize_buffer<float_type>(out_mp.c_array(), size);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( set_test )
 template <typename float_type>
 void add_tests(void)
 {
-    aligned_array<float_type, size> out, out_simd, out_mp, in;
+    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp, in;
 
     randomize_buffer<float_type>(in.c_array(), size);
     randomize_buffer<float_type>(out.c_array(), size);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( add_test )
 template <typename float_type>
 void slope_tests(void)
 {
-    aligned_array<float_type, size> out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
 
     float_type base = randomize_float<float_type>();
     float_type slope = randomize_float<float_type>() * 0.01;
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( slope_test )
 template <typename float_type>
 void exp_tests(void)
 {
-    aligned_array<float_type, size> out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
 
     float_type base = std::abs(randomize_float<float_type>());
     float_type slope = std::abs(randomize_float<float_type>() * 0.01);

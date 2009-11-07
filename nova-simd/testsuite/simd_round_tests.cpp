@@ -17,7 +17,7 @@ static const int size = 10000;
 template <typename float_type>
 void test_round(void)
 {
-    aligned_array<float_type, size> sseval, generic, args;
+    aligned_array<float_type, size> ALIGNED sseval, generic, args;
     randomize_buffer<float_type>(args.c_array(), size);
 
     round_vec(generic.c_array(), args.c_array(), size);
@@ -30,7 +30,7 @@ void test_round(void)
 template <typename float_type>
 void test_ceil(void)
 {
-    aligned_array<float_type, size> sseval, generic, args;
+    aligned_array<float_type, size> ALIGNED sseval, generic, args;
     randomize_buffer<float_type>(args.c_array(), size);
 
     ceil_vec(generic.c_array(), args.c_array(), size);
@@ -43,7 +43,7 @@ void test_ceil(void)
 template <typename float_type>
 void test_floor(void)
 {
-    aligned_array<float_type, size> sseval, generic, args;
+    aligned_array<float_type, size> ALIGNED sseval, generic, args;
     randomize_buffer<float_type>(args.c_array(), size);
 
     floor_vec(generic.c_array(), args.c_array(), size);
@@ -56,7 +56,7 @@ void test_floor(void)
 template <typename float_type>
 void test_frac(void)
 {
-    aligned_array<float_type, size> sseval, generic, args;
+    aligned_array<float_type, size> ALIGNED sseval, generic, args;
     randomize_buffer<float_type>(args.c_array(), size);
 
     frac_vec(generic.c_array(), args.c_array(), size);

@@ -9,39 +9,39 @@ aligned_array<float, 64> out, args_best_case, args_worst_case, args_avg_case;
 
 void __noinline__ bench_simd_best(unsigned int n)
 {
-    softclip4(out.begin(), args_best_case.begin(), n);
+    softclip_vec_simd(out.begin(), args_best_case.begin(), n);
 }
 
 void __noinline__ bench_best(unsigned int n)
 {
-    softclip(out.begin(), args_best_case.begin(), n);
+    softclip_vec(out.begin(), args_best_case.begin(), n);
 }
 
 void __noinline__ bench_simd_worst(unsigned int n)
 {
-    softclip4(out.begin(), args_worst_case.begin(), n);
+    softclip_vec_simd(out.begin(), args_worst_case.begin(), n);
 }
 
 void __noinline__ bench_worst(unsigned int n)
 {
-    softclip(out.begin(), args_worst_case.begin(), n);
+    softclip_vec(out.begin(), args_worst_case.begin(), n);
 }
 
 void __noinline__ bench_simd_avg(unsigned int n)
 {
-    softclip4(out.begin(), args_avg_case.begin(), n);
+    softclip_vec_simd(out.begin(), args_avg_case.begin(), n);
 }
 
 void __noinline__ bench_avg(unsigned int n)
 {
-    softclip(out.begin(), args_avg_case.begin(), n);
+    softclip_vec(out.begin(), args_avg_case.begin(), n);
 }
 
 int main(void)
 {
     out.assign(0.f);
 
-    const unsigned int iterations = 50000000;
+    const unsigned int iterations = 10000000;
 
     for (int i = 0; i != 64; ++i)
     {

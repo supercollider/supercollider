@@ -38,17 +38,18 @@
 // FIXES for broken compilers
 #include <boost/config.hpp>
 
+#ifdef __GCC__
+#define ALIGNED __attribute__((aligned(64)))
+#else
+#define ALIGNED
+#endif
 
 namespace nova {
 
     template<class T, std::size_t N>
     class aligned_array {
       public:
-#ifdef __GCC__
-        T elems[N] __attribute__((aligned(64))); // fixed-size array of elements of type T
-#else
-        T elems[N];             // fixed-size array of elements of type T
-#endif
+        T elems[N] ALIGNED; // fixed-size array of elements of type T
 
       public:
         // type definitions

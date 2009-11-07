@@ -19,7 +19,7 @@ static const int unsigned size = 64;
     template <typename float_type>                                      \
     void function##_compare_vvv(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
             in0, in1, in2;                                              \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
@@ -34,13 +34,13 @@ static const int unsigned size = 64;
         function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
                                   in1.c_array(), in2.c_array());        \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size);       \
-        compare_buffers(out.c_array(), out_mp.c_array(), size);         \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f);\
+        compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
     }                                                                   \
     template <typename float_type>                                      \
     void function##_compare_vvs(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
@@ -55,13 +55,13 @@ static const int unsigned size = 64;
         function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
                                   in1.c_array(), in2);                  \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size);       \
-        compare_buffers(out.c_array(), out_mp.c_array(), size);         \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f);\
+        compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
     }                                                                   \
     template <typename float_type>                                      \
     void function##_compare_vvr(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
