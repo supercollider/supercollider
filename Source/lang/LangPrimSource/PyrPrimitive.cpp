@@ -867,12 +867,12 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 
 
 	g->sp = args - 1;
@@ -1002,12 +1002,12 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 
 	g->sp = args - 1;
 	g->ip = block->code.uob->b - 1;
@@ -1163,12 +1163,12 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 
 
 	g->sp = args - 1;
@@ -1312,12 +1312,12 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	slotCopy(&frame->context,&closure->context);
 
 	if (caller) {
-		SetInt(&caller->ip, (int)g->ip);
+		SetPtr(&caller->ip, g->ip);
 		SetObject(&frame->caller, g->frame);
 	} else {
 		SetInt(&frame->caller, 0);
 	}
-	SetInt(&frame->ip,  0);
+	SetPtr(&frame->ip,  0);
 
 
 	g->sp = args - 1;
@@ -2052,7 +2052,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	SetObject(outSlot, debugFrameObj);
 
 	SetObject(debugFrameObj->slots + 0, meth);
-	SetInt(debugFrameObj->slots + 5, (int)meth);
+	SetPtr(debugFrameObj->slots + 5, meth);
 
 	//int numtemps = methraw->numargs;
 	int numargs = methraw->numargs;
@@ -2808,7 +2808,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
 		SetNil(&oldthread->frame);
-		SetInt(&oldthread->ip, 0);
+		SetPtr(&oldthread->ip, 0);
 		SetInt(&oldthread->sp, 0);
 		SetInt(&oldthread->numArgsPushed, 0);
 		SetInt(&oldthread->numpop, 0);
@@ -2822,7 +2822,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
 		SetNil(&oldthread->frame);
-		SetInt(&oldthread->ip, 0);
+		SetPtr(&oldthread->ip, 0);
 		SetInt(&oldthread->sp, 0);
 		SetInt(&oldthread->numArgsPushed, 0);
 		SetInt(&oldthread->numpop, 0);
@@ -2837,8 +2837,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetObject(&oldthread->method, g->method);
 		SetObject(&oldthread->block, g->block);
 		SetObject(&oldthread->frame, g->frame);
-		oldthread->ip.ui = (int)g->ip;
-		oldthread->sp.ui = (int)g->sp;
+		SetPtr(&oldthread->ip, g->ip);
+		SetPtr(&oldthread->sp, g->sp);
 		slotCopy(&oldthread->receiver,&g->receiver);
 		oldthread->numArgsPushed.ui = *numArgsPushed;
 		oldthread->numpop.ui = g->numpop;
@@ -2890,7 +2890,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	SetNil(&newthread->method);
 	SetNil(&newthread->block);
 	SetNil(&newthread->frame);
-	newthread->ip.ui = 0;
+	SetPtr(&newthread->ip, 0);
 	newthread->sp.ui = 0;
 	SetNil(&newthread->receiver);
 
@@ -3238,7 +3238,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
 		SetNil(&thread->frame);
-		SetInt(&thread->ip, 0);
+		SetPtr(&thread->ip, 0);
 		SetInt(&thread->sp, 0);
 		SetInt(&thread->numArgsPushed, 0);
 		SetInt(&thread->numpop, 0);
@@ -3250,7 +3250,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
 		SetNil(&thread->frame);
-		SetInt(&thread->ip, 0);
+		SetPtr(&thread->ip, 0);
 		SetInt(&thread->sp, 0);
 		SetInt(&thread->numArgsPushed, 0);
 		SetInt(&thread->numpop, 0);

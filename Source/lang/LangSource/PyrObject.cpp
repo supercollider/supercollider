@@ -1971,7 +1971,7 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 		failed = true;
 	}
 	*/
-	if (frame->ip.utag != tagInt) {
+	if (frame->ip.utag != tagPtr) {
 		postfl("Frame %X ip tag wrong %X\n", frame, frame->ip.utag);
 		failed = true;
 	}
@@ -2062,7 +2062,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	slotString(&frame->homeContext, str);	post("\t\thomeCtx = %s\n", str);
 	slotString(&frame->ip, str);			post("\t\tip      = %s\n", str);
 
-	if (IsInt(&frame->ip)) {
+	if (IsPtr(&frame->ip)) {
 		post("ipoffset = %d\n", (char*)frame->ip.ui - (char*)meth->code.uob->b);
 		dumpByteCodes(meth);
 	}
