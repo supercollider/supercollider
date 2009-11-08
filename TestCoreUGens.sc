@@ -191,4 +191,37 @@ test_demand {
 	o.remove;
 }
 
+        test_pitchtrackers {
+                var tests = Dictionary[
+                        "ZCR.ar() tracking a SinOsc"
+                                -> { var freq = XLine.kr(100, 1000, 10);
+				     var son = SinOsc.ar(freq); 
+ 				     var val = A2K.kr(ZeroCrossing.ar(son)); 
+				     var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
+				     Out.ar(0, (son * 0.1).dup);
+				     dev},
+                        "Pitch.kr() tracking a Saw"
+                                -> { var freq = XLine.kr(100, 1000, 10);
+				     var son = Saw.ar(freq);
+				     var val = Pitch.kr(son).at(0);
+				     var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
+                                     Out.ar(0, (son * 0.1).dup);
+                                     dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
+                        ];
+                var testsIncomplete = tests.size;
+                this.bootServer;
+                tests.keysValuesDo{|text, func|
+                        func.loadToFloatArray(10, Server.default, { |data|
+                                this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
+                                testsIncomplete = testsIncomplete - 1;
+                        });
+                        rrand(0.12, 0.35).wait;
+                };
+
+                // Wait for async tests
+                this.wait{testsIncomplete==0};
+        } // test_pitchtrackers
+
+
+
 } // end TestCoreUGens class
