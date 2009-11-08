@@ -45,7 +45,7 @@ namespace nova
             *out++ = function(*in++);                                   \
             *out++ = function(*in++);                                   \
         }                                                               \
-        while (--n);                                                    \
+        while (--loops);                                                \
     }
 
 #define WRAP_MATH_FUNCTION_BINARY(name, function)                       \
@@ -68,7 +68,7 @@ namespace nova
             *out++ = function(*in0++, *in1++);                          \
             *out++ = function(*in0++, *in1++);                          \
         }                                                               \
-        while (--n);                                                    \
+        while (--loops);                                                \
     }                                                                   \
                                                                         \
     template <typename float_type>                                      \
@@ -90,7 +90,7 @@ namespace nova
             *out++ = function(*in0++, in1);                             \
             *out++ = function(*in0++, in1);                             \
         }                                                               \
-        while (--n);                                                    \
+        while (--loops);                                                \
     }                                                                   \
                                                                         \
     template <typename float_type>                                      \
@@ -112,7 +112,7 @@ namespace nova
             *out++ = function(in0, *in1++);                             \
             *out++ = function(in0, *in1++);                             \
         }                                                               \
-        while (--n);                                                    \
+        while (--loops);                                                \
     }
 
 
