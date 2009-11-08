@@ -2271,7 +2271,7 @@ void handle_d_recv(received_message const & msg,
                    udp::endpoint const & endpoint)
 {
     const void * synthdef_data;
-    size_t synthdef_size;
+    unsigned long synthdef_size;
 
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
 
