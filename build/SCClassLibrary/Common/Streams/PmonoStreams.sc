@@ -44,10 +44,11 @@ PmonoStream : Stream {
 			synthLib = ~synthLib ?? { SynthDescLib.global };
 			~synthDesc = desc = synthLib.match(pattern.synthName);
 			if (desc.notNil) {
-				~hasGate = desc.hasGate;
+				~hasGate = hasGate = desc.hasGate;
 				~msgFunc = desc.msgFunc;
 			}{
 				~msgFunc = ~defaultMsgFunc;
+				~hasGate = hasGate = false;
 			};
 			msgFunc = ~msgFunc;
 		}
@@ -69,6 +70,7 @@ PmonoStream : Stream {
 				};
 				cleanup.addFunction(event, currentCleanupFunc = { | flag |
 					if (flag) { (id: id, server: server, type: \off, 
+									hasGate: hasGate,
 									schedBundleArray: schedBundleArray,
 									schedBundle: schedBundle).play }
 				}); 
