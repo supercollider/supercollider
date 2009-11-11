@@ -1450,15 +1450,15 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	filename[b->uos->size] = 0;
 
 #ifdef SC_WIN32
-  char* headerFormat = (char *)malloc(headerSlot->uos->size);
+	char* headerFormat = (char *)malloc(headerSlot->uos->size);
 #else
-  char headerFormat[headerSlot->uos->size];
+	char headerFormat[headerSlot->uos->size];
 #endif
-  memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
+	memcpy(headerFormat, headerSlot->uos->s, headerSlot->uo->size);
 	headerFormat[headerSlot->uos->size] = 0;
 
 #ifdef SC_WIN32
-  char* sampleFormat = (char *)malloc(formatSlot->uos->size);
+	char* sampleFormat = (char *)malloc(formatSlot->uos->size);
 #else
 	char sampleFormat[formatSlot->uos->size];
 #endif
@@ -1466,7 +1466,14 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	sampleFormat[formatSlot->uos->size] = 0;
 
 	error = sndfileFormatInfoFromStrings(&info, headerFormat, sampleFormat);
-	if(error) 	return errFailed;
+	if(error) {
+#ifdef SC_WIN32
+		free(sampleFormat);
+		free(headerFormat);
+#endif
+		return errFailed;
+	}
+
 	//slotIntVal(a->uo->slots + 3, &info.frames);
 	slotIntVal(a->uo->slots + 4, &info.channels);
 	slotIntVal(a->uo->slots + 5, &info.samplerate);
