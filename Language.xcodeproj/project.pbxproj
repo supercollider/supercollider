@@ -339,7 +339,6 @@
 		9493181D0C192C120018AB50 /* MyDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180B0C192C120018AB50 /* MyDocument.nib */; };
 		9493181E0C192C120018AB50 /* SCGraphView.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180D0C192C120018AB50 /* SCGraphView.nib */; };
 		9493181F0C192C120018AB50 /* GoToLinePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 9493180F0C192C120018AB50 /* GoToLinePanel.nib */; };
-		949318200C192C120018AB50 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 949318100C192C120018AB50 /* Info.plist */; };
 		949318210C192C120018AB50 /* SCcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 949318170C192C120018AB50 /* SCcube.icns */; };
 		94B6AEF80AF45DA800E478BB /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069602E6A1C601CA2799 /* ApplicationServices.framework */; };
 		94B6AEF90AF45DA800E478BB /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069702E6A1C601CA2799 /* Carbon.framework */; };
@@ -698,7 +697,7 @@
 		9493180C0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		9493180E0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		9493180F0C192C120018AB50 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GoToLinePanel.nib; sourceTree = "<group>"; };
-		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
 		949318110C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		949318120C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
 		949318130C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -706,7 +705,7 @@
 		949318150C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		949318160C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		949318170C192C120018AB50 /* SCcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SCcube.icns; sourceTree = "<group>"; };
-		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		94B6ABC00AF45D2900E478BB /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
@@ -1453,7 +1452,6 @@
 				9493181D0C192C120018AB50 /* MyDocument.nib in Resources */,
 				9493181E0C192C120018AB50 /* SCGraphView.nib in Resources */,
 				9493181F0C192C120018AB50 /* GoToLinePanel.nib in Resources */,
-				949318200C192C120018AB50 /* Info.plist in Resources */,
 				949318210C192C120018AB50 /* SCcube.icns in Resources */,
 				94070C5E0C19DEF6002304F7 /* html.icns in Resources */,
 				94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */,
