@@ -191,6 +191,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		binary_mode |= _O_WRONLY;
 		if (CreatePipe(&child_in, &father_out, NULL, 0) == FALSE) {
 			fprintf(stderr, "popen: error CreatePipe\n");
+			free(new_cmd);
 			return NULL;
 		}
 
@@ -198,6 +199,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 							current_pid, &father_in_dup,
 							0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
 			fprintf(stderr, "popen: error DuplicateHandle father_out\n");
+			free(new_cmd);
 			return NULL;
 		}
 		si.hStdInput = father_in_dup;
@@ -211,12 +213,14 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		binary_mode |= _O_RDONLY;
 		if (CreatePipe(&father_in, &child_out, NULL, 0) == FALSE) {
 			fprintf(stderr, "popen: error CreatePipe\n");
+			free(new_cmd);
 			return NULL;
 		}
 		if (DuplicateHandle(current_pid, child_out,
 							current_pid, &father_out_dup,
 							0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
 			fprintf(stderr, "popen: error DuplicateHandle father_in\n");
+			free(new_cmd);
 			return NULL;
 		}
 		CloseHandle(child_out);
