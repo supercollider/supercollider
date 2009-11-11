@@ -183,8 +183,8 @@ int matchRegexp(char *string, char *pattern)
 
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
-	int err, start, end;
-
+	int err, start, end, ret;
+	
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
@@ -212,9 +212,16 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	char *pattern = (char*)malloc(a->uo->size + 1);
 	err = slotStrVal(a, pattern, a->uo->size + 1);
-	if (err) return err;
+	if (err) {
+		free(string);
+		free(pattern);
+		return err;
+	}
 
 	int res = matchRegexp(string, pattern);
+	free(string);
+	free(pattern);
+
 	switch (res) {
 		 case 0 : SetTrue(a); break;
 		 case 1 : SetFalse(a); break;
