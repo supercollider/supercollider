@@ -1,15 +1,15 @@
 /*
 s.boot;
+UnitTest.gui
 TestCoreUGens.run
 */
 TestCoreUGens : UnitTest {
 test_ugen_generator_equivalences {
 	var n, v;
-	this.bootServer;
 	
 	// These pairs should generate the same shapes, so subtracting should give zero.
 	// Of course there's some rounding error due to floating-point accuracy.
-	Dictionary[
+	var tests = Dictionary[
 	 //////////////////////////////////////////
 	 // Ramp generators:
 	 "Line.ar can match LFSaw.ar" -> {Line.ar(0,1,1) - LFSaw.ar(0.5)},
@@ -90,45 +90,71 @@ test_ugen_generator_equivalences {
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
 	 
-	]
-	.keysValuesDo{|name, func| 
+	];
+	var testsIncomplete = tests.size;
+	this.bootServer;
+	tests.keysValuesDo{|name, func| 
 		func.loadToFloatArray(1, Server.default, { |data|
-			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true)
+			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
+			testsIncomplete = testsIncomplete - 1;
 		});
 		rrand(0.12, 0.35).wait;
 	};
 	
 	
-	1.6.wait; // enough time for 1-second generators to run and to report back.
+	this.wait{testsIncomplete==0};
 }
 
 test_exact_convergence {
 	var n, v;
-	this.bootServer;
 	
 	// Tests for things that should converge exactly to zero
-	Dictionary[
+	var tests = Dictionary[
 	 //////////////////////////////////////////
 	 // Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
 	 "Pan2.ar(ar, , kr) should converge properly to zero when amp set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
 
-	]
-	.keysValuesDo{|name, func| 
+	];
+	var testsIncomplete = tests.size;
+	this.bootServer;
+	tests.keysValuesDo{|name, func| 
 		func.loadToFloatArray(1, Server.default, { |data|
-			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true)
+			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
+			testsIncomplete = testsIncomplete - 1;
 		});
 		rrand(0.12, 0.35).wait;
 	};
-	
-	
-	1.6.wait; // enough time for 1-second generators to run and to report back.
+	this.wait{testsIncomplete==0};
 }
 
+test_muladd {
+	var n, v;
+	var testsIncomplete;
+	
+	var tests = Dictionary[
+	];
+	[[\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5]].allTuples.do{|tup|
+		//tup.postln;
+		tests["%%.madd(%%, %%)".format(*tup)] = 
+				"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
+	};
+	
+	testsIncomplete = tests.size;
+	this.bootServer;
+	tests.keysValuesDo{|name, func| 
+		func.loadToFloatArray(0.1, Server.default, { |data|
+			this.assertArrayFloatEquals(data, 0, name.quote, report: true);
+			testsIncomplete = testsIncomplete - 1;
+		});
+		rrand(0.06, 0.15).wait;
+	};
+	this.wait{testsIncomplete==0};
+}
 
 
 test_bufugens{
 	var d, b, c;
-	
+	var testsIncomplete = 6;
 	this.bootServer;
 	
 	// channel sizes for test:
@@ -155,12 +181,12 @@ test_bufugens{
 				"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: true);
 			b.free;
 			c.free;
+			testsIncomplete = testsIncomplete - 1;
 		});
 		0.32.wait;
 		Server.default.sync;
-		
 	};
-	1.6.wait; // enough time for 1-second generators to run and to report back.
+	this.wait{testsIncomplete==0};
 }
 
 test_demand {
@@ -191,36 +217,36 @@ test_demand {
 	o.remove;
 }
 
-        test_pitchtrackers {
-                var tests = Dictionary[
-                        "ZCR.ar() tracking a SinOsc"
-                                -> { var freq = XLine.kr(100, 1000, 10);
-				     var son = SinOsc.ar(freq); 
- 				     var val = A2K.kr(ZeroCrossing.ar(son)); 
-				     var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
-				     Out.ar(0, (son * 0.1).dup);
-				     dev},
-                        "Pitch.kr() tracking a Saw"
-                                -> { var freq = XLine.kr(100, 1000, 10);
-				     var son = Saw.ar(freq);
-				     var val = Pitch.kr(son).at(0);
-				     var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
-                                     Out.ar(0, (son * 0.1).dup);
-                                     dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
-                        ];
-                var testsIncomplete = tests.size;
-                this.bootServer;
-                tests.keysValuesDo{|text, func|
-                        func.loadToFloatArray(10, Server.default, { |data|
-                                this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
-                                testsIncomplete = testsIncomplete - 1;
-                        });
-                        rrand(0.12, 0.35).wait;
-                };
-
-                // Wait for async tests
-                this.wait{testsIncomplete==0};
-        } // test_pitchtrackers
+test_pitchtrackers {
+	var tests = Dictionary[
+		"ZCR.ar() tracking a SinOsc"
+			-> { var freq = XLine.kr(100, 1000, 10);
+				var son = SinOsc.ar(freq); 
+				var val = A2K.kr(ZeroCrossing.ar(son)); 
+				var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
+				Out.ar(0, (son * 0.1).dup);
+				dev},
+		"Pitch.kr() tracking a Saw"
+				-> { var freq = XLine.kr(100, 1000, 10);
+				var son = Saw.ar(freq);
+				var val = Pitch.kr(son).at(0);
+				var dev = (freq-val).abs * XLine.kr(0.0001, 1, 0.1);
+				Out.ar(0, (son * 0.1).dup);
+				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
+		];
+	var testsIncomplete = tests.size;
+	this.bootServer;
+	tests.keysValuesDo{|text, func|
+		func.loadToFloatArray(10, Server.default, { |data|
+			this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
+			testsIncomplete = testsIncomplete - 1;
+		});
+		rrand(0.12, 0.35).wait;
+	};
+	
+	// Wait for async tests
+	this.wait{testsIncomplete==0};
+} // test_pitchtrackers
 
 
 
