@@ -323,7 +323,7 @@ void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 
 	if (amp_cur == nextAmp) {
 		if (amp_cur == 0.f) {
-			nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
+			nova::copyvec_simd(OUT(0), ADDIN, inNumSamples);
 		} else if (amp_cur == 1.f) {
 			nova::plus_vec_simd(OUT(0), IN(0), ADDIN, inNumSamples);
 		} else {
