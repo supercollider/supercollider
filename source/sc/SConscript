@@ -49,10 +49,11 @@ pluginenv = Environment(SHLIBPREFIX="",
                         CCFLAGS=env['CCFLAGS'],
                         CXXFLAGS=env['CXXFLAGS']
                         )
-pluginenv.Append(CPPDEFINES=['SUPERNOVA'],
+pluginenv.Append(CPPDEFINES=['SUPERNOVA', 'NOVA_SIMD'],
                  CPPPATH=["supercollider/Headers/plugin_interface",
-                          "supercollider/Headers/server",
                           "supercollider/Headers/common",
+                          "supercollider/Headers/server",
+                          "supercollider/nova-simd",
                           "#source",
                           "#libs/boost",
                           "#libs/boost_lockfree",
