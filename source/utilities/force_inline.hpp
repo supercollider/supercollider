@@ -1,7 +1,5 @@
-//  $Id$
-//
 //  small header for forced inlining
-//  Copyright (C) 2007 Tim Blechmann
+//  Copyright (C) 2007, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,10 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-//  $Revision$
-//  $LastChangedRevision$
-//  $LastChangedDate$
-//  $LastChangedBy$
+#ifndef UTILITIES_FORCE_INLINE_HPP
+#define UTILITIES_FORCE_INLINE_HPP
 
 #ifndef always_inline
 
@@ -31,4 +27,6 @@
 #define always_inline inline
 #endif  /* __GNUC__ */
 
-#endif
+#endif /* always_inline */
+
+#endif /* UTILITIES_FORCE_INLINE_HPP */
