@@ -97,7 +97,7 @@ public:
     {
         assert(has_child(node));
         server_node_list::iterator next = ++server_node_list::s_iterator_to(*node);
-        if (next == child_nodes.end())
+        if (unlikely(next == child_nodes.end()))
             return 0;
         else
             return &(*next);
@@ -107,7 +107,7 @@ public:
     {
         assert(has_child(node));
         server_node_list::iterator it = server_node_list::s_iterator_to(*node);
-        if (it == child_nodes.begin())
+        if (unlikely(it == child_nodes.begin()))
             return 0;
         else
             return &(*--it);

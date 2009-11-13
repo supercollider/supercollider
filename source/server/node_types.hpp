@@ -168,7 +168,7 @@ public:
 
     void release(void)
     {
-        if(--use_count_ == 0)
+        if(unlikely(--use_count_ == 0))
             delete this;
     }
 
@@ -250,7 +250,7 @@ public:
                      const_pointer hint = 0)
     {
         pointer ret = static_cast<pointer>(server_node::allocate(n * sizeof(T)));
-        if (ret == 0)
+        if (unlikely(ret == 0))
             throw std::bad_alloc();
 
         return ret;
