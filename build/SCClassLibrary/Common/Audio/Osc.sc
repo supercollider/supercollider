@@ -264,6 +264,37 @@ Select : UGen {
  	}
 }
 
+SelectX {
+	*new1 { arg rate, which, array;
+		var selector = UGen.methodSelectorForRate(rate);
+		^XFade2.perform(selector,
+			Select.perform(selector, which.round(2), array),
+			Select.perform(selector, which.trunc(2) + 1, array),
+			(which * 2 - 1).fold2(1)
+		);
+	}
+	*ar { arg which, array, wrap=1;
+		^this.new1(\audio, which, array, wrap);
+	}
+	*kr { arg which, array, wrap=1;
+		^this.new1(\control, which, array, wrap);
+	}
+}
+
+SelectXFocus { 	// does not wrap (yet).
+	*new { arg which, array, focus=1;
+		^Mix(array.collect({ arg in, i;
+			(1 - ((which-i).abs * focus) ).max(0) * in;
+		}))
+	}
+	*ar { arg which, array, focus=1;
+		^this.new(which, array, focus);
+	}
+	*kr { arg which, array, focus=1;
+		^this.new(which, array, focus);
+	}
+}
+
 Vibrato : UGen {
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
