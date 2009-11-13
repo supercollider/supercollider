@@ -5,24 +5,24 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Lucida Grande; min-height: 18.0px}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Lucida Grande}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; min-height: 15.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Lucida Grande}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #0018ea}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #001fe8}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019ba}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {color: #000000}
 span.s2 {font: 12.0px Helvetica}
-span.s3 {color: #0000bf}
+span.s3 {color: #0019ba}
 span.s4 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -118,7 +118,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">StartUp</span>.run;</p>
 <p class="p10"><br></p>
-<p class="p12"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// One can boot the server, then use loadPath to evaluate a file</p>
+<p class="p12"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// One can boot the server, then use .load to evaluate a file</p>
 <p class="p12"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// OR - put things into a class... like the SCSA_Demo</p>
 <p class="p10"><br></p>
 <p class="p13"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"Welcome to Standalone Demo made with SuperCollider, type cmd-d for help."<span class="s1">.postln;</span></p>
@@ -127,7 +127,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Server</span>.default.waitForBoot({</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SCSA_Demo</span>.new(<span class="s4">"The Cheese Stands Alone"</span>, <span class="s3">Rect</span>(400, 400, 300, 200), interpreter.s).front;</p>
-<p class="p12">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(String.scDir.dirname ++ "MFBSD.rtf").loadPath;</p>
+<p class="p12">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(String.scDir.dirname ++ "/MFBSD.rtf").load;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// close post window if user should not have it</p>
 <p class="p11">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Document.listener.close<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -137,7 +137,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p5">The class SCSA_Demo contains the entire application, including the main window. This is the tidiest way to work, and requires the least modification to SuperCollider. If you don't want to write a class, you can execute an .rtf file instead:</p>
 <p class="p3"><br></p>
-<p class="p5">loadPath(String.scDir ++ "/myapp.rtf");</p>
+<p class="p5">load(String.scDir ++ "/myapp.rtf");</p>
 <p class="p3"><br></p>
 <p class="p5">However, any sizable application will benefit from encapsulation in classes.</p>
 <p class="p3"><br></p>
