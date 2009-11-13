@@ -48,7 +48,7 @@
 
 		StartUp.run;
 
-		// One can boot the server, then use loadPath to evaluate a file
+		// One can boot the server, then use .load to evaluate a file
 		// OR - put things into a class... like the SCSA_Demo
 
 		"Welcome to Standalone Demo made with SuperCollider, type cmd-d for help.".postln;
@@ -57,7 +57,7 @@
 
 		Server.default.waitForBoot({
 			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
-//			(String.scDir.dirname ++ "MFBSD.rtf").loadPath;
+//			(String.scDir.dirname ++ "/MFBSD.rtf").load;
 		});
 		// close post window if user should not have it
 //		Document.listener.close
