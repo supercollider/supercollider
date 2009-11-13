@@ -1,6 +1,6 @@
 //  chaotic generators, twodimensional maps
 //
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ class coupled_logistic_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, e)
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(1, r, 0, 4)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x = state.get(0);
         const internal_type y = state.get(1);
@@ -115,7 +115,7 @@ class latoocarfian:
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(2, c, -0.5, 1.5)
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(3, d, -0.5, 1.5)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -161,7 +161,7 @@ class latoomutalpha:
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(1, b, -3, 3)
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(2, c, -3, 3)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -203,7 +203,7 @@ class latoomutbeta:
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(0, a, -3, 3)
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(1, b, -3, 3)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -250,7 +250,7 @@ class latoomutgamma:
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(0, a, -3, 3)
     NOVA_CHAOS_PARAMETER_SETTER_CLIPPING(1, b, -3, 3)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -302,7 +302,7 @@ class circle_map_2d:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, b)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(2, c)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -349,7 +349,7 @@ class duffing_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, a)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, b)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -397,7 +397,7 @@ class lozi_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, alpha)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, beta)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -442,7 +442,7 @@ class extended_lozi_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, beta)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(2, gamma)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -487,7 +487,7 @@ class lozi_elhadj_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, alpha)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, beta)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -525,7 +525,7 @@ class gingerbreadman_map:
         generator_base::set(1, 0.2);
     }
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -564,7 +564,7 @@ class henon_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, alpha)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, beta)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -602,7 +602,7 @@ class kaplan_yorke_map:
 
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, alpha)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -642,7 +642,7 @@ class sinai_map:
 
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, a)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -692,7 +692,7 @@ class tinkerbell_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(2, c)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(3, d)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -734,7 +734,7 @@ class backers_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(2, c)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(3, d)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -783,7 +783,7 @@ class standard_map:
         generator_base::set_parameter(0, k);
     }
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type i = state.get(0);
         const internal_type theta = state.get(1);
@@ -825,7 +825,7 @@ class ikeda_map:
 
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(0, u)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);
@@ -874,7 +874,7 @@ class zaslavskii_map:
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(1, gamma)
     NOVA_CHAOS_PARAMETER_SETTER_SIMPLE(2, epsilon)
 
-    static inline void compute_sample(state_copy & state)
+    static always_inline void compute_sample(state_copy & state)
     {
         const internal_type x1 = state.get(0);
         const internal_type x2 = state.get(1);

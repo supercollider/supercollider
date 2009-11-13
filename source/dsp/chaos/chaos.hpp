@@ -1,6 +1,6 @@
 //  chaotic generators
 //
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
 #include "../../utilities/branch_hints.hpp"
+#include "../../utilities/force_inline.hpp"
 #include "../../utilities/template_functions.hpp"
 
 #include "../sample_extractor.hpp"
@@ -297,12 +298,12 @@ class nop_interpolator
     typedef std::size_t size_t;
 
 public:
-    static void perform(system_state_type & state, output_array & out, unsigned int n)
+    static always_inline void perform(system_state_type & state, output_array & out, unsigned int n)
     {
         perform(state, out.begin(), n);
     }
 
-    static void perform(system_state_type & state, sample_type * const * out, unsigned int n)
+    static always_inline void perform(system_state_type & state, sample_type * const * out, unsigned int n)
     {
         for (size_t sample = 0; sample != n; ++sample)
         {
@@ -314,7 +315,7 @@ public:
     }
 
     /* small api wrapper for one-dimensional systems */
-    static void perform(system_state_type & state, sample_type * out, unsigned int n)
+    static always_inline void perform(system_state_type & state, sample_type * out, unsigned int n)
     {
         BOOST_STATIC_ASSERT(dimension == 1);
 
@@ -354,12 +355,12 @@ public:
         current_.assign(0);
     }
 
-    void perform(system_state_type & state, output_array const & out, unsigned int n)
+    always_inline void perform(system_state_type & state, output_array const & out, unsigned int n)
     {
         perform (state, out.begin(), n);
     }
 
-    void perform(system_state_type & state, sample_type * const * out, unsigned int n)
+    always_inline void perform(system_state_type & state, sample_type * const * out, unsigned int n)
     {
         register sample_array current = current_;
         register phase_count_type remaining = remaining_;
@@ -445,12 +446,12 @@ public:
         slope_.assign(0);
     }
 
-    void perform(system_state_type & state, output_array const & out, unsigned int n)
+    always_inline void perform(system_state_type & state, output_array const & out, unsigned int n)
     {
         perform (state, out.begin(), n);
     }
 
-    void perform(system_state_type & state, sample_type * const* out, unsigned int n)
+    always_inline void perform(system_state_type & state, sample_type * const* out, unsigned int n)
     {
         register sample_array current = sh_base::current_;
         register phase_count_type remaining = sh_base::remaining_;
@@ -541,12 +542,12 @@ public:
         curve_.assign(0);
     }
 
-    void perform(system_state_type & state, output_array const & out, unsigned int n)
+    always_inline void perform(system_state_type & state, output_array const & out, unsigned int n)
     {
         perform (state, out.begin(), n);
     }
 
-    void perform(system_state_type & state, sample_type * const * out, unsigned int n)
+    always_inline void perform(system_state_type & state, sample_type * const * out, unsigned int n)
     {
         register sample_array current = sh_base::current_;
         register phase_count_type remaining = sh_base::remaining_;
@@ -606,7 +607,7 @@ public:
     }
 
     /* small api wrapper for one-dimensional systems, the compiler should be able to optimize this */
-    void perform(system_state_type & state, sample_type * out, unsigned int n)
+    always_inline void perform(system_state_type & state, sample_type * out, unsigned int n)
     {
         BOOST_STATIC_ASSERT(dimension == 1);
 
@@ -680,13 +681,13 @@ public:                                                                 \
     /* @{ */                                                            \
     /** generate at sampling rate */                                    \
     template <typename output_buffer_type>                              \
-    void perform(output_buffer_type & out, unsigned int n)              \
+    always_inline void perform(output_buffer_type & out, unsigned int n) \
     {                                                                   \
         assert(output_dimension == 1);                                  \
         perform(get_samples(out), n);                                   \
     }                                                                   \
                                                                         \
-    void perform(sample_type * out_sample, unsigned int n)              \
+    always_inline void perform(sample_type * out_sample, unsigned int n) \
     {                                                                   \
         BOOST_STATIC_ASSERT(output_dimension == 1);                     \
         register state_copy local (*this); /* copy state to registers */ \
@@ -696,7 +697,7 @@ public:                                                                 \
         interpolator::perform(local, out_sample, n);                    \
     }                                                                   \
                                                                         \
-    void perform(sample_type ** out_sample, unsigned int n)             \
+    always_inline void perform(sample_type ** out_sample, unsigned int n) \
     {                                                                   \
         register state_copy local (*this); /* copy state to registers */ \
                                                                         \
@@ -710,16 +711,16 @@ public:                                                                 \
     /* @{ */                                                            \
     /** generate via interpolator */                                    \
     template <typename interpolator_type, typename output_buffer_type>  \
-    void perform(interpolator_type & interpolator, output_buffer_type & out, unsigned int n) \
+    always_inline void perform(interpolator_type & interpolator, output_buffer_type & out, unsigned int n) \
     {                                                                   \
         assert(output_dimension == 1);                                  \
         perform(get_samples(out), n);                                   \
     }                                                                   \
                                                                         \
     template <typename interpolator_type>                               \
-    void perform(interpolator_type & interpolator, sample_type * out_sample, unsigned int n) \
+    always_inline void perform(interpolator_type & interpolator, sample_type * out_sample, unsigned int n) \
     {                                                                   \
-        /* BOOST_STATIC_ASSERT(output_dimension == 1); */                     \
+        /* BOOST_STATIC_ASSERT(output_dimension == 1); */               \
         assert(output_dimension == 1);                                  \
         register state_copy local (*this); /* copy state to registers */ \
                                                                         \
@@ -727,7 +728,7 @@ public:                                                                 \
     }                                                                   \
                                                                         \
     template <typename interpolator_type>                               \
-    void perform(interpolator_type & interpolator, sample_type ** out_sample, unsigned int n) \
+    always_inline void perform(interpolator_type & interpolator, sample_type ** out_sample, unsigned int n) \
     {                                                                   \
         register state_copy local (*this); /* copy state to registers */ \
                                                                         \
