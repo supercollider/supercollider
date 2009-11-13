@@ -39,7 +39,7 @@ SoundFile {
 		^fileptr.notNil
 	}
 
-	*new{arg pathName;
+	*new { arg pathName;
 		^super.new.path_(pathName);
 	}
 
@@ -53,6 +53,17 @@ SoundFile {
 		var file;
 		file = SoundFile(pathName);
 		if(file.openWrite(pathName)){ ^file}{^nil}
+	}
+	
+	*use { arg path, function;
+		var file = this.new, res;
+		protect {
+			file.openRead(path);
+			res = function.value(file);
+		} {
+			file.close;
+		}
+		^res
 	}
 
 	openRead{ arg pathName;
@@ -117,6 +128,8 @@ SoundFile {
 
 	duration { ^numFrames/sampleRate }
 
+	
+	
 		// normalizer utility
 
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
@@ -309,6 +322,26 @@ SoundFile {
 		} {
 			"the server must be running to collection soundfiles into buffers ".error
 		}
+	}
+
+	
+	asBuffer { |server|
+		var buffer, rawData;
+		server = server ? Server.default;
+		if(server.serverRunning.not) { Error("SoundFile:asBuffer - Server not running.").throw };
+		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
+		if(server.isLocal) {
+			buffer = Buffer.read(server, path)
+		} {
+			forkIfNeeded {
+				buffer = Buffer.alloc(server, numFrames, numChannels);
+				rawData = FloatArray.newClear(numFrames * numChannels);
+				this.readData(rawData);
+				server.sync;
+				buffer.sendCollection(rawData);
+			}
+		};
+		^buffer
 	}
 
 	cue { | ev, playNow = false |
