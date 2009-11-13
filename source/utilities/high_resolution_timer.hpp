@@ -1,6 +1,6 @@
 /*=============================================================================
     Copyright (c) 2005-2007 Hartmut Kaiser
-                  2007 Tim Blechmann
+                  2007, 2009 Tim Blechmann
 
     Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at
@@ -11,8 +11,6 @@
 
 #include <boost/config.hpp>
 #include <boost/throw_exception.hpp>
-
-#if !defined(BOOST_WINDOWS)
 
 #if _POSIX_C_SOURCE >= 199309L
 
@@ -80,20 +78,59 @@ private:
 
 } // namespace boost
 
+#elif defined(__APPLE__)
 
-#else
+#import <mach/mach_time.h>
 
-
-//  For platforms other than Windows, simply fall back to boost::timer
-#include <boost/timer.hpp>
-#include <boost/throw_exception.hpp>
 
 namespace boost {
-    typedef boost::timer high_resolution_timer;
-}
 
-#endif
-#else
+class high_resolution_timer
+{
+public:
+    high_resolution_timer(void)
+    {
+        mach_timebase_info_data_t info;
+
+        kern_return_t err = mach_timebase_info(&info);
+        if (err)
+            throw std::runtime_error("cannot create mach timebase info");
+
+        conversion_factor = (double)info.numer/(double)info.denom;
+        restart();
+    }
+
+    void restart()
+    {
+        start = mach_absolute_time();
+    }
+
+    double elapsed() const                  // return elapsed time in seconds
+    {
+        uint64_t now = mach_absolute_time();
+        double duration = double(now - start) * conversion_factor;
+
+        return duration
+    }
+
+    double elapsed_max() const   // return estimated maximum value for elapsed()
+    {
+        return double((std::numeric_limits<double>::max)());
+    }
+
+    double elapsed_min() const            // return minimum value for elapsed()
+    {
+        return 0.0;
+    }
+
+private:
+    uint64_t start;
+    double conversion_factor;
+};
+
+} // namespace boost
+
+#elif defined(BOOST_WINDOWS)
 
 #include <stdexcept>
 #include <limits>
@@ -127,6 +164,7 @@ public:
         if (!QueryPerformanceCounter(&start_time))
             boost::throw_exception(std::runtime_error("Couldn't initialize start_time"));
     }
+
     double elapsed() const                  // return elapsed time in seconds
     {
         LARGE_INTEGER now;
@@ -154,7 +192,17 @@ private:
 
 } // namespace boost
 
-#endif  // !defined(BOOST_WINDOWS)
+#else
+
+//  For other platforms, simply fall back to boost::timer
+#include <boost/timer.hpp>
+#include <boost/throw_exception.hpp>
+
+namespace boost {
+    typedef boost::timer high_resolution_timer;
+}
+
+#endif
 
 #endif  // !defined(BOOST_HIGH_RESOLUTION_TIMER_HPP)
 
