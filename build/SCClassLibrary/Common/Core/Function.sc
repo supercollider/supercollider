@@ -66,6 +66,23 @@ Function : AbstractFunction {
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
 		^this.valueArray(prototypeFrame)
 	}
+	
+	performWithEnvir { |selector, envir|
+		if(selector === \value) { ^this.valueWithEnvir(envir) };
+		^super.performWithEnvir(selector, envir)
+	}
+	
+	performKeyValuePairs { |selector, pairs|
+		var envir;
+		if(selector !== \value) { 
+			^this.superPerform(\performKeyValuePairs, pairs) 
+		};
+		
+		envir = this.def.makeEnvirFromArgs;
+		envir.putPairs(pairs);
+		
+		^this.valueWithEnvir(envir)
+	}
 
 	numArgs { ^def.numArgs }		// return number of arguments to the function
 	numVars { ^def.numVars }		// return number of variables in the function
