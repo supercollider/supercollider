@@ -23,6 +23,8 @@
 
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
+#include "simd_mix.hpp"
+#include "simd_binary_arithmetic.hpp"
 #endif
 
 static InterfaceTable *ft;
@@ -1067,6 +1069,66 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 	unit->m_xfade = next_xfade;
 }
 
+#ifdef NOVA_SIMD
+void XOut_next_a_nova(XOut *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 2;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		uint32 busChannel = (uint32)fbusChannel;
+		uint32 lastChannel = busChannel + numChannels;
+
+		if (!(lastChannel > world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+
+	float next_xfade = ZIN0(1);
+	float xfade0 = unit->m_xfade;
+	float *out = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	if (xfade0 != next_xfade) {
+		float slope = CALCSLOPE(next_xfade, xfade0);
+		for (int i=0; i<numChannels; ++i) {
+			float xfade = xfade0;
+			float *in = IN(i+2);
+			if (touched[i] == bufCounter)
+				nova::mix_vec_simd(out, out, 1-xfade0, -slope, in, xfade0, slope, inNumSamples);
+			else {
+				nova::times_vec_simd(out, in, xfade, slope, inNumSamples);
+				touched[i] = bufCounter;
+			}
+		}
+		unit->m_xfade = next_xfade;
+	} else if (xfade0 == 1.f) {
+		for (int i=0; i<numChannels; ++i, out+=bufLength) {
+			float *in = IN(i+2);
+			nova::copyvec_simd(out, in, inNumSamples);
+			touched[i] = bufCounter;
+		}
+	} else if (xfade0 == 0.f) {
+		// do nothing.
+	} else {
+		for (int i=0; i<numChannels; ++i) {
+			float *in = IN(i+2);
+			if (touched[i] == bufCounter)
+				nova::mix_vec_simd(out, out, 1-xfade0, in, xfade0, inNumSamples);
+			else {
+				nova::times_vec_simd(out, in, xfade0, inNumSamples);
+				touched[i] = bufCounter;
+			}
+		}
+	}
+}
+
+#endif
+
 #if __VEC__
 
 void vXOut_next_a(XOut *unit, int inNumSamples)
@@ -1197,14 +1259,15 @@ void XOut_Ctor(XOut* unit)
 	unit->m_xfade = ZIN0(1);
 	if (unit->mCalcRate == calc_FullRate) {
 #if __VEC__
-		if (USEVEC) {
+		if (USEVEC)
 			SETCALC(vXOut_next_a);
-		} else {
-			SETCALC(XOut_next_a);
-		}
-#else
-		SETCALC(XOut_next_a);
+		else
 #endif
+#ifdef NOVA_SIMD
+		if (!(BUFLENGTH & 15))
+			SETCALC(XOut_next_a_nova);
+#endif
+		SETCALC(XOut_next_a);
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
 	} else {
