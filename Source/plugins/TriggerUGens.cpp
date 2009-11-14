@@ -1156,18 +1156,14 @@ void Gate_next_ak(Gate *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void Gate_next_ak_nova(Gate *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
 	float *trig = ZIN(1);
-	float level = unit->mLevel;
 
 	float curtrig = ZXP(trig);
 	if (curtrig > 0.f) {
 		nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
 		unit->mLevel = IN(0)[inNumSamples-1];
-	} else {
-		nova::setvec_simd(OUT(0), level, inNumSamples);
-	}
+	} else
+		nova::setvec_simd(OUT(0), unit->mLevel, inNumSamples);
 }
 #endif
 
