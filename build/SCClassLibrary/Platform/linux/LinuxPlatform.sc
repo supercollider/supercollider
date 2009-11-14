@@ -3,10 +3,6 @@ LinuxPlatform : UnixPlatform
 	name { ^\linux }
 	startupFiles { ^#["~/.sclang.sc"] }
 	startup {
-		// Document setup
-		if ( this.hasFeature( \emacs ) ) {
-				Document.implementationClass.startup;
-			};
 
 		helpDir = this.systemAppSupportDir++"/Help";
 
@@ -34,9 +30,4 @@ LinuxPlatform : UnixPlatform
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 	}
 
-	recompile{
-		if ( this.hasFeature( \emacs ) ) {
-			Emacs.evalLispExpression( "(sclang-start)" );
-		};
-	}
 }

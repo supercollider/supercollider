@@ -222,6 +222,7 @@ Emacs {
 		}{
 			initialized = true;
 			Document.implementationClass = ScelDocument;
+			StartUp.add( { Document.implementationClass.startup; } );
 			thisProcess.platform.declareFeature( \emacs );
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
