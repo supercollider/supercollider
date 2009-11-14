@@ -417,4 +417,16 @@ SimpleNumber : Number {
 	asBufWithValues {
 		^this
 	}
+	
+	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
+		thisThread.clock.sched(this, {
+					if (lag != 0) {
+						SystemClock.sched(lag, { 
+							server.sendBundle(latency ? server.latency, *bundleArray)
+						})
+					} {
+						server.sendBundle(latency ? server.latency, *bundleArray)
+					}
+		})
+	}
 }
