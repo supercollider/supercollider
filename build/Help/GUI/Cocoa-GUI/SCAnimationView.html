@@ -16,21 +16,21 @@ p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helve
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2c52c3; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #902f20}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d281b}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #3255bf; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #1e49cd}
-span.s3 {color: #284599}
-span.s4 {color: #214fdb}
+span.s2 {color: #254ec8}
+span.s3 {color: #2c4796}
+span.s4 {color: #2854d6}
 span.s5 {color: #000000}
 span.s6 {text-decoration: underline}
-span.s7 {color: #062cb0}
+span.s7 {color: #0000bf}
 span.s8 {color: #606060}
-span.s9 {color: #0024b5}
-span.s10 {color: #9d281b}
-span.s11 {color: #902f20}
+span.s9 {color: #bf0000}
+span.s10 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -90,14 +90,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12">u.mouseMoveAction = u.mouseDownAction;</p>
 <p class="p12">win.front;</p>
 <p class="p12">)</p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
 <p class="p12">u.showInfo = <span class="s7">false</span></p>
 <p class="p12">u.showInfo = <span class="s7">true</span></p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
 <p class="p11">//close the window to stop</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p11">//--</p>
 <p class="p12">(</p>
 <p class="p12"><span class="s7">var</span> width = 400, height = 400, xspeed = 3, yspeed = 2, x = width*0.5, y = height*0.5;</p>
@@ -116,7 +116,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">//u.clearOnRefresh = false;</p>
 <p class="p12">win.front;</p>
 <p class="p12">)</p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
 <p class="p11"><span class="s5">(<span class="Apple-tab-span">	</span></span>//replace the drawFunc above while running</p>
 <p class="p12">u.drawFunc = {<span class="s7">|view, i|</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillColor = <span class="s7">Color</span>.red;</p>
@@ -125,31 +125,76 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillOval(<span class="s7">Rect</span>(200, 200, sin(i*0.073)*200, sin(i*0.086)*200));</p>
 <p class="p12">}</p>
 <p class="p12">)</p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
 <p class="p11">//close the window to stop</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
 <p class="p11">//--</p>
 <p class="p12">(</p>
-<p class="p12"><span class="s9">var</span> ani, cnt = 0, n = 30;</p>
-<p class="p12">w = <span class="s9">Window</span>(<span class="s8">"circ"</span>, <span class="s9">Rect</span>(100, 200, 700, 400), <span class="s9">false</span>, <span class="s9">false</span>);<span class="Apple-tab-span">	</span><span class="s10">//not resizable, no border</span></p>
-<p class="p12">ani = <span class="s9">AnimationView</span>(w, <span class="s9">Rect</span>(0, 0, 700, 400));</p>
-<p class="p12">ani.background= <span class="s9">Color</span>.black;</p>
+<p class="p12"><span class="s7">var</span> ani, cnt = 0, n = 30;</p>
+<p class="p12">w = <span class="s7">Window</span>(<span class="s8">"circ"</span>, <span class="s7">Rect</span>(100, 200, 700, 400), <span class="s7">false</span>, <span class="s7">false</span>);<span class="Apple-tab-span">	</span><span class="s9">//not resizable, no border</span></p>
+<p class="p12">ani = <span class="s7">AnimationView</span>(w, <span class="s7">Rect</span>(0, 0, 700, 400));</p>
+<p class="p12">ani.background= <span class="s7">Color</span>.black;</p>
 <p class="p12">ani.drawFunc = {</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.fillColor = <span class="s9">Color</span>.blue;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.strokeColor = <span class="s9">Color</span>.white;</p>
-<p class="p12"><span class="Apple-tab-span">	</span>n.do{<span class="s9">|i|</span></p>
-<p class="p13"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//Pen.addOval(Rect(cnt*(i+1)%700, cnt/(i+1)%400, 50, 50));</p>
-<p class="p13"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//Pen.addOval(Rect(sin(cnt+i/5)*300+325, cnt/(i+1)%400, 50, 50));</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.addOval(<span class="s9">Rect</span>(sin(cnt+i/5)*150+350, cos(cnt-i/10)*150+200, 50, 50));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillColor = <span class="s7">Color</span>.blue;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.strokeColor = <span class="s7">Color</span>.white;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>n.do{<span class="s7">|i|</span></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//Pen.addOval(Rect(cnt*(i+1)%700, cnt/(i+1)%400, 50, 50));</p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//Pen.addOval(Rect(sin(cnt+i/5)*300+325, cnt/(i+1)%400, 50, 50));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.addOval(<span class="s7">Rect</span>(sin(cnt+i/5)*150+350, cos(cnt-i/10)*150+200, 50, 50));</p>
 <p class="p12"><span class="Apple-tab-span">	</span>};</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="s9">Pen</span>.draw(3);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.draw(3);</p>
 <p class="p12"><span class="Apple-tab-span">	</span>cnt = cnt+0.3;</p>
 <p class="p12">};</p>
 <p class="p12">w.front;</p>
 <p class="p12">)</p>
-<p class="p3"><br></p>
-<p class="p12">w.close;<span class="Apple-tab-span">	</span><span class="s11">//to stop</span></p>
+<p class="p13"><br></p>
+<p class="p12">w.close;<span class="Apple-tab-span">	</span><span class="s9">//to stop</span></p>
+<p class="p13"><br></p>
+<p class="p13"><br></p>
+<p class="p11">//--</p>
+<p class="p12">(</p>
+<p class="p12">s.latency= 0.05;</p>
+<p class="p12">s.waitForBoot{</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s7">var</span> width = 400, height = 400, xspeed = 10, yspeed = 12, x = width*0.5, y = height*0.5, index;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="s7">var</span> win = <span class="s7">Window</span>(<span class="s8">"ball"</span>, <span class="s7">Rect</span>(100, 200, width, height));</p>
+<p class="p14"><span class="s5"><span class="Apple-tab-span">	</span></span>var<span class="s5"> syn = </span>SynthDef<span class="s5">(</span><span class="s10">\ping</span><span class="s5">, {</span>|t_trig = 0, freq = 500|</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> env = <span class="s7">EnvGen</span>.kr(<span class="s7">Env</span>.perc, t_trig);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> src = <span class="s7">SinOsc</span>.ar([freq, freq+10], 0, env);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Out</span>.ar(0, src);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>}).play(s);</p>
+<p class="p12"><span class="Apple-tab-span">	</span>s.sync;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>index = 0;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>u = <span class="s7">AnimationView</span>(win, <span class="s7">Rect</span>(0, 0, width, height));</p>
+<p class="p12"><span class="Apple-tab-span">	</span>u.background = <span class="s7">Color</span>.black;</p>
+<p class="p12"><span class="Apple-tab-span">	</span>u.showInfo = <span class="s7">true</span>;</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>//draw function that simply renders (stateless)...</p>
+<p class="p12"><span class="Apple-tab-span">	</span>u.drawFunc = {<span class="s7">|view, i|</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillColor = <span class="s7">Color</span>.white;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.fillOval(<span class="s7">Rect</span>.aboutPoint(<span class="s7">Point</span>(x, y), 8, 8));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.stringAtPoint(<span class="s8">"framecounter<span class="Apple-converted-space">  </span>"</span>+i, <span class="s7">Point</span>(250, 30));</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pen</span>.stringAtPoint(<span class="s8">"routinecounter"</span>+index, <span class="s7">Point</span>(250, 40));</p>
+<p class="p12"><span class="Apple-tab-span">	</span>};</p>
+<p class="p13"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span></span>//independent routine for the control...</p>
+<p class="p12"><span class="Apple-tab-span">	</span>r = <span class="s7">Routine</span> { </p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> stretch;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stretch = <span class="s7">Pseg</span>(<span class="s7">Pseq</span>([0,1],<span class="s7">inf</span>), 10).linexp(0,1, 10, 0.5).asStream;<span class="Apple-tab-span">	</span><span class="s9">// let's fiddle with the rate</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">inf</span>.do { <span class="s7">| i |</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>index = i;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(x&lt;0 or:{x&gt;width}, {xspeed = 0-xspeed; syn.set(<span class="s10">\t_trig</span>, 1, <span class="s10">\freq</span>, 800)});</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(y&lt;0 or:{y&gt;height}, {yspeed = 0-yspeed; syn.set(<span class="s10">\t_trig</span>, 1, <span class="s10">\freq</span>, 500)});</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = x+xspeed;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = y+yspeed;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(1/60 * stretch.next).wait</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p12"><span class="Apple-tab-span">	</span>};</p>
+<p class="p14"><span class="s5"><span class="Apple-tab-span">	</span>r.play(</span>SystemClock<span class="s5">);</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span>win.onClose_({ r.stop; syn.free; });</p>
+<p class="p12"><span class="Apple-tab-span">	</span>win.front;</p>
+<p class="p12">};</p>
+<p class="p12">)</p>
 </body>
 </html>
