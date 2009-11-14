@@ -212,7 +212,6 @@ void LinPan2_next_ak(LinPan2 *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples)
 {
-	float *in = ZIN(0);
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
 	float leftamp =	 unit->m_leftamp;
@@ -331,10 +330,6 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples)
 {
-	float * leftout = ZOUT(0);
-	float * rightout = ZOUT(1);
-	float * leftin = ZIN(0);
-	float * rightin = ZIN(1);
 	float pos = ZIN0(2);
 	float level = ZIN0(3);
 	float leftamp =  unit->m_leftamp;
@@ -647,9 +642,6 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void Pan2_next_ak_nova(Pan2 *unit, int inNumSamples)
 {
-	float *leftout = ZOUT(0);
-	float *rightout = ZOUT(1);
-	float *in = ZIN(0);
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
 	float leftamp =	 unit->m_leftamp;
@@ -663,7 +655,7 @@ void Pan2_next_ak_nova(Pan2 *unit, int inNumSamples)
 		float nextrightamp = level * ft->mSine[ipos];
 
 		float slopeFactor = unit->mRate->mSlopeFactor;
-		float leftampslope	= (nextleftamp	- leftamp)	* slopeFactor;
+		float leftampslope = (nextleftamp - leftamp) * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
 		nova::pan2_vec_simd(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
@@ -673,9 +665,8 @@ void Pan2_next_ak_nova(Pan2 *unit, int inNumSamples)
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
-	} else {
+	} else
 		nova::pan2_vec_simd(OUT(0), OUT(1), IN(0), leftamp, rightamp, inNumSamples);
-	}
 }
 
 #endif
