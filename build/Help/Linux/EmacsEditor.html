@@ -22,6 +22,7 @@ For a general reference to Emacs shortcut, check out this <A href="http://lpn.rn
 <tr><td>C-c C-c</td><td>Interpret current line</td></tr>
 <tr><td>C-c C-e</td><td>Evaluate expression (in minibuffer)</td></tr>
 <tr><td>C-M-x</td><td>Interpret defun</td></tr>
+<tr><td>C-c C-f</td><td>Interpret current document</td></tr>
 
 <tr><td colspan="2" align="center"><strong>Control the interpreter</strong></td></tr>
 <tr><td>C-c C-s</td><td>Stop (CmdPeriod) / Main.stop</td></tr>
@@ -44,10 +45,13 @@ For a general reference to Emacs shortcut, check out this <A href="http://lpn.rn
 <tr><td colspan="2" align="center"><strong>Finding things in class source files</strong></td></tr>
 <tr><td>C-c :</td><td>Find definitions (method or class). Again, you can type the word you want to look for in the minibuffer and it suggests the word at the current cursor position.</td></tr>
 <tr><td>C-c ;</td><td>Find references to (method or class). (ditto)</td></tr>
-<tr><td>C-c C-k</td><td>Open current file at the svn development path location. You need to have set the devpath variable in Platform for this to work properly.</td></tr>
+<tr><td>C-c C-k</td><td>Open current file at the svn development path location. You need to have set the devpath variable in Platform for this to work properly, e.g.<br>
+thisProcess.platform.devpath = "~/svn/SuperCollider3".standardizePath;
+</td></tr>
 
 <tr><td colspan="2" align="center"><strong>Current code completion and interface</strong></td></tr>
-<tr><td>C-c {</td><td>Dump interface</td></tr>
+<tr><td>C-c [</td><td>Dump interface</td></tr>
+<tr><td>C-c {</td><td>Dump full interface</td></tr>
 <tr><td>C-c C-m / C-c RET</td><td>Show method arguments (in minibuffer)</td></tr>
 <tr><td>C-c C-n / M-TAB</td><td>Autocomplete keyword (either puts in the one possible completion, or pops up a buffer with possibilities from which you can choose one)</td></tr>
 
