@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -20,18 +20,23 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p13 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #606060}
-p.p14 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #9d1c12}
-p.p15 {margin: 0.0px 0.0px 0.0px 42.0px; font: 6.0px Monaco; min-height: 9.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Helvetica; min-height: 11.0px}
+p.p14 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #bf0000}
+p.p15 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p18 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Monaco; color: #bf0000}
+p.p19 {margin: 0.0px 0.0px 0.0px 42.0px; font: 6.0px Monaco; min-height: 9.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 42.0px; font: 9.0px Helvetica; min-height: 11.0px}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0024f8}
-span.s3 {color: #0026b4}
+span.s2 {color: #0000bf}
+span.s3 {color: #0000bf}
 span.s4 {text-decoration: underline}
 span.s5 {font: 12.0px Helvetica}
 span.s6 {color: #000000}
-span.s7 {color: #9d1c12}
-span.s8 {color: #606060}
-span.s9 {color: #3d6d1d}
+span.s7 {color: #bf0000}
+span.s8 {color: #0000bf}
+span.s9 {color: #606060}
+span.s10 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -218,12 +223,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">[[1, 2, 3], [4, 5, 6]].flop;</p>
 <p class="p7">[[1, 2, 3], [4, 5, 6], [7, 8]].flop; <span class="s7">// shorter array wraps</span></p>
 <p class="p14"><span class="s6">[].flop; </span>// result is always 2-d.</p>
+<p class="p15"><br></p>
+<p class="p1"><b>flopTogether(...moreArrays)</b></p>
+<p class="p5">Invert rows and colums in a an array of dimensional Collections (turn inside out), so that they<span class="Apple-converted-space"> </span></p>
+<p class="p5">all match up in size, but remain separated.</p>
+<p class="p6"><br></p>
+<p class="p8"><br></p>
+<p class="p16">(</p>
+<p class="p16">a = flopTogether(</p>
+<p class="p16"><span class="Apple-tab-span">	</span>[[1, 2, 3], [4, 5, 6, 7, 8]] * 100,</p>
+<p class="p16"><span class="Apple-tab-span">	</span>[[1, 2, 3], [4, 5, 6], [7, 8]],</p>
+<p class="p16"><span class="Apple-tab-span">	</span>[1000]</p>
+<p class="p16">)</p>
+<p class="p16">);</p>
+<p class="p17"><br></p>
+<p class="p18"><span class="s6">a.collect(</span><span class="s8">_</span><span class="s6">.size); </span>// sizes are the same</p>
+<p class="p18"><span class="s6">a.collect(</span><span class="s8">_</span><span class="s6">.shape) </span>// shapes can be different</p>
+<p class="p15"><br></p>
 <p class="p8"><br></p>
 <p class="p1"><b>lace(length)</b></p>
 <p class="p5">Returns a new Collection whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size <b>length</b>. The receiver is unchanged.</p>
 <p class="p6"><br></p>
 <p class="p7">(</p>
-<p class="p7">x = [ [1, 2, 3], 6, <span class="s3">List</span>[<span class="s8">"foo"</span>, <span class="s9">'bar'</span>]];</p>
+<p class="p7">x = [ [1, 2, 3], 6, <span class="s3">List</span>[<span class="s9">"foo"</span>, <span class="s10">'bar'</span>]];</p>
 <p class="p7">y = x.lace(12);</p>
 <p class="p7">x.postln;</p>
 <p class="p7">y.postln;</p>
@@ -259,8 +281,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">If the function is nil, the following default function is used.</p>
 <p class="p6"><br></p>
 <p class="p7">{ <span class="s3">arg</span> a, b; a &lt; b }</p>
-<p class="p15"><br></p>
-<p class="p16"><br></p>
+<p class="p19"><br></p>
+<p class="p20"><br></p>
 <p class="p7">[6, 2, 1, 7, 5].sort;</p>
 <p class="p8"><br></p>
 <p class="p7">[6, 2, 1, 7, 5].sort({ <span class="s3">arg</span> a, b; a &gt; b }); <span class="s7">// reverse sort</span></p>
@@ -268,24 +290,24 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p1"><b>sortBy(key)</b></p>
 <p class="p5">Sort the contents of the collection using the key <b>key</b>, which is assumed to be found inside each element of the receiver.</p>
-<p class="p15"><br></p>
+<p class="p19"><br></p>
 <p class="p7">(</p>
 <p class="p7">a = [</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s9">\a</span>-&gt;5, <span class="s9">\b</span>-&gt;1, <span class="s9">\c</span>-&gt;62],<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s9">\a</span>-&gt;2, <span class="s9">\b</span>-&gt;9, <span class="s9">\c</span>-&gt;65],<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s9">\a</span>-&gt;8, <span class="s9">\b</span>-&gt;5, <span class="s9">\c</span>-&gt;68],<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s9">\a</span>-&gt;1, <span class="s9">\b</span>-&gt;3, <span class="s9">\c</span>-&gt;61],<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s9">\a</span>-&gt;6, <span class="s9">\b</span>-&gt;7, <span class="s9">\c</span>-&gt;63],<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s10">\a</span>-&gt;5, <span class="s10">\b</span>-&gt;1, <span class="s10">\c</span>-&gt;62],<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s10">\a</span>-&gt;2, <span class="s10">\b</span>-&gt;9, <span class="s10">\c</span>-&gt;65],<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s10">\a</span>-&gt;8, <span class="s10">\b</span>-&gt;5, <span class="s10">\c</span>-&gt;68],<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s10">\a</span>-&gt;1, <span class="s10">\b</span>-&gt;3, <span class="s10">\c</span>-&gt;61],<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Dictionary</span>[<span class="s10">\a</span>-&gt;6, <span class="s10">\b</span>-&gt;7, <span class="s10">\c</span>-&gt;63],<span class="Apple-converted-space"> </span></p>
 <p class="p7">]</p>
 <p class="p7">)</p>
-<p class="p7">a.sortBy(<span class="s9">\b</span>);</p>
-<p class="p7">a.sortBy(<span class="s9">\c</span>);</p>
+<p class="p7">a.sortBy(<span class="s10">\b</span>);</p>
+<p class="p7">a.sortBy(<span class="s10">\c</span>);</p>
 <p class="p9"><br></p>
 <p class="p6"><br></p>
 <p class="p1"><b>order(function)</b></p>
 <p class="p5">Return an array of indices that would sort the collection into order. <b>function</b> is treated the same way as for the <b>sort</b> method.</p>
-<p class="p15"><br></p>
-<p class="p16"><br></p>
+<p class="p19"><br></p>
+<p class="p20"><br></p>
 <p class="p7">[6, 2, 1, 7, 5].order;</p>
 <p class="p8"><br></p>
 <p class="p9"><br></p>
@@ -340,9 +362,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>reduce(operator)</b></p>
 <p class="p5">Applies the method named by operator to the first and second elements of the collection - then applies the method to the result and to the third element of the collection - then applies the method to the result and to the fourth element of the collection - and so on, until the end of the array. operator may be a <a href="../Core/Kernel/Function.html"><span class="s3">Function</span></a> or a <a href="../Core/Symbol.html"><span class="s3">Symbol</span></a>.</p>
 <p class="p6"><br></p>
-<p class="p14"><span class="s6">[3, 4, 5, 6].reduce(</span><span class="s9">'*'</span><span class="s6">); </span>// this is the same as [3, 4, 5, 6].product</p>
-<p class="p14"><span class="s6">[3, 4, 5, 6].reduce(</span><span class="s9">\lcm</span><span class="s6">); </span>// Lowest common multiple of the whole set of numbers</p>
-<p class="p7">[<span class="s8">"d"</span>, <span class="s8">"e"</span>, (0..9), <span class="s8">"h"</span>].reduce(<span class="s9">'++'</span>); <span class="s7">// concatenation</span></p>
+<p class="p14"><span class="s6">[3, 4, 5, 6].reduce(</span><span class="s10">'*'</span><span class="s6">); </span>// this is the same as [3, 4, 5, 6].product</p>
+<p class="p14"><span class="s6">[3, 4, 5, 6].reduce(</span><span class="s10">\lcm</span><span class="s6">); </span>// Lowest common multiple of the whole set of numbers</p>
+<p class="p7">[<span class="s9">"d"</span>, <span class="s9">"e"</span>, (0..9), <span class="s9">"h"</span>].reduce(<span class="s10">'++'</span>); <span class="s7">// concatenation</span></p>
 <p class="p7">[3, 4, 5, 6].reduce({ <span class="s3">|a, b|</span> sin(a) * sin(b) }); <span class="s7">// product of sines</span></p>
 <p class="p8"><br></p>
 <p class="p6"><br></p>

@@ -423,6 +423,22 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
+	
+	flopTogether { arg ... moreArrays;
+		var standIn, maxSize = 0, array;
+		array = [this] ++ moreArrays;
+		array.do { |sublist| 
+			sublist.do { |each| 
+				maxSize = max(maxSize, each.size) 
+			} 
+		};
+		standIn = 0.dup(maxSize);
+		array = array.collect { |sublist| sublist.add(standIn) };
+		^array.collect { |sublist| 
+			sublist.flop.collect { |each| each.drop(-1) } // remove stand-in
+		};
+	}
+
 	unlace { arg numlists, clumpSize=1, clip=false;
 		var size, list, sublist, self;
 
@@ -1113,4 +1129,23 @@ SequenceableCollection : Collection {
 	asQuant { ^Quant(*this) }
 
 //	asUGenInput { ^this.asArray.asUGenInput }
+
+	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
+		latency = latency ? server.latency;
+		if (lag != 0) {
+			lag = lag.asArray;
+			this.do { |time, i|
+				clock.sched(time, {
+						SystemClock.sched(lag.wrapAt(i), { 
+							server.sendBundle(latency, bundleArray.wrapAt(i)) })
+				})
+			}
+		} {
+			this.do { |time, i|
+				clock.sched(time, {
+						server.sendBundle(latency, bundleArray.wrapAt(i))
+				})
+			}
+		}
+	}
 }
