@@ -91,7 +91,22 @@ Object  {
 			performList(item[0], item[1], item[2..])
 		}
 	}
+	
+	performWithEnvir { |selector, envir|
+		var argNames, args;
+		var method = this.class.findRespondingMethodFor(selector);
+		if(method.isNil) { ^this.doesNotUnderstand(selector) };
+		
+		envir = method.makeEnvirFromArgs.putAll(envir);
+		
+		argNames = method.argNames.drop(1);
+		args = envir.atAll(argNames);
+		^this.performList(selector, args)
+	}
 
+	performKeyValuePairs { |selector, pairs|		
+		^this.performWithEnvir(selector, ().putPairs(pairs))
+	}
 
 	// copying
 	copy { ^this.shallowCopy }
@@ -345,6 +360,12 @@ Object  {
 		^FunctionList([this] ++ functions)
 	}
 	removeFunc { arg function; if(this === function) { ^nil } }
+	addFuncTo { arg variableName ... functions;
+		this.perform(variableName.asSetter, this.perform(variableName).addFunc(*functions))
+	}
+	removeFuncFrom { arg variableName, function;
+		this.perform(variableName).removeFunc(function)
+	}
 
 	// looping
 	while { arg body;
