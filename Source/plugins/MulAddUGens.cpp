@@ -278,12 +278,7 @@ void ampmix_ii(MulAdd *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void ampmix_aa_nova(MulAdd *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *out = OUT(0);
-	float *amp = MULIN;
-	float *mix = ADDIN;
-
-	nova::muladd_vec_simd(out, in, MULIN, ADDIN, inNumSamples);
+	nova::muladd_vec_simd(OUT(0), IN(0), MULIN, ADDIN, inNumSamples);
 }
 
 void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
@@ -297,13 +292,9 @@ void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
 			nova::muladd_vec_simd(OUT(0), IN(0), MULIN, mix_cur, inNumSamples);
 		}
 	} else {
-	float * in = ZIN(0);
-	float * out = ZOUT(0);
-		float *amp = MULIN - ZOFF;
-
 		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; mix_cur += mix_slope; );
 		unit->mPrevAdd = nextMix;
+		nova::muladd_vec_simd_r3(OUT(0), IN(0), MULIN, mix_cur, mix_slope, inNumSamples);
 	}
 }
 
@@ -315,9 +306,6 @@ void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
 
 void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 {
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *mix = ADDIN - ZOFF;
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
 
@@ -331,72 +319,63 @@ void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 		}
 	} else {
 		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); amp_cur += amp_slope; );
 		unit->mPrevMul = nextAmp;
+		nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, ADDIN, inNumSamples);
 	}
 }
 
 void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
 {
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
-	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
-	float mix_slope = CALCSLOPE(nextMix, mix_cur);
 
 	if (nextAmp == amp_cur) {
-	if (mix_slope == 0.f) {
-		if (mix_cur == 0.f) {
-				if (amp_cur == 1.f) {
-					// do nothing!
-				} else if (amp_cur == 0.f) {
-					nova::zerovec_simd(OUT(0), inNumSamples);
+		if (nextMix == mix_cur) {
+			if (mix_cur == 0.f) {
+					if (amp_cur == 1.f) {
+						// do nothing!
+					} else if (amp_cur == 0.f)
+						nova::zerovec_simd(OUT(0), inNumSamples);
+					else
+						nova::times_vec_simd(OUT(0), IN(0), amp_cur, inNumSamples);
 				} else {
-			nova::times_vec_simd(OUT(0), IN(0), amp_cur, inNumSamples);
+					if (amp_cur == 1.f)
+						nova::plus_vec_simd(OUT(0), IN(0), mix_cur, inNumSamples);
+					else if (amp_cur == 0.f)
+						nova::setvec_simd(OUT(0), mix_cur, inNumSamples);
+					else
+						nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, mix_cur, inNumSamples);
 				}
-			} else {
-				if (amp_cur == 1.f) {
-					nova::plus_vec_simd(OUT(0), IN(0), mix_cur, inNumSamples);
-				} else if (amp_cur == 0.f) {
-					nova::setvec_simd(OUT(0), mix_cur, inNumSamples);
 		} else {
-			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, mix_cur, inNumSamples);
-		}
-			}
-		} else {
-			if (amp_cur == 1.f) {
-				LOOP(inNumSamples, ZXP(out) = ZXP(in) + mix_cur; mix_cur += mix_slope;);
-			} else if (amp_cur == 0.f) {
-				LOOP(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
-	} else {
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
-			}
+			float mix_slope = CALCSLOPE(nextMix, mix_cur);
+			if (amp_cur == 1.f)
+				nova::plus_vec_simd(OUT(0), IN(0), mix_cur, mix_slope, inNumSamples);
+			else if (amp_cur == 0.f)
+				nova::set_slope_vec_simd(OUT(0), mix_cur, mix_slope, inNumSamples);
+			else
+				nova::muladd_vec_simd_r3(OUT(0), IN(0), amp_cur, mix_cur, mix_slope, inNumSamples);
 			unit->mPrevAdd = nextMix;
 		}
 	} else {
-		if (mix_slope == 0.f) {
-			if (mix_cur == 0.f) {
-				LOOP(inNumSamples, ZXP(out) = ZXP(in) * amp_cur; amp_cur += amp_slope; );
-			} else {
-				LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
-			}
+		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
+		if (nextMix == mix_cur) {
+			if (mix_cur == 0.f)
+				nova::times_vec_simd(OUT(0), IN(0), amp_cur, amp_slope, inNumSamples);
+			else
+				nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, mix_cur, inNumSamples);
 		} else {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; );
-		unit->mPrevAdd = nextMix;
-	}
+			float mix_slope = CALCSLOPE(nextMix, mix_cur);
+			nova::muladd_vec_simd_r2r3(OUT(0), IN(0), mix_cur, mix_slope, amp_cur, amp_slope, inNumSamples);
+			unit->mPrevAdd = nextMix;
+		}
 		unit->mPrevMul = nextAmp;
 	}
 }
 
 void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 {
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
 	float mix_cur = unit->mPrevAdd;
@@ -411,7 +390,7 @@ void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 		}
 	} else {
 		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
+		nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, mix_cur, inNumSamples);
 		unit->mPrevMul = nextAmp;
 	}
 }
@@ -425,9 +404,6 @@ void ampmix_ia_nova(MulAdd *unit, int inNumSamples)
 
 void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
 {
-	float * in = ZIN(0);
-	float * out = ZOUT(0);
-
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
@@ -440,7 +416,7 @@ void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
 		}
 	} else {
 		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
+		nova::muladd_vec_simd_r3(OUT(0), IN(0), amp_cur, mix_cur, mix_slope, inNumSamples);
 		unit->mPrevAdd = nextMix;
 	}
 }
