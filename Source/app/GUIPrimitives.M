@@ -4059,6 +4059,54 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed);
+int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *b = g->sp;
+	
+	//#if SC_DARWIN
+	RgnHandle rgn = GetGrayRgn();
+	Rect screenBounds;
+	GetRegionBounds(rgn, &screenBounds);
+	Point p;
+	float r_screenWidth = 1. / (screenBounds.right - screenBounds.left);
+	float r_screenHeight = 1. / (screenBounds.bottom - screenBounds.top);
+	GetGlobalMouse(&p);
+	float mouseX = (float)p.h * r_screenWidth;
+	float mouseY = (float)p.v * r_screenHeight;
+	//bool mouseButton = Button();
+	/*
+	#else
+
+	# ifdef SC_WIN32
+	int screenWidth  = GetSystemMetrics( SM_CXSCREEN ); 
+	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
+		// default: SM_CX/CYSCREEN gets the size of a primary screen.
+		// lines uncommented below are just for a specially need on multi-display.
+	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN ); 
+	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
+	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
+	float r_screenHeight = 1.f / (float)(screenHeight -1);
+	
+	GetCursorPos(&p);
+	float mouseX = (float)p.x * r_screenWidth;
+	float mouseY = 1.f - (float)p.y * r_screenHeight;
+	bool mouseButton = (GetKeyState(mButton) < 0);
+	# else
+	# endif
+	*/
+	
+    PyrSlot *slots = b->uo->slots;
+    SetFloat(slots+0, mouseX);
+    SetFloat(slots+1, mouseY);
+	//SetBool(slots+2, mouseButton);
+
+    
+    return errNone;
+}
+
 int prRecompile(struct VMGlobals *g, int numArgsPushed);
 int prRecompile(struct VMGlobals *g, int numArgsPushed)
 {
@@ -4268,6 +4316,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_EnableMenuItem", prEnableMenuItem, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemState", prSetMenuItemState, 2, 0);
 	definePrimitive(base, index++, "_SetMenuItemKeyboardEquivalent", prSetMenuItemKeyboardEquivalent, 4, 0);
+	definePrimitive(base, index++, "_Mouse_getCoords", prMouse_getCoords, 4, 0);
+
 	definePrimitive(base, index++, "_Recompile", prRecompile, 1, 0);
 	definePrimitive(base, index++, "_SetDeferredTaskInterval", prSetDeferredTaskInterval, 2, 0);
 
