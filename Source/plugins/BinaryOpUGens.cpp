@@ -492,7 +492,7 @@ extern "C"
 bool ChooseOperatorFunc(BinaryOpUGen *unit);
 
 void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
-{	
+{
 	bool initialized = ChooseOperatorFunc(unit);
 	unit->mPrevA = ZIN0(0);
 	unit->mPrevB = ZIN0(1);
