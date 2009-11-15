@@ -1018,7 +1018,7 @@ elif PLATFORM == 'linux':
         LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 
     if env.has_key('amd64') and env['amd64']:
-        langEnv.Append(LIBPATH="/emul/ia32-linux/usr/lib/",
+        langEnv.Append(LIBPATH="/emul/ia32-linux/usr/lib/,/usr/lib32/",
 		       LINKFLAGS = '-Wl,-rpath,/emul/ia32-linux/usr/lib/')
 
 elif PLATFORM == 'freebsd':
@@ -1382,6 +1382,7 @@ print ' STRIP:                   %s' % yesorno(env['STRIP'])
 print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
 print ' X11:                     %s' % yesorno(features['x11'])
+print ' GPL3:                    %s' % yesorno(env['GPL3'])
 print '------------------------------------------------------------------------'
 
 # ======================================================================
