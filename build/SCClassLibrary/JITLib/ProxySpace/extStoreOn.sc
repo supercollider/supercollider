@@ -32,7 +32,8 @@
 		stream << ("~" ++ key);
 	}
 
-	playNDialog { |bounds|		var editstring, doc;
+	playNDialog { |bounds|
+		var editstring, doc;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
 		editstring = this.asCompileString ++ ".playN(\n"
 			++ "\touts:" + try { this.monitor.outs } ?? { (0..this.numChannels - 1) }  ++ ",\n"
@@ -40,7 +41,8 @@
 			++ "\tvol:" + try { this.monitor.vol } ? 1 ++ "\n);";
 
 		doc = Document("edit outs:", editstring);
-		try { doc.bounds_(bounds) };	// swingosc safe	}
+		try { doc.bounds_(bounds) };	// swingosc safe
+	}
 
 	findInOpenDocuments {
 		var src, str, startSel, doc;
@@ -53,7 +55,58 @@
 			startSel.notNil;
 		};
 		doc !? { doc.front.selectRange(startSel, 0); }
-	}}
+	}
+
+	document{ arg includeSettings=true;
+		var str,str2,multiline,key;
+		str2 = String.streamContents({ arg stream;
+			if( this.objects.size == 1 and: { this.objects.indices.first == 0 }) {
+				str = this.source.envirCompileString ? "";
+				multiline = str.includes(Char.nl);
+				if(multiline){ stream << "(" << Char.nl };
+				if ( this.key.isNil ){
+					stream << "a = NodeProxy.new(s); \n a.source =";
+				}{
+					stream << "~" << this.key << " = ";
+				};
+				str.printOn(stream);
+				stream << ";";
+				if(multiline){ stream << Char.nl << ");" << Char.nl };
+			} {
+				this.objects.keysValuesDo({ arg index, item;
+					var multiline, str;
+					str = item.source.envirCompileString ? "";
+					multiline = str.includes(Char.nl);
+					if(multiline){ stream << "(" << Char.nl };
+					if ( this.key.isNil ){
+						if ( index == 0 ){
+							stream << "a = NodeProxy.new(s)\n";
+						};
+						stream << "a[" << index << "] = ";
+					}{
+						stream << "~" << this.key << "[" << index << "] = ";
+					};
+					str.printOn(stream);
+					stream << ";";
+					if(multiline){ stream << Char.nl << ");" << Char.nl };
+					stream.nl;
+				});
+			};
+			stream.nl;
+			// add settings to compile string
+			if(includeSettings) {
+				if ( this.key.isNil ){
+					this.nodeMap.storeOn(stream, "a", true);
+				}{
+					this.nodeMap.storeOn(stream, "~" ++ this.key, true);
+				}
+			};
+			stream.nl;
+		});
+	^Document.new(("nodeproxy:"++this.key).asString, str2)
+	}
+
+}
 
 
 +BinaryOpPlug {
