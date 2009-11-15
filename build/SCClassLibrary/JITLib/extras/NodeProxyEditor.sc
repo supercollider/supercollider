@@ -118,7 +118,7 @@ NodeProxyEditor {
 				if (mod.isAlt) {
 					try { ProxySpace.findSpace(proxy).document(proxy.key) };
 				} {
-					proxy.findInOpenDocuments
+					proxy.document;
 				}
 			}
 			.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
@@ -230,7 +230,7 @@ NodeProxyEditor {
 							if (mod.isAlt) {
 								try { ProxySpace.findSpace(proxy).document(proxy.key) };
 							} {
-								proxy.findInOpenDocuments
+								proxy.document;
 							}
 						})
 			},
