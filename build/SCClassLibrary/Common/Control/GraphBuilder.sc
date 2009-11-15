@@ -135,7 +135,7 @@ NamedControl {
 				Error("NamedControl: cannot have more than one set of "
 					"fixed lag values in the same control.").throw;
 			} {
-				^res.control;
+				^res.control.unbubble;
 			}
 		};
 
@@ -143,7 +143,7 @@ NamedControl {
 			res.control.lag(lags.asArray)
 		} {
 			res.control
-		}
+		}.unbubble
 	}
 
 	init {
