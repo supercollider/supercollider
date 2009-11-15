@@ -360,9 +360,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_scfft2 = (scfft*)RTAlloc(world, sizeof(scfft));
 		unit->m_scfftR = (scfft*)RTAlloc(world, sizeof(scfft));
 
-		unit->m_outbuf = (float*)RTAlloc(world, fftsize);
-		unit->m_overlapbuf = (float*)RTAlloc(world, insize);
-
 		memset(unit->m_outbuf, 0, fftsize);
 		memset(unit->m_overlapbuf, 0, insize);
 
