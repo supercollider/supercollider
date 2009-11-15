@@ -1,12 +1,18 @@
 // document for non-current proxyspaces is not correct yet.
-NodeProxyEditor { 		classvar <>menuHeight=18;	var 	<proxy;
+
+NodeProxyEditor { 
+	
+	classvar <>menuHeight=18;
+
+	var 	<proxy;
 	var <skin, <font;
 
 	var <>w, <zone, <nameView, <typeChanView, <monitor,
 		<>nSliders, <edits, <sinks, <scrolly, skipjack;
 	var buttonFuncs, pauseBut, sendBut;
 
-	var 	<currentSettings=#[], 	<prevSettings=#[], <editKeys=#[], <>ignoreKeys=#[];	var <>replaceKeys;		// a dict for slider names to be replaced
+	var 	<currentSettings=#[], 	<prevSettings=#[], <editKeys=#[], <>ignoreKeys=#[];
+	var <>replaceKeys;		// a dict for slider names to be replaced
 	var 	<tooManyKeys = false, <keysRotation = 0;
 	var oldType = "-";
 
@@ -16,10 +22,15 @@
 			Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]);
 		};
 	}
-		*new { arg proxy, nSliders=16, win, comp, 		extras=[\CLR, \reset, \scope, \doc, \end, \fade],
+	
+	*new { arg proxy, nSliders=16, win, comp, 
+		extras=[\CLR, \reset, \scope, \doc, \end, \fade],
 		monitor=true, sinks=true, morph=false;
-				^super.new.nSliders_(nSliders)
-			.init(win, comp, extras, monitor, sinks, morph)			.proxy_(proxy);	}
+		
+		^super.new.nSliders_(nSliders)
+			.init(win, comp, extras, monitor, sinks, morph)
+			.proxy_(proxy);
+	}
 
 	proxy_ { arg px;
 		if (px.isNil) {
@@ -27,9 +38,16 @@
 			nameView.object_(px).string_('-');
 			typeChanView.string_('-');
 			this.fullUpdate;
-		} { 			if (px.isKindOf(NodeProxy)) { 				proxy = px;				nameView.object_(px).string_(px.key ? 'anon proxy');				typeChanView.string_(proxy.typeStr);
-				if (monitor.notNil) { monitor.proxy_(proxy) };				this.fullUpdate;			}
-		}	}
+		} { 
+			if (px.isKindOf(NodeProxy)) { 
+				proxy = px;
+				nameView.object_(px).string_(px.key ? 'anon proxy');
+				typeChanView.string_(proxy.typeStr);
+				if (monitor.notNil) { monitor.proxy_(proxy) };
+				this.fullUpdate;
+			}
+		}
+	}
 
 	name { ^nameView.string.asSymbol }
 	name_ { |key| nameView.string_(key.asString); }
@@ -37,25 +55,64 @@
 		// backwards compatibility
 	pxKey { ^this.name }
 	pxKey_ { |key| ^this.name_(key) }
-	clear {		proxy = nil; 		{ nameView.object_(nil).string_("-"); }.defer;		this.fullUpdate;	}
-			init { arg win, comp, extras, monitor, sinks, morph;
-						var bounds;						skin = GUI.skins.jit; 				font = Font.new(*skin.fontSpecs);				bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);				win = win ?? {
+
+	clear {
+		proxy = nil; 
+		{ nameView.object_(nil).string_("-"); }.defer;
+		this.fullUpdate;
+	}
+		
+	init { arg win, comp, extras, monitor, sinks, morph;
+				
+		var bounds;				
+		skin = GUI.skins.jit; 		
+		font = Font.new(*skin.fontSpecs);		
+		bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);		
+		win = win ?? {
 			// "NodeProxyEditor: making internal win.".postln;
 			Window(this.class.name, bounds.resizeBy(4, 4))
-		};		w = win; 			zone = comp ?? {
+		};
+		w = win; 	
+		zone = comp ?? {
 			// "NodeProxyEditor: making internal zone.".postln;
 			CompositeView(w, bounds);
-		};		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(0@0) };		w.view.background = skin.background;		zone.background = skin.foreground;		w.front;
+		};
+		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(0@0) };
+		w.view.background = skin.background;
+		zone.background = skin.foreground;
+		w.front;
 		replaceKeys = replaceKeys ?? { () };
 
 		this.makeButtonFuncs;
-				this.makeTopLine(extras);		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });		this.makeSinksSliders(sinks);
-				this.makeSkipJack; 	}
-		makePxMon { 		monitor = ProxyMonitorGui(proxy, zone,
+		
+		this.makeTopLine(extras);
+		if (monitor, { this.makePxMon; zone.decorator.nextLine.shift(0, 4); });
+		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });
+
+		this.makeSinksSliders(sinks);
+		
+		this.makeSkipJack; 
+	}
+	
+	makePxMon { 
+		monitor = ProxyMonitorGui(proxy, zone,
 			zone.bounds.width - 4 @ (skin.buttonHeight),
-			showName: false, makeWatcher: false);	}	makeMorph {
-		inform("NodeProxyEditor: preset/morph not finished yet.");//		zone.decorator.shift(0, 2);//		StaticText(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));//		zone.decorator.shift(0, 2);//		PxPreset(proxy, zone);	}		makeTopLine { |extras|
-		nameView = DragBoth(zone, 90@menuHeight)			.font_(font).align_(\center)			.background_(Color.white);
+			showName: false, makeWatcher: false);
+	}
+
+	makeMorph {
+		inform("NodeProxyEditor: preset/morph not finished yet.");
+//		zone.decorator.shift(0, 2);
+//		StaticText(zone, Rect(0,0, 330, 1)).background_(Color.gray(0.2));
+//		zone.decorator.shift(0, 2);
+//		PxPreset(proxy, zone);
+	}
+	
+	makeTopLine { |extras|
+
+		nameView = DragBoth(zone, 90@menuHeight)
+			.font_(font).align_(\center)
+			.background_(Color.white);
 		nameView.setBoth_(false)
 			.mouseDownAction_ { |drag, x, y, mod|
 				if (mod.isAlt) {
@@ -72,10 +129,33 @@
 			buttonFuncs[butkey].value;
 		};
 		
-		zone.decorator.nextLine.shift(0, 4);	}
-		makeSinksSliders { |bigSinks|		var sinkWidth, lay;
-				sinkWidth = if (bigSinks, 40, 0); 	// invisibly small		#edits, sinks = Array.fill(nSliders, { arg i;			var ez, sink;			zone.decorator.nextLine; 			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))				.string_("-").align_(\center).visible_(false);							sink.action_({ arg sink; var px;				if (sink.object.notNil) { 					px = currentEnvironment[sink.object.asSymbol];					if(px.isKindOf(NodeProxy)) {						proxy.map(editKeys[i], px);						this.fullUpdate;					}				}			}); 			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
-			ez.visible_(false);			ez.labelView.font_(font).align_(\center);
+		zone.decorator.nextLine.shift(0, 4);
+	}
+	
+	makeSinksSliders { |bigSinks|
+		var sinkWidth, lay;
+		
+		sinkWidth = if (bigSinks, 40, 0); 	// invisibly small
+		#edits, sinks = Array.fill(nSliders, { arg i;
+			var ez, sink;
+			zone.decorator.nextLine; 
+
+			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))
+				.string_("-").align_(\center).visible_(false);
+				
+			sink.action_({ arg sink; var px;
+				if (sink.object.notNil) { 
+					px = currentEnvironment[sink.object.asSymbol];
+					if(px.isKindOf(NodeProxy)) {
+						proxy.map(editKeys[i], px);
+						this.fullUpdate;
+					}
+				}
+			}); 
+
+			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
+			ez.visible_(false);
+			ez.labelView.font_(font).align_(\center);
 
 			ez.sliderView.keyDownAction = { |view, char,modifiers,unicode,keycode|
 				if (unicode == 127) { // delete key
@@ -84,7 +164,8 @@
 					view.defaultKeyDownAction(char,modifiers,unicode,keycode);
 				};
 			};
-			[ez, sink]		}).flop;
+			[ez, sink]
+		}).flop;
 
 		lay = zone.decorator;
 		lay.left_(lay.bounds.right - 20).top_(lay.bounds.top + 48);
@@ -202,7 +283,23 @@
 
 		);
 	}
-		makeSkipJack {				skipjack = SkipJack(			{ this.checkUpdate }, 			0.2, 			{ w.isClosed }, 			this.class.name		); 		// w.onClose_({ skipjack.stop; });		this.runUpdate;	}	getCurrentKeysValues {  		if (proxy.isNil, {^[] });		currentSettings = proxy.getKeysValues(except: ignoreKeys);		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 	}
+	
+	makeSkipJack {		
+		skipjack = SkipJack(
+			{ this.checkUpdate }, 
+			0.2, 
+			{ w.isClosed }, 
+			this.class.name
+		); 
+		// w.onClose_({ skipjack.stop; });
+		this.runUpdate;
+	}
+
+	getCurrentKeysValues {  
+		if (proxy.isNil, {^[] });
+		currentSettings = proxy.getKeysValues(except: ignoreKeys);
+		editKeys = currentSettings.collect({ |list| list.first.asSymbol }); 
+	}
 	checkTooMany {
 		var oversize = (editKeys.size - nSliders).max(0);
 		tooManyKeys = oversize > 0;
@@ -222,8 +319,12 @@
 		};
 		scrolly.value_( keysRotation);
 	}
-		checkUpdate { 		var oldKeys, newType; 		oldKeys = editKeys;
-				this.getCurrentKeysValues;
+	
+	checkUpdate { 
+		var oldKeys, newType; 
+		oldKeys = editKeys;
+		
+		this.getCurrentKeysValues;
 		this.checkTooMany;
 
 		// [\oldKeys, oldKeys, \editKeys, editKeys].printAll;
@@ -242,8 +343,18 @@
 			if (sendBut.notNil) {
 				sendBut.value_((proxy.notNil and: { proxy.objects.notEmpty }).binaryValue)
 			};
-				if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });	}		fullUpdate { 		this.getCurrentKeysValues;
-		this.checkTooMany;		this.updateAllEdits;	}		updateVals {		var sl, val, mapKey;
+		
+		if ( (editKeys != oldKeys), { this.updateAllEdits }, {  this.updateVals });
+	}
+	
+	fullUpdate { 
+		this.getCurrentKeysValues;
+		this.checkTooMany;
+		this.updateAllEdits;
+	}
+	
+	updateVals {
+		var sl, val, mapKey;
 
 	//	"updateVals : ".postln;
 		if (currentSettings == prevSettings) {
@@ -253,12 +364,33 @@
 
 	//	"values have changed - updating edits.".postln;
 
-		editKeys.do { arg key, i;			sl = edits[i];			// editKeys and currentSettings are in sync.			val = currentSettings[i][1].unbubble;
+		editKeys.do { arg key, i;
+			sl = edits[i];
+			// editKeys and currentSettings are in sync.
+			val = currentSettings[i][1].unbubble;
 			if (val != try { prevSettings[i][1] }) {
 					// disable for arrayed controls
-				sl.enabled_(val.size <= 1);		 				// when in doubt, use this:				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];				if(sl.numberView.hasFocus.not) {					if (val.isKindOf(SimpleNumber), { 												sl.value_(val.value);						sl.labelView.string_(this.replaceName(key));						sinks[i].string_("-");					}, { 						if (val.isKindOf(BusPlug), { 							mapKey = currentEnvironment.findKeyForValue(val) ? "";							sinks[i].object_(mapKey).string_(mapKey);							sl.labelView.string = "->" + key;						});					});				};
-			};		};
-		prevSettings = currentSettings; 	}	replaceName { |key|
+				sl.enabled_(val.size <= 1);		 
+				// when in doubt, use this:
+				//	val = (currentSettings.detect { |set| set[0] == key } ? [])[1];
+				if(sl.numberView.hasFocus.not) {
+					if (val.isKindOf(SimpleNumber), { 						
+						sl.value_(val.value);
+						sl.labelView.string_(this.replaceName(key));
+						sinks[i].string_("-");
+					}, { 
+						if (val.isKindOf(BusPlug), { 
+							mapKey = currentEnvironment.findKeyForValue(val) ? "";
+							sinks[i].object_(mapKey).string_(mapKey);
+							sl.labelView.string = "->" + key;
+						});
+					});
+				};
+			};
+		};
+		prevSettings = currentSettings; 
+	}
+	replaceName { |key|
 		var replaced;
 		if (replaceKeys.isNil) { ^key };
 		replaced = replaceKeys[key.asSymbol];
@@ -266,7 +398,8 @@
 	//	"NPXE: replacing % with %.".format(key.asCompileString, replaced.asCompileString).postln;
 		^replaced;
 
-	}	updateAllEdits {
+	}
+	updateAllEdits {
 	//	var keyPressed = false;
 		if (proxy.isNil) {
 			[sinks, edits].do(_.do(_.visible_(false)));
@@ -339,4 +472,162 @@
 			};
 		};
 		// this.adjustWindowSize;
-	}		runUpdate {  skipjack.start }	stopUpdate { skipjack.stop }}RecordProxyMixer {	var <>proxymixer, bounds;	var <recorder, <recType=\mix;	var <>recHeaderFormat, <>recSampleFormat, <preparedForRecording=false;	var skipjack, <display;		*new { arg proxymixer, bounds; 		^super.newCopyArgs(proxymixer, bounds).initDefaults.makeWindow	}	initDefaults {		recHeaderFormat = recHeaderFormat ?? { this.server.recHeaderFormat };		recSampleFormat = recSampleFormat ?? { this.server.recSampleFormat };	}		prepareForRecord {		var numChannels=0, path, proxies, func;		proxies = this.selectedKeys.collect { arg key; this.at(key) };		if(proxies.isEmpty) { "NodeProxyEditor: no proxies.".postln; ^nil };						if(recType == \multichannel)  {			proxies.do {  |el| numChannels = numChannels + el.numChannels };			func = { proxies.collect(_.ar).flat }; // no vol for now!		} {			proxies.do {  |el| numChannels = max(numChannels, el.numChannels) };			func = { var sum=0;				proxies.do { |el| sum = sum +.s el.ar };				sum 			}		};				path = thisProcess.platform.recordingsDir +/+ "SC_PX_" ++ numChannels ++ "_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;		recorder = RecNodeProxy.audio(this.server, numChannels);		recorder.source = func;		recorder.open(path, recHeaderFormat, recSampleFormat);		preparedForRecording = true;		^numChannels	}		font { ^GUI.font.new(*GUI.skins.jit.fontSpecs) }	skin { ^GUI.skins.jit }		server { ^proxymixer.proxyspace.server }		removeRecorder {		recorder !? {			recorder.close;			recorder.clear;			recorder = nil;		};		preparedForRecording = false;	}		record { arg paused=false;		if(recorder.notNil) {recorder.record(paused) };	}		pauseRecorder { recorder !? {recorder.pause} }	unpauseRecorder { 		recorder !? { if(recorder.isRecording) { recorder.unpause } { "not recording".postln } } 	}		selectedKeys {  ^proxymixer.selectedKeys }	at { arg key; ^proxymixer.proxyspace.envir.at(key) }	selectedKeysValues {		^this.selectedKeys.collect { |key| 					var proxy = this.at(key);					[ key, proxy.numChannels ]		}.flat;	}		makeWindow {		var rw, recbut, pbut, numChannels, recTypeChoice;		var font = this.font;				rw = Window("recording:" + proxymixer.title, bounds);		rw.view.decorator = FlowLayout(rw.view.bounds.insetBy(20, 20));		rw.onClose = { this.removeRecorder; this.stopUpdate; };		rw.view.background = this.skin.background;						recbut = Button(rw, Rect(0, 0, 80, 20)).states_([			["prepare rec", this.skin.fontcolor, Color.clear],			["record >", Color.red, Color.gray(0.1)],			["stop []", this.skin.fontcolor, Color.red]		]).action_({|b|			var list;			switch(b.value,				1, { 					numChannels = this.prepareForRecord;					if(numChannels.isNil) { b.value = 0; pbut.value = 0 } 				},				2, { this.record(pbut.value == 1) },				0, { this.removeRecorder  }			);			if(b.value == 1 and: { numChannels.notNil }) {				list = this.selectedKeysValues;				this.displayString = format("recording % channels: %", numChannels, list.join(" "));			};					}).font_(font);				pbut = Button(rw, Rect(0, 0, 80, 20)).states_([			["pause", this.skin.fontcolor, Color.clear],			[">", Color.red, Color.gray(0.1)]		]).action_({|b|			if(b.value == 1) {  this.pauseRecorder } { this.unpauseRecorder }				}).font_(font);				recTypeChoice = PopUpMenu(rw, Rect(0, 0, 110, 20))				.items_([ \mix, \multichannel ])				.action_({ arg view; 					recType = view.items[view.value]; 					if(recbut.value != 0) { recbut.valueAction = 0 } 				})				.font_(font);		recTypeChoice.value = 1;		Button(rw, Rect(0, 0, 60, 20))				.states_([["cancel", this.skin.fontcolor, Color.clear]])				.action_({ if(recbut.value != 0) { recbut.valueAction = 0 } })				.font_(font);			rw.view.decorator.nextLine;		display = StaticText(rw, Rect(30, 40, 300, 20)).font_(font);		rw.front;		this.makeSkipJack;		this.runUpdate;				^rw	}	displayString_ { arg str;		display.string = str;	}		updateZones {		if(preparedForRecording.not) {			this.displayString = format("proxies: %", this.selectedKeysValues.join(" "));		}	}	title {  ^"recorder for" + proxymixer.title }	runUpdate { skipjack.start; }	stopUpdate { skipjack.stop }	makeSkipJack {				// stoptest should check window.		skipjack = SkipJack({ this.updateZones }, 0.5, name: this.title);	}}
+	}
+	
+	runUpdate {  skipjack.start }
+	stopUpdate { skipjack.stop }
+}
+
+
+
+RecordProxyMixer {
+	var <>proxymixer, bounds;
+	var <recorder, <recType=\mix;
+	var <>recHeaderFormat, <>recSampleFormat, <preparedForRecording=false;
+	var skipjack, <display;
+	
+	*new { arg proxymixer, bounds; 
+		^super.newCopyArgs(proxymixer, bounds).initDefaults.makeWindow
+	}
+	initDefaults {
+		recHeaderFormat = recHeaderFormat ?? { this.server.recHeaderFormat };
+		recSampleFormat = recSampleFormat ?? { this.server.recSampleFormat };
+	}
+	
+	prepareForRecord {
+		var numChannels=0, path, proxies, func;
+		proxies = this.selectedKeys.collect { arg key; this.at(key) };
+		if(proxies.isEmpty) { "NodeProxyEditor: no proxies.".postln; ^nil };
+		
+		
+		if(recType == \multichannel)  {
+			proxies.do {  |el| numChannels = numChannels + el.numChannels };
+			func = { proxies.collect(_.ar).flat }; // no vol for now!
+		} {
+			proxies.do {  |el| numChannels = max(numChannels, el.numChannels) };
+			func = { var sum=0;
+				proxies.do { |el| sum = sum +.s el.ar };
+				sum 
+			}
+		};
+		
+		path = thisProcess.platform.recordingsDir +/+ "SC_PX_" ++ numChannels ++ "_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
+		recorder = RecNodeProxy.audio(this.server, numChannels);
+		recorder.source = func;
+		recorder.open(path, recHeaderFormat, recSampleFormat);
+		preparedForRecording = true;
+		^numChannels
+	}
+	
+	font { ^GUI.font.new(*GUI.skins.jit.fontSpecs) }
+	skin { ^GUI.skins.jit }
+	
+	server { ^proxymixer.proxyspace.server }
+	
+	removeRecorder {
+		recorder !? {
+			recorder.close;
+			recorder.clear;
+			recorder = nil;
+		};
+		preparedForRecording = false;
+	}
+	
+	record { arg paused=false;
+		if(recorder.notNil) {recorder.record(paused) };
+	}
+	
+	pauseRecorder { recorder !? {recorder.pause} }
+	unpauseRecorder { 
+		recorder !? { if(recorder.isRecording) { recorder.unpause } { "not recording".postln } } 
+	}
+	
+	selectedKeys {  ^proxymixer.selectedKeys }
+	at { arg key; ^proxymixer.proxyspace.envir.at(key) }
+	selectedKeysValues {
+		^this.selectedKeys.collect { |key| 
+					var proxy = this.at(key);
+					[ key, proxy.numChannels ]
+		}.flat;
+	}
+	
+	makeWindow {
+		var rw, recbut, pbut, numChannels, recTypeChoice;
+		var font = this.font;
+		
+		rw = Window("recording:" + proxymixer.title, bounds);
+		rw.view.decorator = FlowLayout(rw.view.bounds.insetBy(20, 20));
+		rw.onClose = { this.removeRecorder; this.stopUpdate; };
+		rw.view.background = this.skin.background;	
+			
+		recbut = Button(rw, Rect(0, 0, 80, 20)).states_([
+			["prepare rec", this.skin.fontcolor, Color.clear],
+			["record >", Color.red, Color.gray(0.1)],
+			["stop []", this.skin.fontcolor, Color.red]
+		]).action_({|b|
+			var list;
+			switch(b.value,
+				1, { 
+					numChannels = this.prepareForRecord;
+					if(numChannels.isNil) { b.value = 0; pbut.value = 0 } 
+				},
+				2, { this.record(pbut.value == 1) },
+				0, { this.removeRecorder  }
+			);
+			if(b.value == 1 and: { numChannels.notNil }) {
+				list = this.selectedKeysValues;
+				this.displayString = format("recording % channels: %", numChannels, list.join(" "));
+			};
+			
+		}).font_(font);
+		
+		pbut = Button(rw, Rect(0, 0, 80, 20)).states_([
+			["pause", this.skin.fontcolor, Color.clear],
+			[">", Color.red, Color.gray(0.1)]
+		]).action_({|b|
+			if(b.value == 1) {  this.pauseRecorder } { this.unpauseRecorder }
+		
+		}).font_(font);
+		
+		recTypeChoice = PopUpMenu(rw, Rect(0, 0, 110, 20))
+				.items_([ \mix, \multichannel ])
+				.action_({ arg view; 
+					recType = view.items[view.value]; 
+					if(recbut.value != 0) { recbut.valueAction = 0 } 
+				})
+				.font_(font);
+		recTypeChoice.value = 1;
+		Button(rw, Rect(0, 0, 60, 20))
+				.states_([["cancel", this.skin.fontcolor, Color.clear]])
+				.action_({ if(recbut.value != 0) { recbut.valueAction = 0 } })
+				.font_(font);
+
+	
+		rw.view.decorator.nextLine;
+		display = StaticText(rw, Rect(30, 40, 300, 20)).font_(font);
+		rw.front;
+		this.makeSkipJack;
+		this.runUpdate;
+		
+		^rw
+	}
+
+	displayString_ { arg str;
+		display.string = str;
+	}
+	
+	updateZones {
+		if(preparedForRecording.not) {
+			this.displayString = format("proxies: %", this.selectedKeysValues.join(" "));
+		}
+	}
+
+	title {  ^"recorder for" + proxymixer.title }
+
+	runUpdate { skipjack.start; }
+	stopUpdate { skipjack.stop }
+	makeSkipJack {				// stoptest should check window.
+		skipjack = SkipJack({ this.updateZones }, 0.5, name: this.title);
+	}
+}
+
