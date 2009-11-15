@@ -135,7 +135,7 @@ NamedControl {
 				Error("NamedControl: cannot have more than one set of "
 					"fixed lag values in the same control.").throw;
 			} {
-				^res.control.unbubble;
+				^res.control;
 			}
 		};
 
@@ -143,7 +143,7 @@ NamedControl {
 			res.control.lag(lags.asArray)
 		} {
 			res.control
-		}.unbubble
+		}
 	}
 
 	init {
@@ -155,24 +155,24 @@ NamedControl {
 		};
 
 		if(fixedLag && lags.notNil && prefix.isNil) {
-			buildSynthDef.addKr(name, values);
-			control = LagControl.kr(values.flat, lags);
+			buildSynthDef.addKr(name, values.unbubble);
+			control = LagControl.kr(values.flat.unbubble, lags);
 		} {
 			if(prefix == $a or: {rate === \audio}) {
-				buildSynthDef.addAr(name, values);
-				control = AudioControl.ar(values.flat);
+				buildSynthDef.addAr(name, values.unbubble);
+				control = AudioControl.ar(values.flat.unbubble);
 
 			} {
 				if(prefix == $t or: {rate === \trigger}) {
-					buildSynthDef.addTr(name, values);
-					control = TrigControl.kr(values.flat);
+					buildSynthDef.addTr(name, values.unbubble);
+					control = TrigControl.kr(values.flat.unbubble);
 				} {
 					if(prefix == $i or: {rate === \scalar}) {
 						buildSynthDef.addIr(name, values);
-						control = Control.ir(values.flat);
+						control = Control.ir(values.flat.unbubble);
 					} {
-						buildSynthDef.addKr(name, values);
-						control = Control.kr(values.flat);
+						buildSynthDef.addKr(name, values.unbubble);
+						control = Control.kr(values.flat.unbubble);
 					}
 				}
 			};
