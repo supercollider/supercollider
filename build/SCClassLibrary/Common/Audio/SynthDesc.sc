@@ -331,7 +331,7 @@ SynthDescLib {
 	init { |inServers|
 		all.put(name.asSymbol, this);
 		synthDescs = IdentityDictionary.new;
-		servers = IdentitySet.with(*debug(inServers ? { Server.default }, "initializing servers"))
+		servers = IdentitySet.with(*inServers ? { Server.default })
 	}
 	*initClass {
 		Class.initClassTree(Server);
