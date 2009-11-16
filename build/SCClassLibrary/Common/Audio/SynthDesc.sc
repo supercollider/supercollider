@@ -326,11 +326,12 @@ SynthDescLib {
 
 	*new { arg name, servers;
 		if (name.isNil) { "SynthDescLib must have a name".error; ^nil }
-		^super.new.name_(name).servers_(servers ? {Server.default}).init;
+		^super.new.name_(name).init(servers);
 	}
-	init {
+	init { |inServers|
 		all.put(name.asSymbol, this);
 		synthDescs = IdentityDictionary.new;
+		servers = IdentitySet.with(*debug(inServers ? { Server.default }, "initializing servers"))
 	}
 	*initClass {
 		Class.initClassTree(Server);
@@ -351,7 +352,7 @@ SynthDescLib {
 		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
 	}
 	addServer { |server|
-		servers = servers.add(server).as(IdentityBag).asArray; // one server only once.
+		servers = servers.add(server); // IdentitySet = one server only once.
 	}
 	removeServer { |server|
 		servers.remove(server);
