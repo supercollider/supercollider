@@ -47,6 +47,11 @@ SCTextView : SCView{
 	setStringColor{arg color, rangeStart = -1, rangeSize = 0;
 		this.setProperty(\setTextColor, [color,rangeStart, rangeSize]);
 	}
+	
+	syntaxColorize {
+		this.setProperty(\setSyntaxColors);
+	}
+	
 	font_ {arg afont;
 		font = afont;
 		this.setFont(font, -1, 0)

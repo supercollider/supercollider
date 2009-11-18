@@ -1436,6 +1436,11 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         return errNone;
 	}
 	
+	if (strcmp(name, "setSyntaxColors")==0) {
+		SyntaxColorize(mTextView);
+		return errNone; 
+	}
+	
 	return SCView::setProperty(symbol, slot);
 }
 
