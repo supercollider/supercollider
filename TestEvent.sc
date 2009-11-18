@@ -4,6 +4,8 @@ UnitTest.gui
 */
 TestEvent : UnitTest {
 	
+	var prevMsg;
+	
 	test_equality {
 		var a,b,c, x, y, keys, values;
 		
@@ -29,10 +31,52 @@ TestEvent : UnitTest {
 		
 		this.assert(x == y, "an Event remains invariant under transformation to envirPairs");
 		
+	}
+	
+	test_server_messages {
+		// type note
+		var event = (
+			type: \note, 
+			instrument: \xxx_test, 
+			server: this, 
+			note: 0,
+			octave: 6, 
+			ctranspose: 1,
+			zzzz: 0
+		);
+		var i, msg1;
 		
+		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
+			
+		}).memStore;
 		
+		this.assert(SynthDescLib.global.at(\xxx_test).canFreeSynth.not, 
+			"SynthDesc detects that Synth can't free itself");
+		
+		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
+			EnvGen.kr(Env.asr, gate, doneAction:2)
+		}).memStore;
+		
+		this.assert(SynthDescLib.global.at(\xxx_test).canFreeSynth, 
+			"SynthDesc detects that Synth can free itself");
+		
+		event.play;
+		0.5.wait;
+		
+		msg1 = prevMsg[0];
+		i = msg1.indexOf(\freq);
+		this.assert(msg1[i+1].cpsmidi == 73, "note 0 octave 6 ctranspose 1 equals midinote 73");
+		this.assert(msg1[4] == 1, "synth created in root node");
+		this.assert(msg1.includes(\zzzz), "SynthDesc provides parameters to send in message");
+		this.assert(event[\hasGate] == true, "Event detects gate in SynthDesc");
+		prevMsg = nil;
 	}
 		
+	sendMsg { |... args| prevMsg = prevMsg.add(args) }
+	sendBundle { |latency, args| prevMsg = prevMsg.add(args) }
+
+	nextNodeID { ^-1 }
+	latency { ^0.2 }
 	
 }
 
