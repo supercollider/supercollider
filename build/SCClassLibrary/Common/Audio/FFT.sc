@@ -11,19 +11,40 @@ FFT : PV_ChainUGen
 
 IFFT : UGen
 {
+	var siblings;
 	*new { | buffer, wintype = 0, winsize=0|
 		^this.ar(buffer, wintype, winsize)
 	}
 
 	*ar { | buffer, wintype = 0, winsize=0|
-		^this.multiNew('audio', buffer, wintype, winsize)
+		^this.multiNew('audio', buffer, wintype, winsize).do({|ifft| _.initSiblings});
 	}
 
 	*kr { | buffer, wintype = 0, winsize=0|
-		^this.multiNew('control', buffer, wintype, winsize)
+		^this.multiNew('control', buffer, wintype, winsize).do({|ifft| _.initSiblings});
 	}
-
+	
+	initSiblings { siblings = Set.new; }
+	
+	removeAntecedent { arg ugen;
+		antecedents.remove(ugen);
+		siblings = siblings.addAll(ugen.descendants);
+		this.makeAvailable;
+	}
+	
+	makeAvailable {
+		var ind;
+		if (antecedents.size == 0, {	
+			ind = synthDef.available.detectIndex({|av|
+				siblings.includes(av) || siblings.includesAny(av.descendants)
+			}) ? synthDef.available.size;
+			
+			synthDef.available = synthDef.available.insert(ind, this);
+			siblings = nil;
+		});
+	}
 }
+
 PV_MagAbove : PV_ChainUGen
 {
 	*new { arg buffer, threshold = 0.0;
