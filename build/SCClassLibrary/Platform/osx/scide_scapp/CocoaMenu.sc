@@ -168,7 +168,7 @@ SCMenuSeparator : CocoaMenuItem {
 
 		parent = argparent;
 		isBranch = false;
-		this.prAddMenuSeparator(argparent, argindex.postln);
+		this.prAddMenuSeparator(argparent, argindex);
 		if(parent.notNil && (parent != 'Help')) { parent.addChild(this) }
 			{ topLevelItems = topLevelItems.add(this) };
 	}
