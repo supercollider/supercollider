@@ -5,18 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #0024b0}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #932919}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #002cab}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #872c1c}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; min-height: 16.0px}
-span.s1 {color: #0000ff}
-span.s2 {color: #0024b0}
+span.s1 {color: #0024f8}
+span.s2 {color: #002cab}
 span.s3 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -32,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are <a href="../Math/Integer.html"><span class="s1">Integer</span></a>, <a href="../Math/Float.html"><span class="s1">Float</span></a>, <a href="../Core/Symbol.html"><span class="s1">Symbol</span></a>, <a href="../Core/True.html"><span class="s1">True</span></a>, <a href="../Core/False.html"><span class="s1">False</span></a>, <a href="../Core/Nil.html"><span class="s1">Nil</span></a>, <a href="../Math/Infinitum.html"><span class="s1">Infinitum</span></a>, <a href="../Core/Char.html"><span class="s1">Char</span></a>, <a href="../GUI/GUI-Tools/Color.html"><span class="s1">Color</span></a>.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="Apple-tab-span">	</span>Instance variables declaration lists occur after the open curly bracket of the class definition and are preceeded by the reserved word <b>var</b>. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Instance variables declaration lists occur after the open curly bracket of the class definition and are preceeded by the reserved word <b>var</b>. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil. Instance variables that are immutable are defined by the reserved word <b>const</b>.</p>
 <p class="p2"><br></p>
 <p class="p3"><span class="Apple-tab-span">	</span>Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class. A <b>getter</b> message is a message with the same name as the variable which returns the value of that variable when sent to the receiver. A <b>setter</b> message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message. Getter and setter methods may be defined in the declaration of the instance variable. A getter message for an instance variable is created by typing a less than sign &lt; before the variable name. A setter message is created by typing a greater than &gt; sign before the variable name. If both occur then they must occur in the order &lt;&gt;.</p>
 <p class="p2"><br></p>
@@ -61,7 +61,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Class Variables</b></p>
 <p class="p2"><br></p>
-<p class="p3">Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceeded by the reserved word <b>classvar</b> and may be interspersed with instance variable declaration lists. Class variables like instance variables may only be directly accessed by methods of the class. Class variables may also have getter and setter methods created for them using the less than &lt; and greater than &gt; symbols.</p>
+<p class="p3"><span class="Apple-tab-span">	</span>Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceeded by the reserved word <b>classvar</b> and may be interspersed with instance variable declaration lists. Class variables like instance variables may only be directly accessed by methods of the class. Class variables may also have getter and setter methods created for them using the less than &lt; and greater than &gt; symbols.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Instance Methods</b></p>
