@@ -19,6 +19,8 @@ Headlines:
 * 2009-10-29 improve OSC message correctness: for convenience, sclang allows command names as symbols with no leading slash e.g. \g_new. To improve compliance with the OSC standard, the leading slash is now added to those symbols before dispatch - ds
 * 2009-11-04 new SCAnimationView and update of deferredTaskInterval from 0.038 to 0.01667 - fo
 * 2009-11-07 use nova-simd framework for performance improvements of unit generators - tb
+* 2009-11-21 Event type note supports polyphonic sustain, lag and timingOffset, and responds correctly to free and release. Add grain event type. -jr
+
 
 Bugfixes:
 ---------
