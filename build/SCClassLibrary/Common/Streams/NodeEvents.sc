@@ -62,7 +62,7 @@ Here is a simple example of its use:
 
 	sendOSC { | msg |
 		if (this[\isPlaying]) {
-			this[\server].sendBundle( this[\latency],  *(msg.flop) )
+			this[\server].sendBundle(this[\latency],  *(msg.flop) )
 		}
 	}
 	set { | ... args |
@@ -73,10 +73,11 @@ Here is a simple example of its use:
 		}
 	}
 
-	stop { this.use { ~stop.value }  }
-	pause { this.use { ~pause.value }  }
-	resume { this.use { ~resume.value }  }
-	release { this.use { ~release.value }  }
+	stop { this.use { ~stopServerNode.value }  }
+	pause { this.use { ~pauseServerNode.value }  }
+	resume { this.use { ~resumeServerNode.value }  }
+	release { |releaseTime| this.use { ~releaseServerNode.value(releaseTime) }  }
+	free { this.use { ~freeServerNode.value }  }
 
 	synth {
 		this.parent = Event.parentEvents[\synthEvent];
