@@ -275,7 +275,7 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 	SETUP_IN(1)
 
 	float *out = OUT(0);
-	uint32_t framew = unit->m_framewritten;
+	uint32 framew = unit->m_framewritten;
 
 //	printf("Start frames %i %i\n", unit->m_framewritten, framew );
 

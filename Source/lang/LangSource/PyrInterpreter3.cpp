@@ -356,7 +356,9 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 #endif
 	//tellPlugInsAboutToRun();
 
+#ifndef SC_WIN32
 	signal(SIGUSR1,handleSigUsr1);
+#endif
 
 	assert((g->gc->SanityCheck()));
 #if SANITYCHECKLITE
@@ -517,7 +519,11 @@ void Interpret(VMGlobals *g)
 	if (setjmp(g->escapeInterpreter) != 0) {
 		return;
 	}
+#ifndef SC_WIN32
 	while (running) {  // not going to indent body to save line space
+#else
+	while (true) {
+#endif
 
 #if CHECK_MAX_STACK_USE
 	int stackDepth = sp - g->sp + 1;
@@ -2322,7 +2328,9 @@ void Interpret(VMGlobals *g)
 #endif
 	} // switch(op1)
 	} // end while(running)
+#ifndef SC_WIN32
 	running = true; // reset the signal
+#endif
 	g->sp = sp; g->ip = ip;
 }
 
