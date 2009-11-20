@@ -4,9 +4,10 @@ UnitTest.gui
 */
 TestEvent : UnitTest {
 	
-	var prevMsg;
+	var prevMsg, prevLatency;
 	
 	test_equality {
+	
 		var a,b,c, x, y, keys, values;
 		
 		a = (a: 100, b: 200, c: [1, 2, 3]);
@@ -42,9 +43,12 @@ TestEvent : UnitTest {
 			note: 0,
 			octave: 6, 
 			ctranspose: 1,
-			zzzz: 0
+			zzzz: 0,
+			latency: 0,
+			finish: { finishTest = true }
 		);
-		var i, msg1;
+		var i, msg1, finishTest = false;
+		var isPlaying;
 		
 		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
 			
@@ -69,11 +73,34 @@ TestEvent : UnitTest {
 		this.assert(msg1[4] == 1, "synth created in root node");
 		this.assert(msg1.includes(\zzzz), "SynthDesc provides parameters to send in message");
 		this.assert(event[\hasGate] == true, "Event detects gate in SynthDesc");
+		this.assert(finishTest, "Event evaluates finish action");
+		this.assert(prevLatency == 0, 
+			"latency specified in the event should override server latency");
 		prevMsg = nil;
+		prevLatency = nil;
+		/*
+		
+		Server.default.boot;
+		this.wait({ Server.default.serverRunning }, "server failed to boot");
+		SynthDef(\xxx_test, { |gate = 1, doneAction = 0|
+			EnvGen.kr(Env.asr(0, 1, 0.1), gate, doneAction:doneAction)
+		}).memStore;
+		event = (instrument: \xxx_test, sustain: 200, server: Server.default, doneAction: 2);
+		event.play;
+		0.5.wait;
+		OSCresponderNode(addr, '/g_queryTree.reply', { arg time, responder, msg;
+		}).addOnce;
+		this.assert(synth.isPlaying, "event should play");
+		0.5.wait;
+		event.release;
+		0.5.wait;
+		this.assert(synth.isPlaying.not, "event should release");
+		
+		*/
 	}
 		
 	sendMsg { |... args| prevMsg = prevMsg.add(args) }
-	sendBundle { |latency, args| prevMsg = prevMsg.add(args) }
+	sendBundle { |latency, args| prevMsg = prevMsg.add(args); prevLatency = latency; }
 
 	nextNodeID { ^-1 }
 	latency { ^0.2 }

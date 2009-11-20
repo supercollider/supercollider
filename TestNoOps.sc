@@ -45,8 +45,41 @@ TestNoOps : UnitTest {
 		
 			
 		
-	} // End test_array_no_ops
+	}
 	
+		
+	test_numerical_homomorphisms {
+		var n = [
+				100.rand2, // integers
+				10.0.rand2, // floats
+				{ 100.rand2 }.dup(8), // arrays
+				{ 100.0.rand2 }.dup(8),
+				Complex(100.rand2, 100.rand2), // complex
+				{ 1 }, // function
+			];
+		var numbers = n.dup(2).allTuples.flatten(1).postcs;
+		var test = { |name, f, h, a, b|
+			var x = f.(h.(a, b));
+			var y = h.(f.(a), f.(b));
+			this.assert(this.deepEval(x) == this.deepEval(y), 
+				name + "should be a homomorphism for" + [a, b]);
+		};
+		var c = 0.5;
+		
+		numbers.pairsDo { |n1, n2|
+			test.value("add-mul", c * _, _ + _, n1, n2);
+			test.value("add-div", _ / c, _ + _, n1, n2);			test.value("bubble-mul", _.bubble, _ * _, n1, n2);
+		}
 	
+	}
+	
+	deepEval { |item|
+		^if(item.isSequenceableCollection) {
+			item.collect(this.deepEval(_))
+		} {
+			item.value
+		}
+	
+	}
 	
 }
