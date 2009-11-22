@@ -33,7 +33,11 @@
 #include "SC_World.h"
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
-#include <sndfile.h>
+#ifdef SC_WIN32
+	#include <sndfile-win.h>
+#else
+	#include <sndfile.h>
+#endif
 #include <new>
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)	\

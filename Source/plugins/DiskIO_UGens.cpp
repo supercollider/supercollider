@@ -25,7 +25,11 @@
 #include "MsgFifo.h"
 #include "SC_SyncCondition.h"
 #include "SC_PlugIn.h"
-#include <sndfile.h>
+#ifdef SC_WIN32
+	#include <sndfile-win.h>
+#else
+	#include <sndfile.h>
+#endif
 
 static InterfaceTable *ft;
 

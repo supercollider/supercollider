@@ -22,7 +22,11 @@
 #define _SndBuf_
 
 #include <sys/types.h>
-#include <sndfile.h>
+#ifdef SC_WIN32
+	#include <sndfile-win.h>
+#else
+	#include <sndfile.h>
+#endif
 
 struct SndBuf
 {
