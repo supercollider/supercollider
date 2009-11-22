@@ -1165,7 +1165,11 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 
 ////////
 
-#include <sndfile.h>
+#ifdef SC_WIN32
+	#include <sndfile-win.h>
+#else
+	#include <sndfile.h>
+#endif
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);
 int sampleFormatToString(struct SF_INFO *info, const char **string)
