@@ -26,12 +26,19 @@ QuarkSVNRepository
 
 	*new { | url, local |
 		if(svnpath.isNil) {
-			Post
-			<< 	"\tSVN not found! Quarks placed in the directory"
-			<<	"\n\n\t\t" << Platform.userAppSupportDir << "/quarks"
-			<< 	"\n\n\t" << "will be available, but you need svn to checkout updated versions."
-			<<	"\n\n\t" << "svn can be downloaded from:"
-			<< 	"\n\n\t\t" << "http://subversion.tigris.org/project_packages.html\n"
+			if(thisProcess.platform.name==\windows){
+				Post
+				<< 	"\tSVN not yet possible on windows. Quarks placed in the directory"
+				<<	"\n\n\t\t" << Platform.userAppSupportDir << "\\quarks"
+				<< 	"\n\n\t" << "will be available.\n"
+			}{
+				Post
+				<< 	"\tSVN not found! Quarks placed in the directory"
+				<<	"\n\n\t\t" << Platform.userAppSupportDir << "/quarks"
+				<< 	"\n\n\t" << "will be available, but you need svn to checkout updated versions."
+				<<	"\n\n\t" << "svn can be downloaded from:"
+				<< 	"\n\n\t\t" << "http://subversion.tigris.org/project_packages.html\n"
+			}
 		};
 		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
 	}

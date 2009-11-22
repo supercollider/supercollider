@@ -57,8 +57,10 @@ GeneralHID{
 		if( newScheme.notNil, {
 			scheme = newScheme;
 		}, {
-			("GeneralHID.fromID : The HID scheme '" ++ id ++ "' is not installed\n" ++
-			 "The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
+			if(thisProcess.platform.name != \windows){ // on win we know it's not yet supported
+				("GeneralHID.fromID : The HID scheme '" ++ id ++ "' is not installed\n" ++
+				"The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
+			}
 		});
 		^scheme;
 	}
@@ -311,4 +313,4 @@ GeneralHIDSlot{
 		^In.kr( bus );
 	}
 
-}
+}  
