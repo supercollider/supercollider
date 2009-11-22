@@ -39,7 +39,7 @@ rbtest_fixed = env.Program("ringbuffer_fixed_test",
                            LIBS='boost_thread-mt')
 
 libboost_thread = Environment().StaticLibrary("boost_thread", ["../libs/boost/libs/thread/src/"+x for x in Split("""
-tss_null.cpp pthread/exceptions.cpp pthread/once.cpp pthread/thread.cpp
+tss_null.cpp pthread/once.cpp pthread/thread.cpp
 """)]+["../libs/boost/libs/system/src/error_code.cpp"], CPPPATH="#/libs/boost")
 
 
