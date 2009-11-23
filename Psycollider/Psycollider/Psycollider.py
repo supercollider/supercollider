@@ -24,8 +24,14 @@
 # currently maintained by:
 # Christopher Frauenberger - frauenberger@iem.at
 # John Glover - glover.john@gmail.com
+# Martin Victory - martin.victory@gmail.com
 #
 # Latest changes:
+# Nov 2009 (Martin)
+#   - Help file navigation
+#   - Menu redesign
+#   - Find/Replace dialogs
+
 # Jan 2008 (John)
 #   - SDI model
 #   - Remembers the size and position of the post window
@@ -96,8 +102,10 @@ class PsycolliderWindow(wx.Frame):
     config = None                   # wx.FileConfig object
     menubar = None                  # wx.MenuBar object
     fileMenu = None                 # file menu (wx.Menu object)
+    editMenu = None                 # edit menu (wx.Menu) 
     langMenu = None                 # lang menu (wx.Menu)
     optionsMenu = None              # options menu (wx.Menu)
+    helpMenu = None                 # help menu (wx.Menu)
     title = ""                      # the window title
     isModified = False              # whether or not window contents have been modified
     filePath = ""                   # path to file being displayed
@@ -122,6 +130,7 @@ class PsycolliderWindow(wx.Frame):
         self.CreateMenuBar()
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
 
+    # file menu actions
     def OnCloseWindow(self, event):
         if not self.CanCloseWindow():
             event.Veto()
@@ -145,6 +154,47 @@ class PsycolliderWindow(wx.Frame):
     def OnSaveFileAs(self, event):
         self.SaveFileAs()
 
+    # edit menu actions - need to be overriden by inheriting class
+    def OnUndo(self, event):
+        pass
+
+    def OnRedo(self, event):
+        pass
+
+    def OnCut(self, event):
+        pass
+
+    def OnCopy(self, event):
+        pass
+
+    def OnPaste(self, event):
+        pass
+
+    def OnDelete(self, event):
+        pass
+
+    def OnSelectAll(self, event):
+        pass
+
+    def OnShowFind(self, event):
+        findData = wx.FindReplaceData()
+        findDialog = wx.FindReplaceDialog(self, findData, "Find")
+        findDialog.findData = findData
+        findDialog.Show(True)
+
+    def OnShowFindReplace(self, event):
+        findReplaceData = wx.FindReplaceData()
+        findReplaceDialog = wx.FindReplaceDialog(self, findReplaceData, "Find & Replace", wx.FR_REPLACEDIALOG)
+        findReplaceDialog.findReplaceData = findReplaceData
+        findReplaceDialog.Show(True)
+
+    def OnFindClose(self, event):
+        event.GetDialog().Destroy()
+
+    def OnFind(self, event):
+        pass
+
+    # lang menu actions
     def OnStopServer(self, event):
         wx.GetApp().StopServer()
 
@@ -169,12 +219,20 @@ class PsycolliderWindow(wx.Frame):
     def OnEval(self, event):
         self.Eval()
 
-    def OnGoToHelpFile(self, event):
-        wx.GetApp().GoToHelpFile(self.GetSelectedTextOrLine())
-
     def OnClearPostWindow(self, event):
         wx.GetApp().ClearPostWindow()
 
+    #help menu actions
+    def OnScHelp(self, event):
+        wx.GetApp().GoToHelpFile(self.GetSelectedTextOrLine())
+
+    def OnBrowseHelp(self, event):
+        wx.GetApp().Eval("Help.gui")
+
+    def OnBrowseClasses(self, event):
+        wx.GetApp().Eval("Help.browse")
+
+    #options menu actions
     def OnSetDefaultWindowSize(self, event):
         size = self.GetSize()
         wx.GetApp().SetDefaultWindowSize(size.x, size.y)
@@ -238,12 +296,16 @@ class PsycolliderWindow(wx.Frame):
 
     def CreateMenuBar(self):
         self.fileMenu = wx.Menu()
+        self.editMenu = wx.Menu()
         self.langMenu = wx.Menu()
         self.optionsMenu = wx.Menu()
+        self.helpMenu = wx.Menu()
         self.menubar = wx.MenuBar()
         self.menubar.Append(self.fileMenu, "&File")
+        self.menubar.Append(self.editMenu, "&Edit")
         self.menubar.Append(self.langMenu, "&Lang")
         self.menubar.Append(self.optionsMenu, "&Options")
+        self.menubar.Append(self.helpMenu, "&Help")
         self.SetMenuBar(self.menubar)
 
         self.newCodeWin = wx.MenuItem(self.fileMenu, -1, '&New Code Window\tCtrl+N')
@@ -253,6 +315,16 @@ class PsycolliderWindow(wx.Frame):
         self.saveFileAs = wx.MenuItem(self.fileMenu, -1, 'Save File &As\tCtrl+Shift+S')
         self.closeWindow = wx.MenuItem(self.fileMenu, -1, 'Close &Window...\tCtrl+W')
 
+        self.undo = wx.MenuItem(self.editMenu, -1, '&Undo\tCtrl+Z')
+        self.redo = wx.MenuItem(self.editMenu, -1, '&Redo\tCtrl+Y')
+        self.cut = wx.MenuItem(self.editMenu, -1, '&Cut\tCtrl+X')
+        self.copy = wx.MenuItem(self.editMenu, -1, 'C&opy\tCtrl+C')
+        self.paste = wx.MenuItem(self.editMenu, -1, '&Paste\tCtrl+V')
+        self.delete = wx.MenuItem(self.editMenu, -1, '&Delete\tDel')
+        self.selectAll = wx.MenuItem(self.editMenu, -1, '&Select All\tCtrl+A')
+        self.find = wx.MenuItem(self.editMenu, -1, '&Find\tCtrl+F')
+        self.replace = wx.MenuItem(self.editMenu, -1, '&Replace\tCtrl+H')
+
         self.stopServer = wx.MenuItem(self.langMenu, -1, 'Stop Server')
         self.run = wx.MenuItem(self.langMenu, -1, 'Run\tAlt+R')
         self.stop = wx.MenuItem(self.langMenu, -1, '&Stop\tAlt+.')
@@ -261,12 +333,14 @@ class PsycolliderWindow(wx.Frame):
         self.impOf = wx.MenuItem(self.langMenu, -1, 'Implementations of\tAlt+Y')
         self.refsTo = wx.MenuItem(self.langMenu, -1, 'References to\tShift+Alt+Y')
         self.eval = wx.MenuItem(self.langMenu, -1, '&Evaluate Selection\tCtrl+Enter')
-        self.goToHelpFile = wx.MenuItem(self.langMenu, -1, '&Go To Help File\tF1')
         self.clearPostWindow = wx.MenuItem(self.langMenu, -1, '&Clear Post Window\tAlt+P')
 
         self.setDefaultWindowSize = wx.MenuItem(self.optionsMenu, -1, '&Set This Window Size As Default')
         self.clearRecentFileList = wx.MenuItem(self.optionsMenu, -1, '&Clear Recent File List')
 
+        self.scHelp = wx.MenuItem(self.helpMenu, -1, '&SuperCollider Help\tF1')
+        self.helpBrowser = wx.MenuItem(self.helpMenu, -1, '&Browse and Search Documentation\t')
+        self.classBrowser = wx.MenuItem(self.helpMenu, -1, '&Class Browser\t')
 
         self.fileMenu.AppendItem(self.newCodeWin)
         self.fileMenu.AppendItem(self.htmlToCode)
@@ -276,6 +350,18 @@ class PsycolliderWindow(wx.Frame):
         self.fileMenu.AppendSeparator()
         self.fileMenu.AppendItem(self.closeWindow)
 
+        self.editMenu.AppendItem(self.undo)
+        self.editMenu.AppendItem(self.redo)
+        self.editMenu.AppendSeparator()
+        self.editMenu.AppendItem(self.cut)
+        self.editMenu.AppendItem(self.copy)
+        self.editMenu.AppendItem(self.paste)
+        self.editMenu.AppendItem(self.delete)
+        self.editMenu.AppendItem(self.selectAll)
+        self.editMenu.AppendSeparator()
+        self.editMenu.AppendItem(self.find)
+        self.editMenu.AppendItem(self.replace)
+
         self.langMenu.AppendItem(self.stopServer)
         self.langMenu.AppendItem(self.run)
         self.langMenu.AppendItem(self.stop)
@@ -284,11 +370,14 @@ class PsycolliderWindow(wx.Frame):
         self.langMenu.AppendItem(self.impOf)
         self.langMenu.AppendItem(self.refsTo)
         self.langMenu.AppendItem(self.eval)
-        self.langMenu.AppendItem(self.goToHelpFile)
         self.langMenu.AppendItem(self.clearPostWindow)
 
         self.optionsMenu.AppendItem(self.setDefaultWindowSize)
         self.optionsMenu.AppendItem(self.clearRecentFileList)
+
+        self.helpMenu.AppendItem(self.scHelp)
+        self.helpMenu.AppendItem(self.helpBrowser)
+        self.helpMenu.AppendItem(self.classBrowser)
 
         self.Bind(wx.EVT_MENU, self.OnNewCodeWin, id=self.newCodeWin.GetId())
         self.Bind(wx.EVT_MENU, self.OnHtmlToCode, id=self.htmlToCode.GetId())
@@ -296,6 +385,22 @@ class PsycolliderWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSaveFile, id=self.saveFile.GetId())
         self.Bind(wx.EVT_MENU, self.OnSaveFileAs, id=self.saveFileAs.GetId())
         self.Bind(wx.EVT_MENU, self.OnCloseWindow, id=self.closeWindow.GetId())
+
+        self.Bind(wx.EVT_MENU, self.OnUndo, id=self.undo.GetId())
+        self.Bind(wx.EVT_MENU, self.OnRedo, id=self.redo.GetId())
+        self.Bind(wx.EVT_MENU, self.OnCut, id=self.cut.GetId())
+        self.Bind(wx.EVT_MENU, self.OnCopy, id=self.copy.GetId())
+        self.Bind(wx.EVT_MENU, self.OnPaste, id=self.paste.GetId())
+        self.Bind(wx.EVT_MENU, self.OnDelete, id=self.delete.GetId())
+        self.Bind(wx.EVT_MENU, self.OnSelectAll, id=self.selectAll.GetId())
+        self.Bind(wx.EVT_MENU, self.OnShowFind, id=self.find.GetId())
+        self.Bind(wx.EVT_MENU, self.OnShowFindReplace, id=self.replace.GetId())
+
+        self.Bind(wx.EVT_FIND, self.OnFind)
+        self.Bind(wx.EVT_FIND_NEXT, self.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE, self.OnFind)
+        self.Bind(wx.EVT_FIND_REPLACE_ALL, self.OnFind)
+        self.Bind(wx.EVT_FIND_CLOSE, self.OnFindClose)
 
         self.Bind(wx.EVT_MENU, self.OnStopServer, id=self.stopServer.GetId())
         self.Bind(wx.EVT_MENU, self.OnRun, id=self.run.GetId())
@@ -305,11 +410,14 @@ class PsycolliderWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnImpOf, id=self.impOf.GetId())
         self.Bind(wx.EVT_MENU, self.OnRefsTo, id=self.refsTo.GetId())
         self.Bind(wx.EVT_MENU, self.OnEval, id=self.eval.GetId())
-        self.Bind(wx.EVT_MENU, self.OnGoToHelpFile, id=self.goToHelpFile.GetId())
         self.Bind(wx.EVT_MENU, self.OnClearPostWindow, id=self.clearPostWindow.GetId())
 
         self.Bind(wx.EVT_MENU, self.OnSetDefaultWindowSize, id=self.setDefaultWindowSize.GetId())
         self.Bind(wx.EVT_MENU, self.OnClearRecentFileList, id=self.clearRecentFileList.GetId())
+
+        self.Bind(wx.EVT_MENU, self.OnScHelp, id=self.scHelp.GetId())
+        self.Bind(wx.EVT_MENU, self.OnBrowseHelp, id=self.helpBrowser.GetId())
+        self.Bind(wx.EVT_MENU, self.OnBrowseClasses, id=self.classBrowser.GetId())
 
         wx.GetApp().fileHistory.UseMenu(self.fileMenu)
         wx.GetApp().fileHistory.AddFilesToThisMenu(self.fileMenu)
@@ -751,7 +859,120 @@ class PsycolliderCodeWin(PsycolliderWindow):
         self.Bind(wx.EVT_MENU, self.OnShowLineNumbers, id=self.showLineNumbers.GetId())
         self.Bind(wx.EVT_MENU, self.OnSetTabSize, id=self.setTabSize.GetId())
 
+    # edit menu actions
+    def OnUndo(self, event):
+        self.codeSubWin.Undo()
 
+    def OnRedo(self, event):
+        self.codeSubWin.Redo()
+
+    def OnCut(self, event):
+        self.codeSubWin.Cut()
+
+    def OnCopy(self, event):
+        self.codeSubWin.Copy()
+
+    def OnPaste(self, event):
+        self.codeSubWin.Paste()
+
+    def OnDelete(self, event):
+        self.codeSubWin.Clear()
+
+    def OnSelectAll(self, event):
+        self.codeSubWin.SelectAll()
+
+    def OnFind(self, event):
+        map = {
+            wx.wxEVT_COMMAND_FIND : "FIND",
+            wx.wxEVT_COMMAND_FIND_NEXT : "FIND_NEXT",
+            wx.wxEVT_COMMAND_FIND_REPLACE : "REPLACE",
+            wx.wxEVT_COMMAND_FIND_REPLACE_ALL : "REPLACE_ALL",
+            }
+
+        et = event.GetEventType()
+        
+        length = self.codeSubWin.GetTextLength()
+        str = event.GetFindString()
+
+        # find/find next
+        if et == wx.wxEVT_COMMAND_FIND or et == wx.wxEVT_COMMAND_FIND_NEXT:
+            flags = 0
+            if event.GetFlags() & wx.FR_MATCHCASE:
+                flags = flags | stc.STC_FIND_MATCHCASE
+                print "matching case"
+
+            if event.GetFlags() & wx.FR_WHOLEWORD:
+                flags = flags | stc.STC_FIND_WHOLEWORD
+                print "searching wholeword"
+
+            if event.GetFlags() & wx.FR_DOWN:
+                if et == wx.wxEVT_COMMAND_FIND_NEXT:
+                    startPos = self.codeSubWin.GetCurrentPos()
+                    endPos = self.codeSubWin.GetTextLength()
+                else:
+                    startPos = 0
+                    endPos = self.codeSubWin.GetTextLength()
+            else:
+                if et == wx.wxEVT_COMMAND_FIND_NEXT:
+                    startPos = self.codeSubWin.GetCurrentPos()-1
+                    endPos = 0
+                else:
+                    startPos = self.codeSubWin.GetTextLength()
+                    endPos = 0
+
+            pos = self.codeSubWin.FindText(startPos, endPos, str, flags)
+
+            if pos >= 0:
+                self.codeSubWin.SetSelection(pos, pos+len(str))
+                self.codeSubWin.EnsureCaretVisible()
+            else:
+                wx.MessageBox("Reached end of document", "Find", wx.ICON_EXCLAMATION | wx.OK, self.codeSubWin)
+
+        # replace
+        elif et == wx.wxEVT_COMMAND_FIND_REPLACE:
+            flags = 0
+            if event.GetFlags() & wx.FR_MATCHCASE:
+                flags = flags | stc.STC_FIND_MATCHCASE
+
+            if event.GetFlags() & wx.FR_WHOLEWORD:
+                flags = flags | stc.STC_FIND_WHOLEWORD
+
+            startPos = 0
+            endPos = self.codeSubWin.GetTextLength()
+
+            pos = self.codeSubWin.FindText(startPos, endPos, str, flags)
+            if pos >= 0:
+                self.codeSubWin.SetSelection(pos, pos+len(str))
+                self.codeSubWin.ReplaceSelection(event.GetReplaceString())
+                self.codeSubWin.EnsureCaretVisible()
+            else:
+                wx.MessageBox("Reached end of document", "Replace", wx.ICON_EXCLAMATION | wx.OK, self.codeSubWin)
+
+        # replace all
+        elif et == wx.wxEVT_COMMAND_FIND_REPLACE_ALL:
+            flags = 0
+            if event.GetFlags() & wx.FR_MATCHCASE:
+                flags = flags | stc.STC_FIND_MATCHCASE
+
+            if event.GetFlags() & wx.FR_WHOLEWORD:
+                flags = flags | stc.STC_FIND_WHOLEWORD
+
+            initPos = self.codeSubWin.GetCurrentPos()
+            startPos = 0
+            endPos = self.codeSubWin.GetTextLength()
+
+            numTokens = 0
+            pos = self.codeSubWin.FindText(startPos, endPos, str, flags)
+            while pos >= 0:
+                numTokens = numTokens+1
+                self.codeSubWin.SetSelection(pos, pos+len(str))
+                self.codeSubWin.ReplaceSelection(event.GetReplaceString())
+                self.codeSubWin.EnsureCaretVisible()
+                pos = self.codeSubWin.FindText(pos+len(str), endPos, str, flags)
+
+            self.codeSubWin.GotoPos(initPos)
+
+            wx.MessageBox("%d instance(s) replaced" % (numTokens), "Replace All", wx.ICON_EXCLAMATION | wx.OK, self.codeSubWin)
 
 # ---------------------------------------------------------------------
 # HTML Sub Window
@@ -792,6 +1013,9 @@ class PsycolliderHTMLWin(PsycolliderWindow):
         self.fileMenu.Remove(self.saveFile.GetId())     # Remove unnecessary menu items
         self.fileMenu.Remove(self.saveFileAs.GetId())
         self.htmlSubWin = PsycolliderHTMLSubWin(self)
+
+        # is the edit menu unnecessary in an HTML window
+        self.menubar.Remove(1)
 
         # Add navigation menu to HTML windows
         self.navMenu = wx.Menu()
