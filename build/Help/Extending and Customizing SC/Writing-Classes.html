@@ -20,10 +20,10 @@ p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier; min-height: 17.0px}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3300d3}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Lucida Grande'; color: #000000; min-height: 17.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #737373}
 span.s1 {color: #0000bf}
 span.s2 {color: #000000}
@@ -32,9 +32,10 @@ span.s4 {font: 14.0px Courier; color: #000000}
 span.s5 {font: 9.0px Monaco}
 span.s6 {font: 12.0px Helvetica; color: #000000}
 span.s7 {color: #3300d3}
-span.s8 {font: 9.0px Monaco; color: #0000bf}
-span.s9 {font: 14.0px 'Lucida Grande'; color: #000000}
-span.s10 {color: #737373}
+span.s8 {color: #4300ff}
+span.s9 {font: 9.0px Monaco; color: #0000bf}
+span.s10 {font: 14.0px 'Lucida Grande'; color: #000000}
+span.s11 {color: #737373}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -149,23 +150,23 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">One easy way to copy the arguments passed to the instance variables when creating a class  is to use  <span class="s5">newCopyArgs</span>. <span class="Apple-converted-space">  </span>This method will copy the arguments to the instance variables in the order that the variables were defined in the class, starting the parent classes and working it's way down to the current class.<span class="Apple-converted-space"> </span></p>
 <p class="p5"><br></p>
 <p class="p13"><span class="s6"><span class="Apple-tab-span">	</span></span>MyClass<span class="s2">{</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> &lt;a,b,c;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new { <span class="s7">arg</span> a,b,c;<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s7">super</span>.newCopyArgs(a,b,c)<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span>}</p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>MyChildClass<span class="s2"> : </span>MyClass<span class="s2">{</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> &lt;d;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new { <span class="s7">arg</span> a,b,c,d;<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s7">super</span>.newCopyArgs(a,b,c,d)<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p16"><span class="Apple-tab-span">	</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span>}</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> &lt;a,b,c;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new { <span class="s7">arg</span> a,b,c;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s7">super</span>.newCopyArgs(a,b,c)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>}</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="s2"><span class="Apple-tab-span">	</span></span>MyChildClass<span class="s2"> : </span>MyClass<span class="s2">{</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> &lt;d;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new { <span class="s7">arg</span> a,b,c,d;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>^<span class="s7">super</span>.newCopyArgs(a,b,c,d)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span>}</p>
+<p class="p10"><br></p>
 <p class="p3">Over reliance on inheritance is usually a design flaw.<span class="Apple-converted-space">  </span>Explore "object composition" rather than trying to obtain all your powers through inheritance. Is your "subclass" really some kind of "superclass" or are you just trying to swipe all of daddy's methods ? Do a websearch for<span class="Apple-converted-space">  </span>Design Patterns.</p>
 <p class="p5"><br></p>
 <p class="p3">Class variables are accessible within class methods and in any instance methods.<span class="Apple-converted-space"> </span></p>
@@ -174,12 +175,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="s1">var</span> myInstanceVar;<span class="Apple-converted-space"> </span></p>
 <p class="p12"><br></p>
+<p class="p5"><br></p>
+<p class="p3">For class initialization check <a href="SC://initClass"><span class="s8">initClass</span></a><span class="s8">.</span></p>
 <p class="p2"><br></p>
 <p class="p7"><b>Overriding Methods (Overloading)</b></p>
 <p class="p2"><br></p>
 <p class="p3">in order to change the behaviour of the superclass, often methods are overridden.</p>
 <p class="p3">note that an object looks always for the method it has defined first and then looks in the superclass.</p>
-<p class="p3">here <span class="s8">NewClass</span><span class="s5">.value(2)</span> will return<span class="s8"> 6</span>, not<span class="s8"> 4</span>:<span class="Apple-converted-space"> </span></p>
+<p class="p3">here <span class="s9">NewClass</span><span class="s5">.value(2)</span> will return<span class="s9"> 6</span>, not<span class="s9"> 4</span>:<span class="Apple-converted-space"> </span></p>
 <p class="p12"><br></p>
 <p class="p9"><span class="s4"><span class="Apple-tab-span">	</span></span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
@@ -220,7 +223,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Classic Smalltalk demands that variables are not accessible outside of the class or instance.<span class="Apple-converted-space">  </span>A method must be added to explicitly give access:<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="s9"><span class="Apple-tab-span">	</span></span>NewClass<span class="s2"> : </span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
+<p class="p9"><span class="s10"><span class="Apple-tab-span">	</span></span>NewClass<span class="s2"> : </span>Superclass<span class="s2"> {<span class="Apple-converted-space"> </span></span></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">var</span> myVariable;</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
@@ -270,7 +273,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p17"><b>External Method Files</b></p>
+<p class="p14"><b>External Method Files</b></p>
 <p class="p5"><br></p>
 <p class="p3">Methods may be added to Classes in separate files.<span class="Apple-converted-space">  </span>This is equivalent to Protocols in Objective-C.<span class="Apple-converted-space">  </span>By convention, the file name starts with a lower case letter: the name of the method or feature that the methods are supporting.</p>
 <p class="p2"><br></p>
@@ -286,32 +289,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span>}</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p17"><b>Slotted classes</b></p>
+<p class="p14"><b>Slotted classes</b></p>
 <p class="p5"><br></p>
-<p class="p3">Classes defined with <span class="s5">[slot]</span><span class="Apple-converted-space">  </span>can use the syntax <span class="s5">myClass[i] </span>which will call<span class="Apple-converted-space">  </span><span class="s5">myClass.at(i).</span></p>
+<p class="p3">Classes defined with <span class="s5">[slot]</span><span class="Apple-converted-space">  </span>can use the syntax <span class="s5">myClass[i] </span>which will call<span class="Apple-converted-space">  </span><span class="s5">myClass.at(i). </span>This is usefull when defining classes that inherit from a Collection type class.</p>
 <p class="p2"><br></p>
 <p class="p3">Syntax:</p>
-<p class="p2"><br></p>
-<p class="p11"><span class="Apple-tab-span">	</span>MyClass[slot] {</p>
+<p class="p15"><br></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="s7">MyClass</span>[slot] {</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new{ ^<span class="s7">super</span>.new }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>at{ <span class="s7">|i|</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(<span class="s11">"Index "</span>++i).postln<span class="Apple-converted-space"> </span></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
+<p class="p17"><br></p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>}</p>
+<p class="p17"><span class="Apple-tab-span">	</span></p>
+<p class="p17"><span class="Apple-tab-span">	</span></p>
+<p class="p16"><span class="Apple-tab-span">	</span>a = <span class="s7">MyClass</span>();</p>
+<p class="p16"><span class="Apple-tab-span">	</span>a[3];</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p3">Defining a custom array of Points:</p>
+<p class="p5"><br></p>
+<p class="p13"><span class="s6"><span class="Apple-tab-span">	</span></span>MyPointArray<span class="s2">[slot] : </span>RawArray<span class="s2"> {</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new{ ^<span class="s7">super</span>.new }</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>center { ^Point(*<span class="s7">this</span>.asArray.flop.collect{ <span class="s7">|item|</span> item.sum / item.size } ) }</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>at{ <span class="s7">|i|</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(<span class="s10">"Index "</span>++i).postln<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-converted-space"> </span></p>
-<p class="p10"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>asArray{ ^<span class="s7">this</span>.collect{ <span class="s7">|elem|</span> elem.asArray } }</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>}</p>
+<p class="p5"><br></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span>a = MyClass();</p>
-<p class="p11"><span class="Apple-tab-span">	</span>a[3];</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p17"><b>Printing custom messages to post window</b></p>
+<p class="p14"><b>Printing custom messages to post window</b></p>
 <p class="p5"><br></p>
 <p class="p3">By default when postln is called on an class instance the name of the class is printed in a post window.<span class="Apple-converted-space">  </span>When <span class="s5">postln</span><span class="Apple-converted-space">  </span>or <span class="s5">asString</span> is called on a class instance, the class then calls <span class="s5">printOn</span> which can be overridden to obtain more useful information.</p>
 <p class="p2"><br></p>
@@ -323,7 +338,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new{ <span class="s7">|x,y|</span> ^<span class="s7">super</span>.newCopyArgs(x,y) }</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>printOn { <span class="s7">arg</span> stream;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream &lt;&lt; <span class="s10">"MyTestPoint( "</span> &lt;&lt; x &lt;&lt; <span class="s10">", "</span> &lt;&lt; y &lt;&lt; <span class="s10">" )"</span>;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream &lt;&lt; <span class="s11">"MyTestPoint( "</span> &lt;&lt; x &lt;&lt; <span class="s11">", "</span> &lt;&lt; y &lt;&lt; <span class="s11">" )"</span>;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>}</p>
@@ -331,7 +346,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>a = <span class="s7">MyTestPoint</span>(2,3);</p>
 <p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p17"><b>Defining custom asCompileString behaviour</b></p>
+<p class="p14"><b>Defining custom asCompileString behaviour</b></p>
 <p class="p5"><br></p>
 <p class="p3">A call to <span class="s5">asCompileString </span>should return a string which when evaluated creates the exact same instance of the class. To define a custom behaviour one should either override <span class="s5">storeOn </span>or <span class="s5">storeArgs</span>.<span class="Apple-converted-space"> </span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>The method <span class="s5">storeOn </span>should return the string that evaluated creates the instance of the current object.</p>
@@ -347,7 +362,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new{ <span class="s7">|x,y|</span> ^<span class="s7">super</span>.newCopyArgs(x,y) }</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>storeOn { <span class="s7">arg</span> stream;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream &lt;&lt; <span class="s10">"MyTestPoint.new("</span> &lt;&lt; x &lt;&lt; <span class="s10">", "</span> &lt;&lt; y &lt;&lt; <span class="s10">")"</span>;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream &lt;&lt; <span class="s11">"MyTestPoint.new("</span> &lt;&lt; x &lt;&lt; <span class="s11">", "</span> &lt;&lt; y &lt;&lt; <span class="s11">")"</span>;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span>}<span class="Apple-tab-span">	</span></p>
