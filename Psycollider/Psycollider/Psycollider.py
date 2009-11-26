@@ -29,8 +29,9 @@
 # Latest changes:
 # Nov 2009 (Martin)
 #   - Help file navigation
-#   - Menu redesign
-#   - Find/Replace dialogs
+#   - Find and Replace dialogs
+#   - Text Formatting
+#   - About dialog box
 
 # Jan 2008 (John)
 #   - SDI model
@@ -135,7 +136,7 @@ class PsycolliderWindow(wx.Frame):
         if not self.CanCloseWindow():
             event.Veto()
 
-        wx.GetApp().fileHistory.RemoveMenu(self.fileMenu)
+        wx.GetApp().fileHistory.RemoveMenu(self.openRecentMenu)
         wx.GetApp().ClosedWindow(self)
         self.Destroy()
 
@@ -232,6 +233,20 @@ class PsycolliderWindow(wx.Frame):
     def OnBrowseClasses(self, event):
         wx.GetApp().Eval("Help.browse")
 
+    def OnAbout(self, event):
+
+        description = 'a programming language and engine for real time audio synthesis.'
+
+        info = wx.AboutDialogInfo()
+
+        info.SetIcon(wx.Icon('Help/GUI/Cocoa-GUI/SCImage/icon.supercollider.png', wx.BITMAP_TYPE_PNG))
+        info.SetName('SuperCollider')
+        info.SetVersion('3.3.2')
+        info.SetDescription(description)
+        info.SetWebSite('http://supercollider.sourceforge.net')
+
+        wx.AboutBox(info)
+
     #options menu actions
     def OnSetDefaultWindowSize(self, event):
         size = self.GetSize()
@@ -296,6 +311,7 @@ class PsycolliderWindow(wx.Frame):
 
     def CreateMenuBar(self):
         self.fileMenu = wx.Menu()
+        self.openRecentMenu = wx.Menu()
         self.editMenu = wx.Menu()
         self.langMenu = wx.Menu()
         self.optionsMenu = wx.Menu()
@@ -308,12 +324,12 @@ class PsycolliderWindow(wx.Frame):
         self.menubar.Append(self.helpMenu, "&Help")
         self.SetMenuBar(self.menubar)
 
-        self.newCodeWin = wx.MenuItem(self.fileMenu, -1, '&New Code Window\tCtrl+N')
+        self.newCodeWin = wx.MenuItem(self.fileMenu, -1, '&New\tCtrl+N')
         self.htmlToCode = wx.MenuItem(self.fileMenu, -1, 'H&TML to Code\tCtrl+T')
-        self.openFile = wx.MenuItem(self.fileMenu, -1, '&Open File\tCtrl+O')
-        self.saveFile = wx.MenuItem(self.fileMenu, -1, '&Save File\tCtrl+S')
-        self.saveFileAs = wx.MenuItem(self.fileMenu, -1, 'Save File &As\tCtrl+Shift+S')
-        self.closeWindow = wx.MenuItem(self.fileMenu, -1, 'Close &Window...\tCtrl+W')
+        self.openFile = wx.MenuItem(self.fileMenu, -1, '&Open...\tCtrl+O')
+        self.saveFile = wx.MenuItem(self.fileMenu, -1, '&Save\tCtrl+S')
+        self.saveFileAs = wx.MenuItem(self.fileMenu, -1, 'Save &As...\tCtrl+Shift+S')
+        self.closeWindow = wx.MenuItem(self.fileMenu, -1, 'Close\tCtrl+W')
 
         self.undo = wx.MenuItem(self.editMenu, -1, '&Undo\tCtrl+Z')
         self.redo = wx.MenuItem(self.editMenu, -1, '&Redo\tCtrl+Y')
@@ -341,12 +357,16 @@ class PsycolliderWindow(wx.Frame):
         self.scHelp = wx.MenuItem(self.helpMenu, -1, '&SuperCollider Help\tF1')
         self.helpBrowser = wx.MenuItem(self.helpMenu, -1, '&Browse and Search Documentation\t')
         self.classBrowser = wx.MenuItem(self.helpMenu, -1, '&Class Browser\t')
+        self.about = wx.MenuItem(self.helpMenu, -1, 'About\t')
+
 
         self.fileMenu.AppendItem(self.newCodeWin)
-        self.fileMenu.AppendItem(self.htmlToCode)
         self.fileMenu.AppendItem(self.openFile)
+        self.fileMenu.AppendSubMenu(self.openRecentMenu, "Open Recent")
+        self.fileMenu.AppendSeparator()
         self.fileMenu.AppendItem(self.saveFile)
         self.fileMenu.AppendItem(self.saveFileAs)
+        self.fileMenu.AppendItem(self.htmlToCode)
         self.fileMenu.AppendSeparator()
         self.fileMenu.AppendItem(self.closeWindow)
 
@@ -378,6 +398,8 @@ class PsycolliderWindow(wx.Frame):
         self.helpMenu.AppendItem(self.scHelp)
         self.helpMenu.AppendItem(self.helpBrowser)
         self.helpMenu.AppendItem(self.classBrowser)
+        self.helpMenu.AppendSeparator()
+        self.helpMenu.AppendItem(self.about)
 
         self.Bind(wx.EVT_MENU, self.OnNewCodeWin, id=self.newCodeWin.GetId())
         self.Bind(wx.EVT_MENU, self.OnHtmlToCode, id=self.htmlToCode.GetId())
@@ -418,9 +440,10 @@ class PsycolliderWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnScHelp, id=self.scHelp.GetId())
         self.Bind(wx.EVT_MENU, self.OnBrowseHelp, id=self.helpBrowser.GetId())
         self.Bind(wx.EVT_MENU, self.OnBrowseClasses, id=self.classBrowser.GetId())
+        self.Bind(wx.EVT_MENU, self.OnAbout, id=self.about.GetId())
 
-        wx.GetApp().fileHistory.UseMenu(self.fileMenu)
-        wx.GetApp().fileHistory.AddFilesToThisMenu(self.fileMenu)
+        wx.GetApp().fileHistory.UseMenu(self.openRecentMenu)
+        wx.GetApp().fileHistory.AddFilesToThisMenu(self.openRecentMenu)
         self.Bind(wx.EVT_MENU_RANGE, wx.GetApp().doFileHistory, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
 
@@ -432,8 +455,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
 
     def __init__ (self,parent):
         stc.StyledTextCtrl.__init__(self,parent)
-        font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Courier New")
-        self.StyleSetFont(wx.stc.STC_STYLE_DEFAULT, font)
         self.SetModEventMask(wx.stc.STC_MOD_INSERTTEXT | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_PERFORMED_USER)
 
         # bindings
@@ -445,9 +466,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
                                                     # to stop playback, which doesn't seem to work otherwise
                                                     # bug in wx?
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnDoubleClick)
-
-        self.CmdKeyAssign(ord('+'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
-        self.CmdKeyAssign(ord('-'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
 
         self.SetLexer(wx.stc.STC_LEX_CPP)             # yssr
         self.SetKeyWords(0, " ".join(SC3_KEYWORDS))   # yssr
@@ -481,44 +499,6 @@ class PsycolliderCodeSubWin(wx.stc.StyledTextCtrl):
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPENMID, stc.STC_MARK_BOXMINUSCONNECTED, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDERMIDTAIL, stc.STC_MARK_TCORNER,           "white", "#808080")
 
-        # Make some styles,  The lexer defines what each style is used for, we
-        # just have to define what each style looks like.  This set is adapted from
-        # Scintilla sample property files.
-
-        # Global default styles for all languages
-        #self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
-        #self.StyleClearAll()  # Reset all to be like the default
-
-        # Global default styles for all languages
-        self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(mono)s,size:%(size)d" % faces)
-        self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
-        self.StyleSetSpec(stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % faces)
-        self.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,  "fore:#FFFFFF,back:#00FFFF,bold")
-        self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,    "fore:#000000,back:#FF3333,bold")
-
-        # C++ styles
-        # Default
-        self.StyleSetSpec(stc.STC_C_DEFAULT, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
-        # Comments
-        self.StyleSetSpec(stc.STC_C_COMMENTLINE, "fore:#007F00,face:%(mono)s,size:%(size)d" % faces)
-        # Number
-        self.StyleSetSpec(stc.STC_C_NUMBER, "bold,fore:#333333,size:%(size)d" % faces)
-        # String
-        self.StyleSetSpec(stc.STC_C_STRING, "italic,fore:#CC0000,face:%(mono)s,size:%(size)d" % faces)
-        # Single quoted string
-        self.StyleSetSpec(stc.STC_C_CHARACTER, "fore:#CC0000,face:%(mono)s,size:%(size)d" % faces)
-        # Keyword
-        self.StyleSetSpec(stc.STC_C_WORD, "fore:#00007F,bold,size:%(size)d" % faces)
-        # Operators
-        # self.StyleSetSpec(stc.STC_C_OPERATOR, "bold,size:%(size)d" % faces)
-        # Identifiers
-        self.StyleSetSpec(stc.STC_C_IDENTIFIER, "fore:#000000,face:%(mono)s,size:%(size)d" % faces)
-        # End of line where string is not closed
-        self.StyleSetSpec(stc.STC_C_STRINGEOL, "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
-        #self.StyleSetSpec(stc.STC_C_COMMENTDOC, "fore:#7F7F7F,size:%(size)d" % faces)
-        #self.StyleSetSpec(stc.STC_C_COMMENTLINEDOC,  "fore:#7F7F7F,size:%(size)d" % faces)
-        #self.StyleSetSpec(stc.STC_C_GLOBALCLASS, "fore:#7F7F7F,size:%(size)d" % faces)
-        self.SetCaretForeground("BLACK")
 
     def OnChar(self, event):
         if event.GetKeyCode() == 0x2e and event.AltDown():
@@ -731,6 +711,13 @@ class PsycolliderCodeWin(PsycolliderWindow):
         self.fileMenu.Remove(self.htmlToCode.GetId())   # Remove unnecessary menu item
         self.codeSubWin = PsycolliderCodeSubWin(self)
 
+        # this will be our default font
+        font = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, "Courier New")
+        self.fontSize = font.GetPointSize()
+        self.fontFace = font.GetFaceName()
+
+        self.ChangeFont(self.fontFace, self.fontSize)
+
         # line numbers
         self.config.SetPath("/CodeWindowOptions")
         self.showLineNumbers.Check(self.config.ReadInt('ShowLineNumbers', self.SHOW_LINE_NUMBERS))
@@ -848,6 +835,82 @@ class PsycolliderCodeWin(PsycolliderWindow):
     def LineDown(self):
         self.codeSubWin.LineDown()
 
+    def OnOpenFonts(self, event):
+        data = wx.FontData()
+        data.EnableEffects(False)
+
+        dlg = wx.FontDialog(self, data)
+        
+        if dlg.ShowModal() == wx.ID_OK:
+            data = dlg.GetFontData()
+            font = data.GetChosenFont()
+
+            self.fontFace = font.GetFaceName()
+            self.fontSize = font.GetPointSize()
+            self.ChangeFont(self.fontFace, self.fontSize)
+
+        dlg.Destroy()
+
+    def ChangeFont(self, face, size):
+        self.codeSubWin.StyleClearAll()  # Reset all to be like the default
+        self.codeSubWin.StyleSetSpec(stc.STC_STYLE_DEFAULT,
+            "face:%s, size:%d" % (face, size))
+
+        self.codeSubWin.StyleSetSpec(stc.STC_STYLE_LINENUMBER,
+            "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
+
+        self.codeSubWin.StyleSetSpec(
+            stc.STC_STYLE_CONTROLCHAR, "face:%s, size:%d" % (face, size))
+
+        self.codeSubWin.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,
+            "fore:#FFFFFF,back:#00FFFF,bold, face:%s, size:%d" % (face, size))
+
+        self.codeSubWin.StyleSetSpec(stc.STC_STYLE_BRACEBAD, 
+            "fore:#000000,back:#FF3333,bold,face:%s, size:%d" % (face, size))
+
+        # Default face
+        self.codeSubWin.StyleSetSpec(stc.STC_C_DEFAULT,
+            "fore:#000000,face:%s,size:%d" % (face, size))
+        # Comments
+        self.codeSubWin.StyleSetSpec(stc.STC_C_COMMENTLINE,
+            "fore:#bf0000,face:%s,size:%d" % (face, size))
+        # Number
+        self.codeSubWin.StyleSetSpec(stc.STC_C_NUMBER,
+            "fore:#333333,face:%s,size:%d" % (face, size))
+        # String
+        self.codeSubWin.StyleSetSpec(stc.STC_C_STRING,
+            "italic,fore:#606060,face:%s,size:%d" % (face, size))
+        # Single quoted string
+        self.codeSubWin.StyleSetSpec(stc.STC_C_CHARACTER,
+            "fore:#007300,face:%s,size:%d" % (face, size))
+        # Keyword
+        self.codeSubWin.StyleSetSpec(stc.STC_C_WORD,
+            "fore:#0000bf,face:%s,size:%d" %  (face, size))
+        self.codeSubWin.StyleSetSpec(stc.STC_C_WORD2,
+            "fore:#0000bf,face:%s,size:%d" %  (face, size))
+        # Operators
+        self.codeSubWin.StyleSetSpec(stc.STC_C_OPERATOR,
+            "face:%s,size:%d" %  (face, size))
+        # Identifiers
+        self.codeSubWin.StyleSetSpec(stc.STC_C_IDENTIFIER,
+            "fore:#000000,face:%s,size:%d" % (face, size))
+        self.codeSubWin.StyleSetSpec(stc.STC_C_UUID,
+            "fore:#000000,face:%s,size:%d" % (face, size))
+        # End of line where string is not closed
+        self.codeSubWin.StyleSetSpec(stc.STC_C_STRINGEOL,
+            "fore:#000000,face:%s,back:#E0C0E0,eol,size:%d" % (face, size))
+
+        self.codeSubWin.SetCaretForeground("BLACK")
+
+
+    def OnBiggerFont(self, event):
+        self.fontSize += 1
+        self.ChangeFont(self.fontFace, self.fontSize)
+
+    def OnSmallerFont(self, event):
+        self.fontSize -= 1
+        self.ChangeFont(self.fontFace, self.fontSize)
+
     def CreateMenuBar(self):
         PsycolliderWindow.CreateMenuBar(self)
 
@@ -858,6 +921,20 @@ class PsycolliderCodeWin(PsycolliderWindow):
         self.optionsMenu.AppendItem(self.setTabSize)
         self.Bind(wx.EVT_MENU, self.OnShowLineNumbers, id=self.showLineNumbers.GetId())
         self.Bind(wx.EVT_MENU, self.OnSetTabSize, id=self.setTabSize.GetId())
+
+        # format menu
+        formatMenu = wx.Menu()
+        self.menubar.Insert(4, formatMenu, "Fo&rmat")
+        self.openFonts = wx.MenuItem(formatMenu, -1, '&Show Fonts\tAlt+T')
+        self.biggerFont = wx.MenuItem(formatMenu, -1, '&Bigger Font\tCtrl++')
+        self.smallerFont = wx.MenuItem(formatMenu, -1, '&Smaller Font\tCtrl+-')
+        formatMenu.AppendItem(self.openFonts)
+        formatMenu.AppendSeparator()
+        formatMenu.AppendItem(self.biggerFont)
+        formatMenu.AppendItem(self.smallerFont)
+        self.Bind(wx.EVT_MENU, self.OnOpenFonts, id=self.openFonts.GetId())
+        self.Bind(wx.EVT_MENU, self.OnBiggerFont, id=self.biggerFont.GetId())
+        self.Bind(wx.EVT_MENU, self.OnSmallerFont, id=self.smallerFont.GetId())
 
     # edit menu actions
     def OnUndo(self, event):
@@ -1014,12 +1091,12 @@ class PsycolliderHTMLWin(PsycolliderWindow):
         self.fileMenu.Remove(self.saveFileAs.GetId())
         self.htmlSubWin = PsycolliderHTMLSubWin(self)
 
-        # is the edit menu unnecessary in an HTML window
+        # Remove edit menu
         self.menubar.Remove(1)
 
         # Add navigation menu to HTML windows
         self.navMenu = wx.Menu()
-        self.menubar.Append(self.navMenu, "&Navigation")
+        self.menubar.Insert(3, self.navMenu, "&Navigation")
         self.home = wx.MenuItem(self.navMenu, -1, '&Home')
         self.forward = wx.MenuItem(self.navMenu, -1, '&Forward\tAlt+Right')
         self.back = wx.MenuItem(self.navMenu, -1, '&Back\tAlt+Left')
@@ -1080,6 +1157,7 @@ class PsycolliderPostWindow(PsycolliderWindow):
         self.langMenu.Remove(self.impOf.GetId())
         self.langMenu.Remove(self.refsTo.GetId())
         self.langMenu.Remove(self.eval.GetId())
+        self.menubar.Remove(1)
 
         mainPanel = wx.Panel(self, -1)
         mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -1260,7 +1338,7 @@ class Psycollider(wx.App):
         return window
 
     def NewHTMLWindow(self):
-        window = PsycolliderHTMLWin(self.theMainFrame, -1, "HTML Window: %d" % (len(self.openWindows)+1))
+        window = PsycolliderHTMLWin(self.theMainFrame, -1, "Help Window: %d" % (len(self.openWindows)+1))
         self.openWindows.append(window)
         window.Show(True)
         window.SetSubWinFocus()
