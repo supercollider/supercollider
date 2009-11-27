@@ -63,7 +63,7 @@ BufEnvir : EnvironmentRedirect {
 		^if(res.isSequenceableCollection) { res.collect(_.bufnum) } { res.bufnum }
 	}
 
-	alloc { arg key, numFrames=2048, numChannels=1;
+	alloc { arg key, numFrames = 2048, numChannels = 1;
 		var buf = this.at(key);
 		if(buf.numFrames != numFrames or: {buf.numChannels != numChannels}) {
 			buf.numFrames_(numFrames).numChannels_(numChannels).alloc;
@@ -71,7 +71,7 @@ BufEnvir : EnvironmentRedirect {
 		^buf;
 	}
 
-	read { arg key, path, startFrame, numFrames, completionMessage;
+	read { arg key, path, startFrame = 0, numFrames = -1, completionMessage;
 		if(server.serverRunning.not) { Error("server not running").throw };
 		this.at(key).allocRead(path, startFrame, numFrames, completionMessage);
 	}
