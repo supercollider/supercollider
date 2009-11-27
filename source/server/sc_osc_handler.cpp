@@ -1426,7 +1426,13 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
 
     osc::int32 index, frames, channels;
 
-    args >> index >> frames >> channels;
+    args >> index >> frames;
+
+    if (!args.Eos())
+        args >> channels;
+    else
+        channels = 1;
+
     completion_message message = extract_completion_message(args);
 
     fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint));
