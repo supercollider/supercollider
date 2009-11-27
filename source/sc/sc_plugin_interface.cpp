@@ -815,17 +815,17 @@ int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
-    if (uint32_t(buf->frames) >= start_buffer)
+    if (uint32_t(buf->frames) < start_buffer)
         /* buffer already full */
         return -2;
 
     SF_INFO info;
-    SNDFILE * sf = sf_open(filename, SFM_WRITE, &info);
+    SNDFILE * sf = sf_open(filename, SFM_READ, &info);
 
     if (!sf)
         return -1;
 
-    if (info.frames >= start_file)
+    if (info.frames < start_file)
     {
         /* no more frames to read */
         sf_close(sf);
@@ -871,7 +871,7 @@ int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filena
         return -2;
 
     SF_INFO info;
-    SNDFILE * sf = sf_open(filename, SFM_WRITE, &info);
+    SNDFILE * sf = sf_open(filename, SFM_READ, &info);
 
     if (!sf)
         return -1;
