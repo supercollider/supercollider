@@ -874,6 +874,8 @@ class PsycolliderCodeWin(PsycolliderWindow):
         # Comments
         self.codeSubWin.StyleSetSpec(stc.STC_C_COMMENTLINE,
             "fore:#bf0000,face:%s,size:%d" % (face, size))
+        self.codeSubWin.StyleSetSpec(stc.STC_C_COMMENT,
+            "fore:#bf0000,face:%s,size:%d" % (face, size))
         # Number
         self.codeSubWin.StyleSetSpec(stc.STC_C_NUMBER,
             "fore:#333333,face:%s,size:%d" % (face, size))
@@ -898,7 +900,7 @@ class PsycolliderCodeWin(PsycolliderWindow):
             "fore:#000000,face:%s,size:%d" % (face, size))
         # End of line where string is not closed
         self.codeSubWin.StyleSetSpec(stc.STC_C_STRINGEOL,
-            "fore:#000000,face:%s,back:#E0C0E0,eol,size:%d" % (face, size))
+            "fore:#000000,face:%s,back:#ffffff,eol,size:%d" % (face, size))
 
         self.codeSubWin.SetCaretForeground("BLACK")
 
@@ -1058,7 +1060,11 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
 
     def __init__ (self,parent):
         wx.html.HtmlWindow.__init__(self,parent)
+        self.parent = parent
         self.Bind(wx.EVT_CHAR, self.OnChar)         # this hack is to enable the alt+. shortcut
+        self.Bind(html.EVT_HTML_LINK_CLICKED, self.OnClicked)
+        self.titles = [parent.GetTitle()]
+        self.titlePos = 0
 
     def OnChar(self, event):
         if event.GetKeyCode() == 0x2e and event.AltDown():
@@ -1070,15 +1076,39 @@ class PsycolliderHTMLSubWin(wx.html.HtmlWindow):
         else:
             event.Skip()
 
+    # this allows us to correctly set the title of the parent window
+    def OnClicked(self, event):
+
+        # clicking on a link effectively removes forward history
+        self.titles = self.titles[:self.titlePos+1]
+
+        info = event.GetLinkInfo()
+        href = info.GetHref()
+        self.LoadPage(href)
+
+        pageTitle = os.path.splitext(os.path.basename(href))[0]
+        self.parent.SetTitle(pageTitle)
+        self.titles.append(pageTitle)
+        self.titlePos += 1
+
     def GoForward(self, event):
-        self.HistoryForward()
+        if self.HistoryCanForward():
+            self.HistoryForward()
+            self.titlePos += 1
+            self.parent.SetTitle(self.titles[self.titlePos])
 
     def GoBack(self, event):
-        self.HistoryBack()
+        if self.HistoryCanBack():
+            self.HistoryBack()
+            self.titlePos -= 1
+            self.parent.SetTitle(self.titles[self.titlePos])
 
     def GoHome(self, event):
         filePath = os.path.join(gHelpFolder,"Help.html")
+        self.parent.SetTitle("Help")
         self.LoadPage(filePath)
+        self.titles.append("Help")
+        self.titlePos += 1
 
 # ---------------------------------------------------------------------
 # HTML Window
@@ -1337,8 +1367,9 @@ class Psycollider(wx.App):
         window.SetSubWinFocus()
         return window
 
-    def NewHTMLWindow(self):
-        window = PsycolliderHTMLWin(self.theMainFrame, -1, "Help Window: %d" % (len(self.openWindows)+1))
+    def NewHTMLWindow(self, filepath):
+        window = PsycolliderHTMLWin(self.theMainFrame, -1, 
+            os.path.splitext(os.path.basename(filepath))[0])
         self.openWindows.append(window)
         window.Show(True)
         window.SetSubWinFocus()
@@ -1386,7 +1417,7 @@ class Psycollider(wx.App):
             return win
 
         elif (textContent.find('<html') >= 0 or textContent.find('<HTML') >= 0):
-            win = self.NewHTMLWindow()
+            win = self.NewHTMLWindow(path)
             win.htmlSubWin.LoadPage(path)
             return win
 
