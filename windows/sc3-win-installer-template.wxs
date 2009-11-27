@@ -79,13 +79,6 @@
 <!-- Do not change the comment just below here. It's used for substitution -->
 <!-- SUBST:SPLITHERE -->
 
-<!-- We make ourselves some empty folders... -->
-<DirectoryRef Id="SCextensionsFolder">
-	<Component Id="SCextensions" Guid="35AF303A-C836-11DD-84E5-084C56D89593">
-		<CreateFolder/>
-	</Component>
-</DirectoryRef>
-
 <DirectoryRef Id="ApplicationProgramsFolder">
 	<Component Id="ApplicationShortcut" Guid="7511071E-C90B-11DD-BB90-C59D55D89593">
 		<Shortcut Id="ApplicationStartMenuShortcut" Name="SuperCollider 3" 

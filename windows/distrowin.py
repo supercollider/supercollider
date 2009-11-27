@@ -56,7 +56,7 @@ regex1 = re.compile('[^a-zA-Z0-9.]')
 def pathToId(path):
 	global regex1
 	id = regex1.sub('_', path.replace('../build/', ''))
-	return id[max(len(id)-65, 0):]
+	return 's'+id[max(len(id)-64, 0):]  # Prepending 's' a bit of a hack to ensure never begins with '3', '_' etc
 def pathToGuid(path):
 	return str(uuid.uuid3(uuid.NAMESPACE_DNS, 'supercollider.sourceforge.net/' + path))
 
@@ -98,6 +98,23 @@ xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCHelpFolder">\n'
 xmlstr2 = xmlstr2 + '<Feature Id="HelpFilesFeature" Title="Help files" Description="SC3 help documentation" Level="1">\n'
 scanDirForWix('../build/Help', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd'), 0)
 xmlstr2 = xmlstr2 + '</Feature>\n'
+xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
+
+includeExtras = False    # whether or not to expect build/sc3-plugins and to bundle it into the extensions folder
+
+xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCextensionsFolder">\n'
+if includeExtras:
+	xmlstr1 = xmlstr1 + '	<Component Id="SCextensions" Guid="35AF303A-C836-11DD-84E5-084C56D89593">\n'
+	xmlstr1 = xmlstr1 + '	</Component>\n'
+	xmlstr1 = xmlstr1 + '<Directory Id="sc3plugins" Name="sc3-plugins">\n'
+	xmlstr2 = xmlstr2 + '<Feature Id="Sc3PluginsFeature" Title="Community sc3-plugins pack" Description="Third-party plugins pack sc3-plugins" Level="1">\n'
+	scanDirForWix('../build/sc3-plugins', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd', '.scx', '.sc'), 0)
+	xmlstr2 = xmlstr2 + '</Feature>\n'
+	xmlstr1 = xmlstr1 + '</Directory>\n\n'
+else:
+	xmlstr1 = xmlstr1 + '	<Component Id="SCextensions" Guid="35AF303A-C836-11DD-84E5-084C56D89593">\n'
+	xmlstr1 = xmlstr1 + '		<CreateFolder/>\n'  # This is how to create an empty folder in wix
+	xmlstr1 = xmlstr1 + '	</Component>\n'
 xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 
 xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCsoundsFolder">\n'
