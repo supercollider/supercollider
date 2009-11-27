@@ -47,7 +47,8 @@ sources = [File(x, "supercollider/Source/plugins") for x in sources]
 pluginenv = Environment(SHLIBPREFIX="",
                         CFLAGS=env['CFLAGS'],
                         CCFLAGS=env['CCFLAGS'],
-                        CXXFLAGS=env['CXXFLAGS']
+                        CXXFLAGS=env['CXXFLAGS'],
+                        LIBS=Split("m pthread stdc++")
                         )
 pluginenv.Append(CPPDEFINES=['SUPERNOVA', 'NOVA_SIMD'],
                  CPPPATH=["supercollider/Headers/plugin_interface",
