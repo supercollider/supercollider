@@ -279,7 +279,7 @@ private:
     udp::socket socket_;
     udp::endpoint remote_endpoint_;
 
-    boost::array<char, 1<<13 > recv_buffer_;
+    boost::array<char, 1<<15 > recv_buffer_;
 
     std::vector<char> overflow_vector;
     /* @} */
