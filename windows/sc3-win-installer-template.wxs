@@ -57,6 +57,8 @@
 		<!-- env vars -->
 		<Environment Id='PsycolliderHome' Name='PSYCOLLIDER_HOME' Action='set' System='yes' Part='all'
 					Value='[SC3INSTALLLOCATION]' />
+		<Environment Id='ScSystemAppSupportPath' Name='SC_SYSAPPSUP_PATH' Action='set' System='yes' Part='all'
+					Value='[SC3INSTALLLOCATION]' />
 		<Environment Id='ScPluginPath'    Name='SC_PLUGIN_PATH'   Action='set' System='yes' Part='all'
 					Value='[SC3INSTALLLOCATION]plugins' />
 
