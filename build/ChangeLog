@@ -20,6 +20,7 @@ Headlines:
 * 2009-11-04 new SCAnimationView and update of deferredTaskInterval from 0.038 to 0.01667 - fo
 * 2009-11-07 use nova-simd framework for performance improvements of unit generators - tb
 * 2009-11-21 Event type note supports polyphonic sustain, lag and timingOffset, and responds correctly to free and release. Add grain event type. -jr
+* 2009-11-28 windows: system "application support path", previously hardcoded as C:\SuperCollider, now settable by environment variable SC_SYSAPPSUP_PATH. Default setting for that env var (when using official wix bundle) will be [SC3INSTALLLOCATION] - ds
 
 
 Bugfixes:

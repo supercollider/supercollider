@@ -289,7 +289,7 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 #elif SC_IPHONE
 			"/",
 #elif defined(SC_WIN32)
-			"C:\\SuperCollider",
+			( getenv("SC_SYSAPPSUP_PATH")==NULL ) ? "C:\\SuperCollider" : getenv("SC_SYSAPPSUP_PATH"),
 #else
 			"/usr/local/share/SuperCollider",
 #endif
