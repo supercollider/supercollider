@@ -1,10 +1,11 @@
+
 NodeMapSetting {
+
 	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false, <>mappedRate;
-
+	
 	*new { arg key, value, busNumChannels;
-		^super.newCopyArgs(key, value, busNumChannels)
-	}
-
+		^super.newCopyArgs(key, value, busNumChannels)	}
+	
 	map { arg index;
 		value = index;
 		isMultiChannel = false;
@@ -63,7 +64,7 @@ NodeMapSetting {
 	}
 
 	copy {
-		^this.class.new(key, value, busNumChannels)
+		^this.class.prNew(key, value, busNumChannels, isMultiChannel, isMapped, mappedRate)
 	}
 
 	isEmpty { ^value.isNil }
@@ -75,6 +76,10 @@ NodeMapSetting {
 
 	printOn { arg stream;
 		stream << this.storeArgs
+	}
+	
+	*prNew { arg key, value, busNumChannels, isMultiChannel=false, isMapped=false, mappedRate;
+		^super.newCopyArgs(key, value, busNumChannels, isMultiChannel, isMapped, mappedRate)
 	}
 }
 
