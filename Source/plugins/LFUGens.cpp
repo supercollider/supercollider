@@ -1308,12 +1308,31 @@ void K2A_next_nova(K2A *unit, int inNumSamples)
 
 	unit->mLevel = in;
 }
+
+void K2A_next_nova_64(K2A *unit, int inNumSamples)
+{
+	float in = ZIN0(0);
+	float level = unit->mLevel;
+
+	if (level == in)
+		nova::setvec_simd<64>(OUT(0), level);
+	else
+	{
+		float slope = CALCSLOPE(in, level);
+		nova::set_slope_vec_simd(OUT(0), level, slope, 64);
+	}
+
+	unit->mLevel = in;
+}
+
 #endif
 
 void K2A_Ctor(K2A* unit)
 {
 #ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
+	if (BUFLENGTH == 64)
+		SETCALC(K2A_next_nova_64);
+	else if (!(BUFLENGTH & 15))
 		SETCALC(K2A_next_nova);
 	else
 #endif
@@ -1395,28 +1414,48 @@ void T2A_next_nova(T2A *unit, int inNumSamples)
 	if((unit->mLevel <= 0.f && level > 0.f)) {
 		float *out = ZOUT(0);
 		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset) {
+			if(i == offset)
 				ZXP(out) = level;
-			} else {
+			else
 				ZXP(out) = 0.f;
-			}
 		}
-	} else {
+	} else
 		nova::zerovec_simd(OUT(0), inNumSamples);
-	}
 
 	unit->mLevel = level;
 }
+
+void T2A_next_nova_64(T2A *unit, int inNumSamples)
+{
+	float level = IN0(0);
+	int offset = (int) IN0(1);
+
+	if((unit->mLevel <= 0.f && level > 0.f)) {
+		float *out = ZOUT(0);
+		for(int i = 0; i < inNumSamples; i++) {
+			if(i == offset)
+				ZXP(out) = level;
+			else
+				ZXP(out) = 0.f;
+		}
+	} else
+		nova::zerovec_simd<64>(OUT(0));
+
+	unit->mLevel = level;
+}
+
 #endif
 
 void T2A_Ctor(T2A* unit)
 {
 #ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
+	if (BUFLENGTH == 64)
+		SETCALC(T2A_next_nova_64);
+	else if (!(BUFLENGTH & 15))
 		SETCALC(T2A_next_nova);
 	else
 #endif
-    SETCALC(T2A_next);
+	SETCALC(T2A_next);
 	T2A_next(unit, 1);
 }
 
@@ -1429,12 +1468,20 @@ void DC_next_nova(DC *unit, int inNumSamples)
 	float val = unit->m_val;
 	nova::setvec_simd(OUT(0), val, inNumSamples);
 }
+
+void DC_next_nova_64(DC *unit, int inNumSamples)
+{
+	float val = unit->m_val;
+	nova::setvec_simd<64>(OUT(0), val);
+}
 #endif
 
 void DC_Ctor(DC* unit)
 {
 	unit->m_val = IN0(0);
 #ifdef NOVA_SIMD
+	if (BUFLENGTH == 64)
+		SETCALC(DC_next_nova_64);
 	if (!(BUFLENGTH & 15))
 		SETCALC(DC_next_nova);
 	else
@@ -1548,12 +1595,66 @@ void Line_next_nova(Line *unit, int inNumSamples)
 	unit->mLevel = level;
 
 }
+
+void Line_next_nova_64(Line *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+
+	double slope = unit->mSlope;
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	int remain = 64;
+	if (counter == 0)
+	{
+		nova::setvec_simd<64>(OUT(0), unit->mEndLevel);
+		return;
+	}
+
+	if (counter > inNumSamples)
+	{
+		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, 64);
+		unit->mLevel = level + inNumSamples * slope;
+		unit->mCounter = counter - inNumSamples;
+		return;
+	}
+
+	do {
+		if (counter==0) {
+			int nsmps = remain;
+			remain = 0;
+			float endlevel = unit->mEndLevel;
+			LOOP(nsmps,
+				ZXP(out) = endlevel;
+			);
+		} else {
+			int nsmps = sc_min(remain, counter);
+			counter -= nsmps;
+			remain -= nsmps;
+			LOOP(nsmps,
+				ZXP(out) = level;
+				level += slope;
+			);
+			if (counter == 0) {
+				unit->mDone = true;
+				int doneAction = (int)ZIN0(3);
+				DoneAction(doneAction, unit);
+			}
+		}
+	} while (remain);
+	unit->mCounter = counter;
+	unit->mLevel = level;
+
+}
+
 #endif
 
 void Line_Ctor(Line* unit)
 {
 #ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
+	if (BUFLENGTH == 64)
+		SETCALC(Line_next_nova);
+	else if (!(BUFLENGTH & 15))
 		SETCALC(Line_next_nova);
 	else
 #endif
@@ -1667,12 +1768,66 @@ void XLine_next_nova(XLine *unit, int inNumSamples)
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
+
+void XLine_next_nova_64(XLine *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+
+	double grow = unit->mGrowth;
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	int remain = 64;
+
+	if (counter == 0)
+	{
+		nova::setvec_simd<64>(OUT(0), (float)level);
+		return;
+	}
+	if (counter >= 64)
+	{
+		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, 64);
+		level *= sc_powi(grow, inNumSamples);
+		counter -= inNumSamples;
+	}
+	else
+	{
+		do {
+			if (counter==0) {
+				int nsmps = remain;
+				remain = 0;
+				float endlevel = unit->mEndLevel;
+				LOOP(nsmps,
+					ZXP(out) = endlevel;
+					);
+			} else {
+				int nsmps = sc_min(remain, counter);
+				counter -= nsmps;
+				remain -= nsmps;
+				LOOP(nsmps,
+					ZXP(out) = level;
+					 level *= grow;
+					);
+				if (counter == 0) {
+					unit->mDone = true;
+					int doneAction = (int)ZIN0(3);
+					DoneAction(doneAction, unit);
+				}
+			}
+		} while (remain);
+	}
+	unit->mCounter = counter;
+	unit->mLevel = level;
+}
+
 #endif
 
 void XLine_Ctor(XLine* unit)
 {
 #ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
+	if (BUFLENGTH == 64)
+		SETCALC(XLine_next_nova_64);
+	else if (!(BUFLENGTH & 15))
 		SETCALC(XLine_next_nova);
 	else
 #endif
@@ -2516,10 +2671,12 @@ void LinLin_next_ka(LinLin *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 void LinLin_next_nova(LinLin *unit, int inNumSamples)
 {
-	float scale = unit->m_scale;
-	float offset = unit->m_offset;
+	nova::muladd_vec_simd(OUT(0), IN(0), unit->m_scale, unit->m_offset, inNumSamples);
+}
 
-	nova::muladd_vec_simd(OUT(0), IN(0), scale, offset, inNumSamples);
+void LinLin_next_nova_64(LinLin *unit, int inNumSamples)
+{
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->m_scale, unit->m_offset);
 }
 
 void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
@@ -2533,6 +2690,19 @@ void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
 
 	nova::muladd_vec_simd(OUT(0), IN(0), scale, offset, inNumSamples);
 }
+
+void LinLin_next_kk_nova_64(LinLin *unit, int inNumSamples)
+{
+	float srclo = ZIN0(1);
+	float srchi = ZIN0(2);
+	float dstlo = ZIN0(3);
+	float dsthi = ZIN0(4);
+	float scale = (dsthi - dstlo) / (srchi - srclo);
+	float offset = dstlo - scale * srclo;
+
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), scale, offset);
+}
+
 #endif
 
 void LinLin_SetCalc(LinLin* unit)
@@ -2553,17 +2723,18 @@ void LinLin_SetCalc(LinLin* unit)
 		}
 		for(int i = 1; i<5; i++) {
 			if(INRATE(i) != calc_ScalarRate) {
-				SETCALC(LinLin_next_kk_nova); return;
+				if (BUFLENGTH == 64)
+					SETCALC(LinLin_next_kk_nova_64);
+				else
+					SETCALC(LinLin_next_kk_nova);
+				return;
 			}
 		};
-		SETCALC(LinLin_next_nova);
-		float srclo = ZIN0(1);
-		float srchi = ZIN0(2);
-		float dstlo = ZIN0(3);
-		float dsthi = ZIN0(4);
-
-		unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
-		unit->m_offset = dstlo - unit->m_scale * srclo;
+		if (BUFLENGTH == 64)
+			SETCALC(LinLin_next_nova_64);
+		else
+			SETCALC(LinLin_next_nova);
+		return;
 	}
 #endif
 
