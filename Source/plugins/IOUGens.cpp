@@ -781,12 +781,78 @@ void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 	}
 }
 
+#ifdef NOVA_SIMD
+void ReplaceOut_next_a_nova(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 1;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		uint32 busChannel = (uint32)fbusChannel;
+		uint32 lastChannel = busChannel + numChannels;
+
+		if (!(lastChannel > world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+
+	float *out = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i+1);
+		nova::copyvec_simd(out, in, inNumSamples);
+		touched[i] = bufCounter;
+	}
+}
+
+void ReplaceOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs - 1;
+
+	float fbusChannel = ZIN0(0);
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		uint32 busChannel = (uint32)fbusChannel;
+		uint32 lastChannel = busChannel + numChannels;
+
+		if (!(lastChannel > world->mNumAudioBusChannels)) {
+			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+			unit->m_busTouched = world->mAudioBusTouched + busChannel;
+		}
+	}
+
+	float *out = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i+1);
+		nova::copyvec_simd<64>(out, in);
+		touched[i] = bufCounter;
+	}
+}
+
+#endif /* NOVA_SIMD */
+
 void ReplaceOut_Ctor(IOUnit* unit)
 {
 	World *world = unit->mWorld;
 	unit->m_fbusChannel = -1.;
 
 	if (unit->mCalcRate == calc_FullRate) {
+#ifdef NOVA_SIMD
+		if (BUFLENGTH == 64)
+			SETCALC(ReplaceOut_next_a_nova_64);
+		else if (!(BUFLENGTH & 15))
+			SETCALC(ReplaceOut_next_a_nova);
+		else
+#endif
 		SETCALC(ReplaceOut_next_a);
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
