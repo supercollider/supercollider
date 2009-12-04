@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( add_test )
 template <typename float_type>
 void slope_tests(void)
 {
-    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd;
 
     float_type base = randomize_float<float_type>();
     float_type slope = randomize_float<float_type>() * 0.01;
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( slope_test )
 template <typename float_type>
 void exp_tests(void)
 {
-    aligned_array<float_type, size> ALIGNED out, out_simd, out_mp;
+    aligned_array<float_type, size> ALIGNED out, out_simd;
 
     float_type base = std::abs(randomize_float<float_type>());
     float_type slope = std::abs(randomize_float<float_type>() * 0.01);

@@ -24,6 +24,10 @@
 
 #ifdef __SSE__
 #include "simd_mix_sse.hpp"
+#else
+#include "simd_mix_fallbacks_float.hpp"
 #endif
+
+#include "simd_mix_fallbacks_double.hpp"
 
 #endif /* SIMD_MIX_HPP */

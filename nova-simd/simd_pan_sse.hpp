@@ -22,8 +22,44 @@
 
 #include <xmmintrin.h>
 
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 namespace nova
 {
+
+namespace detail
+{
+
+template <unsigned int n>
+always_inline void pan2_vec_simd_mp(float * out0, float * out1, const float * in, const __m128 factor0, const __m128 factor1)
+{
+    __m128 sig0 = _mm_load_ps(in);
+    _mm_store_ps(out0, _mm_mul_ps(sig0, factor0));
+    _mm_store_ps(out1, _mm_mul_ps(sig0, factor1));
+
+    pan2_vec_simd_mp<n-4>(out0+4, out1+4, in+4, factor0, factor1);
+}
+
+template <>
+always_inline void pan2_vec_simd_mp<0>(float * out0, float * out1, const float * in, const __m128 factor0, const __m128 factor1)
+{}
+
+} /* namespace detail */
+
+template <unsigned int n>
+void pan2_vec_simd(float * out0, float * out1, const float * in,
+                   float factor0, float factor1)
+{
+    const __m128 f0 = _mm_set_ps1(factor0);
+    const __m128 f1 = _mm_set_ps1(factor1);
+
+    detail::pan2_vec_simd_mp<n>(out0, out1, in, f0, f1);
+}
+
 template <>
 void pan2_vec_simd(float * out0, float * out1, const float * in,
                    float factor0, float factor1, unsigned int n)
@@ -35,19 +71,14 @@ void pan2_vec_simd(float * out0, float * out1, const float * in,
 
     do
     {
-        __m128 sig0 = _mm_load_ps(in);
-        __m128 sig1 = _mm_load_ps(in+4);
-        _mm_store_ps(out0, _mm_mul_ps(sig0, f0));
-        _mm_store_ps(out1, _mm_mul_ps(sig0, f1));
-
-        _mm_store_ps(out0+4, _mm_mul_ps(sig1, f0));
-        _mm_store_ps(out1+4, _mm_mul_ps(sig1, f1));
+        detail::pan2_vec_simd_mp<8>(out0, out1, in, f0, f1);
 
         in += 8;
         out0 += 8;
         out1 += 8;
     } while(--n);
 }
+
 
 template <>
 void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
@@ -83,6 +114,15 @@ void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, 
     } while(--n);
 }
 
+template <unsigned int n>
+void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
+                   float factor1, float slope1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
+}
+
 } /* namespace nova */
+
+#undef always_inline
 
 #endif /* SIMD_PAN_SSE_HPP */

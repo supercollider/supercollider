@@ -1,4 +1,4 @@
-//  simdfied mathematical functions
+//  simd functions for panning, fallback implementation for double
 //  Copyright (C) 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -16,18 +16,27 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SIMD_MATH_HPP
-#define SIMD_MATH_HPP
 
-#include "simd_math_generic.hpp"
+#ifndef SIMD_PAN_FALLBACKS_DOUBLE_HPP
+#define SIMD_PAN_FALLBACKS_DOUBLE_HPP
 
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 1))) && defined(__SSE__)
-#include "simd_math_vec.hpp"
-#else
-#include "simd_math_fallback_float.hpp"
-#endif
+namespace nova
+{
 
-#include "simd_math_fallback_double.hpp"
+template <unsigned int n>
+void pan2_vec_simd(double * out0, double * out1, const double * in,
+                   double factor0, double factor1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, factor1, n);
+}
 
-#endif /* SIMD_MATH_HPP */
+template <unsigned int n>
+void pan2_vec_simd(double * out0, double * out1, const double * in, double factor0, double slope0,
+                   double factor1, double slope1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
+}
+
+} /* namespace nova */
+
+#endif /* SIMD_PAN_FALLBACKS_DOUBLE_HPP */

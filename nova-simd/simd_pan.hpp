@@ -24,6 +24,10 @@
 
 #ifdef __SSE__
 #include "simd_pan_sse.hpp"
+#else
+#include "simd_pan_fallbacks_float.hpp"
 #endif
+
+#include "simd_pan_fallbacks_double.hpp"
 
 #endif /* SIMD_PAN_HPP */
