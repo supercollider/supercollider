@@ -479,10 +479,10 @@
 		D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperColliderAUVersion.h; sourceTree = "<group>"; };
 		D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperColliderAU.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55DEBD80EF32CE300968B95 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
-		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = serverConfig.plist; sourceTree = "<group>"; };
-		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
+		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
+		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serverConfig.plist; sourceTree = "<group>"; };
+		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = version.plist; sourceTree = "<group>"; };
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
@@ -1340,6 +1340,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DNDEBUG";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
