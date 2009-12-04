@@ -323,5 +323,7 @@ WRAP_MATH_FUNCTION_BINARY(spow, detail::spow4)
 
 } /* namespace nova */
 
+#undef WRAP_MATH_FUNCTION
+#undef WRAP_MATH_FUNCTION_BINARY
 
 #endif /* SIMD_MATH_VEC_HPP */

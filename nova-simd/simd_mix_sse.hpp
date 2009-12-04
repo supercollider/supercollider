@@ -21,8 +21,46 @@
 
 #include <xmmintrin.h>
 
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
+#endif
+
 namespace nova
 {
+
+namespace detail
+{
+
+template <unsigned int n>
+void mix_vec_simd_mp(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
+{
+    const __m128 sig0 = _mm_load_ps(in0);
+    const __m128 sig1 = _mm_load_ps(in1);
+
+    const __m128 mix = _mm_add_ps(_mm_mul_ps(sig0, factor0),
+                                  _mm_mul_ps(sig1, factor1));
+    _mm_store_ps(out, mix);
+
+    mix_vec_simd_mp<n-4>(out+4, in0+4, factor0, in1+4, factor1);
+}
+
+template <>
+void mix_vec_simd_mp<0>(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
+{}
+
+} /* namespace detail */
+
+template <unsigned int n>
+void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1)
+{
+    const __m128 f0 = _mm_set_ps1(factor0);
+    const __m128 f1 = _mm_set_ps1(factor1);
+
+    detail::mix_vec_simd_mp<n>(out, in0, f0, in1, f1);
+}
+
 
 template <>
 void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1, unsigned int n)
@@ -32,19 +70,7 @@ void mix_vec_simd(float * out, const float * in0, float factor0, const float * i
 
     n /= 8;
     do {
-        __m128 sig00 = _mm_load_ps(in0);
-        __m128 sig01 = _mm_load_ps(in1);
-        __m128 sig10 = _mm_load_ps(in0+4);
-        __m128 sig11 = _mm_load_ps(in1+4);
-
-        __m128 mix0  = _mm_add_ps(_mm_mul_ps(sig00, f0),
-                                  _mm_mul_ps(sig01, f1));
-
-        __m128 mix1  = _mm_add_ps(_mm_mul_ps(sig10, f0),
-                                  _mm_mul_ps(sig11, f1));
-
-        _mm_store_ps(out, mix0);
-        _mm_store_ps(out+4, mix1);
+        detail::mix_vec_simd_mp<8>(out, in0, f0, in1, f1);
 
         out += 8;
         in0 += 8;
@@ -90,7 +116,16 @@ void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
     } while(--n);
 }
 
+template <unsigned int n>
+void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
+                  const float * in1, float factor1, float slope1)
+{
+    mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
+}
+
+
 } /* namespace nova */
 
+#undef always_inline
 
 #endif /* SIMD_MIX_SSE_HPP */

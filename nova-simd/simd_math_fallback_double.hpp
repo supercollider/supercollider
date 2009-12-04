@@ -1,4 +1,4 @@
-//  simdfied mathematical functions, float fallback implementation
+//  simdfied mathematical functions, double fallback implementation
 //  Copyright (C) 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SIMD_MATH_FALLBACK_FLOAT_HPP
-#define SIMD_MATH_FALLBACK_FLOAT_HPP
+#ifndef SIMD_MATH_FALLBACK_DOUBLE_HPP
+#define SIMD_MATH_FALLBACK_DOUBLE_HPP
 
 #include <cmath>
 
@@ -26,26 +26,26 @@ namespace nova
 
 #define WRAP_MATH_FUNCTION(name)                                \
     template <unsigned int n>                                   \
-    inline void name##_vec_simd(float * out, const float * in)  \
+    inline void name##_vec_simd(double * out, const double * in)  \
     {                                                           \
         name##_vec_simd(out, in, n);                            \
     }
 
 #define WRAP_MATH_FUNCTION_BINARY(name)                                 \
     template <unsigned int n>                                           \
-    inline void name##_vec_simd(float * out, const float * in0, const float * in1) \
+    inline void name##_vec_simd(double * out, const double * in0, const double * in1) \
     {                                                                   \
         name##_vec_simd(out, in0, in1, n);                              \
     }                                                                   \
                                                                         \
     template <unsigned int n>                                           \
-    inline void name##_vec_simd(float * out, const float * in0, const float in1) \
+    inline void name##_vec_simd(double * out, const double * in0, const double in1) \
     {                                                                   \
         name##_vec_simd(out, in0, in1, n);                              \
     }                                                                   \
                                                                         \
     template <unsigned int n>                                           \
-    inline void name##_vec_simd(float * out, const float in0, const float * in1) \
+    inline void name##_vec_simd(double * out, const double in0, const double * in1) \
     {                                                                   \
         name##_vec_simd(out, in0, in1, n);                              \
     }
@@ -73,4 +73,4 @@ WRAP_MATH_FUNCTION_BINARY(spow)
 #undef WRAP_MATH_FUNCTION_BINARY
 
 
-#endif /* SIMD_MATH_FALLBACK_FLOAT_HPP */
+#endif /* SIMD_MATH_FALLBACK_DOUBLE_HPP */

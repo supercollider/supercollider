@@ -1,4 +1,4 @@
-//  simdfied mathematical functions
+//  simd functions for mixing, float fallbacks
 //  Copyright (C) 2009 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -16,18 +16,27 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SIMD_MATH_HPP
-#define SIMD_MATH_HPP
+#ifndef SIMD_MIX_FALLBACKS_FLOAT_HPP
+#define SIMD_MIX_FALLBACKS_FLOAT_HPP
 
-#include "simd_math_generic.hpp"
+namespace nova
+{
 
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 1))) && defined(__SSE__)
-#include "simd_math_vec.hpp"
-#else
-#include "simd_math_fallback_float.hpp"
-#endif
+template <unsigned int n>
+void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1)
+{
+    mix_vec_simd(out, in0, factor0, in1, factor1, n);
+}
 
-#include "simd_math_fallback_double.hpp"
+template <unsigned int n>
+void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
+                  const float * in1, float factor1, float slope1)
+{
+    mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
+}
 
-#endif /* SIMD_MATH_HPP */
+} /* namespace nova */
+
+#undef always_inline
+
+#endif /* SIMD_MIX_FALLBACKS_FLOAT_HPP */
