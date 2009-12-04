@@ -1517,8 +1517,6 @@ void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
@@ -1554,9 +1552,7 @@ void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
 	float xa = unit->mPrevA;
-	float *b = ZIN(1);
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
@@ -1687,8 +1683,6 @@ void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
@@ -1723,9 +1717,7 @@ void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
 	float xa = unit->mPrevA;
-	float *b = ZIN(1);
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
@@ -1859,9 +1851,7 @@ inline void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 
 inline void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float * out = ZOUT(0);
 	float xa = unit->mPrevA;
-	float * b = ZIN(1);
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
@@ -1901,8 +1891,6 @@ inline void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 
 inline void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
