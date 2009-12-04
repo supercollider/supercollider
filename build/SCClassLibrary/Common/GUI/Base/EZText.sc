@@ -55,7 +55,7 @@ EZText : EZGui {
 		initVal = initVal ? "";
 		action = argAction;
 
-		textField = SCTextField(view, textBounds).resize_(2);
+		textField = GUI.textField.new(view, textBounds).resize_(2);
 
 		textField.action = {
 			var newval = textField.string.interpret;
