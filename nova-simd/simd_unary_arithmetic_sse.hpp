@@ -99,6 +99,13 @@ inline void abs_vec_simd(float * out, const float * arg, unsigned int n)
     while (--loops);
 }
 
+template <unsigned int n>
+inline void abs_vec_simd(float * out, const float * arg)
+{
+    __m128 abs_mask = detail::gen_abs_mask();
+    detail::abs_vec_mp<n>(out, arg, abs_mask);
+}
+
 
 namespace detail
 {
@@ -136,6 +143,15 @@ inline void sgn_vec_simd(float * out, const float * arg, unsigned int n)
     while (--loops);
 }
 
+template <unsigned int n>
+inline void sgn_vec_simd(float * out, const float * arg)
+{
+    __m128 sgn_mask = detail::gen_sign_mask();
+    __m128 zero = _mm_setzero_ps();
+    __m128 one = detail::gen_one();
+
+    detail::sgn_vec_mp<n>(out, arg, sgn_mask, zero, one);
+}
 
 namespace detail
 {
@@ -168,6 +184,11 @@ inline void square_vec_simd(float * out, const float * arg, unsigned int n)
     while (--loops);
 }
 
+template <unsigned int n>
+inline void square_vec_simd(float * out, const float * arg)
+{
+    detail::square_vec_mp<n>(out, arg);
+}
 
 namespace detail
 {
@@ -198,6 +219,12 @@ inline void cube_vec_simd(float * out, const float * arg, unsigned int n)
         arg += samples_per_loop;
     }
     while (--loops);
+}
+
+template <unsigned int n>
+inline void cube_vec_simd(float * out, const float * arg)
+{
+    detail::cube_vec_mp<n>(out, arg);
 }
 
 

@@ -27,7 +27,9 @@
 #endif
 
 /* for compile-time loop unrolling */
+#ifndef __SSE__
 #include "simd_unary_arithmetic_fallbacks_float.hpp"
+#endif
 #include "simd_unary_arithmetic_fallbacks_double.hpp"
 
 #endif /* SIMD_UNARY_ARITHMETIC_HPP */

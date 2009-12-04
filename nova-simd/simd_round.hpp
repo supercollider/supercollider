@@ -27,6 +27,9 @@
 #elif !defined(NO_GPL3_CODE) && defined(__GNUC__)                       \
     && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ == 1))) && defined (__SSE__)
 #include "simd_round_vec.hpp"
+#else
+#include "simd_round_fallbacks_float.hpp"
 #endif
+#include "simd_round_fallbacks_double.hpp"
 
 #endif /* SIMD_ROUND_HPP */

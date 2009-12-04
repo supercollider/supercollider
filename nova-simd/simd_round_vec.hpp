@@ -42,7 +42,26 @@ inline void NAME##_vec_simd(float * out, const float * arg, unsigned int n) \
         arg += 8;                                                       \
     }                                                                   \
     while (--loops);                                                    \
+}                                                                       \
+                                                                        \
+template <unsigned int n>                                               \
+inline void NAME##_vec_simd(float * out, const float * arg)             \
+{                                                                       \
+    unsigned int loops = n / 8;                                         \
+    do {                                                                \
+        const vec_float4 * in0 = (const vec_float4*)arg;                \
+        const vec_float4 * in1 = (const vec_float4*)(arg + 4);          \
+        vec_float4 * out0 = (vec_float4*)out;                           \
+        vec_float4 * out1 = (vec_float4*)(out+4);                       \
+        *out0 = _##NAME##f4(*in0);                                      \
+        *out1 = _##NAME##f4(*in1);                                      \
+                                                                        \
+        out += 8;                                                       \
+        arg += 8;                                                       \
+    }                                                                   \
+    while (--loops);                                                    \
 }
+
 
 LIBSIMDMATH_WRAPPER(round)
 LIBSIMDMATH_WRAPPER(floor)
@@ -50,6 +69,24 @@ LIBSIMDMATH_WRAPPER(ceil)
 
 template <>
 inline void frac_vec_simd(float * out, const float * arg, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        const vec_float4 * in0 = (const vec_float4*)arg;
+        const vec_float4 * in1 = (const vec_float4*)(arg + 4);
+        vec_float4 * out0 = (vec_float4*)out;
+        vec_float4 * out1 = (vec_float4*)(out+4);
+        *out0 = *in0 - _roundf4(*in0);
+        *out1 = *in1 - _roundf4(*in1);
+
+        out += 8;
+        arg += 8;
+    }
+    while (--loops);
+}
+
+template <unsigned int n>
+inline void frac_vec_simd(float * out, const float * arg)
 {
     unsigned int loops = n / 8;
     do {

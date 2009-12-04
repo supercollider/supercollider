@@ -42,6 +42,11 @@
             in += 4;                                                    \
             out += 4;                                                   \
         } while (--loops);                                              \
+    }                                                                   \
+    template <unsigned int n>                                           \
+    inline void name##_vec_simd(float * out, const float * in)          \
+    {                                                                   \
+        name##_vec_simd(out, in, n);                                    \
     }
 
 #define WRAP_MATH_FUNCTION_BINARY(name, function)                       \

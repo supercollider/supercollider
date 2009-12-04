@@ -153,6 +153,7 @@ inline void floor_vec_simd(float_type * out, const float_type * arg, unsigned in
     while (--loops);
 }
 
+
 template <typename float_type>
 inline void frac_vec(float_type * out, const float_type * arg, unsigned int n)
 {
