@@ -1031,8 +1031,33 @@ void ToggleFF_next(ToggleFF *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 #ifdef NOVA_SIMD
-void Latch_next_ak_nova(Latch *unit, int inNumSamples);
+void Latch_next_ak_nova(Latch *unit, int inNumSamples)
+{
+	float level = unit->mLevel;
+
+	float curtrig = ZIN0(1);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = ZIN0(0);
+
+	nova::setvec_simd(OUT(0), level, inNumSamples);
+
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
+
+void Latch_next_ak_nova_64(Latch *unit, int inNumSamples)
+{
+	float level = unit->mLevel;
+
+	float curtrig = ZIN0(1);
+	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = ZIN0(0);
+
+	nova::setvec_simd<64>(OUT(0), level);
+
+	unit->m_prevtrig = curtrig;
+	unit->mLevel = level;
+}
 #endif
 
 void Latch_Ctor(Latch *unit)
@@ -1041,6 +1066,8 @@ void Latch_Ctor(Latch *unit)
 		SETCALC(Latch_next_aa);
 	} else {
 #ifdef NOVA_SIMD
+		if (BUFLENGTH == 64)
+			SETCALC(Latch_next_ak_nova_64);
 		if (!(BUFLENGTH & 15))
 			SETCALC(Latch_next_ak_nova);
 		else
@@ -1069,21 +1096,6 @@ void Latch_next_ak(Latch *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-#ifdef NOVA_SIMD
-void Latch_next_ak_nova(Latch *unit, int inNumSamples)
-{
-	float level = unit->mLevel;
-
-	float curtrig = ZIN0(1);
-	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = ZIN0(0);
-
-	nova::setvec_simd(OUT(0), level, inNumSamples);
-
-	unit->m_prevtrig = curtrig;
-	unit->mLevel = level;
-}
-#endif
-
 
 void Latch_next_aa(Latch *unit, int inNumSamples)
 {
@@ -1109,7 +1121,31 @@ void Latch_next_aa(Latch *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void Gate_next_ak_nova(Gate *unit, int inNumSamples);
+void Gate_next_ak_nova(Gate *unit, int inNumSamples)
+{
+	float *trig = ZIN(1);
+	float level = unit->mLevel;
+
+	float curtrig = ZXP(trig);
+	if (curtrig > 0.f) {
+		nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
+		unit->mLevel = IN(0)[inNumSamples-1];
+	} else
+		nova::setvec_simd(OUT(0), level, inNumSamples);
+}
+
+void Gate_next_ak_nova_64(Gate *unit, int inNumSamples)
+{
+	float *trig = ZIN(1);
+	float level = unit->mLevel;
+
+	float curtrig = ZXP(trig);
+	if (curtrig > 0.f) {
+		nova::copyvec_simd<64>(OUT(0), IN(0));
+		unit->mLevel = IN(0)[inNumSamples-1];
+	} else
+		nova::setvec_simd<64>(OUT(0), level);
+}
 #endif
 
 void Gate_Ctor(Gate *unit)
@@ -1118,6 +1154,8 @@ void Gate_Ctor(Gate *unit)
 		SETCALC(Gate_next_aa);
 	} else {
 #ifdef NOVA_SIMD
+		if (BUFLENGTH == 64)
+			SETCALC(Gate_next_ak_nova_64);
 		if (!(BUFLENGTH & 15))
 			SETCALC(Gate_next_ak_nova);
 		else
@@ -1152,21 +1190,6 @@ void Gate_next_ak(Gate *unit, int inNumSamples)
 		);
 	}
 }
-
-#ifdef NOVA_SIMD
-void Gate_next_ak_nova(Gate *unit, int inNumSamples)
-{
-	float *trig = ZIN(1);
-
-	float curtrig = ZXP(trig);
-	if (curtrig > 0.f) {
-		nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
-		unit->mLevel = IN(0)[inNumSamples-1];
-	} else
-		nova::setvec_simd(OUT(0), unit->mLevel, inNumSamples);
-}
-#endif
-
 
 void Gate_next_aa(Gate *unit, int inNumSamples)
 {
