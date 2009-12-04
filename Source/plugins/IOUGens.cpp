@@ -1629,6 +1629,50 @@ void LocalIn_next_a(LocalIn *unit, int inNumSamples)
 	}
 }
 
+#ifdef NOVA_SIMD
+void LocalIn_next_a_nova(LocalIn *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		int diff = bufCounter - touched[i];
+		//Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
+		if (diff == 1 || diff == 0)
+			nova::copyvec_simd(out, in, inNumSamples);
+		else
+			nova::zerovec_simd(out, inNumSamples);
+	}
+}
+
+void LocalIn_next_a_nova_64(LocalIn *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
+
+	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		float *out = OUT(i);
+		int diff = bufCounter - touched[i];
+		//Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
+		if (diff == 1 || diff == 0)
+			nova::copyvec_simd<64>(out, in);
+		else
+			nova::zerovec_simd<64>(out);
+	}
+}
+#endif
+
 
 void LocalIn_next_k(LocalIn *unit, int inNumSamples)
 {
@@ -1664,6 +1708,13 @@ void LocalIn_Ctor(LocalIn* unit)
 			return;
 		}
 		unit->mParent->mLocalAudioBusUnit = unit;
+#ifdef NOVA_SIMD
+		if (BUFLENGTH == 64)
+			SETCALC(LocalIn_next_a_nova_64);
+		else if (!(BUFLENGTH & 15))
+			SETCALC(LocalIn_next_a_nova);
+		else
+#endif
 		SETCALC(LocalIn_next_a);
 		LocalIn_next_a(unit, 1);
 	} else {
@@ -1716,6 +1767,66 @@ void LocalOut_next_a(IOUnit *unit, int inNumSamples)
 		//Print("LocalOut %d %g %g\n", i, in[0], out[0]);
 	}
 }
+
+#ifdef NOVA_SIMD
+void LocalOut_next_a_nova(IOUnit *unit, int inNumSamples)
+{
+	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs;
+
+	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
+	if (!localIn || numChannels != localIn->mNumOutputs)
+	{
+		ClearUnitOutputs(unit, inNumSamples);
+	}
+
+	float *out = localIn->m_bus;
+	int32 *touched = localIn->m_busTouched;
+
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i);
+		if (touched[i] == bufCounter)
+			nova::addvec_simd(out, in, inNumSamples);
+		else {
+			nova::copyvec_simd(out, in, inNumSamples);
+			touched[i] = bufCounter;
+		}
+		//Print("LocalOut %d %g %g\n", i, in[0], out[0]);
+	}
+}
+
+void LocalOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
+{
+	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumInputs;
+
+	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
+	if (!localIn || numChannels != localIn->mNumOutputs)
+	{
+		ClearUnitOutputs(unit, inNumSamples);
+	}
+
+	float *out = localIn->m_bus;
+	int32 *touched = localIn->m_busTouched;
+
+	int32 bufCounter = unit->mWorld->mBufCounter;
+	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		float *in = IN(i);
+		if (touched[i] == bufCounter)
+			nova::addvec_simd<64>(out, in);
+		else {
+			nova::copyvec_simd<64>(out, in);
+			touched[i] = bufCounter;
+		}
+		//Print("LocalOut %d %g %g\n", i, in[0], out[0]);
+	}
+}
+#endif
 
 #if __VEC__
 
@@ -1789,14 +1900,18 @@ void LocalOut_Ctor(IOUnit* unit)
 
 	if (unit->mCalcRate == calc_FullRate) {
 #if __VEC__
-		if (USEVEC) {
+		if (USEVEC)
 			SETCALC(vLocalOut_next_a);
-		} else {
-			SETCALC(LocalOut_next_a);
-		}
-#else
-		SETCALC(LocalOut_next_a);
+		else
 #endif
+#ifdef NOVA_SIMD
+		if (BUFLENGTH == 64)
+			SETCALC(LocalOut_next_a_nova_64);
+		else if (!(BUFLENGTH & 15))
+			SETCALC(LocalOut_next_a_nova);
+		else
+#endif
+		SETCALC(LocalOut_next_a);
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
 	} else {
