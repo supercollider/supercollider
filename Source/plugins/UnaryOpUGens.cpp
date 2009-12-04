@@ -36,6 +36,16 @@
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
 	}
 
+#define NOVA_WRAPPER_CT_UNROLL(NAME, NOVANAME)              \
+	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
+	{                                                       \
+		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
+	}														\
+															\
+	void NAME##_nova_64(UnaryOpUGen *unit, int inNumSamples)\
+	{                                                       \
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0));    \
+	}
 
 #endif
 
@@ -216,7 +226,7 @@ extern "C"
 bool ChooseOperatorFunc(UnaryOpUGen *unit);
 
 void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
-{	
+{
 	bool initialized = ChooseOperatorFunc(unit);
 	if (!initialized)
 		(unit->mCalcFunc)(unit, 1);
@@ -428,8 +438,8 @@ void vceil_a(UnaryOpUGen *unit, int inNumSamples)
 #endif // __VEC__
 
 #ifdef NOVA_SIMD
-NOVA_WRAPPER(floor, floor)
-NOVA_WRAPPER(ceil, ceil)
+NOVA_WRAPPER_CT_UNROLL(floor, floor)
+NOVA_WRAPPER_CT_UNROLL(ceil, ceil)
 #endif
 
 void sin_a(UnaryOpUGen *unit, int inNumSamples)
@@ -593,7 +603,7 @@ void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-NOVA_WRAPPER(sqrt, ssqrt)
+NOVA_WRAPPER_CT_UNROLL(sqrt, ssqrt)
 #endif
 
 void ampdb_a(UnaryOpUGen *unit, int inNumSamples)
@@ -688,7 +698,7 @@ void frac_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-NOVA_WRAPPER(frac, frac)
+NOVA_WRAPPER_CT_UNROLL(frac, frac)
 #endif
 
 #if __VEC__
@@ -717,15 +727,7 @@ void squared_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void squared_nova(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::square_vec_simd(OUT(0), IN(0), inNumSamples);
-}
-
-void squared_nova_64(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::square_vec_simd<64>(OUT(0), IN(0));
-}
+NOVA_WRAPPER_CT_UNROLL(squared, square)
 #endif
 
 #if __VEC__
@@ -770,15 +772,7 @@ void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 #endif // __VEC__
 
 #ifdef NOVA_SIMD
-void cubed_nova(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::cube_vec_simd(OUT(0), IN(0), inNumSamples);
-}
-
-void cubed_nova_64(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::cube_vec_simd<64>(OUT(0), IN(0));
-}
+NOVA_WRAPPER_CT_UNROLL(cubed, cube)
 #endif
 
 void sign_a(UnaryOpUGen *unit, int inNumSamples)
@@ -793,15 +787,7 @@ void sign_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void sign_nova(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::sgn_vec_simd(OUT(0), IN(0), inNumSamples);
-}
-
-void sign_nova_64(UnaryOpUGen *unit, int inNumSamples)
-{
-	nova::sgn_vec_simd<64>(OUT(0), IN(0));
-}
+NOVA_WRAPPER_CT_UNROLL(sign, sgn)
 #endif
 
 void distort_a(UnaryOpUGen *unit, int inNumSamples)
@@ -871,7 +857,7 @@ void softclip_a(UnaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-NOVA_WRAPPER(softclip, softclip)
+NOVA_WRAPPER_CT_UNROLL(softclip, softclip)
 #endif
 
 void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)
@@ -1577,13 +1563,13 @@ UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opNeg : return &invert_nova_64;
 		case opNot : func = &not_a; break;
 		case opAbs : return &abs_nova_64;
-		case opCeil : func = &ceil_nova; break;
-		case opFloor : func = &floor_nova; break;
-		case opFrac : func = &frac_nova; break;
+		case opCeil : func = &ceil_nova_64; break;
+		case opFloor : func = &floor_nova_64; break;
+		case opFrac : func = &frac_nova_64; break;
 		case opSign : return &sign_nova_64;
 		case opSquared : return &squared_nova_64;
 		case opCubed : return &cubed_nova_64;
-		case opSqrt : func = &sqrt_nova; break;
+		case opSqrt : func = &sqrt_nova_64; break;
 		case opExp : func = &exp_nova; break;
 		case opRecip : return &recip_nova_64;
 		case opMIDICPS : func = &midicps_a; break;
@@ -1609,7 +1595,7 @@ UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opTanH : func = &tanh_nova; break;
 
 		case opDistort : func = &distort_a; break;
-		case opSoftClip : func = &softclip_nova; break;
+		case opSoftClip : func = &softclip_nova_64; break;
 
 		case opRectWindow : func = &rectwindow_a; break;
 		case opHanWindow : func = &hanwindow_a; break;
@@ -1641,7 +1627,7 @@ UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCPSMIDI : func = &cpsmidi_a; break;
 
 		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;	
+		case opRatioMIDI : func = &ratiomidi_a; break;
 		case opDbAmp : func = &dbamp_a; break;
 		case opAmpDb : 	func = &ampdb_a; break;
 		case opOctCPS : func = &octcps_a; break;

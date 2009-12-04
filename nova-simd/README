@@ -32,7 +32,54 @@ on current pipelined cpus.
  * unroll_constraints<float_type>::unroll_constraints
  */
 template <int n>
-void foo_vec_simd(float * out, const float * in);
+inline void foo_vec_simd_mp(float * out, const float * in);
+template <int n>
+inline void foo_vec_simd_mp(double * out, const double * in);
+
+
+for binary and ternary operations, instances are provided for mixed
+vector and scalar arguments. using the suffix _simd provides unrolled
+versions of these operations. also compile-time unrolled versions may
+be provided:
+
+template <typename float_type>
+inline void foo_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n);
+template <typename float_type>
+inline void foo_vec(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n);
+template <typename float_type>
+inline void foo_vec(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n);
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n);
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n);
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n);
+
+
+for scalar arguments, an extension is provided to support ramping by
+adding a slope to the scalar after each iteration. for binary functions,
+c++ function overloading is used. compile-time unrolled versions of these
+functions may also be provided:
+
+template <typename float_type>
+inline void foo_vec(float_type * out, const float_type * arg1, float_type arg2,
+                    const float_type arg2_slope, unsigned int n);
+template <typename float_type>
+inline void foo_vec(float_type * out, float_type arg1, const float_type arg1_slope,
+                    const float_type * arg2, unsigned int n)
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, const float_type * arg1, float_type arg2,
+                         const float_type arg2_slope, unsigned int n);
+template <typename float_type>
+inline void foo_vec_simd(float_type * out, float_type arg1, const float_type arg1_slope,
+                         const float_type * arg2, unsigned int n)
+
+
+for ternary operations, a suffix need to be added to specify the
+ramping arguments. the suffix is formatted as _(r[0-9])+. this means,
+that _r1r3 would select a function, ramping the first and the third
+argument, which are implied to be scalar.
+
 
 
 libsimdmath:
