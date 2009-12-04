@@ -39,11 +39,24 @@
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);	\
 	}																	\
 																		\
+	void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), IN(1));			\
+	}																	\
+																		\
 	void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples)			\
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
 		nova::NOVANAME##_vec_simd(OUT(0), xa, IN(1), inNumSamples);		\
+		unit->mPrevA = xa;												\
+	}																	\
+																		\
+	void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		float xa = ZIN0(0);												\
+																		\
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));			\
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
@@ -53,7 +66,15 @@
 																		\
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, inNumSamples);		\
 		unit->mPrevB = xb;												\
-	}                                                                   \
+	}																	\
+																		\
+	void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		float xb = ZIN0(1);												\
+																		\
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);			\
+		unit->mPrevB = xb;												\
+	}																	\
 
 #define NOVA_BINARY_WRAPPER_K(SCNAME, NOVANAME)							\
 	void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples)			\
@@ -61,11 +82,24 @@
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);	\
 	}																	\
 																		\
+	void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), IN(1));			\
+	}																	\
+																		\
 	void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples)			\
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
 		nova::NOVANAME##_vec_simd(OUT(0), xa, IN(1), inNumSamples);		\
+		unit->mPrevA = xa;												\
+	}																	\
+																		\
+	void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		float xa = ZIN0(0);												\
+																		\
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));			\
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
@@ -75,8 +109,16 @@
 																		\
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, inNumSamples);		\
 		unit->mPrevB = xb;												\
-	}                                                                   \
-                                                                        \
+	}																	\
+																		\
+	void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		float xb = ZIN0(1);												\
+																		\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);               \
+		unit->mPrevB = xb;												\
+	}																	\
+																		\
 	void SCNAME##_ak_nova(BinaryOpUGen *unit, int inNumSamples)			\
 	{																	\
 		float xb = unit->mPrevB;										\
@@ -84,6 +126,20 @@
 																		\
 		if (xb == next_b) {												\
 			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, inNumSamples); \
+		} else {														\
+			float slope = CALCSLOPE(next_b, xb);						\
+			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples); \
+			unit->mPrevB = next_b;										\
+		}																\
+	}																	\
+																		\
+	void SCNAME##_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	{																	\
+		float xb = unit->mPrevB;										\
+		float next_b = ZIN0(1);											\
+																		\
+		if (xb == next_b) {												\
+			nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);        \
 		} else {														\
 			float slope = CALCSLOPE(next_b, xb);						\
 			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples); \
@@ -103,7 +159,21 @@
 			nova::NOVANAME##_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples); \
 			unit->mPrevA = next_a;										\
 		}																\
+	}                                                                   \
+	void SCNAME##_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)      \
+	{																	\
+		float xa = unit->mPrevA;										\
+		float next_a = ZIN0(0);											\
+																		\
+		if (xa == next_a) {												\
+			nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));        \
+		} else {														\
+			float slope = CALCSLOPE(next_a, xa);						\
+			nova::NOVANAME##_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples); \
+			unit->mPrevA = next_a;										\
+		}																\
 	}
+
 
 #endif
 
@@ -1445,6 +1515,25 @@ void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		if (xb == 0.f)
+			nova::copyvec_simd_mp<64>(OUT(0), IN(0));
+		else
+			nova::plus_vec_simd_mp<64>(OUT(0), IN(0), xb);
+	} else {
+		float slope =  CALCSLOPE(next_b, xb);
+		nova::plus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		unit->mPrevB = next_b;
+	}
+}
+
 
 void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -1456,6 +1545,25 @@ void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::copyvec_simd(OUT(0), IN(1), inNumSamples);
 		else
 			nova::plus_vec_simd(OUT(0), IN(1), xa, inNumSamples);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		nova::plus_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+		unit->mPrevA = next_a;
+	}
+}
+
+void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		if (xa == 0.f)
+			nova::copyvec_simd<64>(OUT(0), IN(1));
+		else
+			nova::plus_vec_simd_mp<64>(OUT(0), IN(1), xa);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::plus_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
@@ -1577,6 +1685,25 @@ void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		if (xb == 0.f)
+			nova::copyvec_simd<64>(OUT(0), IN(0));
+		else
+			nova::minus_vec_simd_mp<64>(OUT(0), IN(0), xb);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		nova::minus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		unit->mPrevB = next_b;
+	}
+}
+
 void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
@@ -1587,6 +1714,25 @@ void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::copyvec_simd(OUT(0), IN(1), inNumSamples);
 		else
 			nova::minus_vec_simd(OUT(0), xa, IN(1), inNumSamples);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		nova::minus_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
+		unit->mPrevA = next_a;
+	}
+}
+
+void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		if (xa == 0.f)
+			nova::copyvec_simd<64>(OUT(0), IN(1));
+		else
+			nova::minus_vec_simd_mp<64>(OUT(0), xa, IN(1));
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::minus_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
@@ -1711,6 +1857,28 @@ inline void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+inline void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float * out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float * b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		if (xa == 0.f)
+			nova::zerovec_simd<64>(OUT(0));
+		else if (xa == 1.f)
+			nova::copyvec_simd<64>(OUT(0), IN(1));
+		else
+			nova::times_vec_simd_mp<64>(OUT(0), IN(1), xa);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		unit->mPrevA = next_a;
+
+		nova::times_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+	}
+}
+
 inline void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
@@ -1731,6 +1899,27 @@ inline void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+inline void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		if (xb == 0.f)
+			nova::zerovec_simd<64>(OUT(0));
+		else if (xb == 1.f)
+			nova::copyvec_simd<64>(OUT(0), IN(0));
+		else
+			nova::times_vec_simd_mp<64>(OUT(0), IN(0), xb);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		unit->mPrevB = next_b;
+
+		nova::times_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+	}
+}
 
 #endif
 
@@ -6982,8 +7171,273 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 }
 
 #ifdef NOVA_SIMD
+BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
+{
+	BinaryOpFunc func = &zero_1;
+
+	int rateA = INRATE(0);
+	int rateB = INRATE(1);
+
+	switch (rateA) {
+		case calc_FullRate:
+			switch (rateB) {
+				case calc_FullRate:
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_aa_nova_64; break;
+						case opSub : func = &sub_aa_nova_64; break;
+						case opMul : func = &mul_aa_nova_64; break;
+						case opFDiv : func = &div_aa_nova; break;
+						case opMod : func = &mod_aa; break;
+						case opEQ  : func = &eq_aa_nova_64; break;
+						case opNE  : func = &neq_aa_nova_64; break;
+						case opLT  : func = &lt_aa_nova_64; break;
+						case opGT  : func = &gt_aa_nova_64; break;
+						case opLE  : func = &le_aa_nova_64; break;
+						case opGE  : func = &ge_aa_nova_64; break;
+						case opMin : func = &min_aa_nova_64; break;
+						case opMax : func = &max_aa_nova_64; break;
+						case opBitAnd : func = &and_aa; break;
+						case opBitOr : func = &or_aa; break;
+						case opBitXor : func = &xor_aa; break;
+						case opRound : func = &round_aa; break;
+						case opRoundUp : func = &roundUp_aa; break;
+						case opTrunc : func = &trunc_aa; break;
+						case opAtan2 : func = &atan2_aa; break;
+						case opHypot : func = &hypot_aa; break;
+						case opHypotx : func = &hypotx_aa; break;
+						case opPow	 : func = &pow_aa_nova; break;
+						case opRing1 : func = &ring1_aa; break;
+						case opRing2 : func = &ring2_aa; break;
+						case opRing3 : func = &ring3_aa; break;
+						case opRing4 : func = &ring4_aa; break;
+						case opDifSqr : func = &difsqr_aa; break;
+						case opSumSqr : func = &sumsqr_aa; break;
+						case opSqrSum : func = &sqrsum_aa; break;
+						case opSqrDif : func = &sqrdif_aa; break;
+						case opAbsDif : func = &absdif_aa; break;
+						case opThresh : func = &thresh_aa; break;
+						case opAMClip : func = &amclip_aa; break;
+						case opScaleNeg : func = &scaleneg_aa; break;
+						case opClip2 : func = &clip2_aa; break;
+						case opFold2 : func = &fold2_aa; break;
+						case opWrap2 : func = &wrap2_aa; break;
+						case opExcess : func = &excess_aa; break;
+						case opFirstArg : func = &firstarg_aa_nova; break;
+						//case opSecondArg : func = &secondarg_aa_nova; break;
+						default : func = &add_aa; break;
+					}
+					break;
+				case calc_BufRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_ak_nova_64; break;
+						case opSub : func = &sub_ak_nova_64; break;
+						case opMul : func = &mul_ak_nova_64; break;
+						case opFDiv : func = &div_ak_nova; break;
+						case opMod : func = &mod_ak; break;
+						case opEQ  : func = &eq_ak_nova_64; break;
+						case opNE  : func = &neq_ak_nova_64; break;
+						case opLT  : func = &lt_ak_nova_64; break;
+						case opGT  : func = &gt_ak_nova_64; break;
+						case opLE  : func = &le_ak_nova_64; break;
+						case opGE  : func = &ge_ak_nova_64; break;
+						case opMin : func = &min_ak_nova_64; break;
+						case opMax : func = &max_ak_nova_64; break;
+						case opBitAnd : func = &and_ak; break;
+						case opBitOr : func = &or_ak; break;
+						case opBitXor : func = &xor_ak; break;
+						case opRound : func = &round_ak; break;
+						case opRoundUp : func = &roundUp_ak; break;
+						case opTrunc : func = &trunc_ak; break;
+						case opAtan2 : func = &atan2_ak; break;
+						case opHypot : func = &hypot_ak; break;
+						case opHypotx : func = &hypotx_ak; break;
+						case opPow	 : func = &pow_ak_nova; break;
+						case opRing1 : func = &ring1_ak; break;
+						case opRing2 : func = &ring2_ak; break;
+						case opRing3 : func = &ring3_ak; break;
+						case opRing4 : func = &ring4_ak; break;
+						case opDifSqr : func = &difsqr_ak; break;
+						case opSumSqr : func = &sumsqr_ak; break;
+						case opSqrSum : func = &sqrsum_ak; break;
+						case opSqrDif : func = &sqrdif_ak; break;
+						case opAbsDif : func = &absdif_ak; break;
+						case opThresh : func = &thresh_ak; break;
+						case opAMClip : func = &amclip_ak; break;
+						case opScaleNeg : func = &scaleneg_ak; break;
+						case opClip2 : func = &clip2_ak; break;
+						case opFold2 : func = &fold2_ak; break;
+						case opWrap2 : func = &wrap2_ak; break;
+						case opExcess : func = &excess_ak; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ak; break;
+					}
+					break;
+				case calc_ScalarRate :
+					switch (unit->mSpecialIndex) {
+						//case opSilence2 : func = &zero_aa; break;
+						case opAdd : func = &add_ai_nova_64; break;
+						case opSub : func = &sub_ai_nova_64; break;
+						case opMul : func = &mul_ai_nova_64; break;
+						case opFDiv : func = &div_ai_nova; break;
+						case opMod : func = &mod_ai; break;
+						case opEQ  : func = &eq_ai_nova_64; break;
+						case opNE  : func = &neq_ai_nova_64; break;
+						case opLT  : func = &lt_ai_nova_64; break;
+						case opGT  : func = &gt_ai_nova_64; break;
+						case opLE  : func = &le_ai_nova_64; break;
+						case opGE  : func = &ge_ai_nova_64; break;
+						case opMin : func = &min_ai_nova_64; break;
+						case opMax : func = &max_ai_nova_64; break;
+						case opBitAnd : func = &and_ai; break;
+						case opBitOr : func = &or_ai; break;
+						case opBitXor : func = &xor_ai; break;
+						case opRound : func = &round_ai; break;
+						case opRoundUp : func = &roundUp_ai; break;
+						case opTrunc : func = &trunc_ai; break;
+						case opAtan2 : func = &atan2_ai; break;
+						case opHypot : func = &hypot_ai; break;
+						case opHypotx : func = &hypotx_ai; break;
+						case opPow	 : func = &pow_ai_nova; break;
+						case opRing1 : func = &ring1_ai; break;
+						case opRing2 : func = &ring2_ai; break;
+						case opRing3 : func = &ring3_ai; break;
+						case opRing4 : func = &ring4_ai; break;
+						case opDifSqr : func = &difsqr_ai; break;
+						case opSumSqr : func = &sumsqr_ai; break;
+						case opSqrSum : func = &sqrsum_ai; break;
+						case opSqrDif : func = &sqrdif_ai; break;
+						case opAbsDif : func = &absdif_ai; break;
+						case opThresh : func = &thresh_ai; break;
+						case opAMClip : func = &amclip_ai; break;
+						case opScaleNeg : func = &scaleneg_ai; break;
+						case opClip2 : func = &clip2_ai; break;
+						case opFold2 : func = &fold2_ai; break;
+						case opWrap2 : func = &wrap2_ai; break;
+						case opExcess : func = &excess_ai; break;
+						case opFirstArg : func = &firstarg_aa; break;
+						//case opSecondArg : func = &secondarg_aa; break;
+						default : func = &add_ai; break;
+					}
+				}
+			break;
+		case calc_BufRate :
+			if (rateB == calc_FullRate) {
+				switch (unit->mSpecialIndex) {
+					//case opSilence2 : func = &zero_aa; break;
+					case opAdd : func = &add_ka_nova_64; break;
+					case opSub : func = &sub_ka_nova_64; break;
+					case opMul : func = &mul_ka_nova_64; break;
+					case opFDiv : func = &div_ka_nova; break;
+					case opMod : func = &mod_ka; break;
+					case opEQ  : func = &eq_ka_nova_64; break;
+					case opNE  : func = &neq_ka_nova_64; break;
+					case opLT  : func = &lt_ka_nova_64; break;
+					case opGT  : func = &gt_ka_nova_64; break;
+					case opLE  : func = &le_ka_nova_64; break;
+					case opGE  : func = &ge_ka_nova_64; break;
+					case opMin : func = &min_ka_nova_64; break;
+					case opMax : func = &max_ka_nova_64; break;
+					case opBitAnd : func = &and_ka; break;
+					case opBitOr : func = &or_ka; break;
+					case opBitXor : func = &xor_ka; break;
+					case opRound : func = &round_ka; break;
+					case opRoundUp : func = &roundUp_ka; break;
+					case opTrunc : func = &trunc_ka; break;
+					case opAtan2 : func = &atan2_ka; break;
+					case opHypot : func = &hypot_ka; break;
+					case opHypotx : func = &hypotx_ka; break;
+					case opPow	 : func = &pow_ka_nova; break;
+					case opRing1 : func = &ring1_ka; break;
+					case opRing2 : func = &ring2_ka; break;
+					case opRing3 : func = &ring3_ka; break;
+					case opRing4 : func = &ring4_ka; break;
+					case opDifSqr : func = &difsqr_ka; break;
+					case opSumSqr : func = &sumsqr_ka; break;
+					case opSqrSum : func = &sqrsum_ka; break;
+					case opSqrDif : func = &sqrdif_ka; break;
+					case opAbsDif : func = &absdif_ka; break;
+					case opThresh : func = &thresh_ka; break;
+					case opAMClip : func = &amclip_ka; break;
+					case opScaleNeg : func = &scaleneg_ka; break;
+					case opClip2 : func = &clip2_ka; break;
+					case opFold2 : func = &fold2_ka; break;
+					case opWrap2 : func = &wrap2_ka; break;
+					case opExcess : func = &excess_ka; break;
+					//case opFirstArg : func = &firstarg_aa; break;
+					//case opSecondArg : func = &secondarg_aa; break;
+					default : func = &add_ka; break;
+				}
+			} else {
+				// this should have been caught by mBufLength == 1
+				func = &zero_aa;
+			}
+			break;
+		case calc_ScalarRate :
+			if (rateB == calc_FullRate) {
+				switch (unit->mSpecialIndex) {
+					//case opSilence2 : func = &zero_aa; break;
+					case opAdd : func = &add_ia_nova_64; break;
+					case opSub : func = &sub_ia_nova_64; break;
+					case opMul : func = &mul_ia_nova_64; break;
+					case opFDiv : func = &div_ia_nova; break;
+					case opMod : func = &mod_ia; break;
+					case opEQ  : func = &eq_ia_nova_64; break;
+					case opNE  : func = &neq_ia_nova_64; break;
+					case opLT  : func = &lt_ia_nova_64; break;
+					case opGT  : func = &gt_ia_nova_64; break;
+					case opLE  : func = &le_ia_nova_64; break;
+					case opGE  : func = &ge_ia_nova_64; break;
+					case opMin : func = &min_ia_nova_64; break;
+					case opMax : func = &max_ia_nova_64; break;
+					case opBitAnd : func = &and_ia; break;
+					case opBitOr : func = &or_ia; break;
+					case opBitXor : func = &xor_ia; break;
+					case opRound : func = &round_ia; break;
+					case opRoundUp : func = &roundUp_ia; break;
+					case opTrunc : func = &trunc_ia; break;
+					case opAtan2 : func = &atan2_ia; break;
+					case opHypot : func = &hypot_ia; break;
+					case opHypotx : func = &hypotx_ia; break;
+					case opPow	 : func = &pow_ia_nova; break;
+					case opRing1 : func = &ring1_ia; break;
+					case opRing2 : func = &ring2_ia; break;
+					case opRing3 : func = &ring3_ia; break;
+					case opRing4 : func = &ring4_ia; break;
+					case opDifSqr : func = &difsqr_ia; break;
+					case opSumSqr : func = &sumsqr_ia; break;
+					case opSqrSum : func = &sqrsum_ia; break;
+					case opSqrDif : func = &sqrdif_ia; break;
+					case opAbsDif : func = &absdif_ia; break;
+					case opThresh : func = &thresh_ia; break;
+					case opAMClip : func = &amclip_ia; break;
+					case opScaleNeg : func = &scaleneg_ia; break;
+					case opClip2 : func = &clip2_ia; break;
+					case opFold2 : func = &fold2_ia; break;
+					case opWrap2 : func = &wrap2_ia; break;
+					case opExcess : func = &excess_ia; break;
+					//case opFirstArg : func = &firstarg_aa; break;
+					//case opSecondArg : func = &secondarg_aa; break;
+					default : func = &add_ia; break;
+				}
+			} else {
+				// this should have been caught by mBufLength == 1
+				func = &zero_aa;
+			}
+			break;
+	}
+
+	return func;
+}
+
+
 BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 {
+	if (BUFLENGTH == 64)
+		return ChooseNovaSimdFunc_64(unit);
+
 	BinaryOpFunc func = &zero_1;
 
 	int rateA = INRATE(0);
@@ -7242,6 +7696,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 
 	return func;
 }
+
 #endif
 
 bool ChooseOperatorFunc(BinaryOpUGen *unit)
