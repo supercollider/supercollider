@@ -281,16 +281,20 @@ void ampmix_aa_nova(MulAdd *unit, int inNumSamples)
 	nova::muladd_vec_simd(OUT(0), IN(0), MULIN, ADDIN, inNumSamples);
 }
 
+void ampmix_aa_nova_64(MulAdd *unit, int inNumSamples)
+{
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN, ADDIN);
+}
+
 void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
 {
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
 	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f) {
+		if (mix_cur == 0.f)
 			nova::times_vec_simd(OUT(0), IN(0), MULIN, inNumSamples);
-		} else {
+		else
 			nova::muladd_vec_simd(OUT(0), IN(0), MULIN, mix_cur, inNumSamples);
-		}
 	} else {
 		float mix_slope = CALCSLOPE(nextMix, mix_cur);
 		unit->mPrevAdd = nextMix;
@@ -298,10 +302,30 @@ void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
+void ampmix_ak_nova_64(MulAdd *unit, int inNumSamples)
 {
 	float mix_cur = unit->mPrevAdd;
-	nova::muladd_vec_simd(OUT(0), IN(0), MULIN, mix_cur, inNumSamples);
+	float nextMix = ADDIN[0];
+	if (nextMix == mix_cur) {
+		if (mix_cur == 0.f)
+			nova::times_vec_simd<64>(OUT(0), IN(0), MULIN);
+		else
+			nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN, mix_cur);
+	} else {
+		float mix_slope = CALCSLOPE(nextMix, mix_cur);
+		unit->mPrevAdd = nextMix;
+		nova::muladd_vec_simd_r3<64>(OUT(0), IN(0), MULIN, mix_cur, mix_slope);
+	}
+}
+
+void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
+{
+	nova::muladd_vec_simd(OUT(0), IN(0), MULIN, unit->mPrevAdd, inNumSamples);
+}
+
+void ampmix_ai_nova_64(MulAdd *unit, int inNumSamples)
+{
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN, unit->mPrevAdd);
 }
 
 void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
@@ -310,17 +334,35 @@ void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 	float nextAmp = MULIN[0];
 
 	if (amp_cur == nextAmp) {
-		if (amp_cur == 0.f) {
+		if (amp_cur == 0.f)
 			nova::copyvec_simd(OUT(0), ADDIN, inNumSamples);
-		} else if (amp_cur == 1.f) {
+		else if (amp_cur == 1.f)
 			nova::plus_vec_simd(OUT(0), IN(0), ADDIN, inNumSamples);
-		} else {
+		else
 			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, ADDIN, inNumSamples);
-		}
 	} else {
 		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 		unit->mPrevMul = nextAmp;
 		nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, ADDIN, inNumSamples);
+	}
+}
+
+void ampmix_ka_nova_64(MulAdd *unit, int inNumSamples)
+{
+	float amp_cur = unit->mPrevMul;
+	float nextAmp = MULIN[0];
+
+	if (amp_cur == nextAmp) {
+		if (amp_cur == 0.f)
+			nova::copyvec_simd<64>(OUT(0), ADDIN);
+		else if (amp_cur == 1.f)
+			nova::plus_vec_simd<64>(OUT(0), IN(0), ADDIN);
+		else
+			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur, ADDIN);
+	} else {
+		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
+		unit->mPrevMul = nextAmp;
+		nova::muladd_vec_simd_r2<64>(OUT(0), IN(0), amp_cur, amp_slope, ADDIN);
 	}
 }
 
@@ -381,13 +423,12 @@ void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 	float mix_cur = unit->mPrevAdd;
 
 	if (nextAmp == amp_cur) {
-		if (amp_cur == 1.f) {
+		if (amp_cur == 1.f)
 			nova::plus_vec_simd(OUT(0), IN(0), mix_cur, inNumSamples);
-		} else if (amp_cur == 0.f) {
+		else if (amp_cur == 0.f)
 			nova::setvec_simd(OUT(0), mix_cur, inNumSamples);
-		} else {
+		else
 			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, mix_cur, inNumSamples);
-		}
 	} else {
 		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 		nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, mix_cur, inNumSamples);
@@ -395,11 +436,34 @@ void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
+void ampmix_ki_nova_64(MulAdd *unit, int inNumSamples)
+{
+	float amp_cur = unit->mPrevMul;
+	float nextAmp = MULIN[0];
+	float mix_cur = unit->mPrevAdd;
+
+	if (nextAmp == amp_cur) {
+		if (amp_cur == 1.f)
+			nova::plus_vec_simd<64>(OUT(0), IN(0), mix_cur);
+		else if (amp_cur == 0.f)
+			nova::setvec_simd<64>(OUT(0), mix_cur);
+		else
+			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur, mix_cur);
+	} else {
+		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
+		nova::muladd_vec_simd_r2<64>(OUT(0), IN(0), amp_cur, amp_slope, mix_cur);
+		unit->mPrevMul = nextAmp;
+	}
+}
 
 void ampmix_ia_nova(MulAdd *unit, int inNumSamples)
 {
-	float amp_cur = unit->mPrevMul;
-	nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, ADDIN, inNumSamples);
+	nova::muladd_vec_simd(OUT(0), IN(0), unit->mPrevMul, ADDIN, inNumSamples);
+}
+
+void ampmix_ia_nova_64(MulAdd *unit, int inNumSamples)
+{
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->mPrevMul, ADDIN);
 }
 
 void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
@@ -409,14 +473,31 @@ void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
 	float nextMix = ADDIN[0];
 
 	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f) {
+		if (mix_cur == 0.f)
 			nova::times_vec_simd(OUT(0), IN(0), amp_cur, inNumSamples);
-		} else {
+		else
 			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, mix_cur, inNumSamples);
-		}
 	} else {
 		float mix_slope = CALCSLOPE(nextMix, mix_cur);
 		nova::muladd_vec_simd_r3(OUT(0), IN(0), amp_cur, mix_cur, mix_slope, inNumSamples);
+		unit->mPrevAdd = nextMix;
+	}
+}
+
+void ampmix_ik_nova_64(MulAdd *unit, int inNumSamples)
+{
+	float amp_cur = unit->mPrevMul;
+	float mix_cur = unit->mPrevAdd;
+	float nextMix = ADDIN[0];
+
+	if (nextMix == mix_cur) {
+		if (mix_cur == 0.f)
+			nova::times_vec_simd<64>(OUT(0), IN(0), amp_cur);
+		else
+			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur, mix_cur);
+	} else {
+		float mix_slope = CALCSLOPE(nextMix, mix_cur);
+		nova::muladd_vec_simd_r3<64>(OUT(0), IN(0), amp_cur, mix_cur, mix_slope);
 		unit->mPrevAdd = nextMix;
 	}
 }
@@ -426,6 +507,13 @@ void ampmix_ii_nova(MulAdd *unit, int inNumSamples)
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
 	nova::muladd_vec_simd(OUT(0), IN(0), amp_cur, mix_cur, inNumSamples);
+}
+
+void ampmix_ii_nova_64(MulAdd *unit, int inNumSamples)
+{
+	float amp_cur = unit->mPrevMul;
+	float mix_cur = unit->mPrevAdd;
+	nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur, mix_cur);
 }
 
 #endif
@@ -977,47 +1065,91 @@ void MulAdd_Ctor(MulAdd *unit)
 	}
 #elif defined (NOVA_SIMD)
     	} else {
-		switch (mulRate) {
-			case calc_FullRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai_nova;
-						break;
-				}
-				break;
-			case calc_BufRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki_nova;
-						break;
-				}
-				break;
-			case calc_ScalarRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii_nova;
-						break;
-				}
-				break;
-		}
+			if (BUFLENGTH == 64) {
+			switch (mulRate) {
+				case calc_FullRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa_nova_64;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak_nova_64;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai_nova_64;
+							break;
+					}
+					break;
+				case calc_BufRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka_nova_64;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk_nova;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki_nova_64;
+							break;
+					}
+					break;
+				case calc_ScalarRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia_nova_64;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik_nova_64;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii_nova_64;
+							break;
+					}
+					break;
+			}
+			} else {
+			switch (mulRate) {
+				case calc_FullRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa_nova;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak_nova;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai_nova;
+							break;
+					}
+					break;
+				case calc_BufRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka_nova;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk_nova;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki_nova;
+							break;
+					}
+					break;
+				case calc_ScalarRate :
+					switch (addRate) {
+						case calc_FullRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia_nova;
+							break;
+						case calc_BufRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik_nova;
+							break;
+						case calc_ScalarRate :
+							unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii_nova;
+							break;
+					}
+					break;
+			}
+			}
     }
 #endif
 	ampmix_k(unit, 1);
