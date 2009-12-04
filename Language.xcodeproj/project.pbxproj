@@ -1945,6 +1945,9 @@
 				HEADER_SEARCH_PATHS = ./Headers/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = (
+					"-DNDEBUG",
+				);
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
