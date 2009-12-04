@@ -240,6 +240,12 @@ void invert_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::minus_vec_simd(OUT(0), 0.f, IN(0), inNumSamples);
 }
+
+void invert_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::minus_vec_simd_mp<64>(OUT(0), 0.f, IN(0));
+}
+
 #endif
 
 #if __VEC__
@@ -298,14 +304,29 @@ void zero_nova(UnaryOpUGen *unit, int inNumSamples)
 	nova::zerovec_simd(OUT(0), inNumSamples);
 }
 
+void zero_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::zerovec_simd_mp<64>(OUT(0));
+}
+
 void thru_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
 }
 
+void thru_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::copyvec_simd<64>(OUT(0), IN(0));
+}
+
 void abs_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::abs_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+
+void abs_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::abs_vec_simd<64>(OUT(0), IN(0));
 }
 #endif
 
@@ -338,6 +359,11 @@ void recip_a(UnaryOpUGen *unit, int inNumSamples)
 void recip_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::over_vec_simd(OUT(0), 1.f, IN(0), inNumSamples);
+}
+
+void recip_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::over_vec_simd_mp<64>(OUT(0), 1.f, IN(0));
 }
 #endif
 
@@ -695,6 +721,11 @@ void squared_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::square_vec_simd(OUT(0), IN(0), inNumSamples);
 }
+
+void squared_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::square_vec_simd<64>(OUT(0), IN(0));
+}
 #endif
 
 #if __VEC__
@@ -743,6 +774,11 @@ void cubed_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::cube_vec_simd(OUT(0), IN(0), inNumSamples);
 }
+
+void cubed_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::cube_vec_simd<64>(OUT(0), IN(0));
+}
 #endif
 
 void sign_a(UnaryOpUGen *unit, int inNumSamples)
@@ -760,6 +796,11 @@ void sign_a(UnaryOpUGen *unit, int inNumSamples)
 void sign_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::sgn_vec_simd(OUT(0), IN(0), inNumSamples);
+}
+
+void sign_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::sgn_vec_simd<64>(OUT(0), IN(0));
 }
 #endif
 
@@ -903,6 +944,11 @@ void ramp_a(UnaryOpUGen *unit, int inNumSamples)
 void ramp_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::clip_vec_simd(OUT(0), IN(0), 0.f, 1.f, inNumSamples);
+}
+
+void ramp_nova_64(UnaryOpUGen *unit, int inNumSamples)
+{
+	nova::clip_vec_simd<64>(OUT(0), IN(0), 0.f, 1.f);
 }
 #endif
 
@@ -1519,10 +1565,63 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 #endif // __VEC__
 
 #ifdef NOVA_SIMD
+
 UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 
+	if (BUFLENGTH == 64) {
+		switch (unit->mSpecialIndex) {
+		case opSilence : return &zero_nova_64;
+		case opThru : func = &thru_nova; break;
+		case opNeg : return &invert_nova_64;
+		case opNot : func = &not_a; break;
+		case opAbs : return &abs_nova_64;
+		case opCeil : func = &ceil_nova; break;
+		case opFloor : func = &floor_nova; break;
+		case opFrac : func = &frac_nova; break;
+		case opSign : return &sign_nova_64;
+		case opSquared : return &squared_nova_64;
+		case opCubed : return &cubed_nova_64;
+		case opSqrt : func = &sqrt_nova; break;
+		case opExp : func = &exp_nova; break;
+		case opRecip : return &recip_nova_64;
+		case opMIDICPS : func = &midicps_a; break;
+		case opCPSMIDI : func = &cpsmidi_a; break;
+
+		case opMIDIRatio : func = &midiratio_a; break;
+		case opRatioMIDI : func = &ratiomidi_a; break;
+		case opDbAmp : func = &dbamp_a; break;
+		case opAmpDb : 	func = &ampdb_a; break;
+		case opOctCPS : func = &octcps_a; break;
+		case opCPSOct : func = &cpsoct_a; break;
+		case opLog : func = &log_nova; break;
+		case opLog2 : func = &log2_nova; break;
+		case opLog10 : func = &log10_nova; break;
+		case opSin : func = &sin_nova; break;
+		case opCos : func = &cos_nova; break;
+		case opTan : func = &tan_nova; break;
+		case opArcSin : func = &asin_nova; break;
+		case opArcCos : func = &acos_nova; break;
+		case opArcTan : func = &atan_nova; break;
+		case opSinH : func = &sinh_a; break;
+		case opCosH : func = &cosh_a; break;
+		case opTanH : func = &tanh_nova; break;
+
+		case opDistort : func = &distort_a; break;
+		case opSoftClip : func = &softclip_nova; break;
+
+		case opRectWindow : func = &rectwindow_a; break;
+		case opHanWindow : func = &hanwindow_a; break;
+		case opWelchWindow : func = &welwindow_a; break;
+		case opTriWindow : func = &triwindow_a; break;
+
+		case opSCurve : func = &scurve_a; break;
+		case opRamp : return &ramp_nova_64;
+
+		default : return &thru_nova_64;
+        }
+    }
 	switch (unit->mSpecialIndex) {
 		case opSilence : func = &zero_nova; break;
 		case opThru : func = &thru_nova; break;
