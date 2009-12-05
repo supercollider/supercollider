@@ -256,14 +256,14 @@ void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
+		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
 								rightamp, rightampslope);
 		unit->m_pos = pos;
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
+		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
 }
 #endif
 
@@ -420,8 +420,8 @@ void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples)
 		nova::times_vec_simd(OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
 	} else {
 		//nova::times_vec2_simd(OUT(0), IN(0), leftamp, OUT(1), IN(1), rightamp, inNumSamples);
-		nova::times_vec_simd<64>(OUT(0), IN(0), leftamp);
-		nova::times_vec_simd<64>(OUT(1), IN(1), rightamp);
+		nova::times_vec_simd_mp<64>(OUT(0), IN(0), leftamp);
+		nova::times_vec_simd_mp<64>(OUT(1), IN(1), rightamp);
 	}
 }
 #endif
@@ -553,7 +553,7 @@ void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples)
 		nova::mix_vec_simd(OUT(0), IN(0), leftamp, leftampslope,
 						   IN(1), rightamp, rightampslope, inNumSamples);
 
-        unit->m_pos = pos;
+		unit->m_pos = pos;
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
@@ -579,15 +579,15 @@ void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::mix_vec_simd<64>(OUT(0), IN(0), leftamp, leftampslope,
-							   IN(1), rightamp, rightampslope);
+		nova::mix_vec_simd_mp<64>(OUT(0), IN(0), leftamp, leftampslope,
+								  IN(1), rightamp, rightampslope);
 
 		unit->m_pos = pos;
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::mix_vec_simd<64>(OUT(0), IN(0), leftamp, IN(1), rightamp);
+		nova::mix_vec_simd_mp<64>(OUT(0), IN(0), leftamp, IN(1), rightamp);
 }
 
 #endif
@@ -783,15 +783,15 @@ void Pan2_next_ak_nova_64(Pan2 *unit, int inNumSamples)
 		float leftampslope = (nextleftamp - leftamp) * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
-								rightamp, rightampslope);
+		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
+								   rightamp, rightampslope);
 
 		unit->m_pos = pos;
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
+		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
 }
 
 #endif

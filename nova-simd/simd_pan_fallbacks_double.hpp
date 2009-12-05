@@ -31,8 +31,22 @@ void pan2_vec_simd(double * out0, double * out1, const double * in,
 }
 
 template <unsigned int n>
+inline void pan2_vec_simd_mp(double * out0, double * out1, const double * in,
+                             double factor0, double factor1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, factor1, n);
+}
+
+template <unsigned int n>
 void pan2_vec_simd(double * out0, double * out1, const double * in, double factor0, double slope0,
                    double factor1, double slope1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
+}
+
+template <unsigned int n>
+inline void pan2_vec_simd_mp(double * out0, double * out1, const double * in, double factor0, double slope0,
+                        double factor1, double slope1)
 {
     pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
 }

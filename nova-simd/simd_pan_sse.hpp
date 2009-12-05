@@ -51,8 +51,8 @@ always_inline void pan2_vec_simd_mp<0>(float * out0, float * out1, const float *
 } /* namespace detail */
 
 template <unsigned int n>
-void pan2_vec_simd(float * out0, float * out1, const float * in,
-                   float factor0, float factor1)
+always_inline void pan2_vec_simd_mp(float * out0, float * out1, const float * in,
+                               float factor0, float factor1)
 {
     const __m128 f0 = _mm_set_ps1(factor0);
     const __m128 f1 = _mm_set_ps1(factor1);
@@ -60,8 +60,15 @@ void pan2_vec_simd(float * out0, float * out1, const float * in,
     detail::pan2_vec_simd_mp<n>(out0, out1, in, f0, f1);
 }
 
-template <>
+template <unsigned int n>
 void pan2_vec_simd(float * out0, float * out1, const float * in,
+                   float factor0, float factor1)
+{
+    pan2_vec_simd_mp<n>(out0, out1, in, factor0, factor1);
+}
+
+template <>
+inline void pan2_vec_simd(float * out0, float * out1, const float * in,
                    float factor0, float factor1, unsigned int n)
 {
     n /= 8;
@@ -81,7 +88,7 @@ void pan2_vec_simd(float * out0, float * out1, const float * in,
 
 
 template <>
-void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
+inline void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
                    float factor1, float slope1, unsigned int n)
 {
     n /= 8;
@@ -115,11 +122,19 @@ void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, 
 }
 
 template <unsigned int n>
-void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
+inline void pan2_vec_simd(float * out0, float * out1, const float * in, float factor0, float slope0,
                    float factor1, float slope1)
 {
     pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
 }
+
+template <unsigned int n>
+always_inline void pan2_vec_simd_mp(float * out0, float * out1, const float * in, float factor0, float slope0,
+                                    float factor1, float slope1)
+{
+    pan2_vec_simd(out0, out1, in, factor0, slope0, factor1, slope1, n);
+}
+
 
 } /* namespace nova */
 
