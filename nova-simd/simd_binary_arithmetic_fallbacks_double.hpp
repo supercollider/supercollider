@@ -505,6 +505,46 @@ inline void notequal_vec_simd(double * out, const double src1, const double * sr
 }
 
 
+/* vector/vector */
+template <int n>
+inline void clip2_vec_simd_mp(double * out, const double * src1, const double * src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(double * out, const double * src1, const double * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* vector/scalar */
+template <int n>
+inline void clip2_vec_simd_mp(double * out, const double * src1, const double src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(double * out, const double * src1, const double src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* scalar/vector */
+template <int n>
+inline void clip2_vec_simd_mp(double * out, const double src1, const double * src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(double * out, const double src1, const double * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+
 } /* namespace nova */
 
 #endif /* SIMD_BINARY_ARITHMETIC_FALLBACKS_DOUBLE_HPP */

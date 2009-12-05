@@ -24,6 +24,19 @@ import sys
 
 from generator_common import *
 
+functions = """
+namespace detail
+{
+
+template <typename float_type>
+inline float_type clip2(float_type f, float_type limit)
+{
+    return std::max(-limit, std::min(f, limit));
+}
+
+} /* namespace detail */
+"""
+
 binary_template = Template("""
 template <typename float_type>
 inline void ${label}_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n)
@@ -196,7 +209,8 @@ inline void ${label}_vec_simd(float_type * out, float_type arg1, const float_typ
 }
 """)
 
-body = binary_template.substitute(label='plus',  operation = 'std::plus<float_type>()') + \
+body = functions + \
+    binary_template.substitute(label='plus',  operation = 'std::plus<float_type>()') + \
     binary_template.substitute(label='minus', operation = 'std::minus<float_type>()') + \
     binary_template.substitute(label='times', operation = 'std::multiplies<float_type>()') + \
     binary_template.substitute(label='over', operation = 'std::divides<float_type>()') + \
@@ -207,7 +221,8 @@ body = binary_template.substitute(label='plus',  operation = 'std::plus<float_ty
     binary_template.substitute(label='greater', operation = 'std::greater<float_type>()') + \
     binary_template.substitute(label='greater_equal', operation = 'std::greater_equal<float_type>()') + \
     binary_template.substitute(label='equal', operation = 'std::equal_to<float_type>()') + \
-    binary_template.substitute(label='notequal', operation = 'std::not_equal_to<float_type>()')
+    binary_template.substitute(label='notequal', operation = 'std::not_equal_to<float_type>()') + \
+    binary_template.substitute(label='clip2', operation = 'detail::clip2<float_type>')
 
 ret = generate_file(body, "templated arithmetic simd functions",
                     "SIMD_BINARY_ARITHMETIC_GENERIC_HPP", ["<functional>", "<algorithm>"],
