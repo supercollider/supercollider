@@ -269,6 +269,14 @@ $increments
 }
 
 template<unsigned int n>
+always_inline void $${label}_vec_simd${fnsuffix}_mp($fargs_mp)
+{
+$prefix
+
+    detail::${fname}<n>($fmpargs);
+}
+
+template<unsigned int n>
 inline void $${label}_vec_simd$fnsuffix($fargs_mp)
 {
 $prefix

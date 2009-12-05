@@ -117,7 +117,7 @@ inline void softclip_vec_simd(float * out, const float * in, unsigned int n)
 }
 
 template <unsigned int n>
-inline void softclip_vec_simd(float * out, const float * in)
+always_inline void softclip_vec_simd_mp(float * out, const float * in)
 {
     const __m128 abs_mask = (__m128)detail::gen_abs_mask();
     const __m128 const05  = detail::gen_05();
@@ -126,10 +126,22 @@ inline void softclip_vec_simd(float * out, const float * in)
     detail::softclip_vec_simd_mp<n>(out, in, abs_mask, const05, const025);
 }
 
+template <unsigned int n>
+void softclip_vec_simd(float * out, const float * in)
+{
+    softclip_vec_simd_mp<n>(out, in);
+}
+
 #undef always_inline
 #undef samples_per_loop
 
 #else /* __SSE__ */
+
+template <unsigned int n>
+inline void softclip_vec_simd_mp(float * out, const float * in)
+{
+    softclip_vec_simd(out, in, n);
+}
 
 template <unsigned int n>
 inline void softclip_vec_simd(float * out, const float * in)

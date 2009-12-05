@@ -26,7 +26,12 @@ namespace nova
 
 #define WRAP_MATH_FUNCTION(name)                                \
     template <unsigned int n>                                   \
-    inline void name##_vec_simd(double * out, const double * in)  \
+    inline void name##_vec_simd_mp(double * out, const double * in)\
+    {                                                           \
+        name##_vec_simd(out, in, n);                            \
+    }                                                           \
+    template <unsigned int n>                                   \
+    inline void name##_vec_simd(double * out, const double * in)\
     {                                                           \
         name##_vec_simd(out, in, n);                            \
     }

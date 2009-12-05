@@ -93,6 +93,14 @@ inline void clip_vec_simd(float * out, const float * arg1, const float * arg2, c
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float * arg1, const float * arg2, const float * arg3)
+{
+
+
+    detail::clip_vec_simd_mp_vvv<n>(out, arg1, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd(float * out, const float * arg1, const float * arg2, const float * arg3)
 {
 
@@ -137,6 +145,14 @@ inline void clip_vec_simd(float * out, const float * arg1, const float * arg2, c
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float * arg1, const float * arg2, const float arg3)
+{
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_vvs<n>(out, arg1, arg2, a3);
 }
 
 template<unsigned int n>
@@ -191,6 +207,18 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float * arg2
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r3_mp(float * out, const float * arg1, const float * arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_vvr<n>(out, arg1, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r3(float * out, const float * arg1, const float * arg2, const float arg3, const float arg3_slope)
 {
 
@@ -242,6 +270,14 @@ inline void clip_vec_simd(float * out, const float * arg1, const float arg2, con
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float * arg1, const float arg2, const float * arg3)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::clip_vec_simd_mp_vsv<n>(out, arg1, a2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd(float * out, const float * arg1, const float arg2, const float * arg3)
 {
     __m128 a2 = _mm_set_ps1(arg2);
@@ -286,6 +322,15 @@ inline void clip_vec_simd(float * out, const float * arg1, const float arg2, con
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float * arg1, const float arg2, const float arg3)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_vss<n>(out, arg1, a2, a3);
 }
 
 template<unsigned int n>
@@ -338,6 +383,19 @@ inline void clip_vec_simd_r3(float * out, const float * arg1, const float arg2, 
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r3_mp(float * out, const float * arg1, const float arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_vsr<n>(out, arg1, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -397,6 +455,18 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r2_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float * arg3)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::clip_vec_simd_mp_vrv<n>(out, arg1, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, const float arg2_slope, const float * arg3)
 {
 
@@ -448,6 +518,18 @@ inline void clip_vec_simd_r2(float * out, const float * arg1, const float arg2, 
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r2_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_vrs<n>(out, arg1, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -510,6 +592,22 @@ inline void clip_vec_simd_r2r3(float * out, const float * arg1, const float arg2
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r2r3_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_vrr<n>(out, arg1, a2, a2_slope, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r2r3(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
 {
 
@@ -565,6 +663,14 @@ inline void clip_vec_simd(float * out, const float arg1, const float * arg2, con
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float arg1, const float * arg2, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    detail::clip_vec_simd_mp_svv<n>(out, a1, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd(float * out, const float arg1, const float * arg2, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -609,6 +715,15 @@ inline void clip_vec_simd(float * out, const float arg1, const float * arg2, con
         out += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float arg1, const float * arg2, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_svs<n>(out, a1, arg2, a3);
 }
 
 template<unsigned int n>
@@ -664,6 +779,19 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float * arg2, 
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r3_mp(float * out, const float arg1, const float * arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_svr<n>(out, a1, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r3(float * out, const float arg1, const float * arg2, const float arg3, const float arg3_slope)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -716,6 +844,15 @@ inline void clip_vec_simd(float * out, const float arg1, const float arg2, const
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float arg1, const float arg2, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::clip_vec_simd_mp_ssv<n>(out, a1, a2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd(float * out, const float arg1, const float arg2, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -762,6 +899,16 @@ inline void clip_vec_simd(float * out, const float arg1, const float arg2, const
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_mp(float * out, const float arg1, const float arg2, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_sss<n>(out, a1, a2, a3);
 }
 
 template<unsigned int n>
@@ -816,6 +963,20 @@ inline void clip_vec_simd_r3(float * out, const float arg1, const float arg2, co
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r3_mp(float * out, const float arg1, const float arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_ssr<n>(out, a1, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -876,6 +1037,19 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r2_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::clip_vec_simd_mp_srv<n>(out, a1, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, const float arg2_slope, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -929,6 +1103,19 @@ inline void clip_vec_simd_r2(float * out, const float arg1, const float arg2, co
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r2_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_srs<n>(out, a1, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -993,6 +1180,23 @@ inline void clip_vec_simd_r2r3(float * out, const float arg1, const float arg2, 
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r2r3_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_srr<n>(out, a1, a2, a2_slope, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r2r3(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -1053,6 +1257,18 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+
+    detail::clip_vec_simd_mp_rvv<n>(out, a1, a1_slope, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slope, const float * arg2, const float * arg3)
 {
 
@@ -1104,6 +1320,18 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         out += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_rvs<n>(out, a1, a1_slope, arg2, a3);
 }
 
 template<unsigned int n>
@@ -1166,6 +1394,22 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r1r3_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_rvr<n>(out, a1, a1_slope, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3, const float arg3_slope)
 {
 
@@ -1224,6 +1468,18 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::clip_vec_simd_mp_rsv<n>(out, a1, a1_slope, a2, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slope, const float arg2, const float * arg3)
 {
 
@@ -1276,6 +1532,19 @@ inline void clip_vec_simd_r1(float * out, const float arg1, const float arg1_slo
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_rss<n>(out, a1, a1_slope, a2, a3);
 }
 
 template<unsigned int n>
@@ -1337,6 +1606,23 @@ inline void clip_vec_simd_r1r3(float * out, const float arg1, const float arg1_s
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r1r3_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_rsr<n>(out, a1, a1_slope, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -1404,6 +1690,22 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r1r2_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::clip_vec_simd_mp_rrv<n>(out, a1, a1_slope, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float * arg3)
 {
 
@@ -1464,6 +1766,22 @@ inline void clip_vec_simd_r1r2(float * out, const float arg1, const float arg1_s
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void clip_vec_simd_r1r2_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::clip_vec_simd_mp_rrs<n>(out, a1, a1_slope, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -1535,6 +1853,26 @@ inline void clip_vec_simd_r1r2r3(float * out, const float arg1, const float arg1
 }
 
 template<unsigned int n>
+always_inline void clip_vec_simd_r1r2r3_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::clip_vec_simd_mp_rrr<n>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void clip_vec_simd_r1r2r3(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
 {
 
@@ -1595,6 +1933,14 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float * arg2,
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float * arg1, const float * arg2, const float * arg3)
+{
+
+
+    detail::muladd_vec_simd_mp_vvv<n>(out, arg1, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd(float * out, const float * arg1, const float * arg2, const float * arg3)
 {
 
@@ -1639,6 +1985,14 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float * arg2,
         arg1 += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float * arg1, const float * arg2, const float arg3)
+{
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_vvs<n>(out, arg1, arg2, a3);
 }
 
 template<unsigned int n>
@@ -1693,6 +2047,18 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float * ar
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r3_mp(float * out, const float * arg1, const float * arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_vvr<n>(out, arg1, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r3(float * out, const float * arg1, const float * arg2, const float arg3, const float arg3_slope)
 {
 
@@ -1744,6 +2110,14 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float arg2, c
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float * arg1, const float arg2, const float * arg3)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::muladd_vec_simd_mp_vsv<n>(out, arg1, a2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd(float * out, const float * arg1, const float arg2, const float * arg3)
 {
     __m128 a2 = _mm_set_ps1(arg2);
@@ -1788,6 +2162,15 @@ inline void muladd_vec_simd(float * out, const float * arg1, const float arg2, c
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float * arg1, const float arg2, const float arg3)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_vss<n>(out, arg1, a2, a3);
 }
 
 template<unsigned int n>
@@ -1840,6 +2223,19 @@ inline void muladd_vec_simd_r3(float * out, const float * arg1, const float arg2
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r3_mp(float * out, const float * arg1, const float arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_vsr<n>(out, arg1, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -1899,6 +2295,18 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r2_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float * arg3)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::muladd_vec_simd_mp_vrv<n>(out, arg1, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2, const float arg2_slope, const float * arg3)
 {
 
@@ -1950,6 +2358,18 @@ inline void muladd_vec_simd_r2(float * out, const float * arg1, const float arg2
         out += samples_per_loop;
         arg1 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r2_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_vrs<n>(out, arg1, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -2012,6 +2432,22 @@ inline void muladd_vec_simd_r2r3(float * out, const float * arg1, const float ar
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r2r3_mp(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_vrr<n>(out, arg1, a2, a2_slope, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r2r3(float * out, const float * arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
 {
 
@@ -2067,6 +2503,14 @@ inline void muladd_vec_simd(float * out, const float arg1, const float * arg2, c
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float arg1, const float * arg2, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    detail::muladd_vec_simd_mp_svv<n>(out, a1, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd(float * out, const float arg1, const float * arg2, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -2111,6 +2555,15 @@ inline void muladd_vec_simd(float * out, const float arg1, const float * arg2, c
         out += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float arg1, const float * arg2, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_svs<n>(out, a1, arg2, a3);
 }
 
 template<unsigned int n>
@@ -2166,6 +2619,19 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float * arg2
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r3_mp(float * out, const float arg1, const float * arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_svr<n>(out, a1, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r3(float * out, const float arg1, const float * arg2, const float arg3, const float arg3_slope)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -2218,6 +2684,15 @@ inline void muladd_vec_simd(float * out, const float arg1, const float arg2, con
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float arg1, const float arg2, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::muladd_vec_simd_mp_ssv<n>(out, a1, a2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd(float * out, const float arg1, const float arg2, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -2264,6 +2739,16 @@ inline void muladd_vec_simd(float * out, const float arg1, const float arg2, con
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_mp(float * out, const float arg1, const float arg2, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_sss<n>(out, a1, a2, a3);
 }
 
 template<unsigned int n>
@@ -2318,6 +2803,20 @@ inline void muladd_vec_simd_r3(float * out, const float arg1, const float arg2, 
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r3_mp(float * out, const float arg1, const float arg2, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_ssr<n>(out, a1, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -2378,6 +2877,19 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r2_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float * arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::muladd_vec_simd_mp_srv<n>(out, a1, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, const float arg2_slope, const float * arg3)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -2431,6 +2943,19 @@ inline void muladd_vec_simd_r2(float * out, const float arg1, const float arg2, 
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r2_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_srs<n>(out, a1, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -2495,6 +3020,23 @@ inline void muladd_vec_simd_r2r3(float * out, const float arg1, const float arg2
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r2r3_mp(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+    __m128 a1 = _mm_set_ps1(arg1);
+
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_srr<n>(out, a1, a2, a2_slope, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r2r3(float * out, const float arg1, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
 {
     __m128 a1 = _mm_set_ps1(arg1);
@@ -2555,6 +3097,18 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+
+    detail::muladd_vec_simd_mp_rvv<n>(out, a1, a1_slope, arg2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_slope, const float * arg2, const float * arg3)
 {
 
@@ -2606,6 +3160,18 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         out += samples_per_loop;
         arg2 += samples_per_loop;
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_rvs<n>(out, a1, a1_slope, arg2, a3);
 }
 
 template<unsigned int n>
@@ -2668,6 +3234,22 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r1r3_mp(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_rvr<n>(out, a1, a1_slope, arg2, a3, a3_slope);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1_slope, const float * arg2, const float arg3, const float arg3_slope)
 {
 
@@ -2726,6 +3308,18 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+
+    detail::muladd_vec_simd_mp_rsv<n>(out, a1, a1_slope, a2, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_slope, const float arg2, const float * arg3)
 {
 
@@ -2778,6 +3372,19 @@ inline void muladd_vec_simd_r1(float * out, const float arg1, const float arg1_s
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r1_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_rss<n>(out, a1, a1_slope, a2, a3);
 }
 
 template<unsigned int n>
@@ -2839,6 +3446,23 @@ inline void muladd_vec_simd_r1r3(float * out, const float arg1, const float arg1
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r1r3_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);    __m128 a2 = _mm_set_ps1(arg2);
+
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_rsr<n>(out, a1, a1_slope, a2, a3, a3_slope);
 }
 
 template<unsigned int n>
@@ -2906,6 +3530,22 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
 }
 
 template<unsigned int n>
+always_inline void muladd_vec_simd_r1r2_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float * arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    detail::muladd_vec_simd_mp_rrv<n>(out, a1, a1_slope, a2, a2_slope, arg3);
+}
+
+template<unsigned int n>
 inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float * arg3)
 {
 
@@ -2966,6 +3606,22 @@ inline void muladd_vec_simd_r1r2(float * out, const float arg1, const float arg1
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r1r2_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float arg3)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);    __m128 a3 = _mm_set_ps1(arg3);
+
+    detail::muladd_vec_simd_mp_rrs<n>(out, a1, a1_slope, a2, a2_slope, a3);
 }
 
 template<unsigned int n>
@@ -3034,6 +3690,26 @@ inline void muladd_vec_simd_r1r2r3(float * out, const float arg1, const float ar
         out += samples_per_loop;
 
     } while (--loops);
+}
+
+template<unsigned int n>
+always_inline void muladd_vec_simd_r1r2r3_mp(float * out, const float arg1, const float arg1_slope, const float arg2, const float arg2_slope, const float arg3, const float arg3_slope)
+{
+
+    __m128 a1 = _mm_setr_ps(arg1, arg1 + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope,
+                            arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a1_slope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+    __m128 a2 = _mm_setr_ps(arg2, arg2 + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope,
+                            arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a2_slope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+    __m128 a3 = _mm_setr_ps(arg3, arg3 + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope,
+                            arg3 + arg3_slope + arg3_slope + arg3_slope);
+    __m128 a3_slope = _mm_set_ps1(arg3_slope + arg3_slope + arg3_slope + arg3_slope);
+
+    detail::muladd_vec_simd_mp_rrr<n>(out, a1, a1_slope, a2, a2_slope, a3, a3_slope);
 }
 
 template<unsigned int n>

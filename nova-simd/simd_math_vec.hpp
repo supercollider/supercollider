@@ -44,6 +44,11 @@
         } while (--loops);                                              \
     }                                                                   \
     template <unsigned int n>                                           \
+    inline void name##_vec_simd_mp(float * out, const float * in)       \
+    {                                                                   \
+        name##_vec_simd(out, in, n);                                    \
+    }                                                                   \
+    template <unsigned int n>                                           \
     inline void name##_vec_simd(float * out, const float * in)          \
     {                                                                   \
         name##_vec_simd(out, in, n);                                    \

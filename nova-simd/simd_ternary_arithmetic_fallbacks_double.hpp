@@ -30,9 +30,21 @@ inline void clip_vec_simd(double * out, const double * arg1, const double * arg2
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double * arg1, const double * arg2, const double * arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd(double * out, const double * arg1, const double * arg2, const double arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double * arg1, const double * arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -44,9 +56,21 @@ inline void clip_vec_simd_r3(double * out, const double * arg1, const double * a
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r3_mp(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd(double * out, const double * arg1, const double arg2, const double * arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double * arg1, const double arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -58,9 +82,21 @@ inline void clip_vec_simd(double * out, const double * arg1, const double arg2, 
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double * arg1, const double arg2, const double arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r3(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r3_mp(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
@@ -72,9 +108,21 @@ inline void clip_vec_simd_r2(double * out, const double * arg1, double arg2, con
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r2_mp(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
+{
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
+{
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r2_mp(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
@@ -86,9 +134,21 @@ inline void clip_vec_simd_r2r3(double * out, const double * arg1, double arg2, c
     clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r2r3_mp(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd(double * out, const double arg1, const double * arg2, const double * arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double arg1, const double * arg2, const double * arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -100,9 +160,21 @@ inline void clip_vec_simd(double * out, const double arg1, const double * arg2, 
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double arg1, const double * arg2, const double arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r3(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r3_mp(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
@@ -114,9 +186,21 @@ inline void clip_vec_simd(double * out, const double arg1, const double arg2, co
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double arg1, const double arg2, const double * arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd(double * out, const double arg1, const double arg2, const double arg3)
+{
+    clip_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_mp(double * out, const double arg1, const double arg2, const double arg3)
 {
     clip_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -128,9 +212,21 @@ inline void clip_vec_simd_r3(double * out, const double arg1, const double arg2,
     clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r3_mp(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
+{
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r2_mp(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
@@ -142,9 +238,21 @@ inline void clip_vec_simd_r2(double * out, const double arg1, double arg2, const
     clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r2_mp(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
+{
+    clip_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r2r3(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r2r3_mp(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
@@ -156,9 +264,21 @@ inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope,
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
+{
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
+{
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
@@ -170,9 +290,21 @@ inline void clip_vec_simd_r1r3(double * out, double arg1, const double arg1_slop
     clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r1r3_mp(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
+{
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
 {
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
@@ -184,9 +316,21 @@ inline void clip_vec_simd_r1(double * out, double arg1, const double arg1_slope,
     clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
+{
+    clip_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r1r3_mp(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
 {
     clip_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
@@ -198,9 +342,21 @@ inline void clip_vec_simd_r1r2(double * out, double arg1, const double arg1_slop
     clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r1r2_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
+{
+    clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void clip_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
+{
+    clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void clip_vec_simd_r1r2_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
 {
     clip_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
@@ -212,9 +368,21 @@ inline void clip_vec_simd_r1r2r3(double * out, double arg1, const double arg1_sl
     clip_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void clip_vec_simd_r1r2r3_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    clip_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd(double * out, const double * arg1, const double * arg2, const double * arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double * arg1, const double * arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -226,9 +394,21 @@ inline void muladd_vec_simd(double * out, const double * arg1, const double * ar
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double * arg1, const double * arg2, const double arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r3(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r3_mp(double * out, const double * arg1, const double * arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
@@ -240,9 +420,21 @@ inline void muladd_vec_simd(double * out, const double * arg1, const double arg2
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double * arg1, const double arg2, const double * arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd(double * out, const double * arg1, const double arg2, const double arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double * arg1, const double arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -254,9 +446,21 @@ inline void muladd_vec_simd_r3(double * out, const double * arg1, const double a
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r3_mp(double * out, const double * arg1, const double arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r2(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
+{
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r2_mp(double * out, const double * arg1, double arg2, const double arg2_slope, const double * arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
@@ -268,9 +472,21 @@ inline void muladd_vec_simd_r2(double * out, const double * arg1, double arg2, c
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r2_mp(double * out, const double * arg1, double arg2, const double arg2_slope, const double arg3)
+{
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r2r3(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r2r3_mp(double * out, const double * arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
@@ -282,9 +498,21 @@ inline void muladd_vec_simd(double * out, const double arg1, const double * arg2
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double arg1, const double * arg2, const double * arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd(double * out, const double arg1, const double * arg2, const double arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double arg1, const double * arg2, const double arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -296,9 +524,21 @@ inline void muladd_vec_simd_r3(double * out, const double arg1, const double * a
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r3_mp(double * out, const double arg1, const double * arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd(double * out, const double arg1, const double arg2, const double * arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double arg1, const double arg2, const double * arg3)
 {
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
@@ -310,9 +550,21 @@ inline void muladd_vec_simd(double * out, const double arg1, const double arg2, 
     muladd_vec_simd(out, arg1, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_mp(double * out, const double arg1, const double arg2, const double arg3)
+{
+    muladd_vec_simd(out, arg1, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r3(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r3_mp(double * out, const double arg1, const double arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r3(out, arg1, arg2, arg3, arg3_slope, n);
 }
@@ -324,9 +576,21 @@ inline void muladd_vec_simd_r2(double * out, const double arg1, double arg2, con
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r2_mp(double * out, const double arg1, double arg2, const double arg2_slope, const double * arg3)
+{
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r2(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
+{
+    muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r2_mp(double * out, const double arg1, double arg2, const double arg2_slope, const double arg3)
 {
     muladd_vec_simd_r2(out, arg1, arg2, arg2_slope, arg3, n);
 }
@@ -338,9 +602,21 @@ inline void muladd_vec_simd_r2r3(double * out, const double arg1, double arg2, c
     muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r2r3_mp(double * out, const double arg1, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r2r3(out, arg1, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
+{
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double * arg2, const double * arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
@@ -352,9 +628,21 @@ inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slop
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double * arg2, const double arg3)
+{
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r1r3(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r1r3_mp(double * out, double arg1, const double arg1_slope, const double * arg2, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
@@ -366,9 +654,21 @@ inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slop
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double arg2, const double * arg3)
+{
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r1(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
+{
+    muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r1_mp(double * out, double arg1, const double arg1_slope, const double arg2, const double arg3)
 {
     muladd_vec_simd_r1(out, arg1, arg1_slope, arg2, arg3, n);
 }
@@ -380,9 +680,21 @@ inline void muladd_vec_simd_r1r3(double * out, double arg1, const double arg1_sl
     muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r1r3_mp(double * out, double arg1, const double arg1_slope, const double arg2, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r1r3(out, arg1, arg1_slope, arg2, arg3, arg3_slope, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r1r2(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
+{
+    muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r1r2_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double * arg3)
 {
     muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
@@ -394,9 +706,21 @@ inline void muladd_vec_simd_r1r2(double * out, double arg1, const double arg1_sl
     muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
 }
 
+template <unsigned int n>
+inline void muladd_vec_simd_r1r2_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, const double arg3)
+{
+    muladd_vec_simd_r1r2(out, arg1, arg1_slope, arg2, arg2_slope, arg3, n);
+}
+
 
 template <unsigned int n>
 inline void muladd_vec_simd_r1r2r3(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
+{
+    muladd_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
+}
+
+template <unsigned int n>
+inline void muladd_vec_simd_r1r2r3_mp(double * out, double arg1, const double arg1_slope, double arg2, const double arg2_slope, double arg3, const double arg3_slope)
 {
     muladd_vec_simd_r1r2r3(out, arg1, arg1_slope, arg2, arg2_slope, arg3, arg3_slope, n);
 }
