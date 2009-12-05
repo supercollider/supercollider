@@ -34,7 +34,7 @@ namespace detail
 {
 
 template <unsigned int n>
-void mix_vec_simd_mp(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
+always_inline void mix_vec_simd_mp(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
 {
     const __m128 sig0 = _mm_load_ps(in0);
     const __m128 sig1 = _mm_load_ps(in1);
@@ -47,13 +47,15 @@ void mix_vec_simd_mp(float * out, const float * in0, const __m128 factor0, const
 }
 
 template <>
-void mix_vec_simd_mp<0>(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
+always_inline void mix_vec_simd_mp<0>(float * out, const float * in0, const __m128 factor0, const float * in1, const __m128 factor1)
 {}
 
 } /* namespace detail */
 
+
+
 template <unsigned int n>
-void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1)
+always_inline void mix_vec_simd_mp(float * out, const float * in0, float factor0, const float * in1, float factor1)
 {
     const __m128 f0 = _mm_set_ps1(factor0);
     const __m128 f1 = _mm_set_ps1(factor1);
@@ -61,9 +63,14 @@ void mix_vec_simd(float * out, const float * in0, float factor0, const float * i
     detail::mix_vec_simd_mp<n>(out, in0, f0, in1, f1);
 }
 
+template <unsigned int n>
+void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1)
+{
+    mix_vec_simd_mp<n>(out, in0, factor0, in1, factor1);
+}
 
 template <>
-void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1, unsigned int n)
+inline void mix_vec_simd(float * out, const float * in0, float factor0, const float * in1, float factor1, unsigned int n)
 {
     const __m128 f0 = _mm_set_ps1(factor0);
     const __m128 f1 = _mm_set_ps1(factor1);
@@ -79,8 +86,8 @@ void mix_vec_simd(float * out, const float * in0, float factor0, const float * i
 }
 
 template <>
-void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
-                  const float * in1, float factor1, float slope1, unsigned int n)
+inline void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
+                         const float * in1, float factor1, float slope1, unsigned int n)
 {
     __m128 f0 = _mm_setr_ps(factor0, factor0 + slope0,
                             factor0 + 2*slope0, factor0 + 3*slope0);
@@ -119,6 +126,13 @@ void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
 template <unsigned int n>
 void mix_vec_simd(float * out, const float * in0, float factor0, float slope0,
                   const float * in1, float factor1, float slope1)
+{
+    mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
+}
+
+template <unsigned int n>
+always_inline void mix_vec_simd_mp(float * out, const float * in0, float factor0, float slope0,
+                                   const float * in1, float factor1, float slope1)
 {
     mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
 }

@@ -29,8 +29,21 @@ void mix_vec_simd(double * out, const double * in0, double factor0, const double
 }
 
 template <unsigned int n>
+inline void mix_vec_simd_mp(double * out, const double * in0, double factor0, const double * in1, double factor1)
+{
+    mix_vec_simd(out, in0, factor0, in1, factor1, n);
+}
+
+template <unsigned int n>
 void mix_vec_simd(double * out, const double * in0, double factor0, double slope0,
                   const double * in1, double factor1, double slope1)
+{
+    mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
+}
+
+template <unsigned int n>
+inline void mix_vec_simd_mp(double * out, const double * in0, double factor0, double slope0,
+                            const double * in1, double factor1, double slope1)
 {
     mix_vec_simd(out, in0, factor0, slope0, in1, factor1, slope1, n);
 }
