@@ -41,7 +41,7 @@ namespace detail
 template<>
 always_inline __m128 clip2(__m128 value, __m128 limit)
 {
-    const __m128 sign_bits = detail::gen_sign_mask();
+    const __m128 sign_bits = detail::gen_sign_mask(); /* flipping sign bit is faster than zero-limit */
     __m128 low = _mm_xor_ps(sign_bits, limit);
     return _mm_max_ps(_mm_min_ps(value, limit),
                       low);

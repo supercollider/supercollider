@@ -26,9 +26,15 @@ from generator_common import *
 
 unary_fallbacks_template = Template("""
 template <int n>
-inline void ${label}_vec_simd(${float} * out, const ${float} * src)
+inline void ${label}_vec_simd_mp(${float} * out, const ${float} * src)
 {
     ${label}_vec_simd(out, src, n);
+}
+
+template <int n>
+inline void ${label}_vec_simd(${float} * out, const ${float} * src)
+{
+    ${label}_vec_simd_mp<n>(out, src);
 }
 """)
 

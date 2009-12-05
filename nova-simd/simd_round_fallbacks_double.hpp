@@ -47,6 +47,30 @@ inline void frac_vec_simd(double * out, const double * arg)
     frac_vec_simd(out, arg, n);
 }
 
+template <unsigned int n>
+inline void round_vec_simd_mp(double * out, const double * arg)
+{
+    round_vec_simd(out, arg, n);
+}
+
+template <unsigned int n>
+inline void ceil_vec_simd_mp(double * out, const double * arg)
+{
+    ceil_vec_simd(out, arg, n);
+}
+
+template <unsigned int n>
+inline void floor_vec_simd_mp(double * out, const double * arg)
+{
+    floor_vec_simd(out, arg, n);
+}
+
+template <unsigned int n>
+inline void frac_vec_simd_mp(double * out, const double * arg)
+{
+    frac_vec_simd(out, arg, n);
+}
+
 } /* namespace nova */
 
 #endif /* SIMD_ROUND_FALLBACKS_DOUBLE_HPP */

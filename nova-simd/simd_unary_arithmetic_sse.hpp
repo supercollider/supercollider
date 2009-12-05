@@ -70,16 +70,16 @@ always_inline __m128 cube(__m128 arg)
 namespace detail
 {
 template <int n>
-always_inline void abs_vec_mp(float * out, const float * arg, __m128 const & abs_mask)
+always_inline void abs_vec_simd_mp(float * out, const float * arg, __m128 const & abs_mask)
 {
     __m128 in = _mm_load_ps(arg);
     __m128 val = _mm_and_ps(in, abs_mask);
     _mm_store_ps(out, val);
-    abs_vec_mp<n-4>(out+4, arg+4, abs_mask);
+    abs_vec_simd_mp<n-4>(out+4, arg+4, abs_mask);
 }
 
 template <>
-always_inline void abs_vec_mp<0>(float * out, const float * arg, __m128 const & abs_mask)
+always_inline void abs_vec_simd_mp<0>(float * out, const float * arg, __m128 const & abs_mask)
 {}
 
 } /* namespace detail */
@@ -91,7 +91,7 @@ inline void abs_vec_simd(float * out, const float * arg, unsigned int n)
     __m128 abs_mask = detail::gen_abs_mask();
 
     do {
-        detail::abs_vec_mp<samples_per_loop>(out, arg, abs_mask);
+        detail::abs_vec_simd_mp<samples_per_loop>(out, arg, abs_mask);
 
         out += samples_per_loop;
         arg += samples_per_loop;
@@ -100,27 +100,33 @@ inline void abs_vec_simd(float * out, const float * arg, unsigned int n)
 }
 
 template <unsigned int n>
-inline void abs_vec_simd(float * out, const float * arg)
+always_inline void abs_vec_simd_mp(float * out, const float * arg)
 {
     __m128 abs_mask = detail::gen_abs_mask();
-    detail::abs_vec_mp<n>(out, arg, abs_mask);
+    detail::abs_vec_simd_mp<n>(out, arg, abs_mask);
+}
+
+template <unsigned int n>
+inline void abs_vec_simd(float * out, const float * arg)
+{
+    abs_vec_simd_mp<n>(out, arg);
 }
 
 
 namespace detail
 {
 template <int n>
-always_inline void sgn_vec_mp(float * out, const float * arg, __m128 const & sign_mask,
+always_inline void sgn_vec_simd_mp(float * out, const float * arg, __m128 const & sign_mask,
                               __m128 const & zero, __m128 const & one)
 {
     __m128 in = _mm_load_ps(arg);
     __m128 val = sgn(in, sign_mask, zero, one);
     _mm_store_ps(out, val);
-    sgn_vec_mp<n-4>(out+4, arg+4, sign_mask, zero, one);
+    sgn_vec_simd_mp<n-4>(out+4, arg+4, sign_mask, zero, one);
 }
 
 template <>
-always_inline void sgn_vec_mp<0>(float * out, const float * arg, __m128 const & sign_mask,
+always_inline void sgn_vec_simd_mp<0>(float * out, const float * arg, __m128 const & sign_mask,
                                  __m128 const & zero, __m128 const & one)
 {}
 
@@ -135,7 +141,7 @@ inline void sgn_vec_simd(float * out, const float * arg, unsigned int n)
     __m128 one = detail::gen_one();
 
     do {
-        detail::sgn_vec_mp<samples_per_loop>(out, arg, sgn_mask, zero, one);
+        detail::sgn_vec_simd_mp<samples_per_loop>(out, arg, sgn_mask, zero, one);
 
         out += samples_per_loop;
         arg += samples_per_loop;
@@ -144,28 +150,34 @@ inline void sgn_vec_simd(float * out, const float * arg, unsigned int n)
 }
 
 template <unsigned int n>
-inline void sgn_vec_simd(float * out, const float * arg)
+always_inline void sgn_vec_simd_mp(float * out, const float * arg)
 {
     __m128 sgn_mask = detail::gen_sign_mask();
     __m128 zero = _mm_setzero_ps();
     __m128 one = detail::gen_one();
 
-    detail::sgn_vec_mp<n>(out, arg, sgn_mask, zero, one);
+    detail::sgn_vec_simd_mp<n>(out, arg, sgn_mask, zero, one);
+}
+
+template <unsigned int n>
+void sgn_vec_simd(float * out, const float * arg)
+{
+    sgn_vec_simd_mp<n>(out, arg);
 }
 
 namespace detail
 {
 template <int n>
-always_inline void square_vec_mp(float * out, const float * arg)
+always_inline void square_vec_simd_mp(float * out, const float * arg)
 {
     __m128 in = _mm_load_ps(arg);
     __m128 val = square(in);
     _mm_store_ps(out, val);
-    square_vec_mp<n-4>(out+4, arg+4);
+    square_vec_simd_mp<n-4>(out+4, arg+4);
 }
 
 template <>
-always_inline void square_vec_mp<0>(float * out, const float * arg)
+always_inline void square_vec_simd_mp<0>(float * out, const float * arg)
 {}
 
 } /* namespace detail */
@@ -176,7 +188,7 @@ inline void square_vec_simd(float * out, const float * arg, unsigned int n)
     unsigned int loops = n / samples_per_loop;
 
     do {
-        detail::square_vec_mp<samples_per_loop>(out, arg);
+        detail::square_vec_simd_mp<samples_per_loop>(out, arg);
 
         out += samples_per_loop;
         arg += samples_per_loop;
@@ -184,25 +196,27 @@ inline void square_vec_simd(float * out, const float * arg, unsigned int n)
     while (--loops);
 }
 
+using detail::square_vec_simd_mp;
+
 template <unsigned int n>
 inline void square_vec_simd(float * out, const float * arg)
 {
-    detail::square_vec_mp<n>(out, arg);
+    detail::square_vec_simd_mp<n>(out, arg);
 }
 
 namespace detail
 {
 template <int n>
-always_inline void cube_vec_mp(float * out, const float * arg)
+always_inline void cube_vec_simd_mp(float * out, const float * arg)
 {
     __m128 in = _mm_load_ps(arg);
     __m128 val = cube(in);
     _mm_store_ps(out, val);
-    cube_vec_mp<n-4>(out+4, arg+4);
+    cube_vec_simd_mp<n-4>(out+4, arg+4);
 }
 
 template <>
-always_inline void cube_vec_mp<0>(float * out, const float * arg)
+always_inline void cube_vec_simd_mp<0>(float * out, const float * arg)
 {}
 
 } /* namespace detail */
@@ -213,7 +227,7 @@ inline void cube_vec_simd(float * out, const float * arg, unsigned int n)
     unsigned int loops = n / samples_per_loop;
 
     do {
-        detail::cube_vec_mp<samples_per_loop>(out, arg);
+        detail::cube_vec_simd_mp<samples_per_loop>(out, arg);
 
         out += samples_per_loop;
         arg += samples_per_loop;
@@ -221,10 +235,12 @@ inline void cube_vec_simd(float * out, const float * arg, unsigned int n)
     while (--loops);
 }
 
+using detail::cube_vec_simd_mp;
+
 template <unsigned int n>
 inline void cube_vec_simd(float * out, const float * arg)
 {
-    detail::cube_vec_mp<n>(out, arg);
+    detail::cube_vec_simd_mp<n>(out, arg);
 }
 
 

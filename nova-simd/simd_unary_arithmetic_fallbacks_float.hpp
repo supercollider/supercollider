@@ -26,27 +26,51 @@
 namespace nova {
 
 template <int n>
-inline void abs_vec_simd(float * out, const float * src)
+inline void abs_vec_simd_mp(float * out, const float * src)
 {
     abs_vec_simd(out, src, n);
 }
 
 template <int n>
-inline void sgn_vec_simd(float * out, const float * src)
+inline void abs_vec_simd(float * out, const float * src)
+{
+    abs_vec_simd_mp<n>(out, src);
+}
+
+template <int n>
+inline void sgn_vec_simd_mp(float * out, const float * src)
 {
     sgn_vec_simd(out, src, n);
 }
 
 template <int n>
-inline void square_vec_simd(float * out, const float * src)
+inline void sgn_vec_simd(float * out, const float * src)
+{
+    sgn_vec_simd_mp<n>(out, src);
+}
+
+template <int n>
+inline void square_vec_simd_mp(float * out, const float * src)
 {
     square_vec_simd(out, src, n);
 }
 
 template <int n>
-inline void cube_vec_simd(float * out, const float * src)
+inline void square_vec_simd(float * out, const float * src)
+{
+    square_vec_simd_mp<n>(out, src);
+}
+
+template <int n>
+inline void cube_vec_simd_mp(float * out, const float * src)
 {
     cube_vec_simd(out, src, n);
+}
+
+template <int n>
+inline void cube_vec_simd(float * out, const float * src)
+{
+    cube_vec_simd_mp<n>(out, src);
 }
 
 } /* namespace nova */

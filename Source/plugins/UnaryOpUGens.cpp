@@ -44,7 +44,7 @@
 															\
 	void NAME##_nova_64(UnaryOpUGen *unit, int inNumSamples)\
 	{                                                       \
-		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0));    \
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0));    \
 	}
 
 #endif

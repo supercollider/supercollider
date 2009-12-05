@@ -121,6 +121,12 @@ inline void $${label}_vec_simd$fnsuffix($float_type * out, $fnargs)
     $${label}_vec_simd$fnsuffix($fmpargs, n);
 }
 
+template <unsigned int n>
+inline void $${label}_vec_simd${fnsuffix}_mp($float_type * out, $fnargs)
+{
+    $${label}_vec_simd$fnsuffix($fmpargs, n);
+}
+
 """)
 
     return ret.substitute( fnargs = fn_args, callargs = call_args, increments = inc_slopes, fnsuffix = fn_suffix,

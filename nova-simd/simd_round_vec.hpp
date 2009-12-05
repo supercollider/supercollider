@@ -45,7 +45,7 @@ inline void NAME##_vec_simd(float * out, const float * arg, unsigned int n) \
 }                                                                       \
                                                                         \
 template <unsigned int n>                                               \
-inline void NAME##_vec_simd(float * out, const float * arg)             \
+inline void NAME##_vec_simd_mp(float * out, const float * arg)          \
 {                                                                       \
     unsigned int loops = n / 8;                                         \
     do {                                                                \
@@ -60,6 +60,11 @@ inline void NAME##_vec_simd(float * out, const float * arg)             \
         arg += 8;                                                       \
     }                                                                   \
     while (--loops);                                                    \
+}                                                                       \
+template <unsigned int n>                                               \
+inline void NAME##_vec_simd(float * out, const float * arg)             \
+{                                                                       \
+    NAME##_vec_simd_mp<n>(out, arg);                                    \
 }
 
 
@@ -103,6 +108,11 @@ inline void frac_vec_simd(float * out, const float * arg)
     while (--loops);
 }
 
+template <unsigned int n>
+inline void frac_vec_simd_mp(float * out, const float * arg)
+{
+    frac_vec_simd<n>(out, arg);
+}
 
 } /* namespace nova */
 
