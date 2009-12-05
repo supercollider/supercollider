@@ -3551,6 +3551,10 @@ void clip2_ai(BinaryOpUGen *unit, int inNumSamples)
 }
 
 
+#ifdef NOVA_SIMD
+NOVA_BINARY_WRAPPER_K(clip2, clip2)
+#endif
+
 
 void excess_aa(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -7207,7 +7211,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_aa; break;
 						case opAMClip : func = &amclip_aa; break;
 						case opScaleNeg : func = &scaleneg_aa; break;
-						case opClip2 : func = &clip2_aa; break;
+						case opClip2 : func = &clip2_aa_nova_64; break;
 						case opFold2 : func = &fold2_aa; break;
 						case opWrap2 : func = &wrap2_aa; break;
 						case opExcess : func = &excess_aa; break;
@@ -7254,7 +7258,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_ak; break;
 						case opAMClip : func = &amclip_ak; break;
 						case opScaleNeg : func = &scaleneg_ak; break;
-						case opClip2 : func = &clip2_ak; break;
+						case opClip2 : func = &clip2_ak_nova_64; break;
 						case opFold2 : func = &fold2_ak; break;
 						case opWrap2 : func = &wrap2_ak; break;
 						case opExcess : func = &excess_ak; break;
@@ -7301,7 +7305,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_ai; break;
 						case opAMClip : func = &amclip_ai; break;
 						case opScaleNeg : func = &scaleneg_ai; break;
-						case opClip2 : func = &clip2_ai; break;
+						case opClip2 : func = &clip2_ai_nova_64; break;
 						case opFold2 : func = &fold2_ai; break;
 						case opWrap2 : func = &wrap2_ai; break;
 						case opExcess : func = &excess_ai; break;
@@ -7350,7 +7354,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opThresh : func = &thresh_ka; break;
 					case opAMClip : func = &amclip_ka; break;
 					case opScaleNeg : func = &scaleneg_ka; break;
-					case opClip2 : func = &clip2_ka; break;
+					case opClip2 : func = &clip2_ka_nova_64; break;
 					case opFold2 : func = &fold2_ka; break;
 					case opWrap2 : func = &wrap2_ka; break;
 					case opExcess : func = &excess_ka; break;
@@ -7402,7 +7406,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opThresh : func = &thresh_ia; break;
 					case opAMClip : func = &amclip_ia; break;
 					case opScaleNeg : func = &scaleneg_ia; break;
-					case opClip2 : func = &clip2_ia; break;
+					case opClip2 : func = &clip2_ia_nova_64; break;
 					case opFold2 : func = &fold2_ia; break;
 					case opWrap2 : func = &wrap2_ia; break;
 					case opExcess : func = &excess_ia; break;
@@ -7472,7 +7476,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_aa; break;
 						case opAMClip : func = &amclip_aa; break;
 						case opScaleNeg : func = &scaleneg_aa; break;
-						case opClip2 : func = &clip2_aa; break;
+						case opClip2 : func = &clip2_aa_nova; break;
 						case opFold2 : func = &fold2_aa; break;
 						case opWrap2 : func = &wrap2_aa; break;
 						case opExcess : func = &excess_aa; break;
@@ -7519,7 +7523,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_ak; break;
 						case opAMClip : func = &amclip_ak; break;
 						case opScaleNeg : func = &scaleneg_ak; break;
-						case opClip2 : func = &clip2_ak; break;
+						case opClip2 : func = &clip2_ak_nova; break;
 						case opFold2 : func = &fold2_ak; break;
 						case opWrap2 : func = &wrap2_ak; break;
 						case opExcess : func = &excess_ak; break;
@@ -7566,7 +7570,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opThresh : func = &thresh_ai; break;
 						case opAMClip : func = &amclip_ai; break;
 						case opScaleNeg : func = &scaleneg_ai; break;
-						case opClip2 : func = &clip2_ai; break;
+						case opClip2 : func = &clip2_ai_nova; break;
 						case opFold2 : func = &fold2_ai; break;
 						case opWrap2 : func = &wrap2_ai; break;
 						case opExcess : func = &excess_ai; break;
@@ -7615,7 +7619,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opThresh : func = &thresh_ka; break;
 					case opAMClip : func = &amclip_ka; break;
 					case opScaleNeg : func = &scaleneg_ka; break;
-					case opClip2 : func = &clip2_ka; break;
+					case opClip2 : func = &clip2_ka_nova; break;
 					case opFold2 : func = &fold2_ka; break;
 					case opWrap2 : func = &wrap2_ka; break;
 					case opExcess : func = &excess_ka; break;
@@ -7667,7 +7671,7 @@ BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opThresh : func = &thresh_ia; break;
 					case opAMClip : func = &amclip_ia; break;
 					case opScaleNeg : func = &scaleneg_ia; break;
-					case opClip2 : func = &clip2_ia; break;
+					case opClip2 : func = &clip2_ia_nova; break;
 					case opFold2 : func = &fold2_ia; break;
 					case opWrap2 : func = &wrap2_ia; break;
 					case opExcess : func = &excess_ia; break;

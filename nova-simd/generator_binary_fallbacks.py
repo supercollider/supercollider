@@ -78,7 +78,8 @@ def generate_binary_fallbacks(file, float_type):
         binary_fallbacks_template.substitute(label='greater', float=float_type) + \
         binary_fallbacks_template.substitute(label='greater_equal', float=float_type) + \
         binary_fallbacks_template.substitute(label='equal', float=float_type) + \
-        binary_fallbacks_template.substitute(label='notequal', float=float_type)
+        binary_fallbacks_template.substitute(label='notequal', float=float_type) + \
+        binary_fallbacks_template.substitute(label='clip2', float=float_type)
 
     comment = "binary arithmetic simd function fallbacks, %s version" % float_type
 

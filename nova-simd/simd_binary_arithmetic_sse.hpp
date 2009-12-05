@@ -35,6 +35,21 @@ namespace nova {
 #define samples_per_loop nova::unroll_constraints<float>::samples_per_loop
 
 
+namespace detail
+{
+
+template<>
+always_inline __m128 clip2(__m128 value, __m128 limit)
+{
+    const __m128 sign_bits = detail::gen_sign_mask();
+    __m128 low = _mm_xor_ps(sign_bits, limit);
+    return _mm_max_ps(_mm_min_ps(value, limit),
+                      low);
+}
+
+} /* namespace detail */
+
+
 namespace detail {
 
 template <int n>
@@ -1207,6 +1222,203 @@ inline void max_vec_simd(float * out, float arg1, const float arg1_slope,
 
         in2 = _mm_load_ps(arg2+4);
         result = _mm_max_ps(in1, in2);
+
+        _mm_store_ps(out+4, result);
+        in1 = _mm_add_ps(in1, vslope);
+
+        out += 8;
+        arg2 += 8;
+    }
+    while (--loops);
+}
+
+namespace detail {
+
+template <int n>
+always_inline void clip2_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src2);
+
+    const __m128 result = detail::clip2(in1, in2);
+
+    _mm_store_ps(out, result);
+
+    clip2_vec_simd_mp<n-4>(out+4, src1+4, src2+4);
+}
+
+template <>
+always_inline void clip2_vec_simd_mp<0>(float * out, const float * src1, const float * src2)
+{}
+
+template <int n>
+always_inline void clip2_vec_simd_mp_iteration(float * out, const float * src1, const __m128 & src2)
+{
+    const __m128 in1 = _mm_load_ps(src1);
+    const __m128 in2 = _mm_load_ps(src1+4);
+
+    const __m128 result1 = detail::clip2(in1, src2);
+    const __m128 result2 = detail::clip2(in2, src2);
+
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
+
+    clip2_vec_simd_mp_iteration<n-8>(out+8, src1+8, src2);
+}
+
+template <>
+always_inline void clip2_vec_simd_mp_iteration<0>(float * out, const float * src1, const __m128 & src2)
+{}
+
+template <int n>
+always_inline void clip2_vec_simd_mp_iteration(float * out, const __m128 & src1, const float * src2)
+{
+    const __m128 in1 = _mm_load_ps(src2);
+    const __m128 in2 = _mm_load_ps(src2+4);
+
+    const __m128 result1 = detail::clip2(src1, in1);
+    const __m128 result2 = detail::clip2(src1, in2);
+
+    _mm_store_ps(out, result1);
+    _mm_store_ps(out+4, result2);
+
+    clip2_vec_simd_mp_iteration<n-8>(out+8, src1, src2+8);
+}
+
+template <>
+always_inline void clip2_vec_simd_mp_iteration<0>(float * out, const __m128 & src1, const float * src2)
+{}
+
+} /* namespace detail */
+
+
+/* vector/vector */
+using detail::clip2_vec_simd_mp;
+
+template <int n>
+void clip2_vec_simd(float * out, const float * src1, const float * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* vector/scalar */
+template <int n>
+always_inline void clip2_vec_simd_mp(float * out, const float * src1, const float src2)
+{
+    __m128 in2 = _mm_set_ps1(src2);
+    detail::clip2_vec_simd_mp_iteration<n>(out, src1, in2);
+}
+
+template <int n>
+void clip2_vec_simd(float * out, const float * src1, const float src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* vector/scalar */
+template <int n>
+always_inline void clip2_vec_simd_mp(float * out, const float src1, const float * src2)
+{
+    __m128 in1 = _mm_set_ps1(src1);
+    detail::clip2_vec_simd_mp_iteration<n>(out, in1, src2);
+}
+
+template <int n>
+void clip2_vec_simd(float * out, const float src1, const float * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+
+template <>
+inline void clip2_vec_simd(float * out, const float * arg1, const float * arg2, unsigned int n)
+{
+    unsigned int loops = n / samples_per_loop;
+    do {
+        detail::clip2_vec_simd_mp<samples_per_loop>(out, arg1, arg2);
+        out += samples_per_loop;
+        arg1 += samples_per_loop;
+        arg2 += samples_per_loop;
+    }
+    while (--loops);
+}
+
+template <>
+inline void clip2_vec_simd(float * out, const float * arg1, const float arg2, unsigned int n)
+{
+    unsigned int loops = n / samples_per_loop;
+    const __m128 in2 = _mm_set_ps1(arg2);
+    do {
+        detail::clip2_vec_simd_mp_iteration<samples_per_loop>(out, arg1, in2);
+        out += samples_per_loop;
+        arg1 += samples_per_loop;
+    }
+    while (--loops);
+}
+
+template <>
+inline void clip2_vec_simd(float * out, const float arg1, const float * arg2, unsigned int n)
+{
+    unsigned int loops = n / samples_per_loop;
+    const __m128 in1 = _mm_set_ps1(arg1);
+    do {
+        detail::clip2_vec_simd_mp_iteration<samples_per_loop>(out, in1, arg2);
+        out += samples_per_loop;
+        arg2 += samples_per_loop;
+    }
+    while (--loops);
+}
+
+template <>
+inline void clip2_vec_simd(float * out, const float * arg1, float arg2,
+                              float arg2_slope, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    __m128 in2   = _mm_setr_ps(arg2,
+                               arg2 + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope,
+                               arg2 + arg2_slope + arg2_slope + arg2_slope);
+    __m128 vslope = _mm_set_ps1(arg2_slope + arg2_slope + arg2_slope + arg2_slope);
+
+    do {
+        __m128 in1 = _mm_load_ps(arg1);
+        __m128 result = detail::clip2(in1, in2);
+
+        _mm_store_ps(out, result);
+        in2 = _mm_add_ps(in2, vslope);
+
+        in1 = _mm_load_ps(arg1+4);
+        result = detail::clip2(in1, in2);
+
+        _mm_store_ps(out+4, result);
+        in2 = _mm_add_ps(in2, vslope);
+
+        out += 8;
+        arg1 += 8;
+    }
+    while (--loops);
+}
+
+template <>
+inline void clip2_vec_simd(float * out, float arg1, const float arg1_slope,
+                              const float * arg2, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    __m128 in1   = _mm_setr_ps(arg1,
+                               arg1 + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope,
+                               arg1 + arg1_slope + arg1_slope + arg1_slope);
+    __m128 vslope = _mm_set_ps1(arg1_slope + arg1_slope + arg1_slope + arg1_slope);
+
+    do {
+        __m128 in2 = _mm_load_ps(arg2);
+        __m128 result = detail::clip2(in1, in2);
+
+        _mm_store_ps(out, result);
+        in1 = _mm_add_ps(in1, vslope);
+
+        in2 = _mm_load_ps(arg2+4);
+        result = detail::clip2(in1, in2);
 
         _mm_store_ps(out+4, result);
         in1 = _mm_add_ps(in1, vslope);

@@ -505,6 +505,46 @@ inline void notequal_vec_simd(float * out, const float src1, const float * src2)
 }
 
 
+/* vector/vector */
+template <int n>
+inline void clip2_vec_simd_mp(float * out, const float * src1, const float * src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(float * out, const float * src1, const float * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* vector/scalar */
+template <int n>
+inline void clip2_vec_simd_mp(float * out, const float * src1, const float src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(float * out, const float * src1, const float src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+/* scalar/vector */
+template <int n>
+inline void clip2_vec_simd_mp(float * out, const float src1, const float * src2)
+{
+    clip2_vec_simd(out, src1, src2, n);
+}
+
+template <int n>
+inline void clip2_vec_simd(float * out, const float src1, const float * src2)
+{
+    clip2_vec_simd_mp<n>(out, src1, src2);
+}
+
+
 } /* namespace nova */
 
 #endif /* SIMD_BINARY_ARITHMETIC_FALLBACKS_FLOAT_HPP */

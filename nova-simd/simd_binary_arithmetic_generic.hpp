@@ -26,6 +26,17 @@
 
 namespace nova {
 
+namespace detail
+{
+
+template <typename float_type>
+inline float_type clip2(float_type f, float_type limit)
+{
+    return std::max(-limit, std::min(f, limit));
+}
+
+} /* namespace detail */
+
 template <typename float_type>
 inline void plus_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n)
 {
@@ -2062,6 +2073,176 @@ inline void notequal_vec_simd(float_type * out, float_type arg1, const float_typ
         *out++ = std::not_equal_to<float_type>()(arg1, *arg2++); arg1 += arg1_slope;
         *out++ = std::not_equal_to<float_type>()(arg1, *arg2++); arg1 += arg1_slope;
         *out++ = std::not_equal_to<float_type>()(arg1, *arg2++); arg1 += arg1_slope;
+    }
+    while (--loops);
+}
+
+template <typename float_type>
+inline void clip2_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n)
+{
+    do {
+        *out++ = detail::clip2<float_type>(*arg1++, *arg2++);
+    }
+    while (--n);
+}
+
+template <typename float_type>
+inline void clip2_vec(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n)
+{
+    do {
+        *out++ = detail::clip2<float_type>(*arg1++, arg2);
+    }
+    while (--n);
+}
+
+template <typename float_type>
+inline void clip2_vec(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n)
+{
+    do {
+        *out++ = detail::clip2<float_type>(arg1, *arg2++);
+    }
+    while (--n);
+}
+
+template <typename float_type>
+inline void clip2_vec(float_type * out, const float_type * arg1, float_type arg2,
+                  const float_type arg2_slope, unsigned int n)
+{
+    do {
+        *out++ = detail::clip2<float_type>(*arg1++, arg2);
+        arg2 += arg2_slope;
+    }
+    while (--n);
+}
+
+template <typename float_type>
+inline void clip2_vec(float_type * out, float_type arg1, const float_type arg1_slope,
+                  const float_type * arg2, unsigned int n)
+{
+    do {
+        *out++ = detail::clip2<float_type>(arg1, *arg2++);
+        arg1 += arg1_slope;
+    }
+    while (--n);
+}
+
+template <typename float_type>
+inline void clip2_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        float_type out0 = detail::clip2<float_type>(arg1[0], arg2[0]);
+        float_type out1 = detail::clip2<float_type>(arg1[1], arg2[1]);
+        float_type out2 = detail::clip2<float_type>(arg1[2], arg2[2]);
+        float_type out3 = detail::clip2<float_type>(arg1[3], arg2[3]);
+        float_type out4 = detail::clip2<float_type>(arg1[4], arg2[4]);
+        float_type out5 = detail::clip2<float_type>(arg1[5], arg2[5]);
+        float_type out6 = detail::clip2<float_type>(arg1[6], arg2[6]);
+        float_type out7 = detail::clip2<float_type>(arg1[7], arg2[7]);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg1 += 8;
+        arg2 += 8;
+    }
+    while (--loops);
+}
+
+template <typename float_type>
+inline void clip2_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        float_type out0 = detail::clip2<float_type>(arg1[0], arg2);
+        float_type out1 = detail::clip2<float_type>(arg1[1], arg2);
+        float_type out2 = detail::clip2<float_type>(arg1[2], arg2);
+        float_type out3 = detail::clip2<float_type>(arg1[3], arg2);
+        float_type out4 = detail::clip2<float_type>(arg1[4], arg2);
+        float_type out5 = detail::clip2<float_type>(arg1[5], arg2);
+        float_type out6 = detail::clip2<float_type>(arg1[6], arg2);
+        float_type out7 = detail::clip2<float_type>(arg1[7], arg2);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg1 += 8;
+    }
+    while (--loops);
+}
+
+template <typename float_type>
+inline void clip2_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        float_type out0 = detail::clip2<float_type>(arg1, arg2[0]);
+        float_type out1 = detail::clip2<float_type>(arg1, arg2[1]);
+        float_type out2 = detail::clip2<float_type>(arg1, arg2[2]);
+        float_type out3 = detail::clip2<float_type>(arg1, arg2[3]);
+        float_type out4 = detail::clip2<float_type>(arg1, arg2[4]);
+        float_type out5 = detail::clip2<float_type>(arg1, arg2[5]);
+        float_type out6 = detail::clip2<float_type>(arg1, arg2[6]);
+        float_type out7 = detail::clip2<float_type>(arg1, arg2[7]);
+        out[0] = out0;
+        out[1] = out1;
+        out[2] = out2;
+        out[3] = out3;
+        out[4] = out4;
+        out[5] = out5;
+        out[6] = out6;
+        out[7] = out7;
+
+        out += 8;
+        arg2 += 8;
+    }
+    while (--loops);
+}
+
+template <typename float_type>
+inline void clip2_vec_simd(float_type * out, const float_type * arg1, float_type arg2,
+                              float_type arg2_slope, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+        *out++ = detail::clip2<float_type>(*arg1++, arg2); arg2 += arg2_slope;
+    }
+    while (--loops);
+}
+
+template <typename float_type>
+inline void clip2_vec_simd(float_type * out, float_type arg1, const float_type arg1_slope,
+                              const float_type * arg2, unsigned int n)
+{
+    unsigned int loops = n / 8;
+    do {
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
+        *out++ = detail::clip2<float_type>(arg1, *arg2++); arg1 += arg1_slope;
     }
     while (--loops);
 }
