@@ -115,7 +115,7 @@
 	{																	\
 		float xb = ZIN0(1);												\
 																		\
-		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);               \
+		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);			\
 		unit->mPrevB = xb;												\
 	}																	\
 																		\
