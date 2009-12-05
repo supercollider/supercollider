@@ -69,12 +69,12 @@ Buffer {
 	allocReadMsg { arg argpath,startFrame = 0,numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
-		^["/b_allocRead",bufnum, path,startFrame,numFrames.asInt ? -1, completionMessage.value(this)]
+		^["/b_allocRead",bufnum, path,startFrame,(numFrames ? -1).asInt, completionMessage.value(this)]
 	}
 	allocReadChannelMsg { arg argpath,startFrame = 0,numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
-		^["/b_allocReadChannel",bufnum, path,startFrame, numFrames.asInt ? -1] ++ channels ++ 			[completionMessage.value(this)]
+		^["/b_allocReadChannel",bufnum, path,startFrame, (numFrames ? -1).asInt] ++ channels ++ 			[completionMessage.value(this)]
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -137,7 +137,7 @@ Buffer {
 	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
-		^["/b_read", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
+		^["/b_read", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -145,7 +145,7 @@ Buffer {
 	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
-		^["/b_readChannel", bufnum, path, fileStartFrame, numFrames.asInt ? -1,
+		^["/b_readChannel", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
 			bufStartFrame, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
