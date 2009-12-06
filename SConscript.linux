@@ -111,6 +111,9 @@ def independent():
     if conf.CheckLibWithHeader('tbb', 'tbb/concurrent_hash_map.h','c++'):
         env.Append(CPPDEFINES=["HAVE_TBB"])
 
+    if conf.CheckLib('dl'):
+        env.Append(CPPDEFINES=["DLOPEN"])
+
     ######################################################################
     #
     # some flags
