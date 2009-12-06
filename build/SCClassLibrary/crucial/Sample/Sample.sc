@@ -154,7 +154,7 @@ AbstractSample : BufferProxy {
 	}
 	*standardizePath { arg path;
 		var pathName;
-		pathName = PathName.fromOS9(path);
+		pathName = PathName(path.standardizePath);
 		^if(pathName.isRelativePath,{
 			dir ++ pathName.fullPath;
 		},{

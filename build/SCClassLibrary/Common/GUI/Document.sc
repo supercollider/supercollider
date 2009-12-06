@@ -91,7 +91,7 @@ Document {
 
 	*standardizePath { | p |
 		var pathName;
-		pathName = PathName.fromOS9(p.standardizePath);
+		pathName = PathName(p.standardizePath);
 		^if(pathName.isRelativePath) {
 			dir  ++ pathName.fullPath
 		} {
