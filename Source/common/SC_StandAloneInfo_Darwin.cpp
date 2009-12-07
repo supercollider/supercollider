@@ -2,6 +2,7 @@
 
 #include <sys/param.h>
 #include <stdexcept>
+#include <cstring>  // for strncpy
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFBundle.h>
