@@ -539,18 +539,19 @@ features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 
 # wii on linux
 if PLATFORM == 'linux':
-        features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
+    features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
 else:
-        features['wii'] = env['WII']
+    features['wii'] = env['WII']
 
 # libicu
-if conf.CheckCHeader('unicode/uregex.h'):
+if env['LANG']:
+    if conf.CheckCHeader('unicode/uregex.h'):
         libraries['libicu'] = Environment(
              LINKFLAGS = '-licui18n -licuuc -licudata',
         )
-else:
-    print "libicu not found"
-    Exit(1)
+    else:
+        print "libicu not found"
+        Exit(1)
 
 # only _one_ Configure context can be alive at a time
 env = conf.Finish()
@@ -1090,7 +1091,8 @@ Source/lang/LangPrimSource/PyrUnixPrim.cpp
 Source/common/fftlib.c
 ''')
 
-merge_lib_info(langEnv, libraries['libicu'])
+if env['LANG']:
+    merge_lib_info(langEnv, libraries['libicu'])
 
 # optional features
 if features['midiapi']:
