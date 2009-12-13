@@ -218,6 +218,54 @@ SimpleNumber : Number {
 		);
 		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
 	}
+	
+	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+		var grow, a, b, scaled;
+		switch(clip,
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
+		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
+
+		grow = exp(curve);
+		a = outMax - outMin / (1.0 - grow);
+		b = outMin + a;
+		scaled = (this - inMin) / (inMax - inMin);
+		
+		^b - (a * pow(grow, scaled));
+	}
+	
+	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+		var grow, a, b, scaled;
+		switch(clip,
+			\minmax, {
+				if (this <= inMin, { ^outMin });
+				if (this >= inMax, { ^outMax });
+			},
+			\min, {
+				if (this <= inMin, { ^outMin });
+			},
+			\max, {
+				if (this >= inMax, { ^outMax });
+			}
+		);
+		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
+
+		grow = exp(curve);
+		a = outMax - outMin / (1.0 - grow);
+		b = outMin + a;
+		scaled = (this - inMin) / (inMax - inMin);
+		
+		^log((b - scaled) / a) / curve
+	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		// triangular linear mapping
