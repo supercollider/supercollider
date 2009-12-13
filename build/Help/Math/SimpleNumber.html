@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -15,7 +15,9 @@ p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ff}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #cd1612}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #001bb9}
 span.s3 {text-decoration: underline}
@@ -24,7 +26,11 @@ span.s5 {color: #606060}
 span.s6 {font: 9.0px Monaco}
 span.s7 {font: 12.0px Helvetica}
 span.s8 {color: #ad140d}
-span.s9 {font: 12.0px Helvetica; color: #000000}
+span.s9 {color: #1135f9}
+span.s10 {color: #0a25b9}
+span.s11 {color: #0b28c5}
+span.s12 {color: #0b28c6}
+span.s13 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -588,7 +594,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s2">|num|</span> num.expexp(0, 10, -4.3, 100) };<span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>(1..10).expexp(0, 10, 4.3, 100); <span class="s8">// equivalent.</span></p>
-<p class="p2"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b>lincurve(inMin, inMax, outMin, outMax, curve, clip)</b></p>
+<p class="p5"><br></p>
+<p class="p1"><span class="s6"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed linear input range (inMin..inMax)</p>
+<p class="p1"><span class="Apple-tab-span">	</span>to an exponential curve output range (outMin..outMax). A <b>curve</b> is like the curve parameter in <a href="../Control/Env.html"><span class="s9">Env</span></a></p>
+<p class="p1"><span class="Apple-tab-span">	</span>Unlike with linexp, the output range may include zero.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="s7"><span class="Apple-tab-span">	</span></span>(0..10).collect { <span class="s10">|num|</span> num.lincurve(0, 10, -4.3, 100, -3) };<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>(0..10).lincurve(0, 10, -4.3, 100, -3); <span class="s8">// equivalent.</span></p>
+<p class="p9"><span class="s8"><span class="Apple-tab-span">	</span></span>// different curves:</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(</p>
+<p class="p4"><span class="Apple-tab-span">	</span>(-4..4).do { <span class="s11">|val|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0..100).collect(<span class="s11">_</span>.lincurve(0, 100, 0, 1, val)).plot</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}</p>
+<p class="p4"><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p1"><b>curvelin(inMin, inMax, outMin, outMax, curve, clip)</b></p>
+<p class="p5"><br></p>
+<p class="p1"><span class="s6"><span class="Apple-tab-span">	</span></span>map the receiver from an assumed curve-exponential input range (inMin..inMax)</p>
+<p class="p1"><span class="Apple-tab-span">	</span>to a linear output range (outMin..outMax). If the input exceeds the assumed input range.</p>
+<p class="p1"><span class="Apple-tab-span">	</span>A<b> curve</b> is<span class="Apple-converted-space">  </span>like the curve parameter in <a href="../Control/Env.html"><span class="s9">Env</span></a><span class="s9">.</span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>Unlike with explin, the input range may include zero.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="s6"><span class="Apple-tab-span">	</span></span></p>
+<p class="p5"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>(1..10).collect { <span class="s10">|num|</span> num.curvelin(0, 10, -4.3, 100, -3) };<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>(1..10).curvelin(0, 10, -4.3, 100, -3); <span class="s8">// equivalent.</span></p>
+<p class="p9"><span class="s8"><span class="Apple-tab-span">	</span></span>// different curves:</p>
+<p class="p10"><span class="Apple-tab-span">	</span>(</p>
+<p class="p10"><span class="Apple-tab-span">	</span>(-4..4).do { <span class="s12">|val|</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0..100).collect(<span class="s12">_</span>.<span class="s4">curvelin</span>(0, 100, 0, 1, val)).plot</p>
+<p class="p10"><span class="Apple-tab-span">	</span>}</p>
+<p class="p10"><span class="Apple-tab-span">	</span>)</p>
+<p class="p8"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b>bilin(inCenter, inMin, inMax, outCenter, outMin, outMax, clip)</b></p>
 <p class="p5"><br></p>
 <p class="p1"><span class="s6"><span class="Apple-tab-span">	</span></span>map the receiver from two assumed linear input ranges (inMin..inCenter) and (inCenter..inMax)</p>
@@ -617,7 +660,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span>If the input exceeds the input range, the following behaviours are specified by the <b>clip</b> argument:<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>nil</b> (don't clip), <b>\max</b> (clip ceiling), <b>\min</b>, (clip floor), <b>\minmax</b> (clip both - this is default).<span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="s9"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
+<p class="p6"><span class="s13"><span class="Apple-tab-span">	</span></span>// doesn't properly work yet.</p>
 <p class="p4"><span class="Apple-tab-span">	</span>(</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> center = 0.5, ctlCenter;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>(<span class="s5">"biexp"</span>, <span class="s2">Rect</span>(100, 100, 200, 100)).front;</p>
@@ -659,7 +702,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span>return a <a href="../Core/Kernel/Routine.html"><span class="s2">Routine</span></a> that iterates over the numbers from <b>this</b> to <b>last</b>.<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>Since this is a lazy operation, <b>last</b> may be <b>inf</b>, generating an endless series<span class="Apple-converted-space"> </span></p>
-<p class="p9"><span class="s4"><span class="Apple-tab-span">	</span>(see also: <a href="../Language/ListComprehensions.html"><span class="s7">ListComprehensions</span></a>)</span></p>
+<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span>(see also: <a href="../Language/ListComprehensions.html"><span class="s7">ListComprehensions</span></a>)</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>r = seriesIter(0, 5);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>r.nextN(8);<span class="Apple-tab-span">	</span></p>
