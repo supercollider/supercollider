@@ -770,17 +770,23 @@ SequenceableCollection : Collection {
 	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
 
 
-	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linlin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, clip=\minmax;
 		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax, clip) }
 	}
-	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linexp { arg inMin = 0, inMax = 1, outMin = 0.001, outMax = 1, clip=\minmax;
 		^this.collect {|item| item.linexp(inMin, inMax, outMin, outMax, clip) }
 	}
-	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	explin { arg inMin = 0.001, inMax = 1, outMin = 0, outMax = 1, clip=\minmax;
 		^this.collect {|item| item.explin(inMin, inMax, outMin, outMax, clip) }
 	}
-	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	expexp { arg inMin = 0.001, inMax = 1, outMin = 0.001, outMax = 1, clip=\minmax;
 		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax, clip) }
+	}
+	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip=\minmax;
+		^this.collect {|item| item.lincurve(inMin, inMax, outMin, outMax, curve, clip) }
+	}
+	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip=\minmax;
+		^this.collect {|item| item.curvelin(inMin, inMax, outMin, outMax, curve, clip) }
 	}
 
 	asFraction { arg denominator=100, fasterBetter=true;
@@ -1119,6 +1125,7 @@ SequenceableCollection : Collection {
 			}
 		}
 	}
+	
 
 	// TempoClock play quantization
 	nextTimeOnGrid { arg clock;
