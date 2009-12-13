@@ -6,7 +6,9 @@ OSXPlatform : UnixPlatform
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
-		this.declareFeature(\findHelpFile); // Announce that we have our own way of finding helpfiles
+		if(Platform.ideName == "scapp"){
+			this.declareFeature(\findHelpFile); // Announce that we have our own way of finding helpfiles
+		};
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 		if (Platform.ideName == "scapp") { this.setDeferredTaskInterval(1/60); }
 	}
