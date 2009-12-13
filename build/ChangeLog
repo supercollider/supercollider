@@ -62,6 +62,7 @@ Other additions/improvements:
 * 2009-11-03 TwoWayIdentityDictionary has a removeAt method now - jr
 * 2009-11-07 improved PyrSlot typesafety - tb
 * 2009-11-23 menu system improvements in Windows IDE - mv
+* 2009-12-13 tidyups for "sclang when on osx but not in sc.app" - ds
 
 
 SuperCollider v3.3.1, released 2009-06-19
