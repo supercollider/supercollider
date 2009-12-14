@@ -463,16 +463,17 @@ Pconst : FilterPattern {
 	storeArgs { ^[sum,pattern,tolerance] }
 
 	embedInStream { arg inval;
-			var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream;
+			var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream,
+				localSum = sum.value(inval);
 			loop ({
 				delta = str.next(inval);
 				if(delta.isNil) {
-					(sum - elapsed).yield;
+					(localSum - elapsed).yield;
 					^inval
 				};
 				nextElapsed = elapsed + delta;
-				if (nextElapsed.round(tolerance) >= sum) {
-					(sum - elapsed).yield;
+				if (nextElapsed.round(tolerance) >= localSum) {
+					(localSum - elapsed).yield;
 					^inval
 				}{
 					elapsed = nextElapsed;
