@@ -166,39 +166,6 @@ Pbinop : Pattern {
 			stream << " " <<< b << ")"
 	}
 
-	embedInStream { arg inval;
-		var streamA, streamB, vala, valb;
-		streamA = a.asStream;
-		streamB = b.asStream;
-		if (adverb.isNil) {
-			loop {
-				vala = streamA.next(inval);
-				if (vala.isNil) { ^inval };
-				valb = streamB.next(inval);
-				if (valb.isNil) { ^inval };
-				inval = yield(vala.perform(operator, valb));
-			};
-		};
-		if (adverb == 'x') {
-			if (vala.isNil) {
-				vala = a.next(inval);
-				if (vala.isNil) { ^inval };
-				valb = b.next(inval);
-				if (valb.isNil, { ^inval });
-			}{
-				valb = b.next(inval);
-				if (valb.isNil) {
-					vala = a.next(inval);
-					if (vala.isNil) { ^inval };
-					b.reset;
-					valb = b.next(inval);
-					if (valb.isNil) { ^inval };
-				};
-			};
-			^inval = yield(vala.perform(operator, valb));
-		};
-	}
-
 	asStream {
 		var streamA = a.asStream;
 		var streamB = b.asStream;
