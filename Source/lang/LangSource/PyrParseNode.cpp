@@ -332,12 +332,12 @@ void PyrClassExtNode::compile(PyrSlot *result)
 {
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
-        char extPath[1024];
-        asRelativePath(gCompilingFileSym->name, extPath);
+		char extPath[1024];
+		asRelativePath(gCompilingFileSym->name, extPath);
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
-            slotRawSymbol(&mClassName->mSlot)->name,
-            extPath
-        );
+			slotRawSymbol(&mClassName->mSlot)->name,
+			extPath
+		);
 		return;
 	}
 	gCurrentClass = classobj;
