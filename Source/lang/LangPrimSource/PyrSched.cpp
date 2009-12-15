@@ -971,6 +971,7 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 	if (err) tempo = 1.;
 	if (tempo <= 0.) {
 		error("invalid tempo %g\n", tempo);
+		SetPtr(slotRawObject(a)->slots+1, NULL);
 		return errFailed;
 	}
 
