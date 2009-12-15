@@ -216,7 +216,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 	if(!view) return errNone;
 	NSColor * color = [view backgroundColor];
 	if(!color) return errNone;
-	float red, green, blue, alpha;
+	CGFloat red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -314,7 +314,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	if(!view) return errNone;
 	NSColor * color = [[[view selectedTextAttributes] objectForKey: NSBackgroundColorAttributeName] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
 	if(!color) return errNone;
-	float red, green, blue, alpha;
+	CGFloat red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -1245,13 +1245,13 @@ int slotGetNSRect(PyrSlot* a, NSRect *r)
 {
 	PyrSlot *slots = slotRawObject(a)->slots;
 	int err;
-	err = slotFloatVal(slots+0, &r->origin.x);
+	err = slotVal(slots+0, &r->origin.x);
 	if (err) return err;
-	err = slotFloatVal(slots+1, &r->origin.y);
+	err = slotVal(slots+1, &r->origin.y);
 	if (err) return err;
-	err = slotFloatVal(slots+2, &r->size.width);
+	err = slotVal(slots+2, &r->size.width);
 	if (err) return err;
-	err = slotFloatVal(slots+3, &r->size.height);
+	err = slotVal(slots+3, &r->size.height);
 	if (err) return err;
 
 	return errNone;
@@ -1262,13 +1262,13 @@ int slotGetCGRect(PyrSlot* a, CGRect *r)
 {
 	PyrSlot *slots = slotRawObject(a)->slots;
 	int err;
-	err = slotFloatVal(slots+0, &r->origin.x);
+	err = slotVal(slots+0, &r->origin.x);
 	if (err) return err;
-	err = slotFloatVal(slots+1, &r->origin.y);
+	err = slotVal(slots+1, &r->origin.y);
 	if (err) return err;
-	err = slotFloatVal(slots+2, &r->size.width);
+	err = slotVal(slots+2, &r->size.width);
 	if (err) return err;
-	err = slotFloatVal(slots+3, &r->size.height);
+	err = slotVal(slots+3, &r->size.height);
 	if (err) return err;
 
 	return errNone;
@@ -1301,9 +1301,9 @@ int slotGetPoint(PyrSlot* a, NSPoint *p)
 {
 	PyrSlot *slots = slotRawObject(a)->slots;
 	int err;
-	err = slotFloatVal(slots+0, &p->x);
+	err = slotVal(slots+0, &p->x);
 	if (err) return err;
-	err = slotFloatVal(slots+1, &p->y);
+	err = slotVal(slots+1, &p->y);
 	if (err) return err;
 
 	return errNone;
@@ -2788,17 +2788,17 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
 
     CGAffineTransform afx;
 
-    int err = getIndexedFloat(mobj, 0, &afx.a);
+    int err = getIndexedFloat(mobj, 0, (float*)&afx.a);
     if (err) return err;
-    err = getIndexedFloat(mobj, 1, &afx.b);
+    err = getIndexedFloat(mobj, 1, (float*)&afx.b);
     if (err) return err;
-    err = getIndexedFloat(mobj, 2, &afx.c);
+    err = getIndexedFloat(mobj, 2, (float*)&afx.c);
     if (err) return err;
-    err = getIndexedFloat(mobj, 3, &afx.d);
+    err = getIndexedFloat(mobj, 3, (float*)&afx.d);
     if (err) return err;
-    err = getIndexedFloat(mobj, 4, &afx.tx);
+    err = getIndexedFloat(mobj, 4, (float*)&afx.tx);
     if (err) return err;
-    err = getIndexedFloat(mobj, 5, &afx.ty);
+    err = getIndexedFloat(mobj, 5, (float*)&afx.ty);
     if (err) return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];

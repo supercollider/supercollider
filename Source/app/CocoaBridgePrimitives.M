@@ -885,8 +885,8 @@ extern bool compiledOK;
 					) {
 						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSSize s;
-						slotFloatVal(slots+0, &s.width);
-						slotFloatVal(slots+1, &s.height);
+						slotVal(slots+0, &s.width);
+						slotVal(slots+1, &s.height);
 						retbuffer = (void*)&s;
 					}
 					else if((strcmp(cType+1, "_NSRange") == 0) && (
@@ -905,10 +905,10 @@ extern bool compiledOK;
 					){
 						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSRect s;
-						slotFloatVal(slots+0, &(s.origin.x));
-						slotFloatVal(slots+1, &(s.origin.y));
-						slotFloatVal(slots+2, &(s.size.width));
-						slotFloatVal(slots+3, &(s.size.height));
+						slotVal(slots+0, &(s.origin.x));
+						slotVal(slots+1, &(s.origin.y));
+						slotVal(slots+2, &(s.size.width));
+						slotVal(slots+3, &(s.size.height));
 						retbuffer = (void*)&s;
 					}
 					else if((strcmp(cType+1, "_NSPoint") == 0) && (
@@ -917,8 +917,8 @@ extern bool compiledOK;
 					) {
 						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSPoint s;
-						slotFloatVal(slots+0, &s.x);
-						slotFloatVal(slots+1, &s.y);
+						slotVal(slots+0, &s.x);
+						slotVal(slots+1, &s.y);
 						retbuffer = (void*)&s;
 					}else{
 						post("ERROR: Warning structure type not supported %c.\n", _C_STRUCT_B);

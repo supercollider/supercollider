@@ -204,40 +204,33 @@ inline void SetRaw(PyrSlot* slot, double val) { assert(IsFloat(slot)); SetFloat(
 
 inline void SetTagRaw(PyrSlot* slot, int tag) { slot->utag = tag; }
 
-inline int slotFloatVal(PyrSlot *slot, float *value)
+template <typename numeric_type>
+inline int slotVal(PyrSlot * slot, numeric_type *value)
 {
 	if (IsFloat(slot)) {
-		*value = static_cast<float>(slot->uf);
+		*value = static_cast<numeric_type>(slot->uf);
 		return errNone;
 	} else if (IsInt(slot)) {
-		 *value = static_cast<float>(slot->ui);
+		 *value = static_cast<numeric_type>(slot->ui);
 		return errNone;
 	}
 	return errWrongType;
+}
+
+
+inline int slotFloatVal(PyrSlot *slot, float *value)
+{
+	return slotVal<float>(slot, value);
 }
 
 inline int slotIntVal(PyrSlot *slot, int *value)
 {
-	if (IsInt(slot)) {
-		 *value = slot->ui;
-		return errNone;
-	} else if (IsFloat(slot)) {
-		*value = (int)slot->uf;
-		return errNone;
-	}
-	return errWrongType;
+	return slotVal<int>(slot, value);
 }
 
 inline int slotDoubleVal(PyrSlot *slot, double *value)
 {
-	if (IsFloat(slot)) {
-		*value = slot->uf;
-		return errNone;
-	} else if (IsInt(slot)) {
-		 *value = slot->ui;
-		return errNone;
-	}
-	return errWrongType;
+	return slotVal<double>(slot, value);
 }
 
 inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)

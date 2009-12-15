@@ -594,7 +594,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		if (rangeSize < 0) {
 			unsigned int lineStart, lineEnd;
 			range.length = 0;
-			[nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
+			[nsstring getLineStart: (NSUInteger*)&lineStart end: (NSUInteger*)&lineEnd contentsEnd: nil forRange: range];
 			range = NSMakeRange(lineStart, lineEnd - lineStart);
 		}
 		if(rangeStart < 0) range.location = 0;
@@ -1443,7 +1443,7 @@ void fixHTMLBoldUnderline(NSMutableString* html) {
 		
 		unsigned lineStart, nameStart;
 		// goto beginning of line
-		[html getLineStart: &lineStart end: NULL contentsEnd: NULL forRange: underlineSpan];
+		[html getLineStart: (NSUInteger*)&lineStart end: NULL contentsEnd: NULL forRange: underlineSpan];
 		nameStart = lineStart + 5; // offset for "span."
 		NSString *underlineSpanClass = [html substringWithRange: NSMakeRange(nameStart, underlineSpan.location - 1 - nameStart)];
 		//NSLog(@"span class: %@", underlineSpanClass);
