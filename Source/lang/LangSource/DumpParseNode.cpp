@@ -344,9 +344,12 @@ void slotString(PyrSlot *slot, char *str)
 			break;
 		default :
 		{
-			char fstr[32];
-			g_fmt(fstr, slotRawFloat(slot));
-			sprintf(str, "Float %s   %08X %08X", fstr, GetTag(slot), slotRawInt(slot));
+			union {
+				int32 i[2];
+				double f;
+			} u;
+			u.f = slotRawFloat(slot);
+			sprintf(str, "Float %f   %08X %08X", u.f, u.i[0], u.i[1]);
 			break;
 		}
 	}
@@ -448,7 +451,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "ptr%08X", slotRawInt(slot));
 			break;
 		default :
-			g_fmt(str, slotRawFloat(slot));
+			sprintf(str, "%.14g", slotRawFloat(slot));
 			break;
 	}
 }
@@ -563,7 +566,6 @@ bool postString(PyrSlot *slot, char *str)
 			break;
 		default :
 			sprintf(str, "%.14g", slotRawFloat(slot));
-			//g_fmt(str, slotRawFloat(slot));
 			break;
 	}
 	return res;

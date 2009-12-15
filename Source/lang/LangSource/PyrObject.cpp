@@ -546,8 +546,10 @@ void fixClassArrays(PyrClass *classobj)
 int numInstVars(PyrClass* classobj)
 {
 	int res;
-	if (IsNil(&classobj->instVarNames)) res = 0;
-	else res = slotRawObject(&classobj->instVarNames)->size;
+	if (IsNil(&classobj->instVarNames))
+		res = 0;
+	else
+		res = slotRawObject(&classobj->instVarNames)->size;
 	return res;
 }
 
@@ -1235,11 +1237,11 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	int numInstVars, int numClassVars)
 {
 	PyrClass *superClass = NULL;
-  PyrClass *metaSuperClass = NULL;
+	PyrClass *metaSuperClass = NULL;
 	PyrSymbol *metaClassName = NULL;
 	PyrSymbol *metaSuperClassName = NULL;
 	PyrClass *classobj = NULL;
-  PyrClass *metaclassobj = NULL;
+	PyrClass *metaclassobj = NULL;
 	int superInstVars;
 
 	//postfl("makeIntrinsicClass '%s'\n", className->name);
@@ -1264,7 +1266,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	metaclassobj = newClassObj( class_class,
 		metaClassName, metaSuperClassName,
 		classClassNumInstVars, 0, 0, 0, obj_notindexed, 0);
-	SetRaw(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
+	SetInt(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
 
 	if (metaSuperClassName && classClassNumInstVars) {
 		memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&metaSuperClass->iprototype)->slots,
@@ -1280,7 +1282,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	classobj = newClassObj(metaclassobj,
 		className, superClassName,
 		numInstVars + superInstVars, numClassVars, 0, 0, obj_notindexed, 0);
-	SetRaw(&classobj->classFlags, slotRawInt(&classobj->classFlags) | classIsIntrinsic);
+	SetInt(&classobj->classFlags, slotRawInt(&classobj->classFlags) | classIsIntrinsic);
 
 	//postfl("%s:%s  : %d\n", className->name, superClassName->name, superInstVars);
 	if (superClass && superInstVars) {
@@ -1392,7 +1394,7 @@ void initClasses()
 	class_arrayed_collection = makeIntrinsicClass(s_arrayed_collection, s_sequenceable_collection, 0, 0);
 	class_array = makeIntrinsicClass(s_array, s_arrayed_collection, 0, 0);
 		SetInt(&class_array->instanceFormat, obj_slot);
-		SetRaw(&class_array->classFlags, slotRawInt(&class_array->classFlags) | classHasIndexableInstances);
+		SetInt(&class_array->classFlags, slotRawInt(&class_array->classFlags) | classHasIndexableInstances);
 
 	// now fix array classptrs in already created classes
 	fixClassArrays(class_class);
@@ -1428,7 +1430,7 @@ void initClasses()
 		//addIntrinsicVar(class_method, "callMeter", &o_zero);
 
 	class_frame = makeIntrinsicClass(s_frame, s_object, 0, 0);
-		SetRaw(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
+		SetInt(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
 		//addIntrinsicVar(class_frame, "method", &o_nil);
 		//addIntrinsicVar(class_frame, "caller", &o_nil);
 		//addIntrinsicVar(class_frame, "context", &o_nil);
@@ -1518,34 +1520,34 @@ void initClasses()
 		//slotRawInt(&class_rawarray->classFlags) |= classHasIndexableInstances;
 	class_int8array = makeIntrinsicClass(s_int8array, s_rawarray, 0, 0);
 		SetInt(&class_int8array->instanceFormat, obj_int8);
-		SetRaw(&class_int8array->classFlags, slotRawInt(&class_int8array->classFlags) | classHasIndexableInstances);
+		SetInt(&class_int8array->classFlags, slotRawInt(&class_int8array->classFlags) | classHasIndexableInstances);
 	class_int16array = makeIntrinsicClass(s_int16array, s_rawarray, 0, 0);
 		SetInt(&class_int16array->instanceFormat, obj_int16);
-		SetRaw(&class_int16array->classFlags, slotRawInt(&class_int16array->classFlags) | classHasIndexableInstances);
+		SetInt(&class_int16array->classFlags, slotRawInt(&class_int16array->classFlags) | classHasIndexableInstances);
 	class_int32array = makeIntrinsicClass(s_int32array, s_rawarray, 0, 0);
 		SetInt(&class_int32array->instanceFormat, obj_int32);
-		SetRaw(&class_int32array->classFlags, slotRawInt(&class_int32array->classFlags) | classHasIndexableInstances);
+		SetInt(&class_int32array->classFlags, slotRawInt(&class_int32array->classFlags) | classHasIndexableInstances);
 	class_symbolarray = makeIntrinsicClass(s_symbolarray, s_rawarray, 0, 0);
 		SetInt(&class_symbolarray->instanceFormat, obj_symbol);
-		SetRaw(&class_symbolarray->classFlags, slotRawInt(&class_symbolarray->classFlags) | classHasIndexableInstances);
+		SetInt(&class_symbolarray->classFlags, slotRawInt(&class_symbolarray->classFlags) | classHasIndexableInstances);
 	class_string = makeIntrinsicClass(s_string, s_rawarray, 0, 1);
 		addIntrinsicClassVar(class_string, "unixCmdActions", &o_nil);
 		SetInt(&class_string->instanceFormat, obj_char);
-		SetRaw(&class_string->classFlags, slotRawInt(&class_string->classFlags) | classHasIndexableInstances);
+		SetInt(&class_string->classFlags, slotRawInt(&class_string->classFlags) | classHasIndexableInstances);
 	class_floatarray = makeIntrinsicClass(s_floatarray, s_rawarray, 0, 0);
 		SetInt(&class_floatarray->instanceFormat, obj_float);
-		SetRaw(&class_floatarray->classFlags, slotRawInt(&class_floatarray->classFlags) | classHasIndexableInstances);
+		SetInt(&class_floatarray->classFlags, slotRawInt(&class_floatarray->classFlags) | classHasIndexableInstances);
 	class_signal = makeIntrinsicClass(s_signal, s_floatarray, 0, 0);
 		SetInt(&class_signal->instanceFormat, obj_float);
-		SetRaw(&class_signal->classFlags, slotRawInt(&class_signal->classFlags) | classHasIndexableInstances);
+		SetInt(&class_signal->classFlags, slotRawInt(&class_signal->classFlags) | classHasIndexableInstances);
 	class_wavetable = makeIntrinsicClass(s_wavetable, s_floatarray, 0, 0);
 		SetInt(&class_wavetable->instanceFormat, obj_float);
-		SetRaw(&class_wavetable->classFlags, slotRawInt(&class_wavetable->classFlags) | classHasIndexableInstances);
+		SetInt(&class_wavetable->classFlags, slotRawInt(&class_wavetable->classFlags) | classHasIndexableInstances);
 
 		//addIntrinsicVar(class_signal, "rate", &o_nil);
 	class_doublearray = makeIntrinsicClass(s_doublearray, s_rawarray, 0, 0);
 		SetInt(&class_doublearray->instanceFormat, obj_double);
-		SetRaw(&class_doublearray->classFlags, slotRawInt(&class_doublearray->classFlags) | classHasIndexableInstances);
+		SetInt(&class_doublearray->classFlags, slotRawInt(&class_doublearray->classFlags) | classHasIndexableInstances);
 
 	class_list = makeIntrinsicClass(s_list, s_sequenceable_collection, 1, 0);
 		addIntrinsicVar(class_list, "array", &o_nil);
@@ -2312,11 +2314,11 @@ void freePyrSlot(PyrSlot *slot)
 	if (NotNil(slot)) {
 		PyrObject *obj;
 		if (IsSym(slot))
-			obj = (PyrObject*)slotRawSymbol(slot); // i don't want to know, what this means for the gc
+				obj = (PyrObject*)slotRawSymbol(slot); // i don't want to know, what this means
 		else if (IsObj(slot))
-			obj = slotRawObject(slot);
+				obj = slotRawObject(slot);
 		else
-			assert(false);
+				assert(false);
 
 		if (obj && obj->IsPermanent()) {
 			// don't deallocate these
@@ -2558,27 +2560,33 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 	return errNone;
 }
 
+static int hashPtr(void* ptr)
+{
+    int32 hashed_part = int32((long)ptr&0xffffffff);
+    return Hash(hashed_part);
+}
+
 int calcHash(PyrSlot *a);
 int calcHash(PyrSlot *a)
 {
 	int hash;
 	switch (GetTag(a)) {
-		case tagObj : hash = Hash((int32)slotRawObject(a)); break;
-		case tagInt : hash = Hash(slotRawInt(a)); break;
-		case tagChar : hash = Hash(slotRawChar(a) & 255); break;
-		case tagSym : hash = slotRawSymbol(a)->hash; break;
-		case tagNil : hash = 0xA5A5A5A5; break;
-		case tagFalse : hash = 0x55AA55AA; break;
-		case tagTrue : hash = 0x69696969; break;
-		case tagPtr : hash = Hash((int32)slotRawPtr(a)); break;
-		default :
-			// hash for a double
-			union {
-				int32 i[2];
-				double d;
-			} u;
-			u.d = slotRawFloat(a);
-			hash = Hash(u.i[0] + Hash(u.i[1]));
+	case tagObj : hash = hashPtr(slotRawObject(a)); break;
+	case tagInt : hash = Hash(slotRawInt(a)); break;
+	case tagChar : hash = Hash(slotRawChar(a) & 255); break;
+	case tagSym : hash = slotRawSymbol(a)->hash; break;
+	case tagNil : hash = 0xA5A5A5A5; break;
+	case tagFalse : hash = 0x55AA55AA; break;
+	case tagTrue : hash = 0x69696969; break;
+	case tagPtr : hash = hashPtr(slotRawPtr(a)); break;
+	default :
+		// hash for a double
+		union {
+			int32 i[2];
+			double d;
+		} u;
+		u.d = slotRawFloat(a);
+		hash = Hash(u.i[0] + Hash(u.i[1]));
 	}
 	return hash;
 }

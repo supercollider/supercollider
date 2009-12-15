@@ -328,7 +328,9 @@ opts.AddOptions(
     BoolOption('GPL3',
                'Allow the inclusion of gpl-3 licensed code. Makes the license of the whole package gpl-3', 0),
     PackageOption('X11',
-                  'Build with X11 support', 1),
+                'Build with X11 support', 1),
+    BoolOption('SCLANG64',
+               'Build 64bit sclang (only affects compilation on 64bit systems)', 0),
     )
 
 if PLATFORM == 'darwin':
@@ -991,8 +993,8 @@ langEnv.Append(
     LIBPATH = 'build'
     )
 
-if env.has_key('amd64') and env['amd64']:
-	langEnv.Append( CFLAGS = ['-m32'],
+if env.get('amd64') and not env.get('SCLANG64'):
+    langEnv.Append( CFLAGS = ['-m32'],
                     CXXFLAGS = ['-m32'],
                     LINKFLAGS = ['-m32'],
                     CPPDEFINES = "NO_INTERNAL_SERVER")
@@ -1018,9 +1020,9 @@ elif PLATFORM == 'linux':
     langEnv.Append(
         LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 
-    if env.has_key('amd64') and env['amd64']:
+    if env.get('amd64') and not env.get('SCLANG64'):
         langEnv.Append(LIBPATH="/emul/ia32-linux/usr/lib/,/usr/lib32/",
-		       LINKFLAGS = '-Wl,-rpath,/emul/ia32-linux/usr/lib/')
+                       LINKFLAGS = '-Wl,-rpath,/emul/ia32-linux/usr/lib/')
 
 elif PLATFORM == 'freebsd':
     langEnv.Append(
@@ -1385,6 +1387,7 @@ print ' CROSSCOMPILE:            %s' % yesorno(env['CROSSCOMPILE'])
 print ' TERMINAL_CLIENT:         %s' % yesorno(env['TERMINAL_CLIENT'])
 print ' X11:                     %s' % yesorno(features['x11'])
 print ' GPL3:                    %s' % yesorno(env['GPL3'])
+print ' SCLANG64:                %s' % yesorno(env.get('SCLANG64'))
 print '------------------------------------------------------------------------'
 
 # ======================================================================
