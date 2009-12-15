@@ -31,6 +31,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "SC_Endian.h"
 #include "PyrSymbol.h"
 
+#include <cassert>
+
 /*
 	Pyrite slots are the size of an 8 byte double. If the upper bits
 	indicate that the double is a 'Not-A-Number' then the upper 32
@@ -166,11 +168,6 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
 #endif
 
-inline void SetRawChar(PyrSlot* slot, int val) { slot->uc = val; }
-inline void SetRaw(PyrSlot* slot, int val) { slot->ui = val; }
-inline void SetRaw(PyrSlot* slot, PyrObject * val) { slot->uo = val; }
-inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { slot->us = val; }
-inline void SetRaw(PyrSlot* slot, double val) { SetFloat(slot, val); }
 
 inline void SetTagRaw(PyrSlot* slot, int tag) { slot->utag = tag; }
 
@@ -199,6 +196,12 @@ inline bool IsFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7F
 inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
 
 inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
+
+inline void SetRawChar(PyrSlot* slot, int val) { assert(IsChar(slot)); slot->uc = val; }
+inline void SetRaw(PyrSlot* slot, int val) { assert(IsInt(slot)); slot->ui = val; }
+inline void SetRaw(PyrSlot* slot, PyrObject * val) { assert(IsObj(slot)); slot->uo = val; }
+inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { assert(IsSym(slot)); slot->us = val; }
+inline void SetRaw(PyrSlot* slot, double val) { assert(IsFloat(slot)); SetFloat(slot, val); }
 
 void dumpPyrSlot(PyrSlot* slot);
 void slotString(PyrSlot *slot, char *str);
@@ -269,6 +272,7 @@ inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)
 
 inline void* slotRawPtr(PyrSlot *slot)
 {
+	assert(IsPtr(slot));
 	return slot->s.u.ptr;
 }
 
@@ -329,26 +333,31 @@ inline PyrInterpreter* slotRawInterpreter(PyrSlot *slot)
 
 inline PyrSymbol* slotRawSymbol(PyrSlot *slot)
 {
+	assert(IsSym(slot));
 	return slot->s.u.s;
 }
 
 inline int slotRawChar(PyrSlot *slot)
 {
+	assert(IsChar(slot));
 	return slot->s.u.c;
 }
 
 inline int slotRawInt(PyrSlot *slot)
 {
+	assert(IsInt(slot));
 	return slot->s.u.i;
 }
 
 inline double slotRawFloat(PyrSlot *slot)
 {
+	assert(IsFloat(slot));
 	return slot->s.u.f;
 }
 
 inline PyrObject* slotRawObject(PyrSlot *slot)
 {
+	assert(IsObj(slot));
 	return slot->s.u.o;
 }
 
