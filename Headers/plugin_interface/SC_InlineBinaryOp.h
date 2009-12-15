@@ -220,53 +220,6 @@ inline double sc_pow(double a, double b)
 	return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b);
 }
 
-template <typename F>
-inline F sc_powi (F x, unsigned int n)
-{
-	F z = 1;
-	while (n != 0)
-	{
-		if ((n & 1) != 0)
-		{
-			z *= x;
-		}
-		n >>= 1;
-		x *= x;
-	}
-
-	return z;
-}
-
-template <class T>
-inline T sc_thresh(T a, T b)
-{
-	return a < b ? (T)0 : a;
-}
-
-template <typename T>
-inline T sc_clip2(T a, T b)
-{
-	return sc_clip(a, -b, b);
-}
-
-template <typename T>
-inline T sc_wrap2(T a, T b)
-{
-	return sc_wrap(a, -b, b);
-}
-
-template <typename T>
-inline T sc_fold2(T a, T b)
-{
-	return sc_fold(a, -b, b);
-}
-
-template <typename T>
-inline T sc_excess(T a, T b)
-{
-	return a - sc_clip(a, -b, b);
-}
-
 inline float sc_round(float x, float quant)
 {
 	return quant==0. ? x : std::floor(x/quant + .5f) * quant;
@@ -300,23 +253,6 @@ inline double sc_trunc(double x, double quant)
 inline float sc_atan2(float a, float b)
 {
 	return std::atan2(a, b);
-}
-
-
-inline float sc_scaleneg(float a, float b)
-{
-	b = 0.5f * b + 0.5f;
-	return (std::abs(a) - a) * b + a;
-}
-
-inline float sc_amclip(float a, float b)
-{
-	return a * 0.5f * (b + std::abs(b));
-}
-
-inline double sc_amclip(double a, double b)
-{
-	return a * 0.5 * (b + std::abs(b));
 }
 
 const float kFSQRT2M1 = static_cast<float32>(sqrt(2.) - 1.);
@@ -423,11 +359,6 @@ inline int sc_lcm(int u, int v)
 	return (u * v)/sc_gcd(u,v);
 }
 
-inline int sc_thresh(int a, int b)
-{
-	return a < b ? 0 : a;
-}
-
 inline int sc_bitAnd(int a, int b)
 {
 	return a & b;
@@ -469,6 +400,99 @@ inline int sc_trunc(int x, int quant)
 	return quant==0 ? x : sc_div(x, quant) * quant;
 }
 
+template <typename F>
+inline F sc_powi (F x, unsigned int n)
+{
+	F z = 1;
+	while (n != 0)
+	{
+		if ((n & 1) != 0)
+		{
+			z *= x;
+		}
+		n >>= 1;
+		x *= x;
+	}
+
+	return z;
+}
+
+template <class T>
+inline T sc_thresh(T a, T b)
+{
+	return a < b ? (T)0 : a;
+}
+
+template <typename T>
+inline T sc_clip2(T a, T b)
+{
+	return sc_clip(a, -b, b);
+}
+
+template <typename T>
+inline T sc_wrap2(T a, T b)
+{
+	return sc_wrap(a, -b, b);
+}
+
+template <typename T>
+inline T sc_fold2(T a, T b)
+{
+	return sc_fold(a, -b, b);
+}
+
+template <typename T>
+inline T sc_excess(T a, T b)
+{
+	return a - sc_clip(a, -b, b);
+}
+
+template <typename T>
+inline T sc_scaleneg(T a, T b)
+{
+	if (a < 0)
+		return a*b;
+	else
+		return a;
+}
+
+template <>
+inline float sc_scaleneg<float>(float a, float b)
+{
+	b = 0.5f * b + 0.5f;
+	return (std::abs(a) - a) * b + a;
+}
+
+template <>
+inline double sc_scaleneg<double>(double a, double b)
+{
+	b = 0.5 * b + 0.5;
+	return (std::abs(a) - a) * b + a;
+}
+
+template <typename T>
+inline T sc_amclip(T a, T b)
+{
+	if (b < 0)
+		return 0;
+	else
+		return a*b;
+}
+
+template <>
+inline float sc_amclip<float>(float a, float b)
+{
+	return a * 0.5f * (b + std::abs(b));
+}
+
+template <>
+inline double sc_amclip<double>(double a, double b)
+{
+	return a * 0.5 * (b + std::abs(b));
+}
+
+
+
 #ifndef SC_WIN32
 #pragma mark -
 #endif //SC_WIN32
@@ -498,11 +522,6 @@ inline long sc_fold(long in, long lo, long hi)
 	long c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
 	return c + lo;
-}
-
-inline long sc_thresh(long a, long b)
-{
-	return a < b ? 0 : a;
 }
 
 inline long sc_bitAnd(long a, long b)
