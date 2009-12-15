@@ -34,11 +34,6 @@
 #include <ctype.h>
 extern int textpos;
 
-extern "C" {
-	extern char *g_fmt(char *, double);
-}
-
-
 void dumpNodeList(PyrParseNode *node)
 {
 	for (; node; node = node->mNext) {
@@ -612,7 +607,7 @@ int asCompileString(PyrSlot *slot, char *str)
 			strcpy(str, "/*Ptr*/ nil");
 			break;
 		default :
-			g_fmt(str, slotRawFloat(slot));
+			sprintf(str, "%f", slotRawFloat(slot));
 			break;
 	}
 	return errNone;

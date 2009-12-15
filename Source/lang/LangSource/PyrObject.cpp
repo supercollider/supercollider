@@ -1705,10 +1705,6 @@ PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end
 	return newobj;
 }
 
-extern "C" {
-	extern char *g_fmt(char *, double);
-}
-
 void dumpObject(PyrObject *obj)
 {
 	char str[256];
@@ -1749,9 +1745,7 @@ void dumpObject(PyrObject *obj)
 				break;
 			case obj_double :
 				for (i=0; i<maxsize; ++i) {
-					char fstr[32];
-					g_fmt(fstr, slotRawFloat(&obj->slots[i]));
-					post("    %3d : %s\n", i, fstr);
+					post("    %3d : %f\n", i, slotRawFloat(&obj->slots[i]));
 				}
 				break;
 			case obj_float :
@@ -1845,9 +1839,7 @@ void dumpBadObject(PyrObject *obj)
 				break;
 			case obj_double :
 				for (i=0; i<maxsize; ++i) {
-					char fstr[32];
-					g_fmt(fstr, slotRawFloat(&obj->slots[i]));
-					postfl("    %3d : %s\n", i, fstr);
+					postfl("    %3d : %f\n", i, slotRawFloat(&obj->slots[i]));
 				}
 				break;
 			case obj_float :
