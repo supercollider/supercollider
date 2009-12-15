@@ -3280,7 +3280,7 @@ typedef struct GradientInfo {
 
 static GradientInfo gGradientInfo;
 
-static void					GradientCalcLinear(void *info, const float *in, float *out)
+static void					GradientCalcLinear(void *info, const CGFloat *in, float *out)
 {
     size_t k;
 	/*
