@@ -125,6 +125,7 @@ inline void SetFloat(PyrSlot* slot, double val)    { slot->tag = tagFloat; slot-
 /* raw setter functions, no typecheck */
 inline void SetRawChar(PyrSlot* slot, int val)     { assert(IsChar(slot));  slot->u.c = val; }
 inline void SetRaw(PyrSlot* slot, int val)         { assert(IsInt(slot));   slot->u.i = val; }
+inline void SetRaw(PyrSlot* slot, long val)         { assert(IsInt(slot));   slot->u.i = val; }
 inline void SetRaw(PyrSlot* slot, PyrObject * val) { assert(IsObj(slot));   slot->u.o = val; }
 inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { assert(IsSym(slot));   slot->u.s = val; }
 inline void SetRaw(PyrSlot* slot, void * val)      { assert(IsPtr(slot));   slot->u.ptr = val; }
