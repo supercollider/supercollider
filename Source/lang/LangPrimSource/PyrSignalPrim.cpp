@@ -109,7 +109,7 @@ int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uf = signal_findpeak(slotRawObject(a));
+	SetFloat(a, signal_findpeak(slotRawObject(a)));
 	return errNone;
 }
 
@@ -154,7 +154,7 @@ int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uf = signal_integral(slotRawObject(a));
+	SetFloat(a, signal_integral(slotRawObject(a)));
 	return errNone;
 }
 
@@ -444,7 +444,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	asize = slotRawObject(a)->size;
-	if (b->uf != 0.0 && !(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) {
+	if (slotRawFloat(b) != 0.0 && !(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) { /// check: is the first condition safe?
 		error("Signal::fft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
@@ -479,7 +479,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	g->gc->GCWriteNew(complexobj, imagobj);
 
 	inreal = (float*)slotRawObject(a)->slots - 1;
-	if (b->uf == 0.0) {
+	if (slotRawFloat(b) == 0.0) { /// check: is the condition safe?
 
 		fftbuf = (float*)fftoutobj->slots - 1;
 		for (i=0; i<asize; ++i) {

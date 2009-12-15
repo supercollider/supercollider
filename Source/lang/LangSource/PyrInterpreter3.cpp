@@ -379,14 +379,14 @@ bool initAwakeMessage(VMGlobals *g)
 	g->block = NULL;
 	g->frame = NULL;
 	g->ip = NULL;
-        g->execMethod = 0;
+	g->execMethod = 0;
 
 	// set process as the receiver
 	PyrSlot *slot = g->sp - 3;
 	slotCopy(&g->receiver, slot);
 
-	g->thread->beats.uf = slot[1].uf;
-	g->thread->seconds.uf = slot[2].uf;
+	SetFloat(&g->thread->beats, slotRawFloat(&slot[1]));
+	SetFloat(&g->thread->seconds, slotRawFloat(&slot[2]));
 	slotCopy(&g->thread->clock, &slot[3]);
 	g->gc->GCWrite(g->thread, slot+3);
 
@@ -409,8 +409,10 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 	g->block = NULL;
 	g->frame = NULL;
 	g->ip = NULL;
-        g->execMethod = 0;
-	g->thread->beats.uf = g->thread->seconds.uf = elapsedTime();
+	g->execMethod = 0;
+	double elapsed = elapsedTime();
+	SetFloat(&g->thread->beats, elapsed);
+	SetFloat(&g->thread->seconds, elapsed);
 	SetObject(&g->thread->clock, s_systemclock->u.classobj);
 	g->gc->GCWrite(g->thread, s_systemclock->u.classobj);
 
@@ -1287,7 +1289,7 @@ void Interpret(VMGlobals *g)
 					if (tag != tagInt) {
 						if (IsFloat(&vars[1])) {
 							// coerce to int
-							SetInt(&vars[1], (int32)(vars[1].uf));
+							SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
 						} else {
 							error("Integer-for : endval not a SimpleNumber.\n");
 
@@ -1334,10 +1336,10 @@ void Interpret(VMGlobals *g)
 				case 7 :
 					vars = g->frame->vars;
 					if (IsFloat(vars+1)) {
-						SetInt(&vars[1], (int32)(vars[1].uf));
+						SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
 					}
 					if (IsFloat(vars+2)) {
-						SetInt(&vars[2], (int32)(vars[2].uf));
+						SetInt(&vars[2], (int32)(slotRawFloat(&vars[2])));
 					}
 					tag = GetTag(&vars[1]);
 					if ((tag != tagInt)
@@ -1484,7 +1486,7 @@ void Interpret(VMGlobals *g)
 				// Float-do : 143 17, 143 18
 				case 17 :
 					vars = g->frame->vars;
-					if (vars[2].uf + 0.5 < g->receiver.uf) {
+					if (slotRawFloat(&vars[2]) + 0.5 < slotRawFloat(&g->receiver)) {
 						slotCopy(++sp, &vars[1]); // push function
 						slotCopy(++sp, &vars[2]); // push i
 						slotCopy(++sp, &vars[2]); // push i
@@ -1503,17 +1505,17 @@ void Interpret(VMGlobals *g)
 					break;
 				case 18 :
 					-- sp ; // Drop
-					g->frame->vars[2].uf += 1.0; // inc i
+					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) + 1.0); // inc i
 					ip -= 4;
 					break;
 
 				// Float-reverseDo : 143 19, 143 20, 143 21
 				case 19 :
-					g->frame->vars[2].uf = g->receiver.uf - 1.0;
+					SetFloat(&g->frame->vars[2], slotRawFloat(&g->receiver) - 1.0);
 					break;
 				case 20 :
 					vars = g->frame->vars;
-					if (vars[2].uf + 0.5 >= 0.0) {
+					if (slotRawFloat(&vars[2]) + 0.5 >= 0.0) {
 						slotCopy(++sp, &vars[1]); // push function
 						slotCopy(++sp, &vars[2]); // push i
 						slotCopy(++sp, &vars[3]); // push j
@@ -1533,8 +1535,8 @@ void Interpret(VMGlobals *g)
 				case 21 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
-					vars[2].uf -= 1.0; // dec i
-					vars[3].uf += 1.0; // inc j
+					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) - 1.0); // dec i
+					SetRaw(&g->frame->vars[3], slotRawFloat(&g->frame->vars[3]) - 1.0); // inc j
 					ip -= 4;
 					break;
 				case 22 : // ? question mark method
@@ -1615,9 +1617,9 @@ void Interpret(VMGlobals *g)
 						slotCopy(&vars[4], &vars[0]);
 					} else {
 						if (IsInt(vars+0)) {
-							vars[4].uf = slotRawInt(&vars[0]);
+							SetFloat(&vars[4], slotRawInt(&vars[0]));
 						} else if (IsFloat(vars+0)) {
-							vars[4].uf = vars[0].uf;
+							SetFloat(&vars[4], slotRawFloat(&vars[0]));
 						} else {
 							bailFromNumberSeries:
 							error("Number-forSeries : first, second or last not an Integer or Float.\n");
@@ -1632,22 +1634,22 @@ void Interpret(VMGlobals *g)
 
 						if (IsNil(vars+1)) {
 							if (IsNil(vars+2)) SetFloat(vars+2, kBigBigFloat);
-							else if (IsInt(vars+2)) vars[2].uf = slotRawInt(&vars[2]);
+							else if (IsInt(vars+2)) SetFloat(&vars[2], slotRawInt(&vars[2]));
 							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
 
-							if (vars[4].uf < vars[2].uf) SetFloat(vars+1, 1.);
+							if (slotRawFloat(&vars[4]) < slotRawFloat(&vars[2])) SetFloat(vars+1, 1.);
 							else SetFloat(vars+1, -1.);
 						} else {
-							if (IsInt(vars+1)) vars[1].uf = slotRawInt(&vars[1]);
+							if (IsInt(vars+1)) SetFloat(&vars[1], slotRawInt(&vars[1]));
 							else if (!IsFloat(vars+1)) goto bailFromNumberSeries;
 
 							if (IsNil(vars+2)) {
-								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, kSmallSmallFloat);
+								if (slotRawFloat(&vars[1]) < slotRawFloat(&vars[4])) SetFloat(vars+2, kSmallSmallFloat);
 								else SetFloat(vars+2, kBigBigFloat);
 							}
-							else if (IsInt(vars+2)) vars[2].uf = slotRawInt(&vars[2]);
+							else if (IsInt(vars+2)) SetFloat(&vars[2], slotRawInt(&vars[2]));
 							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
-							SetFloat(vars+1, vars[1].uf - vars[4].uf);
+							SetFloat(vars+1, slotRawFloat(&vars[1]) - slotRawFloat(&vars[4]));
 						}
 					}
 					break;
@@ -1673,8 +1675,8 @@ void Interpret(VMGlobals *g)
 							sp = g->sp; ip = g->ip;
 						}
 					} else {
-						if ((vars[1].uf >= 0. && vars[4].uf <= vars[2].uf)
-								|| (vars[1].uf < 0. && vars[4].uf >= vars[2].uf)) {
+						if ((slotRawFloat(&vars[1]) >= 0. && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[2]))
+								|| (slotRawFloat(&vars[1]) < 0. && slotRawFloat(&vars[4]) >= slotRawFloat(&vars[2]))) {
 							slotCopy(++sp, &vars[3]); // push function
 							slotCopy(++sp, &vars[4]); // push i
 							slotCopy(++sp, &vars[5]); // push j
@@ -1700,7 +1702,7 @@ void Interpret(VMGlobals *g)
 					if (tag == tagInt) {
 						SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[1])); // inc i
 					} else {
-						vars[4].uf += vars[1].uf; // inc i
+						SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[1])); // inc i
 					}
 					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
@@ -1800,7 +1802,7 @@ void Interpret(VMGlobals *g)
 		// opSendSpecialUnaryArithMsg
 		case 208 :  // opNeg
 			if (IsFloat(sp)) {
-				SetFloat(sp, -sp->uf);
+				SetFloat(sp, -slotRawFloat(sp));
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
@@ -2124,9 +2126,8 @@ void Interpret(VMGlobals *g)
 						if (numArgsPushed >= 2) {
 							slotCopy(&g->classvars->slots[methraw->specialIndex], &sp[1]);
 							g->gc->GCWrite(g->classvars, sp + 1);
-						} else {
-							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
-						}
+						} else
+							slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues[svNil]);
 						slotCopy(sp, slot);
 						break;
 					case methRedirect : /* send a different selector to self */
@@ -2254,9 +2255,8 @@ void Interpret(VMGlobals *g)
 							if (numArgsPushed >= 2) {
 								slotCopy(&obj->slots[index], &sp[1]);
 								g->gc->GCWrite(obj, sp + 1);
-							} else {
-								obj->slots[index].uf = gSpecialValues[svNil];
-							}
+							} else
+								slotCopy(&obj->slots[index], &gSpecialValues[svNil]);
 							slotCopy(sp, slot);
 						}
 						break;
@@ -2269,9 +2269,8 @@ void Interpret(VMGlobals *g)
 						if (numArgsPushed >= 2) {
 							slotCopy(&g->classvars->slots[methraw->specialIndex], &sp[1]);
 							g->gc->GCWrite(g->classvars, sp + 1);
-						} else {
-							g->classvars->slots[methraw->specialIndex].uf = gSpecialValues[svNil];
-						}
+						} else
+							slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues[svNil]);
 						slotCopy(sp, slot);
 						break;
 					case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */

@@ -38,7 +38,71 @@ const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 inline bool IsSignal(PyrSlot* slot) { return (IsObj(slot) && slotRawObject(slot)->classptr == class_signal); }
 inline bool NotSignal(PyrSlot* slot) { return (NotObj(slot) || slotRawObject(slot)->classptr != class_signal); }
 
-int prAddNum(VMGlobals *g, int numArgsPushed)
+
+/* functors for dispatching template code */
+
+struct addNum
+{
+	static inline double run(double lhs, double rhs)
+	{
+		return lhs + rhs;
+	}
+	static inline PyrObject* signal_xf(VMGlobals *g, PyrObject* ina, float inb)
+	{
+		return signal_add_xf(g, ina, inb);
+	}
+	static inline PyrObject* signal_fx(VMGlobals *g, float ina, PyrObject* inb)
+	{
+		return signal_xf(g, inb, ina);
+	}
+	static inline PyrObject* signal_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
+	{
+		return signal_add_xx(g, ina, inb);
+	}
+};
+
+struct mulNum
+{
+	static inline double run(double lhs, double rhs)
+	{
+		return lhs * rhs;
+	}
+	static inline PyrObject* signal_xf(VMGlobals *g, PyrObject* ina, float inb)
+	{
+		return signal_mul_xf(g, ina, inb);
+	}
+	static inline PyrObject* signal_fx(VMGlobals *g, float ina, PyrObject* inb)
+	{
+		return signal_xf(g, inb, ina);
+	}
+	static inline PyrObject* signal_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
+	{
+		return signal_mul_xx(g, ina, inb);
+	}
+};
+
+struct subNum
+{
+	static inline double run(double lhs, double rhs)
+	{
+		return lhs - rhs;
+	}
+	static inline PyrObject* signal_xf(VMGlobals *g, PyrObject* ina, float inb)
+	{
+		return signal_sub_xf(g, ina, inb);
+	}
+	static inline PyrObject* signal_fx(VMGlobals *g, float ina, PyrObject* inb)
+	{
+		return signal_sub_fx(g, ina, inb);
+	}
+	static inline PyrObject* signal_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
+	{
+		return signal_sub_xx(g, ina, inb);
+	}
+};
+
+template <typename Functor>
+inline int prOpNum(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
@@ -50,28 +114,33 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 		case tagInt :
 			switch (GetTag(b)) {
 				case tagInt :
-					SetRaw(a, slotRawInt(a) + slotRawInt(b));
+					SetRaw(a, Functor::run(slotRawInt(a), slotRawInt(b)));
 					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
+				case tagChar :
+				case tagPtr :
+				case tagNil :
+				case tagFalse :
+				case tagTrue :
 					goto send_normal_2;
 				case tagSym :
 					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawInt(a)));
-					} else {
+					if (isKindOf(slotRawObject(b), class_signal))
+						SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawObject(b)));
+					else
 						goto send_normal_2;
-					}
 					break;
 				default :
-					a->uf = slotRawInt(a) + b->uf;
+					SetFloat(a, slotRawInt(a) + slotRawFloat(b));
 					break;
 			}
 			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
+		case tagChar :
+		case tagPtr :
+		case tagNil :
+		case tagFalse :
+		case tagTrue :
 			goto send_normal_2;
 		case tagSym :
 			// leave self in 'a'
@@ -80,45 +149,52 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 			if (isKindOf(slotRawObject(a), class_signal)) {
 				switch (GetTag(b)) {
 					case tagInt :
-						SetRaw(a, signal_add_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
+						SetRaw(a, Functor::signal_xf(g, slotRawObject(a), slotRawInt(b)));
 						break;
-					case tagChar : case tagPtr :
-					case tagNil : case tagFalse : case tagTrue :
+					case tagChar :
+					case tagPtr :
+					case tagNil :
+					case tagFalse :
+					case tagTrue :
 						goto send_normal_2;
 					case tagSym :
 						SetSymbol(a, slotRawSymbol(b));
 						break;
 					case tagObj :
 						if (isKindOf(slotRawObject(b), class_signal)) {
-							SetRaw(a, signal_add_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
-						} else goto send_normal_2;
+							SetRaw(a, Functor::signal_xx(g, slotRawObject(a), slotRawObject(b)));
+						} else
+							goto send_normal_2;
 						break;
 					default : // double
-						SetRaw(a, signal_add_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
+						SetRaw(a, Functor::signal_xf(g, slotRawObject(a), slotRawFloat(b)));
 						break;
 				}
-			} else {
+			} else
 				goto send_normal_2;
-			}
 			break;
 		default : // double
 			switch (GetTag(b)) {
 				case tagInt :
-					a->uf = a->uf + slotRawInt(b);
+					SetRaw(a, Functor::run(slotRawFloat(a), slotRawInt(b)));
 					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
+				case tagChar :
+				case tagPtr :
+				case tagNil :
+				case tagFalse :
+				case tagTrue :
 					goto send_normal_2;
 				case tagSym :
 					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_add_xf(g, slotRawObject(b), a->uf)); break;
-					} else goto send_normal_2;
+					if (isKindOf(slotRawObject(b), class_signal))
+						SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawObject(b)));
+					else
+						goto send_normal_2;
 					break;
 				default : // double
-					a->uf = a->uf + b->uf; break;
+					SetRaw(a, Functor::run(slotRawFloat(a), slotRawFloat(b)));
 					break;
 			}
 			break;
@@ -139,7 +215,8 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prMulNum(VMGlobals *g, int numArgsPushed)
+template <typename Functor>
+inline int prOpInt(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
 	PyrSymbol *msg;
@@ -147,81 +224,27 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (GetTag(a)) {
+	switch (GetTag(b)) {
 		case tagInt :
-			switch (GetTag(b)) {
-				case tagInt :
-					SetRaw(a, slotRawInt(a) * slotRawInt(b)); //GetTag(a) = tagInt;
-					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
-					goto send_normal_2;
-				case tagSym :
-					SetSymbol(a, slotRawSymbol(b));
-					break;
-				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawInt(a)));
-					} else {
-						goto send_normal_2;
-					}
-					break;
-				default :
-					a->uf = slotRawInt(a) * b->uf;
-					break;
-			}
+			SetRaw(a, Functor::run(slotRawInt(a), slotRawInt(b)));
 			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
+		case tagChar :
+		case tagPtr :
+		case tagNil :
+		case tagFalse :
+		case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			//slotRawSymbol(a) = slotRawSymbol(a); GetTag(a) = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(slotRawObject(a), class_signal)) {
-				switch (GetTag(b)) {
-					case tagInt :
-						SetRaw(a, signal_mul_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
-						break;
-					case tagChar : case tagPtr :
-					case tagNil : case tagFalse : case tagTrue :
-						goto send_normal_2;
-					case tagSym :
-						SetSymbol(a, slotRawSymbol(b));
-						break;
-					case tagObj :
-						if (isKindOf(slotRawObject(b), class_signal)) {
-							SetRaw(a, signal_mul_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
-						} else goto send_normal_2;
-						break;
-					default : // double
-						SetRaw(a, signal_mul_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
-						break;
-				}
-			} else {
+			if (isKindOf(slotRawObject(b), class_signal))
+				SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawObject(b)));
+			else
 				goto send_normal_2;
-			}
 			break;
-		default : // double
-			switch (GetTag(b)) {
-				case tagInt :
-					a->uf = a->uf * slotRawInt(b);
-					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
-					goto send_normal_2;
-				case tagSym :
-					SetSymbol(a, slotRawSymbol(b));
-					break;
-				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_mul_xf(g, slotRawObject(b), a->uf)); break;
-					} else goto send_normal_2;
-					break;
-				default : // double
-					a->uf = a->uf * b->uf; break;
-					break;
-			}
+		default :
+			SetRaw(a, Functor::run((double)slotRawInt(a), slotRawFloat(b)));
 			break;
 	}
 	g->sp-- ; // drop
@@ -238,384 +261,103 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	msg = gSpecialBinarySelectors[g->primitiveIndex];
 	sendMessage(g, msg, 2);
 	return errNone;
+}
+
+template <typename Functor>
+inline int prOpFloat(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	PyrSymbol *msg;
+
+	a = g->sp - 1;
+	b = g->sp;
+
+	switch (GetTag(b)) {
+		case tagInt :
+			SetRaw(a, Functor::run(slotRawFloat(a), (double)slotRawInt(b)));
+			break;
+		case tagChar :
+		case tagPtr :
+		case tagNil :
+		case tagFalse :
+		case tagTrue :
+			goto send_normal_2;
+		case tagSym :
+			SetSymbol(a, slotRawSymbol(b));
+			break;
+		case tagObj :
+			if (isKindOf(slotRawObject(b), class_signal))
+				SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawObject(b)));
+			else
+				goto send_normal_2;
+			break;
+		default :
+			SetRaw(a, Functor::run(slotRawFloat(a), slotRawFloat(b)));
+			break;
+	}
+	g->sp-- ; // drop
+	g->numpop = 0;
+#if TAILCALLOPTIMIZE
+	g->tailCall = 0;
+#endif
+	return errNone;
+
+	send_normal_2:
+	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
+		return errFailed;	// arguments remain on the stack
+
+	msg = gSpecialBinarySelectors[g->primitiveIndex];
+	sendMessage(g, msg, 2);
+	return errNone;
+}
+
+int prAddNum(VMGlobals *g, int numArgsPushed)
+{
+	return prOpNum<addNum>(g, numArgsPushed);
 }
 
 int prSubNum(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(a)) {
-		case tagInt :
-			switch (GetTag(b)) {
-				case tagInt :
-					SetRaw(a, slotRawInt(a) - slotRawInt(b)); //GetTag(a) = tagInt;
-					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
-					goto send_normal_2;
-				case tagSym :
-					SetSymbol(a, slotRawSymbol(b));
-					break;
-				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_sub_fx(g, slotRawInt(a), slotRawObject(b)));
-					} else {
-						goto send_normal_2;
-					}
-					break;
-				default :
-					a->uf = slotRawInt(a) - b->uf;
-					break;
-			}
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			//slotRawSymbol(a) = slotRawSymbol(a); GetTag(a) = tagSym;
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(a), class_signal)) {
-				switch (GetTag(b)) {
-					case tagInt :
-						SetRaw(a, signal_sub_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
-						break;
-					case tagChar : case tagPtr :
-					case tagNil : case tagFalse : case tagTrue :
-						goto send_normal_2;
-					case tagSym :
-						SetSymbol(a, slotRawSymbol(b));
-						break;
-					case tagObj :
-						if (isKindOf(slotRawObject(b), class_signal)) {
-							SetRaw(a, signal_sub_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
-						} else goto send_normal_2;
-						break;
-					default : // double
-						SetRaw(a, signal_sub_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
-						break;
-				}
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default : // double
-			switch (GetTag(b)) {
-				case tagInt :
-					a->uf = a->uf - slotRawInt(b);
-					break;
-				case tagChar : case tagPtr :
-				case tagNil : case tagFalse : case tagTrue :
-					goto send_normal_2;
-				case tagSym :
-					SetSymbol(a, slotRawSymbol(b));
-					break;
-				case tagObj :
-					if (isKindOf(slotRawObject(b), class_signal)) {
-						SetObject(a, signal_sub_fx(g, a->uf, slotRawObject(b))); break;
-					} else goto send_normal_2;
-					break;
-				default : // double
-					a->uf = a->uf - b->uf; break;
-					break;
-			}
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
+	return prOpNum<subNum>(g, numArgsPushed);
 }
 
-int prAddInt(VMGlobals *g, int numArgsPushed)
+int prMulNum(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(b)) {
-		case tagInt :
-			SetRaw(a, slotRawInt(a) + slotRawInt(b)); //GetTag(a) = tagInt;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawInt(a)));
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = slotRawInt(a) + b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
+	return prOpNum<mulNum>(g, numArgsPushed);
 }
-
 
 
 int prAddFloat(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
+	return prOpFloat<addNum>(g, numArgsPushed);
+}
 
-	a = g->sp - 1;
-	b = g->sp;
+int prSubFloat(VMGlobals *g, int numArgsPushed)
+{
+	return prOpFloat<subNum>(g, numArgsPushed);
+}
 
-	switch (GetTag(b)) {
-		case tagInt :
-			a->uf = a->uf + slotRawInt(b); break;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_add_xf(g, slotRawObject(b), a->uf));
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = a->uf + b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
+int prMulFloat(VMGlobals *g, int numArgsPushed)
+{
+	return prOpFloat<mulNum>(g, numArgsPushed);
+}
 
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
+int prAddInt(VMGlobals *g, int numArgsPushed)
+{
+	return prOpInt<addNum>(g, numArgsPushed);
 }
 
 int prSubInt(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(b)) {
-		case tagInt :
-			SetRaw(a, slotRawInt(a) - slotRawInt(b)); //GetTag(a) = tagInt;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_sub_xf(g, slotRawObject(b), slotRawInt(a)));
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = slotRawInt(a) - b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
-}
-
-
-
-int prSubFloat(VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(b)) {
-		case tagInt :
-			a->uf = a->uf - slotRawInt(b); break;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_sub_xf(g, slotRawObject(b), a->uf)); break;
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = a->uf - b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
+	return prOpInt<subNum>(g, numArgsPushed);
 }
 
 int prMulInt(VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(b)) {
-		case tagInt :
-			SetRaw(a, slotRawInt(a) * slotRawInt(b)); //GetTag(a) = tagInt; break;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawInt(a))); break;
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = slotRawInt(a) * b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
+	return prOpInt<mulNum>(g, numArgsPushed);
 }
 
 
-
-int prMulFloat(VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *a, *b;
-	PyrSymbol *msg;
-
-	a = g->sp - 1;
-	b = g->sp;
-
-	switch (GetTag(b)) {
-		case tagInt :
-			a->uf = a->uf * slotRawInt(b); break;
-			break;
-		case tagChar : case tagPtr :
-		case tagNil : case tagFalse : case tagTrue :
-			goto send_normal_2;
-		case tagSym :
-			SetSymbol(a, slotRawSymbol(b));
-			break;
-		case tagObj :
-			if (isKindOf(slotRawObject(b), class_signal)) {
-				SetObject(a, signal_mul_xf(g, slotRawObject(b), a->uf)); break;
-			} else {
-				goto send_normal_2;
-			}
-			break;
-		default :
-			a->uf = a->uf * b->uf;
-			break;
-	}
-	g->sp-- ; // drop
-	g->numpop = 0;
-#if TAILCALLOPTIMIZE
-	g->tailCall = 0;
-#endif
-	return errNone;
-
-	send_normal_2:
-	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
-		return errFailed;	// arguments remain on the stack
-
-	msg = gSpecialBinarySelectors[g->primitiveIndex];
-	sendMessage(g, msg, 2);
-	return errNone;
-}
 
 
 int prNthPrime(VMGlobals *g, int numArgsPushed);
@@ -735,7 +477,7 @@ int prAs32Bits(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	// return an integer that is a bit pattern for the 32 bit float representation
 	union { float f; int32 i; } u;
-	u.f = a->uf;
+	u.f = slotRawFloat(a);
 	SetInt(a, u.i);
 	return errNone;
 }
@@ -751,7 +493,7 @@ int prHigh32Bits(VMGlobals *g, int numArgsPushed)
 	union { struct { uint32 lo, hi; } i; double f; } du;
 #endif
 
-	du.f = a->uf;
+	du.f = slotRawFloat(a);
 	SetInt(a, du.i.hi);
 	return errNone;
 }
@@ -767,7 +509,7 @@ int prLow32Bits(VMGlobals *g, int numArgsPushed)
 	union { struct { uint32 lo, hi; } i; double f; } du;
 #endif
 
-	du.f = a->uf;
+	du.f = slotRawFloat(a);
 	SetInt(a, du.i.lo);
 	return errNone;
 }
@@ -836,7 +578,7 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_clip(slotRawInt(a), lo, hi);
+		SetFloat(a, sc_clip(slotRawInt(a), lo, hi));
 	}
 	return errNone;
 }
@@ -860,7 +602,7 @@ int mathClipFloat(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_clip(a->uf, lo, hi);
+		SetRaw(a, sc_clip(slotRawFloat(a), lo, hi));
 	}
 	return errNone;
 }
@@ -916,7 +658,7 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_mod(x - lo, hi - lo) + lo;
+		SetFloat(a, sc_mod(x - lo, hi - lo) + lo);
 	}
 	return errNone;
 }
@@ -940,7 +682,7 @@ int mathWrapFloat(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_mod(a->uf - lo, hi - lo) + lo;
+		SetRaw(a, sc_mod(slotRawFloat(a) - lo, hi - lo) + lo);
 	}
 	return errNone;
 }
@@ -996,7 +738,7 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_fold(x, lo, hi);
+		SetFloat(a, sc_fold(x, lo, hi));
 	}
 	return errNone;
 }
@@ -1020,7 +762,7 @@ int mathFoldFloat(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_fold(a->uf, lo, hi);
+		SetRaw(a, sc_fold(slotRawFloat(a), lo, hi));
 	}
 	return errNone;
 }

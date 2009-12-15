@@ -43,7 +43,7 @@ PyrSymbol *gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol *gSpecialBinarySelectors[opNumBinarySelectors];
 PyrSymbol *gSpecialSelectors[opmNumSpecialSelectors];
 PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
-double gSpecialValues[svNumSpecialValues];
+PyrSlot gSpecialValues[svNumSpecialValues];
 
 PyrParseNode* gRootParseNode;
 int gParserResult;

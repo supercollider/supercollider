@@ -60,13 +60,13 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 	for (; mom>0;) {	/* percolate up heap */
 		mom = (mom - 2 >> 1) & ~1;
 		pmom = heap->slots + mom;
-		if (schedtime < pmom->uf) {
+		if (schedtime < slotRawFloat(pmom)) {
 			slotCopy(&pme[0], &pmom[0]);
 			slotCopy(&pme[1], &pmom[1]);
 			pme = pmom;
 		} else break;
 	}
-	pme[0].uf = schedtime;
+	SetFloat(&pme[0], schedtime);
 	slotCopy(&pme[1], task);
 	g->gc->GCWrite(heap, task);
 	heap->size += 2;
@@ -83,7 +83,7 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	if (heap->size) {
-		*schedtime = heap->slots[0].uf;
+		*schedtime = slotRawFloat(&heap->slots[0]);
 		slotCopy(task, &heap->slots[1]);
 		return true;
 	} else return false;
@@ -102,7 +102,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 	//dumpheap(heap);
 	//post("->getheap\n");
 	if (heap->size>0) {
-		*schedtime = heap->slots[0].uf;
+		*schedtime = slotRawFloat(&heap->slots[0]);
 		slotCopy(task, &heap->slots[1]);
 		size = heap->size -= 2;
 		slotCopy(&heap->slots[0], &heap->slots[size]);
@@ -112,13 +112,13 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 		pmom = heap->slots + mom;
 		pme = heap->slots + me;
 		pend = heap->slots + size;
-		timetemp = pmom[0].uf;
-		tasktemp = pmom[1].uf;
+		timetemp = slotRawFloat(&pmom[0]);
+		tasktemp = slotRawFloat(&pmom[1]);
 		for (;pme < pend;) { /* demote heap */
-			if (pme+2 < pend && pme[0].uf > pme[2].uf) {
+			if (pme+2 < pend && slotRawFloat(&pme[0]) > slotRawFloat(&pme[2])) {
 				me += 2; pme += 2;
 			}
-			if (timetemp > pme[0].uf) {
+			if (timetemp > slotRawFloat(&pme[0])) {
 				slotCopy(&pmom[0], &pme[0]);
 				slotCopy(&pmom[1], &pme[1]);
 				if (isPartialScanObj) {
@@ -129,8 +129,8 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 				pme = heap->slots + me;
 			} else break;
 		}
-		pmom[0].uf = timetemp;
-		pmom[1].uf = tasktemp;
+		SetRaw(&pmom[0], timetemp);
+		SetRaw(&pmom[1], tasktemp);
 		if (isPartialScanObj) {
 			gc->GCWriteBlack(pmom+1);
 		}
@@ -149,7 +149,7 @@ void offsetheap(VMGlobals *g, PyrObject *heap, double offset)
 {
 	long i;
 	for (i=0; i<heap->size; i+=2) {
-		heap->slots[i].uf += offset;
+		SetRaw(&heap->slots[i], slotRawFloat(&heap->slots[i]) + offset);
 		//post("%3d %9.2f %9.2f\n", i>>1, heap->slots[i].uf, offset);
 	}
 }
@@ -158,11 +158,11 @@ void dumpheap(PyrObject *heap)
 {
 	long i;
 	double mintime;
-	mintime = heap->slots[0].uf;
+	mintime = slotRawFloat(&heap->slots[0]);
 	post("SCHED QUEUE (%d)\n", heap->size);
 	for (i=0; i<heap->size; i+=2) {
-		post("%3d %9.2f %08X\n", i>>1, heap->slots[i].uf, slotRawInt(&heap->slots[i+1]));
-		if (heap->slots[i].uf < mintime)
+		post("%3d %9.2f %08X\n", i>>1, slotRawFloat(&heap->slots[i]), slotRawInt(&heap->slots[i+1]));
+		if (slotRawFloat(&heap->slots[i]) < mintime)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
 }
@@ -316,14 +316,14 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask)
 {
 	// gLangMutex must be locked
-	double prevTime = inQueue->size ? inQueue->slots->uf : -1e10;
+	double prevTime = inQueue->size ? slotRawFloat(inQueue->slots) : -1e10;
 	bool added = addheap(g, inQueue, inSeconds, inTask);
 	if (!added) post("scheduler queue is full.\n");
 	else {
 		if (isKindOfSlot(inTask, class_thread)) {
 			SetFloat(&slotRawThread(inTask)->nextBeat, inSeconds);
 		}
-		if (inQueue->slots->uf != prevTime) {
+		if (slotRawFloat(inQueue->slots) != prevTime) {
 			//post("pthread_cond_signal\n");
 			pthread_cond_signal (&gSchedCond);
 		}
@@ -418,10 +418,10 @@ void* schedRunFunc(void* arg)
 		double elapsed;
 		do {
 			elapsed = elapsedTime();
-			if (elapsed >= inQueue->slots->uf) break;
+			if (elapsed >= slotRawFloat(inQueue->slots)) break;
 			struct timespec abstime;
 			//doubleToTimespec(inQueue->slots->uf, &abstime);
-			ElapsedTimeToTimespec(inQueue->slots->uf, &abstime);
+			ElapsedTimeToTimespec(slotRawFloat(inQueue->slots), &abstime);
 			//postfl("wait until an event is ready\n");
 			pthread_cond_timedwait (&gSchedCond, &gLangMutex, &abstime);
 			if (!gRunSched) goto leave;
@@ -432,7 +432,7 @@ void* schedRunFunc(void* arg)
 
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
-		while (inQueue->size && elapsed >= inQueue->slots->uf) {
+		while (inQueue->size && elapsed >= slotRawFloat(inQueue->slots)) {
 			double schedtime, delta;
 			PyrSlot task;
 
@@ -445,8 +445,8 @@ void* schedRunFunc(void* arg)
 			}
 
 			slotCopy((++g->sp), &task);
-			(++g->sp)->uf = schedtime;
-			(++g->sp)->uf = schedtime;
+			SetFloat(++g->sp, schedtime);
+			SetFloat(++g->sp, schedtime);
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
 
 			runAwakeMessage(g);
@@ -850,11 +850,11 @@ void* TempoClock::Run()
 		double elapsedBeats;
 		do {
 			elapsedBeats = ElapsedBeats();
-			if (elapsedBeats >= mQueue->slots->uf) break;
+			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
 			struct timespec abstime;
 			//doubleToTimespec(mQueue->slots->uf, &abstime);
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
-			double wakeTime = BeatsToSecs(mQueue->slots->uf);
+			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
 			ElapsedTimeToTimespec(wakeTime, &abstime);
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
 			pthread_cond_timedwait (&mCondition, &gLangMutex, &abstime);
@@ -866,7 +866,7 @@ void* TempoClock::Run()
 
 		// perform all events that are ready
 		//printf("perform all events that are ready\n");
-		while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
+		while (mQueue->size && elapsedBeats >= slotRawFloat(mQueue->slots)) {
 			double delta;
 			PyrSlot task;
 
@@ -879,8 +879,8 @@ void* TempoClock::Run()
 			}
 
 			slotCopy((++g->sp), &task);
-			(++g->sp)->uf = mBeats;
-			(++g->sp)->uf = BeatsToSecs(mBeats);
+			SetFloat(++g->sp, mBeats);
+			SetFloat(++g->sp, BeatsToSecs(mBeats));
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
 
 			runAwakeMessage(g);
@@ -928,14 +928,14 @@ void TempoClock::Flush()
 
 void TempoClock::Add(double inBeats, PyrSlot* inTask)
 {
-	double prevBeats = mQueue->size ? mQueue->slots->uf : -1e10;
+	double prevBeats = mQueue->size ? slotRawFloat(mQueue->slots) : -1e10;
 	bool added = addheap(g, mQueue, inBeats, inTask);
 	if (!added) post("scheduler queue is full.\n");
 	else {
 		if (isKindOfSlot(inTask, class_thread)) {
 			SetFloat(&slotRawThread(inTask)->nextBeat, inBeats);
 		}
-		if (mQueue->slots->uf != prevBeats) {
+		if (slotRawFloat(mQueue->slots) != prevBeats) {
 			pthread_cond_signal (&mCondition);
 		}
 	}

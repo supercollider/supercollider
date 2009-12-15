@@ -371,7 +371,7 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 
 	char fmt[8], str[256];
 	sprintf(fmt, "%%.%dg", precision);
-	sprintf(str, fmt, a->uf);
+	sprintf(str, fmt, slotRawFloat(a));
 
 	PyrString *string = newPyrString(g->gc, str, 0, true);
 	SetObject(a, string);
@@ -551,7 +551,7 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 		// create an indexable object
 		if (NotInt(b)) {
 			if (IsFloat(b)) {
-				size = (int)b->uf;
+				size = (int)slotRawFloat(b);
 			} else if (NotNil(b)) return errIndexNotAnInteger;
 			else size = 8;
 		} else {
@@ -611,7 +611,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 		// create an indexable object
 		if (NotInt(b)) {
 			if (IsFloat(b)) {
-				size = (int)b->uf;
+				size = (int)slotRawFloat(b);
 			} else if (NotNil(b)) return errIndexNotAnInteger;
 			else size = 8;
 		} else {
@@ -2932,8 +2932,8 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	SetObject(&thread->randData, rgenArray);
 	gc->GCWrite(thread, rgenArray);
 
-	thread->beats.uf = beats;
-	thread->seconds.uf = seconds;
+	SetFloat(&thread->beats, beats); /// would raw access be possible?
+	SetFloat(&thread->seconds, seconds); /// would raw access be possible?
 
 	if (IsNil(clock)) {
 		SetObject(&thread->clock, s_systemclock->u.classobj);
@@ -2943,8 +2943,8 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	}
 
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
-        slotCopy(&thread->environment,currentEnvironmentSlot);
-        gc->GCWrite(thread, currentEnvironmentSlot);
+	slotCopy(&thread->environment,currentEnvironmentSlot);
+	gc->GCWrite(thread, currentEnvironmentSlot);
 }
 
 extern PyrSymbol *s_prstart;
@@ -2974,7 +2974,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(slotRawObject(&g->thread->randData)),
-		g->thread->beats.uf, g->thread->seconds.uf, &g->thread->clock, true);
+	slotRawFloat(&g->thread->beats), slotRawFloat(&g->thread->seconds), &g->thread->clock, true);
 
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
@@ -3173,8 +3173,6 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
 
-		thread->beats.uf = g->thread->beats.uf;
-		thread->seconds.uf = g->thread->seconds.uf;
 		slotCopy(&thread->clock,&g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
@@ -3196,8 +3194,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		}
 		g->gc->GCWrite(thread, g->thread);
 
-		thread->beats.uf = g->thread->beats.uf;
-		thread->seconds.uf = g->thread->seconds.uf;
+		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
+		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
 		slotCopy(&thread->clock,&g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
