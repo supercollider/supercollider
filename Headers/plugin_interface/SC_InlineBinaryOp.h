@@ -491,7 +491,55 @@ inline double sc_amclip<double>(double a, double b)
 	return a * 0.5 * (b + std::abs(b));
 }
 
+template <typename T>
+inline T sc_ring1(T a, T b)
+{
+	return a *b + a;
+}
 
+template <typename T>
+inline T sc_ring2(T a, T b)
+{
+	return a*b + a + b;
+}
+
+template <typename T>
+inline T sc_ring3(T a, T b)
+{
+	return a*a*b;
+}
+
+template <typename T>
+inline T sc_ring4(T a, T b)
+{
+	return a*a*b - a*b*b;
+}
+
+template <typename T>
+inline T sc_difsqr(T a, T b)
+{
+	return a*a - b*b;
+}
+
+template <typename T>
+inline T sc_sumsqr(T a, T b)
+{
+	return a*a + b*b;
+}
+
+template <typename T>
+inline T sc_sqrsum(T a, T b)
+{
+	T z = a+b;
+	return z*z;
+}
+
+template <typename T>
+inline T sc_sqrdif(T a, T b)
+{
+	T z = a-b;
+	return z*z;
+}
 
 #ifndef SC_WIN32
 #pragma mark -
