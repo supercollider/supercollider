@@ -292,19 +292,19 @@ void initSymbols()
  	SetFloat(&o_inf, INFINITY);
 #endif
 
-	gSpecialValues[svNil] = o_nil.uf;
-	gSpecialValues[svFalse] = o_false.uf;
-	gSpecialValues[svTrue] = o_true.uf;
-	gSpecialValues[svNegOne] = o_negone.uf;
-	gSpecialValues[svZero] = o_zero.uf;
-	gSpecialValues[svOne] = o_one.uf;
-	gSpecialValues[svTwo] = o_two.uf;
-	gSpecialValues[svFHalf] = o_fhalf.uf;
-	gSpecialValues[svFNegOne] = o_fnegone.uf;
-	gSpecialValues[svFZero] = o_fzero.uf;
-	gSpecialValues[svFOne] = o_fone.uf;
-	gSpecialValues[svFTwo] = o_ftwo.uf;
-	gSpecialValues[svInf] = o_inf.uf;
+	slotCopy(&gSpecialValues[svNil], &o_nil);
+	slotCopy(&gSpecialValues[svFalse], &o_false);
+	slotCopy(&gSpecialValues[svTrue], &o_true);
+	slotCopy(&gSpecialValues[svNegOne], &o_negone);
+	slotCopy(&gSpecialValues[svZero], &o_zero);
+	slotCopy(&gSpecialValues[svOne], &o_one);
+	slotCopy(&gSpecialValues[svTwo], &o_two);
+	slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
+	slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
+	slotCopy(&gSpecialValues[svFZero], &o_fzero);
+	slotCopy(&gSpecialValues[svFOne], &o_fone);
+	slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
+	slotCopy(&gSpecialValues[svInf], &o_inf);
 
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
@@ -1749,7 +1749,7 @@ void dumpObject(PyrObject *obj)
 			case obj_double :
 				for (i=0; i<maxsize; ++i) {
 					char fstr[32];
-					g_fmt(fstr, obj->slots[i].uf);
+					g_fmt(fstr, slotRawFloat(&obj->slots[i]));
 					post("    %3d : %s\n", i, fstr);
 				}
 				break;
@@ -1845,7 +1845,7 @@ void dumpBadObject(PyrObject *obj)
 			case obj_double :
 				for (i=0; i<maxsize; ++i) {
 					char fstr[32];
-					g_fmt(fstr, obj->slots[i].uf);
+					g_fmt(fstr, slotRawFloat(&obj->slots[i]));
 					postfl("    %3d : %s\n", i, fstr);
 				}
 				break;
@@ -2292,8 +2292,8 @@ PyrMethod* initPyrMethod(PyrMethod* method)
 	method->classptr = class_method;
 	method->size = 0;
 	method->size = numSlots;
-	method->rawData1.uf = 0.0;
-	method->rawData2.uf = 0.0;
+	SetFloat(&method->rawData1, 0.0);
+	SetFloat(&method->rawData2, 0.0);
 	nilSlots(&method->code,  numSlots-2);
 	//slotCopy(&method->byteMeter, &o_zero);
 	//slotCopy(&method->callMeter, &o_zero);
@@ -2339,7 +2339,7 @@ int getIndexedInt(PyrObject *obj, int index, int *value)
 		case obj_slot :
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
-				*value = (int)slot->uf;
+				*value = (int)slotRawFloat(slot);
 			} else if (IsInt(slot)) {
 				*value = slotRawInt(slot);
 			} else {
@@ -2347,7 +2347,7 @@ int getIndexedInt(PyrObject *obj, int index, int *value)
 			}
 			break;
 		case obj_double :
-			*value = (int)obj->slots[index].uf;
+			*value = (int)slotRawFloat(&obj->slots[index]);
 			break;
 		case obj_float :
 			*value = (int)((float*)(obj->slots))[index];
@@ -2376,7 +2376,7 @@ int getIndexedFloat(PyrObject *obj, int index, float *value)
 		case obj_slot :
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
-				*value = slot->uf;
+				*value = slotRawFloat(slot);
 			} else if (IsInt(slot)) {
 				*value = slotRawInt(slot);
 			} else {
@@ -2384,7 +2384,7 @@ int getIndexedFloat(PyrObject *obj, int index, float *value)
 			}
 			break;
 		case obj_double :
-			*value = obj->slots[index].uf;
+			*value = slotRawFloat(&obj->slots[index]);
 			break;
 		case obj_float :
 			*value = ((float*)(obj->slots))[index];
@@ -2413,7 +2413,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 		case obj_slot :
 			slot = obj->slots + index;
 			if (IsFloat(slot)) {
-				*value = slot->uf;
+				*value = slotRawFloat(slot);
 			} else if (IsInt(slot)) {
 				*value = slotRawInt(slot);
 			} else {
@@ -2421,7 +2421,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 			}
 			break;
 		case obj_double :
-			*value = obj->slots[index].uf;
+			*value = slotRawFloat(&obj->slots[index]);
 			break;
 		case obj_float :
 			*value = ((float*)(obj->slots))[index];
@@ -2486,11 +2486,10 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			if (NotFloat(c)) {
 				if (NotInt(c)) return errWrongType;
 				else {
-					obj->slots[index].uf = slotRawInt(c);
+					SetFloat(&obj->slots[index], slotRawInt(c));
 				}
-			} else {
-				obj->slots[index].uf = c->uf;
-			}
+			} else
+				SetRaw(&obj->slots[index], slotRawFloat(c));
 			break;
 		case obj_float :
 			if (NotFloat(c)) {
@@ -2499,7 +2498,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 					((float*)(obj->slots))[index] = slotRawInt(c);
 				}
 			} else {
-				((float*)(obj->slots))[index] = c->uf;
+				((float*)(obj->slots))[index] = slotRawFloat(c);
 			}
 			break;
 		case obj_int32 :
@@ -2533,10 +2532,10 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 		case obj_slot :
 			if (obj->obj_flags & obj_immutable) return errImmutableObject;
 			slot = obj->slots + index;
-			slot->uf = val;
+			SetFloat(slot, val);
 			break;
 		case obj_double :
-			obj->slots[index].uf = val;
+			SetFloat(&obj->slots[index], val);
 			break;
 		case obj_float :
 			((float*)(obj->slots))[index] = (float)val;

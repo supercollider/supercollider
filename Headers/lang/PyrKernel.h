@@ -221,7 +221,7 @@ enum {
 	svNumSpecialValues
 };
 
-extern double gSpecialValues[svNumSpecialValues];
+extern PyrSlot gSpecialValues[svNumSpecialValues];
 
 extern PyrMethod *gNullMethod; // used to fill row table
 

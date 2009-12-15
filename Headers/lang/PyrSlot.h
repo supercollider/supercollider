@@ -383,7 +383,7 @@ inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 #undef uo
 #undef uoi
 #undef ui
-//#undef uf
+#undef uf
 
 #undef uop
 
