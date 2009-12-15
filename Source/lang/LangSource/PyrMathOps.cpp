@@ -381,17 +381,13 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAMClip : SetInt(&res, slotRawInt(b)<0 ? 0 : slotRawInt(a)*slotRawInt(b)); break;
 						case opScaleNeg : SetInt(&res, slotRawInt(a)<0 ? slotRawInt(a)*slotRawInt(b) : slotRawInt(a)); break;
 						case opClip2 :
-							SetInt(&res, slotRawInt(a) < -slotRawInt(b) ? -slotRawInt(b) : (slotRawInt(a) > slotRawInt(b) ? slotRawInt(b) : slotRawInt(a)));
-							break;
+							SetInt(&res, sc_clip2(slotRawInt(a), -slotRawInt(b))); break;
 						case opFold2 :
-							SetInt(&res, sc_fold2(slotRawInt(a), slotRawInt(b)));
-							break;
+							SetInt(&res, sc_fold2(slotRawInt(a), slotRawInt(b))); break;
 						case opWrap2 :
-							SetInt(&res, sc_mod((int)(slotRawInt(a) + slotRawInt(b)), (int)(2 * slotRawInt(b))) - slotRawInt(b));
-							break;
+							SetInt(&res, sc_wrap2(slotRawInt(a), slotRawInt(b))); break;
 						case opExcess :
-							SetInt(&res, slotRawInt(a) - (slotRawInt(a) < -slotRawInt(b) ? -slotRawInt(b) : (slotRawInt(a) > slotRawInt(b) ? slotRawInt(b) : slotRawInt(a))));
-							break;
+							SetInt(&res, sc_excess(slotRawInt(a), slotRawInt(b))); break;
 						case opFirstArg : SetInt(&res, slotRawInt(a)); break;
 						case opRandRange :
 							SetInt(&res, slotRawInt(b) > slotRawInt(a) ? slotRawInt(a) + g->rgen->irand(slotRawInt(b) - slotRawInt(a) + 1)
@@ -498,17 +494,13 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAMClip : SetFloat(&res, slotRawFloat(b)<0 ? 0 : slotRawInt(a)*slotRawFloat(b)); break;
 						case opScaleNeg : SetFloat(&res, slotRawInt(a)<0 ? slotRawInt(a)*slotRawFloat(b) : slotRawInt(a)); break;
 						case opClip2 :
-							SetFloat(&res, slotRawInt(a) < -slotRawFloat(b) ? -slotRawFloat(b) : (slotRawInt(a) > slotRawFloat(b) ? slotRawFloat(b) : slotRawInt(a)));
-							break;
+							SetFloat(&res, sc_clip2((double)slotRawInt(a), -slotRawFloat(b))); break;
 						case opFold2 :
-							SetFloat(&res, sc_fold2((double)slotRawInt(a), slotRawFloat(b)));
-							break;
+							SetFloat(&res, sc_fold2((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opWrap2 :
-							SetFloat(&res, sc_wrap((double)slotRawInt(a), -slotRawFloat(b), -slotRawFloat(b)));
-							break;
+							SetFloat(&res, sc_wrap2((double)slotRawInt(a), -slotRawFloat(b))); break;
 						case opExcess :
-							SetFloat(&res, slotRawInt(a) - (slotRawInt(a) < -slotRawFloat(b) ? -slotRawFloat(b) : (slotRawInt(a) > slotRawFloat(b) ? slotRawFloat(b) : slotRawInt(a))));
-							break;
+							SetFloat(&res, sc_excess((double)slotRawInt(a), slotRawFloat(b)); break;
 						case opFirstArg : SetInt(&res, slotRawInt(a)); break;
 						case opRandRange :
 							SetFloat(&res, slotRawInt(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawInt(a)));
@@ -845,17 +837,13 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opAMClip : SetFloat(&res, slotRawFloat(b)<0 ? 0 : slotRawFloat(a)*slotRawFloat(b)); break;
 						case opScaleNeg : SetFloat(&res, slotRawFloat(a)<0 ? slotRawFloat(a)*slotRawFloat(b) : slotRawFloat(a)); break;
 						case opClip2 :
-							SetFloat(&res, slotRawFloat(a) < -slotRawFloat(b) ? -slotRawFloat(b) : (slotRawFloat(a) > slotRawFloat(b) ? slotRawFloat(b) : slotRawFloat(a)));
-							break;
+							SetFloat(&res, sc_clip2(slotRawFloat(a), slotRawFloat(b))); break;
 						case opFold2 :
-							SetFloat(&res, sc_fold2(slotRawFloat(a), slotRawFloat(b)));
-							break;
+							SetFloat(&res, sc_fold2(slotRawFloat(a), slotRawFloat(b))); break;
 						case opWrap2 :
-							SetFloat(&res, sc_wrap(slotRawFloat(a), -slotRawFloat(b), slotRawFloat(b)));
-							break;
+							SetFloat(&res, sc_wrap2(slotRawFloat(a), slotRawFloat(b))); break;
 						case opExcess :
-							SetFloat(&res, slotRawFloat(a) - (slotRawFloat(a) < -slotRawFloat(b) ? -slotRawFloat(b) : (slotRawFloat(a) > slotRawFloat(b) ? slotRawFloat(b) : slotRawFloat(a))));
-							break;
+							SetFloat(&res, sc_excess(slotRawFloat(a), slotRawFloat(b))); break;
 						case opFirstArg : SetFloat(&res, slotRawFloat(a)); break;
 						case opRandRange :
 							SetFloat(&res, slotRawFloat(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawFloat(a)));

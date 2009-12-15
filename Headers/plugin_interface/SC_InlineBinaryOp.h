@@ -243,27 +243,26 @@ inline T sc_thresh(T a, T b)
 	return a < b ? (T)0 : a;
 }
 
-inline float sc_clip2(float a, float b)
+template <typename T>
+inline T sc_clip2(T a, T b)
 {
 	return sc_clip(a, -b, b);
 }
 
-inline float sc_wrap2(float a, float b)
+template <typename T>
+inline T sc_wrap2(T a, T b)
 {
 	return sc_wrap(a, -b, b);
 }
 
-inline float sc_fold2(float a, float b)
+template <typename T>
+inline T sc_fold2(T a, T b)
 {
 	return sc_fold(a, -b, b);
 }
 
-inline double sc_fold2(double a, double b)
-{
-	return sc_fold(a, -b, b);
-}
-
-inline float sc_excess(float a, float b)
+template <typename T>
+inline T sc_excess(T a, T b)
 {
 	return a - sc_clip(a, -b, b);
 }
@@ -397,16 +396,6 @@ inline int sc_wrap(int in, int lo, int hi)
 	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
-inline int sc_clip2(int a, int b)
-{
-	return sc_clip(a, -b, b);
-}
-
-inline int sc_wrap2(int a, int b)
-{
-	return sc_wrap(a, -b, b);
-}
-
 inline int sc_fold(int in, int lo, int hi)
 {
 	int b = hi - lo;
@@ -414,16 +403,6 @@ inline int sc_fold(int in, int lo, int hi)
 	int c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
 	return c + lo;
-}
-
-inline int sc_fold2(int a, int b)
-{
-	return sc_fold(a, -b, b);
-}
-
-inline int sc_excess(int a, int b)
-{
-	return a - sc_clip(a, -b, b);
 }
 
 inline int sc_gcd(int u, int v)
@@ -507,19 +486,9 @@ inline long sc_div(long a, long b)
 }
 
 
-inline long sc_clip2(long a, long b)
-{
-	return sc_clip(a, -b, b);
-}
-
 inline long sc_wrap(long in, long lo, long hi)
 {
 	return sc_mod(in - lo, hi - lo + 1) + lo;
-}
-
-inline long sc_wrap2(long a, long b)
-{
-	return sc_wrap(a, -b, b);
 }
 
 inline long sc_fold(long in, long lo, long hi)
@@ -529,11 +498,6 @@ inline long sc_fold(long in, long lo, long hi)
 	long c = sc_mod(in - lo, b2);
 	if (c>b) c = b2-c;
 	return c + lo;
-}
-
-inline long sc_fold2(long a, long b)
-{
-	return sc_fold(a, -b, b);
 }
 
 inline long sc_thresh(long a, long b)
@@ -582,11 +546,6 @@ inline long sc_gcd(long u, long v)
 inline long sc_lcm(long u, long v)
 {
 	return (u * v)/sc_gcd(u,v);
-}
-
-inline long sc_excess(long a, long b)
-{
-	return a - sc_clip(a, -b, b);
 }
 
 inline long sc_round(long x, long quant)
