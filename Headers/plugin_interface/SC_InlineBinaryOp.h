@@ -417,8 +417,8 @@ inline F sc_powi (F x, unsigned int n)
 	return z;
 }
 
-template <class T>
-inline T sc_thresh(T a, T b)
+template <typename T, typename U>
+inline T sc_thresh(T a, U b)
 {
 	return a < b ? (T)0 : a;
 }
