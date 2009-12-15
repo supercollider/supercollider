@@ -6712,7 +6712,7 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 		// check if it still has a dataptr
 		parentSlot = slotRawObject(&args[1])->slots[0];
 		if(IsNil(&parentSlot)) return errFailed;
-		parent = (SCContainerView*)slotRawInt(&parentSlot);
+		parent = (SCContainerView*)slotRawPtr(&parentSlot);
 	}
 	if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
 
@@ -6734,7 +6734,7 @@ int prSCView_SetProperty(struct VMGlobals *g, int numArgsPushed)
 
 	if (!IsSym(args+1)) return errWrongType;
 
-	SCView *view = (SCView*)slotRawInt(slotRawObject(&args[0])->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(&args[0])->slots);
 	if (!view) return errFailed;
 
 	int err = view->setProperty(slotRawSymbol(&args[1]), args+2);
@@ -6754,7 +6754,7 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 
 	if (!IsSym(args+1)) return errWrongType;
 
-	SCView *view = (SCView*)slotRawInt(slotRawObject(&args[0])->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(&args[0])->slots);
 	if (!view) return errFailed;
 
 	int err = view->getProperty(slotRawSymbol(&args[1]), args+2);
@@ -6773,7 +6773,7 @@ int prSCView_FindByID(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
-	SCView *view = (SCView*)slotRawInt(slotRawObject(a)->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
 	if (!view) return errFailed;
 
 	int32 tag;
@@ -6796,7 +6796,7 @@ int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *viewObjSlot = g->sp - 1;
-	SCView *view = (SCView*)slotRawInt(slotRawObject(&viewObjSlot[0])->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(&viewObjSlot[0])->slots);
 	PyrSlot *boo = g->sp;
 
 	if (!view) return errFailed;
@@ -6810,7 +6810,7 @@ int prSCView_HasFocus(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *viewObjSlot = g->sp;
-	SCView *view = (SCView*)slotRawInt(slotRawObject(&viewObjSlot[0])->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(&viewObjSlot[0])->slots);
 
 	if (!view) return errFailed;
 	SetBool(viewObjSlot, view->isFocus());
@@ -6825,7 +6825,7 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 	if(::IsNil( slotRawObject(g->sp)->slots+0 ))
 		return errFailed;
 
-	SCView *view = (SCView*)slotRawInt(slotRawObject(g->sp)->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(g->sp)->slots);
 	if(!view) return errNone;
 	view->refresh();
 	return errNone;
@@ -6840,7 +6840,7 @@ int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 
 	SCRect r;
-	SCView *view = (SCView*)slotRawInt(slotRawObject(g->sp - 1)->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(g->sp - 1)->slots);
 
 	if(slotGetSCRect(g->sp, &r) != noErr)
 		return errFailed;
@@ -6855,7 +6855,7 @@ int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
 	//if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *viewObjSlot = g->sp;
-	SCView *view = (SCView*)slotRawInt(slotRawObject(viewObjSlot)->slots);
+	SCView *view = (SCGraphView*)slotRawPtr(slotRawObject(viewObjSlot)->slots);
 	if (!view) return errFailed;
 
 	// removes from parent, set mObj to nil

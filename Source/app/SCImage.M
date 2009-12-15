@@ -1217,7 +1217,7 @@ int prSCImage_WriteToFile(struct VMGlobals *g, int numArgsPushed)
 	NSString *StringPath = [[NSString alloc] initWithCString:path length:strlen(path)];
 	delete [] path;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 
 	if([image isAccelerated]) {
 		[image syncBitmap]; // force sync of the bitmap
@@ -1238,7 +1238,7 @@ int prSCImage_interpolation(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots[0]);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots[0]);
 	if(!image)
 		return errNone;
 
@@ -1256,7 +1256,7 @@ int prSCImage_setInterpolation(struct VMGlobals *g, int numArgsPushed)
 
 	int interp = NSImageInterpolationDefault;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone;
 
@@ -1274,7 +1274,7 @@ int prSCImage_Free(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone;
 
@@ -1296,7 +1296,7 @@ int prSCImage_sync(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;	// instance of SCImage
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	[image syncRepresentations]; // force sync
 
 #if SCIMAGE_DEBUG
@@ -1323,7 +1323,7 @@ int prSCImage_setSize(struct VMGlobals *g, int numArgsPushed)
 	err = slotFloatVal(b, &height);
 	if (err) return err;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	[image setSize: NSMakeSize(width, height)];
 
 	SetFloat(slotRawObject(receiver)->slots + 1, width);
@@ -1341,7 +1341,7 @@ int prSCImage_setScalesWhenResized(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;				// bool flag
 
 	BOOL flag = IsTrue(a);
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	[image setScalesWhenResized: flag];
 
 	return errNone;
@@ -1354,7 +1354,7 @@ int prSCImage_scalesWhenResized(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	SetBool(receiver, [image scalesWhenResized]);
 	return errNone;
 }
@@ -1373,7 +1373,7 @@ int prSCImage_DrawAtPoint(struct VMGlobals *g, int numArgsPushed)
 	int err;
     NSPoint nsPoint;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone; // just do nothing
 
@@ -1422,7 +1422,7 @@ int prSCImage_DrawInRect(struct VMGlobals *g, int numArgsPushed)
 	int err;
 	NSRect rect, fromRect;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image) {
 		return errNone;
 	}
@@ -1469,7 +1469,7 @@ int prSCImage_TileInRect(struct VMGlobals *g, int numArgsPushed)
 	if(IsNil(slotRawObject(receiver)->slots+0))
 		return errNone;
 
-	image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image) {
 		return errNone;
 	}
@@ -1496,7 +1496,7 @@ int prSCImage_lockFocus(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	// here we do not use the set flipped because it will create problem
 	// if we draw on top of an already image loaded with URL and write it after
 	// better to S(T(ctx)) directly so everything is fine now
@@ -1516,7 +1516,7 @@ int prSCImage_unlockFocus(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	// revert the coordinate system
 	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext]graphicsPort];
 	CGContextRestoreGState(ctx);
@@ -1533,7 +1533,7 @@ int prSCImage_recache(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	[image recache];
 	return errNone;
 }
@@ -1554,7 +1554,7 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	err = errNone;
 
-	image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image) return errNone;
 
 	err = slotIntVal(xSlot, &x);
@@ -1593,7 +1593,7 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *xSlot = g->sp - 1;
 	PyrSlot *ySlot = g->sp;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone;
 
@@ -1632,7 +1632,7 @@ int prSCImage_setColorAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *xSlot = g->sp - 1;
 	PyrSlot *ySlot = g->sp;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone;
 
@@ -1670,7 +1670,7 @@ int prSCImage_getColorAt(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *ySlot = g->sp;
 
 	NSColor *nsColor;
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image)
 		return errNone;
 
@@ -1722,7 +1722,7 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	NSSize				size;
 	NSRect				region;
 
-	image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image){
 		SetNil(receiver);
 		return errNone;
@@ -1818,7 +1818,7 @@ int prSCImage_updatePixels(struct VMGlobals *g, int numArgsPushed)
 	if(startIndex < 0)
 		return errIndexOutOfRange;
 
-	image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image){
 		SetNil(receiver);
 		return errNone;
@@ -1896,7 +1896,7 @@ int prSCImage_updatePixelsInRect(struct VMGlobals *g, int numArgsPushed)
 	if(startIndex < 0)
 		return errIndexOutOfRange;
 
-	image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image){
 		SetNil(receiver);
 		return errNone;
@@ -1976,7 +1976,7 @@ int prSCImage_isAccelerated(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot  *receiver	= g->sp;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image){
 		SetNil(receiver);
 		return errNone;
@@ -1995,7 +1995,7 @@ int prSCImage_setAccelerated(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot  *receiver	= g->sp - 1;
 	PyrSlot  *yornSlot	= g->sp;
 
-	SCImage *image = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!image){
 		SetNil(receiver);
 		return errNone;
@@ -2225,12 +2225,12 @@ id		nsciObjectFromSlot(PyrSlot *slot, Class attributeClass, NSString *attributeT
 	int err;
 	if(attributeClass == [CIImage class] || attributeType == kCIAttributeTypeGradient)
 	{
-		SCImage *image = (SCImage *)slotRawInt(slotRawObject(slot)->slots);
+		SCImage *image = (SCImage *)slotRawPtr(slotRawObject(slot)->slots);
 		return [image ciimage];
 	}
 	else if(isKindOfSlot(slot, s_scimage->u.classobj) && (attributeClass == NULL) && (attributeType == NULL))  // here returns the CISampler by default
 	{
-		SCImage *image = (SCImage *)slotRawInt(slotRawObject(slot)->slots);
+		SCImage *image = (SCImage *)slotRawPtr(slotRawObject(slot)->slots);
 		return [CISampler samplerWithImage:[image ciimage]];
 	}
 //	else if(isKindOfSlot(slot, s_vector->u.classobj)) {
@@ -2359,7 +2359,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot		*cropRegionSlot		= g->sp;
 	int			err = errNone;
 
-	SCImage *scimage = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *scimage = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!scimage){
 		SetNil(receiver);
 		return errNone;
@@ -2558,7 +2558,7 @@ int prSCImageFilter_Apply(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot		*argumentsSlot		= g->sp - 1;
 	PyrSlot		*inPlace			= g->sp;
 
-	SCImage *scimage = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	SCImage *scimage = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!scimage){
 		SetNil(receiver);
 		return errNone;
@@ -2693,7 +2693,7 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 
 
 	err = errNone;
-	scimage = (SCImage *)slotRawInt(slotRawObject(receiver)->slots);
+	scimage = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
 	if(!scimage){
 		SetNil(receiver);
 		return errNone;

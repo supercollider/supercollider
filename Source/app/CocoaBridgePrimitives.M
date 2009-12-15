@@ -2062,7 +2062,7 @@ int prObjcDelegateAddSelector(struct VMGlobals *g, int numArgsPushed)
 	//PyrObject* obj;
 	char slotString[64];
 
-	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(slotRawInt(slotRawObject(a)->slots));
+	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)slotRawPtr(slotRawObject(a)->slots);
 
 	if(!isKindOfSlot(b, class_string) || !isKindOfSlot(c, class_string))
 		return errWrongType;
@@ -2087,7 +2087,7 @@ int prObjcDelegateRemoveSelector(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(slotRawInt(slotRawObject(a)->slots));
+	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)slotRawPtr(slotRawObject(a)->slots);
 
 	if(!isKindOfSlot(b, class_string))
 		return errWrongType;
@@ -2148,7 +2148,7 @@ int prObjcNSDataToPyrArray(struct VMGlobals *g, int numArgsPushed)
 	PyrObject*	pyrarray = slotRawObject(b);
 	PyrClass*	pyrclass = pyrarray->classptr;
 
-	NSData*		nsobject = (NSData*)(slotRawInt(slotRawObject(a)->slots));
+	NSData*		nsobject = (NSData*)slotRawPtr(slotRawObject(a)->slots);
 	int			size=0, nssize = [nsobject length]; // in bytes
 
 	if(!IsInt(c) && !IsFloat(c))

@@ -2259,7 +2259,7 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 		// check if it still has a dataptr
 		parentSlot = slotRawObject(&args[1])->slots[0];
 		if(IsNil(&parentSlot)) return errFailed;
-		parent = (SCContainerView*)slotRawInt(&parentSlot);
+		parent = (SCContainerView*)slotRawPtr(&parentSlot);
 	}
 	if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
 

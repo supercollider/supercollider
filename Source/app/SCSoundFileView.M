@@ -789,7 +789,7 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		SF_INFO info;
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
 		PyrSlot *slots = slotRawObject(slot)->slots;
-		SNDFILE * file = (SNDFILE*) slotRawInt(slotRawObject(slots+0)->slots);
+		SNDFILE * file = (SNDFILE*) slotRawPtr(slotRawObject(slots+0)->slots);
 		err = slotIntVal(slots+1, &startframe);
 		if (err) return err;
 		err = slotIntVal(slots+2, &frames);
