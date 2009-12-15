@@ -855,7 +855,7 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 			break;
 		case obj_char :
 			if (NotChar(b)) return errWrongType;
-			((char*)slots)[array->size++] = slotRawInt(b);
+			((char*)slots)[array->size++] = slotRawChar(b);
 			break;
 		case obj_symbol :
 			if (NotSym(b)) return errWrongType;

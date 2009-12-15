@@ -461,7 +461,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "%c", slotRawInt(slot));
+			sprintf(str, "%c", slotRawChar(slot));
 			break;
 		case tagSym :
 			str[0] = 0;

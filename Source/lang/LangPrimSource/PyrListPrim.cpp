@@ -116,16 +116,14 @@ int arrayAtIdentityHash(PyrObject *array, PyrSlot *key)
 	slots = array->slots;
 	for (i=start; i<end; i++) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) || SlotEq(test, key))
 			return i;
-		}
 	}
 	end = start - 1;
 	for (i=0; i<=end; i++) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) ||  SlotEq(test, key))
 			return i;
-		}
 	}
 	return -1;
 }
@@ -161,16 +159,14 @@ int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key)
 	slots = array->slots;
 	for (i=start; i<end; i+=2) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) || SlotEq(test, key))
 			return i;
-		}
 	}
 	end = start - 2;
 	for (i=0; i<=end; i+=2) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) || SlotEq(test, key))
 			return i;
-		}
 	}
 	return -2;
 }
@@ -187,16 +183,14 @@ int arrayAtIdentityHashInPairsWithHash(PyrObject *array, PyrSlot *key, int hash)
 	slots = array->slots;
 	for (i=start; i<end; i+=2) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) || SlotEq(test, key))
 			return i;
-		}
 	}
 	end = start - 2;
 	for (i=0; i<=end; i+=2) {
 		test = slots + i;
-		if (IsNil(test) || (GetTag(test) == GetTag(key) && slotRawInt(test) == slotRawInt(key))) {
+		if (IsNil(test) || SlotEq(test, key))
 			return i;
-		}
 	}
 	return -2;
 }

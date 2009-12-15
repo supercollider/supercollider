@@ -178,7 +178,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	// fill class vars from prototypes:
 	classobj = gClassList;
 	while (classobj) {
-		if (slotRawObject(&classobj->cprototype)) {
+		if (IsObj(&classobj->cprototype)) {
 			numClassVars = slotRawObject(&classobj->cprototype)->size;
 			if (numClassVars > 0) {
 				memcpy(g->classvars->slots + slotRawInt(&classobj->classVarIndex), slotRawObject(&classobj->cprototype)->slots, numClassVars * sizeof(PyrSlot));

@@ -94,7 +94,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 {
 	PyrSlot *pmom, *pme, *pend;
 	short mom,me,size;	/* parent and sibling in the heap, not in the task hierarchy */
-	double tasktemp;
+	PyrSlot tasktemp;
 	double timetemp;
 	PyrGC* gc = g->gc;
 	bool isPartialScanObj = gc->IsPartialScanObject(heap);
@@ -113,7 +113,7 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 		pme = heap->slots + me;
 		pend = heap->slots + size;
 		timetemp = slotRawFloat(&pmom[0]);
-		tasktemp = slotRawFloat(&pmom[1]);
+		slotCopy(&tasktemp, &pmom[1]);
 		for (;pme < pend;) { /* demote heap */
 			if (pme+2 < pend && slotRawFloat(&pme[0]) > slotRawFloat(&pme[2])) {
 				me += 2; pme += 2;
@@ -130,10 +130,9 @@ bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task)
 			} else break;
 		}
 		SetRaw(&pmom[0], timetemp);
-		SetRaw(&pmom[1], tasktemp);
-		if (isPartialScanObj) {
+		slotCopy(&pmom[1], &tasktemp);
+		if (isPartialScanObj)
 			gc->GCWriteBlack(pmom+1);
-		}
 
 		//dumpheap(heap);
 	//dumpheap(heap);

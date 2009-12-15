@@ -201,6 +201,7 @@ inline void SetRawChar(PyrSlot* slot, int val) { assert(IsChar(slot)); slot->uc 
 inline void SetRaw(PyrSlot* slot, int val) { assert(IsInt(slot)); slot->ui = val; }
 inline void SetRaw(PyrSlot* slot, PyrObject * val) { assert(IsObj(slot)); slot->uo = val; }
 inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { assert(IsSym(slot)); slot->us = val; }
+inline void SetRaw(PyrSlot* slot, void * val) { assert(IsPtr(slot)); slot->uptr = val; }
 inline void SetRaw(PyrSlot* slot, double val) { assert(IsFloat(slot)); SetFloat(slot, val); }
 
 void dumpPyrSlot(PyrSlot* slot);
@@ -352,7 +353,7 @@ inline int slotRawInt(PyrSlot *slot)
 inline double slotRawFloat(PyrSlot *slot)
 {
 	assert(IsFloat(slot));
-	return slot->s.u.f;
+	return slot->uf;
 }
 
 inline PyrObject* slotRawObject(PyrSlot *slot)
@@ -392,7 +393,7 @@ inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 #undef uo
 #undef uoi
 #undef ui
-#undef uf
+//#undef uf
 
 #undef uop
 

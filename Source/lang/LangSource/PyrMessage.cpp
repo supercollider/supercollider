@@ -1159,7 +1159,7 @@ void returnFromBlock(VMGlobals *g)
 		blockraw = METHRAW(block);
 
 		g->frame = returnFrame;
-		g->ip = (unsigned char *)slotRawInt(&returnFrame->ip);
+		g->ip = (unsigned char *)slotRawPtr(&returnFrame->ip);
 		g->block = slotRawBlock(&returnFrame->method);
 		homeContext = slotRawFrame(&returnFrame->homeContext);
 		meth = slotRawMethod(&homeContext->method);
@@ -1294,7 +1294,7 @@ void returnFromMethod(VMGlobals *g)
 		}
 
 		// return to it
-		g->ip = (unsigned char *)slotRawInt(&returnFrame->ip);
+		g->ip = (unsigned char *)slotRawPtr(&returnFrame->ip);
 		g->frame = returnFrame;
 		g->block = slotRawBlock(&returnFrame->method);
 

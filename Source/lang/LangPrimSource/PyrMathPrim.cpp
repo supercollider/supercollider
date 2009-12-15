@@ -47,6 +47,10 @@ struct addNum
 	{
 		return lhs + rhs;
 	}
+	static inline int run(int lhs, int rhs)
+	{
+		return lhs + rhs;
+	}
 	static inline PyrObject* signal_xf(VMGlobals *g, PyrObject* ina, float inb)
 	{
 		return signal_add_xf(g, ina, inb);
@@ -67,6 +71,10 @@ struct mulNum
 	{
 		return lhs * rhs;
 	}
+	static inline int run(int lhs, int rhs)
+	{
+		return lhs * rhs;
+	}
 	static inline PyrObject* signal_xf(VMGlobals *g, PyrObject* ina, float inb)
 	{
 		return signal_mul_xf(g, ina, inb);
@@ -84,6 +92,10 @@ struct mulNum
 struct subNum
 {
 	static inline double run(double lhs, double rhs)
+	{
+		return lhs - rhs;
+	}
+	static inline int run(int lhs, int rhs)
 	{
 		return lhs - rhs;
 	}
@@ -176,7 +188,7 @@ inline int prOpNum(VMGlobals *g, int numArgsPushed)
 		default : // double
 			switch (GetTag(b)) {
 				case tagInt :
-					SetRaw(a, Functor::run(slotRawFloat(a), slotRawInt(b)));
+					SetRaw(a, Functor::run(slotRawFloat(a), (double)slotRawInt(b)));
 					break;
 				case tagChar :
 				case tagPtr :
@@ -244,7 +256,7 @@ inline int prOpInt(VMGlobals *g, int numArgsPushed)
 				goto send_normal_2;
 			break;
 		default :
-			SetRaw(a, Functor::run((double)slotRawInt(a), slotRawFloat(b)));
+			SetFloat(a, Functor::run((double)slotRawInt(a), slotRawFloat(b)));
 			break;
 	}
 	g->sp-- ; // drop
