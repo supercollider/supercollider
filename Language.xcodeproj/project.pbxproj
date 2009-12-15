@@ -1937,9 +1937,7 @@
 				HEADER_SEARCH_PATHS = ./Headers/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = (
-					"-DNDEBUG",
-				);
+				OTHER_CFLAGS = "-DNDEBUG";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2064,8 +2062,8 @@
 		949317D00C192ACC0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2089,10 +2087,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
-				OTHER_CFLAGS = (
-					"-DNDEBUG",
-					"-DSC_DARWIN",
-				);
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				PRODUCT_NAME = sclang;
 				SDKROOT = "";
 			};
@@ -2142,8 +2137,8 @@
 		94B6ABC90AF45D2900E478BB /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2169,7 +2164,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/libsndfile\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
 				OTHER_CFLAGS = (
-					"-DNDEBUG",
 					"-DSC_DARWIN",
 					"-Wstrict-aliasing",
 				);
@@ -2180,7 +2174,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = SuperCollider;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;
