@@ -197,6 +197,7 @@ inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
 
 inline void SetRawChar(PyrSlot* slot, int val) { assert(IsChar(slot)); slot->uc = val; }
 inline void SetRaw(PyrSlot* slot, int val) { assert(IsInt(slot)); slot->ui = val; }
+inline void SetRaw(PyrSlot* slot, long val) { assert(IsInt(slot)); slot->ui = val; }
 inline void SetRaw(PyrSlot* slot, PyrObject * val) { assert(IsObj(slot)); slot->uo = val; }
 inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { assert(IsSym(slot)); slot->us = val; }
 inline void SetRaw(PyrSlot* slot, void * val) { assert(IsPtr(slot)); slot->uptr = val; }

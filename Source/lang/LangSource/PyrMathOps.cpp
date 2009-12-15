@@ -43,8 +43,6 @@ double log2(double x);
 
 double hypotx(double x, double y);
 
-#define BOOL(val) ((val) ? o_true : o_false)
-
 #define IS_BINARY_BOOL_OP(op)  ((op)>=opEQ && (op)<=opGE)
 
 int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
@@ -295,7 +293,7 @@ int prSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed)
 
 int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 {
-	PyrSlot *a, *b, res;
+	PyrSlot *a, *b;
 	PyrSymbol *msg;
 	int opcode = g->primitiveIndex;
 
@@ -307,77 +305,77 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 			switch (GetTag(b)) {
 				case tagInt :
 					switch (opcode) {
-						case opAdd :	SetInt(&res, slotRawInt(a) + slotRawInt(b)); break;
-						case opSub :	SetInt(&res, slotRawInt(a) - slotRawInt(b)); break;
-						case opMul :	SetInt(&res, slotRawInt(a) * slotRawInt(b)); break;
-						case opIDiv :	SetInt(&res, sc_div(slotRawInt(a), slotRawInt(b))); break;
-						case opFDiv :	SetFloat(&res, (double)slotRawInt(a) / (double)slotRawInt(b)); break;
-						case opMod :	SetInt(&res, sc_mod((int)slotRawInt(a), (int)slotRawInt(b))); break;
-						case opEQ  :	res = BOOL(slotRawInt(a) == slotRawInt(b)); break;
-						case opNE  :	res = BOOL(slotRawInt(a) != slotRawInt(b)); break;
-						case opLT  :	res = BOOL(slotRawInt(a) <  slotRawInt(b)); break;
-						case opGT  :	res = BOOL(slotRawInt(a) >  slotRawInt(b)); break;
-						case opLE  :	res = BOOL(slotRawInt(a) <= slotRawInt(b)); break;
-						case opGE  :	res = BOOL(slotRawInt(a) >= slotRawInt(b)); break;
-						//case opIdentical : res = BOOL(slotRawInt(a) == slotRawInt(b)); break;
-						//case opNotIdentical : res = BOOL(slotRawInt(a) != slotRawInt(b)); break;
-						case opMin :	SetInt(&res, sc_min(slotRawInt(a), slotRawInt(b))); break;
-						case opMax :	SetInt(&res, sc_max(slotRawInt(a), slotRawInt(b))); break;
-						case opBitAnd :	SetInt(&res, slotRawInt(a) & slotRawInt(b)); break;
-						case opBitOr  :	SetInt(&res, slotRawInt(a) | slotRawInt(b)); break;
-						case opBitXor :	SetInt(&res, slotRawInt(a) ^ slotRawInt(b)); break;
-						case opLCM   :	SetInt(&res, sc_lcm(slotRawInt(a), slotRawInt(b))); break;
-						case opGCD   :	SetInt(&res, sc_gcd(slotRawInt(a), slotRawInt(b))); break;
-						case opRound :	SetInt(&res, sc_round((int)slotRawInt(a), (int)slotRawInt(b))); break;
-						case opRoundUp :SetInt(&res, sc_roundUp((int)slotRawInt(a), (int)slotRawInt(b))); break;
-						case opTrunc :	SetInt(&res, sc_trunc((int)slotRawInt(a), (int)slotRawInt(b))); break;
-						case opAtan2 :	SetFloat(&res, atan2((double)slotRawInt(a), (double)slotRawInt(b))); break;
-						case opHypot :	SetFloat(&res, hypot((double)slotRawInt(a), (double)slotRawInt(b))); break;
-						case opHypotx : SetFloat(&res, hypotx((double)slotRawInt(a), (double)slotRawInt(b))); break;
-						case opPow   :	SetFloat(&res, pow((double)slotRawInt(a), (double)slotRawInt(b))); break;
+						case opAdd :	SetRaw(a, slotRawInt(a) + slotRawInt(b)); break;
+						case opSub :	SetRaw(a, slotRawInt(a) - slotRawInt(b)); break;
+						case opMul :	SetRaw(a, slotRawInt(a) * slotRawInt(b)); break;
+						case opIDiv :	SetRaw(a, sc_div(slotRawInt(a), slotRawInt(b))); break;
+						case opFDiv :	SetFloat(a, (double)slotRawInt(a) / (double)slotRawInt(b)); break;
+						case opMod :	SetRaw(a, sc_mod((int)slotRawInt(a), (int)slotRawInt(b))); break;
+						case opEQ  :	SetBool(a, slotRawInt(a) == slotRawInt(b)); break;
+						case opNE  :	SetBool(a, slotRawInt(a) != slotRawInt(b)); break;
+						case opLT  :	SetBool(a, slotRawInt(a) <  slotRawInt(b)); break;
+						case opGT  :	SetBool(a, slotRawInt(a) >  slotRawInt(b)); break;
+						case opLE  :	SetBool(a, slotRawInt(a) <= slotRawInt(b)); break;
+						case opGE  :	SetBool(a, slotRawInt(a) >= slotRawInt(b)); break;
+						//case opIdentical : SetBool(a, slotRawInt(a) == slotRawInt(b)); break;
+						//case opNotIdentical : SetBool(a, slotRawInt(a) != slotRawInt(b)); break;
+						case opMin :	SetRaw(a, sc_min(slotRawInt(a), slotRawInt(b))); break;
+						case opMax :	SetRaw(a, sc_max(slotRawInt(a), slotRawInt(b))); break;
+						case opBitAnd :	SetRaw(a, slotRawInt(a) & slotRawInt(b)); break;
+						case opBitOr  :	SetRaw(a, slotRawInt(a) | slotRawInt(b)); break;
+						case opBitXor :	SetRaw(a, slotRawInt(a) ^ slotRawInt(b)); break;
+						case opLCM   :	SetRaw(a, sc_lcm(slotRawInt(a), slotRawInt(b))); break;
+						case opGCD   :	SetRaw(a, sc_gcd(slotRawInt(a), slotRawInt(b))); break;
+						case opRound :	SetRaw(a, sc_round((int)slotRawInt(a), (int)slotRawInt(b))); break;
+						case opRoundUp :SetRaw(a, sc_roundUp((int)slotRawInt(a), (int)slotRawInt(b))); break;
+						case opTrunc :	SetRaw(a, sc_trunc((int)slotRawInt(a), (int)slotRawInt(b))); break;
+						case opAtan2 :	SetFloat(a, atan2((double)slotRawInt(a), (double)slotRawInt(b))); break;
+						case opHypot :	SetFloat(a, hypot((double)slotRawInt(a), (double)slotRawInt(b))); break;
+						case opHypotx : SetFloat(a, hypotx((double)slotRawInt(a), (double)slotRawInt(b))); break;
+						case opPow   :	SetFloat(a, pow((double)slotRawInt(a), (double)slotRawInt(b))); break;
 						case opShiftLeft : {
 							long ia = slotRawInt(a);
 							long ib = slotRawInt(b);
 							if (ib>0) ia <<= ib;
 							else if (ib<0) ia >>= -ib;
-							SetInt(&res, ia);
+							SetRaw(a, ia);
 						} break;
 						case opShiftRight : {
 							long ia = slotRawInt(a);
 							long ib = slotRawInt(b);
 							if (ib>0) ia >>= ib;
 							else if (ib<0) ia <<= -ib;
-							SetInt(&res, ia);
+							SetRaw(a, ia);
 						} break;
 						case opUnsignedShift : {
 							unsigned long ia = slotRawInt(a);
 							long ib = slotRawInt(b);
 							if (ib>0) ia >>= ib;
 							else if (ib<0) ia <<= -ib;
-							SetInt(&res, ia);
+							SetRaw(a, (long)ia);
 						} break;
-						case opRing1 : SetInt(&res, sc_ring1(slotRawInt(a), slotRawInt(b))); break;
-						case opRing2 : SetInt(&res, sc_ring2(slotRawInt(a), slotRawInt(b))); break;
-						case opRing3 : SetInt(&res, sc_ring3(slotRawInt(a), slotRawInt(b))); break;
-						case opRing4 : SetInt(&res, sc_ring4(slotRawInt(a), slotRawInt(a))); break;
-						case opDifSqr : SetInt(&res, sc_difsqr(slotRawInt(a), slotRawInt(b))); break;
-						case opSumSqr : SetInt(&res, sc_sumsqr(slotRawInt(a), slotRawInt(b))); break;
-						case opSqrSum : SetInt(&res, sc_sqrsum(slotRawInt(a), slotRawInt(b))); break;
-						case opSqrDif : SetInt(&res, sc_sqrdif(slotRawInt(a), slotRawInt(b))); break;
-						case opAbsDif :		SetInt(&res, sc_abs(slotRawInt(a) - slotRawInt(b))); break;
-						case opThresh :	    SetInt(&res, sc_thresh(slotRawInt(a), slotRawInt(b))); break;
-						case opAMClip :		SetInt(&res, sc_amclip(slotRawInt(a), slotRawInt(b))); break;
-						case opScaleNeg :	SetInt(&res, sc_scaleneg(slotRawInt(a), slotRawInt(b))); break;
-						case opClip2 :		SetInt(&res, sc_clip2(slotRawInt(a), -slotRawInt(b))); break;
-						case opFold2 :		SetInt(&res, sc_fold2(slotRawInt(a), slotRawInt(b))); break;
-						case opWrap2 :		SetInt(&res, sc_wrap2(slotRawInt(a), slotRawInt(b))); break;
-						case opExcess :		SetInt(&res, sc_excess(slotRawInt(a), slotRawInt(b))); break;
-						case opFirstArg : 	SetInt(&res, slotRawInt(a)); break;
-						case opRandRange :	SetInt(&res, slotRawInt(b) > slotRawInt(a) ? slotRawInt(a) + g->rgen->irand(slotRawInt(b) - slotRawInt(a) + 1)
+						case opRing1 :		SetRaw(a, sc_ring1(slotRawInt(a), slotRawInt(b))); break;
+						case opRing2 :		SetRaw(a, sc_ring2(slotRawInt(a), slotRawInt(b))); break;
+						case opRing3 :		SetRaw(a, sc_ring3(slotRawInt(a), slotRawInt(b))); break;
+						case opRing4 :		SetRaw(a, sc_ring4(slotRawInt(a), slotRawInt(a))); break;
+						case opDifSqr :		SetRaw(a, sc_difsqr(slotRawInt(a), slotRawInt(b))); break;
+						case opSumSqr :		SetRaw(a, sc_sumsqr(slotRawInt(a), slotRawInt(b))); break;
+						case opSqrSum :		SetRaw(a, sc_sqrsum(slotRawInt(a), slotRawInt(b))); break;
+						case opSqrDif :		SetRaw(a, sc_sqrdif(slotRawInt(a), slotRawInt(b))); break;
+						case opAbsDif :		SetRaw(a, sc_abs(slotRawInt(a) - slotRawInt(b))); break;
+						case opThresh :	    SetRaw(a, sc_thresh(slotRawInt(a), slotRawInt(b))); break;
+						case opAMClip :		SetRaw(a, sc_amclip(slotRawInt(a), slotRawInt(b))); break;
+						case opScaleNeg :	SetRaw(a, sc_scaleneg(slotRawInt(a), slotRawInt(b))); break;
+						case opClip2 :		SetRaw(a, sc_clip2(slotRawInt(a), -slotRawInt(b))); break;
+						case opFold2 :		SetRaw(a, sc_fold2(slotRawInt(a), slotRawInt(b))); break;
+						case opWrap2 :		SetRaw(a, sc_wrap2(slotRawInt(a), slotRawInt(b))); break;
+						case opExcess :		SetRaw(a, sc_excess(slotRawInt(a), slotRawInt(b))); break;
+						case opFirstArg : 	SetRaw(a, slotRawInt(a)); break;
+						case opRandRange :	SetRaw(a, slotRawInt(b) > slotRawInt(a) ? slotRawInt(a) + g->rgen->irand(slotRawInt(b) - slotRawInt(a) + 1)
 								   : slotRawInt(b) + g->rgen->irand(slotRawInt(a) - slotRawInt(b) + 1));
 							break;
 						case opExpRandRange :
-							SetFloat(&res, g->rgen->exprandrng(slotRawInt(a), slotRawInt(b)));
+							SetFloat(a, g->rgen->exprandrng(slotRawInt(a), slotRawInt(b)));
 							break;
 						default : goto send_normal_2;
 					}
@@ -389,41 +387,40 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					if (IS_BINARY_BOOL_OP(opcode)) {
-						res = opcode == opNE ? o_true : o_false;
-					} else {
-						SetSymbol(&res, slotRawSymbol(b));
-					}
+					if (IS_BINARY_BOOL_OP(opcode))
+						SetBool(a, opcode == opNE);
+					else
+						SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
 					if (isKindOf(slotRawObject(b), class_signal)) {
 						switch (opcode) {
-							case opAdd : SetObject(&res, signal_add_xf(g, slotRawObject(b), slotRawInt(a))); break;
-							case opSub : SetObject(&res, signal_sub_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opMul : SetObject(&res, signal_mul_xf(g, slotRawObject(b), slotRawInt(a))); break;
-							case opIDiv : SetObject(&res, signal_div_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opFDiv : SetObject(&res, signal_div_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opEQ  : res = o_false; break;
-							case opNE  : res = o_true; break;
-							case opMin : SetObject(&res, signal_min_xf(g, slotRawObject(b), slotRawInt(a))); break;
-							case opMax : SetObject(&res, signal_max_xf(g, slotRawObject(b), slotRawInt(a))); break;
-							case opRing1 : SetObject(&res, signal_ring1_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opRing2 : SetObject(&res, signal_ring2_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opRing3 : SetObject(&res, signal_ring3_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opRing4 : SetObject(&res, signal_ring4_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opDifSqr : SetObject(&res, signal_difsqr_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opSumSqr : SetObject(&res, signal_sumsqr_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opSqrSum : SetObject(&res, signal_sqrsum_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opSqrDif : SetObject(&res, signal_sqrdif_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opAbsDif : SetObject(&res, signal_absdif_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opThresh : SetObject(&res, signal_thresh_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opAMClip : SetObject(&res, signal_amclip_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opScaleNeg : SetObject(&res, signal_scaleneg_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opClip2 : SetObject(&res, signal_clip2_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opFold2 : SetObject(&res, signal_fold2_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opWrap2 : SetObject(&res, signal_wrap2_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opExcess : SetObject(&res, signal_excess_fx(g, slotRawInt(a), slotRawObject(b))); break;
-							case opFirstArg : SetObject(&res, slotRawObject(a)); break;
+							case opAdd : SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawInt(a))); break;
+							case opSub : SetObject(a, signal_sub_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opMul : SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawInt(a))); break;
+							case opIDiv : SetObject(a, signal_div_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opFDiv : SetObject(a, signal_div_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opEQ  : SetFalse(a); break;
+							case opNE  : SetTrue(a); break;
+							case opMin : SetObject(a, signal_min_xf(g, slotRawObject(b), slotRawInt(a))); break;
+							case opMax : SetObject(a, signal_max_xf(g, slotRawObject(b), slotRawInt(a))); break;
+							case opRing1 : SetObject(a, signal_ring1_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opRing2 : SetObject(a, signal_ring2_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opRing3 : SetObject(a, signal_ring3_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opRing4 : SetObject(a, signal_ring4_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opDifSqr : SetObject(a, signal_difsqr_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opSumSqr : SetObject(a, signal_sumsqr_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opSqrSum : SetObject(a, signal_sqrsum_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opSqrDif : SetObject(a, signal_sqrdif_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opAbsDif : SetObject(a, signal_absdif_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opThresh : SetObject(a, signal_thresh_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opAMClip : SetObject(a, signal_amclip_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opScaleNeg : SetObject(a, signal_scaleneg_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opClip2 : SetObject(a, signal_clip2_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opFold2 : SetObject(a, signal_fold2_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opWrap2 : SetObject(a, signal_wrap2_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opExcess : SetObject(a, signal_excess_fx(g, slotRawInt(a), slotRawObject(b))); break;
+							case opFirstArg : SetObject(a, slotRawObject(a)); break;
 							default : goto send_normal_2;
 						}
 					} else {
@@ -432,51 +429,51 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					break;
 				default :
 					switch (opcode) {
-						case opAdd :		SetFloat(&res, slotRawInt(a) + slotRawFloat(b)); break;
-						case opSub :		SetFloat(&res, slotRawInt(a) - slotRawFloat(b)); break;
-						case opMul :		SetFloat(&res, slotRawInt(a) * slotRawFloat(b)); break;
-						case opIDiv :		SetInt(&res, (long)floor(slotRawInt(a) / slotRawFloat(b))); break;
-						case opFDiv :		SetFloat(&res, slotRawInt(a) / slotRawFloat(b)); break;
-						case opMod :		SetFloat(&res, sc_mod((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opEQ  :		res = BOOL(slotRawInt(a) == slotRawFloat(b)); break;
-						case opNE  :		res = BOOL(slotRawInt(a) != slotRawFloat(b)); break;
-						case opLT  :		res = BOOL(slotRawInt(a) <  slotRawFloat(b)); break;
-						case opGT  :		res = BOOL(slotRawInt(a) >  slotRawFloat(b)); break;
-						case opLE  :		res = BOOL(slotRawInt(a) <= slotRawFloat(b)); break;
-						case opGE  :		res = BOOL(slotRawInt(a) >= slotRawFloat(b)); break;
-						//case opIdentical : res = o_false; break;
-						//case opNotIdentical : res = o_true; break;
-						case opMin :		SetFloat(&res, sc_min((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opMax :		SetFloat(&res, sc_max((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRound :		SetFloat(&res, sc_round((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRoundUp :	SetFloat(&res, sc_roundUp((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opTrunc :		SetFloat(&res, sc_trunc((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opAtan2 :		SetFloat(&res, atan2(slotRawInt(a), slotRawFloat(b))); break;
-						case opHypot :		SetFloat(&res, hypot(slotRawInt(a), slotRawFloat(b))); break;
-						case opHypotx : 	SetFloat(&res, hypotx(slotRawInt(a), slotRawFloat(b))); break;
-						case opPow   :		SetFloat(&res, pow((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRing1 :		SetFloat(&res, sc_ring1((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRing2 :		SetFloat(&res, sc_ring2((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRing3 :		SetFloat(&res, sc_ring3((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opRing4 :		SetFloat(&res, sc_ring4((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opDifSqr :		SetFloat(&res, sc_difsqr((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opSumSqr :		SetFloat(&res, sc_sumsqr((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opSqrSum :		SetFloat(&res, sc_sqrsum((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opSqrDif :		SetFloat(&res, sc_sqrdif((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opAbsDif :		SetFloat(&res, sc_abs(slotRawInt(a) - slotRawFloat(b))); break;
-						case opThresh :		SetInt(&res, sc_thresh((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opAMClip :		SetFloat(&res, sc_amclip((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opScaleNeg : 	SetFloat(&res, sc_scaleneg((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opClip2 :		SetFloat(&res, sc_clip2((double)slotRawInt(a), -slotRawFloat(b))); break;
-						case opFold2 :		SetFloat(&res, sc_fold2((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opWrap2 :		SetFloat(&res, sc_wrap2((double)slotRawInt(a), -slotRawFloat(b))); break;
-						case opExcess :		SetFloat(&res, sc_excess((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opFirstArg :	SetInt(&res, slotRawInt(a)); break;
+						case opAdd :		SetFloat(a, slotRawInt(a) + slotRawFloat(b)); break;
+						case opSub :		SetFloat(a, slotRawInt(a) - slotRawFloat(b)); break;
+						case opMul :		SetFloat(a, slotRawInt(a) * slotRawFloat(b)); break;
+						case opIDiv :		SetRaw(a, (long)floor(slotRawInt(a) / slotRawFloat(b))); break;
+						case opFDiv :		SetFloat(a, slotRawInt(a) / slotRawFloat(b)); break;
+						case opMod :		SetFloat(a, sc_mod((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opEQ  :		SetBool(a, slotRawInt(a) == slotRawFloat(b)); break;
+						case opNE  :		SetBool(a, slotRawInt(a) != slotRawFloat(b)); break;
+						case opLT  :		SetBool(a, slotRawInt(a) <  slotRawFloat(b)); break;
+						case opGT  :		SetBool(a, slotRawInt(a) >  slotRawFloat(b)); break;
+						case opLE  :		SetBool(a, slotRawInt(a) <= slotRawFloat(b)); break;
+						case opGE  :		SetBool(a, slotRawInt(a) >= slotRawFloat(b)); break;
+						//case opIdentical : SetFalse(a); break;
+						//case opNotIdentical : SetTrue(a); break;
+						case opMin :		SetFloat(a, sc_min((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opMax :		SetFloat(a, sc_max((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRound :		SetFloat(a, sc_round((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRoundUp :	SetFloat(a, sc_roundUp((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opTrunc :		SetFloat(a, sc_trunc((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opAtan2 :		SetFloat(a, atan2(slotRawInt(a), slotRawFloat(b))); break;
+						case opHypot :		SetFloat(a, hypot(slotRawInt(a), slotRawFloat(b))); break;
+						case opHypotx : 	SetFloat(a, hypotx(slotRawInt(a), slotRawFloat(b))); break;
+						case opPow   :		SetFloat(a, pow((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRing1 :		SetFloat(a, sc_ring1((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRing2 :		SetFloat(a, sc_ring2((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRing3 :		SetFloat(a, sc_ring3((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opRing4 :		SetFloat(a, sc_ring4((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opDifSqr :		SetFloat(a, sc_difsqr((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opSumSqr :		SetFloat(a, sc_sumsqr((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opSqrSum :		SetFloat(a, sc_sqrsum((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opSqrDif :		SetFloat(a, sc_sqrdif((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opAbsDif :		SetFloat(a, sc_abs(slotRawInt(a) - slotRawFloat(b))); break;
+						case opThresh :		SetRaw(a, sc_thresh((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opAMClip :		SetFloat(a, sc_amclip((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opScaleNeg : 	SetFloat(a, sc_scaleneg((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opClip2 :		SetFloat(a, sc_clip2((double)slotRawInt(a), -slotRawFloat(b))); break;
+						case opFold2 :		SetFloat(a, sc_fold2((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opWrap2 :		SetFloat(a, sc_wrap2((double)slotRawInt(a), -slotRawFloat(b))); break;
+						case opExcess :		SetFloat(a, sc_excess((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opFirstArg :	SetInt(a, slotRawInt(a)); break;
 						case opRandRange :
-							SetFloat(&res, slotRawInt(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawInt(a)));
+							SetFloat(a, slotRawInt(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawInt(a)));
 							break;
 						case opExpRandRange :
-							SetFloat(&res, g->rgen->exprandrng(slotRawInt(a), slotRawFloat(b)));
+							SetFloat(a, g->rgen->exprandrng(slotRawInt(a), slotRawFloat(b)));
 							break;
 						default : goto send_normal_2;
 					}
@@ -486,16 +483,16 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		case tagChar : {
 			if (IsChar(b)) {
 				switch (opcode) {
-					case opEQ  : res = BOOL(slotRawChar(a) == slotRawChar(b)); break;
-					case opNE  : res = BOOL(slotRawChar(a) != slotRawChar(b)); break;
-					case opLT  : res = BOOL(slotRawChar(a) <  slotRawChar(b)); break;
-					case opGT  : res = BOOL(slotRawChar(a) >  slotRawChar(b)); break;
-					case opLE  : res = BOOL(slotRawChar(a) <= slotRawChar(b)); break;
-					case opGE  : res = BOOL(slotRawChar(a) >= slotRawChar(b)); break;
-					//case opIdentical : res = BOOL(slotRawChar(a) == slotRawChar(b)); break;
-					//case opNotIdentical : res = BOOL(slotRawChar(a) != slotRawChar(b)); break;
-					case opMin : SetInt(&res, sc_min(slotRawChar(a), slotRawChar(b))); break;
-					case opMax : SetInt(&res, sc_max(slotRawChar(a), slotRawChar(b))); break;
+					case opEQ  : SetBool(a, slotRawChar(a) == slotRawChar(b)); break;
+					case opNE  : SetBool(a, slotRawChar(a) != slotRawChar(b)); break;
+					case opLT  : SetBool(a, slotRawChar(a) <  slotRawChar(b)); break;
+					case opGT  : SetBool(a, slotRawChar(a) >  slotRawChar(b)); break;
+					case opLE  : SetBool(a, slotRawChar(a) <= slotRawChar(b)); break;
+					case opGE  : SetBool(a, slotRawChar(a) >= slotRawChar(b)); break;
+					//case opIdentical : SetBool(a, slotRawChar(a) == slotRawChar(b)); break;
+					//case opNotIdentical : SetBool(a, slotRawChar(a) != slotRawChar(b)); break;
+					case opMin : SetRawChar(a, sc_min(slotRawChar(a), slotRawChar(b))); break;
+					case opMax : SetRawChar(a, sc_max(slotRawChar(a), slotRawChar(b))); break;
 					default : goto send_normal_2;
 				}
 			} else {
@@ -510,20 +507,17 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		case tagSym :
 			if (IsSym(b)) {
 				switch (opcode) {
-					case opEQ  : res = BOOL(slotRawSymbol(a) == slotRawSymbol(b)); break;
-					case opNE  : res = BOOL(slotRawSymbol(a) != slotRawSymbol(b)); break;
-					case opLT  : res = BOOL(strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) <  0); break;
-					case opGT  : res = BOOL(strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) >  0); break;
-					case opLE  : res = BOOL(strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) <= 0); break;
-					case opGE  : res = BOOL(strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) >= 0); break;
+					case opEQ  : SetBool(a, slotRawSymbol(a) == slotRawSymbol(b)); break;
+					case opNE  : SetBool(a, slotRawSymbol(a) != slotRawSymbol(b)); break;
+					case opLT  : SetBool(a, strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) <  0); break;
+					case opGT  : SetBool(a, strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) >  0); break;
+					case opLE  : SetBool(a, strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) <= 0); break;
+					case opGE  : SetBool(a, strcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name) >= 0); break;
 					//default : leave first operand on stack
 				}
 			} else {
-				if (IS_BINARY_BOOL_OP(opcode)) {
-					res = opcode == opNE ? o_true : o_false;
-				} else {
-					SetSymbol(&res, slotRawSymbol(a));
-				}
+				if (IS_BINARY_BOOL_OP(opcode))
+					SetBool(a, opcode == opNE);
 			}
 			break;
 		case tagObj : {
@@ -531,33 +525,33 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				switch (GetTag(b)) {
 					case tagInt :
 						switch (opcode) {
-							case opAdd  : SetObject(&res, signal_add_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opSub  : SetObject(&res, signal_sub_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opMul  : SetObject(&res, signal_mul_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opIDiv  : SetObject(&res, signal_div_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opFDiv  : SetObject(&res, signal_div_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opEQ  : res = o_false; break;
-							case opNE  : res = o_true; break;
-							case opMin  : SetObject(&res, signal_min_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opMax  : SetObject(&res, signal_max_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opFill : SetObject(&res, signal_fill(slotRawObject(a), slotRawInt(b))); break;
-							case opRing1 : SetObject(&res, signal_ring1_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opRing2 : SetObject(&res, signal_ring2_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opRing3 : SetObject(&res, signal_ring3_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opRing4 : SetObject(&res, signal_ring4_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opDifSqr : SetObject(&res, signal_difsqr_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opSumSqr : SetObject(&res, signal_sumsqr_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opSqrSum : SetObject(&res, signal_sqrsum_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opSqrDif : SetObject(&res, signal_sqrdif_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opAbsDif : SetObject(&res, signal_absdif_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opThresh : SetObject(&res, signal_thresh_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opAMClip : SetObject(&res, signal_amclip_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opScaleNeg : SetObject(&res, signal_scaleneg_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opClip2 : SetObject(&res, signal_clip2_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opFold2 : SetObject(&res, signal_fold2_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opWrap2 : SetObject(&res, signal_wrap2_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opExcess : SetObject(&res, signal_excess_xf(g, slotRawObject(a), slotRawInt(b))); break;
-							case opFirstArg : SetObject(&res, slotRawObject(a)); break;
+							case opAdd  : SetRaw(a, signal_add_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opSub  : SetRaw(a, signal_sub_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opMul  : SetRaw(a, signal_mul_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opIDiv  : SetRaw(a, signal_div_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opFDiv  : SetRaw(a, signal_div_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opEQ  : SetFalse(a); break;
+							case opNE  : SetTrue(a); break;
+							case opMin  : SetRaw(a, signal_min_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opMax  : SetRaw(a, signal_max_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opFill : SetRaw(a, signal_fill(slotRawObject(a), slotRawInt(b))); break;
+							case opRing1 : SetRaw(a, signal_ring1_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opRing2 : SetRaw(a, signal_ring2_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opRing3 : SetRaw(a, signal_ring3_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opRing4 : SetRaw(a, signal_ring4_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opDifSqr : SetRaw(a, signal_difsqr_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opSumSqr : SetRaw(a, signal_sumsqr_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opSqrSum : SetRaw(a, signal_sqrsum_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opSqrDif : SetRaw(a, signal_sqrdif_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opAbsDif : SetRaw(a, signal_absdif_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opThresh : SetRaw(a, signal_thresh_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opAMClip : SetRaw(a, signal_amclip_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opScaleNeg : SetRaw(a, signal_scaleneg_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opClip2 : SetRaw(a, signal_clip2_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opFold2 : SetRaw(a, signal_fold2_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opWrap2 : SetRaw(a, signal_wrap2_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opExcess : SetRaw(a, signal_excess_xf(g, slotRawObject(a), slotRawInt(b))); break;
+							case opFirstArg : SetRaw(a, slotRawObject(a)); break;
 							default : goto send_normal_2;
 						}
 						break;
@@ -568,74 +562,73 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 					case tagTrue :
 						goto send_normal_2;
 					case tagSym :
-						if (IS_BINARY_BOOL_OP(opcode)) {
-							res = opcode == opNE ? o_true : o_false;
-						} else {
-							SetSymbol(&res, slotRawSymbol(b));
-						}
+						if (IS_BINARY_BOOL_OP(opcode))
+							SetBool(a, opcode == opNE);
+						else
+							SetSymbol(a, slotRawSymbol(b));
 						break;
 					case tagObj :
 						if (isKindOf(slotRawObject(b), class_signal)) {
 							switch (opcode) {
-								case opAdd : SetObject(&res, signal_add_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opSub : SetObject(&res, signal_sub_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opMul : SetObject(&res, signal_mul_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opIDiv : SetObject(&res, signal_div_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opFDiv : SetObject(&res, signal_div_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opEQ  : res = BOOL(signal_equal_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opNE  : res = BOOL(!signal_equal_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opMin : SetObject(&res, signal_min_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opMax : SetObject(&res, signal_max_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opRing1 : SetObject(&res, signal_ring1_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opRing2 : SetObject(&res, signal_ring2_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opRing3 : SetObject(&res, signal_ring3_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opRing4 : SetObject(&res, signal_ring4_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opDifSqr : SetObject(&res, signal_difsqr_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opSumSqr : SetObject(&res, signal_sumsqr_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opSqrSum : SetObject(&res, signal_sqrsum_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opSqrDif : SetObject(&res, signal_sqrdif_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opAbsDif : SetObject(&res, signal_absdif_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opThresh : SetObject(&res, signal_thresh_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opAMClip : SetObject(&res, signal_amclip_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opScaleNeg : SetObject(&res, signal_scaleneg_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opClip2 : SetObject(&res, signal_clip2_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opFold2 : SetObject(&res, signal_fold2_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opWrap2 : SetObject(&res, signal_wrap2_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opExcess : SetObject(&res, signal_excess_xx(g, slotRawObject(a), slotRawObject(b))); break;
-								case opFirstArg : SetObject(&res, slotRawObject(a)); break;
+								case opAdd : SetRaw(a, signal_add_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opSub : SetRaw(a, signal_sub_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opMul : SetRaw(a, signal_mul_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opIDiv : SetRaw(a, signal_div_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opFDiv : SetRaw(a, signal_div_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opEQ  : SetBool(a, signal_equal_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opNE  : SetBool(a, !signal_equal_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opMin : SetRaw(a, signal_min_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opMax : SetRaw(a, signal_max_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opRing1 : SetRaw(a, signal_ring1_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opRing2 : SetRaw(a, signal_ring2_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opRing3 : SetRaw(a, signal_ring3_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opRing4 : SetRaw(a, signal_ring4_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opDifSqr : SetRaw(a, signal_difsqr_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opSumSqr : SetRaw(a, signal_sumsqr_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opSqrSum : SetRaw(a, signal_sqrsum_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opSqrDif : SetRaw(a, signal_sqrdif_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opAbsDif : SetRaw(a, signal_absdif_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opThresh : SetRaw(a, signal_thresh_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opAMClip : SetRaw(a, signal_amclip_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opScaleNeg : SetRaw(a, signal_scaleneg_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opClip2 : SetRaw(a, signal_clip2_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opFold2 : SetRaw(a, signal_fold2_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opWrap2 : SetRaw(a, signal_wrap2_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opExcess : SetRaw(a, signal_excess_xx(g, slotRawObject(a), slotRawObject(b))); break;
+								case opFirstArg : SetRaw(a, slotRawObject(a)); break;
 								default : goto send_normal_2;
 							}
 						} else goto send_normal_2;
 						break;
 					default : // double
 						switch (opcode) {
-							case opAdd  : SetObject(&res, signal_add_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opSub  : SetObject(&res, signal_sub_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opMul  : SetObject(&res, signal_mul_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opIDiv  : SetObject(&res, signal_div_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opFDiv  : SetObject(&res, signal_div_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opEQ  : res = o_false; break;
-							case opNE  : res = o_true; break;
-							case opMin  : SetObject(&res, signal_min_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opMax  : SetObject(&res, signal_max_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opFill : SetObject(&res, signal_fill(slotRawObject(a), slotRawFloat(b))); break;
-							case opRing1 : SetObject(&res, signal_ring1_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opRing2 : SetObject(&res, signal_ring2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opRing3 : SetObject(&res, signal_ring3_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opRing4 : SetObject(&res, signal_ring4_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opDifSqr : SetObject(&res, signal_difsqr_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opSumSqr : SetObject(&res, signal_sumsqr_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opSqrSum : SetObject(&res, signal_sqrsum_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opSqrDif : SetObject(&res, signal_sqrdif_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opAbsDif : SetObject(&res, signal_absdif_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opThresh : SetObject(&res, signal_thresh_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opAMClip : SetObject(&res, signal_amclip_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opScaleNeg : SetObject(&res, signal_scaleneg_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opClip2 : SetObject(&res, signal_clip2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opFold2 : SetObject(&res, signal_fold2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opWrap2 : SetObject(&res, signal_wrap2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opExcess : SetObject(&res, signal_excess_xf(g, slotRawObject(a), slotRawFloat(b))); break;
-							case opFirstArg : SetObject(&res, slotRawObject(a)); break;
+							case opAdd  : SetRaw(a, signal_add_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opSub  : SetRaw(a, signal_sub_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opMul  : SetRaw(a, signal_mul_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opIDiv  : SetRaw(a, signal_div_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opFDiv  : SetRaw(a, signal_div_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opEQ  : SetFalse(a); break;
+							case opNE  : SetTrue(a); break;
+							case opMin  : SetRaw(a, signal_min_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opMax  : SetRaw(a, signal_max_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opFill : SetRaw(a, signal_fill(slotRawObject(a), slotRawFloat(b))); break;
+							case opRing1 : SetRaw(a, signal_ring1_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opRing2 : SetRaw(a, signal_ring2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opRing3 : SetRaw(a, signal_ring3_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opRing4 : SetRaw(a, signal_ring4_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opDifSqr : SetRaw(a, signal_difsqr_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opSumSqr : SetRaw(a, signal_sumsqr_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opSqrSum : SetRaw(a, signal_sqrsum_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opSqrDif : SetRaw(a, signal_sqrdif_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opAbsDif : SetRaw(a, signal_absdif_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opThresh : SetRaw(a, signal_thresh_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opAMClip : SetRaw(a, signal_amclip_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opScaleNeg : SetRaw(a, signal_scaleneg_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opClip2 : SetRaw(a, signal_clip2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opFold2 : SetRaw(a, signal_fold2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opWrap2 : SetRaw(a, signal_wrap2_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opExcess : SetRaw(a, signal_excess_xf(g, slotRawObject(a), slotRawFloat(b))); break;
+							case opFirstArg : SetRaw(a, slotRawObject(a)); break;
 							default : goto send_normal_2;
 						}
 						break;
@@ -648,51 +641,51 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 			switch (GetTag(b)) {
 				case tagInt :
 					switch (opcode) {
-						case opAdd :		SetFloat(&res, slotRawFloat(a) + slotRawInt(b)); break;
-						case opSub :		SetFloat(&res, slotRawFloat(a) - slotRawInt(b)); break;
-						case opMul :		SetFloat(&res, slotRawFloat(a) * slotRawInt(b)); break;
-						case opIDiv :		SetInt(&res, (long)floor(slotRawFloat(a) / slotRawInt(b))); break;
-						case opFDiv :		SetFloat(&res, slotRawFloat(a) / slotRawInt(b)); break;
-						case opMod :		SetFloat(&res, sc_mod(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opEQ  :		res = BOOL(slotRawFloat(a) == slotRawInt(b)); break;
-						case opNE  :		res = BOOL(slotRawFloat(a) != slotRawInt(b)); break;
-						case opLT  :		res = BOOL(slotRawFloat(a) <  slotRawInt(b)); break;
-						case opGT  :		res = BOOL(slotRawFloat(a) >  slotRawInt(b)); break;
-						case opLE  :		res = BOOL(slotRawFloat(a) <= slotRawInt(b)); break;
-						case opGE  :		res = BOOL(slotRawFloat(a) >= slotRawInt(b)); break;
-						//case opIdentical : res = o_false; break;
-						//case opNotIdentical : res = o_true; break;
-						case opMin :		SetFloat(&res, sc_min(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opMax :		SetFloat(&res, sc_max(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRound :		SetFloat(&res, sc_round(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRoundUp :	SetFloat(&res, sc_roundUp(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opTrunc :		SetFloat(&res, sc_trunc(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opAtan2 :		SetFloat(&res, atan2(slotRawFloat(a), slotRawInt(b))); break;
-						case opHypot :		SetFloat(&res, hypot(slotRawFloat(a), slotRawInt(b))); break;
-						case opHypotx :		SetFloat(&res, hypotx(slotRawFloat(a), slotRawInt(b))); break;
-						case opPow   :		SetFloat(&res, pow(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRing1 :		SetFloat(&res, sc_ring1(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRing2 :		SetFloat(&res, sc_ring2(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRing3 :		SetFloat(&res, sc_ring3(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opRing4 :		SetFloat(&res, sc_ring4(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opDifSqr :		SetFloat(&res, sc_difsqr(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opSumSqr :		SetFloat(&res, sc_sumsqr(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opSqrSum :		SetFloat(&res, sc_sqrsum(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opSqrDif :		SetFloat(&res, sc_sqrdif(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opAbsDif :		SetFloat(&res, sc_abs(slotRawFloat(a) - slotRawInt(b))); break;
-						case opThresh :		SetFloat(&res, sc_thresh(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opAMClip :		SetFloat(&res, sc_amclip(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opScaleNeg :	SetFloat(&res, sc_scaleneg(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opClip2 :		SetFloat(&res, sc_clip2(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opFold2 :		SetFloat(&res, sc_fold2(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opWrap2 :		SetFloat(&res, sc_wrap2(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opExcess :		SetFloat(&res, sc_excess(slotRawFloat(a), (double)slotRawInt(b))); break;
-						case opFirstArg :	SetFloat(&res, slotRawFloat(a)); break;
+						case opAdd :		SetRaw(a, slotRawFloat(a) + slotRawInt(b)); break;
+						case opSub :		SetRaw(a, slotRawFloat(a) - slotRawInt(b)); break;
+						case opMul :		SetRaw(a, slotRawFloat(a) * slotRawInt(b)); break;
+						case opIDiv :		SetInt(a, (long)floor(slotRawFloat(a) / slotRawInt(b))); break;
+						case opFDiv :		SetRaw(a, slotRawFloat(a) / slotRawInt(b)); break;
+						case opMod :		SetRaw(a, sc_mod(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opEQ  :		SetBool(a, slotRawFloat(a) == slotRawInt(b)); break;
+						case opNE  :		SetBool(a, slotRawFloat(a) != slotRawInt(b)); break;
+						case opLT  :		SetBool(a, slotRawFloat(a) <  slotRawInt(b)); break;
+						case opGT  :		SetBool(a, slotRawFloat(a) >  slotRawInt(b)); break;
+						case opLE  :		SetBool(a, slotRawFloat(a) <= slotRawInt(b)); break;
+						case opGE  :		SetBool(a, slotRawFloat(a) >= slotRawInt(b)); break;
+						//case opIdentical : SetFalse(a); break;
+						//case opNotIdentical : SetTrue(a); break;
+						case opMin :		SetRaw(a, sc_min(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opMax :		SetRaw(a, sc_max(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRound :		SetRaw(a, sc_round(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRoundUp :	SetRaw(a, sc_roundUp(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opTrunc :		SetRaw(a, sc_trunc(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opAtan2 :		SetRaw(a, atan2(slotRawFloat(a), slotRawInt(b))); break;
+						case opHypot :		SetRaw(a, hypot(slotRawFloat(a), slotRawInt(b))); break;
+						case opHypotx :		SetRaw(a, hypotx(slotRawFloat(a), slotRawInt(b))); break;
+						case opPow   :		SetRaw(a, pow(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRing1 :		SetRaw(a, sc_ring1(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRing2 :		SetRaw(a, sc_ring2(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRing3 :		SetRaw(a, sc_ring3(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opRing4 :		SetRaw(a, sc_ring4(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opDifSqr :		SetRaw(a, sc_difsqr(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opSumSqr :		SetRaw(a, sc_sumsqr(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opSqrSum :		SetRaw(a, sc_sqrsum(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opSqrDif :		SetRaw(a, sc_sqrdif(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opAbsDif :		SetRaw(a, sc_abs(slotRawFloat(a) - slotRawInt(b))); break;
+						case opThresh :		SetRaw(a, sc_thresh(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opAMClip :		SetRaw(a, sc_amclip(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opScaleNeg :	SetRaw(a, sc_scaleneg(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opClip2 :		SetRaw(a, sc_clip2(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opFold2 :		SetRaw(a, sc_fold2(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opWrap2 :		SetRaw(a, sc_wrap2(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opExcess :		SetRaw(a, sc_excess(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opFirstArg :	SetRaw(a, slotRawFloat(a)); break;
 						case opRandRange :
-							SetFloat(&res, slotRawFloat(a) + g->rgen->frand() * (slotRawInt(b) - slotRawFloat(a)));
+							SetRaw(a, slotRawFloat(a) + g->rgen->frand() * (slotRawInt(b) - slotRawFloat(a)));
 							break;
 						case opExpRandRange :
-							SetFloat(&res, g->rgen->exprandrng(slotRawFloat(a), slotRawInt(b)));
+							SetRaw(a, g->rgen->exprandrng(slotRawFloat(a), slotRawInt(b)));
 							break;
 						default : goto send_normal_2;
 					}
@@ -704,92 +697,91 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 				case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					if (IS_BINARY_BOOL_OP(opcode)) {
-						res = opcode == opNE ? o_true : o_false;
-					} else {
-						SetSymbol(&res, slotRawSymbol(b));
-					}
+					if (IS_BINARY_BOOL_OP(opcode))
+						SetBool(a, opcode == opNE);
+					else
+						SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
 					if (isKindOf(slotRawObject(b), class_signal)) {
 						switch (opcode) {
-							case opAdd : SetObject(&res, signal_add_xf(g, slotRawObject(b), slotRawFloat(a))); break;
-							case opSub : SetObject(&res, signal_sub_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opMul : SetObject(&res, signal_mul_xf(g, slotRawObject(b), slotRawFloat(a))); break;
-							case opIDiv : SetObject(&res, signal_div_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opFDiv : SetObject(&res, signal_div_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opEQ  : res = o_false; break;
-							case opNE  : res = o_true; break;
-							case opMin : SetObject(&res, signal_min_xf(g, slotRawObject(b), slotRawFloat(a))); break;
-							case opMax : SetObject(&res, signal_max_xf(g, slotRawObject(b), slotRawFloat(a))); break;
-							case opRing1 : SetObject(&res, signal_ring1_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opRing2 : SetObject(&res, signal_ring2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opRing3 : SetObject(&res, signal_ring3_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opRing4 : SetObject(&res, signal_ring4_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opDifSqr : SetObject(&res, signal_difsqr_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opSumSqr : SetObject(&res, signal_sumsqr_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opSqrSum : SetObject(&res, signal_sqrsum_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opSqrDif : SetObject(&res, signal_sqrdif_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opAbsDif : SetObject(&res, signal_absdif_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opThresh : SetObject(&res, signal_thresh_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opAMClip : SetObject(&res, signal_amclip_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opScaleNeg : SetObject(&res, signal_scaleneg_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opClip2 : SetObject(&res, signal_clip2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opFold2 : SetObject(&res, signal_fold2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opWrap2 : SetObject(&res, signal_wrap2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opExcess : SetObject(&res, signal_excess_fx(g, slotRawFloat(a), slotRawObject(b))); break;
-							case opFirstArg : SetObject(&res, slotRawObject(a)); break;
+							case opAdd : SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawFloat(a))); break;
+							case opSub : SetObject(a, signal_sub_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opMul : SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawFloat(a))); break;
+							case opIDiv : SetObject(a, signal_div_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opFDiv : SetObject(a, signal_div_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opEQ  : SetFalse(a); break;
+							case opNE  : SetTrue(a); break;
+							case opMin : SetObject(a, signal_min_xf(g, slotRawObject(b), slotRawFloat(a))); break;
+							case opMax : SetObject(a, signal_max_xf(g, slotRawObject(b), slotRawFloat(a))); break;
+							case opRing1 : SetObject(a, signal_ring1_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opRing2 : SetObject(a, signal_ring2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opRing3 : SetObject(a, signal_ring3_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opRing4 : SetObject(a, signal_ring4_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opDifSqr : SetObject(a, signal_difsqr_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opSumSqr : SetObject(a, signal_sumsqr_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opSqrSum : SetObject(a, signal_sqrsum_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opSqrDif : SetObject(a, signal_sqrdif_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opAbsDif : SetObject(a, signal_absdif_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opThresh : SetObject(a, signal_thresh_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opAMClip : SetObject(a, signal_amclip_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opScaleNeg : SetObject(a, signal_scaleneg_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opClip2 : SetObject(a, signal_clip2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opFold2 : SetObject(a, signal_fold2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opWrap2 : SetObject(a, signal_wrap2_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opExcess : SetObject(a, signal_excess_fx(g, slotRawFloat(a), slotRawObject(b))); break;
+							case opFirstArg : SetObject(a, slotRawObject(a)); break;
 							default : goto send_normal_2;
 						}
 					} else goto send_normal_2;
 					break;
 				default : // double
 					switch (opcode) {
-						case opAdd :		SetFloat(&res, slotRawFloat(a) + slotRawFloat(b)); break;
-						case opSub :		SetFloat(&res, slotRawFloat(a) - slotRawFloat(b)); break;
-						case opMul :		SetFloat(&res, slotRawFloat(a) * slotRawFloat(b)); break;
-						case opIDiv :		SetInt(&res, (long)floor(slotRawFloat(a) / slotRawFloat(b))); break;
-						case opFDiv :		SetFloat(&res, slotRawFloat(a) / slotRawFloat(b)); break;
-						case opMod :		SetFloat(&res, sc_mod(slotRawFloat(a), slotRawFloat(b))); break;
-						case opEQ  :		res = BOOL(slotRawFloat(a) == slotRawFloat(b)); break;
-						case opNE  :		res = BOOL(slotRawFloat(a) != slotRawFloat(b)); break;
-						case opLT  :		res = BOOL(slotRawFloat(a) <  slotRawFloat(b)); break;
-						case opGT  :		res = BOOL(slotRawFloat(a) >  slotRawFloat(b)); break;
-						case opLE  :		res = BOOL(slotRawFloat(a) <= slotRawFloat(b)); break;
-						case opGE  :		res = BOOL(slotRawFloat(a) >= slotRawFloat(b)); break;
-						//case opIdentical  : res = BOOL(slotRawFloat(a) == slotRawFloat(b)); break;
-						//case opNotIdentical  : res = BOOL(slotRawFloat(a) != slotRawFloat(b)); break;
-						case opMin : 		SetFloat(&res, sc_min(slotRawFloat(a), slotRawFloat(b))); break;
-						case opMax :		SetFloat(&res, sc_max(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRound :		SetFloat(&res, sc_round(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRoundUp :	SetFloat(&res, sc_roundUp(slotRawFloat(a), slotRawFloat(b))); break;
-						case opTrunc :		SetFloat(&res, sc_trunc(slotRawFloat(a), slotRawFloat(b))); break;
-						case opAtan2 :		SetFloat(&res, atan2(slotRawFloat(a), slotRawFloat(b))); break;
-						case opHypot :		SetFloat(&res, hypot(slotRawFloat(a), slotRawFloat(b))); break;
-						case opHypotx :		SetFloat(&res, hypotx(slotRawFloat(a), slotRawFloat(b))); break;
-						case opPow   :		SetFloat(&res, pow(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRing1 :		SetFloat(&res, sc_ring1(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRing2 :		SetFloat(&res, sc_ring2(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRing3 :		SetFloat(&res, sc_ring3(slotRawFloat(a), slotRawFloat(b))); break;
-						case opRing4 :		SetFloat(&res, sc_ring4(slotRawFloat(a), slotRawFloat(b))); break;
-						case opDifSqr :		SetFloat(&res, sc_difsqr(slotRawFloat(a), slotRawFloat(b))); break;
-						case opSumSqr :		SetFloat(&res, sc_sumsqr(slotRawFloat(a), slotRawFloat(b))); break;
-						case opSqrSum :		SetFloat(&res, sc_sqrsum(slotRawFloat(a), slotRawFloat(b))); break;
-						case opSqrDif :		SetFloat(&res, sc_sqrdif(slotRawFloat(a), slotRawFloat(b))); break;
-						case opAbsDif :		SetFloat(&res, sc_abs(slotRawFloat(a) - slotRawFloat(b))); break;
-						case opThresh :		SetFloat(&res, sc_thresh(slotRawFloat(a), slotRawFloat(b))); break;
-						case opAMClip :		SetFloat(&res, sc_amclip(slotRawFloat(a), slotRawFloat(b))); break;
-						case opScaleNeg :	SetFloat(&res, sc_scaleneg(slotRawFloat(a), slotRawFloat(b))); break;
-						case opClip2 :		SetFloat(&res, sc_clip2(slotRawFloat(a), slotRawFloat(b))); break;
-						case opFold2 :		SetFloat(&res, sc_fold2(slotRawFloat(a), slotRawFloat(b))); break;
-						case opWrap2 :		SetFloat(&res, sc_wrap2(slotRawFloat(a), slotRawFloat(b))); break;
-						case opExcess :		SetFloat(&res, sc_excess(slotRawFloat(a), slotRawFloat(b))); break;
-						case opFirstArg :	SetFloat(&res, slotRawFloat(a)); break;
+						case opAdd :		SetRaw(a, slotRawFloat(a) + slotRawFloat(b)); break;
+						case opSub :		SetRaw(a, slotRawFloat(a) - slotRawFloat(b)); break;
+						case opMul :		SetRaw(a, slotRawFloat(a) * slotRawFloat(b)); break;
+						case opIDiv :		SetInt(a, (long)floor(slotRawFloat(a) / slotRawFloat(b))); break;
+						case opFDiv :		SetRaw(a, slotRawFloat(a) / slotRawFloat(b)); break;
+						case opMod :		SetRaw(a, sc_mod(slotRawFloat(a), slotRawFloat(b))); break;
+						case opEQ  :		SetBool(a, slotRawFloat(a) == slotRawFloat(b)); break;
+						case opNE  :		SetBool(a, slotRawFloat(a) != slotRawFloat(b)); break;
+						case opLT  :		SetBool(a, slotRawFloat(a) <  slotRawFloat(b)); break;
+						case opGT  :		SetBool(a, slotRawFloat(a) >  slotRawFloat(b)); break;
+						case opLE  :		SetBool(a, slotRawFloat(a) <= slotRawFloat(b)); break;
+						case opGE  :		SetBool(a, slotRawFloat(a) >= slotRawFloat(b)); break;
+						//case opIdentical  : SetBool(a, slotRawFloat(a) == slotRawFloat(b)); break;
+						//case opNotIdentical  : SetBool(a, slotRawFloat(a) != slotRawFloat(b)); break;
+						case opMin : 		SetRaw(a, sc_min(slotRawFloat(a), slotRawFloat(b))); break;
+						case opMax :		SetRaw(a, sc_max(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRound :		SetRaw(a, sc_round(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRoundUp :	SetRaw(a, sc_roundUp(slotRawFloat(a), slotRawFloat(b))); break;
+						case opTrunc :		SetRaw(a, sc_trunc(slotRawFloat(a), slotRawFloat(b))); break;
+						case opAtan2 :		SetRaw(a, atan2(slotRawFloat(a), slotRawFloat(b))); break;
+						case opHypot :		SetRaw(a, hypot(slotRawFloat(a), slotRawFloat(b))); break;
+						case opHypotx :		SetRaw(a, hypotx(slotRawFloat(a), slotRawFloat(b))); break;
+						case opPow   :		SetRaw(a, pow(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRing1 :		SetRaw(a, sc_ring1(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRing2 :		SetRaw(a, sc_ring2(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRing3 :		SetRaw(a, sc_ring3(slotRawFloat(a), slotRawFloat(b))); break;
+						case opRing4 :		SetRaw(a, sc_ring4(slotRawFloat(a), slotRawFloat(b))); break;
+						case opDifSqr :		SetRaw(a, sc_difsqr(slotRawFloat(a), slotRawFloat(b))); break;
+						case opSumSqr :		SetRaw(a, sc_sumsqr(slotRawFloat(a), slotRawFloat(b))); break;
+						case opSqrSum :		SetRaw(a, sc_sqrsum(slotRawFloat(a), slotRawFloat(b))); break;
+						case opSqrDif :		SetRaw(a, sc_sqrdif(slotRawFloat(a), slotRawFloat(b))); break;
+						case opAbsDif :		SetRaw(a, sc_abs(slotRawFloat(a) - slotRawFloat(b))); break;
+						case opThresh :		SetRaw(a, sc_thresh(slotRawFloat(a), slotRawFloat(b))); break;
+						case opAMClip :		SetRaw(a, sc_amclip(slotRawFloat(a), slotRawFloat(b))); break;
+						case opScaleNeg :	SetRaw(a, sc_scaleneg(slotRawFloat(a), slotRawFloat(b))); break;
+						case opClip2 :		SetRaw(a, sc_clip2(slotRawFloat(a), slotRawFloat(b))); break;
+						case opFold2 :		SetRaw(a, sc_fold2(slotRawFloat(a), slotRawFloat(b))); break;
+						case opWrap2 :		SetRaw(a, sc_wrap2(slotRawFloat(a), slotRawFloat(b))); break;
+						case opExcess :		SetRaw(a, sc_excess(slotRawFloat(a), slotRawFloat(b))); break;
+						case opFirstArg :	SetRaw(a, slotRawFloat(a)); break;
 						case opRandRange :
-							SetFloat(&res, slotRawFloat(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawFloat(a)));
+							SetRaw(a, slotRawFloat(a) + g->rgen->frand() * (slotRawFloat(b) - slotRawFloat(a)));
 							break;
 						case opExpRandRange :
-							SetFloat(&res, g->rgen->exprandrng(slotRawFloat(a), slotRawFloat(b)));
+							SetRaw(a, g->rgen->exprandrng(slotRawFloat(a), slotRawFloat(b)));
 							break;
 						default : goto send_normal_2;
 					}
@@ -797,8 +789,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 			}
 		} break;
 	}
-	g->sp -= numArgsPushed - 1; // drop
-	slotCopy(&g->sp[0], &res);
+	g->sp = a; // drop
 	g->numpop = 0;
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
