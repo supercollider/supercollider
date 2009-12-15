@@ -2788,18 +2788,18 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
 
     CGAffineTransform afx;
 
-    int err = getIndexedFloat(mobj, 0, (float*)&afx.a);
-    if (err) return err;
-    err = getIndexedFloat(mobj, 1, (float*)&afx.b);
-    if (err) return err;
-    err = getIndexedFloat(mobj, 2, (float*)&afx.c);
-    if (err) return err;
-    err = getIndexedFloat(mobj, 3, (float*)&afx.d);
-    if (err) return err;
-    err = getIndexedFloat(mobj, 4, (float*)&afx.tx);
-    if (err) return err;
-    err = getIndexedFloat(mobj, 5, (float*)&afx.ty);
-    if (err) return err;
+	int err = getIndexedVal(mobj, 0, &afx.a);
+	if (err) return err;
+	err = getIndexedVal(mobj, 1, &afx.b);
+	if (err) return err;
+	err = getIndexedVal(mobj, 2, &afx.c);
+	if (err) return err;
+	err = getIndexedVal(mobj, 3, &afx.d);
+	if (err) return err;
+	err = getIndexedVal(mobj, 4, &afx.tx);
+	if (err) return err;
+	err = getIndexedVal(mobj, 5, &afx.ty);
+	if (err) return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
