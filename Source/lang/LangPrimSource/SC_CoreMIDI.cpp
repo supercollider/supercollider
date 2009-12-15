@@ -214,7 +214,7 @@ static int midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
 	return (1);
 }
 
-static void midiProcessPacket(MIDIPacket *pkt, int uid)
+static void midiProcessPacket(MIDIPacket *pkt, size_t uid)
 {
 //jt
 	if(pkt) {
@@ -231,40 +231,40 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 
 				++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
 				//set arguments:
-				++g->sp;SetInt(g->sp,  uid); //src
+				++g->sp; SetInt(g->sp, uid); //src
 					// ++g->sp;  SetInt(g->sp, status); //status
-				++g->sp;  SetInt(g->sp, chan); //chan
+				++g->sp; SetInt(g->sp, chan); //chan
 
 				if(status & 0x80) // set the running status for voice messages
 					gRunningStatus = ((status >> 4) == 0xF) ? 0 : pkt->data[i]; // keep also additional info
 			L:
 				switch (status) {
 				case 0x80 : //noteOff
-					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
-					++g->sp; SetInt(g->sp,  pkt->data[i+2]); //val2
+					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
+					++g->sp; SetInt(g->sp, pkt->data[i+2]); //val2
 					runInterpreter(g, s_midiNoteOffAction, 5);
 					i += 3;
 					break;
 				case 0x90 : //noteOn
-					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
-					++g->sp; SetInt(g->sp,  pkt->data[i+2]); //val2
+					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
+					++g->sp; SetInt(g->sp, pkt->data[i+2]); //val2
 					runInterpreter(g, pkt->data[i+2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
 					i += 3;
 					break;
 				case 0xA0 : //polytouch
-					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
-					++g->sp; SetInt(g->sp,  pkt->data[i+2]); //val2
+					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
+					++g->sp; SetInt(g->sp, pkt->data[i+2]); //val2
 					runInterpreter(g, s_midiPolyTouchAction, 5);
 					i += 3;
 					break;
 				case 0xB0 : //control
-					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
-					++g->sp; SetInt(g->sp,  pkt->data[i+2]); //val2
+					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
+					++g->sp; SetInt(g->sp, pkt->data[i+2]); //val2
 					runInterpreter(g, s_midiControlAction, 5);
 					i += 3;
 					break;
 				case 0xC0 : //program
-					++g->sp; SetInt(g->sp,  pkt->data[i+1]); //val1
+					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
 					runInterpreter(g, s_midiProgramAction, 4);
 					i += 2;
 					break;
@@ -303,7 +303,7 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 static void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, void* srcConnRefCon)
 {
 	MIDIPacket *pkt = (MIDIPacket*)pktlist->packet;
-	int uid = (int) srcConnRefCon;
+	size_t uid = (size_t) srcConnRefCon;
 	for (uint32 i=0; i<pktlist->numPackets; ++i) {
 		midiProcessPacket(pkt, uid);
 		pkt = MIDIPacketNext(pkt);
