@@ -278,7 +278,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 #endif
 	return errNone;
 
-	send_normal_1:
+send_normal_1:
 	if (numArgsPushed != -1)  // special case flag meaning it is a primitive
 		return errFailed;
 
@@ -805,7 +805,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 #endif
 	return errNone;
 
-	send_normal_2:
+send_normal_2:
 	if (isPrimitive)  // special case flag meaning it is a primitive
 		return errFailed;	// arguments remain on the stack
 
