@@ -763,7 +763,7 @@ const int circDiam = 20;
 		CGRect	curRect;
 		int		numDirtyRects;
 
-		[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:&numDirtyRects];
+		[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:(NSInteger*)&numDirtyRects];
 
 		int i=0;
 		//post("numrects: %i\n", numDirtyRects);
