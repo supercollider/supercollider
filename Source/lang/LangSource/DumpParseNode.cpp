@@ -335,7 +335,7 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "RawPointer %X", slotRawInt(slot));
+			sprintf(str, "RawPointer %X", slotRawPtr(slot));
 			break;
 		default :
 		{
