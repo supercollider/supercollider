@@ -822,22 +822,25 @@ void buildClassTree()
 
 void indexClassTree(PyrClass *classobj, int numSuperMethods)
 {
-	PyrObject *subclasses;
-	PyrObject *methods;
 	int i, numMethods;
 
 	if (!classobj) return;
-	subclasses = slotRawObject(&classobj->subclasses);
 
-	SetInt(&classobj->classIndex, 	gNumClasses);
+	SetInt(&classobj->classIndex, gNumClasses);
 	gNumClasses ++;
-	methods = slotRawObject(&classobj->methods);
-	numMethods = methods ? methods->size : 0;
+
+	if (IsObj(&classobj->methods)) {
+		PyrObject * methods = slotRawObject(&classobj->methods);
+		numMethods = methods->size;
+	}
+	else
+		numMethods = 0;
+
 	numMethods = numSuperMethods + numMethods;
-	if (subclasses) {
-		for (i=0; i<subclasses->size; ++i) {
+	if (IsObj(&classobj->subclasses)) {
+		PyrObject * subclasses = slotRawObject(&classobj->subclasses);
+		for (i=0; i<subclasses->size; ++i)
 			indexClassTree(slotRawClass(&subclasses->slots[i]), numMethods);
-		}
 	}
 	SetInt(&classobj->maxSubclassIndex,  gNumClasses - 1);
 }
@@ -913,17 +916,14 @@ void postClassTree(PyrClass *classobj, int level)
 
 void setSelectorFlags()
 {
-	PyrClass *classobj;
-	PyrObject *methods;
-	PyrMethod *method;
 	int i;
 
-	classobj = gClassList;
+	PyrClass * classobj = gClassList;
 	while (classobj) {
-		methods = slotRawObject(&classobj->methods);
-		if (methods) {
+		if (IsObj(&classobj->methods)) {
+			PyrObject *methods = slotRawObject(&classobj->methods);
 			for (i=0; i<methods->size; ++i) {
-				method = slotRawMethod(&methods->slots[i]);
+				PyrMethod * method = slotRawMethod(&methods->slots[i]);
 				slotRawSymbol(&method->name)->flags |= sym_Selector;
 				//if (method->methType == methRedirect) {
 				//	post("rd: %3d %s:%s\n", k++, slotRawSymbol(&classobj->name)->name,
@@ -1172,7 +1172,6 @@ void buildBigMethodMatrix()
 
 void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 {
-	PyrObject *subclasses, *methods;
 	PyrClass* superclassobj;
 	PyrMethod **superrow, **myrow, *method;
 	int i, selectorIndex;
@@ -1189,8 +1188,8 @@ void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 		memset(myrow, 0, gNumSelectors * sizeof(PyrMethod*));
 	}
 
-	methods = slotRawObject(&classobj->methods);
-	if (methods) {
+	if (IsObj(&classobj->methods)) {
+		PyrObject * methods = slotRawObject(&classobj->methods);
 		//postfl("        %d\n", methods->size);
 		for (i=0; i<methods->size; ++i) {
 			method = slotRawMethod(&methods->slots[i]);
@@ -1199,8 +1198,8 @@ void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 		}
 	}
 
-	subclasses = slotRawObject(&classobj->subclasses);
-	if (subclasses) {
+	if (IsObj(&classobj->subclasses)) {
+		PyrObject * subclasses = slotRawObject(&classobj->subclasses);
 		for (i=0; i<subclasses->size; ++i) {
 			fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable);
 		}
@@ -1324,7 +1323,7 @@ void initClasses()
 	gNumClassVars = 0;
 	gClassList = NULL;
 	gNullMethod = newPyrMethod();
-	SetRaw(&gNullMethod->name, (PyrSymbol*)NULL);
+	SetSymbol(&gNullMethod->name, (PyrSymbol*)NULL);
 	methraw = METHRAW(gNullMethod);
 	methraw->methType = methNormal;
 
@@ -2312,7 +2311,13 @@ void freePyrSlot(PyrSlot *slot)
 {
 	if (NotNil(slot)) {
 		PyrObject *obj;
-		obj = slotRawObject(slot);
+		if (IsSym(slot))
+			obj = (PyrObject*)slotRawSymbol(slot); // i don't want to know, what this means for the gc
+		else if (IsObj(slot))
+			obj = slotRawObject(slot);
+		else
+			assert(false);
+
 		if (obj && obj->IsPermanent()) {
 			// don't deallocate these
 			if (obj != slotRawObject(&o_emptyarray) && obj != slotRawObject(&o_onenilarray) && obj != slotRawObject(&o_argnamethis)) {
@@ -2515,11 +2520,11 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			break;
 		case obj_symbol :
 			if (NotSym(c)) return errWrongType;
-			((int*)(obj->slots))[index] = slotRawInt(c);
+			((PyrSymbol**)(obj->slots))[index] = slotRawSymbol(c);
 			break;
 		case obj_char :
 			if (NotChar(c)) return errWrongType;
-			((unsigned char*)(obj->slots))[index] = slotRawInt(c);
+			((unsigned char*)(obj->slots))[index] = slotRawChar(c);
 			break;
 	}
 	return errNone;
@@ -2558,15 +2563,22 @@ int calcHash(PyrSlot *a)
 {
 	int hash;
 	switch (GetTag(a)) {
-		case tagObj : hash = Hash(slotRawInt(a)); break;
+		case tagObj : hash = Hash((int32)slotRawObject(a)); break;
 		case tagInt : hash = Hash(slotRawInt(a)); break;
-		case tagChar : hash = Hash(slotRawInt(a) & 255); break;
+		case tagChar : hash = Hash(slotRawChar(a) & 255); break;
 		case tagSym : hash = slotRawSymbol(a)->hash; break;
 		case tagNil : hash = 0xA5A5A5A5; break;
 		case tagFalse : hash = 0x55AA55AA; break;
 		case tagTrue : hash = 0x69696969; break;
-		case tagPtr : hash = Hash(slotRawInt(a)); break;
-		default : hash = Hash(GetTag(a) + Hash(slotRawInt(a))); break; // hash for a double
+		case tagPtr : hash = Hash((int32)slotRawPtr(a)); break;
+		default :
+			// hash for a double
+			union {
+				int32 i[2];
+				double d;
+			} u;
+			u.d = slotRawFloat(a);
+			hash = Hash(u.i[0] + Hash(u.i[1]));
 	}
 	return hash;
 }

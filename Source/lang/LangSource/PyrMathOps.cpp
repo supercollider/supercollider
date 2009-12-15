@@ -524,16 +524,16 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 		case tagChar : {
 			if (IsChar(b)) {
 				switch (opcode) {
-					case opEQ  : res = BOOL(slotRawInt(a) == slotRawInt(b)); break;
-					case opNE  : res = BOOL(slotRawInt(a) != slotRawInt(b)); break;
-					case opLT  : res = BOOL(slotRawInt(a) <  slotRawInt(b)); break;
-					case opGT  : res = BOOL(slotRawInt(a) >  slotRawInt(b)); break;
-					case opLE  : res = BOOL(slotRawInt(a) <= slotRawInt(b)); break;
-					case opGE  : res = BOOL(slotRawInt(a) >= slotRawInt(b)); break;
-					//case opIdentical : res = BOOL(slotRawInt(a) == slotRawInt(b)); break;
-					//case opNotIdentical : res = BOOL(slotRawInt(a) != slotRawInt(b)); break;
-					case opMin : SetInt(&res, slotRawInt(a) < slotRawInt(b) ? slotRawInt(a) : slotRawInt(b)); break;
-					case opMax : SetInt(&res, slotRawInt(a) > slotRawInt(b) ? slotRawInt(a) : slotRawInt(b)); break;
+					case opEQ  : res = BOOL(slotRawChar(a) == slotRawChar(b)); break;
+					case opNE  : res = BOOL(slotRawChar(a) != slotRawChar(b)); break;
+					case opLT  : res = BOOL(slotRawChar(a) <  slotRawChar(b)); break;
+					case opGT  : res = BOOL(slotRawChar(a) >  slotRawChar(b)); break;
+					case opLE  : res = BOOL(slotRawChar(a) <= slotRawChar(b)); break;
+					case opGE  : res = BOOL(slotRawChar(a) >= slotRawChar(b)); break;
+					//case opIdentical : res = BOOL(slotRawChar(a) == slotRawChar(b)); break;
+					//case opNotIdentical : res = BOOL(slotRawChar(a) != slotRawChar(b)); break;
+					case opMin : SetInt(&res, slotRawChar(a) < slotRawChar(b) ? slotRawChar(a) : slotRawChar(b)); break;
+					case opMax : SetInt(&res, slotRawChar(a) > slotRawChar(b) ? slotRawChar(a) : slotRawChar(b)); break;
 					default : goto send_normal_2;
 				}
 			} else {

@@ -511,11 +511,10 @@ int objectIdentical(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (slotRawInt(a) == slotRawInt(b) && GetTag(a) == GetTag(b)) {
+	if (SlotEq(a, b))
 		SetTrue(a);
-	} else {
+	else
 		SetFalse(a);
-	}
 	return errNone;
 }
 
@@ -526,11 +525,10 @@ int objectNotIdentical(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (slotRawInt(a) != slotRawInt(b) || GetTag(a) != GetTag(b)) {
+	if ( !SlotEq(a, b) )
 		SetTrue(a);
-	} else {
+	else
 		SetFalse(a);
-	}
 	return errNone;
 }
 
@@ -853,7 +851,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	block = slotRawBlock(&closure->block);
 	context = slotRawFrame(&closure->context);
 
-	proto = slotRawObject(&block->prototypeFrame);
+	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : 0;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -2808,10 +2806,10 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
 		SetNil(&oldthread->frame);
-		SetPtr(&oldthread->ip, 0);
-		SetInt(&oldthread->sp, 0);
-		SetInt(&oldthread->numArgsPushed, 0);
-		SetInt(&oldthread->numpop, 0);
+		SetRaw(&oldthread->ip, (void*)0);
+		SetRaw(&oldthread->sp, (void*)0);
+		SetRaw(&oldthread->numArgsPushed, 0);
+		SetRaw(&oldthread->numpop, 0);
 		SetNil(&oldthread->parent);
 	} else if (oldstate == tInit) {
 		SetObject(&oldthread->stack, gc->Stack());
@@ -2822,10 +2820,10 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetNil(&oldthread->block);
 		SetNil(&oldthread->receiver);
 		SetNil(&oldthread->frame);
-		SetPtr(&oldthread->ip, 0);
-		SetInt(&oldthread->sp, 0);
-		SetInt(&oldthread->numArgsPushed, 0);
-		SetInt(&oldthread->numpop, 0);
+		SetRaw(&oldthread->ip, (void*)0);
+		SetRaw(&oldthread->sp, (void*)0);
+		SetRaw(&oldthread->numArgsPushed, 0);
+		SetRaw(&oldthread->numpop, 0);
 		SetNil(&oldthread->parent);
 	} else {
 		// save old thread's state
@@ -2868,8 +2866,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	g->method = slotRawMethod(&newthread->method);
 	g->block = slotRawBlock(&newthread->block);
 	g->frame = slotRawFrame(&newthread->frame);
-	g->ip = (unsigned char *)slotRawInt(&newthread->ip);
-	g->sp = (PyrSlot*)slotRawInt(&newthread->sp);
+	g->ip = (unsigned char *)slotRawPtr(&newthread->ip);
+	g->sp = (PyrSlot*)slotRawPtr(&newthread->sp);
 	slotCopy(&g->receiver,&newthread->receiver);
 
 	g->rgen = (RGen*)(slotRawObject(&newthread->randData)->slots);
@@ -2890,8 +2888,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	SetNil(&newthread->method);
 	SetNil(&newthread->block);
 	SetNil(&newthread->frame);
-	SetPtr(&newthread->ip, 0);
-	SetRaw(&newthread->sp, 0);
+	SetRaw(&newthread->ip, (void*)0);
+	SetRaw(&newthread->sp, (void*)0);
 	SetNil(&newthread->receiver);
 
 	SetRaw(&newthread->state, tRunning);
@@ -2921,19 +2919,24 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	PyrObject *array;
 	PyrGC* gc = g->gc;
 
-	slotCopy(&thread->func,func);
+	slotCopy(&thread->func, func);
 	gc->GCWrite(thread, func);
 
 	array = newPyrArray(gc, stacksize, 0, collect);
 	SetObject(&thread->stack, array);
 	gc->GCWrite(thread, array);
-	SetRaw(&thread->state, tInit);
+	SetInt(&thread->state, tInit);
+
+	SetPtr(&thread->ip, 0);
+	SetPtr(&thread->sp, 0);
 
 	SetObject(&thread->randData, rgenArray);
 	gc->GCWrite(thread, rgenArray);
 
-	SetFloat(&thread->beats, beats); /// would raw access be possible?
-	SetFloat(&thread->seconds, seconds); /// would raw access be possible?
+	SetFloat(&thread->beats, beats);
+	SetFloat(&thread->seconds, seconds);
+	SetInt(&thread->numArgsPushed, 0);
+	SetInt(&thread->numpop, 0);
 
 	if (IsNil(clock)) {
 		SetObject(&thread->clock, s_systemclock->u.classobj);
@@ -3168,12 +3171,12 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		slotCopy(&threadSlot,a);
 		slotCopy(&value,b);
 
-	//post("g->thread %08X\n", g->thread);
-	//post("thread %08X\n", thread);
+		//post("g->thread %08X\n", g->thread);
+		//post("thread %08X\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
 
-		slotCopy(&thread->clock,&g->thread->clock);
+		slotCopy(&thread->clock, &g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
@@ -3236,10 +3239,10 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
 		SetNil(&thread->frame);
-		SetPtr(&thread->ip, 0);
-		SetInt(&thread->sp, 0);
-		SetInt(&thread->numArgsPushed, 0);
-		SetInt(&thread->numpop, 0);
+		SetRaw(&thread->ip, (void*)0);
+		SetRaw(&thread->sp, (void*)0);
+		SetRaw(&thread->numArgsPushed, 0);
+		SetRaw(&thread->numpop, 0);
 		SetNil(&thread->parent);
 	} else if (state == tDone) {
 		SetRaw(&thread->state, tInit);
@@ -3248,10 +3251,10 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
 		SetNil(&thread->frame);
-		SetPtr(&thread->ip, 0);
-		SetInt(&thread->sp, 0);
-		SetInt(&thread->numArgsPushed, 0);
-		SetInt(&thread->numpop, 0);
+		SetRaw(&thread->ip, (void*)0);
+		SetRaw(&thread->sp, (void*)0);
+		SetRaw(&thread->numArgsPushed, 0);
+		SetRaw(&thread->numpop, 0);
 		SetNil(&thread->parent);
 	} else if (state == tInit) {
 		// do nothing
@@ -3496,8 +3499,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif
 
-	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, slotRawSymbol(&meth->name)->name);
-        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, slotRawSymbol(&meth->name)->name);
+	//post("doPrimitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
