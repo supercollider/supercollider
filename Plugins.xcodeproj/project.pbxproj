@@ -1686,6 +1686,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = KeyboardUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -1709,6 +1710,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = MachineListening;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -1830,7 +1832,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -1878,7 +1880,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -1909,7 +1911,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -1940,7 +1942,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -1964,7 +1966,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -1988,7 +1990,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -2012,7 +2014,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -2036,7 +2038,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -2060,7 +2062,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -2084,7 +2086,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
-				GCC_VERSION = "";
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = (
 					"-DNO_GPL3_CODE",
 					"-DSC_DARWIN",
@@ -2114,6 +2116,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = TriggerUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2137,6 +2140,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = UnaryOpUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2160,6 +2164,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = MouseUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2183,6 +2188,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = GendynUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2206,6 +2212,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = PhysicalModellingUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2229,6 +2236,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = FFT2_UGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2252,6 +2260,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = DemandUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2275,6 +2284,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = DynNoiseUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2298,6 +2308,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = ChaosUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2321,6 +2332,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = UnpackFFTUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2344,6 +2356,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = GrainUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2367,6 +2380,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = ReverbUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2390,6 +2404,7 @@
 					"-DNOVA_SIMD",
 					"-DNDEBUG",
 				);
+				GCC_VERSION = 4.0;
 				PRODUCT_NAME = TestUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
