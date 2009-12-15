@@ -263,6 +263,17 @@ void zeroSlots(PyrSlot* slot, int size);
 int calcHash(PyrSlot *a);
 int getIndexedFloat(struct PyrObject *obj, int index, float *value);
 int getIndexedDouble(struct PyrObject *obj, int index, double *value);
+
+inline int getIndexedVal(struct PyrObject *obj, int index, float *value)
+{
+	return getIndexedFloat(obj, index, value);
+}
+
+inline int getIndexedVal(struct PyrObject *obj, int index, double *value)
+{
+	return getIndexedDouble(obj, index, value);
+}
+
 void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index);
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
