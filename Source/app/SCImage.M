@@ -1238,7 +1238,7 @@ int prSCImage_interpolation(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *receiver = g->sp;		// instance of SCImage
-	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots[0]);
+	SCImage *image = (SCImage *)slotRawPtr(&slotRawObject(receiver)->slots[0]);
 	if(!image)
 		return errNone;
 

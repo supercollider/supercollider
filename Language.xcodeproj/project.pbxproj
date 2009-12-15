@@ -209,8 +209,6 @@
 		9493115D0C1921F90018AB50 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BB0C1921F90018AB50 /* TabletEvents.m */; };
 		9493115E0C1921F90018AB50 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BC0C1921F90018AB50 /* TextFinder.m */; };
 		9493115F0C1921F90018AB50 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310BD0C1921F90018AB50 /* UserPanel.M */; };
-		949311610C1921F90018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
-		949311620C1921F90018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
 		949311630C1921F90018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
 		949311640C1921F90018AB50 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C30C1921F90018AB50 /* SC_DirUtils.cpp */; };
 		949311650C1921F90018AB50 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C40C1921F90018AB50 /* SC_Sem.cpp */; };
@@ -264,8 +262,6 @@
 		949311A30C1921F90018AB50 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949311100C1921F90018AB50 /* VMGlobals.cpp */; };
 		949313CC0C19234D0018AB50 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 949313CB0C19234D0018AB50 /* IOBluetooth.framework */; };
 		9493143A0C1925B90018AB50 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 949314390C1925B90018AB50 /* fftlib.c */; };
-		949315020C192A6E0018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
-		949315030C192A6E0018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
 		949315040C192A6E0018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
 		949315050C192A6E0018AB50 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C30C1921F90018AB50 /* SC_DirUtils.cpp */; };
 		949315060C192A6E0018AB50 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C40C1921F90018AB50 /* SC_Sem.cpp */; };
@@ -697,7 +693,7 @@
 		9493180C0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		9493180E0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		9493180F0C192C120018AB50 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GoToLinePanel.nib; sourceTree = "<group>"; };
-		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		949318110C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		949318120C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
 		949318130C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -1590,8 +1586,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				949315020C192A6E0018AB50 /* dtoa.c in Sources */,
-				949315030C192A6E0018AB50 /* g_fmt.c in Sources */,
 				949315040C192A6E0018AB50 /* SC_AllocPool.cpp in Sources */,
 				3799DA840E3502D900AE51A3 /* SC_CoreAudioPrim.cpp in Sources */,
 				949315050C192A6E0018AB50 /* SC_DirUtils.cpp in Sources */,
@@ -1686,8 +1680,6 @@
 				9493115D0C1921F90018AB50 /* TabletEvents.m in Sources */,
 				9493115E0C1921F90018AB50 /* TextFinder.m in Sources */,
 				9493115F0C1921F90018AB50 /* UserPanel.M in Sources */,
-				949311610C1921F90018AB50 /* dtoa.c in Sources */,
-				949311620C1921F90018AB50 /* g_fmt.c in Sources */,
 				949311630C1921F90018AB50 /* SC_AllocPool.cpp in Sources */,
 				949311640C1921F90018AB50 /* SC_DirUtils.cpp in Sources */,
 				949311650C1921F90018AB50 /* SC_Sem.cpp in Sources */,

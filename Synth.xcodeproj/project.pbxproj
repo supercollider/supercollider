@@ -36,8 +36,6 @@
 /* Begin PBXBuildFile section */
 		942F96F10B03380700E00399 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
 		942F96F20B03380700E00399 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
-		94930B040C190FB10018AB50 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
-		94930B050C190FB10018AB50 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
 		94930B060C190FB10018AB50 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */; };
 		94930B070C190FB10018AB50 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */; };
 		94930B080C190FB10018AB50 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CF0C190FB10018AB50 /* SC_Sem.cpp */; };
@@ -133,8 +131,6 @@
 		94F5FB330C1E6C07005CDF9F /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A520C190FB10018AB50 /* SC_UnitDef.cpp */; };
 		94F5FB340C1E6C07005CDF9F /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A530C190FB10018AB50 /* SC_World.cpp */; };
 		94F5FB350C1E6C07005CDF9F /* scsynth_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A540C190FB10018AB50 /* scsynth_main.cpp */; };
-		94F5FB370C1E6C07005CDF9F /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
-		94F5FB380C1E6C07005CDF9F /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
 		94F5FB390C1E6C07005CDF9F /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */; };
 		94F5FB3A0C1E6C07005CDF9F /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */; };
 		94F5FB3B0C1E6C07005CDF9F /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CF0C190FB10018AB50 /* SC_Sem.cpp */; };
@@ -287,8 +283,6 @@
 		D55DEE2E0EF3301F00968B95 /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A520C190FB10018AB50 /* SC_UnitDef.cpp */; };
 		D55DEE2F0EF3301F00968B95 /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A530C190FB10018AB50 /* SC_World.cpp */; };
 		D55DEE300EF3301F00968B95 /* scsynth_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A540C190FB10018AB50 /* scsynth_main.cpp */; };
-		D55DEE310EF3302800968B95 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CB0C190FB10018AB50 /* dtoa.c */; };
-		D55DEE320EF3302800968B95 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949309CC0C190FB10018AB50 /* g_fmt.c */; };
 		D55DEE330EF3302800968B95 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */; };
 		D55DEE340EF3302800968B95 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */; };
 		D55DEE350EF3302800968B95 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949309CF0C190FB10018AB50 /* SC_Sem.cpp */; };
@@ -1094,8 +1088,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94930B040C190FB10018AB50 /* dtoa.c in Sources */,
-				94930B050C190FB10018AB50 /* g_fmt.c in Sources */,
 				94930B060C190FB10018AB50 /* SC_AllocPool.cpp in Sources */,
 				94930B070C190FB10018AB50 /* SC_DirUtils.cpp in Sources */,
 				94930B080C190FB10018AB50 /* SC_Sem.cpp in Sources */,
@@ -1159,8 +1151,6 @@
 				94F5FB330C1E6C07005CDF9F /* SC_UnitDef.cpp in Sources */,
 				94F5FB340C1E6C07005CDF9F /* SC_World.cpp in Sources */,
 				94F5FB350C1E6C07005CDF9F /* scsynth_main.cpp in Sources */,
-				94F5FB370C1E6C07005CDF9F /* dtoa.c in Sources */,
-				94F5FB380C1E6C07005CDF9F /* g_fmt.c in Sources */,
 				94F5FB390C1E6C07005CDF9F /* SC_AllocPool.cpp in Sources */,
 				94F5FB3A0C1E6C07005CDF9F /* SC_DirUtils.cpp in Sources */,
 				94F5FB3B0C1E6C07005CDF9F /* SC_Sem.cpp in Sources */,
@@ -1201,8 +1191,6 @@
 				D55DEE2E0EF3301F00968B95 /* SC_UnitDef.cpp in Sources */,
 				D55DEE2F0EF3301F00968B95 /* SC_World.cpp in Sources */,
 				D55DEE300EF3301F00968B95 /* scsynth_main.cpp in Sources */,
-				D55DEE310EF3302800968B95 /* dtoa.c in Sources */,
-				D55DEE320EF3302800968B95 /* g_fmt.c in Sources */,
 				D55DEE330EF3302800968B95 /* SC_AllocPool.cpp in Sources */,
 				D55DEE340EF3302800968B95 /* SC_DirUtils.cpp in Sources */,
 				D55DEE350EF3302800968B95 /* SC_Sem.cpp in Sources */,

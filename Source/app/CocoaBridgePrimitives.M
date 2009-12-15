@@ -1331,12 +1331,12 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				}
 
 				time = QTMakeTime(
-					(long long) (IsInt(slots+0) ? (slotRawInt(&slots[0]) : (IsFloat(slots+0) ? slotRawFloat(slots) : 0)),
-					(long) (IsInt(slots+1) ? (slotRawInt(&slots[1]) : (IsFloat(slots+1) ? slotRawFloat(&slots[1]) : 0))
+					(long long)(IsInt(slots+0) ? slotRawInt(&slots[0]) : (IsFloat(slots+0) ? slotRawFloat(slots) : 0)),
+					(long)(IsInt(slots+1) ? slotRawInt(&slots[1]) : (IsFloat(slots+1) ? slotRawFloat(&slots[1]) : 0))
 				);
 
 				if( slotRawObject(slot)->size > 2 )
-					time.flags = (long) (IsInt(slots+2) ? (slotRawInt(&slots[2]) : (IsFloat(slots+2) ? slotRawFloat(&slots[2]) : 0));
+					time.flags = (long) (IsInt(slots+2) ? slotRawInt(&slots[2]) : (IsFloat(slots+2) ? slotRawFloat(&slots[2]) : 0));
 
 				[anInvocation setArgument: (void*)&time atIndex: i+2];
 			}
@@ -1880,7 +1880,7 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
 	id nsobj = (id)slotRawInt(slotRawObject(receiver)->slots);
 	if(nsobj) {
 		COCOABRIDGE_OBJ_RELEASE(nsobj);
-		SetInt(&slotRawObject(receiver)->slots, nil);
+		SetInt(slotRawObject(receiver)->slots, nil);
 	}else
 		post("SCNSObject object pointer is nil\n");
 
