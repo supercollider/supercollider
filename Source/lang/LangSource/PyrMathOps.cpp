@@ -461,7 +461,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum :		SetFloat(a, sc_sqrsum((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opSqrDif :		SetFloat(a, sc_sqrdif((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opAbsDif :		SetFloat(a, sc_abs(slotRawInt(a) - slotRawFloat(b))); break;
-						case opThresh :		SetRaw(a, sc_thresh((double)slotRawInt(a), slotRawFloat(b))); break;
+						case opThresh :		SetRaw(a, sc_thresh(slotRawInt(a), slotRawFloat(b))); break;
 						case opAMClip :		SetFloat(a, sc_amclip((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opScaleNeg : 	SetFloat(a, sc_scaleneg((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opClip2 :		SetFloat(a, sc_clip2((double)slotRawInt(a), -slotRawFloat(b))); break;
@@ -673,7 +673,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opSqrSum :		SetRaw(a, sc_sqrsum(slotRawFloat(a), (double)slotRawInt(b))); break;
 						case opSqrDif :		SetRaw(a, sc_sqrdif(slotRawFloat(a), (double)slotRawInt(b))); break;
 						case opAbsDif :		SetRaw(a, sc_abs(slotRawFloat(a) - slotRawInt(b))); break;
-						case opThresh :		SetRaw(a, sc_thresh(slotRawFloat(a), (double)slotRawInt(b))); break;
+						case opThresh :		SetRaw(a, sc_thresh(slotRawFloat(a), slotRawInt(b))); break;
 						case opAMClip :		SetRaw(a, sc_amclip(slotRawFloat(a), (double)slotRawInt(b))); break;
 						case opScaleNeg :	SetRaw(a, sc_scaleneg(slotRawFloat(a), (double)slotRawInt(b))); break;
 						case opClip2 :		SetRaw(a, sc_clip2(slotRawFloat(a), (double)slotRawInt(b))); break;
