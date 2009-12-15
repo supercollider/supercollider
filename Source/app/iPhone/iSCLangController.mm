@@ -71,7 +71,7 @@ struct PostBuf {
 	long wrpos;
 	long rdpos;
 	pthread_mutex_t mutex;
-        
+
 	void Init();
 	void Flush(UITextView *view);
 };
@@ -94,7 +94,7 @@ void PostBuf::Flush(UITextView *logView)
 {
 	long numtoread;
 	long localwritepos = wrpos;
-		
+
 	if (localwritepos >= rdpos) {
 		numtoread = localwritepos - rdpos;
 	} else {
@@ -106,15 +106,15 @@ void PostBuf::Flush(UITextView *logView)
 		if (endpos > POSTBUFLEN) {
 			// wrap around end in two copies
 			long firstpart, secondpart;
-			
+
 			firstpart = POSTBUFLEN - rdpos;
 			endpos -= POSTBUFLEN;
 			secondpart = endpos;
-				
+
 			NSString *s = [[logView text] stringByAppendingString:[NSString stringWithCString: buf + rdpos length: firstpart]];
 			NSString *s2 = [s stringByAppendingString:[NSString stringWithCString: buf length: secondpart]];
 			[logView setText:s2];
-			
+
 			rdpos = endpos;
 		} else {
 			NSString *s = [[logView text] stringByAppendingString:[NSString stringWithCString: buf + rdpos length: numtoread]];
@@ -122,7 +122,7 @@ void PostBuf::Flush(UITextView *logView)
 
 			if (endpos == POSTBUFLEN) rdpos = 0;
 			else rdpos = endpos;
-		}		
+		}
 	int offset = [logView contentSize].height - [logView bounds].size.height;
 	if (offset>=0) [logView setContentOffset:CGPointMake(0,offset) animated:NO];
 	}
@@ -138,9 +138,9 @@ void vposttext(const char *str, int length);
 void vposttext(const char *str, int length)
 {
 	printf(str);
-	
+
 	pthread_mutex_lock(&mainPostBuf.mutex);
-	
+
 	for (int i=0; i<length && str[i]; ++i) {
 		if (((mainPostBuf.wrpos+1) & POSTBUFMASK) == mainPostBuf.rdpos) {
 			break;
@@ -155,33 +155,33 @@ void vposttext(const char *str, int length)
 void postfl(const char *fmt, ...)
 {
 	va_list ap;
-	va_start(ap, fmt); 
+	va_start(ap, fmt);
 
 	char buf[512];
 	int len = vsnprintf(buf, sizeof(buf), fmt, ap);
-	
+
 	vposttext(buf, len);
 }
 
 void post(const char *fmt, ...)
 {
 	va_list ap;
-	va_start(ap, fmt); 
+	va_start(ap, fmt);
 
 	char buf[512];
 	int len = vsnprintf(buf, sizeof(buf), fmt, ap);
-	
+
 	vposttext(buf, len);
 }
 
 void error(const char *fmt, ...)
 {
 	va_list ap;
-	va_start(ap, fmt); 
+	va_start(ap, fmt);
 
 	char buf[512];
 	int len = vsnprintf(buf, sizeof(buf), fmt, ap);
-	
+
 	vposttext(buf, len);
 }
 
@@ -190,7 +190,7 @@ void postText(const char *text, long length)
 	char buf[512];
 	strncpy(buf, text, length);
 	buf[length] = 0;
-		
+
 	vposttext(buf, length);
 }
 
@@ -199,7 +199,7 @@ void postChar(char c)
 	char buf[2];
 	buf[0] = c;
 	buf[1] = 0;
-		
+
 	vposttext(buf, 1);
 }
 
@@ -225,19 +225,19 @@ int vpost(const char *fmt, va_list ap)
 void setCmdLine(const char *buf)
 {
 	int size = strlen(buf);
-    if (compiledOK) {
+	if (compiledOK) {
 		pthread_mutex_lock(&gLangMutex);
 		if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
-			
+
 			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
 			memcpy(strobj->s, buf, size);
 
-			SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-			g->gc->GCWrite(g->process->interpreter.uo, strobj);
+			SetObject(slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
+			g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 		}
 		pthread_mutex_unlock(&gLangMutex);
-    }
+	}
 }
 
 void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID inID, UInt32 inDataSize, const void *inData)
@@ -266,7 +266,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		{
 			AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
 		}
-		*/		
+		*/
 	}
 }
 
@@ -286,19 +286,19 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		[super dealloc];
 		return 0;
 	}
-	
+
 	if (self=[super init])
-	{		
+	{
 		theController = self;
 		deferredOperations = [NSMutableArray arrayWithCapacity: 8];
 		[deferredOperations retain];
 	}
-	
+
 	return self;
 }
 
 - (void) awakeFromNib
-{	
+{
 	routeOverride = kAudioSessionOverrideAudioRoute_None;
 	AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(routeOverride), &routeOverride);
 
@@ -310,8 +310,8 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	CFURLRef url = CFBundleCopyBundleURL(bundle);
 	NSString *s = (NSString *) CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
 	CFRelease(url);
-	
-	NSError *error; 
+
+	NSError *error;
 	char supportpath[256];
 	sc_GetUserAppSupportDirectory(supportpath, 256);
 	NSString *support = [NSString stringWithCString:supportpath encoding:NSASCIIStringEncoding];
@@ -355,7 +355,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		if ([manager fileExistsAtPath:from])
 		{
 			[manager copyItemAtPath:from toPath:dir error:&error];
-		}		
+		}
 	}
 	dir = [support stringByAppendingString:@"/sounds"];
 	if (![manager fileExistsAtPath:dir])
@@ -364,7 +364,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		if ([manager fileExistsAtPath:from])
 		{
 			[manager copyItemAtPath:from toPath:dir error:&error];
-		}		
+		}
 	}
 	dir = [support stringByAppendingString:@"/Extensions"];
 	if (![manager fileExistsAtPath:dir])
@@ -373,7 +373,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		if ([manager fileExistsAtPath:from])
 		{
 			[manager copyItemAtPath:from toPath:dir error:&error];
-		}		
+		}
 	}
 	dir = [support stringByAppendingString:@"/plugins"];
 	if (![manager fileExistsAtPath:dir])
@@ -382,7 +382,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		if ([manager fileExistsAtPath:from])
 		{
 			[manager copyItemAtPath:from toPath:dir error:&error];
-		}		
+		}
 	}
 	dir = [support stringByAppendingString:@"/patches"];
 	if (![manager fileExistsAtPath:dir]) [manager createDirectoryAtPath:dir attributes:nil];
@@ -403,12 +403,12 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	dir = [support stringByAppendingString:@"/tmp"];
 	if ([manager fileExistsAtPath:dir]) [manager removeItemAtPath:dir error:nil];
 	[manager createDirectoryAtPath:dir attributes:nil];
-	
+
 	CFRelease(s);
-	
-	
+
+
 	initPostBuffer();
-	[logView setFont:[[logView font] fontWithSize:9.0f]]; 
+	[logView setFont:[[logView font] fontWithSize:9.0f]];
 	[logView setTextColor:[UIColor blueColor]];
 
 	NSString *path;
@@ -417,7 +417,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	[browserViewController setRoot:support];
 
 	[tabBarController setCustomizableViewControllers:nil];
-	
+
 	[liveView setTarget:self withSelector:@selector(interpret:)];
 /*
 #ifdef START_HTTP_SERVER
@@ -442,7 +442,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	compileLibrary();
 
 	appClockTimer = [NSTimer scheduledTimerWithTimeInterval:0.02f target:self selector:@selector(doClockTask:) userInfo:nil repeats:YES];
-	deferredTaskTimer = [NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
+	deferredTaskTimer = [NSTimer scheduledTimerWithTimeInterval: 0.038 target: self selector:@selector(doPeriodicTask:) userInfo: nil repeats: YES];
 
 	s_stop = getsym("stop");
 	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
@@ -464,10 +464,10 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 - (void) interpret: (NSString *) string
 {
 	int length = [string length];
-	char *cmd = (char *) malloc(length+1);	
+	char *cmd = (char *) malloc(length+1);
 	[string getCString:cmd maxLength:length+1 encoding:NSASCIIStringEncoding];
 	setCmdLine(cmd);
-	
+
 	if (pthread_mutex_trylock(&gLangMutex) == 0)
 	{
 		runLibrary(s_interpretPrintCmdLine);
@@ -519,7 +519,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	if (routeOverride==kAudioSessionOverrideAudioRoute_None) routeOverride = kAudioSessionOverrideAudioRoute_Speaker;
 	else routeOverride = kAudioSessionOverrideAudioRoute_None;
 	AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(routeOverride), &routeOverride);
-	
+
 	[b setStyle:(routeOverride==kAudioSessionOverrideAudioRoute_None)?UIBarButtonItemStyleBordered:UIBarButtonItemStyleDone];
 }
 
@@ -613,7 +613,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 - (void) dealloc
 {
 	[deferredOperations release];
-	
+
 	[super dealloc];
 }
 

@@ -2434,7 +2434,7 @@ yyreduce:
 				PyrParseNode* args;
 
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(3) - (5)]))) {
-					((PyrPushNameNode*)(yyvsp[(3) - (5)]))->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)(yyvsp[(3) - (5)]))->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -2534,7 +2534,7 @@ yyreduce:
 				PyrParseNode* args;
 
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (5)]))) {
-					((PyrPushNameNode*)(yyvsp[(1) - (5)]))->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)(yyvsp[(1) - (5)]))->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -2606,7 +2606,7 @@ yyreduce:
 				PyrParseNode* args;
 
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (6)]))) {
-					((PyrPushNameNode*)(yyvsp[(1) - (6)]))->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)(yyvsp[(1) - (6)]))->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -2645,7 +2645,7 @@ yyreduce:
 				PyrParseNode* args;
 
 				if (isSuperObjNode((PyrParseNode*)(yyvsp[(1) - (7)]))) {
-					((PyrPushNameNode*)(yyvsp[(1) - (7)]))->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)(yyvsp[(1) - (7)]))->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -2732,7 +2732,7 @@ yyreduce:
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(3) - (4)]);
 				if (exprseq->mClassno == pn_CallNode) {
 					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (callnode->mSelector->mSlot.us == s_series)
+					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
 					{
 						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
 
@@ -2769,7 +2769,7 @@ yyreduce:
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(4) - (5)]);
 				if (exprseq->mClassno == pn_CallNode) {
 					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (callnode->mSelector->mSlot.us == s_series)
+					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
 					{
 						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
 
@@ -4141,7 +4141,7 @@ yyreduce:
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
-				node->mSlot.ui = -node->mSlot.ui;
+				SetRaw(&node->mSlot, -slotRawInt(&node->mSlot));
 				(yyval) = zzval;
 			;}
     break;
@@ -4156,7 +4156,7 @@ yyreduce:
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
-				node->mSlot.uf = -node->mSlot.uf;
+				SetRaw(&node->mSlot, -slotRawFloat(&node->mSlot));
 				(yyval) = zzval;
 			;}
     break;
@@ -4172,9 +4172,9 @@ yyreduce:
 					PyrSlotNode *node;
 					double intval, fracval;
 					node = (PyrSlotNode*)zzval;
-					intval = floor(node->mSlot.uf + 0.5);
-					fracval = node->mSlot.uf - intval;
-					node->mSlot.uf = -intval + fracval;
+					intval = floor(slotRawFloat(&node->mSlot) + 0.5);
+					fracval = slotRawFloat(&node->mSlot) - intval;
+					SetRaw(&node->mSlot, -intval + fracval);
 					(yyval) = zzval;
 				;}
     break;
@@ -4189,7 +4189,7 @@ yyreduce:
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)(yyvsp[(1) - (2)]);
-				node->mSlot.uf *= pi;
+				SetRaw(&node->mSlot, slotRawFloat(&node->mSlot) * pi);
 			;}
     break;
 
@@ -4199,8 +4199,8 @@ yyreduce:
 				PyrSlotNode *node;
 				double ival;
 				node = (PyrSlotNode*)(yyvsp[(1) - (2)]);
-				ival = node->mSlot.ui;
-				node->mSlot.uf = ival * pi;
+				ival = slotRawInt(&node->mSlot);
+				SetFloat(&node->mSlot, ival * pi);
 			;}
     break;
 
@@ -4209,7 +4209,7 @@ yyreduce:
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
-				node->mSlot.uf = pi;
+				SetFloat(&node->mSlot, pi);
 				(yyval) = zzval;
 			;}
     break;
@@ -4219,7 +4219,7 @@ yyreduce:
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
-				node->mSlot.uf = -pi;
+				SetFloat(&node->mSlot, -pi);
 				(yyval) = zzval;
 			;}
     break;

@@ -35,8 +35,8 @@
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 
-inline bool IsSignal(PyrSlot* slot) { return (IsObj(slot) && slot->uo->classptr == class_signal); }
-inline bool NotSignal(PyrSlot* slot) { return (NotObj(slot) || slot->uo->classptr != class_signal); }
+inline bool IsSignal(PyrSlot* slot) { return (IsObj(slot) && slotRawObject(slot)->classptr == class_signal); }
+inline bool NotSignal(PyrSlot* slot) { return (NotObj(slot) || slotRawObject(slot)->classptr != class_signal); }
 
 int prAddNum(VMGlobals *g, int numArgsPushed)
 {
@@ -46,27 +46,27 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (a->utag) {
+	switch (GetTag(a)) {
 		case tagInt :
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->ui = a->ui + b->ui;
+					SetRaw(a, slotRawInt(a) + slotRawInt(b));
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawInt(a)));
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui + b->uf;
+					a->uf = slotRawInt(a) + b->uf;
 					break;
 			}
 			break;
@@ -77,24 +77,24 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 			// leave self in 'a'
 			break;
 		case tagObj :
-			if (isKindOf(a->uo, class_signal)) {
-				switch (b->utag) {
+			if (isKindOf(slotRawObject(a), class_signal)) {
+				switch (GetTag(b)) {
 					case tagInt :
-						a->uo = signal_add_xf(g, a->uo, b->ui); //a->utag = tagObj;
+						SetRaw(a, signal_add_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
 						break;
 					case tagChar : case tagPtr :
 					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
 					case tagSym :
-						a->us = b->us; a->utag = tagSym;
+						SetSymbol(a, slotRawSymbol(b));
 						break;
 					case tagObj :
-						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_add_xx(g, a->uo, b->uo); //a->utag = tagObj;
+						if (isKindOf(slotRawObject(b), class_signal)) {
+							SetRaw(a, signal_add_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_add_xf(g, a->uo, b->uf); //a->utag = tagObj;
+						SetRaw(a, signal_add_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
 						break;
 				}
 			} else {
@@ -102,19 +102,19 @@ int prAddNum(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default : // double
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->uf = a->uf + b->ui;
+					a->uf = a->uf + slotRawInt(b);
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_add_xf(g, b->uo, a->uf);  a->utag = tagObj; break;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_add_xf(g, slotRawObject(b), a->uf)); break;
 					} else goto send_normal_2;
 					break;
 				default : // double
@@ -147,27 +147,27 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (a->utag) {
+	switch (GetTag(a)) {
 		case tagInt :
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->ui = a->ui * b->ui; //a->utag = tagInt;
+					SetRaw(a, slotRawInt(a) * slotRawInt(b)); //GetTag(a) = tagInt;
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_mul_xf(g, b->uo, a->ui); a->utag = tagObj;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawInt(a)));
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui * b->uf;
+					a->uf = slotRawInt(a) * b->uf;
 					break;
 			}
 			break;
@@ -175,27 +175,27 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			//a->us = a->us; a->utag = tagSym;
+			//slotRawSymbol(a) = slotRawSymbol(a); GetTag(a) = tagSym;
 			break;
 		case tagObj :
-			if (isKindOf(a->uo, class_signal)) {
-				switch (b->utag) {
+			if (isKindOf(slotRawObject(a), class_signal)) {
+				switch (GetTag(b)) {
 					case tagInt :
-						a->uo = signal_mul_xf(g, a->uo, b->ui); //a->utag = tagObj;
+						SetRaw(a, signal_mul_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
 						break;
 					case tagChar : case tagPtr :
 					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
 					case tagSym :
-						a->us = b->us; a->utag = tagSym;
+						SetSymbol(a, slotRawSymbol(b));
 						break;
 					case tagObj :
-						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_mul_xx(g, a->uo, b->uo); //a->utag = tagObj;
+						if (isKindOf(slotRawObject(b), class_signal)) {
+							SetRaw(a, signal_mul_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_mul_xf(g, a->uo, b->uf); //a->utag = tagObj;
+						SetRaw(a, signal_mul_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
 						break;
 				}
 			} else {
@@ -203,19 +203,19 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default : // double
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->uf = a->uf * b->ui;
+					a->uf = a->uf * slotRawInt(b);
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_mul_xf(g, b->uo, a->uf);  a->utag = tagObj; break;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_mul_xf(g, slotRawObject(b), a->uf)); break;
 					} else goto send_normal_2;
 					break;
 				default : // double
@@ -248,27 +248,27 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (a->utag) {
+	switch (GetTag(a)) {
 		case tagInt :
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->ui = a->ui - b->ui; //a->utag = tagInt;
+					SetRaw(a, slotRawInt(a) - slotRawInt(b)); //GetTag(a) = tagInt;
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_sub_fx(g, a->ui, b->uo); a->utag = tagObj;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_sub_fx(g, slotRawInt(a), slotRawObject(b)));
 					} else {
 						goto send_normal_2;
 					}
 					break;
 				default :
-					a->uf = a->ui - b->uf;
+					a->uf = slotRawInt(a) - b->uf;
 					break;
 			}
 			break;
@@ -276,27 +276,27 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			//a->us = a->us; a->utag = tagSym;
+			//slotRawSymbol(a) = slotRawSymbol(a); GetTag(a) = tagSym;
 			break;
 		case tagObj :
-			if (isKindOf(a->uo, class_signal)) {
-				switch (b->utag) {
+			if (isKindOf(slotRawObject(a), class_signal)) {
+				switch (GetTag(b)) {
 					case tagInt :
-						a->uo = signal_sub_xf(g, a->uo, b->ui); //a->utag = tagObj;
+						SetRaw(a, signal_sub_xf(g, slotRawObject(a), slotRawInt(b))); //SetTagRaw(a, tagObj);
 						break;
 					case tagChar : case tagPtr :
 					case tagNil : case tagFalse : case tagTrue :
 						goto send_normal_2;
 					case tagSym :
-						a->us = b->us; a->utag = tagSym;
+						SetSymbol(a, slotRawSymbol(b));
 						break;
 					case tagObj :
-						if (isKindOf(b->uo, class_signal)) {
-							a->uo = signal_sub_xx(g, a->uo, b->uo); //a->utag = tagObj;
+						if (isKindOf(slotRawObject(b), class_signal)) {
+							SetRaw(a, signal_sub_xx(g, slotRawObject(a), slotRawObject(b))); //SetTagRaw(a, tagObj);
 						} else goto send_normal_2;
 						break;
 					default : // double
-						a->uo = signal_sub_xf(g, a->uo, b->uf); //a->utag = tagObj;
+						SetRaw(a, signal_sub_xf(g, slotRawObject(a), b->uf)); //SetTagRaw(a, tagObj);
 						break;
 				}
 			} else {
@@ -304,19 +304,19 @@ int prSubNum(VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		default : // double
-			switch (b->utag) {
+			switch (GetTag(b)) {
 				case tagInt :
-					a->uf = a->uf - b->ui;
+					a->uf = a->uf - slotRawInt(b);
 					break;
 				case tagChar : case tagPtr :
 				case tagNil : case tagFalse : case tagTrue :
 					goto send_normal_2;
 				case tagSym :
-					a->us = b->us; a->utag = tagSym;
+					SetSymbol(a, slotRawSymbol(b));
 					break;
 				case tagObj :
-					if (isKindOf(b->uo, class_signal)) {
-						a->uo = signal_sub_fx(g, a->uf, b->uo);  a->utag = tagObj; break;
+					if (isKindOf(slotRawObject(b), class_signal)) {
+						SetObject(a, signal_sub_fx(g, a->uf, slotRawObject(b))); break;
 					} else goto send_normal_2;
 					break;
 				default : // double
@@ -349,25 +349,25 @@ int prAddInt(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->ui = a->ui + b->ui; //a->utag = tagInt;
+			SetRaw(a, slotRawInt(a) + slotRawInt(b)); //GetTag(a) = tagInt;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_add_xf(g, b->uo, a->ui); a->utag = tagObj;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_add_xf(g, slotRawObject(b), slotRawInt(a)));
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->ui + b->uf;
+			a->uf = slotRawInt(a) + b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -396,19 +396,19 @@ int prAddFloat(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->uf = a->uf + b->ui; break;
+			a->uf = a->uf + slotRawInt(b); break;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_add_xf(g, b->uo, a->uf); a->utag = tagObj;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_add_xf(g, slotRawObject(b), a->uf));
 			} else {
 				goto send_normal_2;
 			}
@@ -441,25 +441,25 @@ int prSubInt(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->ui = a->ui - b->ui; //a->utag = tagInt;
+			SetRaw(a, slotRawInt(a) - slotRawInt(b)); //GetTag(a) = tagInt;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_sub_xf(g, b->uo, a->ui); a->utag = tagObj;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_sub_xf(g, slotRawObject(b), slotRawInt(a)));
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->ui - b->uf;
+			a->uf = slotRawInt(a) - b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -488,19 +488,19 @@ int prSubFloat(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->uf = a->uf - b->ui; break;
+			a->uf = a->uf - slotRawInt(b); break;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_sub_xf(g, b->uo, a->uf); a->utag = tagObj; break;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_sub_xf(g, slotRawObject(b), a->uf)); break;
 			} else {
 				goto send_normal_2;
 			}
@@ -533,25 +533,25 @@ int prMulInt(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->ui = a->ui * b->ui; //a->utag = tagInt; break;
+			SetRaw(a, slotRawInt(a) * slotRawInt(b)); //GetTag(a) = tagInt; break;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_mul_xf(g, b->uo, a->ui); a->utag = tagObj; break;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_mul_xf(g, slotRawObject(b), slotRawInt(a))); break;
 			} else {
 				goto send_normal_2;
 			}
 			break;
 		default :
-			a->uf = a->ui * b->uf;
+			a->uf = slotRawInt(a) * b->uf;
 			break;
 	}
 	g->sp-- ; // drop
@@ -580,19 +580,19 @@ int prMulFloat(VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	switch (b->utag) {
+	switch (GetTag(b)) {
 		case tagInt :
-			a->uf = a->uf * b->ui; break;
+			a->uf = a->uf * slotRawInt(b); break;
 			break;
 		case tagChar : case tagPtr :
 		case tagNil : case tagFalse : case tagTrue :
 			goto send_normal_2;
 		case tagSym :
-			a->us = b->us; a->utag = tagSym;
+			SetSymbol(a, slotRawSymbol(b));
 			break;
 		case tagObj :
-			if (isKindOf(b->uo, class_signal)) {
-				a->uo = signal_mul_xf(g, b->uo, a->uf); a->utag = tagObj; break;
+			if (isKindOf(slotRawObject(b), class_signal)) {
+				SetObject(a, signal_mul_xf(g, slotRawObject(b), a->uf)); break;
 			} else {
 				goto send_normal_2;
 			}
@@ -625,7 +625,7 @@ int prNthPrime(VMGlobals *g, int numArgsPushed)
 	int n, p;
 
 	a = g->sp;
-	n = a->ui;
+	n = slotRawInt(a);
 	p = nthPrime(n);
 	if (p == 0) {
 		SetNil(a);
@@ -642,7 +642,7 @@ int prPrevPrime(VMGlobals *g, int numArgsPushed)
 	int n, p, i;
 
 	a = g->sp;
-	n = a->ui;
+	n = slotRawInt(a);
 	i = prevPrime(n);
 	p = nthPrime(i);
 	if (p == 0) {
@@ -660,7 +660,7 @@ int prNextPrime(VMGlobals *g, int numArgsPushed)
 	int n, p, i;
 
 	a = g->sp;
-	n = a->ui;
+	n = slotRawInt(a);
 	i = nextPrime(n);
 	p = nthPrime(i);
 	if (p == 0) {
@@ -679,7 +679,7 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 	int n, p, sqrtn, i;
 
 	a = g->sp;
-	n = a->ui;
+	n = slotRawInt(a);
 	SetNil(a);
 	if (n <= 2) {
 		if (n == 2) { SetTrue(a); }
@@ -711,7 +711,7 @@ int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
 	int n, p;
 
 	a = g->sp;
-	n = a->ui;
+	n = slotRawInt(a);
 	if (n <= 2) {
 		if (n == 2) { SetInt(a, 0); }
 		else { SetNil(a); }
@@ -830,13 +830,13 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsInt(b) && IsInt(c)) {
-		a->ui = sc_clip(a->ui, b->ui, c->ui);
+		SetRaw(a, sc_clip(slotRawInt(a), slotRawInt(b), slotRawInt(c)));
 	} else {
 		err = slotDoubleVal(b, &lo);
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		a->uf = sc_clip(a->ui, lo, hi);
+		a->uf = sc_clip(slotRawInt(a), lo, hi);
 	}
 	return errNone;
 }
@@ -881,14 +881,14 @@ int mathClipSignal(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsSignal(b) && IsSignal(c)) {
-		sig = signal_clip_x(g, a->uo, b->uo, c->uo);
+		sig = signal_clip_x(g, slotRawObject(a), slotRawObject(b), slotRawObject(c));
 		SetObject(a, sig);
 	} else {
 		err = slotFloatVal(b, &lo);
 		if (err) return err;
 		err = slotFloatVal(c, &hi);
 		if (err) return err;
-		sig = signal_clip_f(g, a->uo, lo, hi);
+		sig = signal_clip_f(g, slotRawObject(a), lo, hi);
 		SetObject(a, sig);
 	}
 	return errNone;
@@ -908,10 +908,10 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsInt(b) && IsInt(c)) {
-		a->ui = sc_mod((int)(a->ui - b->ui), (int)(c->ui - b->ui + 1)) + b->ui;
+		SetRaw(a, sc_mod((int)(slotRawInt(a) - slotRawInt(b)), (int)(slotRawInt(c) - slotRawInt(b) + 1)) + slotRawInt(b));
 	} else {
 		double x, lo, hi;
-		x = a->ui;
+		x = slotRawInt(a);
 		err = slotDoubleVal(b, &lo);
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
@@ -961,14 +961,14 @@ int mathWrapSignal(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsSignal(b) && IsSignal(c)) {
-		sig = signal_wrap_x(g, a->uo, b->uo, c->uo);
+		sig = signal_wrap_x(g, slotRawObject(a), slotRawObject(b), slotRawObject(c));
 		SetObject(a, sig);
 	} else {
 		err = slotFloatVal(b, &lo);
 		if (err) return err;
 		err = slotFloatVal(c, &hi);
 		if (err) return err;
-		sig = signal_wrap_f(g, a->uo, lo, hi);
+		sig = signal_wrap_f(g, slotRawObject(a), lo, hi);
 		SetObject(a, sig);
 	}
 	return errNone;
@@ -988,10 +988,10 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsInt(b) && IsInt(c)) {
-		a->ui = sc_fold(a->ui, b->ui, c->ui);
+		SetRaw(a, sc_fold(slotRawInt(a), slotRawInt(b), slotRawInt(c)));
 	} else {
 		double x, lo, hi;
-		x = a->ui;
+		x = slotRawInt(a);
 		err = slotDoubleVal(b, &lo);
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
@@ -1041,14 +1041,14 @@ int mathFoldSignal(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(c)) {
 		*a = *c;
 	} else if (IsSignal(b) && IsSignal(c)) {
-		sig = signal_fold_x(g, a->uo, b->uo, c->uo);
+		sig = signal_fold_x(g, slotRawObject(a), slotRawObject(b), slotRawObject(c));
 		SetObject(a, sig);
 	} else {
 		err = slotFloatVal(b, &lo);
 		if (err) return err;
 		err = slotFloatVal(c, &hi);
 		if (err) return err;
-		sig = signal_fold_f(g, a->uo, lo, hi);
+		sig = signal_fold_f(g, slotRawObject(a), lo, hi);
 		SetObject(a, sig);
 	}
 	return errNone;
@@ -1064,9 +1064,9 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 
 	if (IsInt(a) && (IsInt(b) || IsNil(b)) && IsInt(c)) {
 		int first, second, last, step;
-		first = a->ui;
-		last = c->ui;
-		second = IsInt(b) ? b->ui : (first < last ? first + 1 : first - 1);
+		first = slotRawInt(a);
+		last = slotRawInt(c);
+		second = IsInt(b) ? slotRawInt(b) : (first < last ? first + 1 : first - 1);
 		step = second - first;
 
 		if ( step == 0 )

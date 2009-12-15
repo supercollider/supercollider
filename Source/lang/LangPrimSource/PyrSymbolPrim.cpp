@@ -38,7 +38,7 @@ int prSymbolString(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	if (NotSym(a)) return errWrongType;
-	string = newPyrString(g->gc, a->us->name, 0, true);
+	string = newPyrString(g->gc, slotRawSymbol(a)->name, 0, true);
 	SetObject(a, string);
 	return errNone;
 }
@@ -53,10 +53,10 @@ int prSymbolIsPrefix(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 	if (!IsSym(a) || !IsSym(b)) return errWrongType;
-	int32 alen = a->us->length;
-	int32 blen = b->us->length;
+	int32 alen = slotRawSymbol(a)->length;
+	int32 blen = slotRawSymbol(b)->length;
 	length = sc_min(alen, blen);
-	if (memcmp(a->us->name, b->us->name, length) == 0) {
+	if (memcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name, length) == 0) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -72,10 +72,10 @@ int prSymbolClass(struct VMGlobals *g, int numArgsPushed)
 	//char firstChar;
 
 	a = g->sp;
-	if (a->us->flags & sym_Class) {
-	//firstChar = a->us->name[0];
+	if (slotRawSymbol(a)->flags & sym_Class) {
+	//firstChar = slotRawSymbol(a)->name[0];
 	//if (firstChar >= 'A' && firstChar <= 'Z') {
-		classobj = a->us->u.classobj;
+		classobj = slotRawSymbol(a)->u.classobj;
 		if (classobj) {
 			SetObject(a, classobj);
 		} else {
@@ -93,7 +93,7 @@ int prSymbolIsSetter(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	if (a->us->flags & sym_Setter) {
+	if (slotRawSymbol(a)->flags & sym_Setter) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -109,22 +109,22 @@ int prSymbolAsSetter(struct VMGlobals *g, int numArgsPushed)
 	int len;
 
 	a = g->sp;
-	if (!(a->us->flags & sym_Setter)) {
-		if ((a->us->flags & sym_Class) || (a->us->flags & sym_Primitive)) {
+	if (!(slotRawSymbol(a)->flags & sym_Setter)) {
+		if ((slotRawSymbol(a)->flags & sym_Class) || (slotRawSymbol(a)->flags & sym_Primitive)) {
 			error("Cannot convert class names or primitive names to setters.\n");
 			return errFailed;
 		}
-		if (strlen(a->us->name)>255) {
+		if (strlen(slotRawSymbol(a)->name)>255) {
 			error("symbol name too long.\n");
 			return errFailed;
 		}
-		strcpy(str, a->us->name);
+		strcpy(str, slotRawSymbol(a)->name);
 		len = strlen(str);
 		str[len] = '_';
 		str[len+1] = 0;
 
 		//postfl("prSymbolAsSetter %s\n", str);
-		a->us = getsym(str);
+		SetRaw(a, getsym(str));
 	}
 	return errNone;
 }
@@ -136,15 +136,15 @@ int prSymbolAsGetter(struct VMGlobals *g, int numArgsPushed)
 	char str[256];
 
 	a = g->sp;
-	if ((a->us->flags & sym_Setter)) {
-		if ((a->us->flags & sym_Class) || (a->us->flags & sym_Primitive)) {
+	if ((slotRawSymbol(a)->flags & sym_Setter)) {
+		if ((slotRawSymbol(a)->flags & sym_Class) || (slotRawSymbol(a)->flags & sym_Primitive)) {
 			error("Cannot convert class names or primitive names to getters.\n");
 			return errFailed;
 		}
-		strcpy(str, a->us->name);
+		strcpy(str, slotRawSymbol(a)->name);
 		str[strlen(str)-1] = 0;
 		//postfl("prSymbolAsGetter %s\n", str);
-		a->us = getsym(str);
+		SetRaw(a, getsym(str));
 	}
 	return errNone;
 }
@@ -155,7 +155,7 @@ int prSymbolIsClassName(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	if (a->us->flags & sym_Class) {
+	if (slotRawSymbol(a)->flags & sym_Class) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -169,7 +169,7 @@ int prSymbolIsMetaClassName(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	if (a->us->flags & sym_MetaClass) {
+	if (slotRawSymbol(a)->flags & sym_MetaClass) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -182,7 +182,7 @@ int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	char *str = a->us->name;
+	char *str = slotRawSymbol(a)->name;
 	SetInt(a, atoi(str));
 
 	return errNone;
@@ -193,7 +193,7 @@ int prSymbol_PrimitiveIndex(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	SetInt(a, a->us->u.index);
+	SetInt(a, slotRawSymbol(a)->u.index);
 
 	return errNone;
 }
@@ -203,7 +203,7 @@ int prSymbol_SpecialIndex(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	SetInt(a, a->us->specialIndex);
+	SetInt(a, slotRawSymbol(a)->specialIndex);
 
 	return errNone;
 }
@@ -214,7 +214,7 @@ int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	char *str = a->us->name;
+	char *str = slotRawSymbol(a)->name;
 	SetFloat(a, atof(str));
 
 	return errNone;

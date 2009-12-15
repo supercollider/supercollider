@@ -4,7 +4,7 @@
  *
  *  Created by jan truetzschler v. falkenstein on Wed Apr 16 2003.
  *  Copyright (c) 2003 sampleAndHold.org. All rights reserved.
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -66,40 +66,40 @@ NSArray * speechSynthsArray;
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon );
 pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon )
 {
-    //call action here;
-    // post("text done");
-#ifdef useCarbonSpeech	
-    pthread_mutex_lock (&gLangMutex); 
+	//call action here;
+	// post("text done");
+#ifdef useCarbonSpeech
+	pthread_mutex_lock (&gLangMutex);
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
-	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class 
-        //set arguments: 
+	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class
+	//set arguments:
 	++g->sp;SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechdoneAction, 2);
 	if(speechStrings[(int) inRefCon] != NULL){
 		free(speechStrings[(int) inRefCon]);
 		speechStrings[(int) inRefCon] = NULL;
 	}
-    g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex); 
+	g->canCallOS = false;
+	pthread_mutex_unlock (&gLangMutex);
 #endif
 }
 
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen);
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen) {
     //post("word done");
-#ifdef useCarbonSpeech		
-	pthread_mutex_lock (&gLangMutex); 
+#ifdef useCarbonSpeech
+	pthread_mutex_lock (&gLangMutex);
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
-	++g->sp; SetObject(g->sp, s_speech->u.classobj); 
-    //set arguments: 
+	++g->sp; SetObject(g->sp, s_speech->u.classobj);
+    //set arguments:
 	++g->sp; SetInt(g->sp, (int) inRefCon); //src
 	runInterpreter(g, s_speechwordAction, 2);
 
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex); 
-#endif	
+	pthread_mutex_unlock (&gLangMutex);
+#endif
 }
 
 int prInitSpeech(struct VMGlobals *g, int numArgsPushed);
@@ -111,7 +111,7 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
     int chan;
     slotIntVal(b, &chan);
 	if (chan < 0 || chan >= kMaxSpeechChannels) return errIndexOutOfRange;
-#ifdef useCarbonSpeech		
+#ifdef useCarbonSpeech
 	for (int i=0; i<chan; ++i) {
 		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);
         NewSpeechChannel( NULL, fCurSpeechChannel+i );
@@ -128,15 +128,15 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 //			[voiceEnumerator release];
 //		}
 
-		[speechSynthsArray release]; 
+		[speechSynthsArray release];
 		speechSynthsArray = NULL;
 	}
 
 	NSSpeechSynthesizer* speechSynths[chan];
 	for (int i=0; i<chan; ++i) speechSynths[i] = 	[[NSSpeechSynthesizer alloc] init];
 	speechSynthsArray = [[NSArray arrayWithObjects: speechSynths count: chan] retain];
-		 
-#endif		
+
+#endif
     return errNone;
 }
 
@@ -156,24 +156,24 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 
 	slotIntVal(a, &chan);
 	chan = sc_clip(chan, 0, kMaxSpeechChannels);
-	PyrString* pyrString = str->uos;
+	PyrString* pyrString = slotRawString(str);
 #ifdef useCarbonSpeech
 	chan = sc_clip(chan, 0, kMaxSpeechChannels);
 	if(speechStrings[chan] != NULL) {
 		post("voice %i already speaking\n", chan);
 		return errNone;
 	} else {
-//	speechStrings[chan] = (char*)pyr_pool_compile->Alloc((a->uo->size + 1)* sizeof(char));
-	speechStrings[chan] = (char*) malloc((str->uo->size + 1)* sizeof(char));
+	//	speechStrings[chan] = (char*)pyr_pool_compile->Alloc((a->uo->size + 1)* sizeof(char));
+		speechStrings[chan] = (char*) malloc((slotRawObject(str)->size + 1)* sizeof(char));
 
-	MEMFAIL(speechStrings[chan]);
-	slotStrVal(str, speechStrings[chan], str->uo->size+1);
-	
-	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
-	theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));	
+		MEMFAIL(speechStrings[chan]);
+		slotStrVal(str, speechStrings[chan], slotRawObject(str)->size+1);
+
+		//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
+		theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));
 	}
 #else
-//    pthread_mutex_lock (&gLangMutex);	
+//    pthread_mutex_lock (&gLangMutex);
 
 	NSAutoreleasePool *autoreleasepool= [[NSAutoreleasePool alloc] init];
 	NSSpeechSynthesizer * spsynth = [speechSynthsArray objectAtIndex: chan];
@@ -185,7 +185,7 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 //	[nsstring release];
 //	[nsstring release];
 	[autoreleasepool release];
-//    pthread_mutex_unlock (&gLangMutex);	
+//    pthread_mutex_unlock (&gLangMutex);
 
 #endif
 	return errNone;
@@ -209,7 +209,7 @@ int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 //	NSSpeechSynthesizer * spsynth = speechSynths[chan];
 //	if(!spsynth) return errNone;
 //	[spsynth setRate: val];
-#endif	
+#endif
 	return errNone;
 }
 
@@ -224,12 +224,12 @@ int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-#ifdef useCarbonSpeech	
+#ifdef useCarbonSpeech
 	Fixed newVal = (Fixed)(val * 65536.0);
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechPitch (fCurSpeechChannel[chan], newVal);
-#else	
-	NSSpeechSynthesizer * spsynth = [speechSynthsArray objectAtIndex: chan]; 
+#else
+	NSSpeechSynthesizer * spsynth = [speechSynthsArray objectAtIndex: chan];
 	NSError * err;
 	if(!spsynth) return errNone;
 // 10.5 only ... ;-(
@@ -249,7 +249,7 @@ int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-#ifdef useCarbonSpeech		
+#ifdef useCarbonSpeech
 	Fixed newVal = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soPitchMod, &newVal);
@@ -268,8 +268,8 @@ int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
 	int chan;
 	slotIntVal(b, &chan);
 	slotDoubleVal(c, &val);
-#ifdef useCarbonSpeech	
-	
+#ifdef useCarbonSpeech
+
 	Fixed newVal = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soVolume, &newVal);
@@ -321,9 +321,9 @@ int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
 	int chan;
 	slotIntVal(b, &chan);
 	slotIntVal(c, &val);
-#ifdef useCarbonSpeech	
+#ifdef useCarbonSpeech
 	StopSpeechAt(fCurSpeechChannel[chan], selector[val]);
-	if(speechStrings[chan] != NULL) {	
+	if(speechStrings[chan] != NULL) {
 		free(speechStrings[chan]);
 		speechStrings[chan] = NULL;
 	}
@@ -331,7 +331,7 @@ int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
 	NSSpeechSynthesizer * spsynth =  [speechSynthsArray objectAtIndex: chan];
 	if(!spsynth) return errNone;
 	[spsynth stopSpeaking];
-#endif	
+#endif
 
 	return errNone;
 }
@@ -348,27 +348,27 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 
 	slotIntVal(b, &chan);
 	slotIntVal(c, &val);
-#ifdef useCarbonSpeech	 
+#ifdef useCarbonSpeech
 	VoiceSpec theVoiceSpec;
-   
+
 	theErr = GetIndVoice (val, &theVoiceSpec);
 	if (SetSpeechInfo (fCurSpeechChannel[chan], soCurrentVoice, &theVoiceSpec) == incompatibleVoice) return (!errNone);
 #else
 	NSSpeechSynthesizer * spsynth =  [speechSynthsArray objectAtIndex: chan];
 	if(!spsynth) return errNone;
-	
+
 	[spsynth setVoice: [[NSSpeechSynthesizer availableVoices] objectAtIndex: val]];
 
 #endif
 	return errNone;
 }
 
-#ifndef useCarbonSpeech	 
+#ifndef useCarbonSpeech
 int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed);
 int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 
-	PyrSlot *a = g->sp-1;		
-	PyrSlot *b = g->sp;		
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
 
 	NSAutoreleasePool *autoreleasepool= [[NSAutoreleasePool alloc] init];
 
@@ -379,14 +379,14 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 	while(aVoice = [voiceEnumerator nextObject]) {
 		NSDictionary * dictionaryOfVoiceAttributes = [NSSpeechSynthesizer attributesForVoice:aVoice];
 		NSString *	voiceDisplayName = [dictionaryOfVoiceAttributes objectForKey:NSVoiceName];
-		
+
 		PyrString *namestring = newPyrString(g->gc, [voiceDisplayName cString], 0, true);
 		SetObject(allVoices->slots+allVoices->size++, namestring);
 		g->gc->GCWrite(allVoices, (PyrObject*) namestring);
-		
+
 	}
 	[autoreleasepool release];
-	
+
 	SetObject(a, allVoices);
 	return errNone;
 
@@ -399,8 +399,8 @@ int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp;
     int chan;
     slotIntVal(b, &chan);
-#ifdef useCarbonSpeech	 
-	
+#ifdef useCarbonSpeech
+
 	if(speechStrings[chan] != NULL) SetTrue(out);
 	else SetFalse(out);
 #else
@@ -408,18 +408,18 @@ int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
 	if(!spsynth) return errNone;
 	if([spsynth isSpeaking])  SetTrue(out);
 	else SetFalse(out);
-#endif	
+#endif
 	return errNone;
-	
+
 }
 
 void initSpeechPrimitives ()
 {
 	int base, index;
-        
+
 	base = nextPrimitiveIndex();
 	index = 0;
-	
+
 	s_speechwordAction = getsym("doWordAction");
 	s_speechdoneAction = getsym("doSpeechDoneAction");
 	s_speech = getsym("Speech");
@@ -433,11 +433,11 @@ void initSpeechPrimitives ()
 	definePrimitive(base, index++, "_SetSpeechVolume", prSetSpeechVolume, 3, 0);
 	definePrimitive(base, index++, "_SetSpeechPause", prSetSpeechPause, 3, 0); //0 pause, 1 continue
 	definePrimitive(base, index++, "_SetSpeechStopAt", prSetSpeechStop, 3, 0); //0 kImmediate, 1 kEndOfWord, 2 kEndOfSentence
-	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0); 
-#ifndef useCarbonSpeech	 
+	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0);
+#ifndef useCarbonSpeech
 	definePrimitive(base, index++, "_GetSpeechVoiceNames", prGetSpeechVoiceNames, 2, 0);
 #endif
-		
+
 #ifdef useCarbonSpeech
 	for(int i=0; i<kMaxSpeechChannels; ++i){
 		speechStrings[i] = NULL;
@@ -448,7 +448,7 @@ void initSpeechPrimitives ()
 	#if 0
 	if(speechSynthsArray){
 //		[speechSynthsArray enumerator]
-		[speechSynthsArray release]; 
+		[speechSynthsArray release];
 		speechSynthsArray = NULL;
 	}
 	#endif

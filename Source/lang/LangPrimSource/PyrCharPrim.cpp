@@ -35,7 +35,7 @@ int prToLower(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uc = tolower(a->uc);
+	SetRawChar(a, tolower(slotRawChar(a)));
 
 	return errNone;
 }
@@ -47,7 +47,7 @@ int prToUpper(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uc = toupper(a->uc);
+	SetRawChar(a, toupper(slotRawChar(a)));
 
 	return errNone;
 }
@@ -59,7 +59,7 @@ int prIsAlpha(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (isalpha(a->uc)) { SetTrue(a); }
+	if (isalpha(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -72,7 +72,7 @@ int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (isalnum(a->uc)) { SetTrue(a); }
+	if (isalnum(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -85,7 +85,7 @@ int prIsControl(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (iscntrl(a->uc)) { SetTrue(a); }
+	if (iscntrl(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -98,7 +98,7 @@ int prIsDigit(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (isdigit(a->uc)) { SetTrue(a); }
+	if (isdigit(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -111,7 +111,7 @@ int prIsPrint(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (isprint(a->uc)) { SetTrue(a); }
+	if (isprint(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -124,7 +124,7 @@ int prIsPunct(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (ispunct(a->uc)) { SetTrue(a); }
+	if (ispunct(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -137,7 +137,7 @@ int prIsSpace(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	if (isspace(a->uc)) { SetTrue(a); }
+	if (isspace(slotRawChar(a))) { SetTrue(a); }
 	else { SetFalse(a); }
 
 	return errNone;
@@ -150,7 +150,7 @@ int prAsciiValue(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->utag = tagInt;
+	SetTagRaw(a, tagInt);
 
 	return errNone;
 }
@@ -163,16 +163,13 @@ int prDigitValue(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	c = a->uc;
+	c = slotRawChar(a);
 	if (c >= '0' && c <= '9') {
-		a->utag = tagInt;
-		a->uc = c - '0';
+        SetInt(a, c - '0');
 	} else if (c >= 'a' && c <= 'z') {
-		a->utag = tagInt;
-		a->uc = c - 'a' + 10;
+        SetInt(a, c - 'a' + 10);
 	} else if (c >= 'A' && c <= 'Z') {
-		a->utag = tagInt;
-		a->uc = c - 'A' + 10;
+        SetInt(a, c - 'A' + 10);
 	} else {
 		return errFailed;
 	}
@@ -187,8 +184,7 @@ int prAsAscii(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	a->utag = tagChar;
-	a->ui = a->ui & 255;
+    SetChar(a, slotRawInt(a) & 255);
 
 	return errNone;
 }
@@ -201,13 +197,11 @@ int prAsDigit(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	c = a->ui;
+	c = slotRawInt(a);
 	if (c >= 0 && c <= 9) {
-		a->utag = tagChar;
-		a->ui += '0';
+        SetChar(a, slotRawInt(a) + '0');
 	} else if (c >= 10 && c <= 35) {
-		a->utag = tagChar;
-		a->ui += 'A' - 10;
+        SetChar(a, slotRawInt(a) + 'A' - 10);
 	} else {
 		return errFailed;
 	}

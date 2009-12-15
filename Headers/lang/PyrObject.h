@@ -242,7 +242,7 @@ inline struct PyrClass* classOfSlot(PyrSlot *slot)
 	PyrClass *classobj;
 	int tag;
 	if (IsFloat(slot)) classobj = gTagClassTable[kFloatTagIndex];
-	else if ((tag = slot->utag & 0xF) == 1) classobj = slot->uo->classptr;
+	else if ((tag = GetTag(slot) & 0xF) == 1) classobj = slotRawObject(slot)->classptr;
 	else classobj = gTagClassTable[tag];
 
 	return classobj;

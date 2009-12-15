@@ -208,7 +208,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$3)) {
-					((PyrPushNameNode*)$3)->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)$3)->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -287,7 +287,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -344,7 +344,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -374,7 +374,7 @@ msgsend : name blocklist1
 				PyrParseNode* args;
 				
 				if (isSuperObjNode((PyrParseNode*)$1)) {
-					((PyrPushNameNode*)$1)->mSlot.us = s_this;
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
 					SetSymbol(&slot, s_superPerformList);
 				} else {
 					SetSymbol(&slot, s_performList);
@@ -439,7 +439,7 @@ qual	: name LEFTARROW exprseq nextqual
 				PyrParseNode *exprseq = (PyrParseNode*)$3;
 				if (exprseq->mClassno == pn_CallNode) {
 					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (callnode->mSelector->mSlot.us == s_series)
+					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
 					{
 						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
 
@@ -473,7 +473,7 @@ qual	: name LEFTARROW exprseq nextqual
 				PyrParseNode *exprseq = (PyrParseNode*)$4;
 				if (exprseq->mClassno == pn_CallNode) {
 					PyrCallNode *callnode = (PyrCallNode*)exprseq;
-					if (callnode->mSelector->mSlot.us == s_series)
+					if (slotRawSymbol(&callnode->mSelector->mSlot) == s_series)
 					{
 						SetSymbol(&callnode->mSelector->mSlot, getsym("forSeries"));
 
@@ -1490,7 +1490,7 @@ integer	: INTEGER { $$ = zzval; }
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
-				node->mSlot.ui = -node->mSlot.ui;
+				SetRaw(&node->mSlot, -slotRawInt(&node->mSlot));
 				$$ = zzval;
 			} 
 	;
@@ -1500,7 +1500,7 @@ floatr	: SC_FLOAT { $$ = zzval; }
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
-				node->mSlot.uf = -node->mSlot.uf;
+				SetRaw(&node->mSlot, -slotRawFloat(&node->mSlot));
 				$$ = zzval;
 			} 
 	;
@@ -1511,9 +1511,9 @@ accidental : ACCIDENTAL { $$ = zzval; }
 					PyrSlotNode *node; 
 					double intval, fracval;
 					node = (PyrSlotNode*)zzval;
-					intval = floor(node->mSlot.uf + 0.5);
-					fracval = node->mSlot.uf - intval;
-					node->mSlot.uf = -intval + fracval;
+					intval = floor(slotRawFloat(&node->mSlot) + 0.5);
+					fracval = slotRawFloat(&node->mSlot) - intval;
+					SetRaw(&node->mSlot, -intval + fracval);
 					$$ = zzval;
 				} 
 
@@ -1526,28 +1526,28 @@ floatp	: floatr
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)$1;
-				node->mSlot.uf *= pi;
+				SetRaw(&node->mSlot, slotRawFloat(&node->mSlot) * pi);
 			}
 		| integer pie
 			{
 				PyrSlotNode *node; 
 				double ival;
 				node = (PyrSlotNode*)$1;
-				ival = node->mSlot.ui;
-				node->mSlot.uf = ival * pi;
+				ival = slotRawInt(&node->mSlot);
+				SetFloat(&node->mSlot, ival * pi);
 			}
 		| pie 
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
-				node->mSlot.uf = pi;
+				SetFloat(&node->mSlot, pi);
 				$$ = zzval;
 			} 
 		| '-' pie 
 			{
 				PyrSlotNode *node; 
 				node = (PyrSlotNode*)zzval; 
-				node->mSlot.uf = -pi;
+				SetFloat(&node->mSlot, -pi);
 				$$ = zzval;
 			} 
 	;

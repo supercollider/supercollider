@@ -53,7 +53,7 @@ int prNumberOfOpenTextWindows(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-		        		
+
 		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
 		int num = [[docctl documents] count];
@@ -69,8 +69,8 @@ int prTextWindow_IsEdited(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		bool edited = (bool) [doc isDocumentEdited];
 		if(edited) SetTrue(a);
@@ -86,7 +86,7 @@ int prTextWindow_SetEditable(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp-1;
 		PyrSlot *b = g->sp;
 
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 		if (!doc) return errFailed;
 		if(IsFalse(b))[[doc textView] setEditable: NO];
 		else [[doc textView] setEditable: YES];
@@ -106,10 +106,10 @@ int prTextWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect bounds;
-    int err = slotGetNSRect(b, &bounds);		
+    int err = slotGetNSRect(b, &bounds);
     if (err) return err;
-    
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
     NSWindow *window = [[doc textView] window];
@@ -118,15 +118,15 @@ int prTextWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
     SEL sel = @selector(setFrame:display:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
     BOOL flag = YES;
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &bounds atIndex: 2];       
-    [anInvocation setArgument: &flag atIndex: 3];       
+    [anInvocation setArgument: &bounds atIndex: 2];
+    [anInvocation setArgument: &flag atIndex: 3];
     [scvm defer: anInvocation];
-   
+
     return errNone;
 }
 
@@ -140,19 +140,19 @@ int prTextWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
     NSWindow *window = [[doc textView] window];
 
     NSRect bounds = [window frame];
-    PyrSlot *slots = b->uo->slots;
+    PyrSlot *slots = slotRawObject(b)->slots;
     SetFloat(slots+0, bounds.origin.x);
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
     slotCopy(a, b);
-    
+
     return errNone;
 }
 
@@ -165,12 +165,12 @@ int prTextWindow_SetName(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, class_string))) return errWrongType;
-    
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
     NSWindow *window = [[doc textView] window];
-    PyrString *string = b->uos;
+    PyrString *string = slotRawString(b);
     NSString *title = [NSString stringWithCString: string->s length: string->size];
     [window setTitle: title];
     return errNone;
@@ -188,15 +188,15 @@ int prTextWindow_SetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		int err = slotColorVal(b, &rgb);
 		if (err) return err;
 		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-                            green: rgb.green 
-                            blue: rgb.blue 
+                            green: rgb.green
+                            blue: rgb.blue
                             alpha: rgb.alpha];
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		[doc setBackgroundColor: color];
 		//[[doc textView] didChangeText];
-		
+
 		return errNone;
 }
 
@@ -209,7 +209,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp-1;
 		PyrSlot *b = g->sp;
 		if (IsNil(b)) return errNone;
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		NSTextView * view = [doc initTextView];
 		if(!view) view = [doc textView];
@@ -218,7 +218,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		if(!color) return errNone;
 		float red, green, blue, alpha;
 		[color getRed:&red green:&green blue:&blue alpha:&alpha];
-		PyrSlot *slots = b->uo->slots;
+		PyrSlot *slots = slotRawObject(b)->slots;
 		SetFloat(slots+0, red);
 		SetFloat(slots+1, green);
 		SetFloat(slots+2, blue);
@@ -226,7 +226,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 }
 
-extern SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber; 
+extern SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber;
 
 int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed);
 int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
@@ -237,46 +237,46 @@ int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *colSymbol;
 	PyrSlot *colComment;
 	PyrSlot *colNumber;
-	
+
 	colText = g->sp - numArgsPushed + 2;
 	colClass = colText + 1;
 	colString = colClass + 1;
 	colSymbol = colString + 1;
 	colComment = colSymbol + 1;
 	colNumber = colComment + 1;
-	
+
 	if (isKindOfSlot(colText, s_color->u.classobj)) {
 		int err = slotColorVal(colText, &synColText);
 		if(err) return err;
-	}	
-	
+	}
+
 	if (isKindOfSlot(colClass, s_color->u.classobj)) {
 		int err = slotColorVal(colClass, &synColClass);
 		if(err) return err;
 	};
-	
+
 	if (isKindOfSlot(colString, s_color->u.classobj)) {
 		int err = slotColorVal(colString, &synColString);
 		if(err) return err;
 	};
-	
+
 	if (isKindOfSlot(colSymbol, s_color->u.classobj)) {
 		int err = slotColorVal(colSymbol, &synColSymbol);
 		if(err) return err;
 	};
-	
+
 	if (isKindOfSlot(colComment, s_color->u.classobj)) {
 		int err = slotColorVal(colComment, &synColComment);
 		if(err) return err;
 	};
-	
+
 	if (isKindOfSlot(colNumber, s_color->u.classobj)) {
 		int err = slotColorVal(colNumber, &synColNumber);
 		if(err) return err;
 	};
-	
+
 	return errNone;
-	
+
 }
 
 int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPushed);
@@ -290,10 +290,10 @@ int prTextWindow_SetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	int err = slotColorVal(b, &rgb);
 	if (err) return err;
 	NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-											   green: rgb.green 
-												blue: rgb.blue 
+											   green: rgb.green
+												blue: rgb.blue
 											   alpha: rgb.alpha];
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 	[doc setSelectedBackgroundColor: color];
 	return errNone;
@@ -307,7 +307,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	PyrSlot *a = g->sp-1;
 	PyrSlot *b = g->sp;
 	if (IsNil(b)) return errNone;
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 	NSTextView * view = [doc initTextView];
 	if(!view) view = [doc textView];
@@ -316,7 +316,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	if(!color) return errNone;
 	float red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
-	PyrSlot *slots = b->uo->slots;
+	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
 	SetFloat(slots+1, green);
 	SetFloat(slots+2, blue);
@@ -334,10 +334,10 @@ int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *b = g->sp-2;
 		PyrSlot *c = g->sp-1;
 		PyrSlot *d = g->sp;
-		
+
 		int rangeStart, rangeSize;
 		if (IsNil(b)) return errNone;
-		
+
 		SCColor rgb;
 		int err = slotColorVal(b, &rgb);
 		if (err) return err;
@@ -345,17 +345,17 @@ int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
         if (err) return err;
 		err = slotIntVal(d, &rangeSize);
         if (err) return err;
-		
-		
+
+
 		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-                            green: rgb.green 
-                            blue: rgb.blue 
+                            green: rgb.green
+                            blue: rgb.blue
                             alpha: rgb.alpha];
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		//[[doc textView] setBackgroundColor: color];
-		
+
 		if(rangeStart < 0){
 			[[doc textView] setTextColor: color];
 			[[doc textView] didChangeText];
@@ -365,14 +365,14 @@ int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
-		
+
+
 		[[doc textView] setTextColor: color range: selectedRange];
 		[[doc textView] didChangeText];
-		
-		
-		
-		
+
+
+
+
 		return errNone;
 }
 
@@ -382,31 +382,31 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 		 if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *a = g->sp - 3;
 		PyrSlot *fontSlot = g->sp - 2; //fontsize
-		
+
 		PyrSlot *d = g->sp - 1; //rangestart
 		PyrSlot *e = g->sp; //rangesize
 		if (IsNil(fontSlot)) return errNone; // use default font
 		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
 
-		PyrSlot *nameSlot = fontSlot->uo->slots+0;
-		PyrSlot *sizeSlot = fontSlot->uo->slots+1;
+		PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
+		PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
 		float size;
 		int err = slotFloatVal(sizeSlot, &size);
 		if (err) return err;
 
-		PyrString *pstring = nameSlot->uos;
+		PyrString *pstring = slotRawString(nameSlot);
 		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
 		if (!fontName) return errFailed;
 		NSFont *font = [NSFont fontWithName: fontName size: size];
 		if (!font) return errFailed;
-		
+
 		int rangeStart, rangeSize;
 		err = slotIntVal(d, &rangeStart); //if -1 do not use range
         if (err) return err;
 		 err = slotIntVal(e, &rangeSize);
         if (err) return err;
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		if(rangeStart < 0){
 			[[doc textView] setFont: font];
@@ -414,11 +414,11 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 		}
 		NSString* string = [[doc textView] string];
 		int length = [string length];
-		if(length < 1) return errFailed;		
+		if(length < 1) return errFailed;
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
+
         [[doc textView] setFont: font range: selectedRange];
 		return errNone;
 }
@@ -428,8 +428,8 @@ int prTextWindow_UnderlineSelection(struct VMGlobals *g, int numArgsPushed)
         		if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         		if (!doc) return errFailed;
 		[[doc textView] underline: NULL];
 		return errNone;
@@ -442,19 +442,19 @@ int prTextWindow_Close(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-		
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		SEL sel = @selector(closeWindow);
 		NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
-    
+
 		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 		[anInvocation setTarget: doc];
 		[anInvocation setSelector: sel];
 		[scvm defer: anInvocation];
-		
-		
+
+
 		return errNone;
 }
 
@@ -465,23 +465,23 @@ int prTextWindow_SelectLine(struct VMGlobals *g, int numArgsPushed)
 
 		PyrSlot *a = g->sp - 1;
 		PyrSlot *b = g->sp; //the win number
-        
+
         int err, linenum;
 		err = slotIntVal(b, &linenum);
 		if (err) return errWrongType;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		//[doc selectLine: linenum];
 		SEL sel = @selector(selectLine:);
 		NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
-    
+
 		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 		[anInvocation setTarget: doc];
 		[anInvocation setSelector: sel];
-		[anInvocation setArgument: &linenum atIndex: 2];  
+		[anInvocation setArgument: &linenum atIndex: 2];
 		[scvm defer: anInvocation];
-		
+
 		return errNone;
 }
 
@@ -492,13 +492,13 @@ int prTextWindow_SelectRange(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp - 2;
 		PyrSlot *b = g->sp - 1; //the win number
 		PyrSlot *c = g->sp;
-		
+
 		int rangeStart, rangeSize;
         int err = slotIntVal(b, &rangeStart);
         if (err) return err;
         err = slotIntVal(c, &rangeSize);
         if (err) return err;
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
         [doc selectRangeStart: rangeStart size: rangeSize];
 		return errNone;
@@ -511,11 +511,11 @@ int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed)
 
 		PyrSlot *a = g->sp - 1;
 		PyrSlot *b = g->sp; //the win number
-        
+
         int err, inputIndex;
 		err = slotIntVal(b, &inputIndex);
 		if (err) return errWrongType;
-        
+
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
         MyDocument* doc = [[docctl documents] objectAtIndex: inputIndex];
@@ -527,10 +527,10 @@ int prTextWindow_GetByIndex(struct VMGlobals *g, int numArgsPushed)
 			SetNil(a);
 			return errNone;
 		}
-		[doc setSCObject: a->uo];
-		SetPtr(a->uo->slots + 0, doc);
+		[doc setSCObject: slotRawObject(a)];
+		SetPtr(slotRawObject(a)->slots + 0, doc);
 //		if([doc getSCKeyDownAction])
-//		SetObject(a->uo->slots + 1, [doc getSCKeyDownAction]);
+//		SetObject(slotRawObject(a)->slots + 1, [doc getSCKeyDownAction]);
 		return errNone;
 }
 
@@ -550,8 +550,8 @@ int prTextWindow_GetLastIndex(struct VMGlobals *g, int numArgsPushed)
 			SetNil(a);
 			return errNone;
 		}
-		[doc setSCObject: a->uo];
-		SetPtr(a->uo->slots + 0, doc);
+		[doc setSCObject: slotRawObject(a)];
+		SetPtr(slotRawObject(a)->slots + 0, doc);
 		return errNone;
 }
 
@@ -561,8 +561,8 @@ int prTextWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *b = g->sp; //the win number
-        
-		MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(b)->slots);
         if (!doc) return errFailed;
 		docCreatedFromLang = true;
         [[[doc textView] window] makeKeyAndOrderFront: nil];
@@ -576,8 +576,8 @@ int prTextWindow_SyntaxColorize(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *b = g->sp; //the win number
-        
-        MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(b)->slots);
         if (!doc) return errFailed;
         [doc syntaxColorize: nil];
         return errNone;
@@ -587,11 +587,11 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *a = g->sp - 3; 
+		PyrSlot *a = g->sp - 3;
         PyrSlot *b = g->sp - 2; //the text
 		PyrSlot *c = g->sp - 1;
 		PyrSlot *d = g->sp;
-		
+
 		if (!(isKindOfSlot(b, class_string))) return errWrongType;
 
 		int rangeStart, rangeSize;
@@ -600,27 +600,27 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 		err = slotIntVal(d, &rangeSize);
         if (err) return err;
 
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		PyrString* pstring = b->uos;
+		PyrString* pstring = slotRawString(b);
 		NSRange selectedRange;
 		int length = [[[doc textView] string] length];
-		
+
 		if(rangeSize < 0) rangeSize = length - 1;
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
-		
+
 		if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
 		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 
-		
+
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		if ([[doc textView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
 			[[doc textView]  replaceCharactersInRange: selectedRange withString: string];
 			[[doc textView]  didChangeText];
 		}
 		[string release];
-	
+
         return errNone;
 }
 
@@ -629,13 +629,13 @@ int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_InsertText(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *b = g->sp - 1; 
+		PyrSlot *b = g->sp - 1;
         PyrSlot *c = g->sp; //the text
 		if (!(isKindOfSlot(c, class_string))) return errWrongType;
 
-        MyDocument* doc = (MyDocument*) b->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(b)->slots);
         if (!doc) return errFailed;
-        PyrString* string = c->uos;
+        PyrString* string = slotRawString(c);
         [doc insertText: string->s length: string->size];
         return errNone;
 }
@@ -645,7 +645,7 @@ int prTextWindow_GetName(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *a = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
        // const char * cstr = [[doc displayName] UTF8String];
 		const char * cstr = [[[[doc textView] window] title] UTF8String];
@@ -659,12 +659,12 @@ int prTextWindow_GetFileName(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *a = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
         const char * cstr = [[doc fileName] UTF8String];
 		if(!cstr){
 			SetNil(a);
-			return errNone;			
+			return errNone;
 		}
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
@@ -676,9 +676,9 @@ int prTextWindow_SetFileName(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *a = g->sp-1;
 		PyrSlot *b = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		PyrString* filenmae = b->uos;
+		PyrString* filenmae = slotRawString(b);
 		NSString *nsname = [NSString stringWithCString: filenmae->s length: filenmae->size];
 		if(!nsname) return errFailed;
         [doc setFileName: nsname];
@@ -690,7 +690,7 @@ int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		NSRange range = [[doc textView] selectedRange];
 		SetInt(a, range.location);
@@ -704,9 +704,9 @@ int prTextWindow_SelectToken(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		
+
 		NSString* string = [[doc textView] string];
 		NSRange range = [[doc textView] selectedRange];
 		int clickLoc = range.location;
@@ -726,7 +726,7 @@ int prTextWindow_SelectToken(struct VMGlobals *g, int numArgsPushed)
 				break;
 			}
 		}
-		
+
         [doc selectRangeStart: wordRange.location size: wordRange.length];
 
         return errNone;
@@ -740,33 +740,33 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
 	NSTextView *textView = [doc textView];
-	
+
 	int clickLoc;
 	int err = slotIntVal(b, &clickLoc);
 	if (err) {
 		clickLoc = [textView selectedRange].location;
 	}
 	NSRange range = NSMakeRange(clickLoc, 0);
-	
+
 	NSTextStorage *textStorage = [textView textStorage];
 	NSRange limitRange = NSMakeRange(0, [textStorage length]);
 	NSRange underlineRange;
 	if (range.location < limitRange.length) {
 
-		id isUnderlined = [textStorage attribute: NSUnderlineStyleAttributeName 
-							atIndex: range.location 
-							longestEffectiveRange: &underlineRange 
+		id isUnderlined = [textStorage attribute: NSUnderlineStyleAttributeName
+							atIndex: range.location
+							longestEffectiveRange: &underlineRange
 							inRange: limitRange];
 
 		if (isUnderlined) {
-		
+
 			NSString* string = [[doc textView] string];
-			
+
 		   // underlined range should not cross newlines.
 			for (int i=clickLoc; i>=(int)underlineRange.location; --i) {
 				int c = [string characterAtIndex: i];
@@ -783,7 +783,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 					break;
 				}
 			}
-			
+
 			// trim whitespace
 			int start = underlineRange.location;
 			int end = underlineRange.location + underlineRange.length;
@@ -801,7 +801,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 				if (!isspace(c)) break;
 				underlineRange.length --;
 			}
-			
+
 			// include square brackets in selection
 			start = underlineRange.location - 1;
 			end = underlineRange.location + underlineRange.length;
@@ -816,7 +816,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 				underlineRange.location --;
 				underlineRange.length += 2;
 			}
-			
+
 			if ((int)underlineRange.length > 0 && (int)underlineRange.location <= clickLoc && clickLoc < (int)(underlineRange.location + underlineRange.length)) {
 				[doc selectRangeStart: underlineRange.location size: underlineRange.length];
 				SetTrue(a);
@@ -836,28 +836,28 @@ int prTextWindow_LinkAtClickPos(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_LinkAtClickPos(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
-	
+
 	NSTextView *textView = [doc textView];
-	
+
 	int clickLoc;
 	int err = slotIntVal(b, &clickLoc);
 	if (err) {
 		clickLoc = [textView selectedRange].location;
 	}
 	NSRange range = NSMakeRange(clickLoc, 0);
-	
+
 	NSTextStorage *textStorage = [textView textStorage];
 	NSRange limitRange = NSMakeRange(0, [textStorage length]);
 	if (range.location < limitRange.length) {
-		
+
 		id isLink = [textStorage attribute: NSLinkAttributeName atIndex: range.location effectiveRange: NULL];
-		
+
 		if (isLink) { SetTrue(a);} else { SetFalse(a);}
 
 	} else {
@@ -872,7 +872,7 @@ int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *a = g->sp;
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		NSRange range = [[doc textView] selectedRange];
 		SetInt(a, range.length);
@@ -885,10 +885,10 @@ int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-        
+
         NSString* str = [[doc textView] currentlySelectedTextOrLine:NULL];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
@@ -904,26 +904,26 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp - 2;
 		PyrSlot *b = g->sp - 1; //from
 		PyrSlot *c = g->sp;//length
-		
+
 		int rangeStart, rangeSize;
         int err = slotIntVal(b, &rangeStart);
         if (err) return err;
         err = slotIntVal(c, &rangeSize);
         if (err) return err;
-		MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		NSString* string = [[doc textView] string];
 		int length = [string length];
-		if(length < 1) 
+		if(length < 1)
 		{
 			SetNil(a);
 			return errNone;
 		}
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
-		
+
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		NSString* str = [string substringWithRange: selectedRange];	
+		NSString* str = [string substringWithRange: selectedRange];
         const char * cstr = [str UTF8String];
         PyrString *pstring = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, pstring);
@@ -936,10 +936,10 @@ int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-        
+
         NSString* str = [[doc textView] string];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
@@ -952,8 +952,8 @@ int prTextWindow_RemoveUndo(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		[doc updateChangeCount: NSChangeCleared];
 		return errNone;
@@ -965,8 +965,8 @@ int prTextWindow_UnfocusedFront(struct VMGlobals *g, int numArgsPushed)
         if (!g->canCallOS) return errCantCallOS;
 
 		PyrSlot *a = g->sp;
-        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
         [[[doc textView] window] orderFrontRegardless];
         return errNone;
@@ -979,13 +979,13 @@ int prTextWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
 
 		PyrSlot *a = g->sp-1;
 		PyrSlot *b = g->sp;
-		        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		if(IsTrue(b))
 			[[[doc textView] window] setLevel:NSFloatingWindowLevel];
 		else
-			[[[doc textView] window] setLevel:NSNormalWindowLevel];		
+			[[[doc textView] window] setLevel:NSNormalWindowLevel];
         return errNone;
 }
 
@@ -993,11 +993,11 @@ int prTextWindow_IsAlwaysOnTop(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_IsAlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *a = g->sp;		        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		int level = [[[doc textView] window] level];
-		if(level>0) SetTrue(a);	
+		if(level>0) SetTrue(a);
 		else SetFalse(a);
         return errNone;
 }
@@ -1009,13 +1009,13 @@ int prTextWindow_SetPromptToSave(struct VMGlobals *g, int numArgsPushed)
 
 		PyrSlot *a = g->sp-1;
 		PyrSlot *b = g->sp;
-		        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		if(IsTrue(b))
 			[doc setPromptToSave:YES];
 		else
-			[doc setPromptToSave:NO];		
+			[doc setPromptToSave:NO];
         return errNone;
 }
 
@@ -1023,12 +1023,12 @@ int prTextWindow_PromptToSave(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_PromptToSave(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *a = g->sp;		        
-        MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+		PyrSlot *a = g->sp;
+        MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 		bool flag = [doc promptToSave];
 		if(flag) SetTrue(a);
-		else SetFalse(a);	
+		else SetFalse(a);
         return errNone;
 }
 
@@ -1057,15 +1057,15 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed);
 int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
-		
+
         PyrSlot *d = g->sp - 3;
 		PyrSlot *titleSlot = g->sp - 2;
         PyrSlot *stringSlot = g->sp - 1;
 		PyrSlot *c = g->sp;
-        
+
 		if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
 
-        PyrString* string = stringSlot->uos;
+        PyrString* string = slotRawString(stringSlot);
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
 		docCreatedFromLang = true;
@@ -1076,23 +1076,23 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 			docCreatedFromLang = false;
 			return errFailed;
 		}
-        
+
         [doc insertText: string->s length: string->size];
         NSWindow *window = [[[doc windowControllers] objectAtIndex: 0] window];
         if (!window) {
 			docCreatedFromLang = false;
 			return errFailed;
-		}        
+		}
 		if (isKindOfSlot(titleSlot, class_string)) {
-            PyrString* title = titleSlot->uos;
-            NSString *nstitle = [NSString stringWithCString: title->s length: title->size];
-            [window setTitle: nstitle];
-        }
-        [[doc undoManager] removeAllActions];
-        
-        if (IsTrue(c)) {
-            gPostView = [doc textView];
-        }
+			PyrString* title = slotRawString(titleSlot);
+			NSString *nstitle = [NSString stringWithCString: title->s length: title->size];
+			[window setTitle: nstitle];
+		}
+		[[doc undoManager] removeAllActions];
+
+		if (IsTrue(c)) {
+			gPostView = [doc textView];
+		}
 		PyrObject * obj = [doc getSCObject];
 		if(obj){
 			//post("docuemnt has scObject already\n");
@@ -1100,8 +1100,8 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 			SetNil(d);
 			return errNone;
 		}
-		[doc setSCObject: d->uo];
-        SetPtr(d->uo->slots + 0, doc);
+		[doc setSCObject: slotRawObject(d)];
+        SetPtr(slotRawObject(d)->slots + 0, doc);
 		docCreatedFromLang = false;
 	return errNone;
 }
@@ -1112,30 +1112,30 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 {
         if (!g->canCallOS) return errCantCallOS;
 		PyrSlot *d = g->sp - 3;
-        
+
 		PyrSlot *a = g->sp - 2;
 		PyrSlot *b = g->sp - 1;
 		PyrSlot *c = g->sp;
-		
+
 		if (!(isKindOfSlot(a, class_string))) return errWrongType;
-		PyrString* string = a->uos;
+		PyrString* string = slotRawString(a);
         if(string->size == 0) return errFailed;
         int rangeStart, rangeSize;
         int err = slotIntVal(b, &rangeStart);
         if (err) return err;
         err = slotIntVal(c, &rangeSize);
         if (err) return err;
-        
+
         NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) {
             post("No NSDocumentController\n");
             return errFailed;
         }
-        
+
         NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
         NSURL *url = [NSURL fileURLWithPath: nsstring];
         NSString *nspath = [url path];
-        
+
 		docCreatedFromLang = true;
 		MyDocument *doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
 		if (!doc) {
@@ -1150,8 +1150,8 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 				return errFailed;
 		}
         [window makeKeyAndOrderFront: nil];
-        
-        // select 
+
+        // select
         [doc selectRangeStart: rangeStart size: rangeSize];
 
 		PyrObject * obj = [doc getSCObject];
@@ -1162,8 +1162,8 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 			docCreatedFromLang = false;
 			return errNone;
 		}
-		[doc setSCObject: d->uo];
-		SetPtr(d->uo->slots + 0, doc);
+		[doc setSCObject: slotRawObject(d)];
+		SetPtr(slotRawObject(d)->slots + 0, doc);
 		docCreatedFromLang = false;
 		return errNone;
 }
@@ -1176,7 +1176,7 @@ int prGetStringFromUser(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	//PyrSlot *b = g->sp - 1;
 	//PyrSlot *c = g->sp;
-                                 
+
 	return errNone;
 }
 
@@ -1191,13 +1191,13 @@ int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 		if (IsNil(fontSlot)) return errNone; // use default font
 		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
 
-		PyrSlot *nameSlot = fontSlot->uo->slots+0;
-		PyrSlot *sizeSlot = fontSlot->uo->slots+1;
+		PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
+		PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
 		float size;
 		int err = slotFloatVal(sizeSlot, &size);
 		if (err) return err;
 
-		PyrString *pstring = nameSlot->uos;
+		PyrString *pstring = slotRawString(nameSlot);
 		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
 		if (!fontName) return errFailed;
 		defaultFont = [NSFont fontWithName: fontName size: size];
@@ -1213,15 +1213,15 @@ int prSetPostTextColor(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrSlot *c;
-	
+
 	a = g->sp - 1;
 	c = a + 1;
-	
+
 	if(!(isKindOfSlot(c, s_color->u.classobj))) return errWrongType;
-	
+
 	int err = slotColorVal(c, &postTextColor);
 	if(err) return err;
-		
+
 	return errNone;
 }
 
@@ -1232,8 +1232,8 @@ int prBalanceParens(struct VMGlobals *g, int numArgsPushed)
  if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *a = g->sp;
-        
-	MyDocument* doc = (MyDocument*) a->uo->slots[0].ui;
+
+	MyDocument* doc = (MyDocument*) slotRawInt(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 	[[doc textView] balanceParens: nil];
 
@@ -1243,7 +1243,7 @@ int prBalanceParens(struct VMGlobals *g, int numArgsPushed)
 
 int slotGetNSRect(PyrSlot* a, NSRect *r)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotFloatVal(slots+0, &r->origin.x);
 	if (err) return err;
@@ -1253,14 +1253,14 @@ int slotGetNSRect(PyrSlot* a, NSRect *r)
 	if (err) return err;
 	err = slotFloatVal(slots+3, &r->size.height);
 	if (err) return err;
-        
+
         return errNone;
 }
 
 
 int slotGetCGRect(PyrSlot* a, CGRect *r)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotFloatVal(slots+0, &r->origin.x);
 	if (err) return err;
@@ -1270,16 +1270,16 @@ int slotGetCGRect(PyrSlot* a, CGRect *r)
 	if (err) return err;
 	err = slotFloatVal(slots+3, &r->size.height);
 	if (err) return err;
-        
+
         return errNone;
 }
 
 int slotGetQDRect(PyrSlot* a, Rect *r)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
 	int err;
         float x, y, width, height;
-        
+
 	err = slotFloatVal(slots+0, &x);
 	if (err) return err;
 	err = slotFloatVal(slots+1, &y);
@@ -1293,19 +1293,19 @@ int slotGetQDRect(PyrSlot* a, Rect *r)
 	r->right  = (int)(x + width);
 	r->top    = (int)(y - height);
 	r->bottom = (int)y;
-	
+
 	return errNone;
 }
 
 int slotGetPoint(PyrSlot* a, NSPoint *p)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotFloatVal(slots+0, &p->x);
 	if (err) return err;
 	err = slotFloatVal(slots+1, &p->y);
 	if (err) return err;
-        
+
         return errNone;
 }
 
@@ -1313,7 +1313,7 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *args = g->sp - 6;
 	PyrSlot *a = args + 0;
 	PyrSlot *b = args + 1; // name
@@ -1326,40 +1326,40 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 
 	if (!(isKindOfSlot(b, class_string))) return errWrongType;
 	if (!(isKindOfSlot(c, s_rect->u.classobj))) return errWrongType;
-	
+
 	bool eIsTrue = IsTrue(e);
 	unsigned int mask = IsTrue(d) && eIsTrue ? NSResizableWindowMask : 0;
 	if (IsFalse(j) && eIsTrue){
 		mask |= NSMiniaturizableWindowMask | NSClosableWindowMask;
 	}
 	mask |= eIsTrue ? NSTitledWindowMask | NSTexturedBackgroundWindowMask : NSBorderlessWindowMask;
-            
+
 	NSRect bounds;
-	int err = slotGetNSRect(c, &bounds);		
+	int err = slotGetNSRect(c, &bounds);
 	if (err) return err;
-              
-	PyrString *string = b->uos;
+
+	PyrString *string = slotRawString(b);
 	NSString *title = [NSString stringWithCString: string->s length: string->size];
 
-	SCNSWindow *window = [[SCNSWindow alloc] 
+	SCNSWindow *window = [[SCNSWindow alloc]
 		initWithContentRect: bounds
 		styleMask: mask
 		backing: NSBackingStoreBuffered
 		defer: NO];
 	[window setTitle: title];
 	[window setHasBorders: YES];
-	
+
 	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 	SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
-	[view setSCObject: a->uo];
-	SetPtr(a->uo->slots + 0, view);
+	[view setSCObject: slotRawObject(a)];
+	SetPtr(slotRawObject(a)->slots + 0, view);
 	[window setDelegate: scvm];
 	[window setSCGraphView: view];
-	
+
 	if(IsTrue(h)) {
-		SCScrollTopView* scrollTopView = (SCScrollTopView*)(f->uo->slots[0].ui);
+		SCScrollTopView* scrollTopView = (SCScrollTopView*)slotRawInt(slotRawObject(f)->slots);
 		[view setSCTopView: scrollTopView];
-		
+
 		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: bounds];
 		[scrollView setHasVerticalScroller:YES];
 		[scrollView setHasHorizontalScroller:YES];
@@ -1368,46 +1368,46 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 		[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
 		[[scrollView horizontalScroller] setControlTint:NSGraphiteControlTint];
 		[[scrollView verticalScroller] setControlTint:NSGraphiteControlTint];
-		
+
 		[scrollView setBackgroundColor:[NSColor clearColor]];
 		[scrollView setDrawsBackground:NO];
 		// configure the scroller to have no visible border
 		[scrollView setBorderType:NSNoBorder];
 		[scrollView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 		[scrollView setDocumentView:view];
-		
+
 		[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
 		[[NSNotificationCenter defaultCenter] addObserver:view
 												 selector:@selector(scrollViewResized:)
-													 name:@"NSViewFrameDidChangeNotification" 
+													 name:@"NSViewFrameDidChangeNotification"
 												   object:scrollView];
-		
+
 		NSClipView *contentView = [scrollView contentView];
 		[contentView setPostsBoundsChangedNotifications:YES];
 		[[NSNotificationCenter defaultCenter] addObserver:view
 												 selector:@selector(userScrolled:)
-													 name:@"NSViewBoundsDidChangeNotification" 
+													 name:@"NSViewBoundsDidChangeNotification"
 												   object:contentView];
-		
+
 		scrollTopView->SetNSScrollView(scrollView);
 		[view autorelease];
-		
+
 		[window setContentView: scrollView];
 		[scrollView autorelease];
-		
+
 	} else {
-		[view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
+		[view setSCTopView: (SCTopView*)slotRawInt(slotRawObject(f)->slots)];
 		[window setContentView: view];
 		[view autorelease];
 	}
 /*
         NSRect matrect = NSMakeRect(40,40,400,400);
         NSSize cellsize = NSMakeSize(200,100);
-        id mx = [[NSMatrix alloc] 
-                    initWithFrame: matrect 
-                    mode: NSTrackModeMatrix 
+        id mx = [[NSMatrix alloc]
+                    initWithFrame: matrect
+                    mode: NSTrackModeMatrix
                     cellClass: [NSSliderCell class]
-                    numberOfRows: 4 
+                    numberOfRows: 4
                     numberOfColumns: 2 ];
         [mx setCellSize: cellsize];
         [view addSubview: mx];
@@ -1417,32 +1417,32 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 	[window setFrameOrigin: bounds.origin];
 	[scvm addWindow: window];
 
-/*    
+/*
     id sender = nil;
 
     SEL sel = @selector(makeKeyAndOrderFront:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &sender atIndex: 2];       
+    [anInvocation setArgument: &sender atIndex: 2];
     [scvm defer: anInvocation];
 */
 /*
         SEL sel = @selector(newGuiWindowTitle:bounds:SCObject:styleMask:);
         NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-        
+
         NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
         SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
         [anInvocation setTarget: scvm];
         [anInvocation setSelector: sel];
-        [anInvocation setArgument: &title atIndex: 2];       
-        [anInvocation setArgument: &bounds atIndex: 3];       
-        [anInvocation setArgument: &a->uo atIndex: 4];       
-        [anInvocation setArgument: &flags atIndex: 5];       
+        [anInvocation setArgument: &title atIndex: 2];
+        [anInvocation setArgument: &bounds atIndex: 3];
+        [anInvocation setArgument: &slotRawObject(a) atIndex: 4];
+        [anInvocation setArgument: &flags atIndex: 5];
         [scvm defer: anInvocation];
-*/                
+*/
 	return errNone;
 }
 
@@ -1452,18 +1452,18 @@ int prSCWindow_Refresh(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-    
+
     SEL sel = @selector(setNeedsDisplay:);
     NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: view];
     [anInvocation setSelector: sel];
     BOOL flag = YES;
-    [anInvocation setArgument: &flag atIndex: 2];       
+    [anInvocation setArgument: &flag atIndex: 2];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1473,15 +1473,15 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
    // [[view window] close];
 
    // NSWindow *window = [view window];
-    
+
     SEL sel = @selector(closeWindow);
     NSMethodSignature *sig = [SCGraphView instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: view];
@@ -1497,21 +1497,21 @@ int prSCWindow_Minimize(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
     //[[view window] miniaturize: nil];
 
     NSWindow *window = [view window];
     id sender = nil;
-    
+
     SEL sel = @selector(miniaturize:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &sender atIndex: 2];       
+    [anInvocation setArgument: &sender atIndex: 2];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1523,16 +1523,16 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
     //[[view window] makeKeyAndOrderFront: nil];
 
     NSWindow *window = [view window];
     id sender = nil;
-    
+
     SEL sel = @selector(makeKeyAndOrderFront:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
@@ -1550,19 +1550,19 @@ int prSCWindow_FullScreen(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     NSWindow *window = [view window];
-    
+
     SEL sel = @selector(becomeFullScreen:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &window atIndex: 2];       
+    [anInvocation setArgument: &window atIndex: 2];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1574,19 +1574,19 @@ int prSCWindow_EndFullScreen(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     NSWindow *window = [view window];
-    
+
     SEL sel = @selector(endFullScreen:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &window atIndex: 2];       
+    [anInvocation setArgument: &window atIndex: 2];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1596,7 +1596,7 @@ int prSCWindow_SetShouldClose(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_SetShouldClose(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
     PyrSlot *boo = g->sp;
 
@@ -1613,14 +1613,14 @@ int prSCWindow_AlwaysOnTop(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
     NSWindow *window = [view window];
 	if(IsTrue(b))
 		[window setLevel:NSFloatingWindowLevel];
 	else
-		[window setLevel:NSNormalWindowLevel];		
+		[window setLevel:NSNormalWindowLevel];
 	return errNone;
 }
 
@@ -1628,16 +1628,16 @@ int prSCWindow_AcceptsClickThrough(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_AcceptsClickThrough(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-	
+
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 	if(IsTrue(b))
 		[view setAcceptsClickThrough:YES];
 	else
-		[view setAcceptsClickThrough:NO];		
+		[view setAcceptsClickThrough:NO];
 	return errNone;
 }
 
@@ -1650,10 +1650,10 @@ int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, class_string))) return errWrongType;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-    PyrString *string = b->uos;
+    PyrString *string = slotRawString(b);
     NSString *title = [NSString stringWithCString: string->s length: string->size];
     [[view window] setTitle: title];
     return errNone;
@@ -1670,10 +1670,10 @@ int prSCWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect bounds;
-    int err = slotGetNSRect(b, &bounds);		
+    int err = slotGetNSRect(b, &bounds);
     if (err) return err;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     NSWindow *window = [view window];
@@ -1685,15 +1685,15 @@ int prSCWindow_SetBounds(struct VMGlobals *g, int numArgsPushed)
     SEL sel = @selector(setFrame:display:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
     BOOL flag = YES;
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &bounds atIndex: 2];       
-    [anInvocation setArgument: &flag atIndex: 3];       
+    [anInvocation setArgument: &bounds atIndex: 2];
+    [anInvocation setArgument: &flag atIndex: 3];
     [scvm defer: anInvocation];
-   
+
     return errNone;
 }
 
@@ -1707,20 +1707,20 @@ int prSCWindow_GetBounds(struct VMGlobals *g, int numArgsPushed)
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-	
+
 	NSWindow *window = [view window];
     NSRect bounds = [window frame];
 	bounds = [NSWindow contentRectForFrameRect: bounds styleMask: [window styleMask]];
-	
-    PyrSlot *slots = b->uo->slots;
+
+    PyrSlot *slots = slotRawObject(b)->slots;
     SetFloat(slots+0, bounds.origin.x);
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
     slotCopy(a, b);
-    
+
     return errNone;
 }
 
@@ -1735,13 +1735,13 @@ int prSCWindow_GetScreenBounds(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect bounds = [[NSScreen mainScreen] frame];
-    PyrSlot *slots = b->uo->slots;
+    PyrSlot *slots = slotRawObject(b)->slots;
     SetFloat(slots+0, bounds.origin.x);
     SetFloat(slots+1, bounds.origin.y);
     SetFloat(slots+2, bounds.size.width);
     SetFloat(slots+3, bounds.size.height);
     slotCopy(a, b);
-    
+
     return errNone;
 }
 
@@ -1755,7 +1755,7 @@ int prSCWindow_Show(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
 
     NSWindow *window = [view window];
     NSRect frame = [window frame];
@@ -1763,13 +1763,13 @@ int prSCWindow_Show(struct VMGlobals *g, int numArgsPushed)
     SEL sel = @selector(setFrame:display:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
     BOOL flag = YES;
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &frame atIndex: 2];       
-    [anInvocation setArgument: &flag atIndex: 3];       
+    [anInvocation setArgument: &frame atIndex: 2];
+    [anInvocation setArgument: &flag atIndex: 3];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1781,20 +1781,20 @@ int prSCWindow_Hide(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     NSWindow *window = [view window];
     NSRect frame = [window frame];
 
     SEL sel = @selector(setFrame:display:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
     BOOL flag = NO;
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &frame atIndex: 2];       
-    [anInvocation setArgument: &flag atIndex: 3];       
+    [anInvocation setArgument: &frame atIndex: 2];
+    [anInvocation setArgument: &flag atIndex: 3];
     [scvm defer: anInvocation];
 
     return errNone;
@@ -1809,10 +1809,10 @@ int prSCWindow_SetAlpha(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
     float alpha;
-    int err = slotFloatVal(b, &alpha);		
+    int err = slotFloatVal(b, &alpha);
     if (err) return err;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     //[[view window] setAlphaValue: alpha];
@@ -1820,14 +1820,14 @@ int prSCWindow_SetAlpha(struct VMGlobals *g, int numArgsPushed)
 
     SEL sel = @selector(setAlphaValue:);
     NSMethodSignature *sig = [NSWindow instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &alpha atIndex: 2];       
+    [anInvocation setArgument: &alpha atIndex: 2];
     [scvm defer: anInvocation];
-    
+
     return errNone;
 }
 
@@ -1840,9 +1840,9 @@ int prSCWindow_SetAcceptMouseOver(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
     BOOL accept;
-    accept = (BOOL) IsTrue(b);		
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    accept = (BOOL) IsTrue(b);
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     NSWindow *window = [view window];
@@ -1854,24 +1854,24 @@ int prSCWindow_RunModal(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_RunModal(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-	
+
     PyrSlot *a = g->sp;
-    
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-	
+
     NSWindow *window = [view window];
-	
+
 	SEL sel = @selector(runAsModal:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &window atIndex: 2];       
+    [anInvocation setArgument: &window atIndex: 2];
     [scvm defer: anInvocation];
-	
+
     return errNone;
 }
 
@@ -1889,23 +1889,23 @@ int prSCWindow_RunModalSheet(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_RunModalSheet(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-	
+
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    
-    SCGraphView* sheetView = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* sheetView = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!sheetView) return errNone;
-	
+
     SCNSWindow *sheet = (SCNSWindow*)[sheetView window];
-	
-	SCGraphView* windowView = (SCGraphView*)b->uo->slots[0].ui;
+
+	SCGraphView* windowView = (SCGraphView*)slotRawInt(slotRawObject(b)->slots);
     if (!windowView) return errNone;
-	
+
     NSWindow *window = [windowView window];
-	
+
 	SEL sel = @selector(runAsModalSheet:forWindow:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
@@ -1913,7 +1913,7 @@ int prSCWindow_RunModalSheet(struct VMGlobals *g, int numArgsPushed)
 	[anInvocation setArgument: &sheet atIndex: 2];
 	[anInvocation setArgument: &window atIndex: 3];
     [scvm defer: anInvocation];
-	
+
     return errNone;
 }
 
@@ -1921,16 +1921,16 @@ int prSCWindow_StopModalSheet(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_StopModalSheet(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *a = g->sp;
-    
-    SCGraphView* sheetView = (SCGraphView*)a->uo->slots[0].ui;
+
+    SCGraphView* sheetView = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!sheetView) return errNone;
-	
+
     NSWindow *sheet = [sheetView window];
-	
+
 	[NSApp endSheet:sheet];
-	
+
     return errNone;
 }
 
@@ -1943,10 +1943,10 @@ int prShowCursor(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
     BOOL show;
-    show = (BOOL) IsTrue(b);		
+    show = (BOOL) IsTrue(b);
     if(show) [NSCursor unhide];
 	else [NSCursor hide];
-    return errNone;	
+    return errNone;
 }
 
 int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot);
@@ -1955,22 +1955,22 @@ int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot)
     if (IsNil(fontSlot)) return errNone; // use default font
     if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
 
-    PyrSlot *nameSlot = fontSlot->uo->slots+0;
-    PyrSlot *sizeSlot = fontSlot->uo->slots+1;
-    
+    PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
+    PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
+
     if (!(isKindOfSlot(nameSlot, class_string))) return errWrongType;
-    
+
     float size;
     int err = slotFloatVal(sizeSlot, &size);
     if (err) return err;
 
-    PyrString *string = nameSlot->uos;
+    PyrString *string = slotRawString(nameSlot);
     NSString *fontName = [NSString stringWithCString: string->s length: string->size];
     if (!fontName) return errFailed;
     NSFont *font = [NSFont fontWithName: fontName size: size];
     if (!font) return errFailed;
     [dict setObject: font forKey: NSFontAttributeName ];
-    
+
     return errNone;
 }
 
@@ -1980,8 +1980,8 @@ int slotRGBColorVal(PyrSlot *slot, RGBColor *rgbcolor)
 {
     if (!(isKindOfSlot(slot, s_color->u.classobj))) return errWrongType;
 
-    PyrSlot *slots = slot->uo->slots;
-        
+    PyrSlot *slots = slotRawObject(slot)->slots;
+
     int err;
     float red, green, blue, alpha;
     err = slotFloatVal(slots+0, &red);
@@ -1992,12 +1992,12 @@ int slotRGBColorVal(PyrSlot *slot, RGBColor *rgbcolor)
     if (err) return err;
     err = slotFloatVal(slots+3, &alpha);
     if (err) return err;
-    
+
     rgbcolor->red = (unsigned short)(red * 65535.);
     rgbcolor->green = (unsigned short)(green * 65535.);
     rgbcolor->blue = (unsigned short)(blue * 65535.);
     //rgbcolor->alpha = (unsigned short)(alpha * 65535.);
-    
+
     return errNone;
 }
 
@@ -2009,11 +2009,11 @@ int addFontColorAttribute(NSMutableDictionary *dict, PyrSlot *colorSlot)
     int err = slotColorVal(colorSlot, &rgb);
     if (err) return err;
     NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-                            green: rgb.green 
-                            blue: rgb.blue 
-                            alpha: rgb.alpha];    
+                            green: rgb.green
+                            blue: rgb.blue
+                            alpha: rgb.alpha];
     [dict setObject: color forKey: NSForegroundColorAttributeName ];
-    
+
     return errNone;
 }
 
@@ -2021,16 +2021,16 @@ int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed);
 int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *a = g->sp;
-	
+
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	NSArray *fonts = [fontManager availableFonts];
 
 	int size = [fonts count];
 	PyrObject* array = newPyrArray(g->gc, size, 0, true);
 	SetObject(a, array);
-	
+
 	for (int i=0; i<size; ++i) {
 		NSString *name = [fonts objectAtIndex: i];
 		//if (!name) continue;
@@ -2039,7 +2039,7 @@ int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
 		array->size++;
 		g->gc->GCWrite(array, string);
 	}
-	
+
     return errNone;
 }
 
@@ -2047,7 +2047,7 @@ int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed);
 int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
@@ -2055,7 +2055,7 @@ int prFont_SetAntiAliasing(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	CGContextSetShouldAntialias(cgc, IsTrue(b));
-	
+
 	return errNone;
 }
 
@@ -2063,7 +2063,7 @@ int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed);
 int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
@@ -2071,7 +2071,7 @@ int prFont_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	CGContextSetShouldSmoothFonts(cgc, IsTrue(b));
-	
+
 	return errNone;
 }
 
@@ -2079,7 +2079,7 @@ int prPen_SetSmoothing(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
@@ -2087,7 +2087,7 @@ int prPen_SetSmoothing(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	CGContextSetShouldAntialias(cgc, IsTrue(b));
-	
+
 	return errNone;
 }
 
@@ -2096,29 +2096,29 @@ int prString_GetBounds(struct VMGlobals *g, int numArgsPushed);
 int prString_GetBounds(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
-    
+
     if (!isKindOfSlot(b, s_rect->u.classobj)) return errWrongType;
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     int err = addFontAttribute(dict, c);
     if (err) return err;
-    
-    PyrString* string = a->uos;
+
+    PyrString* string = slotRawString(a);
     NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
     if (!nsstring) return errFailed;
     NSSize size = [nsstring sizeWithAttributes: dict];
-    
-    PyrSlot* rectSlots = b->uo->slots;
+
+    PyrSlot* rectSlots = slotRawObject(b)->slots;
     SetFloat(rectSlots+0, 0.);
     SetFloat(rectSlots+1, 0.);
     SetFloat(rectSlots+2, size.width);
     SetFloat(rectSlots+3, size.height);
     slotCopy(a, b);
-    
+
     return errNone;
 }
 
@@ -2126,7 +2126,7 @@ int prString_DrawAtPoint(struct VMGlobals *g, int numArgsPushed);
 int prString_DrawAtPoint(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp - 3;
     PyrSlot *b = g->sp - 2;
     PyrSlot *c = g->sp - 1;
@@ -2135,7 +2135,7 @@ int prString_DrawAtPoint(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p;
-    int err = slotGetPoint(b, &p);		
+    int err = slotGetPoint(b, &p);
     if (err) return err;
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -2143,8 +2143,8 @@ int prString_DrawAtPoint(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     err = addFontColorAttribute(dict, d);
     if (err) return err;
-    
-    PyrString* string = a->uos;
+
+    PyrString* string = slotRawString(a);
     NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
     if (!nsstring) return errFailed;
 
@@ -2157,7 +2157,7 @@ int prString_DrawInRect(struct VMGlobals *g, int numArgsPushed);
 int prString_DrawInRect(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp - 3;
     PyrSlot *b = g->sp - 2;
     PyrSlot *c = g->sp - 1;
@@ -2166,7 +2166,7 @@ int prString_DrawInRect(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect rect;
-    int err = slotGetNSRect(b, &rect);		
+    int err = slotGetNSRect(b, &rect);
     if (err) return err;
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -2175,7 +2175,7 @@ int prString_DrawInRect(struct VMGlobals *g, int numArgsPushed)
     err = addFontColorAttribute(dict, d);
     if (err) return err;
 
-    PyrString* string = a->uos;
+    PyrString* string = slotRawString(a);
     NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
     if (!nsstring) return errFailed;
 
@@ -2188,9 +2188,9 @@ int prColor_SetStroke(struct VMGlobals *g, int numArgsPushed);
 int prColor_SetStroke(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp;
-    PyrSlot *slots = a->uo->slots;
+    PyrSlot *slots = slotRawObject(a)->slots;
     int err;
     float red, green, blue, alpha;
 
@@ -2202,20 +2202,20 @@ int prColor_SetStroke(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     err = slotFloatVal(slots+3, &alpha);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBStrokeColor(cgc, red, green, blue, alpha);
 //    CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
    /* NSColor *color = [NSColor colorWithCalibratedRed: red
-                            green: green 
-                            blue: blue 
+                            green: green
+                            blue: blue
                             alpha: alpha];
     if (color) {
         [color set];
     }*/
-    
+
     return errNone;
 }
 
@@ -2223,9 +2223,9 @@ int prColor_SetFill(struct VMGlobals *g, int numArgsPushed);
 int prColor_SetFill(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp;
-    PyrSlot *slots = a->uo->slots;
+    PyrSlot *slots = slotRawObject(a)->slots;
     int err;
     float red, green, blue, alpha;
 
@@ -2237,19 +2237,19 @@ int prColor_SetFill(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     err = slotFloatVal(slots+3, &alpha);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetRGBFillColor(cgc, red, green, blue, alpha);
 //	NSColor *color = [NSColor colorWithCalibratedRed: red
-//                            green: green 
-//                            blue: blue 
+//                            green: green
+//                            blue: blue
 //                            alpha: alpha];
 //    if (color) {
 //        [color setFill];
 //    }
-    
+
     return errNone;
 }
 
@@ -2283,12 +2283,12 @@ int prPen_AddRect(struct VMGlobals *g, int numArgsPushed)
 
     CGRect rect;
     int err = slotGetCGRect(b, &rect);
-	if (err) return err;	
+	if (err) return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
-	
+
 	CGContextAddRect(cgc, rect);
     return errNone;
 }
@@ -2304,9 +2304,9 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     CGRect rect;
-    int err = slotGetCGRect(b, &rect);		
+    int err = slotGetCGRect(b, &rect);
     if (err) return err;
-    
+
     //[NSBezierPath strokeRect: rect];
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
@@ -2314,7 +2314,7 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
     CGContextDrawPath(cgc, kCGPathStroke);
-    
+
     return errNone;
 }
 
@@ -2329,9 +2329,9 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     CGRect rect;
-    int err = slotGetCGRect(b, &rect);		
+    int err = slotGetCGRect(b, &rect);
     if (err) return err;
-    
+
     //[NSBezierPath fillRect: rect];
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
@@ -2339,7 +2339,7 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
     CGContextFillPath(cgc);
-    
+
     return errNone;
 }
 
@@ -2354,11 +2354,11 @@ int prPen_StrokeOval(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect rect;
-    int err = slotGetNSRect(b, &rect);		
+    int err = slotGetNSRect(b, &rect);
     if (err) return err;
-    
+
     [[NSBezierPath bezierPathWithOvalInRect: rect] stroke];
-    
+
     return errNone;
 }
 
@@ -2373,11 +2373,11 @@ int prPen_FillOval(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     NSRect rect;
-    int err = slotGetNSRect(b, &rect);		
+    int err = slotGetNSRect(b, &rect);
     if (err) return err;
-    
+
     [[NSBezierPath bezierPathWithOvalInRect: rect] fill];
-    
+
     return errNone;
 }
 
@@ -2394,13 +2394,13 @@ int prPen_StrokeLine(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(c, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1, p2;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
-    err = slotGetPoint(c, &p2);		
+    err = slotGetPoint(c, &p2);
     if (err) return err;
-    
+
     [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-    
+
     return errNone;
 }
 
@@ -2415,14 +2415,14 @@ int prPen_MoveTo(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextMoveToPoint(cgc, p1.x, p1.y);
-    
+
     return errNone;
 }
 
@@ -2437,14 +2437,14 @@ int prPen_LineTo(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextAddLineToPoint(cgc, p1.x, p1.y);
-    
+
     return errNone;
 }
 
@@ -2462,35 +2462,35 @@ int prPen_AddArc(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
- 
+
 	float radius;
-	err = slotFloatVal(c, &radius);		
+	err = slotFloatVal(c, &radius);
     if (err) return err;
- 
+
 	float startAngle;
-	err = slotFloatVal(d, &startAngle);		
+	err = slotFloatVal(d, &startAngle);
     if (err) return err;
- 
+
 	float angle;
-	err = slotFloatVal(e, &angle);		
+	err = slotFloatVal(e, &angle);
     if (err) return err;
- 
+
 	int clockwise = angle > 0. ? 0 : 1;
 	float endAngle = startAngle + angle;
- 
+
 	NSPoint p2;
 	p2.x = p1.x + radius * cos(startAngle);
 	p2.y = p1.y + radius * sin(startAngle);
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//post("start %g %g  end %g %g  arc %g %g\n", startAngle, startAngle * 180./3.14156, endAngle, endAngle * 180./3.14156, angle, angle * 180./3.14156);
 	CGContextMoveToPoint(cgc, p2.x, p2.y);
 	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
-    
+
     return errNone;
 }
 
@@ -2508,28 +2508,28 @@ int prPen_AddWedge(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
- 
+
 	float radius;
-	err = slotFloatVal(c, &radius);		
+	err = slotFloatVal(c, &radius);
     if (err) return err;
- 
+
 	float startAngle;
-	err = slotFloatVal(d, &startAngle);		
+	err = slotFloatVal(d, &startAngle);
     if (err) return err;
- 
+
 	float angle;
-	err = slotFloatVal(e, &angle);		
+	err = slotFloatVal(e, &angle);
     if (err) return err;
- 
+
 	int clockwise = angle > 0. ? 0 : 1;
 	float endAngle = startAngle + angle;
 
     NSPoint p2;
 	p2.x = p1.x + radius * cos(startAngle);
 	p2.y = p1.y + radius * sin(startAngle);
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
@@ -2537,7 +2537,7 @@ int prPen_AddWedge(struct VMGlobals *g, int numArgsPushed)
     CGContextAddLineToPoint(cgc, p2.x, p2.y);
 	CGContextAddArc(cgc, p1.x, p1.y, radius, startAngle, endAngle, clockwise);
     CGContextAddLineToPoint(cgc, p1.x, p1.y);
-    
+
     return errNone;
 }
 
@@ -2556,25 +2556,25 @@ int prPen_AddAnnularWedge(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 
     NSPoint p1;
-    int err = slotGetPoint(b, &p1);		
+    int err = slotGetPoint(b, &p1);
     if (err) return err;
- 
+
 	float innerRadius;
-	err = slotFloatVal(c, &innerRadius);		
+	err = slotFloatVal(c, &innerRadius);
     if (err) return err;
- 
+
 	float outerRadius;
-	err = slotFloatVal(d, &outerRadius);		
+	err = slotFloatVal(d, &outerRadius);
     if (err) return err;
- 
+
 	float startAngle;
-	err = slotFloatVal(e, &startAngle);		
+	err = slotFloatVal(e, &startAngle);
     if (err) return err;
- 
+
 	float angle;
-	err = slotFloatVal(f, &angle);		
+	err = slotFloatVal(f, &angle);
     if (err) return err;
- 
+
 	int clockwise = angle > 0. ? 0 : 1;
 	float endAngle = startAngle + angle;
 
@@ -2585,7 +2585,7 @@ int prPen_AddAnnularWedge(struct VMGlobals *g, int numArgsPushed)
 	p3.y = p1.y + outerRadius * sin(startAngle);
 	p4.x = p1.x + innerRadius * cos(endAngle);
 	p4.y = p1.y + innerRadius * sin(endAngle);
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
@@ -2594,7 +2594,7 @@ int prPen_AddAnnularWedge(struct VMGlobals *g, int numArgsPushed)
 	CGContextAddArc(cgc, p1.x, p1.y, outerRadius, startAngle, endAngle, clockwise);
     CGContextAddLineToPoint(cgc, p4.x, p4.y);
 	CGContextAddArc(cgc, p1.x, p1.y, innerRadius, endAngle, startAngle, 1-clockwise);
-    
+
     return errNone;
 }
 
@@ -2604,12 +2604,12 @@ int prPen_BeginPath(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     //PyrSlot *a = g->sp;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
-    
+
     return errNone;
 }
 
@@ -2619,12 +2619,12 @@ int prPen_ClosePath(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     //PyrSlot *a = g->sp;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextClosePath(cgc);
-    
+
     return errNone;
 }
 
@@ -2634,12 +2634,12 @@ int prPen_StrokePath(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     //PyrSlot *a = g->sp;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextDrawPath(cgc, kCGPathStroke);
-    
+
     return errNone;
 }
 
@@ -2649,12 +2649,12 @@ int prPen_FillPath(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     //PyrSlot *a = g->sp;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextFillPath(cgc);
-    
+
     return errNone;
 }
 
@@ -2665,12 +2665,12 @@ int prPen_ClipPath(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     //PyrSlot *a = g->sp;
- 
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextClip(cgc);
-    
+
     return errNone;
 }
 
@@ -2680,22 +2680,22 @@ int prPen_Translate(struct VMGlobals *g, int numArgsPushed);
 int prPen_Translate(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 
     float x, y;
-    int err = slotFloatVal(b, &x);		
+    int err = slotFloatVal(b, &x);
     if (err) return err;
-    err = slotFloatVal(c, &y);		
+    err = slotFloatVal(c, &y);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextTranslateCTM(cgc, x, y);
-    
+
     return errNone;
 }
 
@@ -2703,43 +2703,43 @@ int prPen_Scale(struct VMGlobals *g, int numArgsPushed);
 int prPen_Scale(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 
     float x, y;
-    int err = slotFloatVal(b, &x);		
+    int err = slotFloatVal(b, &x);
     if (err) return err;
-    err = slotFloatVal(c, &y);		
+    err = slotFloatVal(c, &y);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextScaleCTM(cgc, x, y);
-    
+
     return errNone;
 }
-    
+
 int prPen_Rotate(struct VMGlobals *g, int numArgsPushed);
 int prPen_Rotate(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 3;
     PyrSlot *b = g->sp - 2;
     PyrSlot *c = g->sp - 1;
     PyrSlot *d = g->sp;
 
     float angle, x, y;
-    int err = slotFloatVal(b, &angle);		
+    int err = slotFloatVal(b, &angle);
     if (err) return err;
-    err = slotFloatVal(c, &x);		
+    err = slotFloatVal(c, &x);
     if (err) return err;
-    err = slotFloatVal(d, &y);		
+    err = slotFloatVal(d, &y);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
@@ -2757,14 +2757,14 @@ int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     float width;
-    int err = slotFloatVal(b, &width);		
+    int err = slotFloatVal(b, &width);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
@@ -2777,17 +2777,17 @@ int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetMatrix(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    
+
     if (!isKindOfSlot(b, class_arrayed_collection)) return errWrongType;
-    
-    if (b->uo->size < 6) return errFailed;
-    PyrObject *mobj = b->uo;
-    
+
+    if (slotRawObject(b)->size < 6) return errFailed;
+    PyrObject *mobj = slotRawObject(b);
+
     CGAffineTransform afx;
-    
+
     int err = getIndexedFloat(mobj, 0, &afx.a);
     if (err) return err;
     err = getIndexedFloat(mobj, 1, &afx.b);
@@ -2813,17 +2813,17 @@ int prPen_Skew(struct VMGlobals *g, int numArgsPushed);
 int prPen_Skew(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
 
     float x;
-    int err = slotFloatVal(b, &x);		
+    int err = slotFloatVal(b, &x);
     if (err) return err;
 
     float y;
-    err = slotFloatVal(c, &y);		
+    err = slotFloatVal(c, &y);
     if (err) return err;
 
     CGAffineTransform afx;
@@ -2845,24 +2845,24 @@ int prPen_Skew(struct VMGlobals *g, int numArgsPushed)
 int prPen_DrawAquaButton(struct VMGlobals *g, int numArgsPushed);
 int prPen_DrawAquaButton(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!g->canCallOS) return errCantCallOS;
-    
-    PyrSlot *args = g->sp - 4;
-    
-    if (!(isKindOfSlot(args+1, s_rect->u.classobj))) return errWrongType;
+	if (!g->canCallOS) return errCantCallOS;
 
-    Rect qdrect;
-    int err = slotGetQDRect(args+1, &qdrect);		
-    if (err) return err;
-    
-    ThemeButtonDrawInfo tinfo;
-    tinfo.state = IsTrue(args+3) ? kThemeStatePressedDown : kThemeStatePressedUp ;
-    tinfo.value = IsTrue(args+4) ? kThemeButtonOn : kThemeButtonOff ;
-    tinfo.adornment = kThemeAdornmentDefault;
-    
-    DrawThemeButton(&qdrect, args[2].ui, &tinfo, nil, nil, nil, 0);
-    
-    return errNone;
+	PyrSlot *args = g->sp - 4;
+
+	if (!(isKindOfSlot(args+1, s_rect->u.classobj))) return errWrongType;
+
+	Rect qdrect;
+	int err = slotGetQDRect(args+1, &qdrect);
+	if (err) return err;
+
+	ThemeButtonDrawInfo tinfo;
+	tinfo.state = IsTrue(args+3) ? kThemeStatePressedDown : kThemeStatePressedUp ;
+	tinfo.value = IsTrue(args+4) ? kThemeButtonOn : kThemeButtonOff ;
+	tinfo.adornment = kThemeAdornmentDefault;
+
+	DrawThemeButton(&qdrect, slotRawInt(&args[2]), &tinfo, nil, nil, nil, 0);
+
+	return errNone;
 }
 
 int prPen_SetBlend(struct VMGlobals *g, int numArgsPushed);
@@ -2872,15 +2872,15 @@ int prPen_SetBlend(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 	PyrSlot *c = g->sp; // blendmode
 	int mode = 0, err = errFailed;
-	
+
 	err = slotIntVal(c, &mode);
 	if( err != errNone )
 		return err;
-		
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	CGContextSetBlendMode(cgc, (CGBlendMode)mode);
 	#endif
@@ -2891,33 +2891,33 @@ int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-    
+
 	int err;
-	
+
 	PyrSlot *a = g->sp - 2; // offset
 	PyrSlot *b = g->sp - 1; // blur
     PyrSlot *c = g->sp; // color
-	
+
 	NSPoint offset;
 	float	blur;
 	SCColor scColor;
-	
+
     err = slotColorVal(c, &scColor);
 	if( err != errNone )
 		return err;
-		
+
 	err = slotGetPoint(a, &offset);
 	if( err != errNone )
 		return err;
-	
+
 	err = slotFloatVal(b, &blur);
 	if( err != errNone )
 		return err;
-	
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
 	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 	CGColorRef col = CGColorCreate(colorSpace, (const float*)&scColor);
@@ -2925,12 +2925,12 @@ int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed)
 		CGColorSpaceRelease(colorSpace);
 		return errFailed;
 	}
-		
+
 	CGContextSetShadowWithColor(_ctx, (CGSize){offset.x, offset.y}, blur, col);
-	
+
 	CGColorSpaceRelease(colorSpace);
 	CGColorRelease(col);
-		
+
 	return errNone;
 }
 
@@ -2945,15 +2945,15 @@ int prPen_AddOval(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     CGRect rect;
-    int err = slotGetCGRect(b, &rect);		
+    int err = slotGetCGRect(b, &rect);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
     CGContextAddEllipseInRect((CGContextRef)[gctx graphicsPort], rect);
-	
+
     return errNone;
 }
 
@@ -2961,34 +2961,34 @@ int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed);
 int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-    
+
 	int err;
 	NSPoint points[2];
-	
+
 	PyrSlot *a = g->sp - 1; // point
 	PyrSlot *b = g->sp; // control point 1
-	
+
 	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
-	
+
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
 		return err;
-	
+
 	err = slotGetPoint(b, &points[1]);
 	if( err != errNone )
-		return err;	
-	
+		return err;
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
 	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
-		
+
 	CGContextAddQuadCurveToPoint(_ctx,
 		points[1].x, points[1].y,
 		points[0].x, points[0].y
 	);
-	
+
 	return errNone;
 }
 
@@ -2996,41 +2996,41 @@ int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed);
 int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-    
+
 	int err;
 	NSPoint points[3];
-	
+
 	PyrSlot *a = g->sp - 2; // point
 	PyrSlot *b = g->sp - 1; // control point 1
     PyrSlot *c = g->sp; // control point 2
-	
+
 	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(c, s_point->u.classobj))) return errWrongType;
-	
+
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
 		return err;
-	
+
 	err = slotGetPoint(b, &points[1]);
 	if( err != errNone )
-		return err;	
-		
+		return err;
+
 	err = slotGetPoint(c, &points[2]);
 	if( err != errNone )
 		return err;
-	
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-	
+
     CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
-		
+
 	CGContextAddCurveToPoint(_ctx,
 		points[1].x, points[1].y,
 		points[2].x, points[2].y,
 		points[0].x, points[0].y
 	);
-	
+
 	return errNone;
 }
 
@@ -3078,18 +3078,18 @@ int prPen_ClearRect(struct VMGlobals *g, int numArgsPushed)
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
     CGRect rect;
-    int err = slotGetCGRect(b, &rect);		
+    int err = slotGetCGRect(b, &rect);
     if (err) return err;
-    
-   
+
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
-	
+
     CGContextClearRect(cgc, rect);
-	
+
     return errNone;
 }
 
@@ -3100,14 +3100,14 @@ int prPen_DrawPath(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *b = g->sp;
 	int err, mode=0;
-	
-	if((err = slotIntVal(b, &mode)) != noErr) 
+
+	if((err = slotIntVal(b, &mode)) != noErr)
 		return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//kCGPathFill=0, kCGPathEOFill=1, kCGPathStroke=2, kCGPathFillStroke=3, or kCGPathEOFillStroke=4
 	CGContextDrawPath(cgc, (CGPathDrawingMode)sc_clip(mode,kCGPathFill,kCGPathEOFillStroke));
@@ -3122,32 +3122,32 @@ int prPen_BeginTransparencyLayer(struct VMGlobals *g, int numArgsPushed)
 
 	if (!g->canCallOS) return errCantCallOS;
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
 
 
 	#if 1/*MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_5*/
-	
+
 	CGContextBeginTransparencyLayer((CGContextRef)[gctx graphicsPort], NULL);
-	
+
 	#else /*MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5*/
-	
+
 	PyrSlot *b = g->sp;
-	if (!(isKindOfSlot(b, s_rect->u.classobj))) 
+	if (!(isKindOfSlot(b, s_rect->u.classobj)))
 		return errWrongType;
 
     CGRect rect;
     int err = slotGetCGRect(b, &rect);
-    if (err) 
+    if (err)
 		return err;
-		
+
 	if(rect.size.width == 0 || rect.size.height == 0) // NULL in either side should take all current clipped region
 		CGContextBeginTransparencyLayer((CGContextRef)[gctx graphicsPort], NULL);
 	else
 		CGContextBeginTransparencyLayerWithRect((CGContextRef)[gctx graphicsPort], rect, NULL);
-		
+
 	#endif
-	
+
 #endif
 	return errNone;
 }
@@ -3158,15 +3158,15 @@ int prPen_EndTransparencyLayer(struct VMGlobals *g, int numArgsPushed)
 
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3
 
-	if (!g->canCallOS) 
+	if (!g->canCallOS)
 		return errCantCallOS;
-		
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
 	CGContextEndTransparencyLayer((CGContextRef)[gctx graphicsPort]);
-	
+
 #endif
 
 	return errNone;
@@ -3176,38 +3176,38 @@ int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed);
 int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed)
 {
 	int mode=0, err;
-	
-	if (!g->canCallOS) 
+
+	if (!g->canCallOS)
 		return errCantCallOS;
-		
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-	
+
 	PyrSlot *b  = g->sp; // mode
-	if((err = slotIntVal(b, &mode)) != noErr) 
+	if((err = slotIntVal(b, &mode)) != noErr)
 		return err;
-		
-	//kCGLineJoinMiter=0, kCGLineJoinRound=1,kCGLineJoinBevel=2	
+
+	//kCGLineJoinMiter=0, kCGLineJoinRound=1,kCGLineJoinBevel=2
 	CGContextSetLineJoin((CGContextRef)[gctx graphicsPort], (CGLineJoin)sc_clip(mode, kCGLineJoinMiter, kCGLineJoinBevel));
-	
+
 	return errNone;
 }
 
 int prPen_LineDash(struct VMGlobals *g, int numArgsPushed);
 int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS) 
+	if (!g->canCallOS)
 		return errCantCallOS;
-		
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
 	PyrSlot *a  = g->sp; // array of floats
-	PyrObject*	pyrarray = a->uo;
+	PyrObject*	pyrarray = slotRawObject(a);
 	PyrClass*	pyrclass = pyrarray->classptr;
-	
+
 	if(pyrclass == class_floatarray) { // float array only
 		CGContextSetLineDash(
 			(CGContextRef)[gctx graphicsPort],
@@ -3218,25 +3218,25 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	}else
 		post("Pen line dash needs a FloatArray as argument !\n");
-	
+
 	return errFailed;
 }
 
 int prPen_LineCap(struct VMGlobals *g, int numArgsPushed);
 int prPen_LineCap(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS) 
+	if (!g->canCallOS)
 		return errCantCallOS;
-	
+
 	int err=noErr, mode = 0;
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-		
+
 	PyrSlot *b  = g->sp; // mode
-	if((err = slotIntVal(b, &mode)) != noErr) 
+	if((err = slotIntVal(b, &mode)) != noErr)
 		return err;
-		
+
 	//kCGLineCapButt (default - 0), kCGLineCapRound - 1, or kCGLineCapSquare - 2
 	CGContextSetLineCap((CGContextRef)[gctx graphicsPort], (CGLineCap)sc_clip(mode, kCGLineCapButt, kCGLineCapSquare));
 	return errNone;
@@ -3245,28 +3245,28 @@ int prPen_LineCap(struct VMGlobals *g, int numArgsPushed)
 int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed);
 int prPen_SetAlpha(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS) 
+	if (!g->canCallOS)
 		return errCantCallOS;
-		
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-	
+
 	int err	= errNone; float value;
 	PyrSlot *a  = g->sp; // float
-	
+
 	err = slotFloatVal(a, &value);
 	if(err != errNone)
 		return err;
-	
+
 	CGContextSetAlpha((CGContextRef)[gctx graphicsPort], value);
-	
+
 	return errNone;
 }
 
 
 /*
-*	Gradient Functions 
+*	Gradient Functions
 *	Valid only for MAC OS X 10.2 -) use the CGShading object
 */
 
@@ -3296,7 +3296,7 @@ static void					GradientCalcLinear(void *info, const float *in, float *out)
 	//}
 }
 
-static CGFunctionRef		CreateGradientFunctionRef() 
+static CGFunctionRef		CreateGradientFunctionRef()
 {
 	size_t components;
     static const float input_value_range [2] = { 0, 1 };
@@ -3304,21 +3304,21 @@ static CGFunctionRef		CreateGradientFunctionRef()
     static const CGFunctionCallbacks callbacks = { 0,
 									&GradientCalcLinear,
 									NULL};
-	
-	
-	/* 
+
+
+	/*
 	Note: (colorspace = RGBA == 4)
 	-------------------------
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     components = 1 + CGColorSpaceGetNumberOfComponents (colorSpace);
 	CGColorSpaceRelease(colorSpace);
 	*/
-	
+
 	// initialize gradient info
 	gGradientInfo.color0 = SCMakeColor(1.f,1.f,1.f,1.f);
 	gGradientInfo.color1 = SCMakeColor(0.f,0.f,0.f,1.f);
 	gGradientInfo.scCallback = false;
-	
+
     return CGFunctionCreate ((void *) &gGradientInfo,
                                 1,
                                 input_value_range,
@@ -3329,7 +3329,7 @@ static CGFunctionRef		CreateGradientFunctionRef()
 
 /*
 static CGFunctionRef		gGradientFunctionRef = NULL;
-static CGFunctionRef		GetGradientFunction() 
+static CGFunctionRef		GetGradientFunction()
 {
 	if(!gGradientFunctionRef) {
 		post("creating gradient function !\n");
@@ -3343,7 +3343,7 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed);
 int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-    
+
 	int err;
 	NSPoint points[2];
 
@@ -3351,26 +3351,26 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp - 2; //	point 2
 	PyrSlot *c0= g->sp - 1; //	color 1
 	PyrSlot *c1= g->sp; //	color 2
-	
+
 	if (!(isKindOfSlot(a, s_point->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(c0, s_color->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(c1, s_color->u.classobj))) return errWrongType;
-	
+
 	CGFunctionRef gradFunc = CreateGradientFunctionRef(); // we need to create a new function ref since Quartz cache it
-	if(!gradFunc) {	
+	if(!gradFunc) {
 		post("Error: Failed creating gradient function !\n");
 		return errFailed;
 	}
-	
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-	
+
 	err = slotColorVal(c0, &(gGradientInfo.color0));
 	if( err != errNone )
 		return err;
-		
+
 	err = slotColorVal(c1, &(gGradientInfo.color1));
 	if( err != errNone )
 		return err;
@@ -3378,29 +3378,29 @@ int prPen_DrawAxialGradient(struct VMGlobals *g, int numArgsPushed)
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
 		return err;
-		
+
 	err = slotGetPoint(b, &points[1]);
 	if( err != errNone )
 		return err;
-		
+
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 	CGShadingRef shadingRef = CGShadingCreateAxial(
 		colorSpace,
 		*(CGPoint*)(&points[0]), *(CGPoint*)(&points[1]),
 		gradFunc, true, true
 	);
-	
+
 	CGContextSaveGState((CGContextRef)[gctx graphicsPort]);
 	CGContextClip((CGContextRef)[gctx graphicsPort]);
 	CGContextDrawShading(
 		(CGContextRef)[gctx graphicsPort], shadingRef
 	);
 	CGContextRestoreGState((CGContextRef)[gctx graphicsPort]);
-	
+
 	CGColorSpaceRelease(colorSpace);
 	CGShadingRelease(shadingRef);
 	CGFunctionRelease(gradFunc);
-	
+
 	return errNone;
 }
 
@@ -3408,58 +3408,58 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed);
 int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-    
+
 	int		err;
 	NSPoint points[2];
 	float	radius[2] = {0.f, 0.f};
-	
+
 	PyrSlot *a = g->sp - 5; //	point 1
     PyrSlot *b = g->sp - 4; //	point 2
 	PyrSlot *srad = g->sp - 3; //	start radius
 	PyrSlot *erad = g->sp - 2; //	end radius
 	PyrSlot *c0= g->sp - 1; //	color 1
 	PyrSlot *c1= g->sp; //	color 2
-	
-	
+
+
 	if (!(isKindOfSlot(a, s_point->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(b, s_point->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(c0, s_color->u.classobj))) return errWrongType;
 	if (!(isKindOfSlot(c1, s_color->u.classobj))) return errWrongType;
-	
+
 	CGFunctionRef gradFunc = CreateGradientFunctionRef();
-	if(!gradFunc) {	
+	if(!gradFunc) {
 		NSLog(@"Error: prPen_DrawRadialGradient Failed creating gradient function !\n");
 		return errFailed;
 	}
-	
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) 
+	if (!gctx)
 		return errFailed;
-	
+
 	err = slotColorVal(c0, &(gGradientInfo.color0));
 	if( err != errNone )
 		return err;
-		
+
 	err = slotColorVal(c1, &(gGradientInfo.color1));
 	if( err != errNone )
 		return err;
-			
+
 	err = slotGetPoint(a, &points[0]);
 	if( err != errNone )
 		return err;
-		
+
 	err = slotGetPoint(b, &points[1]);
 	if( err != errNone )
 		return err;
-		
+
 	err = slotFloatVal(srad, &radius[0]);
 	if( err != errNone )
 		return err;
-		
+
 	err = slotFloatVal(erad, &radius[1]);
 	if( err != errNone )
 		return err;
-		
+
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 	CGShadingRef shadingRef = CGShadingCreateRadial(
 		colorSpace,
@@ -3467,14 +3467,14 @@ int prPen_DrawRadialGradient(struct VMGlobals *g, int numArgsPushed)
 		*(CGPoint*)(&points[1]), radius[1],
 		gradFunc, true, true
 	);
-	
+
 	CGContextSaveGState( (CGContextRef)[gctx graphicsPort] );
 	CGContextClip( (CGContextRef)[gctx graphicsPort] );
 	CGContextDrawShading(
 		(CGContextRef)[gctx graphicsPort], shadingRef
 	);
 	CGContextRestoreGState( (CGContextRef)[gctx graphicsPort] );
-	
+
 	CGColorSpaceRelease(colorSpace);
 	CGShadingRelease(shadingRef);
 	CGFunctionRelease(gradFunc);
@@ -3496,28 +3496,28 @@ int prLoadUserPanel(struct VMGlobals *g, int numArgsPushed);
 int prLoadUserPanel(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    
+
     if (!isKindOfSlot(b, class_string)) return errWrongType;
-    PyrString* string = b->uos;
-    
+    PyrString* string = slotRawString(b);
+
     NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
     [nsstring retain];
-    
-    void *scobj = a->uo;    
+
+    void *scobj = slotRawObject(a);
     SEL sel = @selector(loadUserPanel:SCObject:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &nsstring atIndex: 2];       
-    [anInvocation setArgument: &scobj atIndex: 3];       
+    [anInvocation setArgument: &nsstring atIndex: 2];
+    [anInvocation setArgument: &scobj atIndex: 3];
     [scvm defer: anInvocation];
-    
+
     return errNone;
 }
 
@@ -3532,9 +3532,9 @@ int prDrawButtonState(struct VMGlobals *g, int numArgsPushed);
 int prDrawButtonState(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *slots = g->sp - 5;
-    
+
     PyrSlot *rectSlot = slots + 0;
     PyrSlot *strokeColorSlot = slots + 1;
     PyrSlot *fillColorSlot = slots + 2;
@@ -3545,51 +3545,51 @@ int prDrawButtonState(struct VMGlobals *g, int numArgsPushed)
     int err;
 
     CGRect rect;
-    err = slotGetCGRect(rectSlot, &rect);		
+    err = slotGetCGRect(rectSlot, &rect);
     if (err) return err;
-    
+
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 
     CGContextSaveGState(cgc);
-    
+
     SCColor fillColor;
     err = slotColorVal(fillColorSlot, &fillColor);
     if (!err) {
         CGContextSetRGBFillColor(cgc, fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha);
         CGContextFillRect(cgc, rect);
     }
-    
+
     SCColor strokeColor;
     err = slotColorVal(strokeColorSlot, &strokeColor);
     if (!err) {
-        CGContextSetRGBStrokeColor(cgc, 
+        CGContextSetRGBStrokeColor(cgc,
             strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha);
         CGContextStrokeRect(cgc, rect);
     }
-    
+
     if (isKindOfSlot(stringSlot, class_string)) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         err = addFontAttribute(dict, fontSlot);
         if (err) return err;
         err = addFontColorAttribute(dict, stringColorSlot);
         if (err) return err;
-        
-        PyrString *scstring = stringSlot->uos;
+
+        PyrString *scstring = slotRawString(stringSlot);
         NSString *nsstring = [NSString stringWithCString: scstring->s length: scstring->size];
         if (!nsstring) return errFailed;
         NSSize strsize = [nsstring sizeWithAttributes: dict];
-            
+
         NSPoint p;
         p.x = rect.origin.x + rect.size.width/2 - strsize.width/2;
         p.y = rect.origin.y + rect.size.height/2 - strsize.height/2;
-        
+
         [nsstring drawAtPoint: p withAttributes: dict];
     }
-    
+
     CGContextRestoreGState(cgc);
-    
+
     return errNone;
 }
 
@@ -3602,38 +3602,38 @@ int prDrawButtonState(struct VMGlobals *g, int numArgsPushed)
 int slotGetRoundRect(PyrSlot* a, Rect *r, int *radius);
 int slotGetRoundRect(PyrSlot* a, Rect *r, int *radius)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotGetQDRect(a, r);
 	if (err) return err;
 
 	err = slotIntVal(slots+4, radius);
 	if (err) return err;
-	
+
 	return errNone;
 }
 
 int slotBevelRect(PyrSlot* a, Rect *r, int *width, bool *inout);
 int slotBevelRect(PyrSlot* a, Rect *r, int *width, bool *inout)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotGetQDRect(a, r);
 	if (err) return err;
 
 	err = slotIntVal(slots+4, width);
 	if (err) return err;
-	
+
 	if (IsTrue(slots+5)) *inout = true;
 	else *inout = false;
-	
+
 	return errNone;
 }
 
 int slotGetArc(PyrSlot* a, Rect *r, int *startAngle, int *arcAngle);
 int slotGetArc(PyrSlot* a, Rect *r, int *startAngle, int *arcAngle)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotGetQDRect(a, r);
 	if (err) return err;
@@ -3642,7 +3642,7 @@ int slotGetArc(PyrSlot* a, Rect *r, int *startAngle, int *arcAngle)
 	if (err) return err;
 	err = slotIntVal(slots+5, arcAngle);
 	if (err) return err;
-	
+
 	return errNone;
 }
 enum {
@@ -3680,12 +3680,12 @@ void dim_color(RGBColor *rgb)
 void bevelRect(Rect *r0, int width,
 	RGBColor *color1, RGBColor *color2, RGBColor *color3, bool fill);
 void bevelRect(Rect *r0, int width,
-	RGBColor *color1, RGBColor *color2, RGBColor *color3, bool fill) 
+	RGBColor *color1, RGBColor *color2, RGBColor *color3, bool fill)
 {
 	Rect r;
 	PenState ps;
 	RGBColor saveForeColor;
-	
+
 	GetPenState(&ps);
 	GetForeColor(&saveForeColor);
 	r = *r0;
@@ -3710,11 +3710,11 @@ void bevelRect(Rect *r0, int width,
 		PaintRect(&r);
 	}
 	SetPenState(&ps);
-	RGBForeColor(&saveForeColor);	
+	RGBForeColor(&saveForeColor);
 }
 
 void bevelInRect(Rect *r, int width, RGBColor colorFill, bool fill);
-void bevelInRect(Rect *r, int width, RGBColor colorFill, bool fill) 
+void bevelInRect(Rect *r, int width, RGBColor colorFill, bool fill)
 {
 	RGBColor hilite, shadow;
 
@@ -3727,7 +3727,7 @@ void bevelInRect(Rect *r, int width, RGBColor colorFill, bool fill)
 }
 
 void bevelOutRect(Rect *r, int width, RGBColor colorFill, bool fill);
-void bevelOutRect(Rect *r, int width, RGBColor colorFill, bool fill) 
+void bevelOutRect(Rect *r, int width, RGBColor colorFill, bool fill)
 {
 	RGBColor hilite, shadow;
 
@@ -3767,7 +3767,7 @@ inline Point origin(Rect a)
 	p.h = a.left;
 	p.v = a.top;
 	return p;
-}	
+}
 
 inline Point extent(Rect a)
 {
@@ -3816,55 +3816,55 @@ void stringBounds(char *s, int len, Rect &r)
 	GetFontInfo(&finfo);
 
 	int width = TextWidth(s, 0, len);
-	
+
 	r.left = 0;
 	r.top = -finfo.ascent;
 	r.right = width;
-	r.bottom = finfo.descent; 
+	r.bottom = finfo.descent;
 }
 
 int prNewMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *caller = g->sp - 4;		// the SC Object
 	PyrSlot *parentObj = g->sp - 3;	// the parent menu or nil for app menu
 	PyrSlot *ind = g->sp - 2;			// the index
 	PyrSlot *stringSlot = g->sp - 1;	// name of the menu item
 	PyrSlot *submenbool = g->sp;		// submenu bool
-	
+
 	bool nilIndex;
 	int menIndex, err;
-	
+
 	nilIndex = IsNil(ind);
 	if(!nilIndex){
 		err = slotIntVal(ind, &menIndex);
 		if (err) return err;
 	}
-	
+
 	//NSLog(@"menIndex: %i", menIndex);
-	
+
 	if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
-	
-	PyrString* string = stringSlot->uos;
-	
+
+	PyrString* string = slotRawString(stringSlot);
+
 	NSString *label = [[NSString alloc] initWithCString: string->s length: string->size];
-	
+
 	//NSLog(@"Label: %@", label);
 	// make a menu item
 	SCNSMenuItem *menuItem = [[SCNSMenuItem alloc] initWithTitle:label action:@selector(doAction:) keyEquivalent:@""];
 	[menuItem setTarget:menuItem];
-	[menuItem setSCObject: caller->uo];
-	SetPtr(caller->uo->slots + 0, menuItem); // set the dataptr
-	
+	[menuItem setSCObject: slotRawObject(caller)];
+	SetPtr(slotRawObject(caller)->slots + 0, menuItem); // set the dataptr
+
 	if (IsTrue(submenbool)) {
 		// make a submenu if needed
 		//NSLog(@"Is SubMenu");
 		[menuItem setSubmenu:[[NSMenu alloc] initWithTitle:label]];
 		[[menuItem submenu] setAutoenablesItems:NO];
-	} 
-	
+	}
+
 	NSMenu *parentMenu;
 	if (IsNil(parentObj)) {
 		// make a submenu if needed
@@ -3876,20 +3876,20 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:NSLocalizedString(@"Help", @"Help Menu Name")] submenu];
-		} 
+		}
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
-		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
+		SCNSMenuItem *parentItem = (SCNSMenuItem*)(slotRawPtr(slotRawObject(parentObj)->slots));
 		if([parentItem hasSubmenu]) {
 			//NSLog(@"Parent has submenu");
 			parentMenu = [parentItem submenu];
 		}
-	} 
-	
+	}
+
 	if(!parentMenu) {
 		[label release];
 		return errWrongType;
 	}
-	
+
 	// protect against bad indices
 	int parentSize = [parentMenu numberOfItems];
 	//NSLog(@"parentSize: %i", parentSize);
@@ -3902,7 +3902,7 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 		menIndex = 0;
 	}
 	//NSLog(@"Final Index: %i", menIndex);
-	
+
 	[parentMenu insertItem:menuItem atIndex:menIndex];
 	[menuItem retain];
 	if([menuItem hasSubmenu]) { [[menuItem submenu] release]; } // this has been retained
@@ -3914,23 +3914,23 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed);
 int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *caller = g->sp - 2;		// the SC Object
 	PyrSlot *parentObj = g->sp - 1;	// the parent menu or nil for app menu
 	PyrSlot *ind = g->sp;			// the index
-	
+
 	bool nilIndex;
 	int menIndex, err;
-	
+
 	nilIndex = IsNil(ind);
 	if(!nilIndex){
 		err = slotIntVal(ind, &menIndex);
 		if (err) return err;
 	}
-	
+
 	// make a menu item
 	NSMenuItem *menuItem = [NSMenuItem separatorItem];
-	SetPtr(caller->uo->slots + 0, menuItem); // set the dataptr
+	SetPtr(slotRawObject(caller)->slots + 0, menuItem); // set the dataptr
 
 	NSMenu *parentMenu;
 	if (IsNil(parentObj)) {
@@ -3941,19 +3941,19 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		if (strcmp(parentSymbol->name, "Help")==0) {
 			parentMenu = [[[NSApp mainMenu] itemWithTitle:NSLocalizedString(@"Help", @"Help Menu Name")] submenu];
-		} 
+		}
 	} else if (isKindOfSlot(parentObj, getsym("CocoaMenuItem")->u.classobj)){
-		SCNSMenuItem *parentItem = (SCNSMenuItem*)(parentObj->uo->slots->uptr);
+		SCNSMenuItem *parentItem = (SCNSMenuItem*)(slotRawPtr(slotRawObject(parentObj)->slots));
 		if([parentItem hasSubmenu]) {
 			//NSLog(@"Parent has submenu");
 			parentMenu = [parentItem submenu];
 		}
-	} 
-	
+	}
+
 	if(!parentMenu) {
 		return errWrongType;
 	}
-	
+
 	// protect against bad indices
 	int parentSize = [parentMenu numberOfItems];
 	//NSLog(@"parentSize: %i", parentSize);
@@ -3966,7 +3966,7 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 		menIndex = 0;
 	}
 	//NSLog(@"Final Index: %i", menIndex);
-	
+
 	[parentMenu insertItem:menuItem atIndex:menIndex];
 	[menuItem retain];
 	return errNone;
@@ -3976,13 +3976,13 @@ int prNewMenuSeparator(struct VMGlobals *g, int numArgsPushed)
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
-	
+
 	PyrSlot *caller = g->sp;
-	
-	NSMenuItem *menuItem = (NSMenuItem*)(caller->uo->slots->uptr);
+
+	NSMenuItem *menuItem = (NSMenuItem*)(slotRawPtr(slotRawObject(caller)->slots));
 	if(!menuItem) return errFailed;
 	[[menuItem menu] removeItem:menuItem];
-	SetNil(caller->uo->slots); // we're now a lame duck
+	SetNil(slotRawObject(caller)->slots); // we're now a lame duck
 	//if([menuItem hasSubmenu]) { [[menuItem submenu] release] };
 	[menuItem release];
 	return errNone;
@@ -3992,11 +3992,11 @@ int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prEnableMenuItem(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *caller = g->sp - 1;
 	PyrSlot *boolean = g->sp;
-	
-	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(slotRawPtr(slotRawObject(caller)->slots));
 	if(!menuItem) return errFailed;
 	if(IsTrue(boolean)) {
 		[menuItem setEnabled:YES];
@@ -4010,11 +4010,11 @@ int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed);
 int prSetMenuItemState(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *caller = g->sp - 1;
 	PyrSlot *boolean = g->sp;
-	
-	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(slotRawPtr(slotRawObject(caller)->slots));
 	if(!menuItem) return errFailed;
 	if(IsTrue(boolean)) {
 		[menuItem setState:NSOnState];
@@ -4032,29 +4032,29 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *stringSlot = g->sp - 2;
 	PyrSlot *alt = g->sp - 1;
 	PyrSlot *ctrl = g->sp;
-	
-	SCNSMenuItem *menuItem = (SCNSMenuItem*)(caller->uo->slots->uptr);
+
+	SCNSMenuItem *menuItem = (SCNSMenuItem*)(slotRawPtr(slotRawObject(caller)->slots));
 	if(!menuItem) return errFailed;
-	
+
 	if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
-	
-	PyrString* string = stringSlot->uos;
-	
+
+	PyrString* string = slotRawString(stringSlot);
+
 	NSString *kbEquiv = [[NSString alloc] initWithCString: string->s length: string->size];
-	
+
 	[menuItem setKeyEquivalent:kbEquiv];
-	
+
 	int mod = NSCommandKeyMask;
 	if(IsTrue(alt)) {
 		mod = mod | NSAlternateKeyMask;
 	}
-	
+
 	if(IsTrue(ctrl)) {
 		mod = mod | NSControlKeyMask;
 	}
-	
+
 	[menuItem setKeyEquivalentModifierMask:mod];
-	
+
 	[kbEquiv release];
 	return errNone;
 }
@@ -4065,7 +4065,7 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *b = g->sp;
-	
+
 	//#if SC_DARWIN
 	RgnHandle rgn = GetGrayRgn();
 	Rect screenBounds;
@@ -4081,15 +4081,15 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
 	#else
 
 	# ifdef SC_WIN32
-	int screenWidth  = GetSystemMetrics( SM_CXSCREEN ); 
+	int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
 	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
 		// default: SM_CX/CYSCREEN gets the size of a primary screen.
 		// lines uncommented below are just for a specially need on multi-display.
-	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN ); 
+	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
 	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
 	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
 	float r_screenHeight = 1.f / (float)(screenHeight -1);
-	
+
 	GetCursorPos(&p);
 	float mouseX = (float)p.x * r_screenWidth;
 	float mouseY = 1.f - (float)p.y * r_screenHeight;
@@ -4097,13 +4097,13 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
 	# else
 	# endif
 	*/
-	
-    PyrSlot *slots = b->uo->slots;
+
+    PyrSlot *slots = slotRawObject(b)->slots;
     SetFloat(slots+0, mouseX);
     SetFloat(slots+1, mouseY);
 	//SetBool(slots+2, mouseButton);
 
-    
+
     return errNone;
 }
 
@@ -4112,11 +4112,11 @@ int prRecompile(struct VMGlobals *g, int numArgsPushed)
 {
 	SEL sel = @selector(compileLibrary:);
     NSMethodSignature *sig = [SCVirtualMachine instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: scvm];
-    [anInvocation setSelector: sel];     
+    [anInvocation setSelector: sel];
     [scvm defer: anInvocation];
 
 	return errNone;
@@ -4126,17 +4126,17 @@ int prSetDeferredTaskInterval(struct VMGlobals *g, int numArgsPushed);
 int prSetDeferredTaskInterval(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *intv = g->sp;
-	
+
 	int err;
 	float interval;
-	
+
 	err = slotFloatVal(intv, &interval);
 	if (err) return err;
 	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 	[scvm setDeferredTaskInterval: interval];
-	
+
 	return errNone;
 }
 
@@ -4145,7 +4145,7 @@ void initSCImagePrimitives();
 void initGUIPrimitives()
 {
 	int base, index;
-	
+
         s_draw = getsym("draw");
         s_font = getsym("SCFont");
         s_closed = getsym("closed");
@@ -4156,8 +4156,8 @@ void initGUIPrimitives()
 
 	base = nextPrimitiveIndex();
 	index = 0;
-	
-	
+
+
 	//reset scobjects in mydocument
 	//_TextWindow_ primitves by jan.t
 	NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
@@ -4170,8 +4170,8 @@ void initGUIPrimitives()
 	}
 
     [NSBezierPath setDefaultLineWidth: 1];
-	
-	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);	
+
+	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SelectedText", prTextWindow_SelectedText, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_InsertText", prTextWindow_InsertText, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_InsertTextInRange", prTextWindow_InsertTextInRange, 4, 0);
@@ -4198,91 +4198,91 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_UnfocusedFront", prTextWindow_UnfocusedFront, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SetBounds", prTextWindow_SetBounds, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_GetBounds", prTextWindow_GetBounds, 2, 0);
-	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);	
-	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);	
-	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);	
-//	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);	
-	definePrimitive(base, index++, "_TextWindow_GetFileName", prTextWindow_GetFileName, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_SetFileName", prTextWindow_SetFileName, 2, 0);	
-	
-	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_AlwaysOnTop", prTextWindow_AlwaysOnTop, 2, 0);	
-	definePrimitive(base, index++, "_TextWindow_IsAlwaysOnTop", prTextWindow_IsAlwaysOnTop, 1, 0);	
-	definePrimitive(base, index++, "_TextWindow_SetPromptToSave", prTextWindow_SetPromptToSave, 2, 0);	
-	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_SetName", prTextWindow_SetName, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_SetEditable", prTextWindow_SetEditable, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_RemoveUndo", prTextWindow_RemoveUndo, 1, 0);
+//	definePrimitive(base, index++, "_TextWindow_SelectToken", prTextWindow_SelectToken, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SelectUnderlinedText", prTextWindow_SelectUnderlinedText, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_GetFileName", prTextWindow_GetFileName, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SetFileName", prTextWindow_SetFileName, 2, 0);
+
+	definePrimitive(base, index++, "_TextWindow_UnderlineSelection", prTextWindow_UnderlineSelection, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_AlwaysOnTop", prTextWindow_AlwaysOnTop, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_IsAlwaysOnTop", prTextWindow_IsAlwaysOnTop, 1, 0);
+	definePrimitive(base, index++, "_TextWindow_SetPromptToSave", prTextWindow_SetPromptToSave, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);
 	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 6, 0);
-	definePrimitive(base, index++, "_TextWindow_BalanceParens", prBalanceParens, 1, 0);	
+	definePrimitive(base, index++, "_TextWindow_BalanceParens", prBalanceParens, 1, 0);
 
 
 
 ///
-	definePrimitive(base, index++, "_NewTextWindow", prNewTextWindow, 4, 0);	
-	definePrimitive(base, index++, "_OpenTextFile", prOpenTextFile, 4, 0);	
-        
-	definePrimitive(base, index++, "_GetStringFromUser", prGetStringFromUser, 3, 0);	
-	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);	
-	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_Minimize", prSCWindow_Minimize, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_BeginFullScreen", prSCWindow_FullScreen, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_EndFullScreen", prSCWindow_EndFullScreen, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_SetShouldClose", prSCWindow_SetShouldClose, 2, 0);	
-    
-	definePrimitive(base, index++, "_SCWindow_Show", prSCWindow_Show, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_Hide", prSCWindow_Hide, 1, 0);	
+	definePrimitive(base, index++, "_NewTextWindow", prNewTextWindow, 4, 0);
+	definePrimitive(base, index++, "_OpenTextFile", prOpenTextFile, 4, 0);
+
+	definePrimitive(base, index++, "_GetStringFromUser", prGetStringFromUser, 3, 0);
+	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);
+	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_Minimize", prSCWindow_Minimize, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_BeginFullScreen", prSCWindow_FullScreen, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_EndFullScreen", prSCWindow_EndFullScreen, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_SetShouldClose", prSCWindow_SetShouldClose, 2, 0);
+
+	definePrimitive(base, index++, "_SCWindow_Show", prSCWindow_Show, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_Hide", prSCWindow_Hide, 1, 0);
 	definePrimitive(base, index++, "_SCWindow_AlwaysOnTop", prSCWindow_AlwaysOnTop, 2, 0);
 	definePrimitive(base, index++, "_SCWindow_AcceptsClickThrough", prSCWindow_AcceptsClickThrough, 2, 0);
 
-	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_SetAlpha", prSCWindow_SetAlpha, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_SetAlpha", prSCWindow_SetAlpha, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_SetBounds", prSCWindow_SetBounds, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_GetBounds", prSCWindow_GetBounds, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_GetScreenBounds", prSCWindow_GetScreenBounds, 2, 0);
 	definePrimitive(base, index++, "_SCWindow_SetAcceptMouseOver", prSCWindow_SetAcceptMouseOver, 2, 0);
-	definePrimitive(base, index++, "_SCWindow_RunModal", prSCWindow_RunModal, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_StopModal", prSCWindow_StopModal, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_RunModalSheet", prSCWindow_RunModalSheet, 2, 0);	
-	definePrimitive(base, index++, "_SCWindow_StopModalSheet", prSCWindow_StopModalSheet, 1, 0);	
-	definePrimitive(base, index++, "_ShowCursor", prShowCursor, 2, 0);	
+	definePrimitive(base, index++, "_SCWindow_RunModal", prSCWindow_RunModal, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_StopModal", prSCWindow_StopModal, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_RunModalSheet", prSCWindow_RunModalSheet, 2, 0);
+	definePrimitive(base, index++, "_SCWindow_StopModalSheet", prSCWindow_StopModalSheet, 1, 0);
+	definePrimitive(base, index++, "_ShowCursor", prShowCursor, 2, 0);
 
-	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);	
-	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);	
-	definePrimitive(base, index++, "_String_DrawInRect", prString_DrawInRect, 4, 0);	
-	definePrimitive(base, index++, "_Color_SetStroke", prColor_SetStroke, 1, 0);	
-	definePrimitive(base, index++, "_Color_SetFill", prColor_SetFill, 1, 0);	
+	definePrimitive(base, index++, "_String_GetBounds", prString_GetBounds, 3, 0);
+	definePrimitive(base, index++, "_String_DrawAtPoint", prString_DrawAtPoint, 4, 0);
+	definePrimitive(base, index++, "_String_DrawInRect", prString_DrawInRect, 4, 0);
+	definePrimitive(base, index++, "_Color_SetStroke", prColor_SetStroke, 1, 0);
+	definePrimitive(base, index++, "_Color_SetFill", prColor_SetFill, 1, 0);
 
-	definePrimitive(base, index++, "_Pen_StrokeRect", prPen_StrokeRect, 2, 0);	
-	definePrimitive(base, index++, "_Pen_FillRect", prPen_FillRect, 2, 0);	
-	definePrimitive(base, index++, "_Pen_StrokeOval", prPen_StrokeOval, 2, 0);	
-	definePrimitive(base, index++, "_Pen_FillOval", prPen_FillOval, 2, 0);	
-	definePrimitive(base, index++, "_Pen_StrokeLine", prPen_StrokeLine, 3, 0);	
-	definePrimitive(base, index++, "_Pen_Push", prPen_Push, 1, 0);	
-	definePrimitive(base, index++, "_Pen_Pop", prPen_Pop, 1, 0);	
-	definePrimitive(base, index++, "_Pen_Translate", prPen_Translate, 3, 0);	
-	definePrimitive(base, index++, "_Pen_Skew", prPen_Skew, 3, 0);	
-	definePrimitive(base, index++, "_Pen_Scale", prPen_Scale, 3, 0);	
-	definePrimitive(base, index++, "_Pen_Rotate", prPen_Rotate, 4, 0);	
-	definePrimitive(base, index++, "_Pen_SetWidth", prPen_SetWidth, 2, 0);	
-	definePrimitive(base, index++, "_Pen_SetMatrix", prPen_SetMatrix, 2, 0);	
-	definePrimitive(base, index++, "_Pen_AddRect", prPen_AddRect, 2, 0);	
-	definePrimitive(base, index++, "_Pen_AddArc", prPen_AddArc, 5, 0);	
-	definePrimitive(base, index++, "_Pen_AddWedge", prPen_AddWedge, 5, 0);	
-	definePrimitive(base, index++, "_Pen_AddAnnularWedge", prPen_AddAnnularWedge, 6, 0);	
+	definePrimitive(base, index++, "_Pen_StrokeRect", prPen_StrokeRect, 2, 0);
+	definePrimitive(base, index++, "_Pen_FillRect", prPen_FillRect, 2, 0);
+	definePrimitive(base, index++, "_Pen_StrokeOval", prPen_StrokeOval, 2, 0);
+	definePrimitive(base, index++, "_Pen_FillOval", prPen_FillOval, 2, 0);
+	definePrimitive(base, index++, "_Pen_StrokeLine", prPen_StrokeLine, 3, 0);
+	definePrimitive(base, index++, "_Pen_Push", prPen_Push, 1, 0);
+	definePrimitive(base, index++, "_Pen_Pop", prPen_Pop, 1, 0);
+	definePrimitive(base, index++, "_Pen_Translate", prPen_Translate, 3, 0);
+	definePrimitive(base, index++, "_Pen_Skew", prPen_Skew, 3, 0);
+	definePrimitive(base, index++, "_Pen_Scale", prPen_Scale, 3, 0);
+	definePrimitive(base, index++, "_Pen_Rotate", prPen_Rotate, 4, 0);
+	definePrimitive(base, index++, "_Pen_SetWidth", prPen_SetWidth, 2, 0);
+	definePrimitive(base, index++, "_Pen_SetMatrix", prPen_SetMatrix, 2, 0);
+	definePrimitive(base, index++, "_Pen_AddRect", prPen_AddRect, 2, 0);
+	definePrimitive(base, index++, "_Pen_AddArc", prPen_AddArc, 5, 0);
+	definePrimitive(base, index++, "_Pen_AddWedge", prPen_AddWedge, 5, 0);
+	definePrimitive(base, index++, "_Pen_AddAnnularWedge", prPen_AddAnnularWedge, 6, 0);
 
-	definePrimitive(base, index++, "_Pen_BeginPath", prPen_BeginPath, 1, 0);	
-	definePrimitive(base, index++, "_Pen_ClosePath", prPen_ClosePath, 1, 0);	
-	definePrimitive(base, index++, "_Pen_MoveTo", prPen_MoveTo, 2, 0);	
-	definePrimitive(base, index++, "_Pen_LineTo", prPen_LineTo, 2, 0);	
-	definePrimitive(base, index++, "_Pen_StrokePath", prPen_StrokePath, 1, 0);	
-	definePrimitive(base, index++, "_Pen_FillPath", prPen_FillPath, 1, 0);	
-	definePrimitive(base, index++, "_Pen_ClipPath", prPen_ClipPath, 1, 0);	
-        
-	definePrimitive(base, index++, "_Pen_DrawAquaButton", prPen_DrawAquaButton, 5, 0);	
-	
+	definePrimitive(base, index++, "_Pen_BeginPath", prPen_BeginPath, 1, 0);
+	definePrimitive(base, index++, "_Pen_ClosePath", prPen_ClosePath, 1, 0);
+	definePrimitive(base, index++, "_Pen_MoveTo", prPen_MoveTo, 2, 0);
+	definePrimitive(base, index++, "_Pen_LineTo", prPen_LineTo, 2, 0);
+	definePrimitive(base, index++, "_Pen_StrokePath", prPen_StrokePath, 1, 0);
+	definePrimitive(base, index++, "_Pen_FillPath", prPen_FillPath, 1, 0);
+	definePrimitive(base, index++, "_Pen_ClipPath", prPen_ClipPath, 1, 0);
+
+	definePrimitive(base, index++, "_Pen_DrawAquaButton", prPen_DrawAquaButton, 5, 0);
+
 	definePrimitive(base, index++, "_Pen_AddQuadCurve", prPen_AddBezierQuadCurve, 3, 0);
 	definePrimitive(base, index++, "_Pen_AddCubicCurve", prPen_AddBezierCubicCurve, 4, 0);
 	definePrimitive(base, index++, "_Pen_AddArcToPoint", prPen_AddArcToPoint, 4, 0);
@@ -4299,17 +4299,17 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_Pen_AddOval", prPen_AddOval, 2, 0);
 	definePrimitive(base, index++, "_Pen_DrawAxialGradient", prPen_DrawAxialGradient, 5, 0);
 	definePrimitive(base, index++, "_Pen_DrawRadialGradient", prPen_DrawRadialGradient, 7, 0);
-	
-	definePrimitive(base, index++, "_HasDeferred", prHasDeferred, 1, 0);	
-	definePrimitive(base, index++, "_LoadUserPanel", prLoadUserPanel, 2, 0);	
+
+	definePrimitive(base, index++, "_HasDeferred", prHasDeferred, 1, 0);
+	definePrimitive(base, index++, "_LoadUserPanel", prLoadUserPanel, 2, 0);
 
 	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 	definePrimitive(base, index++, "_Font_SetAntiAliasing", prFont_SetAntiAliasing, 2, 0);
 	definePrimitive(base, index++, "_Font_SetSmoothing", prFont_SetSmoothing, 2, 0);
-	
+
 	definePrimitive(base, index++, "_TextWindow_LinkAtClickPos", prTextWindow_LinkAtClickPos, 2, 0);
 	definePrimitive(base, index++, "_Pen_SetSmoothing", prPen_SetSmoothing, 2, 0);
-	
+
 	definePrimitive(base, index++, "_NewMenuItem", prNewMenuItem, 5, 0);
 	definePrimitive(base, index++, "_NewMenuSeparator", prNewMenuSeparator, 3, 0);
 	definePrimitive(base, index++, "_RemoveMenuItem", prRemoveMenuItem, 1, 0);

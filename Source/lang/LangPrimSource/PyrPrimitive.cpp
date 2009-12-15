@@ -85,9 +85,9 @@ PyrSymbol* getPrimitiveName(int index)
 
 int slotStrLen(PyrSlot *slot) {
         if (IsSym(slot)) {
-                return slot->us->length;
+                return slotRawSymbol(slot)->length;
         } else if (isKindOfSlot(slot, class_string)) {
-                return slot->uo->size;
+                return slotRawObject(slot)->size;
         }
         return -1;
 }
@@ -95,12 +95,12 @@ int slotStrLen(PyrSlot *slot) {
 int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 {
 	if (IsSym(slot)) {
-		strncpy(str, slot->us->name, maxlen);
+		strncpy(str, slotRawSymbol(slot)->name, maxlen);
 		return errNone;
 	} else if (isKindOfSlot(slot, class_string)) {
 		int len;
-		len = sc_min(maxlen-1, slot->uo->size);
-		memcpy(str, slot->uos->s, len);
+		len = sc_min(maxlen-1, slotRawObject(slot)->size);
+		memcpy(str, slotRawString(slot)->s, len);
 		str[len] = 0;
 		return errNone;
 	}
@@ -110,13 +110,13 @@ int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 int slotPStrVal(PyrSlot *slot, unsigned char *str)
 {
 	if (IsSym(slot)) {
-		strncpy((char*)str+1, slot->us->name, 255);
-		str[0] = slot->us->length;
+		strncpy((char*)str+1, slotRawSymbol(slot)->name, 255);
+		str[0] = slotRawSymbol(slot)->length;
 		return errNone;
 	} else if (isKindOfSlot(slot, class_string)) {
 		int len;
-		len = sc_min(255, slot->uo->size);
-		memcpy(str+1, slot->uos->s, len);
+		len = sc_min(255, slotRawObject(slot)->size);
+		memcpy(str+1, slotRawString(slot)->s, len);
 		str[0] = len;
 		return errNone;
 	}
@@ -133,18 +133,18 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 
 	if (NotObj(a)) return errWrongType;
 
-	PyrObject *obj = a->uo;
+	PyrObject *obj = slotRawObject(a);
 
 	if (IsInt(b)) {
-		index = b->ui;
+		index = slotRawInt(b);
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 		slotCopy(a,&obj->slots[index]);
 	} else if (IsSym(b)) {
 		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
 		if (!isKindOfSlot(instVarNamesSlot, class_symbolarray)) return errFailed;
-		PyrSymbolArray *instVarNames = instVarNamesSlot->uosym;
+		PyrSymbolArray *instVarNames = slotRawSymbolArray(instVarNamesSlot);
 		PyrSymbol **names = instVarNames->symbols;
-		PyrSymbol *name = b->us;
+		PyrSymbol *name = slotRawSymbol(b);
 		for (int i=0; i<instVarNames->size; ++i) {
 			if (names[i] == name) {
 				slotCopy(a,&obj->slots[i]);
@@ -167,11 +167,11 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	if (NotObj(a)) return errWrongType;
-	obj = a->uo;
+	obj = slotRawObject(a);
 	if (obj->obj_flags & obj_immutable) return errImmutableObject;
 
 	if (IsInt(b)) {
-		index = b->ui;
+		index = slotRawInt(b);
 		if (index < 0 || index >= obj->size) return errIndexOutOfRange;
 		slot = obj->slots + index;
 		slotCopy(slot,c);
@@ -179,9 +179,9 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	} else if (IsSym(b)) {
 		PyrSlot *instVarNamesSlot = &obj->classptr->instVarNames;
 		if (!IsObj(instVarNamesSlot)) return errFailed;
-		PyrSymbolArray *instVarNames = instVarNamesSlot->uosym;
+		PyrSymbolArray *instVarNames = slotRawSymbolArray(instVarNamesSlot);
 		PyrSymbol **names = instVarNames->symbols;
-		PyrSymbol *name = b->us;
+		PyrSymbol *name = slotRawSymbol(b);
 		for (int i=0; i<instVarNames->size; ++i) {
 			if (names[i] == name) {
 				slot = obj->slots + i;
@@ -190,7 +190,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 				return errNone;
 			}
 		}
-		post("WARNING: %s instVarPut '%s' failed.\n", obj->classptr->name.us->name, name->name);
+		post("WARNING: %s instVarPut '%s' failed.\n", slotRawSymbol(&obj->classptr->name)->name, name->name);
 		return errNone;
 	} else return errWrongType;
 	return errNone;
@@ -206,7 +206,7 @@ int instVarSize(struct VMGlobals *g, int numArgsPushed)
 		SetInt(a, 0);
 		return errNone;
 	}
-	obj = a->uo;
+	obj = slotRawObject(a);
 	if (obj->obj_format == obj_notindexed) {
 		SetInt(a, obj->size);
 	} else {
@@ -281,7 +281,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 	const char *str;
 
 	a = g->sp;
-	switch (g->thread->primitiveError.ui) {
+	switch (slotRawInt(&g->thread->primitiveError)) {
 		case errReturn : str = "Return (not an error)."; break;
 		case errNone : str = "No Error"; break;
 		case errFailed : str = "Failed."; break;
@@ -311,7 +311,7 @@ int prPostString(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	//if (NotObj(a)) return errWrongType;
 	// assume it is a string!
-	postText(a->uos->s, a->uos->size);
+	postText(slotRawString(a)->s, slotRawString(a)->size);
 	return errNone;
 }
 
@@ -322,7 +322,7 @@ int prPostLine(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	//if (NotObj(a)) return errWrongType;
 	// assume it is a string!
-	postText(a->uos->s, a->uos->size);
+	postText(slotRawString(a)->s, slotRawString(a)->size);
 	postChar('\n');
 	return errNone;
 }
@@ -347,7 +347,7 @@ int prObjectString(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	if (IsSym(a)) {
-		string = newPyrString(g->gc, a->us->name, 0, true);
+		string = newPyrString(g->gc, slotRawSymbol(a)->name, 0, true);
 		SetObject(a, string);
 		return errNone;
 	} else if (postString(a, str)) {
@@ -388,14 +388,14 @@ int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	if (IsSym(a)) {
-		int len = strlen(a->us->name) + 1;
+		int len = strlen(slotRawSymbol(a)->name) + 1;
 		if (len < 255) {
 			char str[256];
-			sprintf(str, "'%s'", a->us->name);
+			sprintf(str, "'%s'", slotRawSymbol(a)->name);
 			string = newPyrString(g->gc, str, 0, true);
 		} else {
 			char *str = (char*)malloc(len+2);
-			sprintf(str, "'%s'", a->us->name);
+			sprintf(str, "'%s'", slotRawSymbol(a)->name);
 			string = newPyrString(g->gc, str, 0, true);
 			free(str);
 		}
@@ -418,7 +418,7 @@ int prClassString(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	classobj = classOfSlot(a);
-	string = newPyrString(g->gc, classobj->name.us->name, 0, true);
+	string = newPyrString(g->gc, slotRawSymbol(&classobj->name)->name, 0, true);
 	SetObject(a, string);
 	return errNone;
 }
@@ -430,9 +430,9 @@ int prPrimName(struct VMGlobals *g, int numArgsPushed)
 	PyrThread *thread;
 
 	a = g->sp;
-	thread = a->uot;
-	if (thread->primitiveIndex.ui <= gPrimitiveTable.size) {
-		SetSymbol(a, gPrimitiveTable.table[thread->primitiveIndex.ui].name);
+	thread = slotRawThread(a);
+	if (slotRawInt(&thread->primitiveIndex) <= gPrimitiveTable.size) {
+		SetSymbol(a, gPrimitiveTable.table[slotRawInt(&thread->primitiveIndex)].name);
 	} else {
 		SetSymbol(a, s_none);
 	}
@@ -449,7 +449,7 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (NotObj(b)) return errWrongType;
-	testclass = (PyrClass*)b->uo;
+	testclass = (PyrClass*)slotRawObject(b);
 	classobj = classOfSlot(a);
 #if 0
 	while (classobj) {
@@ -457,17 +457,17 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 			SetTrue(a);
 			return errNone;
 		}
-		classobj = classobj->superclass.us->u.classobj;
+		classobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 	}
 	SetFalse(a);
 #else
 	// constant time lookup method:
 
-	objClassIndex = classobj->classIndex.ui;
-	testClassIndex = testclass->classIndex.ui;
-	maxSubclassIndex = testclass->maxSubclassIndex.ui;
+	objClassIndex = slotRawInt(&classobj->classIndex);
+	testClassIndex = slotRawInt(&testclass->classIndex);
+	maxSubclassIndex = slotRawInt(&testclass->maxSubclassIndex);
 
-	/*post("%s %s\n", classobj->name.us->name, testclass->name.us->name);
+	/*post("%s %s\n", slotRawSymbol(&classobj->name)->name, testclass->name.us->name);
 	post("objClassIndex %d\n", objClassIndex);
 	post("testClassIndex %d\n", testClassIndex);
 	post("maxSubclassIndex %d\n", maxSubclassIndex);*/
@@ -494,7 +494,7 @@ int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (NotObj(b)) return errWrongType;
-	testclass = (PyrClass*)b->uo;
+	testclass = (PyrClass*)slotRawObject(b);
 	classobj = classOfSlot(a);
 	if (classobj == testclass) {
 		SetTrue(a);
@@ -511,7 +511,7 @@ int objectIdentical(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->ui == b->ui && a->utag == b->utag) {
+	if (slotRawInt(a) == slotRawInt(b) && GetTag(a) == GetTag(b)) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -526,7 +526,7 @@ int objectNotIdentical(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	if (a->ui != b->ui || a->utag != b->utag) {
+	if (slotRawInt(a) != slotRawInt(b) || GetTag(a) != GetTag(b)) {
 		SetTrue(a);
 	} else {
 		SetFalse(a);
@@ -546,8 +546,8 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (NotObj(a)) return errWrongType;
-	classobj = (PyrClass*)a->uo;
-	if (classobj->classFlags.ui & classHasIndexableInstances) {
+	classobj = (PyrClass*)slotRawObject(a);
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		// create an indexable object
 		if (NotInt(b)) {
 			if (IsFloat(b)) {
@@ -555,7 +555,7 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 			} else if (NotNil(b)) return errIndexNotAnInteger;
 			else size = 8;
 		} else {
-			size = b->ui;
+			size = slotRawInt(b);
 		}
 		if (size < 0) size = 0;
 	} else {
@@ -577,8 +577,8 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 	b = a + 1;
 
 	if (NotObj(a)) return errWrongType;
-	classobj = (PyrClass*)a->uo;
-	if (classobj->classFlags.ui & classHasIndexableInstances) {
+	classobj = (PyrClass*)slotRawObject(a);
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		error("CopyArgs : object has no instance variables.\n");
 		return errFailed;
 	}
@@ -606,8 +606,8 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (NotObj(a)) return errWrongType;
-	classobj = (PyrClass*)a->uo;
-	if (classobj->classFlags.ui & classHasIndexableInstances) {
+	classobj = (PyrClass*)slotRawObject(a);
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		// create an indexable object
 		if (NotInt(b)) {
 			if (IsFloat(b)) {
@@ -615,7 +615,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 			} else if (NotNil(b)) return errIndexNotAnInteger;
 			else size = 8;
 		} else {
-			size = b->ui;
+			size = slotRawInt(b);
 		}
 		if (size < 0) size = 0;
 	} else {
@@ -638,7 +638,7 @@ bool isWithinClosed(PyrBlock* fundef)
 {
 	while (fundef) {
 		if (isClosed(fundef)) return true;
-		fundef = fundef->contextDef.uoblk;
+		fundef = slotRawBlock(&fundef->contextDef);
 	}
 	return false;
 }
@@ -648,7 +648,7 @@ int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	if (!isClosed(a->uoblk)) {
+	if (!isClosed(slotRawBlock(a))) {
 		dumpObjectSlot(a);
 		error("Only closed FunctionDef may be converted to a Function using asFunction.\n");
 		return errFailed;
@@ -659,7 +659,7 @@ int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed)
 	closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 	closure->size = 2;
 	slotCopy(&closure->block,a);
-	slotCopy(&closure->context,&g->process->interpreter.uoi->context);
+	slotCopy(&closure->context,&slotRawInterpreter(&g->process->interpreter)->context);
 	SetObject(a, closure);
 	return errNone;
 }
@@ -670,9 +670,9 @@ int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 
 	int i=0;
-	while (a->uoblk) {
-		post("%2d context %s %08X\n", i++, a->uo->classptr->name.us->name, a->uoblk->contextDef.ui);
-		a = &a->uoblk->contextDef;
+	while (slotRawBlock(a)) {
+		post("%2d context %s %08X\n", i++, slotRawSymbol(&slotRawObject(a)->classptr->name)->name, slotRawInt(&slotRawBlock(a)->contextDef));
+		a = &slotRawBlock(a)->contextDef;
 	}
 	return errNone;
 }
@@ -683,7 +683,7 @@ int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed);
 int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrBlock *block = a->uoblk;
+	PyrBlock *block = slotRawBlock(a);
 
 	SetBool(a, isClosed(block));
 	return errNone;
@@ -693,7 +693,7 @@ int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed);
 int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrBlock *block = a->uoblk;
+	PyrBlock *block = slotRawBlock(a);
 
 	SetBool(a, isWithinClosed(block));
 	return errNone;
@@ -726,8 +726,8 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (IsObj(b)) {
-		if (b->uo->classptr == class_array) {
-			array = (PyrObject*)b->uo;
+		if (slotRawObject(b)->classptr == class_array) {
+			array = (PyrObject*)slotRawObject(b);
 			above:
 			size = array->size;
 
@@ -749,10 +749,10 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 			g->sp += size - 1;
 			return blockValue(g, size+numArgsPushed-1);
 
-		} else if (b->uo->classptr == class_list) {
-			list = b->uol;
+		} else if (slotRawObject(b)->classptr == class_list) {
+			list = slotRawList(b);
 			if (NotObj(&list->array)) return errWrongType;
-			array = list->array.uo;
+			array = slotRawObject(&list->array);
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
 		} else { // last arg is not a list or array, so pass as normal
@@ -778,8 +778,8 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 
 	if (IsObj(b)) {
-		if (b->uo->classptr == class_array) {
-			array = (PyrObject*)b->uo;
+		if (slotRawObject(b)->classptr == class_array) {
+			array = (PyrObject*)slotRawObject(b);
 			above:
 			size = array->size;
 
@@ -801,10 +801,10 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 			g->sp += size - 1;
 			return blockValueEnvir(g, size+numArgsPushed-1);
 
-		} else if (b->uo->classptr == class_list) {
-			list = b->uol;
+		} else if (slotRawObject(b)->classptr == class_list) {
+			list = slotRawList(b);
 			if (NotObj(&list->array)) return errWrongType;
-			array = list->array.uo;
+			array = slotRawObject(&list->array);
 			if (array->classptr != class_array) return errWrongType;
 			goto above;
 		} else { // last arg is not a list or array, so pass as normal
@@ -849,11 +849,11 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 	numArgsPushed -- ;
 	g->numpop = 0;
 
-	closure = (PyrClosure*)args->uo;
-	block = closure->block.uoblk;
-	context = closure->context.uof;
+	closure = (PyrClosure*)slotRawObject(args);
+	block = slotRawBlock(&closure->block);
+	context = slotRawFrame(&closure->context);
 
-	proto = block->prototypeFrame.uo;
+	proto = slotRawObject(&block->prototypeFrame);
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -876,7 +876,7 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 
 
 	g->sp = args - 1;
-	g->ip = block->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&block->code)->b - 1;
 	g->frame = frame;
 	g->block = block;
 
@@ -935,10 +935,10 @@ int blockValue(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 
-	homeContext = frame->homeContext.uof;
+	homeContext = slotRawFrame(&frame->homeContext);
 	if (homeContext) {
 		PyrMethodRaw *methraw;
-		g->method = homeContext->method.uom;
+		g->method = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(g->method);
 		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
@@ -983,11 +983,11 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	allArgsPushed -- ;
 	g->numpop = 0;
 
-	closure = (PyrClosure*)args->uo;
-	block = closure->block.uoblk;
-	context = closure->context.uof;
+	closure = (PyrClosure*)slotRawObject(args);
+	block = slotRawBlock(&closure->block);
+	context = slotRawFrame(&closure->context);
 
-	proto = block->prototypeFrame.uo;
+	proto = slotRawObject(&block->prototypeFrame);
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -1010,7 +1010,7 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	SetPtr(&frame->ip,  0);
 
 	g->sp = args - 1;
-	g->ip = block->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&block->code)->b - 1;
 	g->frame = frame;
 	g->block = block;
 
@@ -1078,28 +1078,28 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	if (numKeyArgsPushed && methraw->posargs) {
 		PyrSlot *key;
 		PyrSymbol **name0, **name;
-		name0 = block->argNames.uosym->symbols;
+		name0 = slotRawSymbolArray(&block->argNames)->symbols;
 		key = args + numArgsPushed + 1;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
-				if (*name == key->us) {
+				if (*name == slotRawSymbol(key)) {
 					slotCopy(&vars[j+1],&key[1]);
 					goto found1;
 				}
 			}
 			if (gKeywordError) {
 				post("WARNING: keyword arg '%s' not found in call to function.\n",
-					key->us->name);
+					slotRawSymbol(key)->name);
 			}
 			found1: ;
 		}
 	}
 
-	homeContext = frame->homeContext.uof;
+	homeContext = slotRawFrame(&frame->homeContext);
 	if (homeContext) {
 		PyrMethodRaw *methraw;
-		g->method = homeContext->method.uom;
+		g->method = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(g->method);
 		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
@@ -1145,11 +1145,11 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	numArgsPushed -- ;
 	g->numpop = 0;
 
-	closure = (PyrClosure*)args->uo;
-	block = closure->block.uoblk;
-	context = closure->context.uof;
+	closure = (PyrClosure*)slotRawObject(args);
+	block = slotRawBlock(&closure->block);
+	context = slotRawFrame(&closure->context);
 
-	proto = block->prototypeFrame.uo;
+	proto = slotRawObject(&block->prototypeFrame);
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -1172,7 +1172,7 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 
 
 	g->sp = args - 1;
-	g->ip = block->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&block->code)->b - 1;
 	g->frame = frame;
 	g->block = block;
 
@@ -1193,12 +1193,12 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 
 		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
 			PyrSymbol **argNames;
-			argNames = block->argNames.uosym->symbols;
+			argNames = slotRawSymbolArray(&block->argNames)->symbols;
 			for (m=numArgsPushed; m<methraw->numargs; ++m) {
 				// replace the args with values from the environment if they exist
 				PyrSlot keyslot;
 				SetSymbol(&keyslot, argNames[m]);
-				identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
+				identDict_lookupNonNil(slotRawObject(curEnvirSlot), &keyslot, calcHash(&keyslot), vars+m+1);
 			}
 		}
 	} else if (methraw->varargs) {
@@ -1245,10 +1245,10 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 
-	homeContext = frame->homeContext.uof;
+	homeContext = slotRawFrame(&frame->homeContext);
 	if (homeContext) {
 		PyrMethodRaw *methraw;
-		g->method = homeContext->method.uom;
+		g->method = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(g->method);
 		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
@@ -1293,11 +1293,11 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	allArgsPushed -- ;
 	g->numpop = 0;
 
-	closure = (PyrClosure*)args->uo;
-	block = closure->block.uoblk;
-	context = closure->context.uof;
+	closure = (PyrClosure*)slotRawObject(args);
+	block = slotRawBlock(&closure->block);
+	context = slotRawFrame(&closure->context);
 
-	proto = block->prototypeFrame.uo;
+	proto = slotRawObject(&block->prototypeFrame);
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -1321,7 +1321,7 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 
 
 	g->sp = args - 1;
-	g->ip = block->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&block->code)->b - 1;
 	g->frame = frame;
 	g->block = block;
 
@@ -1342,12 +1342,12 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 
 		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
 			PyrSymbol **argNames;
-			argNames = block->argNames.uosym->symbols;
+			argNames = slotRawSymbolArray(&block->argNames)->symbols;
 			for (m=numArgsPushed; m<methraw->numargs; ++m) {
 				// replace the args with values from the environment if they exist
 				PyrSlot keyslot;
 				SetSymbol(&keyslot, argNames[m]);
-				identDict_lookupNonNil(curEnvirSlot->uo, &keyslot, calcHash(&keyslot), vars+m+1);
+				identDict_lookupNonNil(slotRawObject(curEnvirSlot), &keyslot, calcHash(&keyslot), vars+m+1);
 			}
 		}
 
@@ -1405,28 +1405,28 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	if (numKeyArgsPushed && methraw->posargs) {
 		PyrSymbol **name0, **name;
 		PyrSlot *key;
-		name0 = block->argNames.uosym->symbols;
+		name0 = slotRawSymbolArray(&block->argNames)->symbols;
 		key = args + numArgsPushed + 1;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			name = name0;
 			for (j=0; j<methraw->posargs; ++j, ++name) {
-				if (*name == key->us) {
+				if (*name == slotRawSymbol(key)) {
 					slotCopy(&vars[j+1],&key[1]);
 					goto found1;
 				}
 			}
 			if (gKeywordError) {
 				post("WARNING: keyword arg '%s' not found in call to function.\n",
-					key->us->name);
+					slotRawSymbol(key)->name);
 			}
 			found1: ;
 		}
 	}
 
-	homeContext = frame->homeContext.uof;
+	homeContext = slotRawFrame(&frame->homeContext);
 	if (homeContext) {
 		PyrMethodRaw *methraw;
-		g->method = homeContext->method.uom;
+		g->method = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(g->method);
 		slotCopy(&g->receiver,&homeContext->vars[0]);
 	} else {
@@ -1446,7 +1446,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
@@ -1456,19 +1456,19 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 		// now the stack looks just like it would for a normal message send
 	} else if (IsObj(selSlot)) {
 		listSlot = selSlot;
-		if (listSlot->uo->classptr == class_list) {
-			listSlot = listSlot->uo->slots;
+		if (slotRawObject(listSlot)->classptr == class_list) {
+			listSlot = slotRawObject(listSlot)->slots;
 		}
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
-		PyrObject *array = listSlot->uo;
+		PyrObject *array = slotRawObject(listSlot);
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
 		selSlot = array->slots;
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed>2) {
 			qslot = recvrSlot + numArgsPushed;
@@ -1507,7 +1507,7 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
@@ -1517,19 +1517,19 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 		// now the stack looks just like it would for a normal message send
 	} else if (IsObj(selSlot)) {
 		listSlot = selSlot;
-		if (listSlot->uo->classptr == class_list) {
-			listSlot = listSlot->uo->slots;
+		if (slotRawObject(listSlot)->classptr == class_list) {
+			listSlot = slotRawObject(listSlot)->slots;
 		}
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
-		PyrObject *array = listSlot->uo;
+		PyrObject *array = slotRawObject(listSlot);
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
 		selSlot = array->slots;
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed>2) {
 			qslot = recvrSlot + numArgsPushed;
@@ -1575,14 +1575,14 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
-	selector = selSlot->us;
+	selector = slotRawSymbol(selSlot);
 
 	if (NotObj(listSlot)) {
 		return objectPerform(g, numArgsPushed);
 	}
-	if (listSlot->uo->classptr == class_array) {
+	if (slotRawObject(listSlot)->classptr == class_array) {
 		doarray:
-		array = listSlot->uo;
+		array = slotRawObject(listSlot);
 
 		PyrObject *stack = g->gc->Stack();
 		int stackDepth = g->sp - stack->slots + 1;
@@ -1601,9 +1601,9 @@ int objectPerformList(struct VMGlobals *g, int numArgsPushed)
 		} else numargslots = 0;
 		qslot = array->slots - 1;
 		for (m=0,mmax=array->size; m<mmax; ++m) slotCopy(++pslot, ++qslot);
-	} else if (listSlot->uo->classptr == class_list) {
-		listSlot = listSlot->uo->slots;
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+	} else if (slotRawObject(listSlot)->classptr == class_list) {
+		listSlot = slotRawObject(listSlot)->slots;
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1632,7 +1632,7 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 
 	recvrSlot = g->sp - numArgsPushed + 1;
 
-	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	PyrClass* classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 	if (!isKindOfSlot(recvrSlot, classobj)) {
 		error("superPerform must be called with 'this' as the receiver.\n");
 		return errFailed;
@@ -1640,7 +1640,7 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
@@ -1650,19 +1650,19 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 		// now the stack looks just like it would for a normal message send
 	} else if (IsObj(selSlot)) {
 		listSlot = selSlot;
-		if (listSlot->uo->classptr == class_list) {
-			listSlot = listSlot->uo->slots;
+		if (slotRawObject(listSlot)->classptr == class_list) {
+			listSlot = slotRawObject(listSlot)->slots;
 		}
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
-		PyrObject *array = listSlot->uo;
+		PyrObject *array = slotRawObject(listSlot);
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
 		selSlot = array->slots;
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed>2) {
 			qslot = recvrSlot + numArgsPushed;
@@ -1700,7 +1700,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 
 	recvrSlot = g->sp - numArgsPushed + 1;
 
-	PyrClass* classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	PyrClass* classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 	if (!isKindOfSlot(recvrSlot, classobj)) {
 		error("superPerform must be called with 'this' as the receiver.\n");
 		return errFailed;
@@ -1708,7 +1708,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 
 	selSlot = recvrSlot + 1;
 	if (IsSym(selSlot)) {
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
@@ -1718,19 +1718,19 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 		// now the stack looks just like it would for a normal message send
 	} else if (IsObj(selSlot)) {
 		listSlot = selSlot;
-		if (listSlot->uo->classptr == class_list) {
-			listSlot = listSlot->uo->slots;
+		if (slotRawObject(listSlot)->classptr == class_list) {
+			listSlot = slotRawObject(listSlot)->slots;
 		}
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
-		PyrObject *array = listSlot->uo;
+		PyrObject *array = slotRawObject(listSlot);
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
 		selSlot = array->slots;
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed>2) {
 			qslot = recvrSlot + numArgsPushed;
@@ -1775,23 +1775,23 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 		error("Selector not a Symbol :\n");
 		return errWrongType;
 	}
-	selector = selSlot->us;
+	selector = slotRawSymbol(selSlot);
 	if (NotObj(listSlot)) {
 		return objectPerform(g, numArgsPushed);
 	}
-	if (listSlot->uo->classptr == class_array) {
+	if (slotRawObject(listSlot)->classptr == class_array) {
 		doarray:
 		pslot = recvrSlot;
 		if (numargslots>0) {
 			qslot = selSlot;
 			for (m=0; m<numargslots; ++m) slotCopy(++pslot, ++qslot);
 		} else numargslots = 0;
-		array = listSlot->uo;
+		array = slotRawObject(listSlot);
 		qslot = array->slots - 1;
 		for (m=0,mmax=array->size; m<mmax; ++m) slotCopy(++pslot, ++qslot);
-	} else if (listSlot->uo->classptr == class_list) {
-		listSlot = listSlot->uo->slots;
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+	} else if (slotRawObject(listSlot)->classptr == class_list) {
+		listSlot = slotRawObject(listSlot)->slots;
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1828,23 +1828,23 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 		dumpObjectSlot(listSlot);
 		return errWrongType;
 	}
-	if (listSlot->uo->classptr == class_array) {
+	if (slotRawObject(listSlot)->classptr == class_array) {
 		doarray:
-		array = listSlot->uo;
+		array = slotRawObject(listSlot);
 
 		selSlot = array->slots;
 		if (NotSym(selSlot)) {
 			error("Selector not a Symbol :\n");
 			return errWrongType;
 		}
-		selector = selSlot->us;
+		selector = slotRawSymbol(selSlot);
 
 		pslot = recvrSlot;
 		qslot = selSlot;
 		for (m=0,mmax=array->size-1; m<mmax; ++m) slotCopy(++pslot, ++qslot);
-	} else if (listSlot->uo->classptr == class_list) {
-		listSlot = listSlot->uo->slots;
-		if (NotObj(listSlot) || listSlot->uo->classptr != class_array) {
+	} else if (slotRawObject(listSlot)->classptr == class_list) {
+		listSlot = slotRawObject(listSlot)->slots;
+		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			error("List array not an Array.\n");
 			dumpObjectSlot(listSlot);
 			return errWrongType;
@@ -1875,7 +1875,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *array;
 
 	arraySlot = g->sp - numArgsPushed + 1;
-	array = arraySlot->uo;
+	array = slotRawObject(arraySlot);
 	if (array->size < 2) {
 		error("Array must contain a receiver and a selector.\n");
 		return errFailed;
@@ -1888,7 +1888,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 		return errWrongType;
 	}
 
-	selector = selSlot->us;
+	selector = slotRawSymbol(selSlot);
 
 	slotCopy(arraySlot,recvrSlot);
 
@@ -1976,7 +1976,7 @@ int prTraceAllPathsTo(struct VMGlobals *g, int numArgsPushed);
 int prTraceAllPathsTo(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	g->gc->TracePathsTo(a->uo, false);
+	g->gc->TracePathsTo(slotRawObject(a), false);
 	return errNone;
 }
 
@@ -1984,7 +1984,7 @@ int prTraceAnyPathsTo(struct VMGlobals *g, int numArgsPushed);
 int prTraceAnyPathsTo(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	g->gc->TracePathsTo(a->uo, true);
+	g->gc->TracePathsTo(slotRawObject(a), true);
 	return errNone;
 }
 
@@ -1992,7 +1992,7 @@ int prTraceAnyPathToAllInstancesOf(struct VMGlobals *g, int numArgsPushed);
 int prTraceAnyPathToAllInstancesOf(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	g->gc->TraceAnyPathToAllInstancesOf(a->uoc->name.us);
+	g->gc->TraceAnyPathToAllInstancesOf(slotRawClass(a)->name.us);
 	return errNone;
 }
 #endif
@@ -2012,7 +2012,7 @@ int prAllClasses(struct VMGlobals *g, int numArgsPushed)
 	classobj = gClassList;
 	for (i=0; classobj; ++i) {
 		SetObject(array->slots + i, classobj);
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 	array->size = gNumClasses;
 	SetObject(a, array);
@@ -2024,7 +2024,7 @@ int prPostClassTree(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	postClassTree(a->uoc, 0);
+	postClassTree(slotRawClass(a), 0);
 	return errNone;
 }
 
@@ -2045,7 +2045,7 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	PyrMethod *meth;
 	PyrMethodRaw *methraw;
 
-	meth = frame->method.uom;
+	meth = slotRawMethod(&frame->method);
 	methraw = METHRAW(meth);
 
 	PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, true);
@@ -2078,16 +2078,16 @@ void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 		SetNil(debugFrameObj->slots + 2);
 	}
 
-	if (frame->caller.uof) {
-		MakeDebugFrame(g, frame->caller.uof, debugFrameObj->slots + 3);
+	if (slotRawFrame(&frame->caller)) {
+		MakeDebugFrame(g, slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
 	} else {
 		SetNil(debugFrameObj->slots + 3);
 	}
 
-	if (IsObj(&frame->context) && frame->context.uof == frame) {
+	if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame) {
 		SetObject(debugFrameObj->slots + 4,  debugFrameObj);
 	} else if (NotNil(&frame->context)) {
-		MakeDebugFrame(g, frame->context.uof, debugFrameObj->slots + 4);
+		MakeDebugFrame(g, slotRawFrame(&frame->context), debugFrameObj->slots + 4);
 	} else {
 		SetNil(debugFrameObj->slots + 4);
 	}
@@ -2110,9 +2110,9 @@ int prObjectShallowCopy(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	switch (a->utag) {
+	switch (GetTag(a)) {
 		case tagObj :
-			a->uo = copyObject(g->gc, a->uo, true);
+			SetRaw(a, copyObject(g->gc, slotRawObject(a), true));
 			break;
 		// the default case is to leave the argument unchanged on the stack
 	}
@@ -2125,10 +2125,10 @@ int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	switch (a->utag) {
+	switch (GetTag(a)) {
 		case tagObj :
-			if (a->uo->obj_flags & obj_immutable) {
-				a->uo = copyObject(g->gc, a->uo, true);
+			if (slotRawObject(a)->obj_flags & obj_immutable) {
+				SetRaw(a, copyObject(g->gc, slotRawObject(a), true));
 			}
 			break;
 	}
@@ -2142,7 +2142,7 @@ int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	if (IsObj(a)) {
-		if (a->uo->obj_flags & obj_immutable) {
+		if (slotRawObject(a)->obj_flags & obj_immutable) {
 			SetFalse(a);
 		} else {
 			SetTrue(a);
@@ -2160,7 +2160,7 @@ int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 	if (IsObj(a)) {
-		if (a->uo->gc_color == obj_permanent) {
+		if (slotRawObject(a)->gc_color == obj_permanent) {
 			SetTrue(a);
 		} else {
 			SetFalse(a);
@@ -2202,8 +2202,8 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 bool IsSimpleLiteralSlot(PyrSlot* slot);
 bool IsSimpleLiteralSlot(PyrSlot* slot)
 {
-	switch (slot->utag) {
-		case tagObj : return slot->uo->IsPermanent();
+	switch (GetTag(slot)) {
+		case tagObj : return slotRawObject(slot)->IsPermanent();
 		case tagInt : return true;
 		case tagSym : return true;
 		case tagChar : return true;
@@ -2228,7 +2228,7 @@ int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 	if (NotObj(a)) return errWrongType;
 	if (NotInt(b)) return errWrongType;
 	if (NotInt(c)) return errWrongType;
-	a->uo = copyObjectRange(g->gc, a->uo, b->ui, c->ui, true);
+	SetRaw(a, copyObjectRange(g->gc, slotRawObject(a), slotRawInt(b), slotRawInt(c), true));
 
 	return errNone;
 }
@@ -2243,7 +2243,7 @@ int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp - 1;
 	d = g->sp;
 
-	PyrObject *inobj = a->uo;
+	PyrObject *inobj = slotRawObject(a);
 	PyrObject *newobj;
 
 	int size = inobj->size;
@@ -2251,18 +2251,18 @@ int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
 
 	int first, second, last;
 
-	if (IsInt(b)) first = b->ui;
+	if (IsInt(b)) first = slotRawInt(b);
 	else if (IsNil(b)) first = 0;
 	else return errWrongType;
 
 	if (IsInt(d)) {
-		last = d->ui;
+		last = slotRawInt(d);
 		if (last < 0 && IsNil(b)) {
 zerolength:
 			newobj = g->gc->New(0, flags, inobj->obj_format, true);
 			newobj->size = 0;
 			newobj->classptr = inobj->classptr;
-			a->uo = newobj;
+			SetRaw(a, newobj);
 			return errNone;
 		}
 	} else if (IsNil(d)) {
@@ -2270,8 +2270,8 @@ zerolength:
 		last = size - 1;
 	} else return errWrongType;
 
-	if (IsInt(c)) second = c->ui;
-	else if (IsNil(c)) second = first < last ? b->ui + 1 : b->ui - 1;
+	if (IsInt(c)) second = slotRawInt(c);
+	else if (IsNil(c)) second = first < last ? slotRawInt(b) + 1 : slotRawInt(b) - 1;
 	else return errWrongType;
 
 	int step = second - first;
@@ -2300,7 +2300,7 @@ zerolength:
 		}
 	}
 
-	a->uo = newobj;
+	SetRaw(a, newobj);
 	return errNone;
 }
 
@@ -2308,7 +2308,7 @@ void switchToThread(struct VMGlobals *g, struct PyrThread *newthread, int oldsta
 
 int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 {
-	switchToThread(g, g->process->mainThread.uot, tDone, &numArgsPushed);
+	switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
 	// return all the way out.
 	//PyrSlot *bottom = g->gc->Stack()->slots;
 	//slotCopy(bottom,g->sp);
@@ -2392,7 +2392,7 @@ int prFunDef_NumArgs(struct VMGlobals *g, int numArgsPushed)
 	PyrMethodRaw *methraw;
 
 	a = g->sp;
-	methraw = METHRAW(a->uoblk);
+	methraw = METHRAW(slotRawBlock(a));
 	SetInt(a, methraw->numargs);
 	return errNone;
 }
@@ -2404,7 +2404,7 @@ int prFunDef_NumVars(struct VMGlobals *g, int numArgsPushed)
 	PyrMethodRaw *methraw;
 
 	a = g->sp;
-	methraw = METHRAW(a->uoblk);
+	methraw = METHRAW(slotRawBlock(a));
 	SetInt(a, methraw->numvars);
 	return errNone;
 }
@@ -2416,7 +2416,7 @@ int prFunDef_VarArgs(struct VMGlobals *g, int numArgsPushed)
 	PyrMethodRaw *methraw;
 
 	a = g->sp;
-	methraw = METHRAW(a->uoblk);
+	methraw = METHRAW(slotRawBlock(a));
 	if (methraw->varargs) { SetTrue(a); } else { SetFalse(a); }
 	return errNone;
 }
@@ -2436,7 +2436,7 @@ int prDumpByteCodes(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	dumpByteCodes(a->uoblk);
+	dumpByteCodes(slotRawBlock(a));
 	return errNone;
 }
 
@@ -2451,10 +2451,10 @@ int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
 
 	if (NotObj(a)) slotCopy(a,&o_false);
 	else {
-		obj = a->uo;
+		obj = slotRawObject(a);
 		for (i=0; i<obj->size; ++i) {
 			getIndexedSlot(obj, &temp, i);
-			if (temp.utag == b->utag && temp.ui == b->ui) {
+			if (GetTag(&temp) == GetTag(b) && slotRawInt(&temp) == slotRawInt(b)) {
 				slotCopy(a,&o_true);
 				return errNone;
 			}
@@ -2480,25 +2480,25 @@ int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
 
 	if (IsSym(b)) {
 
-		selector = b->us;
-		index = classobj->classIndex.ui + selector->u.index;
+		selector = slotRawSymbol(b);
+		index = slotRawInt(&classobj->classIndex) + selector->u.index;
 		meth = gRowTable[index];
-		if (meth->name.us != selector) {
+		if (slotRawSymbol(&meth->name) != selector) {
 			slotCopy(a,&o_false);
 		} else {
 			slotCopy(a,&o_true);
 		}
 	} else if (isKindOfSlot(b, class_array)) {
-		int size = b->uo->size;
-		PyrSlot *slot = b->uo->slots;
+		int size = slotRawObject(b)->size;
+		PyrSlot *slot = slotRawObject(b)->slots;
 		for (int i=0; i<size; ++i, ++slot) {
 
 			if (NotSym(slot)) return errWrongType;
 
-			selector = slot->us;
-			index = classobj->classIndex.ui + selector->u.index;
+			selector = slotRawSymbol(slot);
+			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
-			if (meth->name.us != selector) {
+			if (slotRawSymbol(&meth->name) != selector) {
 				slotCopy(a,&o_false);
 				return errNone;
 			}
@@ -2523,9 +2523,9 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g)
 	}
 	// lookup functionCompileContext method
 	contextsym = getsym("functionCompileContext");
-	int index = classobj->classIndex.ui + contextsym->u.index;
+	int index = slotRawInt(&classobj->classIndex) + contextsym->u.index;
 	meth = gRowTable[index];
-	if (!meth || meth->name.us != contextsym) {
+	if (!meth || slotRawSymbol(&meth->name) != contextsym) {
 		error("compile context method 'functionCompileContext' not found.\n");
 		return 0;
 	}
@@ -2547,8 +2547,8 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 
 	// check b is a string
 	if (NotObj(b)) return errWrongType;
-	if (!isKindOf(b->uo,  class_string)) return errWrongType;
-	string = b->uos;
+	if (!isKindOf(slotRawObject(b),  class_string)) return errWrongType;
+	string = slotRawString(b);
 
 	gRootParseNode = NULL;
 	initParserPool();
@@ -2573,7 +2573,7 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 		COMPILENODE(gRootParseNode, &slotResult, true);
 
 		if (NotObj(&slotResult)
-			|| slotResult.uo->classptr != class_fundef) {
+			|| slotRawObject(&slotResult)->classptr != class_fundef) {
 				compileErrors++;
 			error("Compile did not return a FunctionDef..\n");
 		}
@@ -2583,13 +2583,13 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 			PyrBlock *block;
 			PyrClosure *closure;
 
-			block = slotResult.uoblk;
+			block = slotRawBlock(&slotResult);
 			// create a closure
 			closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, false);
 			closure->classptr = class_func;
 			closure->size = 2;
 			SetObject(&closure->block, block);
-			slotCopy(&closure->context,&g->process->interpreter.uoi->context);
+			slotCopy(&closure->context,&slotRawInterpreter(&g->process->interpreter)->context);
 			SetObject(a, closure);
 		}
 	} else {
@@ -2636,12 +2636,12 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 	if (!isKindOfSlot(dd, class_array)) return errWrongType;
 	bool isDecl = IsTrue(ee);
 
-	PyrObject *inputNamesObj = cc->uo;
-	PyrObject *inputStringsObj = dd->uo;
+	PyrObject *inputNamesObj = slotRawObject(cc);
+	PyrObject *inputStringsObj = slotRawObject(dd);
 
 	sprintf(ugenPrefix, "u%d", ugenIndex);
 	int ugenPrefixSize = strlen(ugenPrefix);
-	PyrString* codeStringObj = aa->uos;
+	PyrString* codeStringObj = slotRawString(aa);
 	int codeStringSize = codeStringObj->size;
 	if (codeStringSize > 8000) {
 		error("input string too int.\n");
@@ -2684,7 +2684,7 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 				PyrSlot inputNameSlot;
 				getIndexedSlot(inputNamesObj, &inputNameSlot, j);
 				if (!IsSym(&inputNameSlot)) return errWrongType;
-				PyrSymbol* inputSym = inputNameSlot.us;
+				PyrSymbol* inputSym = slotRawSymbol(&inputNameSlot);
 				char *inputName = inputSym->name;
 				int inputNameSize = inputSym->length;
 				if (inputNameSize == nameSize && strncmp(inputName, name, nameSize)==0) {
@@ -2696,7 +2696,7 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 			if (slotIndex >= 0) {
 				PyrSlot *inputStringSlot = inputStringsObj->slots + slotIndex;
 				if (!isKindOfSlot(inputStringSlot, class_string)) return errWrongType;
-				PyrString *inputStringObj = inputStringSlot->uos;
+				PyrString *inputStringObj = slotRawString(inputStringSlot);
 				char *input = inputStringObj->s;
 				int inputStringSize = inputStringObj->size;
 				for (int j=0; j<inputStringSize; ++j) {
@@ -2738,17 +2738,17 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 	doGC(g, 0);
 	assert(g->gc->SanityCheck());
 
-	state = thread->state.ui;
+	state = slotRawInt(&thread->state);
 	if (state == tYield) {
 		if (!IsObj(&thread->method)) { error("thread method not an Object\n"); }
-		else if (!isKindOf(thread->method.uo, class_method)) { error("thread method not a Method\n"); }
-		else if (thread->method.uo->gc_color == gcColor.gcFree) { error("thread method is FREE\n"); }
+		else if (!isKindOf(slotRawObject(&thread->method), class_method)) { error("thread method not a Method\n"); }
+		else if (slotRawObject(&thread->method)->gc_color == gcColor.gcFree) { error("thread method is FREE\n"); }
 
 		if (!IsObj(&thread->block)) { error("thread block not an Object\n"); }
-		else if (!isKindOf(thread->block.uo, class_func)) { error("thread block not a Function\n"); }
-		else if (thread->block.uo->gc_color == gcColor.gcFree) { error("thread block is FREE\n"); }
+		else if (!isKindOf(slotRawObject(&thread->block), class_func)) { error("thread block not a Function\n"); }
+		else if (slotRawObject(&thread->block)->gc_color == gcColor.gcFree) { error("thread block is FREE\n"); }
 
-		if (IsObj(&thread->receiver) && thread->receiver.uo->gc_color == gcColor.gcFree)
+		if (IsObj(&thread->receiver) &slotRawObject(&& thread->receiver)->gc_color == gcColor.gcFree)
 			{ error("thread receiver is FREE\n"); }
 
 		FrameSanity(thread->frame.uof);
@@ -2756,8 +2756,8 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 		oldthread->method.uom = g->method;
 		oldthread->block.uoblk = g->block;
 		SetObject(&oldthread->frame, g->frame);
-		oldthread->ip.ui = (int)g->ip;
-		oldthread->sp.ui = (int)g->sp;
+		slotRawInt(&oldthread->ip) = (int)g->ip;
+		slotRawInt(&oldthread->sp) = (int)g->sp;
 
 
 	} else if (state == tInit) {
@@ -2784,7 +2784,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	oldthread = g->thread;
 	if (newthread == oldthread) return;
 	//postfl("->switchToThread %d %08X -> %08X\n", oldstate, oldthread, newthread);
-	//post("->switchToThread from %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+	//post("->switchToThread from %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name);
 	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
@@ -2792,12 +2792,12 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	//gcDumpInfo(g->gc);
 	gc = g->gc;
 
-        // save environment in oldthread
-        PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
-        slotCopy(&oldthread->environment,currentEnvironmentSlot);
-        gc->GCWrite(oldthread, currentEnvironmentSlot);
+	// save environment in oldthread
+	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
+	slotCopy(&oldthread->environment,currentEnvironmentSlot);
+	gc->GCWrite(oldthread, currentEnvironmentSlot);
 
-	oldthread->state.ui = oldstate;
+	SetRaw(&oldthread->state, oldstate);
 
 	if (oldstate == tDone) {
 		SetObject(&oldthread->stack, gc->Stack());
@@ -2832,7 +2832,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetObject(&oldthread->stack, gc->Stack());
 		gc->ToWhite(gc->Stack());
 		gc->Stack()->size = g->sp - gc->Stack()->slots + 1;
-		//post("else %08X %08X\n", oldthread->stack.uo, gc->Stack());
+		//post("else %08X %08X\n", slotRawObject(&oldthread->stack), gc->Stack());
 
 		SetObject(&oldthread->method, g->method);
 		SetObject(&oldthread->block, g->block);
@@ -2840,8 +2840,8 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetPtr(&oldthread->ip, g->ip);
 		SetPtr(&oldthread->sp, g->sp);
 		slotCopy(&oldthread->receiver,&g->receiver);
-		oldthread->numArgsPushed.ui = *numArgsPushed;
-		oldthread->numpop.ui = g->numpop;
+		SetRaw(&oldthread->numArgsPushed, *numArgsPushed);
+		SetRaw(&oldthread->numpop, g->numpop);
 
 		//gc->ToGrey(oldthread);
 		if (gc->ObjIsBlack(oldthread)) {
@@ -2849,7 +2849,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 			gc->GCWriteBlack(g->method);
 			gc->GCWriteBlack(g->block);
 
-			frame = oldthread->frame.uof;
+			frame = slotRawFrame(&oldthread->frame);
 			gc->GCWriteBlack(frame);
 
 			gc->GCWriteBlack(&g->receiver);
@@ -2861,49 +2861,49 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 	SetObject(&g->process->curThread, newthread);
 	gc->GCWrite(g->process, newthread);
 
-	gc->SetStack(newthread->stack.uo);
+	gc->SetStack(slotRawObject(&newthread->stack));
 	gc->ToBlack(gc->Stack());
 	SetNil(&newthread->stack);
 
-	g->method = newthread->method.uom;
-	g->block = newthread->block.uoblk;
-	g->frame = newthread->frame.uof;
-	g->ip = (unsigned char *)newthread->ip.ui;
-	g->sp = (PyrSlot*)newthread->sp.ui;
+	g->method = slotRawMethod(&newthread->method);
+	g->block = slotRawBlock(&newthread->block);
+	g->frame = slotRawFrame(&newthread->frame);
+	g->ip = (unsigned char *)slotRawInt(&newthread->ip);
+	g->sp = (PyrSlot*)slotRawInt(&newthread->sp);
 	slotCopy(&g->receiver,&newthread->receiver);
 
-	g->rgen = (RGen*)(newthread->randData.uo->slots);
+	g->rgen = (RGen*)(slotRawObject(&newthread->randData)->slots);
 
-	*numArgsPushed = newthread->numArgsPushed.ui;
+	*numArgsPushed = slotRawInt(&newthread->numArgsPushed);
 
 	// these are perhaps unecessary because a thread may not
 	// legally block within a C primitive
-	g->numpop = newthread->numpop.ui;
+	g->numpop = slotRawInt(&newthread->numpop);
 
 	g->execMethod = 99;
 
 	//post("switchToThread ip %08X\n", g->ip);
-	//post("switchToThread newthread->ip.ui %d\n", newthread->ip.ui);
-	//post("switchToThread oldthread->ip.ui %d\n", oldthread->ip.ui);
+	//post(slotRawInt(&"switchToThread newthread->ip) %d\n", slotRawInt(&newthread->ip));
+	//post(slotRawInt(&"switchToThread oldthread->ip) %d\n", slotRawInt(&oldthread->ip));
 
 	// wipe out values which will become stale as new thread executes:
 	SetNil(&newthread->method);
 	SetNil(&newthread->block);
 	SetNil(&newthread->frame);
 	SetPtr(&newthread->ip, 0);
-	newthread->sp.ui = 0;
+	SetRaw(&newthread->sp, 0);
 	SetNil(&newthread->receiver);
 
-	newthread->state.ui = tRunning;
+	SetRaw(&newthread->state, tRunning);
 
 
         // set new environment
         slotCopy(currentEnvironmentSlot,&g->thread->environment);
         g->gc->GCWrite(g->classvars, currentEnvironmentSlot);
 
-	//post("old thread %08X stack %08X\n", oldthread, oldthread->stack.uo);
-	//post("new thread %08X stack %08X\n", g->thread, g->thread->stack.uo);
-	//post("main thread %08X stack %08X\n", g->process->mainThread.uot, g->process->mainThread.uot->stack.uo);
+	//post("old thread %08X stack %08X\n", oldthread, slotRawObject(&oldthread->stack));
+	//post("new thread %08X stack %08X\n", g->thread, slotRawObject(&g->thread->stack));
+	//post("main thread %08X stack %08X\n", slotRawThread(&g->process->mainThread), slotRawObject(&slotRawThread(&g->process->mainThread)->stack));
 
 	//postfl("<-switchToThread\n");
 	//post("<-stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
@@ -2927,7 +2927,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	array = newPyrArray(gc, stacksize, 0, collect);
 	SetObject(&thread->stack, array);
 	gc->GCWrite(thread, array);
-	thread->state.ui = tInit;
+	SetRaw(&thread->state, tInit);
 
 	SetObject(&thread->randData, rgenArray);
 	gc->GCWrite(thread, rgenArray);
@@ -2963,9 +2963,9 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;	// function
 	c = g->sp;		// stacksize
 
-	thread = a->uot;
+	thread = slotRawThread(a);
 
-	if (NotObj(b) || !isKindOf(b->uo, class_func)) {
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_func)) {
 		error("Thread function arg not a Function.\n");
 		return errWrongType;
 	}
@@ -2973,7 +2973,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(c, &stacksize);
 	if (err) return err;
 
-	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(g->thread->randData.uo),
+	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(slotRawObject(&g->thread->randData)),
 		g->thread->beats.uf, g->thread->seconds.uf, &g->thread->clock, true);
 
 	//postfl("<-prThreadInit\n");
@@ -2988,7 +2988,7 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;	// thread
 	PyrSlot *b = g->sp;		// rand seed
 
-	PyrThread *thread = a->uot;
+	PyrThread *thread = slotRawThread(a);
 
 	int32 seed;
 	int err = slotIntVal(b, &seed);
@@ -3012,9 +3012,9 @@ int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;	// thread
 
-	PyrThread *thread = a->uot;
+	PyrThread *thread = slotRawThread(a);
 
-	RGen* rgen = (RGen*)thread->randData.uo->slots;
+	RGen* rgen = (RGen*)slotRawObject(&thread->randData)->slots;
 
 	PyrInt32Array *rgenArray = newPyrInt32Array(g->gc, 4, 0, false);
 	rgenArray->size = 3;
@@ -3034,13 +3034,13 @@ int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp;		// rand data array
 
 	if (!isKindOfSlot(b, class_int32array)) return errWrongType;
-	if (b->uo->size < 3) return errWrongType;
+	if (slotRawObject(b)->size < 3) return errWrongType;
 
-	PyrThread *thread = a->uot;
+	PyrThread *thread = slotRawThread(a);
 
-	RGen* rgen = (RGen*)thread->randData.uo->slots;
+	RGen* rgen = (RGen*)slotRawObject(&thread->randData)->slots;
 
-	PyrInt32Array *rgenArray = (PyrInt32Array*)b->uo;
+	PyrInt32Array *rgenArray = (PyrInt32Array*)slotRawObject(b);
 
 	rgen->s1 = rgenArray->i[0];
 	rgen->s2 = rgenArray->i[1];
@@ -3058,7 +3058,7 @@ int transformMainThreadToRoutine(VMGlobals *g)
 	if (g->thread != process->mainThread.uot) return errFailed;
 	//if (g->thread != process->curThread.uot) return errFailed;
 
-	PyrThread* curthread = (PyrThread*)process->mainThread.uo;
+	PyrThread* curthread = (PyrThread*)slotRawObject(&process->mainThread);
 
 	// create a new main thread
 	PyrThread* newthread = (PyrThread*)instantiateObject(g->gc, class_thread, 0, true, false);
@@ -3070,7 +3070,7 @@ int transformMainThreadToRoutine(VMGlobals *g)
 	PyrSlot clockSlot;
 	SetObject(&clockSlot, s_systemclock->u.classobj);
 	initPyrThread(g, newthread, &o_nil, EVALSTACKDEPTH, rgenArray, 0., 0., &clockSlot, false);
-	newthread->sp.ui = (int)newthread->stack.uo->slots - 1;
+	slotRawInt(&newthread->sp) = (int)slotRawObject(&newthread->stack)->slots - 1;
 	SetObject(&process->mainThread, newthread);
 	g->gc->GCWrite(process, newthread);
 
@@ -3103,9 +3103,9 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	PyrThread *parent = g->thread->parent.uot;
+	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
-	//debugf("yield from thread %08X to parent %08X\n", g->thread, g->thread->parent.uot);
+	//debugf("yield from thread %08X to parent %08X\n", g->thread, slotRawThread(&g->thread->parent));
 	switchToThread(g, parent, tSuspended, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
@@ -3135,7 +3135,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	slotCopy(&g->thread->terminalValue,&value);
 	g->gc->GCWrite(g->thread, g->sp);
 
-	PyrThread *parent = g->thread->parent.uot;
+	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
 	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, parent);
 	switchToThread(g, parent, tDone, &numArgsPushed);
@@ -3161,8 +3161,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	thread = a->uot;
-	state = thread->state.ui;
+	thread = slotRawThread(a);
+	state = slotRawInt(&thread->state);
 	//postfl("->prRoutineResume %d\n", state);
 	if (state == tInit) {
 		slotCopy(&threadSlot,a);
@@ -3228,12 +3228,12 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineReset");
-	thread = g->sp->uot;
-	state = thread->state.ui;
+	thread = slotRawThread(g->sp);
+	state = slotRawInt(&thread->state);
 	//post("->prRoutineReset %d\n", state);
 	if (state == tSuspended) {
-		thread->state.ui = tInit;
-		thread->stack.uo->size = 0;
+		SetRaw(&thread->state, tInit);
+		slotRawObject(&thread->stack)->size = 0;
 		SetNil(&thread->method);
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
@@ -3244,8 +3244,8 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 		SetInt(&thread->numpop, 0);
 		SetNil(&thread->parent);
 	} else if (state == tDone) {
-		thread->state.ui = tInit;
-		thread->stack.uo->size = 0;
+		SetRaw(&thread->state, tInit);
+		slotRawObject(&thread->stack)->size = 0;
 		SetNil(&thread->method);
 		SetNil(&thread->block);
 		SetNil(&thread->receiver);
@@ -3278,14 +3278,14 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineStop");
 
-	thread = g->sp->uot;
-	state = thread->state.ui;
+	thread = slotRawThread(g->sp);
+	state = slotRawInt(&thread->state);
 
 
 	if (state == tSuspended || state == tInit) {
 		SetNil(&g->thread->terminalValue);
-		thread->state.ui = tDone;
-		thread->stack.uo->size = 0;
+		SetRaw(&thread->state, tDone);
+		slotRawObject(&thread->stack)->size = 0;
 	} else if (state == tDone) {
 		// do nothing
 	} else if (state == tRunning) {
@@ -3318,7 +3318,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 		error ("yieldAndReset was called outside of a Routine.\n");
 		return errFailed;
 	}
-	/*if (!g->thread->parent.uot) {
+	/*if (!slotRawThread(&g->thread->parent)) {
 		error ("yieldAndReset was called from a thread with no parent.\n");
 		return errFailed;
 	}*/
@@ -3327,7 +3327,7 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	if (IsFalse(b)) state = tSuspended;
 	else state = tInit;
 
-	PyrThread *parent = g->thread->parent.uot;
+	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
 	switchToThread(g, parent, state, &numArgsPushed);
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
@@ -3498,8 +3498,8 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif
 
-	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, slotRawSymbol(&meth->name)->name);
+        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, slotRawSymbol(&meth->name)->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3511,7 +3511,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	if (diff != 0) { // incorrect num of args
 		if (diff > 0) {  // not enough args
 			PyrSlot* pslot = g->sp;
-			PyrSlot* qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+			PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 			for (int m=0; m<diff; ++m) slotCopy(++pslot, ++qslot);
 
 			g->sp += diff;
@@ -3535,16 +3535,16 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif
 	} catch (std::exception& ex) {
-		post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		error(ex.what());
 		err = errException;
 	} catch (...) {
-		post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		err = errException;
 	}
 	if (err <= errNone) g->sp -= g->numpop;
 	else {
-		//post("primitive failed %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+		//post("primitive failed %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		SetInt(&g->thread->primitiveIndex, methraw->specialIndex);
 		SetInt(&g->thread->primitiveError, err);
 		executeMethod(g, meth, numArgsNeeded);
@@ -3563,8 +3563,8 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif
-	//post("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
-        //printf("doPrimitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+	//post("doPrimitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
+        //printf("doPrimitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 
 	PyrMethodRaw *methraw = METHRAW(meth);
 	int primIndex = methraw->specialIndex;
@@ -3577,11 +3577,11 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = ((PrimitiveWithKeysHandler)def[1].func)(g, allArgsPushed, numKeyArgsPushed);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			error(ex.what());
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
@@ -3610,7 +3610,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 			if (diff > 0) {  // not enough args
 				g->sp += numArgsNeeded - allArgsPushed; // remove excess args
 				pslot = g->sp - diff;
-				qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+				qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 				for (m=0; m<diff; ++m) slotCopy(++pslot, ++qslot);
 			} else if (def->varArgs) { // has var args
 				numArgsNeeded = numArgsPushed;
@@ -3624,20 +3624,20 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		if (numKeyArgsPushed && methraw->posargs) {
 			PyrSymbol **name0, **name;
 			PyrSlot *key, *vars;
-			name0 = meth->argNames.uosym->symbols + 1;
+			name0 = slotRawSymbolArray(&meth->argNames)->symbols + 1;
 			key = keywordstack;
 			vars = g->sp - numArgsNeeded + 1;
 			for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 				name = name0;
 				for (j=1; j<methraw->posargs; ++j, ++name) {
-					if (*name == key->us) {
+					if (*name == slotRawSymbol(key)) {
 						slotCopy(&vars[j],&key[1]);
 						goto found;
 					}
 				}
 				if (gKeywordError) {
 					post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
-						key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+						slotRawSymbol(key)->name, slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 				}
 				found: ;
 			}
@@ -3646,11 +3646,11 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = (*def->func)(g, numArgsNeeded);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			error(ex.what());
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s:%s\n", meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;

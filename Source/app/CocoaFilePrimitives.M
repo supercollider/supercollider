@@ -36,7 +36,7 @@ File utilties that depend on the Cocoa framework.
 
 inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 {
-    PyrString* pyrString = slot->uos;
+    PyrString* pyrString = slotRawString(slot);
     return [NSString stringWithCString: pyrString->s length: pyrString->size];
 }
 
@@ -49,8 +49,8 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *allowsMultiple = g->sp; // a bool
-    
-    SCDialog *dialog = [SCDialog receiver: receiver->uo result: nil ];
+
+    SCDialog *dialog = [SCDialog receiver: slotRawObject(receiver) result: nil ];
 
 	BOOL allows = IsTrue(allowsMultiple);
 	SEL selector = @selector(getPaths:);
@@ -60,7 +60,7 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
     [invocation setSelector: selector];
 	[invocation setArgument:&allows atIndex:2];
     [invocation retainArguments];
-    
+
     [[SCVirtualMachine sharedInstance] defer: invocation];
 
     return errNone;
@@ -73,9 +73,9 @@ int prSavePanel(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *receiver = g->sp - 1; // CocoaDialog class
     PyrSlot *string = g->sp; // a string
-    
-    SCDialog *dialog = [SCDialog receiver: receiver->uo result: string->uo ];
-    
+
+    SCDialog *dialog = [SCDialog receiver: slotRawObject(receiver) result: slotRawObject(string) ];
+
     [dialog scvmDeferWithSelector:@selector(savePanel) ];
 
     return errNone;
@@ -86,7 +86,7 @@ int prStandardizePath(struct VMGlobals *g, int numArgsPushed);
 int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
-    
+
     PyrSlot *string = g->sp;
     PyrString *pyrString;
 	NSString *path = nsStringFromPyrSlot(string);
@@ -109,11 +109,11 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *directoryPath = g->sp - 2;
     PyrSlot *extension = g->sp - 1;
     PyrSlot *returnArray  = g->sp;
-    
+
     if(IsNil(directoryPath)) return errWrongType;
-    
-    PyrObject *returnObject = returnArray->uo;
-    
+
+    PyrObject *returnObject = slotRawObject(returnArray);
+
     NSDirectoryEnumerator *direnum = [[NSFileManager defaultManager]
             enumeratorAtPath:nsStringFromPyrSlot(directoryPath)];
     NSString *pname;
@@ -122,9 +122,9 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
     if(IsNil(extension)) {
         while (pname = [direnum nextObject]) {
             if(i >= maxsize) return errIndexOutOfRange;
-            
+
             PyrString* pyrPathString = newPyrString(g->gc,[pname fileSystemRepresentation],0,true);
-            
+
             PyrSlot slot;
             SetObject(&slot, pyrPathString);
             slotCopy(&returnObject->slots[i], &slot);
@@ -141,17 +141,17 @@ int prGetPathsInDirectory(struct VMGlobals *g, int numArgsPushed)
                 //[direnum skipDescendents]; don't enumerate this directory
             //} else {
                 PyrString* pyrPathString = newPyrString(g->gc,[pname fileSystemRepresentation],0,true);
-                
+
                 PyrSlot slot;
                 SetObject(&slot, pyrPathString);
-                
+
                 slotCopy(&returnObject->slots[i], &slot);
-        
+
                 g->gc->GCWrite(returnObject,pyrPathString);
                 returnObject->size = i+1;
                 i++;
             }
-        }  
+        }
         */
     }
     SetObject(receiver,returnObject);
@@ -174,7 +174,7 @@ int prHelpFileForString(struct VMGlobals *g, int numArgsPushed)
 
     PyrSlot *a = g->sp;
     PyrSlot *receiver = g->sp - 1;
-    
+
     // this function should be moved out of the MyDocument instance
     NSString *path = pathOfHelpFileFor( nsStringFromPyrSlot(a));
 
@@ -197,7 +197,7 @@ messages.
 		^this.primitiveFailed;
 	}
 	prDealloc {
-		_ObjC_dealloc;		
+		_ObjC_dealloc;
 	}
 */
 /*
@@ -208,7 +208,7 @@ int prAllocInit(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *classname = g->sp - 2;
    // PyrSlot *initname = g->sp - 1;
     //PyrSlot *args  = g->sp;
-    
+
     // have to put them in a specific pool so they can be released on command
 
     // must defer in case of large loads and gui
@@ -231,32 +231,32 @@ int prObjDo(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *dataptr = g->sp - 2;
     PyrSlot *methodname = g->sp - 1;
     PyrSlot *args = g->sp;
-    
+
     dumpObjectSlot(receiver);
     dumpObjectSlot(dataptr);
     dumpObjectSlot(methodname);
     dumpObjectSlot(args);
-    
+
     // have to put them in a specific pool so they can be released on command
     if(! IsInt(dataptr) ) return errWrongType;
-    
+
     // check retain count and return in case
     SEL selector = NSSelectorFromString(nsStringFromPyrSlot(methodname));
     //err if not found
-    
+
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
-                                        [(id)dataptr->ui methodSignatureForSelector: selector]];
-    [invocation setTarget:(id)dataptr->ui];
+                                        [(id)slotRawInt(dataptr) methodSignatureForSelector: selector]];
+    [invocation setTarget:(id)slotRawInt(dataptr)];
     [invocation setSelector: selector];
     // check number of args is right
 
-    if (!isSubclassOf( args->uo->classptr, class_sequenceable_collection )) 
+    if (!isSubclassOf( slotRawObject(args)->classptr, class_sequenceable_collection ))
         return errWrongType;
-        
+
     int i;
-    for(i = 0; i < args->uo->size; i++) {
-        [invocation setArgument: nsCodableFromPyrSlot(&(args->uo->slots[i])) atIndex: i + 2];
-        //setInvocationArgFromPyrSlot(invocation,i + 2,&(args->uo->slots[i]));
+    for(i = 0; i < slotRawObject(args)->size; i++) {
+        [invocation setArgument: nsCodableFromPyrSlot(&(slotRawObject(args)->slots[i])) atIndex: i + 2];
+        //setInvocationArgFromPyrSlot(invocation,i + 2,&(slotRawObject(args)->slots[i]));
     }
     [invocation retainArguments];
     NSLog(@"invocation: %@",invocation);
@@ -270,12 +270,12 @@ int prDealloc(struct VMGlobals *g, int numArgsPushed)
 {
     //PyrSlot *receiver = g->sp - 1;
     PyrSlot *dataptr = g->sp;
-    
+
     // have to put them in a specific pool so they can be released on command
     if(! IsInt(dataptr) ) return errWrongType;
-    
+
     // check retain count and return in case
-    [(id)dataptr->ui release];
+    [(id)slotRawInt(dataptr) release];
     return errNone;
 }
 */
@@ -283,19 +283,19 @@ int prDealloc(struct VMGlobals *g, int numArgsPushed)
 void initCocoaFilePrimitives()
 {
     int base, index;
-    
+
     base = nextPrimitiveIndex();
     index = 0;
 
-    definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);	
-    definePrimitive(base, index++, "_Cocoa_SavePanel", prSavePanel, 2, 0);	
-    //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);	
-//     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);	
-    definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);	
-    definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 2, 0);	
+    definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);
+    definePrimitive(base, index++, "_Cocoa_SavePanel", prSavePanel, 2, 0);
+    //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 2, 0);
+//     definePrimitive(base, index++, "_Cocoa_StandardizePath", prStandardizePath, 1, 0);
+    definePrimitive(base, index++, "_Cocoa_GetPathsInDirectory", prGetPathsInDirectory, 4, 0);
+    definePrimitive(base, index++, "_Cocoa_HelpFileForString_", prHelpFileForString, 2, 0);
 
-  /*  definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);	
-    definePrimitive(base, index++, "_ObjC_Dealloc", prDealloc, 2, 0);	
+  /*  definePrimitive(base, index++, "_ObjC_AllocInit", prAllocInit, 4, 0);
+    definePrimitive(base, index++, "_ObjC_Dealloc", prDealloc, 2, 0);
     definePrimitive(base, index++, "_ObjC_objectDo", prObjDo, 4, 0);	*/
 
 }

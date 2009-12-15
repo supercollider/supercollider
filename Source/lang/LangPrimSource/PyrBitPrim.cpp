@@ -32,7 +32,7 @@ int prNumBits(VMGlobals *g, int numArgsPushed);
 int prNumBits(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	a->ui = NUMBITS(a->ui);
+	SetRaw(a, NUMBITS(slotRawInt(a)));
 	return errNone;
 }
 
@@ -40,7 +40,7 @@ int prLog2Ceil(VMGlobals *g, int numArgsPushed);
 int prLog2Ceil(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	a->ui = LOG2CEIL(a->ui);
+	SetRaw(a, LOG2CEIL(slotRawInt(a)));
 	return errNone;
 }
 
@@ -48,7 +48,7 @@ int prCLZ(VMGlobals *g, int numArgsPushed);
 int prCLZ(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	a->ui = CLZ(a->ui);
+	SetRaw(a, CLZ(slotRawInt(a)));
 	return errNone;
 }
 
@@ -56,7 +56,7 @@ int prCTZ(VMGlobals *g, int numArgsPushed);
 int prCTZ(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	a->ui = CTZ(a->ui);
+	SetRaw(a, CTZ(slotRawInt(a)));
 	return errNone;
 }
 
@@ -67,7 +67,7 @@ int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->ui = NEXTPOWEROFTWO(a->ui);
+	SetRaw(a, NEXTPOWEROFTWO(slotRawInt(a)));
 	return errNone;
 }
 
@@ -75,7 +75,7 @@ int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed);
 int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	SetBool(a, ISPOWEROFTWO(a->ui));
+	SetBool(a, ISPOWEROFTWO(slotRawInt(a)));
 	return errNone;
 }
 
@@ -85,7 +85,7 @@ int prBinaryGrayCode(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 
 	a = g->sp;
-	a->ui = GRAYCODE(a->ui);
+	SetRaw(a, GRAYCODE(slotRawInt(a)));
 	return errNone;
 }
 
@@ -102,9 +102,9 @@ int prSetBit(VMGlobals *g, int numArgsPushed)
 	bit = bit & 31;
 	mask = 1L << bit;
 	if (IsFalse(c)) {
-		a->ui &= ~mask;
+		SetRaw(a, slotRawInt(a) & ~mask);
 	} else {
-		a->ui |=  mask;
+		SetRaw(a, slotRawInt(a) |  mask);
 	}
 	return errNone;
 }
@@ -125,7 +125,7 @@ int prHammingDistance(VMGlobals *g, int numArgsPushed)
 		if((aInt & mask) != (bInt & mask)) count = count + 1;
 		mask = mask << 1;
 	}
-	a->ui = count;
+	SetRaw(a, count);
 
 	return errNone;
 }

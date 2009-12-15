@@ -265,9 +265,9 @@ void initSymbols()
 	s_envirGet = getsym("envirGet");
 	s_envirPut = getsym("envirPut");
 
-	o_nil.utag = tagNil;		o_nil.ui = 0;
-	o_false.utag = tagFalse;	o_false.ui = 0;
-	o_true.utag = tagTrue;		o_true.ui = 0;
+	SetNil(&o_nil);
+	SetFalse(&o_false);
+	SetTrue(&o_true);
 
 	SetFloat(&o_pi, pi);
 	SetFloat(&o_twopi, twopi);
@@ -339,11 +339,11 @@ void initSymbols()
 
 const char *slotSymString(PyrSlot* slot)
 {
-	switch (slot->utag) {
-		case tagObj : return slot->uo->classptr->name.us->name;
+	switch (GetTag(slot)) {
+		case tagObj : return slotRawSymbol(&slotRawObject(slot)->classptr->name)->name;
 		case tagInt : return "Integer";
 		case tagChar : return "Char";
-		case tagSym : return slot->us->name;
+		case tagSym : return slotRawSymbol(slot)->name;
 		case tagNil : return "Nil";
 		case tagFalse : return "False";
 		case tagTrue : return "True";
@@ -487,7 +487,7 @@ void reallocClassObj(PyrClass* classobj,
 	}
 
 	if (numInstVars) {
-		//post("reallocClassObj %s numInstVars %d\n", classobj->name.us->name, numInstVars);
+		//post("reallocClassObj %s numInstVars %d\n", slotRawSymbol(&classobj->name)->name, numInstVars);
 		symarray = newPyrSymbolArray(NULL, numInstVars, obj_permanent | obj_immutable, false);
 		SetObject(&classobj->instVarNames, symarray);
 
@@ -500,7 +500,7 @@ void reallocClassObj(PyrClass* classobj,
 	}
 
 	if (numClassVars) {
-		//post("reallocClassObj %s numClassVars %d\n", classobj->name.us->name, numClassVars);
+		//post("reallocClassObj %s numClassVars %d\n", slotRawSymbol(&classobj->name)->name, numClassVars);
 		symarray = newPyrSymbolArray(NULL, numClassVars, obj_permanent | obj_immutable, false);
 		SetObject(&classobj->classVarNames, symarray);
 		nilSlots(array->slots, numClassVars);
@@ -514,7 +514,7 @@ void reallocClassObj(PyrClass* classobj,
 	}
 
 	if (numConsts) {
-		//post("reallocClassObj %s numConsts %d\n", classobj->name.us->name, numConsts);
+		//post("reallocClassObj %s numConsts %d\n", slotRawSymbol(&classobj->name)->name, numConsts);
 		symarray = newPyrSymbolArray(NULL, numConsts, obj_permanent | obj_immutable, false);
 		SetObject(&classobj->constNames, symarray);
 
@@ -526,7 +526,7 @@ void reallocClassObj(PyrClass* classobj,
 		SetNil(&classobj->constValues);
 	}
 
-	superclassobj = classobj->superclass.us->u.classobj;
+	superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 
 	SetInt(&classobj->instanceFormat, instFormat);
 	SetInt(&classobj->instanceFlags, instFlags);
@@ -536,18 +536,18 @@ void reallocClassObj(PyrClass* classobj,
 void fixClassArrays(PyrClass *classobj);
 void fixClassArrays(PyrClass *classobj)
 {
-	if (IsObj(&classobj->methods)) classobj->methods.uo->classptr = class_array;
-	if (IsObj(&classobj->instVarNames)) classobj->instVarNames.uo->classptr = class_symbolarray;
-	if (IsObj(&classobj->classVarNames)) classobj->classVarNames.uo->classptr = class_symbolarray;
-	if (IsObj(&classobj->iprototype)) classobj->iprototype.uo->classptr = class_array;
-	if (IsObj(&classobj->cprototype)) classobj->cprototype.uo->classptr = class_array;
+	if (IsObj(&classobj->methods)) slotRawObject(&classobj->methods)->classptr = class_array;
+	if (IsObj(&classobj->instVarNames)) slotRawObject(&classobj->instVarNames)->classptr = class_symbolarray;
+	if (IsObj(&classobj->classVarNames)) slotRawObject(&classobj->classVarNames)->classptr = class_symbolarray;
+	if (IsObj(&classobj->iprototype)) slotRawObject(&classobj->iprototype)->classptr = class_array;
+	if (IsObj(&classobj->cprototype)) slotRawObject(&classobj->cprototype)->classptr = class_array;
 }
 
 int numInstVars(PyrClass* classobj)
 {
 	int res;
 	if (IsNil(&classobj->instVarNames)) res = 0;
-	else res = classobj->instVarNames.uo->size;
+	else res = slotRawObject(&classobj->instVarNames)->size;
 	return res;
 }
 
@@ -555,7 +555,7 @@ int numClassVars(PyrClass* classobj)
 {
 	int res;
 	if (IsNil(&classobj->classVarNames)) res = 0;
-	else res = classobj->classVarNames.uo->size;
+	else res = slotRawObject(&classobj->classVarNames)->size;
 	return res;
 }
 
@@ -569,7 +569,7 @@ void objAddIndexedSlotGrow(PyrSlot *arraySlot, PyrSlot *addSlot)
 		SetObject(arraySlot, newobj);
 		obj = newobj;
 	} else {
-		obj = arraySlot->uo;
+		obj = slotRawObject(arraySlot);
 		if (obj->size >= ARRAYMAXINDEXSIZE(obj)) {
 			//post("objAddIndexedSlotGrow\n");
 			PyrObject *newobj = (PyrObject*)newPyrArray(NULL, obj->size * 2, obj_permanent | obj_immutable, false);
@@ -598,11 +598,11 @@ PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol *name)
 	PyrSlot *methods;
 	int i, numMethods;
 	if (IsNil(&classobj->methods)) return NULL;
-	methods = classobj->methods.uo->slots;
-	numMethods = classobj->methods.uo->size;
+	methods = slotRawObject(&classobj->methods)->slots;
+	numMethods = slotRawObject(&classobj->methods)->size;
 	for (i=0; i<numMethods; ++i) {
-		method = methods[i].uom;
-		if (method->name.us == name) break;
+		method = slotRawMethod(&methods[i]);
+		if (slotRawSymbol(&method->name) == name) break;
 	}
 	if (i>=numMethods) method = NULL;
 	return method;
@@ -613,7 +613,7 @@ int numSuperInstVars(PyrClass *superclassobj)
 	int superinstvars = 0;
 	if (superclassobj) {
 		if (IsObj(&superclassobj->iprototype)) {
-			superinstvars = superclassobj->iprototype.uo->size;
+			superinstvars = slotRawObject(&superclassobj->iprototype)->size;
 		}
 	}
 	return superinstvars;
@@ -625,12 +625,12 @@ bool classFindInstVar(PyrClass* classobj, PyrSymbol *name, int *index)
 	PyrSymbol *ivname;
 	int i;
 	if (NotNil(&classobj->instVarNames)) {
-		ivnames = classobj->instVarNames.uosym;
+		ivnames = slotRawSymbolArray(&classobj->instVarNames);
 		if (ivnames) {
 			for (i=0; i<ivnames->size; ++i) {
 				ivname = ivnames->symbols[i];
 				if (ivname == name) {
-					//numsupervars = numSuperInstVars(classobj->superclass.us->u.classobj);
+					//numsupervars = numSuperInstVars(slotRawSymbol(&classobj->superclass)->u.classobj);
 					//*index = numsupervars + i;
 					*index = i;
 					return true;
@@ -687,13 +687,13 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index)
 	PyrClass* localclassobj = *classobj;
 	// if this is a Metaclass then we need to search its normal Class for
 	// the class vars
-	classname = localclassobj->name.us->name;
+	classname = slotRawSymbol(&localclassobj->name)->name;
 	if (strncmp(classname, "Meta_", 5) == 0) {
 		localclassobj = getsym(classname+5)->u.classobj;
 	}
 	for (j=0; localclassobj; ++j) {
 		if (NotNil(&localclassobj->classVarNames)) {
-			cvnames = localclassobj->classVarNames.uosym;
+			cvnames = slotRawSymbolArray(&localclassobj->classVarNames);
 			if (cvnames) {
 				for (i=0; i<cvnames->size; ++i) {
 					cvname = cvnames->symbols[i];
@@ -706,7 +706,7 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index)
 			}
 		}
 		if (IsSym(&localclassobj->superclass)) {
-			localclassobj = localclassobj->superclass.us->u.classobj;
+			localclassobj = slotRawSymbol(&localclassobj->superclass)->u.classobj;
 		} else {
 			localclassobj = NULL;
 		}
@@ -723,13 +723,13 @@ bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index)
 	PyrClass* localclassobj = *classobj;
 	// if this is a Metaclass then we need to search its normal Class for
 	// the class vars
-	classname = localclassobj->name.us->name;
+	classname = slotRawSymbol(&localclassobj->name)->name;
 	if (strncmp(classname, "Meta_", 5) == 0) {
 		localclassobj = getsym(classname+5)->u.classobj;
 	}
 	for (j=0; localclassobj; ++j) {
 		if (NotNil(&localclassobj->constNames)) {
-			knames = localclassobj->constNames.uosym;
+			knames = slotRawSymbolArray(&localclassobj->constNames);
 			if (knames) {
 				for (i=0; i<knames->size; ++i) {
 					kname = knames->symbols[i];
@@ -742,7 +742,7 @@ bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index)
 			}
 		}
 		if (IsSym(&localclassobj->superclass)) {
-			localclassobj = localclassobj->superclass.us->u.classobj;
+			localclassobj = slotRawSymbol(&localclassobj->superclass)->u.classobj;
 		} else {
 			localclassobj = NULL;
 		}
@@ -761,57 +761,56 @@ void buildClassTree()
 	//postfl("count subclasses\n");
 	classobj = gClassList;
 	while (classobj) {
-		superclassobj = classobj->superclass.us->u.classobj;
+		superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 		if (superclassobj) {
-			//postfl("     superclassobj %s\n", superclassobj->name.us->name);
-			superclassobj->subclasses.ui ++;
+			//postfl("     superclassobj %s\n", slotRawSymbol(&superclassobj->name)->name);
+			SetRaw(&superclassobj->subclasses, slotRawInt(&superclassobj->subclasses) + 1);
 		}
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 	// allocate subclass arrays
 	//postfl("allocate subclass arrays\n");
 	classobj = gClassList;
 	while (classobj) {
 		int numSubclasses;
-		numSubclasses = classobj->subclasses.ui;
-		//postfl("  %s %d\n", classobj->name.us->name, numSubclasses);
+		numSubclasses = slotRawInt(&classobj->subclasses);
+		//postfl("  %s %d\n", slotRawSymbol(&classobj->name)->name, numSubclasses);
 		if (numSubclasses) {
-			classobj->subclasses.uo = (PyrObject*)newPyrArray(NULL, numSubclasses, obj_permanent | obj_immutable, false);
-			classobj->subclasses.utag = tagObj;
-			classobj->subclasses.uo->size = 0;
+			SetObject(&classobj->subclasses, (PyrObject*)newPyrArray(NULL, numSubclasses, obj_permanent | obj_immutable, false));
+			slotRawObject(&classobj->subclasses)->size = 0;
 		} else {
 			SetNil(&classobj->subclasses);
 		}
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 	// fill in subclass arrays
 	//postfl("fill in subclass arrays\n");
 	classobj = gClassList;
 	while (classobj) {
-		//postfl("  %s\n", classobj->name.us->name);
-		superclassobj = classobj->superclass.us->u.classobj;
+		//postfl("  %s\n", slotRawSymbol(&classobj->name)->name);
+		superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 		if (superclassobj) {
-			objAddIndexedObject(superclassobj->subclasses.uo, (PyrObject*)classobj);
-			//postfl("     superclassobj %s %d\n", superclassobj->name.us->name,
-			//	superclassobj->subclasses.uo->size);
+			objAddIndexedObject(slotRawObject(&superclassobj->subclasses), (PyrObject*)classobj);
+			//postfl("     superclassobj %s %d\n", slotRawSymbol(&superclassobj->name)->name,
+			//	slotRawObject(&superclassobj->subclasses)->size);
 		}
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 
 	// alpha sort the classes via insertion sort
 	{
 		PyrClass *alpha, *prev, *cur, *subj;
 		alpha = gClassList;
-		gClassList = gClassList->nextclass.uoc;
+		gClassList = slotRawClass(&gClassList->nextclass);
 		SetNil(&alpha->nextclass);
 		while (gClassList) {
 			subj = gClassList;
-			gClassList = gClassList->nextclass.uoc;
+			gClassList = slotRawClass(&gClassList->nextclass);
 			prev = NULL;
 			cur = alpha;
-			while (cur && strcmp(subj->name.us->name, cur->name.us->name)>0) {
+			while (cur && strcmp(slotRawSymbol(&subj->name)->name, slotRawSymbol(&cur->name)->name)>0) {
 				prev = cur;
-				cur = cur->nextclass.uoc;
+				cur = slotRawClass(&cur->nextclass);
 			}
 			SetObjectOrNil(&subj->nextclass, (PyrObject*)cur);
 			if (prev) SetObjectOrNil(&prev->nextclass, (PyrObject*)subj);
@@ -828,16 +827,16 @@ void indexClassTree(PyrClass *classobj, int numSuperMethods)
 	int i, numMethods;
 
 	if (!classobj) return;
-	subclasses = classobj->subclasses.uo;
+	subclasses = slotRawObject(&classobj->subclasses);
 
 	SetInt(&classobj->classIndex, 	gNumClasses);
 	gNumClasses ++;
-	methods = classobj->methods.uo;
+	methods = slotRawObject(&classobj->methods);
 	numMethods = methods ? methods->size : 0;
 	numMethods = numSuperMethods + numMethods;
 	if (subclasses) {
 		for (i=0; i<subclasses->size; ++i) {
-			indexClassTree(subclasses->slots[i].uoc, numMethods);
+			indexClassTree(slotRawClass(&subclasses->slots[i]), numMethods);
 		}
 	}
 	SetInt(&classobj->maxSubclassIndex,  gNumClasses - 1);
@@ -850,14 +849,14 @@ void findDiscrepancy()
 
 	classobjA = gClassList;
 	while (classobjA) {
-		classobjB = classobjA->nextclass.uoc;;
+		classobjB = slotRawClass(&classobjA->nextclass);;
 		while (classobjB) {
-			if (classobjA->name.us == classobjB->name.us) {
-				post("duplicate %s\n", classobjA->name.us->name);
+			if (slotRawSymbol(&classobjA->name) == slotRawSymbol(&classobjB->name)) {
+				post("duplicate %s\n", slotRawSymbol(&classobjA->name)->name);
 			}
-			classobjB = classobjB->nextclass.uoc;
+			classobjB = slotRawClass(&classobjB->nextclass);
 		}
-		classobjA = classobjA->nextclass.uoc;
+		classobjA = slotRawClass(&classobjA->nextclass);
 	}
 }
 
@@ -874,35 +873,35 @@ void postClassTree(PyrClass *classobj, int level)
 	PyrObject *subclasses;
 	int i;
 
-	//post("%4d  ", classobj->classIndex.ui);
+	//post("%4d  ", slotRawInt(&classobj->classIndex));
 	indent(level);
-	post("%s\n", classobj->name.us->name);
+	post("%s\n", slotRawSymbol(&classobj->name)->name);
 
 	if (classobj == class_class) {
 		indent(level+1);
 		post("      [.. all metaclasses ..]\n");
 	} else {
-		subclasses = classobj->subclasses.uo;
+		subclasses = slotRawObject(&classobj->subclasses);
 		if (subclasses) {
 			// determine if can put on one line
 			bool oneline = subclasses->size <= 5;
 			for (i=0; oneline && i<subclasses->size; ++i) {
-				PyrClass *subclassobj = subclasses->slots[i].uoc;
-				if (subclassobj->subclasses.uo) oneline = false;
+				PyrClass *subclassobj = slotRawClass(&subclasses->slots[i]);
+				if (slotRawObject(&subclassobj->subclasses)) oneline = false;
 			}
 			if (oneline) {
 				indent(level+1);
 				post("[");
 				for (i=0; i<subclasses->size; ++i) {
-					PyrClass *subclassobj = subclasses->slots[i].uoc;
-					post(" %s", subclassobj->name.us->name);
+					PyrClass *subclassobj = slotRawClass(&subclasses->slots[i]);
+					post(" %s", slotRawSymbol(&subclassobj->name)->name);
 				}
 				post(" ]\n");
 			} else {
 				indent(level);
 				post("[\n");
 				for (i=0; i<subclasses->size; ++i) {
-					postClassTree(subclasses->slots[i].uoc, level+1);
+					postClassTree(slotRawClass(&subclasses->slots[i]), level+1);
 				}
 				indent(level);
 				post("]\n");
@@ -921,18 +920,18 @@ void setSelectorFlags()
 
 	classobj = gClassList;
 	while (classobj) {
-		methods = classobj->methods.uo;
+		methods = slotRawObject(&classobj->methods);
 		if (methods) {
 			for (i=0; i<methods->size; ++i) {
-				method = methods->slots[i].uom;
-				method->name.us->flags |= sym_Selector;
+				method = slotRawMethod(&methods->slots[i]);
+				slotRawSymbol(&method->name)->flags |= sym_Selector;
 				//if (method->methType == methRedirect) {
-				//	post("rd: %3d %s:%s\n", k++, classobj->name.us->name,
-				//		method->name.us->name);
+				//	post("rd: %3d %s:%s\n", k++, slotRawSymbol(&classobj->name)->name,
+				//		slotRawSymbol(&method->name)->name);
 				//}
 			}
 		}
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 	// count selectors
 	gNumSelectors = 0;
@@ -1011,8 +1010,8 @@ void buildBigMethodMatrix()
 
 	classobj = gClassList;
 	while (classobj) {
-		classes[classobj->classIndex.ui] = classobj;
-		classobj = classobj->nextclass.uoc;
+		classes[slotRawInt(&classobj->classIndex)] = classobj;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 
 	fillClassRow(class_object, bigTable);
@@ -1063,8 +1062,8 @@ void buildBigMethodMatrix()
 				sels[i].population ++;
 				//if (chunkSize == 0) chunkOffset = j;
 				//chunkSize++;
-				//postfl("    %8s %3d %3d %3d %3d\n", classobj->name.us->name, i, j,
-				//	chunkSize, classobj->classIndex.ui);
+				//postfl("    %8s %3d %3d %3d %3d\n", slotRawSymbol(&classobj->name)->name, i, j,
+				//	chunkSize, slotRawInt(&classobj->classIndex));
 			//} else {
 				//if (chunkSize > sels[i].largestChunk) {
 				//	sels[i].largestChunk = chunkSize;
@@ -1181,29 +1180,29 @@ void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 
 	bigTableSize = gNumSelectors * gNumClasses;
 
-	myrow = bigTable + classobj->classIndex.ui * gNumSelectors;
-	superclassobj = classobj->superclass.us->u.classobj;
+	myrow = bigTable + slotRawInt(&classobj->classIndex) * gNumSelectors;
+	superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 	if (superclassobj) {
-		superrow = bigTable + superclassobj->classIndex.ui * gNumSelectors;
+		superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
 		memcpy(myrow, superrow, gNumSelectors * sizeof(PyrMethod*));
 	} else {
 		memset(myrow, 0, gNumSelectors * sizeof(PyrMethod*));
 	}
 
-	methods = classobj->methods.uo;
+	methods = slotRawObject(&classobj->methods);
 	if (methods) {
 		//postfl("        %d\n", methods->size);
 		for (i=0; i<methods->size; ++i) {
-			method = methods->slots[i].uom;
-			selectorIndex = method->name.us->u.index;
+			method = slotRawMethod(&methods->slots[i]);
+			selectorIndex = slotRawSymbol(&method->name)->u.index;
 			myrow[selectorIndex] = method;
 		}
 	}
 
-	subclasses = classobj->subclasses.uo;
+	subclasses = slotRawObject(&classobj->subclasses);
 	if (subclasses) {
 		for (i=0; i<subclasses->size; ++i) {
-			fillClassRow(subclasses->slots[i].uoc, bigTable);
+			fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable);
 		}
 	}
 }
@@ -1212,8 +1211,8 @@ void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index)
 {
 	int i;
-	for (i=0; i<func->argNames.uosym->size; ++i) {
-		if (func->argNames.uosym->symbols[i] == name) {
+	for (i=0; i<slotRawSymbolArray(&func->argNames)->size; ++i) {
+		if (slotRawSymbolArray(&func->argNames)->symbols[i] == name) {
 			*index = i;
 			return true;
 		}
@@ -1224,8 +1223,8 @@ bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index)
 bool funcFindVar(PyrBlock* func, PyrSymbol *name, int *index)
 {
 	int i;
-	for (i=0; i<func->varNames.uosym->size; ++i) {
-		if (func->varNames.uosym->symbols[i] == name) {
+	for (i=0; i<slotRawSymbolArray(&func->varNames)->size; ++i) {
+		if (slotRawSymbolArray(&func->varNames)->symbols[i] == name) {
 			*index = i;
 			return true;
 		}
@@ -1266,31 +1265,33 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	metaclassobj = newClassObj( class_class,
 		metaClassName, metaSuperClassName,
 		classClassNumInstVars, 0, 0, 0, obj_notindexed, 0);
-	metaclassobj->classFlags.ui |= classIsIntrinsic;
+	SetRaw(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
 
 	if (metaSuperClassName && classClassNumInstVars) {
-		memcpy(metaclassobj->iprototype.uo->slots, metaSuperClass->iprototype.uo->slots,
+		memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&metaSuperClass->iprototype)->slots,
 			sizeof(PyrSlot) * classClassNumInstVars);
-		memcpy(metaclassobj->instVarNames.uosym->symbols, metaSuperClass->instVarNames.uosym->symbols,
+		memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
+			slotRawSymbolArray(&metaSuperClass->instVarNames)->symbols,
 			sizeof(PyrSlot) * classClassNumInstVars);
-		metaclassobj->iprototype.uo->size = classClassNumInstVars;
-		metaclassobj->instVarNames.uo->size = classClassNumInstVars;
+		slotRawObject(&metaclassobj->iprototype)->size = classClassNumInstVars;
+		slotRawObject(&metaclassobj->instVarNames)->size = classClassNumInstVars;
 		//dumpObject((PyrObject*)metaclassobj);
 	}
 
 	classobj = newClassObj(metaclassobj,
 		className, superClassName,
 		numInstVars + superInstVars, numClassVars, 0, 0, obj_notindexed, 0);
-	classobj->classFlags.ui |= classIsIntrinsic;
+	SetRaw(&classobj->classFlags, slotRawInt(&classobj->classFlags) | classIsIntrinsic);
 
 	//postfl("%s:%s  : %d\n", className->name, superClassName->name, superInstVars);
 	if (superClass && superInstVars) {
-		memcpy(classobj->iprototype.uo->slots, superClass->iprototype.uo->slots,
+		memcpy(slotRawObject(&classobj->iprototype)->slots, slotRawObject(&superClass->iprototype)->slots,
 			sizeof(PyrSlot) * superInstVars);
-		memcpy(classobj->instVarNames.uosym->symbols, superClass->instVarNames.uosym->symbols,
+		memcpy(slotRawSymbolArray(&classobj->instVarNames)->symbols,
+			slotRawSymbolArray(&superClass->instVarNames)->symbols,
 			sizeof(PyrSlot) * superInstVars);
-		classobj->iprototype.uo->size = superInstVars;
-		classobj->instVarNames.uo->size = superInstVars;
+		slotRawObject(&classobj->iprototype)->size = superInstVars;
+		slotRawObject(&classobj->instVarNames)->size = superInstVars;
 	}
 
 	return classobj;
@@ -1298,19 +1299,19 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 
 void addIntrinsicVar(PyrClass *classobj, const char *varName, PyrSlot *slot)
 {
-	//postfl("%s  %s  %d\n", classobj->name.us->name, varName,
-	//	classobj->instVarNames.uo->size);
-	objAddIndexedSymbol(classobj->instVarNames.uosym, getsym(varName));
-	objAddIndexedSlot(classobj->iprototype.uo, slot);
+	//postfl("%s  %s  %d\n", slotRawSymbol(&classobj->name)->name, varName,
+	//	slotRawObject(&classobj->instVarNames)->size);
+	objAddIndexedSymbol(slotRawSymbolArray(&classobj->instVarNames), getsym(varName));
+	objAddIndexedSlot(slotRawObject(&classobj->iprototype), slot);
 }
 
 void addIntrinsicClassVar(PyrClass *classobj, const char *varName, PyrSlot *slot);
 void addIntrinsicClassVar(PyrClass *classobj, const char *varName, PyrSlot *slot)
 {
-	//postfl("%s  %s  %d\n", classobj->name.us->name, varName,
-	//	classobj->instVarNames.uo->size);
-	objAddIndexedSymbol(classobj->classVarNames.uosym, getsym(varName));
-	objAddIndexedSlot(classobj->cprototype.uo, slot);
+	//postfl("%s  %s  %d\n", slotRawSymbol(&classobj->name)->name, varName,
+	//	slotRawObject(&classobj->instVarNames)->size);
+	objAddIndexedSymbol(slotRawSymbolArray(&classobj->classVarNames), getsym(varName));
+	objAddIndexedSlot(slotRawObject(&classobj->cprototype), slot);
 }
 
 void initClasses()
@@ -1323,7 +1324,7 @@ void initClasses()
 	gNumClassVars = 0;
 	gClassList = NULL;
 	gNullMethod = newPyrMethod();
-	gNullMethod->name.us = 0;
+	SetRaw(&gNullMethod->name, (PyrSymbol*)NULL);
 	methraw = METHRAW(gNullMethod);
 	methraw->methType = methNormal;
 
@@ -1372,14 +1373,16 @@ void initClasses()
 
 	// class_object_meta's inst var names need to be copied from class_class
 	// because class_class didn't exist when it was created
-	memcpy(class_object_meta->iprototype.uo->slots, class_class->iprototype.uo->slots,
+	memcpy(slotRawObject(&class_object_meta->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
 		sizeof(PyrSlot) * classClassNumInstVars);
-	memcpy(class_object_meta->instVarNames.uosym->symbols, class_class->instVarNames.uosym->symbols,
+	memcpy(slotRawSymbolArray(&class_object_meta->instVarNames)->symbols,
+		slotRawSymbolArray(&class_class->instVarNames)->symbols,
 		sizeof(PyrSymbol*) * classClassNumInstVars);
 
-	memcpy(class_class->classptr->iprototype.uo->slots, class_class->iprototype.uo->slots,
+	memcpy(slotRawObject(&class_class->classptr->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
 		sizeof(PyrSlot) * classClassNumInstVars);
-	memcpy(class_class->classptr->instVarNames.uosym->symbols, class_class->instVarNames.uosym->symbols,
+	memcpy(slotRawSymbolArray(&class_class->classptr->instVarNames)->symbols,
+		slotRawSymbolArray(&class_class->instVarNames)->symbols,
 		sizeof(PyrSymbol*) * classClassNumInstVars);
 
 
@@ -1390,7 +1393,7 @@ void initClasses()
 	class_arrayed_collection = makeIntrinsicClass(s_arrayed_collection, s_sequenceable_collection, 0, 0);
 	class_array = makeIntrinsicClass(s_array, s_arrayed_collection, 0, 0);
 		SetInt(&class_array->instanceFormat, obj_slot);
-		class_array->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_array->classFlags, slotRawInt(&class_array->classFlags) | classHasIndexableInstances);
 
 	// now fix array classptrs in already created classes
 	fixClassArrays(class_class);
@@ -1426,7 +1429,7 @@ void initClasses()
 		//addIntrinsicVar(class_method, "callMeter", &o_zero);
 
 	class_frame = makeIntrinsicClass(s_frame, s_object, 0, 0);
-		class_frame->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_frame->classFlags, slotRawInt(&class_frame->classFlags) | classHasIndexableInstances);
 		//addIntrinsicVar(class_frame, "method", &o_nil);
 		//addIntrinsicVar(class_frame, "caller", &o_nil);
 		//addIntrinsicVar(class_frame, "context", &o_nil);
@@ -1513,37 +1516,37 @@ void initClasses()
 
 	class_rawarray = makeIntrinsicClass(s_rawarray, s_arrayed_collection, 0, 0);
 		//SetInt(&class_rawarray->instanceFormat, obj_int8);
-		//class_rawarray->classFlags.ui |= classHasIndexableInstances;
+		//slotRawInt(&class_rawarray->classFlags) |= classHasIndexableInstances;
 	class_int8array = makeIntrinsicClass(s_int8array, s_rawarray, 0, 0);
 		SetInt(&class_int8array->instanceFormat, obj_int8);
-		class_int8array->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_int8array->classFlags, slotRawInt(&class_int8array->classFlags) | classHasIndexableInstances);
 	class_int16array = makeIntrinsicClass(s_int16array, s_rawarray, 0, 0);
 		SetInt(&class_int16array->instanceFormat, obj_int16);
-		class_int16array->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_int16array->classFlags, slotRawInt(&class_int16array->classFlags) | classHasIndexableInstances);
 	class_int32array = makeIntrinsicClass(s_int32array, s_rawarray, 0, 0);
 		SetInt(&class_int32array->instanceFormat, obj_int32);
-		class_int32array->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_int32array->classFlags, slotRawInt(&class_int32array->classFlags) | classHasIndexableInstances);
 	class_symbolarray = makeIntrinsicClass(s_symbolarray, s_rawarray, 0, 0);
 		SetInt(&class_symbolarray->instanceFormat, obj_symbol);
-		class_symbolarray->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_symbolarray->classFlags, slotRawInt(&class_symbolarray->classFlags) | classHasIndexableInstances);
 	class_string = makeIntrinsicClass(s_string, s_rawarray, 0, 1);
 		addIntrinsicClassVar(class_string, "unixCmdActions", &o_nil);
 		SetInt(&class_string->instanceFormat, obj_char);
-		class_string->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_string->classFlags, slotRawInt(&class_string->classFlags) | classHasIndexableInstances);
 	class_floatarray = makeIntrinsicClass(s_floatarray, s_rawarray, 0, 0);
 		SetInt(&class_floatarray->instanceFormat, obj_float);
-		class_floatarray->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_floatarray->classFlags, slotRawInt(&class_floatarray->classFlags) | classHasIndexableInstances);
 	class_signal = makeIntrinsicClass(s_signal, s_floatarray, 0, 0);
 		SetInt(&class_signal->instanceFormat, obj_float);
-		class_signal->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_signal->classFlags, slotRawInt(&class_signal->classFlags) | classHasIndexableInstances);
 	class_wavetable = makeIntrinsicClass(s_wavetable, s_floatarray, 0, 0);
 		SetInt(&class_wavetable->instanceFormat, obj_float);
-		class_wavetable->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_wavetable->classFlags, slotRawInt(&class_wavetable->classFlags) | classHasIndexableInstances);
 
 		//addIntrinsicVar(class_signal, "rate", &o_nil);
 	class_doublearray = makeIntrinsicClass(s_doublearray, s_rawarray, 0, 0);
 		SetInt(&class_doublearray->instanceFormat, obj_double);
-		class_doublearray->classFlags.ui |= classHasIndexableInstances;
+		SetRaw(&class_doublearray->classFlags, slotRawInt(&class_doublearray->classFlags) | classHasIndexableInstances);
 
 	class_list = makeIntrinsicClass(s_list, s_sequenceable_collection, 1, 0);
 		addIntrinsicVar(class_list, "array", &o_nil);
@@ -1567,24 +1570,21 @@ void initClasses()
 	gTagClassTable[11] = class_float;
 	gTagClassTable[12] = class_float;
 
-	o_emptyarray.utag = tagObj;
-	o_emptyarray.uo = newPyrArray(NULL, 0, obj_permanent | obj_immutable, false);
+	SetObject(&o_emptyarray, newPyrArray(NULL, 0, obj_permanent | obj_immutable, false));
 
-	o_onenilarray.utag = tagObj;
-	o_onenilarray.uo = newPyrArray(NULL, 1, obj_permanent | obj_immutable, false);
-	o_onenilarray.uo->size = 1;
-	SetNil(o_onenilarray.uo->slots);
+	SetObject(&o_onenilarray, newPyrArray(NULL, 1, obj_permanent | obj_immutable, false));
+	slotRawObject(&o_onenilarray)->size = 1;
+	SetNil(slotRawObject(&o_onenilarray)->slots);
 
-	o_argnamethis.utag = tagObj;
-	o_argnamethis.uosym = newPyrSymbolArray(NULL, 1, obj_permanent | obj_immutable, false);
-	o_argnamethis.uosym->size = 1;
-	o_argnamethis.uosym->symbols[0] = s_this;
+	SetObject(&o_argnamethis, newPyrSymbolArray(NULL, 1, obj_permanent | obj_immutable, false));
+	slotRawSymbolArray(&o_argnamethis)->size = 1;
+	slotRawSymbolArray(&o_argnamethis)->symbols[0] = s_this;
 
 	/*
 	post("array %08X '%s'\n", class_array, class_array->name.us->name);
-	post("o_emptyarray %08X '%s'\n", o_emptyarray.uo->classptr, o_emptyarray.uo->classptr->name.us->name);
-	post("o_argnamethis %08X '%s'\n", o_argnamethis.uo->classptr, o_argnamethis.uo->classptr->name.us->name);
-	post("o_onenilarray %08X '%s'\n", o_onenilarray.uo->classptr, o_onenilarray.uo->classptr->name.us->name);
+	post("o_emptyarray %08X '%s'\n", slotRawObject(&o_emptyarray)->classptr, slotRawObject(&o_emptyarray)->classptr->name.us->name);
+	post("o_argnamethis %08X '%s'\n", slotRawObject(&o_argnamethis)->classptr, slotRawObject(&o_argnamethis)->classptr->name.us->name);
+	post("o_onenilarray %08X '%s'\n", slotRawObject(&o_onenilarray)->classptr, slotRawObject(&o_onenilarray)->classptr->name.us->name);
 	dumpObjectSlot(&o_emptyarray);
 	dumpObjectSlot(&o_argnamethis);
 	dumpObjectSlot(&o_onenilarray);
@@ -1597,10 +1597,10 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	PyrObject *newobj, *proto;
 	int numbytes, format, flags;
 
-	format = classobj->instanceFormat.ui;
-	flags = classobj->instanceFlags.ui;
+	format = slotRawInt(&classobj->instanceFormat);
+	flags = slotRawInt(&classobj->instanceFlags);
 
-	if (classobj->classFlags.ui & classHasIndexableInstances) {
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		// create an indexable object
 		numbytes = size * gFormatElemSize[format];
 		newobj = gc->New(numbytes, flags, format, collect);
@@ -1616,7 +1616,7 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 		}
 	} else {
 		if (IsObj(&classobj->iprototype)) {
-			proto = classobj->iprototype.uo;
+			proto = slotRawObject(&classobj->iprototype);
 			size = proto->size;
 			numbytes = size * sizeof(PyrSlot);
 			newobj = gc->New(numbytes, flags, format, collect);
@@ -1640,14 +1640,14 @@ PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size,
 	PyrObject *newobj, *proto;
 	int numbytes, format, flags;
 
-	format = classobj->instanceFormat.ui;
-	flags = classobj->instanceFlags.ui;
+	format = slotRawInt(&classobj->instanceFormat);
+	flags = slotRawInt(&classobj->instanceFlags);
 
-	if (classobj->classFlags.ui & classHasIndexableInstances) {
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		numbytes = size * gFormatElemSize[format];
 	} else {
 		if (IsObj(&classobj->iprototype)) {
-			proto = classobj->iprototype.uo;
+			proto = slotRawObject(&classobj->iprototype);
 			size = proto->size;
 			numbytes = size * sizeof(PyrSlot);
 		} else {
@@ -1720,11 +1720,11 @@ void dumpObject(PyrObject *obj)
 	}
 	classobj = obj->classptr;
 	if (isKindOf(obj, class_class)) {
-		post("class %s (%08X) {\n", ((PyrClass*)obj)->name.us->name, obj);
+		post("class %s (%08X) {\n", slotRawSymbol(&((PyrClass*)obj)->name)->name, obj);
 	} else {
-		//post("Instance of %s (%08X) {\n", classobj->name.us->name, obj);
+		//post("Instance of %s (%08X) {\n", slotRawSymbol(&classobj->name)->name, obj);
 		post("Instance of %s {    (%08X, gc=%02X, fmt=%02X, flg=%02X, set=%02X)\n",
-			classobj->name.us->name, obj, obj->gc_color, obj->obj_format, obj->obj_flags,
+			slotRawSymbol(&classobj->name)->name, obj, obj->gc_color, obj->obj_format, obj->obj_flags,
 			obj->obj_sizeclass);
 	}
         //flushPostBuf();
@@ -1733,7 +1733,7 @@ void dumpObject(PyrObject *obj)
 		post("  instance variables [%d]\n", obj->size);
 		for (i=0; i<obj->size; ++i) {
 			slotString(obj->slots + i, str);
-			post("    %s : %s\n", classobj->instVarNames.uosym->symbols[i]->name, str);
+			post("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name, str);
 		}
 	} else {
 		int maxsize;
@@ -1817,18 +1817,18 @@ void dumpBadObject(PyrObject *obj)
 	}
 	classobj = obj->classptr;
 	if (isKindOf(obj, class_class)) {
-		postfl("class %s (%08X) {\n", ((PyrClass*)obj)->name.us->name, obj);
+		postfl("class %s (%08X) {\n", slotRawSymbol(&((PyrClass*)obj)->name)->name, obj);
 	} else {
-		//postfl("Instance of %s (%08X) {\n", classobj->name.us->name, obj);
+		//postfl("Instance of %s (%08X) {\n", slotRawSymbol(&classobj->name)->name, obj);
 		postfl("Instance of %s {    (%08X, gc=%02X, fmt=%02X, flg=%02X, set=%02X)\n",
-			classobj->name.us->name, obj, obj->gc_color, obj->obj_format, obj->obj_flags,
+			slotRawSymbol(&classobj->name)->name, obj, obj->gc_color, obj->obj_format, obj->obj_flags,
 			obj->obj_sizeclass);
 	}
 	if (obj->obj_format == obj_notindexed) {
 		postfl("  instance variables [%d]\n", obj->size);
 		for (i=0; i<obj->size; ++i) {
 			slotString(obj->slots + i, str);
-			postfl("    %s : %s\n", classobj->instVarNames.uosym->symbols[i]->name, str);
+			postfl("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name, str);
 		}
 	} else {
 		int maxsize;
@@ -1904,7 +1904,7 @@ void dumpBadObject(PyrObject *obj)
 void dumpObjectSlot(PyrSlot *slot)
 {
 	if (IsObj(slot)) {
-		dumpObject(slot->uo);
+		dumpObject(slotRawObject(slot));
 	} else {
 		dumpPyrSlot(slot);
 	}
@@ -1928,7 +1928,7 @@ void CallStackSanity(VMGlobals *g, char *tagstr)
 			//Debugger();
 			break;
 		}
-		frame = frame->caller.uof;
+		frame = slotRawFrame(&frame->caller);
 	}
 }
 
@@ -1938,23 +1938,23 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 	bool failed = false;
 	if (frame==NULL) return false;
 	if (NotObj(&frame->method)) {
-		postfl("Frame %X method tag wrong %X\n", frame, frame->method.utag);
+		postfl("Frame %X method tag wrong %X\n", frame, GetTag(&frame->method));
 		failed = true;
-	//} else if (!isKindOf((PyrObject*)frame->method.uo->classptr, class_fundef)) {
-	} else if (frame->method.uo->classptr != class_method && frame->method.uo->classptr != class_fundef) {
-		postfl("Frame %X method class wrong %X\n", frame, frame->method.uo->classptr);
+	//} else if (!isKindOf((PyrObject*)slotRawObject(&frame->method)->classptr, class_fundef)) {
+	} else if (slotRawObject(&frame->method)->classptr != class_method && slotRawObject(&frame->method)->classptr != class_fundef) {
+		postfl("Frame %X method class wrong %X\n", frame, slotRawObject(&frame->method)->classptr);
 		failed = true;
-		//if (frame->method.uo->classptr->classptr == class_class) {
-			postfl("class: '%s'\n", frame->method.uo->classptr->name.us->name);
+		//if (slotRawObject(&frame->method)->classptr->classptr == class_class) {
+		postfl("class: '%s'\n", slotRawSymbol(&slotRawObject(&frame->method)->classptr->name)->name);
 		///} else {
 		//	postfl("not even a class\n");
 		//}
-	} else if (NotObj(&frame->method.uoblk->code)) {
-		postfl("Method %X code tag wrong %X\n", frame->method.uoblk, frame->method.uoblk->code.utag);
+	} else if (NotObj(&slotRawBlock(&frame->method)->code)) {
+		postfl("Method %X code tag wrong %X\n", slotRawBlock(&frame->method), GetTag(&slotRawBlock(&frame->method)->code));
 		failed = true;
-	} else if (frame->method.uoblk->code.uo->classptr != class_int8array) {
-		postfl("Code %X class wrong %X\n", frame->method.uoblk->code.uo, frame->method.uoblk->code.uo->classptr);
-			postfl("class: '%s'\n", frame->method.uoblk->code.uo->classptr->name.us->name);
+	} else if (slotRawObject(&slotRawBlock(&frame->method)->code)->classptr != class_int8array) {
+		postfl("Code %X class wrong %X\n", slotRawObject(&slotRawBlock(&frame->method)->code), slotRawObject(&slotRawBlock(&frame->method)->code)->classptr);
+			postfl("class: '%s'\n", slotRawSymbol(&slotRawObject(&slotRawBlock(&frame->method)->code)->classptr->name)->name);
 		failed = true;
 	}
 	/*
@@ -1971,8 +1971,8 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 		failed = true;
 	}
 	*/
-	if (frame->ip.utag != tagPtr) {
-		postfl("Frame %X ip tag wrong %X\n", frame, frame->ip.utag);
+	if (!IsPtr(&frame->ip)) {
+		postfl("Frame %X ip tag wrong %X\n", frame, GetTag(&frame->ip));
 		failed = true;
 	}
 	return failed;
@@ -1992,7 +1992,7 @@ void DumpFrame(PyrFrame *frame)
 	slotOneWord(&frame->method, str);
 	//slotString(&frame->method, str);
 
-	meth = frame->method.uom;
+	meth = slotRawMethod(&frame->method);
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
 		post("\t%s   %08X\n", str, frame);
@@ -2003,9 +2003,9 @@ void DumpFrame(PyrFrame *frame)
 			slotOneWord(frame->vars + i, str);
 			//slotString(frame->vars + i, str);
 			if (i < numargs) {
-				post("\t\targ %s = %s\n", meth->argNames.uosym->symbols[i]->name, str);
+				post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str);
 			} else {
-				post("\t\tvar %s = %s\n", meth->varNames.uosym->symbols[i - numargs]->name, str);
+				post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str);
 			}
 		}
 //#endif // !SC_LINUX
@@ -2032,7 +2032,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	slotOneWord(&frame->method, mstr);
 	//slotString(&frame->method, str);
 
-	meth = frame->method.uom;
+	meth = slotRawMethod(&frame->method);
 	methraw = METHRAW(meth);
 
 	if (methraw->numtemps) {
@@ -2042,9 +2042,9 @@ void DumpDetailedFrame(PyrFrame *frame)
 			slotOneWord(frame->vars + i, str);
 			//slotString(frame->vars + i, str);
 			if (i < numargs) {
-				post("\t\targ %s = %s\n", meth->argNames.uosym->symbols[i]->name, str);
+				post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str);
 			} else {
-				post("\t\tvar %s = %s\n", meth->varNames.uosym->symbols[i - numargs]->name, str);
+				post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str);
 			}
 		}
 	} else {
@@ -2063,7 +2063,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	slotString(&frame->ip, str);			post("\t\tip      = %s\n", str);
 
 	if (IsPtr(&frame->ip)) {
-		post("ipoffset = %d\n", (char*)frame->ip.ui - (char*)meth->code.uob->b);
+		post("ipoffset = %d\n", (char*)slotRawInt(&frame->ip) - (char*)slotRawInt8Array(&meth->code)->b);
 		dumpByteCodes(meth);
 	}
 
@@ -2078,9 +2078,9 @@ bool respondsTo(PyrSlot *slot, PyrSymbol *selector)
 
 	classobj = classOfSlot(slot);
 
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
-	return meth->name.us == selector;
+	return slotRawSymbol(&meth->name) == selector;
 }
 
 PyrMethod* methodLookup(PyrSlot *slot, PyrSymbol *selector);
@@ -2092,7 +2092,7 @@ PyrMethod* methodLookup(PyrSlot *slot, PyrSymbol *selector)
 
 	classobj = classOfSlot(slot);
 
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
 	return meth;
 }
@@ -2104,15 +2104,15 @@ bool isSubclassOf(PyrClass *classobj, PyrClass *testclass)
 		if (classobj == testclass) {
 			return true;
 		}
-		classobj = classobj->superclass.us->u.classobj;
+		classobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 	}
 	return false;
 }
 
 /*bool isKindOf(PyrObjectHdr *obj, PyrClass *testclass)
 {
-	int objClassIndex = obj->classptr->classIndex.ui;
-	return objClassIndex >= testclass->classIndex.ui && objClassIndex <= testclass->maxSubclassIndex.ui;
+	int objClassIndex = slotRawInt(&obj->classptr->classIndex);
+	return objClassIndex >= slotRawInt(&testclass->classIndex) && objClassIndex <= slotRawInt(&testclass->maxSubclassIndex);
 }*/
 
 bool objAddIndexedSlot(PyrObject *obj, PyrSlot *slot)
@@ -2146,30 +2146,23 @@ bool objAddIndexedObject(PyrObject *obj, PyrObject *obj2)
 	}
 }
 
-
 void fillSlots(PyrSlot* slot, int size, PyrSlot* fillslot)
 {
-	double fillval = fillslot->uf;
-
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = fillval;
+	for (int i = 0; i != size; ++i)
+		slotCopy(&slot[i], fillslot);
 }
 
 void nilSlots(PyrSlot* slot, int size)
 {
-	double xnil = o_nil.uf;
-
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = xnil;
+	fillSlots(slot, size, &o_nil);
 }
 
 void zeroSlots(PyrSlot* slot, int size)
 {
-	double *p = &slot->uf - 1;
-	double *pend = p + size;
-	while (p < pend) *++p = 0.;
+	PyrSlot zero;
+	SetTagRaw(&zero, 0);
+	SetRaw(&zero, 0.0);
+	fillSlots(slot, size, &zero);
 }
 
 PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect)
@@ -2319,10 +2312,10 @@ void freePyrSlot(PyrSlot *slot)
 {
 	if (NotNil(slot)) {
 		PyrObject *obj;
-		obj = slot->uo;
+		obj = slotRawObject(slot);
 		if (obj && obj->IsPermanent()) {
 			// don't deallocate these
-			if (obj != o_emptyarray.uo && obj != o_onenilarray.uo && obj != o_argnamethis.uo) {
+			if (obj != slotRawObject(&o_emptyarray) && obj != slotRawObject(&o_onenilarray) && obj != slotRawObject(&o_argnamethis)) {
 				pyr_pool_runtime->Free((void*)obj);
 			}
 			SetNil(slot);
@@ -2348,7 +2341,7 @@ int getIndexedInt(PyrObject *obj, int index, int *value)
 			if (IsFloat(slot)) {
 				*value = (int)slot->uf;
 			} else if (IsInt(slot)) {
-				*value = slot->ui;
+				*value = slotRawInt(slot);
 			} else {
 				err = errWrongType;
 			}
@@ -2385,7 +2378,7 @@ int getIndexedFloat(PyrObject *obj, int index, float *value)
 			if (IsFloat(slot)) {
 				*value = slot->uf;
 			} else if (IsInt(slot)) {
-				*value = slot->ui;
+				*value = slotRawInt(slot);
 			} else {
 				err = errWrongType;
 			}
@@ -2422,7 +2415,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 			if (IsFloat(slot)) {
 				*value = slot->uf;
 			} else if (IsInt(slot)) {
-				*value = slot->ui;
+				*value = slotRawInt(slot);
 			} else {
 				err = errWrongType;
 			}
@@ -2451,7 +2444,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 
 void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
 {
-//	postfl("getIndexedSlot %s %X %d\n", obj->classptr->name.us->name,
+//	postfl("getIndexedSlot %s %X %d\n", slotRawSymbol(&obj->classptr->name)->name,
 //		obj, index);
 	switch (obj->obj_format) {
 		case obj_slot :
@@ -2459,27 +2452,22 @@ void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
 			slotCopy(a, &obj->slots[index]);
 			break;
 		case obj_float :
-			a->uf = ((float*)(obj->slots))[index];
+			SetFloat(a, ((float*)(obj->slots))[index]);
 			break;
 		case obj_int32 :
-			a->ui = ((int32*)(obj->slots))[index];
-			a->utag = tagInt;
+			SetInt(a, ((int32*)(obj->slots))[index]);
 			break;
 		case obj_int16 :
-			a->ui = ((int16*)(obj->slots))[index];
-			a->utag = tagInt;
+			SetInt(a, ((int16*)(obj->slots))[index]);
 			break;
 		case obj_int8 :
-			a->ui = ((int8*)(obj->slots))[index];
-			a->utag = tagInt;
+			SetInt(a, ((int8*)(obj->slots))[index]);
 			break;
 		case obj_symbol :
-			a->ui = ((int*)(obj->slots))[index];
-			a->utag = tagSym;
+			SetSymbol(a, (PyrSymbol*)((int**)(obj->slots))[index]);
 			break;
 		case obj_char :
-			a->ui = ((unsigned char*)(obj->slots))[index];
-			a->utag = tagChar;
+			SetChar(a, ((unsigned char*)(obj->slots))[index]);
 			break;
 	}
 }
@@ -2498,7 +2486,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			if (NotFloat(c)) {
 				if (NotInt(c)) return errWrongType;
 				else {
-					obj->slots[index].uf = c->ui;
+					obj->slots[index].uf = slotRawInt(c);
 				}
 			} else {
 				obj->slots[index].uf = c->uf;
@@ -2508,7 +2496,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			if (NotFloat(c)) {
 				if (NotInt(c)) return errWrongType;
 				else {
-					((float*)(obj->slots))[index] = c->ui;
+					((float*)(obj->slots))[index] = slotRawInt(c);
 				}
 			} else {
 				((float*)(obj->slots))[index] = c->uf;
@@ -2516,23 +2504,23 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			break;
 		case obj_int32 :
 			if (NotInt(c)) return errWrongType;
-			((int32*)(obj->slots))[index] = c->ui;
+			((int32*)(obj->slots))[index] = slotRawInt(c);
 			break;
 		case obj_int16 :
 			if (NotInt(c)) return errWrongType;
-			((int16*)(obj->slots))[index] = c->ui;
+			((int16*)(obj->slots))[index] = slotRawInt(c);
 			break;
 		case obj_int8 :
 			if (NotInt(c)) return errWrongType;
-			((int8*)(obj->slots))[index] = c->ui;
+			((int8*)(obj->slots))[index] = slotRawInt(c);
 			break;
 		case obj_symbol :
 			if (NotSym(c)) return errWrongType;
-			((int*)(obj->slots))[index] = c->ui;
+			((int*)(obj->slots))[index] = slotRawInt(c);
 			break;
 		case obj_char :
 			if (NotChar(c)) return errWrongType;
-			((unsigned char*)(obj->slots))[index] = c->ui;
+			((unsigned char*)(obj->slots))[index] = slotRawInt(c);
 			break;
 	}
 	return errNone;
@@ -2570,16 +2558,16 @@ int calcHash(PyrSlot *a);
 int calcHash(PyrSlot *a)
 {
 	int hash;
-	switch (a->utag) {
-		case tagObj : hash = Hash(a->ui); break;
-		case tagInt : hash = Hash(a->ui); break;
-		case tagChar : hash = Hash(a->ui & 255); break;
-		case tagSym : hash = a->us->hash; break;
+	switch (GetTag(a)) {
+		case tagObj : hash = Hash(slotRawInt(a)); break;
+		case tagInt : hash = Hash(slotRawInt(a)); break;
+		case tagChar : hash = Hash(slotRawInt(a) & 255); break;
+		case tagSym : hash = slotRawSymbol(a)->hash; break;
 		case tagNil : hash = 0xA5A5A5A5; break;
 		case tagFalse : hash = 0x55AA55AA; break;
 		case tagTrue : hash = 0x69696969; break;
-		case tagPtr : hash = Hash(a->ui); break;
-		default : hash = Hash(a->utag + Hash(a->ui)); break; // hash for a double
+		case tagPtr : hash = Hash(slotRawInt(a)); break;
+		default : hash = Hash(GetTag(a) + Hash(slotRawInt(a))); break; // hash for a double
 	}
 	return hash;
 }

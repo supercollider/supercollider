@@ -63,13 +63,13 @@ struct PyrClass : public PyrObjectHdr
 
 inline bool isKindOf(PyrObjectHdr *obj, struct PyrClass *testclass)
 {
-	int objClassIndex = obj->classptr->classIndex.ui;
-	return objClassIndex >= testclass->classIndex.ui && objClassIndex <= testclass->maxSubclassIndex.ui;
+	int objClassIndex = slotRawInt(&obj->classptr->classIndex);
+	return objClassIndex >= slotRawInt(&testclass->classIndex) && objClassIndex <= slotRawInt(&testclass->maxSubclassIndex);
 }
 
 inline bool isKindOfSlot(PyrSlot *slot, struct PyrClass *testclass)
 {
-	return IsObj(slot) && isKindOf(slot->uo, testclass);
+	return IsObj(slot) && isKindOf(slotRawObject(slot), testclass);
 }
 
 /*

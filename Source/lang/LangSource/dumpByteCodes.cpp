@@ -26,10 +26,10 @@ void numBlockTemps(PyrBlock *block, long level, long *numArgNames, long *numVarN
 {
 	long i;
 	for (i=0; i<level; ++i) {
-		block = block->contextDef.uoblk;
+		block = slotRawBlock(&block->contextDef);
 	}
-	*numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-	*numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+	*numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+	*numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 }
 
 unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned char *ip);
@@ -54,10 +54,10 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			//	block->classptr, class_method, isKindOf((PyrObject*)block, class_method));
 			//if (block->classptr == class_method) {
 			if (isKindOf((PyrObject*)block, class_method)) {
-				theClass = ((PyrMethod*)block)->ownerclass.uoc;
+				theClass = slotRawClass(&((PyrMethod*)block)->ownerclass);
 				break;
 			}
-			block = block->contextDef.uoblk;
+			block = slotRawBlock(&block->contextDef);
 		}
 		if (theClass == NULL) {
 			theClass = s_interpreter->u.classobj;
@@ -65,7 +65,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			//return NULL;
 		}
 	}
-	ipbeg = theBlock->code.uob->b;
+	ipbeg = slotRawInt8Array(&theBlock->code)->b;
 	n = ip - ipbeg;
 	op1 = *ip++;
 	post("%3d   %02X", n, op1);
@@ -73,51 +73,51 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 0 : //	push class
 			op2 = *ip++; // get literal index
 			post(" %02X    PushClassX '%s'\n", op2,
-				theBlock->selectors.uo->slots[op2].us->name);
+				slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2])->name);
 			break;
 		case 1 : // Extended, PushInstVar
 			op2 = *ip++; // get inst var index
 			post(" %02X    PushInstVarX '%s'\n", op2,
-				theClass->instVarNames.uosym->symbols[op2]->name);
+				slotRawSymbolArray(&theClass->instVarNames)->symbols[op2]->name);
 			break;
 		case 2 : // Extended, PushTempVar
 			op2 = *ip++; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			for (i=op2; i--; block = slotRawBlock(&block->contextDef)) { /* noop */ }
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			op3 = numTemps - *ip++ - 1; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X %02X PushTempVarX '%s'\n", op2, op3,
-					block->argNames.uosym->symbols[op3]->name);
+					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
 			} else {
 				post(" %02X %02X PushTempVarX '%s'\n", op2, op3,
-					block->varNames.uosym->symbols[op3-numArgNames]->name);
+					slotRawSymbolArray(&block->varNames)->symbols[op3-numArgNames]->name);
 			}
 			break;
 		case 3 : // Extended, PushTempZeroVar
 
 			block = theBlock;
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			op2 = numTemps - *ip++ - 1; // get temp var index
 			if (op2 < numArgNames) {
-				post(" %02X    PushTempZeroVarX '%s'\n", op2,
-					theBlock->argNames.uosym->symbols[op2]->name);
+				post(" %02X	   PushTempZeroVarX '%s'\n", op2,
+					slotRawSymbolArray(&theBlock->argNames)->symbols[op2]->name);
 			} else {
-				post(" %02X    PushTempZeroVarX '%s'\n", op2,
-					theBlock->varNames.uosym->symbols[op2-numArgNames]->name);
+				post(" %02X	   PushTempZeroVarX '%s'\n", op2,
+					slotRawSymbolArray(&theBlock->varNames)->symbols[op2-numArgNames]->name);
 			}
 			break;
 		case 4 : // Extended, PushLiteral
 			op2 = *ip++; // get literal index
 			// push a block if it is one
-			slot = theBlock->selectors.uo->slots + op2;
+			slot = slotRawObject(&theBlock->selectors)->slots + op2;
 			slotString(slot, str);
 			post(" %02X    PushLiteralX %s\n", op2, str);
 			break;
@@ -130,29 +130,29 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get class name index
 			classobj = gSpecialClasses[op2]->u.classobj;
 			post(" %02X    PushSpecialClass '%s'\n", op2,
-				classobj->name.us->name);
+				slotRawSymbol(&classobj->name)->name);
 			break;
 		case 7 : // Extended, StoreInstVar
 			op2 = *ip++; // get inst var index
 			post(" %02X    StoreInstVarX '%s'\n", op2,
-				theClass->instVarNames.uosym->symbols[op2]->name);
+				slotRawSymbolArray(&theClass->instVarNames)->symbols[op2]->name);
 			break;
 		case 8 : // Extended, StoreTempVar
 			op2 = *ip++; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			for (i=op2; i--; block = slotRawBlock(&block->contextDef)) { /* noop */ }
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			op3 = *ip++; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X %02X StoreTempVarX '%s'\n", op2, op3,
-					block->argNames.uosym->symbols[op3]->name);
+					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
 			} else {
 				post(" %02X %02X StoreTempVarX '%s'\n", op2, op3,
-					block->varNames.uosym->symbols[op3-numArgNames]->name);
+					slotRawSymbolArray(&block->varNames)->symbols[op3-numArgNames]->name);
 			}
 			break;
 		case 9 : // Extended, StoreClassVar
@@ -164,14 +164,14 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op4].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op4]);
 			post(" %02X %02X %02X SendMsgX '%s'\n", op2, op3, op4, selector->name);
 			break;
 		case 11 : // Extended, SuperMsg
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op4].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op4]);
 			post(" %02X %02X %02X SuperMsgX '%s'\n", op2, op3, op4, selector->name);
 			break;
 		case 12 :  // Extended, SendSpecialMsg
@@ -213,7 +213,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 24 :	case 25 :	case 26 :	case 27 :
 		case 28 :	case 29 :	case 30 :	case 31 :
 			post("       PushInstVar '%s'\n",
-				theClass->instVarNames.uosym->symbols[op1&15]->name);
+				slotRawSymbolArray(&theClass->instVarNames)->symbols[op1&15]->name);
 			break;
 
 		case 32 :
@@ -228,25 +228,25 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = op1 & 15; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			for (i=op2; i--; block = slotRawBlock(&block->contextDef)) { /* noop */ }
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			op3 = numTemps - *ip++ - 1; // get temp var index
 			if (op3 >= 0 && op3 < numArgNames) {
 				post(" %02X    PushTempVar '%s'\n", op3,
-					block->argNames.uosym->symbols[op3]->name);
+					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
 			} else if (op3 >= 0) {
 				post(" %02X    PushTempVar '%s'\n", op3,
-					block->varNames.uosym->symbols[op3-numArgNames]->name);
+					slotRawSymbolArray(&block->varNames)->symbols[op3-numArgNames]->name);
 			}
 			break;
 
 		case 40 :
 			op5 = *ip++;
 			ival = op5;
-			slot = theBlock->constants.uo->slots + ival;
+			slot = slotRawObject(&theBlock->constants)->slots + ival;
 			slotString(slot, str);
 			post(" %02X    PushConstant %s\n", op5, str);
 			break;
@@ -255,7 +255,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op4 = *ip++;
 			op5 = *ip++;
 			ival = (op4 << 8) | op5;
-			slot = theBlock->constants.uo->slots + ival;
+			slot = slotRawObject(&theBlock->constants)->slots + ival;
 			slotString(slot, str);
 			post(" %02X %02X PushConstant %s\n", op4, op5, str);
 			break;
@@ -265,7 +265,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op4 = *ip++;
 			op5 = *ip++;
 			ival = (op3 << 16) | (op4 << 8) | op5;
-			slot = theBlock->constants.uo->slots + ival;
+			slot = slotRawObject(&theBlock->constants)->slots + ival;
 			slotString(slot, str);
 			post(" %02X %02X %02X PushConstant %s\n", op3, op4, op5, str);
 			break;
@@ -276,7 +276,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op4 = *ip++;
 			op5 = *ip++;
 			ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
-			slot = theBlock->constants.uo->slots + ival;
+			slot = slotRawObject(&theBlock->constants)->slots + ival;
 			slotString(slot, str);
 			post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, str);
 			break;
@@ -318,16 +318,16 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = op1 & 15; // get temp var index
 
 			block = theBlock;
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			if (op2 < numArgNames) {
-				post("       PushTempZeroVar '%s'\n",
-					theBlock->argNames.uosym->symbols[op2]->name);
+				post("		 PushTempZeroVar '%s'\n",
+					slotRawSymbolArray(&theBlock->argNames)->symbols[op2]->name);
 			} else {
-				post("       PushTempZeroVar '%s'\n",
-					theBlock->varNames.uosym->symbols[op2-numArgNames]->name);
+				post("		 PushTempZeroVar '%s'\n",
+					slotRawSymbolArray(&theBlock->varNames)->symbols[op2-numArgNames]->name);
 			}
 			break;
 
@@ -336,7 +336,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 72 :	case 73 :	case 74 :	case 75 :
 		case 76 :	case 77 :	case 78 :	case 79 :
 			op2 = op1 & 15; // get temp var level
-			slot = theBlock->constants.uo->slots + op2;
+			slot = slotRawObject(&theBlock->constants)->slots + op2;
 			slotString(slot, str);
 			post("       PushLiteral %s\n", str);
 			break;
@@ -375,7 +375,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 120 :  case 121 :  case 122 :  case 123 :
 		case 124 :  case 125 :  case 126 :  case 127 :
 			post("       StoreInstVar '%s'\n",
-				theClass->instVarNames.uosym->symbols[op1 & 15]->name);
+				slotRawSymbolArray(&theClass->instVarNames)->symbols[op1 & 15]->name);
 			break;
 
 		// StoreTempVar
@@ -384,18 +384,18 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = op1 & 15; // get temp var level
 
 			block = theBlock;
-			for (i=op2; i--; block = block->contextDef.uoblk) { /* noop */ }
-			numArgNames = block->argNames.uosym ? block->argNames.uosym->size : 0;
-			numVarNames = block->varNames.uosym ? block->varNames.uosym->size : 0;
+			for (i=op2; i--; block = slotRawBlock(&block->contextDef)) { /* noop */ }
+			numArgNames = slotRawSymbolArray(&block->argNames) ? slotRawSymbolArray(&block->argNames)->size : 0;
+			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
 			op3 = *ip++; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X    StoreTempVar '%s'\n", op3,
-					block->argNames.uosym->symbols[op3]->name);
+					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
 			} else {
 				post(" %02X    StoreTempVar '%s'\n", op3,
-					block->varNames.uosym->symbols[op3-numArgNames]->name);
+					slotRawSymbolArray(&block->varNames)->symbols[op3-numArgNames]->name);
 			}
 			break;
 		case 136 :
@@ -403,17 +403,17 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op3 = *ip++; // get selector index
 			selector = gSpecialSelectors[op3];
 			post(" %02X %02X PushInstVarAndSendSpecialMsg '%s' '%s'\n", op2, op3,
-				theClass->instVarNames.uosym->symbols[op2]->name, selector->name);
+				slotRawSymbolArray(&theClass->instVarNames)->symbols[op2]->name, selector->name);
 			break;
 		case 137 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			post(" %02X    PushAllArgs+SendMsg '%s'\n",
 				op2, selector->name);
 			break;
 		case 138 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			post(" %02X     PushAllButFirstArg+SendMsg '%s'\n",
 				op2, selector->name);
 			break;
@@ -431,7 +431,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			break;
 		case 141 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			post(" %02X     PushAllButFirstTwoArgs+SendMsg '%s'\n",
 				op2, selector->name);
 			break;
@@ -469,7 +469,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 168 :  case 169 :  case 170 :  case 171 :
 		case 172 :  case 173 :  case 174 :  case 175 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			post(" %02X    SendMsg '%s'\n", op2, selector->name);
 			break;
 
@@ -484,7 +484,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 184 :  case 185 :  case 186 :  case 187 :
 		case 188 :  case 189 :  case 190 :  case 191 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			post(" %02X    SuperMsg '%s'\n", op2, selector->name);
 			break;
 
@@ -590,10 +590,10 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 		theClass = 0;
 		while (block) {
 			if (isKindOf((PyrObject*)block, class_method)) {
-				theClass = ((PyrMethod*)block)->ownerclass.uoc;
+				theClass = slotRawClass(&((PyrMethod*)block)->ownerclass);
 				break;
 			}
-			block = block->contextDef.uoblk;
+			block = slotRawBlock(&block->contextDef);
 		}
 		if (theClass == NULL) {
 			theClass = s_interpreter->u.classobj;
@@ -639,13 +639,13 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op4].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op4]);
 			break;
 		case 11 : // Extended, SuperMsg
 			op2 = *ip++; // get num args
 			op3 = *ip++; // get num key args
 			op4 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op4].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op4]);
 			break;
 		case 12 :  // Extended, SendSpecialMsg
 			op2 = *ip++; // get num args
@@ -727,11 +727,11 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			break;
 		case 137 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			break;
 		case 138 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			break;
 		case 139 :
 			op2 = *ip++; // get selector index
@@ -743,7 +743,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 			break;
 		case 141 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			break;
 		case 142 :
 			op2 = *ip++; // get selector index
@@ -768,7 +768,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 		case 168 :  case 169 :  case 170 :  case 171 :
 		case 172 :  case 173 :  case 174 :  case 175 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			break;
 
 		// SuperMsg
@@ -777,7 +777,7 @@ bool detectSendSelector(PyrBlock *theBlock, PyrClass* theClass, unsigned char **
 		case 184 :  case 185 :  case 186 :  case 187 :
 		case 188 :  case 189 :  case 190 :  case 191 :
 			op2 = *ip++; // get selector index
-			selector = theBlock->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&theBlock->selectors)->slots[op2]);
 			break;
 
 		// SendSpecialMsg
@@ -853,7 +853,7 @@ void dumpByteCodes(PyrBlock *theBlock)
 	long size;
 	unsigned char *ip, *ipbeg, *ipend;
 
-	if (theBlock->code.uob == NULL) {
+	if (slotRawInt8Array(&theBlock->code) == NULL) {
 		post("Code empty.\n");
 		return;
 	}
@@ -861,17 +861,17 @@ void dumpByteCodes(PyrBlock *theBlock)
 	theClass = 0;
 	while (block) {
 		if (isKindOf((PyrObject*)block, class_method)) {
-			theClass = ((PyrMethod*)block)->ownerclass.uoc;
+			theClass = slotRawClass(&((PyrMethod*)block)->ownerclass);
 			break;
 		}
-		block = block->contextDef.uoblk;
+		block = slotRawBlock(&block->contextDef);
 	}
 	if (theClass == NULL) {
 		theClass = s_interpreter->u.classobj;
 	}
 
-	ip = ipbeg = theBlock->code.uob->b;
-	size = theBlock->code.uob->size;
+	ip = ipbeg = slotRawInt8Array(&theBlock->code)->b;
+	size = slotRawInt8Array(&theBlock->code)->size;
 	ipend = ip + size;
 	post("BYTECODES: (%d)\n", size);
 	while (ip<ipend) {
@@ -888,14 +888,14 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 	long size;
 	unsigned char *ip, *ipbeg, *ipend;
 
-	if (theBlock->code.uob == NULL) {
+	if (slotRawInt8Array(&theBlock->code) == NULL) {
 		PyrMethodRaw* methraw = METHRAW(theBlock);
 		switch (methraw->methType) {
 			case methRedirect :
 			case methRedirectSuper :
 			case methForwardInstVar :
 			case methForwardClassVar :
-				selector = theBlock->selectors.us;
+				selector = slotRawSymbol(&theBlock->selectors);
 				return selector == testSelector;
 			default :
 				return false;
@@ -905,17 +905,17 @@ bool detectSendSelectorIn(PyrBlock *theBlock, PyrSymbol *testSelector)
 	theClass = 0;
 	while (block) {
 		if (isKindOf((PyrObject*)block, class_method)) {
-			theClass = ((PyrMethod*)block)->ownerclass.uoc;
+			theClass = slotRawClass(&((PyrMethod*)block)->ownerclass);
 			break;
 		}
-		block = block->contextDef.uoblk;
+		block = slotRawBlock(&block->contextDef);
 	}
 	if (theClass == NULL) {
 		theClass = s_interpreter->u.classobj;
 	}
 
-	ip = ipbeg = theBlock->code.uob->b;
-	size = theBlock->code.uob->size;
+	ip = ipbeg = slotRawInt8Array(&theBlock->code)->b;
+	size = slotRawInt8Array(&theBlock->code)->size;
 	ipend = ip + size;
 	bool res = false;
 	while (ip<ipend) {

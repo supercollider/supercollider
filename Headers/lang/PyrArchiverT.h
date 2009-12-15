@@ -69,7 +69,7 @@ public:
 				// object table size
 				for (int i=0; i<mNumObjects; ++i) {
 					PyrObject* obj = mObjectArray[i];
-					size += obj->classptr->name.us->length + 1; // class name symbol
+					size += slotRawSymbol(&obj->classptr->name)->length + 1; // class name symbol
 					size += sizeof(int32); // size
 					if (obj->obj_format <= obj_slot) {
 						size += obj->size; // tags
@@ -96,7 +96,7 @@ public:
 
 			try {
 				slotCopy(&mTopSlot, objectSlot);
-				if (IsObj(objectSlot)) constructObjectArray(objectSlot->uo);
+				if (IsObj(objectSlot)) constructObjectArray(slotRawObject(objectSlot));
 			} catch (std::exception &ex) {
 				error(ex.what());
 				err = errFailed;
@@ -193,7 +193,7 @@ private:
 		{
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
-				if (IsObj(slot)) constructObjectArray(slot->uo);
+				if (IsObj(slot)) constructObjectArray(slotRawObject(slot));
 			}
 		}
 
@@ -258,16 +258,16 @@ private:
 
 	int32 sizeOfElem(PyrSlot *slot)
 		{
-			//postfl("writeSlot %08X\n", slot->utag);
-			switch (slot->utag) {
+			//postfl("writeSlot %08X\n", GetTag(slot));
+			switch (GetTag(slot)) {
 				case tagObj :
-					if (isKindOf(slot->uo, class_class)) {
-						return slot->uoc->name.us->length + 1;
-					} else if (isKindOf(slot->uo, class_process)) {
+					if (isKindOf(slotRawObject(slot), class_class)) {
+						return slotRawSymbol(&slotRawClass(slot)->name)->length + 1;
+					} else if (isKindOf(slotRawObject(slot), class_process)) {
 						return 0;
-					} else if (isKindOf(slot->uo, class_frame)) {
+					} else if (isKindOf(slotRawObject(slot), class_frame)) {
 						return 0;
-					} else if (isKindOf(slot->uo, s_interpreter->u.classobj)) {
+					} else if (isKindOf(slotRawObject(slot), s_interpreter->u.classobj)) {
 						return 0;
 					} else {
 						return sizeof(int32);
@@ -276,7 +276,7 @@ private:
 				case tagInt :
 					return sizeof(int32);
 				case tagSym :
-					return slot->us->length + 1;
+					return slotRawSymbol(slot)->length + 1;
 				case tagChar :
 					return sizeof(int32);
 				case tagNil :
@@ -312,8 +312,8 @@ private:
 		{
 			obj->ClearMark();
 
-			//postfl("writeObjectHeader %s\n", obj->classptr->name.us->name);
-			mStream.writeSymbol(obj->classptr->name.us->name);
+			//postfl("writeObjectHeader %s\n", slotRawSymbol(&obj->classptr->name)->name);
+			mStream.writeSymbol(slotRawSymbol(&obj->classptr->name)->name);
 
 			mStream.writeInt32_be(obj->size);
 		}
@@ -324,7 +324,7 @@ private:
 			//post("readObjectHeader %s\n", classname->name);
 			PyrObject *obj;
 			int32 size = mStream.readInt32_be();
-			if (classname->u.classobj->classFlags.ui & classHasIndexableInstances) {
+			if (slotRawInt(&classname->u.classobj->classFlags) & classHasIndexableInstances) {
 				obj = instantiateObject(g->gc, classname->u.classobj, size, false, false);
 				obj->size = size;
 			} else {
@@ -335,12 +335,12 @@ private:
 
 	void writeSlots(PyrObject *obj)
 		{
-			//postfl("  writeSlots %s\n", obj->classptr->name.us->name);
+			//postfl("  writeSlots %s\n", slotRawSymbol(&obj->classptr->name)->name);
 			if (isKindOf(obj, class_rawarray)) {
 				writeRawArray(obj);
 			} else if (isKindOf(obj, class_func)) {
 				PyrClosure* closure = (PyrClosure*)obj;
-				if (NotNil(&closure->block.uoblk->contextDef)) {
+				if (NotNil(&slotRawBlock(&closure->block)->contextDef)) {
 					writeSlot(&closure->block);
 					writeSlot(&closure->context);
 				} else {
@@ -364,7 +364,7 @@ private:
 				readSlot(&closure->block);
 				readSlot(&closure->context);
 				if (IsNil(&closure->context)) {
-					slotCopy(&closure->context, &g->process->interpreter.uoi->context);
+					slotCopy(&closure->context, &slotRawInterpreter(&g->process->interpreter)->context);
 				}
 			} else {
 				for (int i=0; i<obj->size; ++i) {
@@ -376,13 +376,13 @@ private:
 	void writeSlot(PyrSlot *slot)
 		{
 			PyrObject *obj;
-			//postfl("    writeSlot %08X\n", slot->utag);
-			switch (slot->utag) {
+			//postfl("    writeSlot %08X\n", GetTag(slot));
+			switch (GetTag(slot)) {
 				case tagObj :
-					obj = slot->uo;
+					obj = slotRawObject(slot);
 					if (isKindOf(obj, class_class)) {
 						mStream.writeInt8('C');
-						mStream.writeSymbol(slot->uoc->name.us->name);
+						mStream.writeSymbol(slotRawSymbol(&slotRawClass(slot)->name)->name);
 					} else if (isKindOf(obj, class_process)) {
 						mStream.writeInt8('P');
 					} else if (isKindOf(obj, s_interpreter->u.classobj)) {
@@ -394,15 +394,15 @@ private:
 					break;
 				case tagInt :
 					mStream.writeInt8('i');
-					mStream.writeInt32_be(slot->ui);
+					mStream.writeInt32_be(slotRawInt(slot));
 					break;
 				case tagSym :
 					mStream.writeInt8('s');
-					mStream.writeSymbol(slot->us->name);
+					mStream.writeSymbol(slotRawSymbol(slot)->name);
 					break;
 				case tagChar :
 					mStream.writeInt8('c');
-					mStream.writeInt32_be(slot->ui);
+					mStream.writeInt32_be(slotRawInt(slot));
 					break;
 				case tagNil :
 					mStream.writeInt8('N');
@@ -418,7 +418,7 @@ private:
 					break;
 				default :
 					mStream.writeInt8('f');
-					mStream.writeDouble_be(slot->uf);
+					mStream.writeDouble_be(slotRawFloat(slot));
 					break;
 			}
 		}
@@ -428,55 +428,41 @@ private:
 			char tag = mStream.readInt8();
 			switch (tag) {
 				case 'o' :
-					slot->utag = tagObj;
-					slot->uo = readObjectID();
+					SetObject(slot, readObjectID());
 					break;
 				case 'z' :
-					slot->utag = tagObj;
-					slot->ui = mStream.readInt32_be();
+					SetObject(slot, (void*)mStream.readInt32_be());
 					break;
 				case 'C' :
-					slot->utag = tagObj;
-					slot->uo = (PyrObject*)readSymbolID()->u.classobj;
+					SetObject(slot, (PyrObject*)readSymbolID()->u.classobj);
 					break;
 				case 'P' :
-					slot->utag = tagObj;
-					slot->uo = (PyrObject*)g->process;
+					SetObject(slot, (PyrObject*)g->process);
 					break;
 				case 'R' :
-					slot->utag = tagObj;
-					slot->uo = g->process->interpreter.uo;
+					SetObject(slot, slotRawObject(&g->process->interpreter));
 					break;
 				case 'i' :
-					slot->utag = tagInt;
-					slot->ui = mStream.readInt32_be();
+					SetInt(slot, mStream.readInt32_be());
 					break;
 				case 's' :
-					slot->utag = tagSym;
-					slot->us = readSymbolID();
+					SetSymbol(slot, readSymbolID());
 					break;
 				case 'c' :
-					slot->utag = tagChar;
-					slot->ui = mStream.readInt32_be();
+					SetChar(slot, mStream.readInt32_be());
 					break;
 				case 'f' :
-					slot->uf = mStream.readDouble_be();
-					break;
-				case 'N' :
-					slot->utag = tagNil;
-					slot->ui = 0;
+					SetFloat(slot, mStream.readDouble_be());
 					break;
 				case 'T' :
-					slot->utag = tagTrue;
-					slot->ui = 0;
+					SetTrue(slot);
 					break;
 				case 'F' :
-					slot->utag = tagFalse;
-					slot->ui = 0;
+					SetFalse(slot);
 					break;
+				case 'N' :
 				default :
-					slot->utag = tagNil;
-					slot->ui = 0;
+					SetNil(slot);
 					break;
 			}
 		}

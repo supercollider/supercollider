@@ -60,7 +60,7 @@ public:
 
 			try {
 				if (IsObj(objectSlot)) {
-					constructObjectArray(objectSlot->uo);
+					constructObjectArray(slotRawObject(objectSlot));
 					for (int i=0; i<numObjects; ++i) {
 						fixSlots(objectArray[i]);
 					}
@@ -84,7 +84,7 @@ private:
 			//post("->recurse %s %08X\n", obj->classptr->name.us->name, obj);
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
-				if (IsObj(slot)) constructObjectArray(slot->uo);
+				if (IsObj(slot)) constructObjectArray(slotRawObject(slot));
 			}
 			//post("<-recurse %s %08X\n", obj->classptr->name.us->name, obj);
 		}
@@ -166,8 +166,8 @@ private:
 
 	void fixObjSlot(PyrSlot* slot)
 		{
-			//post("fixObjSlot %s %08X %d %08X\n", slot->uo->classptr->name.us->name, slot->uo, slot->uo->scratch1, objectArray[slot->uo->scratch1]);
-			slot->uo = objectArray[slot->uo->scratch1];
+			//post("fixObjSlot %s %08X %d %08X\n", slotRawObject(slot)->classptr->name.us->name, slotRawObject(slot), slot->uo->scratch1, objectArray[slot->uo->scratch1]);
+			SetRaw(slot, objectArray[slotRawObject(slot)->scratch1]);
 		}
 
 	void fixSlots(PyrObject *obj)

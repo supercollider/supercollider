@@ -22,7 +22,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-	
+
  */
 
 #include <Cocoa/Cocoa.h>
@@ -51,7 +51,7 @@ int slotGetSCRect(PyrSlot* a, SCRect *r);
 
 
 
-// replacement for calloc. 
+// replacement for calloc.
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
 void *zalloc(size_t n, size_t size)
 {
@@ -73,13 +73,13 @@ inline int32 BUFMASK(int32 x)
 
 int bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate);
 int bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
-{		
+{
 	long numSamples = numFrames * numChannels;
 	if(numSamples < 1) return errFailed;
 	if(buf->data) free(buf->data);
 	buf->data = (float*)zalloc(numSamples, sizeof(float));
 	if (!buf->data) return errFailed;
-	
+
 	buf->channels = numChannels;
 	buf->frames   = numFrames;
 	buf->samples  = numSamples;
@@ -93,7 +93,7 @@ int bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
 
 int bufAllocMinMax(SndMinMaxBuf* buf, int numChannels, int numFrames);
 int bufAllocMinMax(SndMinMaxBuf* buf, int numChannels, int numFrames)
-{		
+{
 	long numSamples = numFrames * numChannels;
 	if(numSamples < 1) return errFailed;
 	buf->isUsable = false;
@@ -126,21 +126,21 @@ SCSoundFileView::SCSoundFileView(SCContainerView *inParent, PyrObject* inObj, SC
 	mSndBuf.channels = 0;
 	mSndBuf.samplerate = 44100;
 	mResampleFactor = 64;
-	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);	
+	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);
     mBackground = new SolidColorBackground(
                     SCMakeColor(0.,0.,0., 1.0));
-	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);	
+	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);
 	mTimeCursorPosition = 0;
 	mTimeCursorColor = SCMakeColor(0.1,0.2,1.0, 1.0);
 	mElasticMode = 0;
-	
-	for (int i=0; i<kMaxSndSelections; ++i) 
+
+	for (int i=0; i<kMaxSndSelections; ++i)
 	{
 		mSelections[i].startIsEditable = true;
 		mSelections[i].sizeIsEditable = true;
 		mSelections[i].size = 0;
-		mSelections[i].start = 0;	
-		mSelections[i].color = SCMakeColor(0.2,0.2,1.0, 0.4);	
+		mSelections[i].start = 0;
+		mSelections[i].color = SCMakeColor(0.2,0.2,1.0, 0.4);
 	}
 	for (int i=0; i<kMaxSndChannels; ++i) mWaveColors[i] = waveColor;
 }
@@ -156,12 +156,12 @@ SCSoundFileView::~SCSoundFileView()
 
 int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int resampleFactor, SF_INFO info)
 {
-	
+
 	if (!file || mIsReadingSoundFile) return errFailed;
 	mIsReadingSoundFile = true;
-	
+
 	//check for
-	startFrame = sc_min(startFrame, info.frames - 1);	
+	startFrame = sc_min(startFrame, info.frames - 1);
 	int maxframes = info.frames - startFrame;
 	if(!frames || frames > maxframes) frames = maxframes;
 	//would be good to find a way to calculate an optimal factor ...
@@ -174,24 +174,24 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 //	post("zoom.x: %f, frames: %d, resampleFactor: %f \n", mZoom.x, (int) frames, mResampleFactor);
 
 	int err = bufAlloc(&mSndBuf, info.channels, (int) (frames/mResampleFactor), info.samplerate);
-	mZoom.x =  ((frames/mResampleFactor)/(mBounds.width-2.f));	
+	mZoom.x =  ((frames/mResampleFactor)/(mBounds.width-2.f));
 
 	if(err) return err;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
-	
+
 	if(mSndMinMax.isUsable) {
 		mSndMinMax.isUsable=false;
 		free(mSndMinMax.min);
 		free(mSndMinMax.max);
 	}
 	bufAllocMinMax(&mSndMinMax, channels, (int)(mBounds.width ));
-	
-		
+
+
 	if(startFrame>0) sf_seek(file, startFrame, SEEK_SET);
 	if(mResampleFactor>1){
-	
+
 		float data[readsize*channels];
-		int count=0;	
+		int count=0;
 		for(int i=0; i<frames; i+=readsize){
 			sf_read_float(file, data, readsize*channels);
 			// find minmax: ...
@@ -207,12 +207,12 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 					if(val<ymin) ymin = val;
 					else if(val>ymax) ymax = val;
 				}
-				
+
 				if(sc_abs(ymin) > sc_abs(ymax)) mSndBuf.data[count++] = ymin;
 				else  mSndBuf.data[count++] = ymax;
 			}
 		}
-	
+
 	} else {
 		sf_read_float(file, mSndBuf.data, frames*channels);
 	}
@@ -222,7 +222,7 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 
 int SCSoundFileView::findSelection(int frame)
 {
-	for (int i=0; i<kMaxSndSelections; ++i) 
+	for (int i=0; i<kMaxSndSelections; ++i)
 	{
 		if(frame >= mSelections[i].start && frame < mSelections[i].start+mSelections[i].size)
 		return i;
@@ -233,18 +233,18 @@ int SCSoundFileView::findSelection(int frame)
 void SCSoundFileView::setBounds(SCRect inBounds)
 {
 	if(inBounds.width != mBounds.width){
-		if(mElasticMode) mZoom.x =  mSndBuf.frames/(inBounds.width-2.f);	
+		if(mElasticMode) mZoom.x =  mSndBuf.frames/(inBounds.width-2.f);
  		mSndMinMax.isUsable = false;
 		if(mSndBuf.channels)
 		bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(inBounds.width ));
-	}	
+	}
     mBounds = inBounds;
 	if(mParent->relativeOrigin()){
 		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
 	}
@@ -259,7 +259,7 @@ void SCSoundFileView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *the
 	SCRect bounds = getDrawBounds();
 	frame =  (int) (mScroll.x + ((where.x - bounds.x - 1) * mZoom.x * mResampleFactor ));
 	//post("current frame is %d, bounds.x is %d\n", frame, mBounds.x);
-	if (modifiers & NSAlternateKeyMask) {	
+	if (modifiers & NSAlternateKeyMask) {
 //		refresh();
 	} else {
 	//check if there is a selection:
@@ -268,13 +268,13 @@ void SCSoundFileView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *the
 			mMoveSelection = true;
 			mCurrentSelection = selection;
 			[[NSCursor openHandCursor] set];
-		
+
 		} else {
-			mMoveSelection = false;		
+			mMoveSelection = false;
 			if(mSelections[mCurrentSelection].startIsEditable) mSelections[mCurrentSelection].start = frame;
 		}
-	
-		mTimeCursorPosition = frame;	
+
+		mTimeCursorPosition = frame;
 		mLastFrame = frame;
 	}
 }
@@ -285,19 +285,19 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
 	mAbsolutePosition.x = (int) where.x; //absolute mouse position
 	mAbsolutePosition.y = (int) where.y;
 	int frame;
-		frame = (int)  (mScroll.x + (where.x - bounds.x - 1) * mZoom.x * mResampleFactor );	
-	if (modifiers & NSAlternateKeyMask) { 
+		frame = (int)  (mScroll.x + (where.x - bounds.x - 1) * mZoom.x * mResampleFactor );
+	if (modifiers & NSAlternateKeyMask) {
 		SCSoundFileSelection * currentSelection = &mSelections[mCurrentSelection];
 		int endOfSelection = currentSelection->start + currentSelection->size;
-			if(currentSelection->sizeIsEditable && frame > endOfSelection) 
-				currentSelection->size = frame - currentSelection->start;	
-			if(currentSelection->sizeIsEditable && currentSelection->startIsEditable && frame < endOfSelection) 
+			if(currentSelection->sizeIsEditable && frame > endOfSelection)
+				currentSelection->size = frame - currentSelection->start;
+			if(currentSelection->sizeIsEditable && currentSelection->startIsEditable && frame < endOfSelection)
 			{
 				currentSelection->start = frame;
-				currentSelection->size = endOfSelection - currentSelection->start;	
+				currentSelection->size = endOfSelection - currentSelection->start;
 			}
 		refresh();
-	} else 
+	} else
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else if (modifiers & NSShiftKeyMask) {
@@ -305,7 +305,7 @@ void SCSoundFileView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent
     } else if (modifiers & NSControlKeyMask) {
         sendMessage(getsym("doMetaAction"), 0, 0, 0);
     } else {
-	
+
 	//	post("current frame is %d, bounds.x is %d, where is %d \n", frame, mBounds.x, where.x);
 		if(mMoveSelection)
 		{
@@ -349,7 +349,7 @@ void SCSoundFileView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEv
 void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
-	if (!data || mIsReadingSoundFile || mScroll.x >= (mSndBuf.frames * mResampleFactor)) return;	
+	if (!data || mIsReadingSoundFile || mScroll.x >= (mSndBuf.frames * mResampleFactor)) return;
 	int samples = mSndBuf.samples;
 	// draw scope.
 	SCRect bounds = getDrawBounds();
@@ -396,7 +396,7 @@ void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 			}
 			iframe = nextiframe;
 			fframe = nextfframe;
-			
+
 			if(mSndMinMax.min && mSndMinMax.max && j+msample < mSndMinMax.samples){
 				mSndMinMax.min[j+msample] = ymin;
 				mSndMinMax.max[j+msample] = ymax;
@@ -405,12 +405,12 @@ void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 
 			CGRect wrect;
 			wrect.origin.x = rect.origin.x + 1. + i;
-			wrect.size.width = 1.; 
+			wrect.size.width = 1.;
 			wrect.origin.y = chanRect.origin.y + ymin * yScale;
 			wrect.size.height = (ymax - ymin) * yScale + 1.;
-			
+
 //			post("%g %g    %d   %g %g\n", ymin, ymax, isample, wrect.origin.x, wrect.size.height);
-			
+
 			wrect = CGRectIntersection(wrect, viewRect);
 			if ( !CGRectIsNull(wrect) ) {
 			    CGContextFillRect(cgc, wrect);
@@ -432,8 +432,8 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
     CGRect rect = SCtoCGRect(bounds);
 	int width = (int) bounds.width - 2;
 	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
-	int widthdisp;	
-	int startx = 0; 
+	int widthdisp;
+	int startx = 0;
 	if(inDamage.x > 0)
 		widthdisp = (int) inDamage.width;
 	else {
@@ -450,7 +450,7 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
 		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
 //		float fframe = mScroll.x;
 		int msample=startx*channels;
-	
+
 		CGRect viewRect, chanRect;
 		viewRect = CGRectMake(bounds.x + 1.f, (bounds.y + 1.f) + (j * chanHeight), bounds.width - 2.f, chanHeight);
 		chanRect.origin.x = rect.origin.x + 1.;
@@ -467,12 +467,12 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
 
 			CGRect wrect;
 			wrect.origin.x = rect.origin.x + 1. + i;
-			wrect.size.width = 1.; 
+			wrect.size.width = 1.;
 			wrect.origin.y = chanRect.origin.y + ymin * yScale;
 			wrect.size.height = (ymax - ymin) * yScale + 1.;
-			
+
 //			post("%g %g    %d   %g %g\n", ymin, ymax, isample, wrect.origin.x, wrect.size.height);
-			
+
 			wrect = CGRectIntersection(wrect, viewRect);
 			if ( !CGRectIsNull(wrect) ) {
 			    CGContextFillRect(cgc, wrect);
@@ -487,7 +487,7 @@ void SCSoundFileView::draw1(SCRect inDamage, CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
 	if (!data) return;
-	
+
 	int samples = mSndBuf.samples;
 	SCRect bounds = getDrawBounds();
 	// draw scope.
@@ -498,7 +498,7 @@ void SCSoundFileView::draw1(SCRect inDamage, CGContextRef cgc)
 	float chanHeight = bounds.height - 2.;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
-	
+
 	for (int j=0; j < channels; ++j)
 	{
 		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
@@ -507,13 +507,13 @@ void SCSoundFileView::draw1(SCRect inDamage, CGContextRef cgc)
 		int iframe = (int)floor(fframe);
 		int isample = iframe * channels;
 		float val = -data[isample + j];
-		
+
 		CGRect chanRect;
 		chanRect.origin.x = rect.origin.x + 1.;
 		chanRect.origin.y = rect.origin.y + 1. + chanHeight2;
 		chanRect.size.width = rect.size.width - 2.;
 		chanRect.size.height = chanHeight;
-		
+
 	//post("width %d\n", width);
 		for (int i = 0; i < width && isample < samples; i++)
 		{
@@ -531,15 +531,15 @@ void SCSoundFileView::draw1(SCRect inDamage, CGContextRef cgc)
 			}
 			iframe = nextiframe;
 			fframe = nextfframe;
-			
+
 			CGRect wrect;
 			wrect.origin.x = rect.origin.x + 1. + i;
-			wrect.size.width = 1.; 
+			wrect.size.width = 1.;
 			wrect.origin.y = chanRect.origin.y + ymin * yScale;
 			wrect.size.height = (ymax - ymin) * yScale + 1.;
-			
+
 			//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
-			
+
 			CGContextFillRect(cgc, wrect);
 		}
 	}
@@ -549,7 +549,7 @@ void SCSoundFileView::draw2(SCRect inDamage, CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
 	if (!data) return;
-	
+
 	int samples = mSndBuf.samples;
 	SCRect bounds = getDrawBounds();
 	// draw scope.
@@ -563,21 +563,21 @@ void SCSoundFileView::draw2(SCRect inDamage, CGContextRef cgc)
 	float xScale = mZoom.x * width2;
 	float xoff = rect.origin.x + width2 + 1.;
 	float yoff = rect.origin.y + height2 + 1.;
-	
-	
+
+
 	for (int k=0, j=0; j<channels; k++, j+=2)
 	{
 		CGContextSetRGBStrokeColor(cgc, mWaveColors[k].red, mWaveColors[k].green, mWaveColors[k].blue, mWaveColors[k].alpha);
 		float x = xoff + data[j] * xScale;
 		float y = yoff - data[j+1] * yScale;
 		CGContextMoveToPoint(cgc, x, y);
-		
+
 		for (int i=channels; i<samples; i+=channels) {
 			x = xoff + data[i+j] * xScale;
 			y = yoff - data[i+j+1] * yScale;
 			CGContextAddLineToPoint(cgc, x, y);
 		}
-		CGContextStrokePath(cgc);	
+		CGContextStrokePath(cgc);
 	}
 }
 
@@ -589,44 +589,44 @@ void SCSoundFileView::draw(SCRect inDamage)
     CGRect rect = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
-	
-	float rzreciprocal = 1.f/ ( mResampleFactor * mZoom.x);	
-//	mStartFrameResampled = (int)(mScroll.x / mResampleFactor);	
+
+	float rzreciprocal = 1.f/ ( mResampleFactor * mZoom.x);
+//	mStartFrameResampled = (int)(mScroll.x / mResampleFactor);
 	CGRect viewRect, drawRect;
 	viewRect = CGRectMake(bounds.x + 1.f, bounds.y + 1.f, bounds.width - 2.f, bounds.height - 2.f);
-	for (int i=0; i<kMaxSndSelections; ++i) 
-	{	
+	for (int i=0; i<kMaxSndSelections; ++i)
+	{
 		if ( mSelections[i].size > 0 ) {
 			float selectionstart = ((mSelections[i].start-mScroll.x) * rzreciprocal ) + 1.f + bounds.x;
 			float selectionsize =  mSelections[i].size * rzreciprocal;
-			drawRect = CGRectMake(selectionstart, 
-									bounds.y + 1.f, 
-									selectionsize, 
-									bounds.height - 2.f);	
+			drawRect = CGRectMake(selectionstart,
+									bounds.y + 1.f,
+									selectionsize,
+									bounds.height - 2.f);
 			drawRect = CGRectIntersection(drawRect, viewRect);
 			if ( !CGRectIsNull(drawRect) ) {
 				CGContextSetRGBFillColor(cgc, mSelections[i].color.red, mSelections[i].color.green, mSelections[i].color.blue, mSelections[i].color.alpha);
-				CGContextFillRect (cgc, drawRect); 
+				CGContextFillRect (cgc, drawRect);
 			}
 		}
 	}
-	
+
 	if(!mDrawsWaveForm) goto restore;
 	// draw grid.
 	if(mGridOn && (mGridResolution > 0.0)){
 		float gridsize =  ((mGridResolution * mSndBuf.samplerate) / ( mResampleFactor * mZoom.x));
-		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);	
+		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);
 		//float xgridpos =  mBounds.x + 1.;
-		float xgridpos = bounds.x + 1. - ((mScroll.x - mGridOffset) * rzreciprocal);		
+		float xgridpos = bounds.x + 1. - ((mScroll.x - mGridOffset) * rzreciprocal);
 		int maxwidth = (int) (bounds.width + bounds.x) - 2;
-		for (int i=0; xgridpos<maxwidth; ++i) 
-		{	
+		for (int i=0; xgridpos<maxwidth; ++i)
+		{
 			if (xgridpos > bounds.x) {
-				drawRect = CGRectMake(xgridpos, 
-										bounds.y + 1.f, 
-										1.f, 
-										bounds.height-2.f);	
-				CGContextFillRect (cgc, drawRect); 
+				drawRect = CGRectMake(xgridpos,
+										bounds.y + 1.f,
+										1.f,
+										bounds.height-2.f);
+				CGContextFillRect (cgc, drawRect);
 			}
 			xgridpos += gridsize;
 
@@ -637,19 +637,19 @@ void SCSoundFileView::draw(SCRect inDamage)
 		case 1 : draw1(inDamage, cgc); break;
 		case 2 : draw2(inDamage, cgc); break;
 	}
-	
-	
+
+
 	if(mShowTimeCursor){
 		// mTimeCursorPosition is in frames
 		float xcursorpos = ((mTimeCursorPosition - mScroll.x)  * rzreciprocal) + bounds.x - 1.f;
-		if ((xcursorpos > bounds.x) && (xcursorpos < bounds.x + bounds.width)) {		
-			CGContextSetRGBFillColor(cgc, mTimeCursorColor.red, mTimeCursorColor.green, mTimeCursorColor.blue, mTimeCursorColor.alpha);	
-			
-				drawRect = CGRectMake(xcursorpos, 
-										bounds.y + 1.f, 
-										1.5f, 
-										bounds.height-2.f);	
-				CGContextFillRect (cgc, drawRect); 
+		if ((xcursorpos > bounds.x) && (xcursorpos < bounds.x + bounds.width)) {
+			CGContextSetRGBFillColor(cgc, mTimeCursorColor.red, mTimeCursorColor.green, mTimeCursorColor.blue, mTimeCursorColor.alpha);
+
+				drawRect = CGRectMake(xcursorpos,
+										bounds.y + 1.f,
+										1.5f,
+										bounds.height-2.f);
+				CGContextFillRect (cgc, drawRect);
 		}
 //			post("xcursorpos %f, resampleFactor %f, mTimeCursorPosition %i \n", xcursorpos, mResampleFactor, mTimeCursorPosition);
 	}
@@ -660,14 +660,14 @@ void SCSoundFileView::draw(SCRect inDamage)
 
 
 int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 
 	if (symbol == s_x) {
 		double x;
 		err = slotDoubleVal(slot, &x);
 		if (err) return err;
-		mScroll.x = sc_clip(x, 0.0, mSndBuf.frames * mResampleFactor) ; 
+		mScroll.x = sc_clip(x, 0.0, mSndBuf.frames * mResampleFactor) ;
 //		mStartFrame = (int)(mScroll.x * mResampleFactor);
 		mSndMinMax.isUsable = false;		//this is a straight forward solution, might be better to work this out in drawBuf
 		return errNone;
@@ -676,36 +676,36 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		double y;
 		err = slotDoubleVal(slot, &y);
 		if (err) return err;
-		mScroll.y = y; 
+		mScroll.y = y;
 		return errNone;
 	}
-	
+
 	char *name = symbol->name;
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
 		if(screct.width != mBounds.width){
-			if(mElasticMode) mZoom.x =  mSndBuf.frames/(screct.width-2.f);	
+			if(mElasticMode) mZoom.x =  mSndBuf.frames/(screct.width-2.f);
 			mSndMinMax.isUsable = false;
 			bufAllocMinMax(&mSndMinMax, mSndBuf.channels, (int)(screct.width ));
 		}
 		setBounds(screct);
-		
+
 		//pass on to SCView ...
 	}
-	
+
 	if (strcmp(name,"elasticResizeMode")==0){
         slotIntVal(slot, &mElasticMode);
-        refresh();	
+        refresh();
 		return errNone;
-		
+
 	}
 	if (strcmp(name, "xZoom")==0) {
 		double x;
 		err = slotDoubleVal(slot, &x);
 		if (err) return err;
-		mZoom.x = x; 
+		mZoom.x = x;
 		mInvZoom.x = 1./x;
 		mSndMinMax.isUsable = false;
 		return errNone;
@@ -714,19 +714,19 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		double y;
 		err = slotDoubleVal(slot, &y);
 		if (err) return err;
-		mZoom.y = y; 
+		mZoom.y = y;
 		mInvZoom.y = 1./y;
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "gridResolution")==0) {
 		err = slotFloatVal(slot, &mGridResolution);
 		if (err) return err;
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "gridOffset")==0) {
  		int gridOffset;
  		err = slotIntVal(slot, &gridOffset);
@@ -735,7 +735,7 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
   		refresh();
   		return errNone;
 	}
-	
+
 	if (strcmp(name, "gridColor")==0) {
 		err = slotColorVal(slot, &mGridColor);
 		if (err) return err;
@@ -748,10 +748,10 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-		
+
 	if (strcmp(name, "selectionColor")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		int index;
 		err = slotIntVal(slots+0, &index);
 		if (err) return err;
@@ -760,11 +760,11 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 
-	}	
+	}
 	if (strcmp(name, "waveColors")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
-		for (int i=0; i<slot->uo->size; ++i)
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		for (int i=0; i<slotRawObject(slot)->size; ++i)
 		{
 			err = slotColorVal(slots+i, mWaveColors+i);
 			if (err) return err;
@@ -782,28 +782,28 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		mDrawsWaveForm = IsTrue(slot);
 		refresh();
 		return errNone;
-	}	
+	}
 	if(strcmp(name, "readSndFile")==0){
 		int resample, startframe, frames, numframes;
 		//float samplerate;
 		SF_INFO info;
-		if (!isKindOfSlot(slot, class_array)) return errWrongType;	
-		PyrSlot *slots = slot->uo->slots;
-		SNDFILE * file = (SNDFILE*) (slots+0)->uo->slots[0].ui;
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		SNDFILE * file = (SNDFILE*) slotRawInt(slotRawObject(slots+0)->slots);
 		err = slotIntVal(slots+1, &startframe);
 		if (err) return err;
 		err = slotIntVal(slots+2, &frames);
 		if (err) return err;
 		err = slotIntVal(slots+3, &resample);
-		if (err) return err;	
+		if (err) return err;
 		err = slotIntVal(slots+4, &info.samplerate);
-		if (err) return err;	
+		if (err) return err;
 		err = slotIntVal(slots+5, &numframes);
 		if (err) return err;
 		info.frames = (sf_count_t) numframes;
 		err = slotIntVal(slots+6, &info.channels);
-		if (err) return err;		
-		mSndMinMax.isUsable = false;		
+		if (err) return err;
+		mSndMinMax.isUsable = false;
 		err = readSndFile(file, startframe, frames, resample, info);
 		if (err) return err;
 		//refresh();
@@ -813,55 +813,55 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotIntVal(slot, &mCurrentSelection);
 		if (err) return err;
 		return errNone;
-	}	
+	}
 	if (strcmp(name, "selectionStart")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		int index;
 		err = slotIntVal(slots+0, &index);
-		if (err) return err;		
+		if (err) return err;
 		err = slotIntVal(slots+1, &(mSelections+index)->start);
 		if (err) return err;
 		refresh();
 		return errNone;
-	}	
-	
+	}
+
 	if (strcmp(name, "selectionSize")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		int index;
 		err = slotIntVal(slots+0, &index);
 		if (err) return err;
 		err = slotIntVal(slots+1, &(mSelections+index)->size);
 		if (err) return err;
 		refresh();
-		return errNone;	
-	}		
-	
+		return errNone;
+	}
+
 	if (strcmp(name, "selectionStartIsEditable")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		int index;
 		err = slotIntVal(slots+0, &index);
-		if (err) return err;		
+		if (err) return err;
 		(mSelections+index)->startIsEditable = IsTrue(slots+1);
 		return errNone;
 	}
 
 	if (strcmp(name, "selectionSizeIsEditable")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		int index;
 		err = slotIntVal(slots+0, &index);
-		if (err) return err;		
+		if (err) return err;
 		(mSelections+index)->sizeIsEditable = IsTrue(slots+1);
 		return errNone;
 	}
-			
+
 	if (strcmp(name, "setViewData")==0) {
 		int startFrame;
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		err = slotFloatVal(slots+1, &mResampleFactor);
 		if(err) return err;
 		err = slotIntVal(slots+2, &startFrame);
@@ -872,29 +872,29 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotIntVal(slots+4, &samplerate);
 		if(err) return err;
 		if (!isKindOfSlot(slots+0, class_array)) return errWrongType;
-		int size = (slots+0)->uo->size;	
-		mScroll.x = (float) startFrame;  
+		int size = slotRawObject(slots+0)->size;
+		mScroll.x = (float) startFrame;
 		if(size ==  mSndBuf.samples && mSndBuf.data && mSndBuf.channels==channels && mSndBuf.samplerate == samplerate){
 			PyrDoubleArray * arr;
-			arr = (PyrDoubleArray*) (slots+0)->uo;
+			arr = (PyrDoubleArray*) slotRawObject(slots+0);
 			for(int i=0; i<size; i++){
 			   mSndBuf.data[i] = arr->d[i];
 			}
 		} else {
-			int frames = (int) ceil(size/channels);		
+			int frames = (int) ceil(size/channels);
 			int err = bufAlloc(&mSndBuf, channels, frames, samplerate);
 			if(err) return err;
 			PyrDoubleArray * arr;
 //			printf("frames:%i, size:%i, mSndBuf.samples:%i\n",frames, size, mSndBuf.samples);
-			arr = (PyrDoubleArray*) (slots+0)->uo;
+			arr = (PyrDoubleArray*) slotRawObject(slots+0);
 			size = mSndBuf.samples;
 			for(int i=0; i<size; i++){
 			   mSndBuf.data[i] = arr->d[i];
 			}
 		}
 		if(mElasticMode){
-//			mZoom.x =  ((mSndBuf.frames/mResampleFactor)/(mBounds.width-2.f));	
-			mZoom.x =  mSndBuf.frames/(mBounds.width-2.f);	
+//			mZoom.x =  ((mSndBuf.frames/mResampleFactor)/(mBounds.width-2.f));
+			mZoom.x =  mSndBuf.frames/(mBounds.width-2.f);
 
 		}
 		mSndMinMax.isUsable = false;
@@ -902,23 +902,23 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	if (strcmp(name, "showTimeCursor")==0) {	
+	if (strcmp(name, "showTimeCursor")==0) {
 		mShowTimeCursor = IsTrue(slot);
 		refresh();
-		return errNone;	
+		return errNone;
 	}
-	if (strcmp(name, "timeCursorPosition")==0) {	
+	if (strcmp(name, "timeCursorPosition")==0) {
 		err = slotIntVal(slot, &mTimeCursorPosition);
 		if(err) return err;
-		refresh();		
-		return errNone;	
+		refresh();
+		return errNone;
 	}
 	if (strcmp(name, "timeCursorColor")==0) {
 		err = slotColorVal(slot, &mTimeCursorColor);
 		if (err) return err;
 		refresh();
 		return errNone;
-	}	
+	}
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -951,23 +951,23 @@ int SCSoundFileView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "waveColors")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
-		for (int i=0; i<slot->uo->size; ++i)
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		for (int i=0; i<slotRawObject(slot)->size; ++i)
 		{
 			int err = setSlotColor(slots+i, mWaveColors+i);
 			if (err) return err;
 		}
 		return errNone;
 	}
-//	if (strcmp(name, "selections")==0) 
-//	{            
+//	if (strcmp(name, "selections")==0)
+//	{
 //		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-//            int size = (slot->uo->slots[0]).uo->size;
+//            int size = (slotRawObject(slot)->slots[0]).uo->size;
 //			size = sc_clip(size, 0, kMaxSndSelections);
 //            PyrDoubleArray * startarr;
 //            PyrDoubleArray * rangearr;
-//            startarr = ((PyrDoubleArray*)(slot->uo->slots[0].uo));
-//            rangearr = ((PyrDoubleArray*)(slot->uo->slots[1].uo));
+//            startarr = ((PyrDoubleArray*)(slotRawObject(slot)->slots[0].uo));
+//            rangearr = ((PyrDoubleArray*)(slotRawObject(slot)->slots[1].uo));
 //
 //            for(int i=0; i<size; i++){
 //                startarr->d[i] = mSelections[i].start;
@@ -976,41 +976,41 @@ int SCSoundFileView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 //            return errNone;
 //	}
 
-	if (strcmp(name, "selections")==0) 
-	{            
+	if (strcmp(name, "selections")==0)
+	{
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		int size = slot->uo->size;
+		int size = slotRawObject(slot)->size;
 		size = sc_clip(size, 0, kMaxSndSelections);
-		PyrObject *array =  slot->uo;
-	
+		PyrObject *array =  slotRawObject(slot);
+
 		for(int i=0; i<size; i++){
-			PyrSlot  *slots= (array->slots+i)->uo->slots;
+			PyrSlot  *slots= slotRawObject(array->slots+i)->slots;
 			SetInt(slots+0, mSelections[i].start);
 			SetInt(slots+1, mSelections[i].size);
 		}
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "absoluteX")==0) {
 		SetInt(slot, (int) mAbsolutePosition.x);
 		return errNone;
-	}	
+	}
 	if (strcmp(name, "absoluteY")==0) {
 		SetInt(slot, (int) mAbsolutePosition.y);
 		return errNone;
-	}	
+	}
 	if (strcmp(name, "currentSelection")==0) {
 		SetInt(slot, (int) mCurrentSelection);
 		return errNone;
-	}	
+	}
 	if (strcmp(name, "selectionStart")==0) {
 		int index;
 		int err = slotIntVal(slot, &index);
 		if (err) return err;
 		SetInt(slot, (int) mSelections[index].start);
 		return errNone;
-	}	
-	
+	}
+
 	if (strcmp(name, "selectionSize")==0) {
 		int index;
 		int err = slotIntVal(slot, &index);
@@ -1025,55 +1025,55 @@ int SCSoundFileView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if (err) return err;
 		SetFloat(slot, (float) mSelections[index].start/mSndBuf.samplerate);
 		return errNone;
-	}	
-	
+	}
+
 	if (strcmp(name, "selectionDuration")==0) {
 		int index;
 		int err = slotIntVal(slot, &index);
-		if (err) return err;	
+		if (err) return err;
 		SetFloat(slot, (float) mSelections[index].size/mSndBuf.samplerate);
 		return errNone;
 	}
 
 	if (strcmp(name, "getViewData")==0) {
-		
+
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            int size = slot->uo->size;
+            int size = slotRawObject(slot)->size;
 			size = sc_clip(size, 0, mSndBuf.samples);
             PyrDoubleArray * arr;
-            arr = (PyrDoubleArray*) slot->uo;
+            arr = (PyrDoubleArray*) slotRawObject(slot);
             for(int i=0; i<size; i++){
                 arr->d[i] = mSndBuf.data[i];
             }
             return errNone;
 	}
 	if (strcmp(name, "getViewNumSamples")==0) {
-		
+
 		SetInt(slot, (int) mSndBuf.samples);
 		return errNone;
 	}
 	if (strcmp(name, "timeCursorPosition")==0) {
-		
+
 		SetInt(slot, mTimeCursorPosition);
 		return errNone;
 	}
 	if (strcmp(name, "gridOn")==0) {
-		
+
 		SetBool(slot, mGridOn);
 		return errNone;
 	}
 	if (strcmp(name, "gridResolution")==0) {
-		
+
 		SetFloat(slot, mGridResolution);
 		return errNone;
 	}
 	if (strcmp(name, "timeCursorOn")==0) {
-		
+
 		SetBool(slot, mShowTimeCursor);
 		return errNone;
 	}
 	if (strcmp(name, "timeCursorColor")==0) {
-		
+
 		return setSlotColor(slot, &mTimeCursorColor);
 	}
 	return SCView::getProperty(symbol, slot);

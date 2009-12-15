@@ -154,12 +154,12 @@ struct SC_WII
 
 	static PyrObject* getObject(PyrSlot* slot)
 	{
-		return isKindOfSlot(slot, s_wii->u.classobj) ? slot->uo : 0;
+		return isKindOfSlot(slot, s_wii->u.classobj) ? slotRawObject(slot) : 0;
 	}
 
 	static SC_WII* getDevice(PyrObject* obj)
 	{
-		return (SC_WII*)obj->slots[0].uptr;
+		return (SC_WII*)slotRawPtr(obj->slots);
 	}
 
 #ifdef SC_DARWIN
@@ -1171,7 +1171,7 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 
 	if (!isKindOfSlot(args+1, class_array))
 		return errWrongType;
-	PyrObject* allDevsArray = args[1].uo;
+	PyrObject* allDevsArray = slotRawObject(&args[1]);
 	PyrSlot* slotsArray = allDevsArray->slots;
 
 // 	post( "checked args %i\n", curid );
@@ -1330,7 +1330,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(args+1, s_wiiCalibrationInfoClass->u.classobj))
 		return errWrongType;
-	PyrObject* infoObj = args[1].uo;
+	PyrObject* infoObj = slotRawObject(&args[1]);
 
 	SC_WII* dev = SC_WII::getDevice(obj);
 	if (!dev) return errFailed;
@@ -1410,7 +1410,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* leds = args[1].uo;
+// 	PyrObject* leds = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = leds->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1446,14 +1446,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1496,14 +1496,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1538,14 +1538,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1580,14 +1580,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1621,14 +1621,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1662,14 +1662,14 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 //
 // // 	if (!isKindOfSlot(args+1, s_wiiLEDStateClass->u.classobj))
 // // 		return errWrongType;
-// // 	PyrObject* infoObj = args[1].uo;
+// // 	PyrObject* infoObj = slotRawObject(&args[1]);
 //
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
 // 	if (!isKindOfSlot(args+1, class_array))
 // 		return errWrongType;
-// 	PyrObject* buttons = args[1].uo;
+// 	PyrObject* buttons = slotRawObject(&args[1]);
 // 	PyrSlot* bslots = buttons->slots;
 //
 // 	if (dev->m_wiiremote == NULL)
@@ -1774,7 +1774,7 @@ int prWiiSetLED(VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(args+1, class_array))
 		return errWrongType;
-	PyrObject* leds = args[1].uo;
+	PyrObject* leds = slotRawObject(&args[1]);
 	PyrSlot* bslots = leds->slots;
 
 	err = slotIntVal( bslots+0, &enable1 );

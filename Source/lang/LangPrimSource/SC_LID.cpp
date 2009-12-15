@@ -97,12 +97,12 @@ struct SC_LID
 
 	static PyrObject* getObject(PyrSlot* slot)
 	{
-		return isKindOfSlot(slot, s_inputDeviceClass->u.classobj) ? slot->uo : 0;
+		return isKindOfSlot(slot, s_inputDeviceClass->u.classobj) ? slotRawObject(slot) : 0;
 	}
 
 	static SC_LID* getDevice(PyrObject* obj)
 	{
-		return (SC_LID*)obj->slots[0].uptr;
+		return (SC_LID*)slotRawPtr(&obj->slots[0]);
 	}
 
 	SC_LID*			m_next;
@@ -615,7 +615,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 
 	if (!isKindOfSlot(args+1, s_inputDeviceInfoClass->u.classobj))
 		return errWrongType;
-	PyrObject* infoObj = args[1].uo;
+	PyrObject* infoObj = slotRawObject(&args[1]);
 
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;
@@ -677,7 +677,7 @@ int prLID_GetAbsInfo(VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(args+2, s_absInfoClass->u.classobj))
 		return errWrongType;
-	PyrObject* infoObj = args[2].uo;
+	PyrObject* infoObj = slotRawObject(&args[2]);
 
 	SC_LID* dev = SC_LID::getDevice(obj);
 	if (!dev) return errFailed;

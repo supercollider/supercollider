@@ -602,7 +602,7 @@ bool signal_equal_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 	float *b = (float*)(inb->slots) - 1;
 	float *endptr = a + ina->size;
 	if (ina->size != inb->size) return false;
-	if (ina->slots[ kSignalRate ].us != inb->slots[ kSignalRate ].us) return false;
+	if (slotRawSymbol(&ina->slots[ kSignalRate ]) != slotRawSymbol(&inb->slots[ kSignalRate ])) return false;
 	while (a < endptr) { if (*a++ != *b++) return false; }
 	return true;
 }

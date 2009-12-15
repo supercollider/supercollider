@@ -1901,7 +1901,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 
 	token = yylex();
 	if (token == CLASSNAME) {
-		className = ((PyrSlotNode*)zzval)->mSlot.us;
+		className = slotRawSymbol(&((PyrSlotNode*)zzval)->mSlot);
 		// I think this is wrong: zzval is space pool alloced
 		//pyrfree((PyrSlot*)zzval);
 
@@ -1916,7 +1916,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 			token = yylex();  // get super class
 			if (token == 0) return false;
 			if (token == CLASSNAME) {
-				superClassName = ((PyrSlotNode*)zzval)->mSlot.us;
+				superClassName = slotRawSymbol(&((PyrSlotNode*)zzval)->mSlot);
 				// I think this is wrong: zzval is space pool alloced
 				//pyrfree((PyrSlot*)zzval);
 				token = yylex();
@@ -2287,9 +2287,9 @@ void runLibrary(PyrSymbol* selector)
 	} catch (std::exception &ex) {
 		PyrMethod *meth = g->method;
 		if (meth) {
-			int ip = meth->code.uob ? g->ip - meth->code.uob->b : -1;
+			int ip = slotRawInt8Array(&meth->code) ? g->ip - slotRawInt8Array(&meth->code)->b : -1;
 			post("caught exception in runLibrary %s:%s %3d\n",
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name, ip
+				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name, ip
 			);
 			dumpByteCodes(meth);
 		} else {
@@ -2311,8 +2311,8 @@ void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
 
 		string = newPyrStringN(gMainVMGlobals->gc, textlen, 0, false);
 		memcpy(string->s, textbuf, textlen);
-		SetObject(&gMainVMGlobals->process->interpreter.uoi->cmdLine, string);
-		gMainVMGlobals->gc->GCWrite(gMainVMGlobals->process->interpreter.uo, string);
+		SetObject(&slotRawInterpreter(&gMainVMGlobals->process->interpreter)->cmdLine, string);
+		gMainVMGlobals->gc->GCWrite(slotRawObject(&gMainVMGlobals->process->interpreter), string);
 		SetObject(&slot, gMainVMGlobals->process);
 //#if __profile__
 //		ProfilerInit(collectSummary, microsecondsTimeBase, 500, 100);

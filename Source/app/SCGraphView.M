@@ -99,10 +99,10 @@ extern PyrSymbol *s_toggleEditMode;
     //control tab/escape doesn't get passed here at all ?
  //   NSLog(@"unicode %d  length:%d clength:%d mTopView %08X  modifiers %d %08X",
 //		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
-    
+
     if (mTopView) {
 		// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
-		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask
 			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask | NSCommandKeyMask;
         if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
             mTopView->tabPrevFocus();
@@ -110,7 +110,7 @@ extern PyrSymbol *s_toggleEditMode;
         } else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
 			mTopView->tabNextFocus();
 			return;
-        } // other tab keys avail for user 
+        } // other tab keys avail for user
         SCView *view = mTopView->focusView();
         if (view) {
             view->keyDown(character, modifiers,[event keyCode]);
@@ -118,7 +118,7 @@ extern PyrSymbol *s_toggleEditMode;
             mTopView->keyDown(character,modifiers,[event keyCode]);
         }
     }
-/*    
+/*
     if ([characters isEqual: @"w"] && (modifiers & NSCommandKeyMask)) {
         [[SCVirtualMachine sharedInstance] endFullScreen: [self window]];
     }
@@ -141,13 +141,13 @@ extern PyrSymbol *s_toggleEditMode;
 //		character,[characters length],[characters cStringLength], mTopView, modifiers, modifiers);
     if (mTopView) {
 
-		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask
 			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
         if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
             return;
         } else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) {
 			return;
-        } // other tab keys avail for user 
+        } // other tab keys avail for user
 
         SCView *view = mTopView->focusView();
         if (view) {
@@ -219,22 +219,22 @@ static NSString *sSCObjType = @"SuperCollider object address";
 		bool constructionmode = mTopView->ConstructionMode();
 		if(!constructionmode)
 		{
-			view->mouseDownAction(scpoint, modifiers,theEvent);				
+			view->mouseDownAction(scpoint, modifiers,theEvent);
 			view->mouseBeginTrack(scpoint, modifiers,theEvent);
 		}else
 		view->setConstructionModeFromPoint(scpoint);
 
 		[self displayIfNeeded];
-        
+
         while (keepOn && !mDragStarted && !mMenuView) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
-                    NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged 
+                    NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged
 					| NSKeyDownMask | NSKeyUpMask
 			];
 			modifiers = [theEvent modifierFlags]; // added
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
-            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
+            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
             int evtype = [theEvent type];
             switch ([theEvent type]) {
 				case NSLeftMouseDown:
@@ -244,7 +244,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 						view->doConstructionMove(scpoint);
 						mTopView->refresh();
 					}else
-						view->mouseDownAction(scpoint, modifiers,theEvent);	
+						view->mouseDownAction(scpoint, modifiers,theEvent);
 //						post("down \n");
 						break;
                 case NSLeftMouseDragged:
@@ -257,7 +257,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 							mTopView->refresh();
 						}else
 							view->mouseTrack(scpoint, modifiers,theEvent);
-							view->mouseMoveAction(scpoint, modifiers,theEvent);				
+							view->mouseMoveAction(scpoint, modifiers,theEvent);
 //							post("drag \n");
                         break;
                 case NSLeftMouseUp:
@@ -269,8 +269,8 @@ static NSString *sSCObjType = @"SuperCollider object address";
 							mTopView->refresh();
 						}else
 						{
-//							if(!view.GetSCObj()) break;						
-							view->mouseUpAction(scpoint, modifiers,theEvent);						
+//							if(!view.GetSCObj()) break;
+							view->mouseUpAction(scpoint, modifiers,theEvent);
 							view->mouseEndTrack(scpoint, modifiers,theEvent);
 						}
                         keepOn = NO;
@@ -301,7 +301,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
     return;
 }
 
--(void)mouseMoved:(NSEvent*)theEvent 
+-(void)mouseMoved:(NSEvent*)theEvent
 {
 	NSPoint mouseLoc;
 	if (!mTopView) return;
@@ -323,7 +323,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 {
     mWindowObj = inObject;
 }
-    
+
 - (struct PyrObject*)getSCObject
 {
     return mWindowObj;
@@ -332,7 +332,7 @@ static NSString *sSCObjType = @"SuperCollider object address";
 void damageFunc(SCRect inRect, void* inData)
 {
     SCGraphView *view = (SCGraphView*)inData;
-    
+
     [view setNeedsDisplayInRect: SCtoNSRect(inRect)];
 }
 
@@ -379,11 +379,11 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
 }
 
 - (void)willClose
-{    
+{
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: self];
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: [self window]];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
+
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj) {
         SetPtr(mWindowObj->slots + 0, self);
@@ -395,7 +395,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
         mWindowObj = 0;
     }
     pthread_mutex_unlock (&gLangMutex);
-    
+
     delete mTopView;
 	mTopView = 0;
 }
@@ -404,7 +404,7 @@ extern PyrSymbol * s_didResignKey;
 - (void) didResignKey{
 	if (mWindowObj) {
 		if(NotNil(mWindowObj->slots + 11)){ // check whether endFrontAction is nil
-			pthread_mutex_lock (&gLangMutex);			
+			pthread_mutex_lock (&gLangMutex);
 			SetPtr(mWindowObj->slots + 0, self);
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
@@ -449,13 +449,13 @@ const int circDiam = 20;
 {
 
     if (!slot) return 0;
-    
+
     NSString *nsstring;
     if(label) {
 		nsstring = label;
 	} else if (slot) {
         PyrClass *classobj = classOfSlot(slot);
-        nsstring = [NSString stringWithCString: classobj->name.us->name];
+        nsstring = [NSString stringWithCString: slotRawSymbol(&classobj->name)->name];
         if (!nsstring) return 0;
     } else {
         nsstring = @"No Data!";
@@ -468,71 +468,71 @@ const int circDiam = 20;
 
     NSSize strSize = [nsstring sizeWithAttributes: dict];
     NSRect strRect = NSMakeRect(circDiam, 0, circDiam + strSize.width, strSize.height);
-    
+
     NSSize size = NSMakeSize(circDiam+strSize.width, sc_max(circDiam, strSize.height));
-    
+
     NSImage *image = [[NSImage alloc] initWithSize: size];
     if (!image) return 0;
-    
+
     [image autorelease];
-    
+
     float alpha = 0.6;
     NSColor *colorClear = [NSColor colorWithCalibratedRed: 0
-                            green: 0 
-                            blue: 0 
+                            green: 0
+                            blue: 0
                             alpha: 0];
     NSColor *colorTransBlack = [NSColor colorWithCalibratedRed: 0
-                            green: 0 
-                            blue: 0 
+                            green: 0
+                            blue: 0
                             alpha: alpha];
     NSColor *colorTransBlue = [NSColor colorWithCalibratedRed: 0
-                            green: 0 
-                            blue: 1 
+                            green: 0
+                            blue: 1
                             alpha: alpha];
     /*NSColor *colorTransLtBlue = [NSColor colorWithCalibratedRed: 0.8
-                            green: 0.8 
-                            blue: 1 
+                            green: 0.8
+                            blue: 1
                             alpha: alpha];*/
     NSColor *colorTransWhite = [NSColor colorWithCalibratedRed: 1
-                            green: 1 
-                            blue: 1 
+                            green: 1
+                            blue: 1
                             alpha: alpha];
     NSColor *colorCaptionBackgnd = [NSColor colorWithCalibratedRed: 0
                             green: 0
-                            blue: 0 
+                            blue: 0
                             alpha: 0.4];
     NSColor *colorWhite = [NSColor colorWithCalibratedRed: 1
-                            green: 1 
-                            blue: 1 
+                            green: 1
+                            blue: 1
                             alpha: 1];
-    
+
     [dict setObject: colorWhite forKey: NSForegroundColorAttributeName ];
 
     [image lockFocus];
     [colorClear set];
     [NSBezierPath fillRect: NSMakeRect(0,0,size.width,size.height)];
     NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(1,1,circDiam-2,circDiam-2)];
-    
+
     [path setLineWidth: 1.5];
     [colorTransBlue set];
     [path fill];
-    
-    NSBezierPath *hilite = [NSBezierPath bezierPathWithOvalInRect: 
+
+    NSBezierPath *hilite = [NSBezierPath bezierPathWithOvalInRect:
         NSMakeRect(circDiam*0.3, circDiam*0.7, circDiam*0.4, circDiam*0.15)];
- 
+
     [colorTransWhite set];
     [hilite fill];
- 
+
     [colorTransBlack set];
     [path stroke];
 
     [colorCaptionBackgnd set];
     [NSBezierPath fillRect: strRect];
-    
+
     [nsstring drawInRect: strRect withAttributes: dict];
 
     [image unlockFocus];
-    
+
     return image;
 }
 
@@ -540,20 +540,20 @@ const int circDiam = 20;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string label:(NSString*) label
 {
     NSImage *image = [self makeDragImage: slot label: label];
-    
+
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
     [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil] owner: self];
-    
+
 	int fakeData;
     NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
-    
+
     [pboard setData: data forType: sSCObjType];
     [pboard setString: string forType: NSStringPboardType];
-	
+
     NSSize imageSize = [image size];
     where.x -= circDiam / 2;
     where.y += circDiam / 4;
-    
+
     NSSize dragOffset = NSMakeSize(0.0, 0.0);
     mDragStarted = YES;
     [self dragImage: image at: where offset: dragOffset event: [NSApp currentEvent]
@@ -566,7 +566,7 @@ const int circDiam = 20;
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
 	NSLog(@"types %@", [pboard types]);
 	if ([[pboard types] containsObject: sSCObjType]) {
-	
+
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
 		NSLog(@"string %@", nsstring);
@@ -575,22 +575,22 @@ const int circDiam = 20;
 		pthread_mutex_lock (&gLangMutex);
 			VMGlobals *g = gMainVMGlobals;
 			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
-			int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+			int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
 			SetObject(&g->classvars->slots[classVarIndex+0], pstrobj); // currentDrag
 			g->gc->GCWrite(g->classvars, pstrobj);
-		
+
 			//PyrSymbol *method = getsym("importDrag");
 			//g->canCallOS = true;
-			++g->sp;  SetObject(g->sp, s_scview->u.classobj); 
+			++g->sp;  SetObject(g->sp, s_scview->u.classobj);
 			//runInterpreter(g, method, 1);
 			//g->canCallOS = false;
-			
+
 		pthread_mutex_unlock (&gLangMutex);
-		
+
 		int fakeData;
-		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
 		[pboard setData: data forType: sSCObjType];
-		
+
 	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
 		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
 		if (!files) return NSDragOperationNone;
@@ -598,7 +598,7 @@ const int circDiam = 20;
 		VMGlobals *g = gMainVMGlobals;
 		int size = [files count];
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
-		
+
 		for (int i=0; i<size; ++i) {
 			NSString *path = [files objectAtIndex: i];
 			PyrString *string = newPyrString(g->gc, [path UTF8String], 0, true);
@@ -606,21 +606,21 @@ const int circDiam = 20;
 			array->size++;
 			g->gc->GCWrite(array, string);
 		}
-		
-		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+
+		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
 		SetObject(&g->classvars->slots[classVarIndex+0], array);
 		g->gc->GCWrite(g->classvars, array);
-		
+
 		pthread_mutex_unlock (&gLangMutex);
-		
+
 		int fakeData;
-		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
 		[pboard setData: data forType: sSCObjType];
-		
+
 	} else {
         return NSDragOperationNone;
 	}
-	
+
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
@@ -642,15 +642,15 @@ const int circDiam = 20;
 - (unsigned int)draggingUpdated:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
-	
+
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
 	if(!view && mTopView->ConstructionMode())
-		view = mTopView;		
+		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
-		view->draggingUpdated(scpoint);		
+		view->draggingUpdated(scpoint);
         [self displayIfNeeded];
         return flag ? NSDragOperationEvery : NSDragOperationNone;
     } else {
@@ -675,7 +675,7 @@ const int circDiam = 20;
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
 	if(!view && mTopView->ConstructionMode())
-		view = mTopView;		
+		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
         mTopView->setDragView(flag ? view : 0);
@@ -695,7 +695,7 @@ const int circDiam = 20;
     SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
     SCView *view = mTopView->findView(scpoint);
 	if(!view && mTopView->ConstructionMode())
-		view = mTopView;	
+		view = mTopView;
     if (view) {
         bool flag = view->canReceiveDrag();
         if (flag) {
@@ -716,7 +716,7 @@ const int circDiam = 20;
 - (void)concludeDragOperation:(id)sender {
     if (mTopView) mTopView->setDragView(0);
     [self displayIfNeeded];
-	
+
     //post("concludeDragOperation %08X\n", self);
 }
 
@@ -724,87 +724,87 @@ const int circDiam = 20;
 
 - (void)drawRect: (NSRect)drawBounds
 {
-	
+
 	if (mTopView) {
-        
+
         SCRect screct;
-        
+
 		NSRect bounds = [self bounds];
 		screct.x = bounds.origin.x;
 		screct.y = bounds.origin.y;
 		screct.width = bounds.size.width;
 		screct.height = bounds.size.height;
-		
+
 		if(!NSEqualRects(bounds, oldBounds)){
 			mTopView->setInternalBounds(screct);
 			oldBounds = bounds;
 		}
-		
-        
+
+
         screct.x = drawBounds.origin.x;
         screct.y = drawBounds.origin.y;
         screct.width = drawBounds.size.width;
         screct.height = drawBounds.size.height;
-        
+
 		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		CGContextSaveGState(cgc);
 		//CGContextClipToRect(cgc, CGRectMake(screct.x, screct.y, screct.width, screct.height));
 		CGContextClipToRect(cgc, *(CGRect*)&bounds);
-		
-		
+
+
         /*
 		 Rect qdrect;
-		 SetRect(&qdrect, (int)screct.x, (int)screct.y, 
+		 SetRect(&qdrect, (int)screct.x, (int)screct.y,
 		 (int)(screct.x + screct.width), (int)(screct.y + screct.height));
 		 ClipRect(&qdrect);
 		 */
-		
+
 		const CGRect *dirtyRects;
 		CGRect	curRect;
 		int		numDirtyRects;
-		
+
 		[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:&numDirtyRects];
-		
+
 		int i=0;
 		//post("numrects: %i\n", numDirtyRects);
 		for(; i < numDirtyRects; ++i) {
 			curRect = *(dirtyRects+i);
-			
+
 			screct.x = curRect.origin.x;
-			screct.y = curRect.origin.y; 
+			screct.y = curRect.origin.y;
 			screct.width = curRect.size.width;
 			screct.height = curRect.size.height;
 			//post("(%2.2f, %2.2f, %2.2f, %2.2f)\n", screct.x, screct.y, screct.width, screct.height);
-			
+
 			CGContextSaveGState(cgc);
-			CGContextClipToRect(cgc, curRect);		
-			if(mTopView->isSubViewScroller()) 
+			CGContextClipToRect(cgc, curRect);
+			if(mTopView->isSubViewScroller())
 			{
 				((SCScrollView*)mTopView)->drawSubViewIfNecessary(screct);
-			} 
-			else 
+			}
+			else
 			{
 				mTopView->drawIfNecessary(screct);
-			}	
+			}
 			CGContextRestoreGState(cgc);
 		}
-		
+
 		CGContextRestoreGState(cgc);
     }
-	
+
     pthread_mutex_lock (&gLangMutex);
     if (mWindowObj && NotNil(mWindowObj->slots+6)) {
         CGRect cgrect = *(CGRect*)&drawBounds;
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
         CGContextSaveGState(cgc);
         CGContextClipToRect(cgc, cgrect);
-		
+
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
         runInterpreter(g, s_callDrawHook, 1);
         g->canCallOS = false;
-		
+
         CGContextRestoreGState(cgc);
     }
     pthread_mutex_unlock (&gLangMutex);
@@ -822,9 +822,9 @@ NSDictionary *makeFontAttrDict(char *cFontName, float fontSize, SCColor sccolor)
 
 
     NSColor *nscolor = [NSColor colorWithCalibratedRed: sccolor.red
-                            green: sccolor.green 
-                            blue: sccolor.blue 
-                            alpha: sccolor.alpha];    
+                            green: sccolor.green
+                            blue: sccolor.blue
+                            alpha: sccolor.alpha];
     [dict setObject: font forKey: NSFontAttributeName ];
     [dict setObject: nscolor forKey: NSForegroundColorAttributeName ];
     return dict;
@@ -834,7 +834,7 @@ int nsStringDrawInRect(NSString *nsstring, SCRect screct, char *cFontName, float
 {
     NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
     if (!dict) return errFailed;
-    
+
     [nsstring drawInRect: SCtoNSRect(screct) withAttributes: dict];
 
     return errNone;
@@ -846,39 +846,39 @@ NSSize nsStringSize(NSString *nsstring, char *cFontName, float fontSize, SCColor
 	return [nsstring sizeWithAttributes: dict];
 }
 
-int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor, 
+int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor,
 	int hAlign, int vAlign, NSSize *outSize)
 {
     NSDictionary* dict = makeFontAttrDict(cFontName, fontSize, sccolor);
     if (!dict) return errFailed;
-    
+
     NSSize size = [nsstring sizeWithAttributes: dict];
     if (outSize) *outSize = size;
-	
+
     NSRect drawBounds = SCtoNSRect(screct);
 
     float hdiff = drawBounds.size.width - size.width;
     float vdiff = drawBounds.size.height - size.height;
-    
+
 	if (hAlign == 0) {
 	    drawBounds.origin.x += hdiff * .5;
 	} else if (hAlign > 0) {
  	   drawBounds.origin.x += hdiff;
 	}
-    
+
 	if (vAlign == 0) {
 	    drawBounds.origin.y += vdiff * .5;
 	} else if (vAlign > 0) {
  	   drawBounds.origin.y += vdiff;
 	}
-    
+
     CGRect cgrect = *(CGRect*)&screct;
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGContextClipToRect(cgc, cgrect);
-    
+
     [nsstring drawInRect: drawBounds withAttributes: dict];
-    
+
     CGContextRestoreGState(cgc);
     return errNone;
 }
@@ -922,13 +922,13 @@ void vPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 {
     numSteps = (int)sc_min(numSteps, floor(bounds.size.height));
     float rNumSteps1 = 1. / (numSteps - 1.);
-    
+
     CGRect rect;
     rect.origin.x    = bounds.origin.x;
     rect.size.width  = bounds.size.width;
     float step = bounds.size.height / numSteps;
     rect.size.height = ceil(step);
-    
+
     for (int i=0; i<numSteps; ++i) {
         float blend = i * rNumSteps1;
         SCColor color = blendColor(blend, startColor, endColor);
@@ -936,7 +936,7 @@ void vPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 
         rect.origin.y = bounds.origin.y + floor(i * step);
         rect.size.height = ceil(bounds.origin.y + (i + 1) * step) - rect.origin.y;
-        
+
         CGContextFillRect(cgc, rect);
     }
 }
@@ -945,13 +945,13 @@ void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 {
     numSteps = (int)sc_min(numSteps, floor(bounds.size.width));
     float rNumSteps1 = 1. / (numSteps - 1.);
-    
+
     CGRect rect;
     rect.origin.y    = bounds.origin.y;
     rect.size.height = bounds.size.height;
     float step = bounds.size.width / numSteps;
     rect.size.width = ceil(step);
-    
+
     for (int i=0; i<numSteps; ++i) {
         float blend = i * rNumSteps1;
         SCColor color = blendColor(blend, startColor, endColor);
@@ -959,7 +959,7 @@ void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor
 
         rect.origin.x = bounds.origin.x + floor(i * step);
         rect.size.width = ceil(bounds.origin.x + (i + 1) * step) - rect.origin.x;
-       
+
         CGContextFillRect(cgc, rect);
     }
 }
@@ -988,12 +988,12 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
     CGContextMoveToPoint(cgc, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height);
     CGContextAddLineToPoint(cgc, bounds.origin.x, bounds.origin.y + bounds.size.height);
     CGContextAddLineToPoint(cgc, bounds.origin.x + width, bounds.origin.y + bounds.size.height - width);
-    CGContextAddLineToPoint(cgc, 
+    CGContextAddLineToPoint(cgc,
         bounds.origin.x + bounds.size.width - width, bounds.origin.y + bounds.size.height - width);
     CGContextAddLineToPoint(cgc, bounds.origin.x + bounds.size.width - width, bounds.origin.y + width);
     CGContextAddLineToPoint(cgc, bounds.origin.x + bounds.size.width, bounds.origin.y);
     CGContextAddLineToPoint(cgc, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height);
-    CGContextFillPath(cgc);    
+    CGContextFillPath(cgc);
 }
 
 - (void)startMenuTracking: (SCView*) inView
@@ -1017,15 +1017,15 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout)
 - (void)scrollViewResized:(NSNotification *)notification
 {
 	[self setFrameSizeToMinimum];
-	
+
 	// this seems to be needed for correct resize behaivour
 	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 	SEL sel = @selector(display);
     NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     [anInvocation setTarget: [[self window] contentView]];
-    [anInvocation setSelector: sel];     
+    [anInvocation setSelector: sel];
     [scvm defer: anInvocation];
 }
 
@@ -1044,9 +1044,9 @@ extern PyrSymbol* s_doaction;
 {
 	NSScrollView* sv;
 	if (sv = [self enclosingScrollView]){
-		
+
 		NSSize visSize = [[sv contentView] documentVisibleRect].size;
-		
+
 		NSSize candidate = SCtoNSRect(((SCScrollTopView*)mTopView)->checkMinimumSize()).size;
 		if((candidate.width > visSize.width) || (candidate.height > visSize.height)){
 			[self setFrameSize: candidate]; // set then check visible rect again to account for scroll bars that may have appeared or vanished
@@ -1055,7 +1055,7 @@ extern PyrSymbol* s_doaction;
 		} else {
 			[self setFrameSize: visSize]; // always at least this big
 		}
-			
+
 		[self setNeedsDisplay: YES];
 		[sv setNeedsDisplay: YES];
 	}

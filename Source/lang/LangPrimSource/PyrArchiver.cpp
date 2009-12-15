@@ -62,7 +62,7 @@ int prUnarchive(struct VMGlobals *g, int numArgsPushed)
 
 	PyrArchiver<char*> arch(g);
 
-	arch.setStream((char*)a->uo->slots);
+	arch.setStream((char*)slotRawObject(a)->slots);
 	int err = arch.readArchive(a);
 	return err;
 }
@@ -76,8 +76,8 @@ int prWriteArchive(struct VMGlobals *g, int numArgsPushed)
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 
 	char pathname[PATH_MAX];
-	memcpy(pathname, b->uos->s, b->uo->size);
-	pathname[b->uos->size] = 0;
+	memcpy(pathname, slotRawString(b)->s, slotRawObject(b)->size);
+	pathname[slotRawString(b)->size] = 0;
 
 	PyrArchiver<FILE*> arch(g);
 	FILE *file = fopen(pathname, "wb");
@@ -105,8 +105,8 @@ int prReadArchive(struct VMGlobals *g, int numArgsPushed)
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 
 	char pathname[PATH_MAX];
-	memcpy(pathname, b->uos->s, b->uo->size);
-	pathname[b->uos->size] = 0;
+	memcpy(pathname, slotRawString(b)->s, slotRawObject(b)->size);
+	pathname[slotRawString(b)->size] = 0;
 
 	PyrArchiver<FILE*> arch(g);
 	FILE *file = fopen(pathname, "rb");

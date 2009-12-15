@@ -48,14 +48,13 @@ int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
 	int len;
 
 	a = g->sp;
-	len = a->uo->size;
+	len = slotRawObject(a)->size;
 	strp = len > 1023 ? (char*)malloc(len+1) : str;
 
-	memcpy(strp, a->uos->s, len);
+	memcpy(strp, slotRawString(a)->s, len);
 	strp[len] = 0;
 
-	a->us = getsym(strp);
-	a->utag = tagSym;
+	SetSymbol(a, getsym(strp));
 
 	if (len > 1023) free(strp);
 
@@ -93,7 +92,7 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* scstr = a->uos;
+	PyrString* scstr = slotRawString(a);
 	char *chars1 = scstr->s;
 	int newSize = scstr->size + 2;
 	for (int i=0; i<scstr->size; ++i) {
@@ -120,17 +119,17 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(b, class_array)) return errWrongType;
 
-	char *fmt = a->uos->s;
+	char *fmt = slotRawString(a)->s;
 
-	int asize = a->uo->size;
-	int bsize = b->uo->size;
+	int asize = slotRawObject(a)->size;
+	int bsize = slotRawObject(b)->size;
 	int csize = asize;
 
-	PyrSlot *slots = b->uo->slots;
+	PyrSlot *slots = slotRawObject(b)->slots;
 	for (int i=0; i<bsize; ++i) {
 		PyrSlot *slot = slots + i;
 		if (!isKindOfSlot(slot, class_string)) return errWrongType;
-		csize += slot->uos->size;
+		csize += slotRawString(slot)->size;
 	}
 	PyrString *newString = newPyrStringN(g->gc, csize, 0, true);
 	char* buf = newString->s;
@@ -141,7 +140,7 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 		char ch = fmt[i++];
 		if (ch == '%') {
 			if (index < bsize) {
-				PyrString* bstring = slots[index].uos;
+				PyrString* bstring = slotRawString(&slots[index]);
 				memcpy(buf+k, bstring->s, bstring->size);
 				k += bstring->size;
 				index++;
@@ -192,12 +191,12 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (NotInt(c) || NotInt(d) && NotNil(d)) return errWrongType;
-	start = c->ui;
+	start = slotRawInt(c);
 
 	if(IsNil(d)) {
-		end = b->uo->size - 1; // last char index instead of size
+		end = slotRawObject(b)->size - 1; // last char index instead of size
 	} else {
-		end = d->ui;
+		end = slotRawInt(d);
 	}
 
 	if(end - start <= 0) {
@@ -207,11 +206,11 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	int stringlen = end - start + 1;
 	char *string = (char*)malloc(stringlen + 1);
-	memcpy(string, (char*)(b->uos->s) + start, stringlen);
+	memcpy(string, (char*)(slotRawString(b)->s) + start, stringlen);
 	string[stringlen] = 0;
 
-	char *pattern = (char*)malloc(a->uo->size + 1);
-	err = slotStrVal(a, pattern, a->uo->size + 1);
+	char *pattern = (char*)malloc(slotRawObject(a)->size + 1);
+	err = slotStrVal(a, pattern, slotRawObject(a)->size + 1);
 	if (err) {
 		free(string);
 		free(pattern);
@@ -253,16 +252,16 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (NotObj(b) || !isKindOf(b->uo, class_string)) {
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string)) {
 		SetNil(a);
 		return errNone;
 	}
-	length = sc_min(a->uo->size, b->uo->size);
-	if (IsTrue(c)) cmp = memcmpi(a->uos->s, b->uos->s, length);
-	else cmp = memcmp(a->uos->s, b->uos->s, length);
+	length = sc_min(slotRawObject(a)->size, slotRawObject(b)->size);
+	if (IsTrue(c)) cmp = memcmpi(slotRawString(a)->s, slotRawString(b)->s, length);
+	else cmp = memcmp(slotRawString(a)->s, slotRawString(b)->s, length);
 	if (cmp == 0) {
-		if (a->uo->size < b->uo->size) cmp = -1;
-		else if (a->uo->size > b->uo->size) cmp = 1;
+		if (slotRawObject(a)->size < slotRawObject(b)->size) cmp = -1;
+		else if (slotRawObject(a)->size > slotRawObject(b)->size) cmp = 1;
 	}
 	SetInt(a, cmp);
 	return errNone;
@@ -272,7 +271,7 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed);
 int prStringHash(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	int hash = Hash(a->uos->s, a->uos->size);
+	int hash = Hash(slotRawString(a)->s, slotRawString(a)->size);
 	SetInt(a, hash);
 	return errNone;
 }
@@ -452,9 +451,9 @@ int prStripRtf(struct VMGlobals *g, int numArgsPushed);
 int prStripRtf(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	int len = a->uo->size;
+	int len = slotRawObject(a)->size;
 	char * chars = (char*)malloc(len + 1);
-	memcpy(chars, a->uos->s, len);
+	memcpy(chars, slotRawString(a)->s, len);
 	chars[len] = 0;
 	rtf2txt(chars);
 
@@ -469,9 +468,9 @@ int prStripHtml(struct VMGlobals *g, int numArgsPushed);
 int prStripHtml(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	int len = a->uo->size;
+	int len = slotRawObject(a)->size;
 	char * chars = (char*)malloc(len + 1);
-	memcpy(chars, a->uos->s, len);
+	memcpy(chars, slotRawString(a)->s, len);
 	chars[len] = 0;
 	html2txt(chars);
 
@@ -516,8 +515,8 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	}
 
-	int alength = a->uo->size - offset;
-	int blength = b->uo->size;
+	int alength = slotRawObject(a)->size - offset;
+	int blength = slotRawObject(b)->size;
 
 	if ((alength <= 0)
 		|| (blength == 0)
@@ -529,8 +528,8 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	int cmp = 1;	// assume contains will be false
-	char *achar = a->uos->s + offset;
-	char *bchar = b->uos->s;
+	char *achar = slotRawString(a)->s + offset;
+	char *bchar = slotRawString(b)->s;
 	char bchar0 = bchar[0];
 	int scanlength = alength - blength;
 	if (IsTrue(c)) {
@@ -550,7 +549,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (cmp == 0) {
-		SetInt(a, achar - a->uos->s);
+		SetInt(a, achar - slotRawString(a)->s);
 	} else {
 		SetNil(a);
 	}
@@ -574,8 +573,8 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	}
 
-	int alength = sc_min(offset + 1, a->uo->size);
-	int blength = b->uo->size;
+	int alength = sc_min(offset + 1, slotRawObject(a)->size);
+	int blength = slotRawObject(b)->size;
 
 	if ((alength <= 0)
 		|| (blength == 0)
@@ -587,8 +586,8 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	int cmp = 1;	// assume contains will be false
-	char *achar = a->uos->s + (alength - blength);
-	char *bchar = b->uos->s;
+	char *achar = slotRawString(a)->s + (alength - blength);
+	char *bchar = slotRawString(b)->s;
 	char bchar0 = bchar[0];
 	int scanlength = alength - blength;
 	if (IsTrue(c)) {
@@ -608,7 +607,7 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 	if (cmp == 0) {
-		SetInt(a, achar - a->uos->s);
+		SetInt(a, achar - slotRawString(a)->s);
 	} else {
 		SetNil(a);
 	}

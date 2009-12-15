@@ -57,7 +57,7 @@ public:
 
 			try {
 				if (IsObj(objectSlot)) {
-					constructObjectArray(objectSlot->uo);
+					constructObjectArray(slotRawObject(objectSlot));
 					for (int i=0; i<numObjects; ++i) {
 						g->gc->BecomePermanent( objectArray[i] );
 					}
@@ -75,7 +75,7 @@ private:
 		{
 			PyrSlot *slot = obj->slots;
 			for (int i=0; i<n; ++i, ++slot) {
-				if (IsObj(slot)) constructObjectArray(slot->uo);
+				if (IsObj(slot)) constructObjectArray(slotRawObject(slot));
 			}
 		}
 
@@ -120,7 +120,7 @@ private:
 						putObject(obj);
 						recurse(obj, obj->size);
 					} else if (isKindOf(obj, class_func)) {
-						if (NotNil(&((PyrClosure*)obj)->block.uoblk->contextDef)) {
+						if (NotNil(&slotRawBlock(&((PyrClosure*)obj)->block)->contextDef)) {
 							throw std::runtime_error("open Function can not be frozen.\n");
 						}
 						putObject(obj);
