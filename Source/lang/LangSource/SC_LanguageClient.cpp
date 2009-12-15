@@ -162,8 +162,8 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
 			memcpy(strobj->s, buf, size);
 
-			SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-			g->gc->GCWrite(g->process->interpreter.uo, strobj);
+			SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
+			g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 		}
 		unlock();
     }

@@ -125,11 +125,11 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 		post("voice %i already speaking\n", chan);
 		return errNone;
 	} else {
-//	speechStrings[chan] = (char*)pyr_pool_compile->Alloc((a->uo->size + 1)* sizeof(char));
-	speechStrings[chan] = (char*) malloc((str->uo->size + 1)* sizeof(char));
+//	speechStrings[chan] = (char*)pyr_pool_compile->Alloc((slotRawObject(a)->size + 1)* sizeof(char));
+	speechStrings[chan] = (char*) malloc((slotRawObject(str)->size + 1)* sizeof(char));
 
 	MEMFAIL(speechStrings[chan]);
-	slotStrVal(str, speechStrings[chan], str->uo->size+1);
+	slotStrVal(str, speechStrings[chan], slotRawObject(str)->size+1);
 
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
 	theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));

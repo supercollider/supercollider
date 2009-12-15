@@ -74,10 +74,10 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	classobj = classOfSlot(recvrSlot);
 
 	lookup_again:
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
 
-	if (meth->name.us != selector) {
+	if (slotRawSymbol(&meth->name) != selector) {
 		doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	} else {
 		methraw = METHRAW(meth);
@@ -102,18 +102,18 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				if (index < numArgsPushed) {
 					slotCopy(&sp[0], &sp[index]);
 				} else {
-					slotCopy(&sp[0], &meth->prototypeFrame.uo->slots[index]);
+					slotCopy(&sp[0], &slotRawObject(&meth->prototypeFrame)->slots[index]);
 				}
 				break;
 			case methReturnInstVar : /* return inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				slotCopy(&sp[0], &recvrSlot->uo->slots[index]);
+				slotCopy(&sp[0], &slotRawObject(recvrSlot)->slots[index]);
 				break;
 			case methAssignInstVar : /* assign inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				obj = recvrSlot->uo;
+				obj = slotRawObject(recvrSlot);
 				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
@@ -142,20 +142,20 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				goto lookup_again;
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
-				classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+				selector = slotRawSymbol(&meth->selectors);
+				classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 				goto lookup_again;
 			case methForwardInstVar : /* forward to an instance variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				index = methraw->specialIndex;
-				slotCopy(recvrSlot, &recvrSlot->uo->slots[index]);
+				slotCopy(recvrSlot, &slotRawObject(recvrSlot)->slots[index]);
 
 				classobj = classOfSlot(recvrSlot);
 
@@ -163,7 +163,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				slotCopy(recvrSlot, &g->classvars->slots[methraw->specialIndex]);
 
 				classobj = classOfSlot(recvrSlot);
@@ -207,10 +207,10 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	classobj = classOfSlot(recvrSlot);
 
 	lookup_again:
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
 
-	if (meth->name.us != selector) {
+	if (slotRawSymbol(&meth->name) != selector) {
 		doesNotUnderstand(g, selector, numArgsPushed);
 	} else {
 		methraw = METHRAW(meth);
@@ -232,18 +232,18 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				if (index < numArgsPushed) {
 					slotCopy(&sp[0], &sp[index]);
 				} else {
-					slotCopy(&sp[0], &meth->prototypeFrame.uo->slots[index]);
+					slotCopy(&sp[0], &slotRawObject(&meth->prototypeFrame)->slots[index]);
 				}
 				break;
 			case methReturnInstVar : /* return inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				slotCopy(&sp[0], &recvrSlot->uo->slots[index]);
+				slotCopy(&sp[0], &slotRawObject(recvrSlot)->slots[index]);
 				break;
 			case methAssignInstVar : /* assign inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				obj = recvrSlot->uo;
+				obj = slotRawObject(recvrSlot);
 				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
@@ -275,12 +275,12 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				goto lookup_again;
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -288,13 +288,13 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
-				classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+				selector = slotRawSymbol(&meth->selectors);
+				classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 				goto lookup_again;
 			case methForwardInstVar : /* forward to an instance variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -302,14 +302,14 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				index = methraw->specialIndex;
-				slotCopy(recvrSlot, &recvrSlot->uo->slots[index]);
+				slotCopy(recvrSlot, &slotRawObject(recvrSlot)->slots[index]);
 
 				classobj = classOfSlot(recvrSlot);
 
@@ -320,12 +320,12 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				slotCopy(recvrSlot, &g->classvars->slots[methraw->specialIndex]);
 
 				classobj = classOfSlot(recvrSlot);
@@ -341,8 +341,8 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methMultDispatchByClass : {
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
-					classobj = sp[index].uo->classptr;
-					selector = meth->selectors.us;
+					classobj = slotRawObject(&sp[index])->classptr;
+					selector = slotRawSymbol(&meth->selectors);
 					goto lookup_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);
@@ -352,7 +352,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
 					index = arrayAtIdentityHashInPairs(array, b);
-					meth = meth->selectors.uo->slots[index + 1].uom;
+					meth = slotRawObject(&meth->selectors)->slots[index + 1].uom;
 					goto meth_select_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);
@@ -389,14 +389,14 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 
-	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 	//assert(isKindOfSlot(recvrSlot, classobj));
 
 	lookup_again:
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
 
-	if (meth->name.us != selector) {
+	if (slotRawSymbol(&meth->name) != selector) {
 		doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 	} else {
 		methraw = METHRAW(meth);
@@ -421,18 +421,18 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				if (index < numArgsPushed) {
 					slotCopy(&sp[0], &sp[index]);
 				} else {
-					slotCopy(&sp[0], &meth->prototypeFrame.uo->slots[index]);
+					slotCopy(&sp[0], &slotRawObject(&meth->prototypeFrame)->slots[index]);
 				}
 				break;
 			case methReturnInstVar : /* return inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				slotCopy(&sp[0], &recvrSlot->uo->slots[index]);
+				slotCopy(&sp[0], &slotRawObject(recvrSlot)->slots[index]);
 				break;
 			case methAssignInstVar : /* assign inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				obj = recvrSlot->uo;
+				obj = slotRawObject(recvrSlot);
 				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
@@ -461,20 +461,20 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 			case methRedirect : /* send a different selector to self, e.g. this.subclassResponsibility */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				goto lookup_again;
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
-				classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+				selector = slotRawSymbol(&meth->selectors);
+				classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 				goto lookup_again;
 			case methForwardInstVar : /* forward to an instance variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				index = methraw->specialIndex;
-				slotCopy(recvrSlot, &recvrSlot->uo->slots[index]);
+				slotCopy(recvrSlot, &slotRawObject(recvrSlot)->slots[index]);
 
 				classobj = classOfSlot(recvrSlot);
 
@@ -482,7 +482,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 			case methForwardClassVar : /* forward to a class variable */
 				numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 				numKeyArgsPushed = 0;
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				slotCopy(recvrSlot, &g->classvars->slots[methraw->specialIndex]);
 
 				classobj = classOfSlot(recvrSlot);
@@ -523,14 +523,14 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 #endif
 	recvrSlot = g->sp - numArgsPushed + 1;
 
-	classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+	classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 	//assert(isKindOfSlot(recvrSlot, classobj));
 
 	lookup_again:
-	index = classobj->classIndex.ui + selector->u.index;
+	index = slotRawInt(&classobj->classIndex) + selector->u.index;
 	meth = gRowTable[index];
 
-	if (meth->name.us != selector) {
+	if (slotRawSymbol(&meth->name) != selector) {
 		doesNotUnderstand(g, selector, numArgsPushed);
 	} else {
 		methraw = METHRAW(meth);
@@ -552,18 +552,18 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				if (index < numArgsPushed) {
 					slotCopy(&sp[0], &sp[index]);
 				} else {
-					slotCopy(&sp[0], &meth->prototypeFrame.uo->slots[index]);
+					slotCopy(&sp[0], &slotRawObject(&meth->prototypeFrame)->slots[index]);
 				}
 				break;
 			case methReturnInstVar : /* return inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				slotCopy(&sp[0], &recvrSlot->uo->slots[index]);
+				slotCopy(&sp[0], &slotRawObject(recvrSlot)->slots[index]);
 				break;
 			case methAssignInstVar : /* assign inst var */
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
-				obj = recvrSlot->uo;
+				obj = slotRawObject(recvrSlot);
 				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
@@ -595,12 +595,12 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				goto lookup_again;
 			case methRedirectSuper : /* send a different selector to self, e.g. this.subclassResponsibility */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -608,13 +608,13 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
-				classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+				selector = slotRawSymbol(&meth->selectors);
+				classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 				goto lookup_again;
 			case methForwardInstVar : /* forward to an instance variable */
 				if (numArgsPushed < methraw->numargs) { // not enough args pushed
@@ -622,14 +622,14 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				index = methraw->specialIndex;
-				slotCopy(recvrSlot, &recvrSlot->uo->slots[index]);
+				slotCopy(recvrSlot, &slotRawObject(recvrSlot)->slots[index]);
 
 				classobj = classOfSlot(recvrSlot);
 
@@ -640,12 +640,12 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 					PyrSlot *pslot, *qslot;
 					long m, mmax;
 					pslot = g->sp;
-					qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+					qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 					for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++pslot, ++qslot);
 					numArgsPushed = methraw->numargs;
 					g->sp += mmax;
 				}
-				selector = meth->selectors.us;
+				selector = slotRawSymbol(&meth->selectors);
 				slotCopy(recvrSlot, &g->classvars->slots[methraw->specialIndex]);
 
 				classobj = classOfSlot(recvrSlot);
@@ -661,8 +661,8 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 			case methMultDispatchByClass : {
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
-					classobj = sp[index].uo->classptr;
-					selector = meth->selectors.us;
+					classobj = slotRawObject(&sp[index])->classptr;
+					selector = slotRawSymbol(&meth->selectors);
 					goto lookup_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);
@@ -672,7 +672,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				index = methraw->specialIndex;
 				if (index < numArgsPushed) {
 					index = arrayAtIdentityHashInPairs(array, b);
-					meth = meth->selectors.uo->slots[index + 1].uom;
+					meth = slotRawObject(&meth->selectors)->slots[index + 1].uom;
 					goto meth_select_again;
 				} else {
 					doesNotUnderstand(g, selector, numArgsPushed);
@@ -726,24 +726,24 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 	classobj = classOfSlot(recvrSlot);
 
-	index = classobj->classIndex.ui + s_nocomprendo->u.index;
+	index = slotRawInt(&classobj->classIndex) + s_nocomprendo->u.index;
 	meth = gRowTable[index];
 
 
-	if (meth->ownerclass.uoc == class_object) {
+	if (slotRawClass(&meth->ownerclass) == class_object) {
 		// lookup instance specific method
 		uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
-			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
-			if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
+			arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+			if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
 				i = arrayAtIdentityHashInPairs(array, recvrSlot);
 				if (i >= 0) {
 					slot = array->slots + i;
 					if (NotNil(slot)) {
 						++slot;
 						if (isKindOfSlot(slot, class_identdict)) {
-							arraySlot = slot->uo->slots + ivxIdentDict_array;
-							if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
+							arraySlot = slotRawObject(slot)->slots + ivxIdentDict_array;
+							if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
 								i = arrayAtIdentityHashInPairs(array, selSlot);
 								if (i >= 0) {
 									slot = array->slots + i;
@@ -799,24 +799,24 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 
 	classobj = classOfSlot(recvrSlot);
 
-	index = classobj->classIndex.ui + s_nocomprendo->u.index;
+	index = slotRawInt(&classobj->classIndex) + s_nocomprendo->u.index;
 	meth = gRowTable[index];
 
 
-	if (meth->ownerclass.uoc == class_object) {
+	if (slotRawClass(&meth->ownerclass) == class_object) {
 		// lookup instance specific method
 		uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
 		if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
-			arraySlot = uniqueMethodSlot->uo->slots + ivxIdentDict_array;
-			if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
+			arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+			if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
 				i = arrayAtIdentityHashInPairs(array, recvrSlot);
 				if (i >= 0) {
 					slot = array->slots + i;
 					if (NotNil(slot)) {
 						++slot;
 						if (isKindOfSlot(slot, class_identdict)) {
-							arraySlot = slot->uo->slots + ivxIdentDict_array;
-							if ((IsObj(arraySlot) && (array = arraySlot->uo)->classptr == class_array)) {
+							arraySlot = slotRawObject(slot)->slots + ivxIdentDict_array;
+							if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
 								i = arrayAtIdentityHashInPairs(array, selSlot);
 								if (i >= 0) {
 									slot = array->slots + i;
@@ -862,17 +862,17 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	if (gTraceInterpreter) {
 		if (g->method) {
 			postfl(" %s:%s -> %s:%s\n",
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name,
+				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		} else {
 			postfl(" top -> %s:%s\n",
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		}
 	}
 #endif
 #if METHODMETER
 	if (gTraceInterpreter) {
-		meth->callMeter.ui++;
+		slotRawInt(&meth->callMeter)++;
 	}
 #endif
 
@@ -889,7 +889,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 
 	g->execMethod = 10;
 
-	proto = meth->prototypeFrame.uo;
+	proto = slotRawObject(&meth->prototypeFrame);
 	methraw = METHRAW(meth);
 	numtemps = methraw->numtemps;
 	numargs = methraw->numargs;
@@ -915,7 +915,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	SetPtr(&frame->ip,  0);
 	g->method = meth;
 
-	g->ip = meth->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&meth->code)->b - 1;
 	g->frame = frame;
 	g->block = (PyrBlock*)meth;
 
@@ -973,19 +973,19 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	if (numKeyArgsPushed && methraw->posargs) {
 		PyrSymbol **name0, **name;
 		PyrSlot *key;
-		name0 = meth->argNames.uosym->symbols + 1;
+		name0 = slotRawSymbolArray(&meth->argNames)->symbols + 1;
 		key = g->sp + numArgsPushed + 1;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			name = name0;
 			for (j=1; j<methraw->posargs; ++j, ++name) {
-				if (*name == key->us) {
+				if (*name == slotRawSymbol(key)) {
 					slotCopy(&vars[j+1], &key[1]);
 					goto found1;
 				}
 			}
 			if (gKeywordError) {
 				post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
-					key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+					slotRawSymbol(key)->name, slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			}
 			found1: ;
 		}
@@ -1018,17 +1018,17 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	if (gTraceInterpreter) {
 		if (g->method) {
 			postfl(" %s:%s -> %s:%s\n",
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name,
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name,
+				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		} else {
 			postfl(" top -> %s:%s\n",
-				meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		}
 	}
 #endif
 #if METHODMETER
 	if (gTraceInterpreter) {
-		meth->callMeter.ui++;
+		slotRawInt(&meth->callMeter)++;
 	}
 #endif
 
@@ -1045,7 +1045,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 
 	g->execMethod = 20;
 
-	proto = meth->prototypeFrame.uo;
+	proto = slotRawObject(&meth->prototypeFrame);
 	methraw = METHRAW(meth);
 	numtemps = methraw->numtemps;
 	numargs = methraw->numargs;
@@ -1070,7 +1070,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	SetPtr(&frame->ip,  0);
 	g->method = meth;
 
-	g->ip = meth->code.uob->b - 1;
+	g->ip = slotRawInt8Array(&meth->code)->b - 1;
 	g->frame = frame;
 	g->block = (PyrBlock*)meth;
 
@@ -1153,21 +1153,21 @@ void returnFromBlock(VMGlobals *g)
 	curframe = g->frame;
 
 //again:
-	returnFrame = curframe->caller.uof;
+	returnFrame = slotRawFrame(&curframe->caller);
 	if (returnFrame) {
-		block = curframe->method.uoblk;
+		block = slotRawBlock(&curframe->method);
 		blockraw = METHRAW(block);
 
 		g->frame = returnFrame;
-		g->ip = (unsigned char *)returnFrame->ip.ui;
-		g->block = returnFrame->method.uoblk;
-		homeContext = returnFrame->homeContext.uof;
-		meth = homeContext->method.uom;
+		g->ip = (unsigned char *)slotRawInt(&returnFrame->ip);
+		g->block = slotRawBlock(&returnFrame->method);
+		homeContext = slotRawFrame(&returnFrame->homeContext);
+		meth = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(meth);
 		slotCopy(&g->receiver, &homeContext->vars[0]); //??
 		g->method = meth;
 
-		meth = curframe->method.uom;
+		meth = slotRawMethod(&curframe->method);
 		methraw = METHRAW(meth);
 		if (!methraw->needsHeapContext) {
 			g->gc->Free(curframe);
@@ -1199,16 +1199,16 @@ void returnFromMethod(VMGlobals *g)
 	PyrMethodRaw *methraw;
 	curframe = g->frame;
 
-	//assert(curframe->context.uof == NULL);
+	//assert(slotRawFrame(&curframe->context) == NULL);
 
 	/*if (gTraceInterpreter) {
-		post("returnFromMethod %s:%s\n", g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+		post("returnFromMethod %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name);
 		post("tailcall %d\n", g->tailCall);
 	}*/
 #if SANITYCHECK
 	g->gc->SanityCheck();
 #endif
-	homeContext = curframe->context.uof->homeContext.uof;
+	homeContext = slotRawFrame(&slotRawFrame(&curframe->context)->homeContext);
 	if (homeContext == NULL) {
 		null_return:
 #if TAILCALLOPTIMIZE
@@ -1222,7 +1222,7 @@ void returnFromMethod(VMGlobals *g)
 			once = false;
 			post("return all the way out. sd %d\n", g->sp - g->gc->Stack()->slots);
 			postfl("%s:%s\n",
-				g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
+				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name
 			);
 			post("tailcall %d\n", g->tailCall);
 			post("homeContext %08X\n", homeContext);
@@ -1244,14 +1244,14 @@ void returnFromMethod(VMGlobals *g)
 		g->frame = NULL;
 		longjmp(g->escapeInterpreter, 2);
 	} else {
-		returnFrame = homeContext->caller.uof;
+		returnFrame = slotRawFrame(&homeContext->caller);
 
 		if (returnFrame == NULL) goto null_return;
 		// make sure returnFrame is a caller and find earliest stack frame
 		{
 			PyrFrame *tempFrame = curframe;
 			while (tempFrame != returnFrame) {
-				tempFrame = tempFrame->caller.uof;
+				tempFrame = slotRawFrame(&tempFrame->caller);
 				if (!tempFrame) {
 					if (isKindOf((PyrObject*)g->thread, class_routine) && NotNil(&g->thread->parent)) {
 						// not found, so yield to parent thread and continue searching.
@@ -1259,7 +1259,7 @@ void returnFromMethod(VMGlobals *g)
 						slotCopy(&value, g->sp);
 
 						int numArgsPushed = 1;
-						switchToThread(g, g->thread->parent.uot, tSuspended, &numArgsPushed);
+						switchToThread(g, slotRawThread(&g->thread->parent), tSuspended, &numArgsPushed);
 
 						// on the other side of the looking glass, put the yielded value on the stack as the result..
 						g->sp -= numArgsPushed - 1;
@@ -1281,9 +1281,9 @@ void returnFromMethod(VMGlobals *g)
 		{
 			PyrFrame *tempFrame = curframe;
 			while (tempFrame != returnFrame) {
-				meth = tempFrame->method.uom;
+				meth = slotRawMethod(&tempFrame->method);
 				methraw = METHRAW(meth);
-				PyrFrame *nextFrame = tempFrame->caller.uof;
+				PyrFrame *nextFrame = slotRawFrame(&tempFrame->caller);
 				if (!methraw->needsHeapContext) {
 					g->gc->Free(tempFrame);
 				} else {
@@ -1294,19 +1294,19 @@ void returnFromMethod(VMGlobals *g)
 		}
 
 		// return to it
-		g->ip = (unsigned char *)returnFrame->ip.ui;
+		g->ip = (unsigned char *)slotRawInt(&returnFrame->ip);
 		g->frame = returnFrame;
-		g->block = returnFrame->method.uoblk;
+		g->block = slotRawBlock(&returnFrame->method);
 
-		homeContext = returnFrame->homeContext.uof;
-		meth = homeContext->method.uom;
+		homeContext = slotRawFrame(&returnFrame->homeContext);
+		meth = slotRawMethod(&homeContext->method);
 		methraw = METHRAW(meth);
 
 #if DEBUGMETHODS
 if (gTraceInterpreter) {
 	postfl("%s:%s <- %s:%s\n",
-		meth->ownerclass.uoc->name.us->name, meth->name.us->name,
-		g->method->ownerclass.uoc->name.us->name, g->method->name.us->name
+		slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name,
+		slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name
 	);
 }
 #endif
@@ -1344,26 +1344,26 @@ int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long a
 	diff = numArgsNeeded - numArgsPushed;
 	if (diff > 0) {  // not enough args
 		pslot = vars + numArgsPushed - 1;
-		qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+		qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 		for (m=0; m<diff; ++m) slotCopy(++pslot, ++qslot);
 		numArgsPushed = numArgsNeeded;
 	}
 
 	// do keyword lookup:
 	if (numKeyArgsPushed && methraw->posargs) {
-		PyrSymbol **name0 = meth->argNames.uosym->symbols + 1;
+		PyrSymbol **name0 = slotRawSymbolArray(&meth->argNames)->symbols + 1;
 		PyrSlot *key = keywordstack;
 		for (i=0; i<numKeyArgsPushed; ++i, key+=2) {
 			PyrSymbol **name = name0;
 			for (j=1; j<methraw->posargs; ++j, ++name) {
-				if (*name == key->us) {
+				if (*name == slotRawSymbol(key)) {
 					slotCopy(&vars[j], &key[1]);
 					goto found;
 				}
 			}
 			if (gKeywordError) {
 					post("WARNING: keyword arg '%s' not found in call to %s:%s\n",
-						key->us->name, meth->ownerclass.uoc->name.us->name, meth->name.us->name);
+						slotRawSymbol(key)->name, slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 			}
 			found: ;
 		}

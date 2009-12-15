@@ -347,7 +347,7 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 	// set the server name		
 	NSString* name = [service->netService name];
 	PyrString *serverNameString = newPyrString(g->gc, [name cString] , 0, true);
-	PyrObject *serverObject = serverSlot->uo;
+	PyrObject *serverObject = slotRawObject(serverSlot);
 	SetObject(&serverObject->slots[0], serverNameString);
 	
 	if (!service->isResolved) {
@@ -383,7 +383,7 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 /*
 	// if OSCService is changed to hold onto a netAddr, use this to set the netAddr fields
 	PyrSlot *netAddrSlot = &serverObject->slots[1];
-	PyrObject *netAddrObject = netAddrSlot->uo;
+	PyrObject *netAddrObject = slotRawObject(netAddrSlot);
 	
 	// addr
 	int addr = (int) service->hostAddress;

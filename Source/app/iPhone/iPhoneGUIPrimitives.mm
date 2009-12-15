@@ -49,7 +49,7 @@ int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 
 int slotGetCGRect(PyrSlot* a, CGRect *r)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotFloatVal(slots+0, &r->origin.x);
 	if (err) return err;
@@ -59,16 +59,16 @@ int slotGetCGRect(PyrSlot* a, CGRect *r)
 	if (err) return err;
 	err = slotFloatVal(slots+3, &r->size.height);
 	if (err) return err;
-        
+
         return errNone;
 }
 
 int slotGetQDRect(PyrSlot* a, Rect *r)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
 	int err;
         float x, y, width, height;
-        
+
 	err = slotFloatVal(slots+0, &x);
 	if (err) return err;
 	err = slotFloatVal(slots+1, &y);
@@ -82,19 +82,19 @@ int slotGetQDRect(PyrSlot* a, Rect *r)
 	r->right  = (int)(x + width);
 	r->top    = (int)(y - height);
 	r->bottom = (int)y;
-	
+
 	return errNone;
 }
 
 int slotGetPoint(PyrSlot* a, CGPoint *p)
 {
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
         int err;
 	err = slotFloatVal(slots+0, &p->x);
 	if (err) return err;
 	err = slotFloatVal(slots+1, &p->y);
 	if (err) return err;
-        
+
         return errNone;
 }
 
@@ -103,7 +103,7 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed);
 int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
+
 	PyrSlot *args = g->sp - 6;
 	PyrSlot *a = args + 0;
 	PyrSlot *b = args + 1; // name
@@ -116,30 +116,30 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 
 	if (!(isKindOfSlot(b, class_string))) return errWrongType;
 	if (!(isKindOfSlot(c, s_rect->u.classobj))) return errWrongType;
-	            
+
 	CGRect bounds;
-	int err = slotGetCGRect(c, &bounds);		
+	int err = slotGetCGRect(c, &bounds);
 	if (err) return err;
-              
-	PyrString *string = b->uos;
+
+	PyrString *string = slotRawString(b);
 	NSString *title = [NSString stringWithCString: string->s length: string->size];
 
 	SCNSWindow *window = [[SCNSWindow alloc] initWithFrame: bounds];
 	[window setTitle: title];
 	[window setHasBorders: YES];
-	
+
 	iSCLangController *controller = [iSCLangController sharedInstance];
 	SCGraphView* view = [[SCGraphView alloc] initWithFrame: bounds];
-	[view setSCObject: a->uo];
-	SetPtr(a->uo->slots + 0, view);
+	[view setSCObject: slotRawObject(a)];
+	SetPtr(slotRawObject(a)->slots + 0, view);
 	[controller insertWindow:window];
 	[window setSCGraphView: view];
-	
+
 	if(IsTrue(h)) {
 /*
-		SCScrollTopView* scrollTopView = (SCScrollTopView*)(f->uo->slots[0].ui);
+		SCScrollTopView* scrollTopView = (SCScrollTopView*)slotRawInt(slotRawObject(f)->slots);
 		[view setSCTopView: scrollTopView];
-		
+
 		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: bounds];
 		[scrollView setHasVerticalScroller:YES];
 		[scrollView setHasHorizontalScroller:YES];
@@ -148,42 +148,42 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 		[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
 		[[scrollView horizontalScroller] setControlTint:NSGraphiteControlTint];
 		[[scrollView verticalScroller] setControlTint:NSGraphiteControlTint];
-		
+
 		[scrollView setBackgroundColor:[NSColor clearColor]];
 		[scrollView setDrawsBackground:NO];
 		// configure the scroller to have no visible border
 		[scrollView setBorderType:NSNoBorder];
 		[scrollView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 		[scrollView setDocumentView:view];
-		
+
 		[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
 		[[NSNotificationCenter defaultCenter] addObserver:view
 												 selector:@selector(scrollViewResized:)
-													 name:@"NSViewFrameDidChangeNotification" 
+													 name:@"NSViewFrameDidChangeNotification"
 												   object:scrollView];
-		
+
 		NSClipView *contentView = [scrollView contentView];
 		[contentView setPostsBoundsChangedNotifications:YES];
 		[[NSNotificationCenter defaultCenter] addObserver:view
 												 selector:@selector(userScrolled:)
-													 name:@"NSViewBoundsDidChangeNotification" 
+													 name:@"NSViewBoundsDidChangeNotification"
 												   object:contentView];
-		
+
 		scrollTopView->SetNSScrollView(scrollView);
 		[view autorelease];
-		
+
 		[window setContentView: scrollView];
 		[scrollView autorelease];
-*/		
+*/
 	} else {
-		[view setSCTopView: (SCTopView*)(f->uo->slots[0].ui)];
+		[view setSCTopView: (SCTopView*)slotRawInt(slotRawObject(f)->slots)];
 		[window addSubview: view];
 		[view autorelease];
 	}
 	//[window makeFirstResponder: view];
 	//[window setFrameOrigin: bounds.origin];
 
-            
+
 	return errNone;
 }
 
@@ -194,18 +194,18 @@ int prSCWindow_Refresh(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-    
+
     SEL sel = @selector(setNeedsDisplay:);
     NSMethodSignature *sig = [UIView instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     iSCLangController* controller = [iSCLangController sharedInstance];
     [anInvocation setTarget: view];
     [anInvocation setSelector: sel];
     BOOL flag = YES;
-    [anInvocation setArgument: &flag atIndex: 2];       
+    [anInvocation setArgument: &flag atIndex: 2];
     [controller defer: anInvocation];
 
     return errNone;
@@ -217,14 +217,14 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
    if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SCNSWindow *window = (SCNSWindow *) [view superview];
-    
+
     SEL sel = @selector(closeWindow:);
     NSMethodSignature *sig = [iSCLangController instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     iSCLangController* controller = [iSCLangController sharedInstance];
     [anInvocation setTarget: controller];
@@ -235,12 +235,12 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 /*
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
-    
+
     SEL sel = @selector(closeWindow);
     NSMethodSignature *sig = [SCGraphView instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     iSCLangController* controller = [iSCLangController sharedInstance];
     [anInvocation setTarget: view];
@@ -258,14 +258,14 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)a->uo->slots[0].ui;
+    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SCNSWindow *window = (SCNSWindow *) [view superview];
-    
+
     SEL sel = @selector(makeWindowFront:);
     NSMethodSignature *sig = [iSCLangController instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     iSCLangController* controller = [iSCLangController sharedInstance];
     [anInvocation setTarget: controller];
@@ -279,7 +279,7 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
 void initGUIPrimitives()
 {
 	int base, index;
-	
+
         s_draw = getsym("draw");
         s_font = getsym("SCFont");
         s_closed = getsym("closed");
@@ -290,10 +290,10 @@ void initGUIPrimitives()
 
 	base = nextPrimitiveIndex();
 	index = 0;
-	
-		definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);	
-	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);	
-	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);	
+
+		definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);
+	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);
 }
 

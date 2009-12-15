@@ -56,7 +56,7 @@ void PyrSlotNode::dump(int level)
 	if (mClassno == pn_PushLitNode)
 		dumpPushLit(level);
 	else if (mClassno == pn_PushNameNode)
-		postfl("%2d PushName '%s'\n", level, mSlot.us->name);
+		postfl("%2d PushName '%s'\n", level, slotRawSymbol(&mSlot)->name);
 	else if (mClassno == pn_LiteralNode)
 		dumpLiteral(level);
 	else {
@@ -76,14 +76,14 @@ void PyrPushKeyArgNode::dump(int level)
 
 void PyrClassExtNode::dump(int level)
 {
-	postfl("%2d ClassExt '%s'\n", level, mClassName->mSlot.us->name);
+	postfl("%2d ClassExt '%s'\n", level, slotRawSymbol(&mClassName->mSlot)->name);
 	DUMPNODE(mMethods, level+1);
 	DUMPNODE(mNext, level);
 }
 
 void PyrClassNode::dump(int level)
 {
-	postfl("%2d Class '%s'\n", level, mClassName->mSlot.us->name);
+	postfl("%2d Class '%s'\n", level, slotRawSymbol(&mClassName->mSlot)->name);
 	DUMPNODE(mSuperClassName, level+1);
 	DUMPNODE(mVarlists, level+1);
 	DUMPNODE(mMethods, level+1);
@@ -92,8 +92,8 @@ void PyrClassNode::dump(int level)
 
 void PyrMethodNode::dump(int level)
 {
-	postfl("%2d MethodNode '%s'  %s\n", level, mMethodName->mSlot.us->name,
-		mPrimitiveName ? mPrimitiveName->mSlot.us->name:"");
+	postfl("%2d MethodNode '%s'  %s\n", level, slotRawSymbol(&mMethodName->mSlot)->name,
+		mPrimitiveName ? slotRawSymbol(&mPrimitiveName->mSlot)->name:"");
 	DUMPNODE(mArglist, level+1);
 	DUMPNODE(mBody, level+1);
 	DUMPNODE(mNext, level);
@@ -116,14 +116,14 @@ void PyrVarListNode::dump(int level)
 
 void PyrVarDefNode::dump(int level)
 {
-	postfl("%2d VarDef '%s'\n", level, mVarName->mSlot.us->name);
+	postfl("%2d VarDef '%s'\n", level, slotRawSymbol(&mVarName->mSlot)->name);
 	DUMPNODE(mDefVal, level);
 	DUMPNODE(mNext, level);
 }
 
 void PyrCallNode::dump(int level)
 {
-	postfl("%2d Call '%s'\n", level, mSelector->mSlot.us->name);
+	postfl("%2d Call '%s'\n", level, slotRawSymbol(&mSelector->mSlot)->name);
 	DUMPNODE(mArglist, level+1);
 	DUMPNODE(mKeyarglist, level+1);
 	DUMPNODE(mNext, level);
@@ -131,7 +131,7 @@ void PyrCallNode::dump(int level)
 
 void PyrBinopCallNode::dump(int level)
 {
-	postfl("%2d BinopCall '%s'\n", level, mSelector->mSlot.us->name);
+	postfl("%2d BinopCall '%s'\n", level, slotRawSymbol(&mSelector->mSlot)->name);
 	DUMPNODE(mArglist, level+1);
 	DUMPNODE(mNext, level);
 }
@@ -151,7 +151,7 @@ void PyrSlotNode::dumpPushLit(int level)
 	postfl("%2d PushLit\n", level);
 	if (!IsPtr(&mSlot)) dumpPyrSlot(&mSlot);
 	else {
-		DUMPNODE((PyrParseNode*)mSlot.uo, level);
+		DUMPNODE((PyrParseNode*)slotRawObject(&mSlot), level);
 	}
 }
 
@@ -160,7 +160,7 @@ void PyrSlotNode::dumpLiteral(int level)
 	postfl("%2d Literal\n", level);
 	if (!IsPtr(&mSlot)) dumpPyrSlot(&mSlot);
 	else {
-		DUMPNODE((PyrParseNode*)mSlot.uo, level);
+		DUMPNODE((PyrParseNode*)slotRawObject(&mSlot), level);
 	}
 }
 
@@ -180,7 +180,7 @@ void PyrBlockReturnNode::dump(int level)
 
 void PyrAssignNode::dump(int level)
 {
-	postfl("%2d Assign '%s'\n", level, mVarName->mSlot.us->name);
+	postfl("%2d Assign '%s'\n", level, slotRawSymbol(&mVarName->mSlot)->name);
 	DUMPNODE(mVarName, level+1);
 	DUMPNODE(mExpr, level+1);
 	DUMPNODE(mNext, level);
@@ -188,7 +188,7 @@ void PyrAssignNode::dump(int level)
 
 void PyrSetterNode::dump(int level)
 {
-	//postfl("%2d Assign '%s'\n", level, mVarName->mSlot.us->name);
+	//postfl("%2d Assign '%s'\n", level, slotRawSymbol(&mVarName->mSlot)->name);
 	DUMPNODE(mSelector, level+1);
 	DUMPNODE(mExpr1, level+1);
 	DUMPNODE(mExpr2, level+1);
@@ -250,81 +250,81 @@ void dumpPyrSlot(PyrSlot* slot)
 
 void slotString(PyrSlot *slot, char *str)
 {
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
-			sprintf(str, "Integer %d", slot->ui);
+			sprintf(str, "Integer %d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "Character %d '%c'", slot->ui, slot->ui);
+			sprintf(str, "Character %d '%c'", slotRawInt(slot), slotRawInt(slot));
 			break;
 		case tagSym :
-			if (strlen(slot->us->name) > 240) {
+			if (strlen(slotRawSymbol(slot)->name) > 240) {
 				char str2[256];
-				memcpy(str2, slot->us->name, 240);
+				memcpy(str2, slotRawSymbol(slot)->name, 240);
 				str2[240] = 0;
 				snprintf(str, 256, "Symbol '%s...'", str2);
 			} else {
-				snprintf(str, 256, "Symbol '%s'", slot->us->name);
+				snprintf(str, 256, "Symbol '%s'", slotRawSymbol(slot)->name);
 			}
 			break;
 		case tagObj :
-			if (slot->uo) {
-				if (isKindOf(slot->uo, class_class)) {
+			if (slotRawObject(slot)) {
+				if (isKindOf(slotRawObject(slot), class_class)) {
 					sprintf(str, "class %s (%p)",
-						((PyrClass*)slot->uo)->name.us->name, slot->uo);
-				} else if (slot->uo->classptr == class_string) {
+						slotRawSymbol(&((PyrClass*)slotRawObject(slot))->name)->name, slotRawObject(slot));
+				} else if (slotRawObject(slot)->classptr == class_string) {
 					char str2[48];
 					int len;
-					if (slot->uo->size > 47) {
-						memcpy(str2, (char*)slot->uo->slots, 44);
+					if (slotRawObject(slot)->size > 47) {
+						memcpy(str2, (char*)slotRawObject(slot)->slots, 44);
 						str2[44] = '.';
 						str2[45] = '.';
 						str2[46] = '.';
 						str2[47] = 0;
 					} else {
-						len = sc_min(47, slot->uo->size);
-						memcpy(str2, (char*)slot->uo->slots, len);
+						len = sc_min(47, slotRawObject(slot)->size);
+						memcpy(str2, (char*)slotRawObject(slot)->slots, len);
 						str2[len] = 0;
 					}
 					sprintf(str, "\"%s\"", str2);
-				} else if (slot->uo->classptr == class_method) {
+				} else if (slotRawObject(slot)->classptr == class_method) {
 					sprintf(str, "instance of Method %s:%s (%p)",
-						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name, slot->uom);
-				} else if (slot->uo->classptr == class_fundef) {
+						slotRawSymbol(&slotRawClass(&slotRawMethod(slot)->ownerclass)->name)->name,
+						slotRawSymbol(&slotRawMethod(slot)->name)->name, slotRawMethod(slot));
+				} else if (slotRawObject(slot)->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->contextDef;
+					nextcontext = &slotRawBlock(slot)->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->contextDef;
+							nextcontext = &slotRawBlock(context)->contextDef;
 						} while (NotNil(nextcontext));
-						if (isKindOf(context->uo, class_method)) {
+						if (isKindOf(slotRawObject(context), class_method)) {
 							sprintf(str, "instance of FunctionDef in Method %s:%s",
-								context->uom->ownerclass.uoc->name.us->name,
-								context->uom->name.us->name);
+								slotRawSymbol(&slotRawClass(&slotRawMethod(context)->ownerclass)->name)->name,
+								slotRawSymbol(&slotRawMethod(context)->name)->name);
 						} else {
 							sprintf(str, "instance of FunctionDef in closed FunctionDef");
 						}
 					} else {
 						sprintf(str, "instance of FunctionDef - closed");
 					}
-				} else if (slot->uo->classptr == class_frame) {
-					if (!slot->uof) {
-						sprintf(str, "Frame (%0X)", slot->ui);
-					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
-							slot->uof->method.uom->ownerclass.uoc->name.us->name,
-							slot->uof->method.uom->name.us->name);
+				} else if (slotRawObject(slot)->classptr == class_frame) {
+					if (!slotRawFrame(slot)) {
+						sprintf(str, "Frame (%0X)", slotRawInt(slot));
+					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s:%s", slotRawInt(slot),
+							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
+							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slot->ui);
+						sprintf(str, "Frame (%0X) of Function", slotRawInt(slot));
 					}
 				} else {
-					sprintf(str, "instance of %s (%08lX, size=%d, set=%d)",
-						slot->uo->classptr->name.us->name,
-						(unsigned long)slot->uo, slot->uo->size,
-						slot->uo->obj_sizeclass);
+					sprintf(str, "instance of %s (%p, size=%d, set=%d)",
+						slotRawSymbol(&slotRawObject(slot)->classptr->name)->name,
+						slotRawObject(slot), slotRawObject(slot)->size,
+						slotRawObject(slot)->obj_sizeclass);
 				}
 			} else {
 				sprintf(str, "NULL Object Pointer");
@@ -340,13 +340,13 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "RawPointer %X", slot->ui);
+			sprintf(str, "RawPointer %X", slotRawInt(slot));
 			break;
 		default :
 		{
 			char fstr[32];
 			g_fmt(fstr, slot->uf);
-			sprintf(str, "Float %s   %08X %08X", fstr, slot->utag, slot->ui);
+			sprintf(str, "Float %s   %08X %08X", fstr, GetTag(slot), slotRawInt(slot));
 			break;
 		}
 	}
@@ -355,81 +355,81 @@ void slotString(PyrSlot *slot, char *str)
 void slotOneWord(PyrSlot *slot, char *str)
 {
 	str[0] = 0;
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
-			sprintf(str, "%d", slot->ui);
+			sprintf(str, "%d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "$%c", slot->ui);
+			sprintf(str, "$%c", slotRawInt(slot));
 			break;
 		case tagSym :
-			if (strlen(slot->us->name) > 240) {
+			if (strlen(slotRawSymbol(slot)->name) > 240) {
 				char str2[256];
-				memcpy(str2, slot->us->name, 240);
+				memcpy(str2, slotRawSymbol(slot)->name, 240);
 				str2[240] = 0;
 				snprintf(str, 256, "'%s...'", str2);
 			} else {
-				snprintf(str, 256, "'%s'", slot->us->name);
+				snprintf(str, 256, "'%s'", slotRawSymbol(slot)->name);
 			}
 			break;
 		case tagObj :
-			if (slot->uo) {
-				if (isKindOf(slot->uo, class_class)) {
-					sprintf(str, "class %s", ((PyrClass*)slot->uo)->name.us->name);
-				} else if (slot->uo->classptr == class_string) {
+			if (slotRawObject(slot)) {
+				if (isKindOf(slotRawObject(slot), class_class)) {
+					sprintf(str, "class %s", slotRawSymbol(&((PyrClass*)slotRawObject(slot))->name)->name);
+				} else if (slotRawObject(slot)->classptr == class_string) {
 					char str2[32];
 					int len;
-					if (slot->uo->size > 31) {
-						memcpy(str2, (char*)slot->uo->slots, 28);
+					if (slotRawObject(slot)->size > 31) {
+						memcpy(str2, (char*)slotRawObject(slot)->slots, 28);
 						str2[28] = '.';
 						str2[29] = '.';
 						str2[30] = '.';
 						str2[31] = 0;
 					} else {
-						len = sc_min(31, slot->uo->size);
-						memcpy(str2, (char*)slot->uo->slots, len);
+						len = sc_min(31, slotRawObject(slot)->size);
+						memcpy(str2, (char*)slotRawObject(slot)->slots, len);
 						str2[len] = 0;
 					}
 					sprintf(str, "\"%s\"", str2);
-				} else if (slot->uo->classptr == class_method) {
+				} else if (slotRawObject(slot)->classptr == class_method) {
 					sprintf(str, "%s:%s",
-						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name);
-				} else if (slot->uo->classptr == class_fundef) {
+						slotRawSymbol(&slotRawClass(&slotRawMethod(slot)->ownerclass)->name)->name,
+						slotRawSymbol(&slotRawMethod(slot)->name)->name);
+				} else if (slotRawObject(slot)->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->contextDef;
+					nextcontext = &slotRawBlock(slot)->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->contextDef;
+							nextcontext = &slotRawBlock(context)->contextDef;
 						} while (NotNil(nextcontext));
-						if (isKindOf(context->uo, class_method)) {
+						if (isKindOf(slotRawObject(context), class_method)) {
 							sprintf(str, "< FunctionDef in Method %s:%s >",
-								context->uom->ownerclass.uoc->name.us->name,
-								context->uom->name.us->name);
+								slotRawSymbol(&slotRawClass(&slotRawMethod(context)->ownerclass)->name)->name,
+								slotRawSymbol(&slotRawMethod(context)->name)->name);
 						} else {
 							sprintf(str, "< FunctionDef in closed FunctionDef >");
 						}
 					} else {
 						sprintf(str, "< closed FunctionDef >");
 					}
-				} else if (slot->uo->classptr == class_frame) {
-					if (!slot->uof) {
+				} else if (slotRawObject(slot)->classptr == class_frame) {
+					if (!slotRawFrame(slot)) {
 						sprintf(str, "Frame (null)");
-					} else if (!slot->uof->method.uoblk) {
+					} else if (!slotRawBlock(&slotRawFrame(slot)->method)) {
 						sprintf(str, "Frame (null method)");
-					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
-							slot->uof->method.uom->ownerclass.uoc->name.us->name,
-							slot->uof->method.uom->name.us->name);
+					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s:%s", slotRawInt(slot),
+							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
+							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slot->ui);
+						sprintf(str, "Frame (%0X) of Function", slotRawInt(slot));
 					}
-				} else if (slot->uo->classptr == class_array) {
-					sprintf(str, "[*%d]", slot->uo->size);
+				} else if (slotRawObject(slot)->classptr == class_array) {
+					sprintf(str, "[*%d]", slotRawObject(slot)->size);
 				} else {
-					sprintf(str, "<instance of %s>", slot->uo->classptr->name.us->name);
+					sprintf(str, "<instance of %s>", slotRawSymbol(&slotRawObject(slot)->classptr->name)->name);
 				}
 			} else {
 				sprintf(str, "NULL Object Pointer");
@@ -445,7 +445,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "ptr%08X", slot->ui);
+			sprintf(str, "ptr%08X", slotRawInt(slot));
 			break;
 		default :
 			g_fmt(str, slot->uf);
@@ -456,94 +456,94 @@ void slotOneWord(PyrSlot *slot, char *str)
 bool postString(PyrSlot *slot, char *str)
 {
 	bool res = true;
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
-			sprintf(str, "%d", slot->ui);
+			sprintf(str, "%d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "%c", slot->ui);
+			sprintf(str, "%c", slotRawInt(slot));
 			break;
 		case tagSym :
 			str[0] = 0;
 			res = false;
 			break;
 		case tagObj :
-			/*if (slot->uo) {
-				if (slot->uo->classptr == class_method) {
+			/*if (slotRawObject(slot)) {
+				if (slotRawObject(slot)->classptr == class_method) {
 					sprintf(str, "instance of Method %s:%s",
-						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name);
+						slotRawSymbol(&slotRawClass(&slotRawMethod(slot)->ownerclass)->name)->name,
+						slotRawSymbol(&slotRawMethod(slot)->name)->name);
 				} else {
 					sprintf(str, "instance of %s (%08X, size=%d, set=%02X)",
-						slot->uo->classptr->name.us->name,
-						slot->uo, slot->uo->size,
-						slot->uo->obj_sizeclass);
+						slotRawSymbol(&slotRawObject(slot)->classptr->name)->name,
+						slotRawObject(slot), slotRawObject(slot)->size,
+						slotRawObject(slot)->obj_sizeclass);
 				}
 			} else {
 				sprintf(str, "NULL Object Pointer");
 			}*/
 
-			if (slot->uo) {
-				if (isKindOf(slot->uo, class_class)) {
-					sprintf(str, "class %s", ((PyrClass*)slot->uo)->name.us->name);
-/*				} else if (slot->uo->classptr == class_string) {
+			if (slotRawObject(slot)) {
+				if (isKindOf(slotRawObject(slot), class_class)) {
+					sprintf(str, "class %s", slotRawSymbol(&((PyrClass*)slotRawObject(slot))->name)->name);
+/*				} else if (slotRawObject(slot)->classptr == class_string) {
 					char str2[48];
 					int len;
-					if (slot->uo->size > 47) {
-						memcpy(str2, (char*)slot->uo->slots, 44);
+					if (slotRawObject(slot)->size > 47) {
+						memcpy(str2, (char*)slotRawObject(slot)->slots, 44);
 						str2[44] = '.';
 						str2[45] = '.';
 						str2[46] = '.';
 						str2[47] = 0;
 					} else {
-						len = sc_min(47, slot->uo->size);
-						memcpy(str2, (char*)slot->uo->slots, len);
+						len = sc_min(47, slotRawObject(slot)->size);
+						memcpy(str2, (char*)slotRawObject(slot)->slots, len);
 						str2[len] = 0;
 					}
 					sprintf(str, "\"%s\"", str2);
 */
-				} else if (slot->uo->classptr == class_method) {
+				} else if (slotRawObject(slot)->classptr == class_method) {
 					sprintf(str, "Method %s:%s",
-						slot->uom->ownerclass.uoc->name.us->name,
-						slot->uom->name.us->name);
-				} else if (slot->uo->classptr == class_fundef) {
+						slotRawSymbol(&slotRawClass(&slotRawMethod(slot)->ownerclass)->name)->name,
+						slotRawSymbol(&slotRawMethod(slot)->name)->name);
+				} else if (slotRawObject(slot)->classptr == class_fundef) {
 					PyrSlot *context, *nextcontext;
 					// find function's method
-					nextcontext = &slot->uoblk->contextDef;
+					nextcontext = &slotRawBlock(slot)->contextDef;
 					if (NotNil(nextcontext)) {
 						do {
 							context = nextcontext;
-							nextcontext = &context->uoblk->contextDef;
+							nextcontext = &slotRawBlock(context)->contextDef;
 						} while (NotNil(nextcontext));
-						if (isKindOf(context->uo, class_method)) {
+						if (isKindOf(slotRawObject(context), class_method)) {
 							sprintf(str, "a FunctionDef in Method %s:%s",
-								context->uom->ownerclass.uoc->name.us->name,
-								context->uom->name.us->name);
+								slotRawSymbol(&slotRawClass(&slotRawMethod(context)->ownerclass)->name)->name,
+								slotRawSymbol(&slotRawMethod(context)->name)->name);
 						} else {
 							sprintf(str, "a FunctionDef in closed FunctionDef");
 						}
 					} else {
 						sprintf(str, "a FunctionDef - closed");
 					}
-				} else if (slot->uo->classptr == class_frame) {
-					if (!slot->uof) {
+				} else if (slotRawObject(slot)->classptr == class_frame) {
+					if (!slotRawFrame(slot)) {
 						sprintf(str, "Frame (null)");
-					} else if (!slot->uof->method.uoblk) {
+					} else if (!slotRawBlock(&slotRawFrame(slot)->method)) {
 						sprintf(str, "Frame (null method)");
-					} else if (slot->uof->method.uoblk->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slot->ui,
-							slot->uof->method.uom->ownerclass.uoc->name.us->name,
-							slot->uof->method.uom->name.us->name);
+					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
+						sprintf(str, "Frame (%0X) of %s:%s", slotRawInt(slot),
+							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
+							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slot->ui);
+						sprintf(str, "Frame (%0X) of Function", slotRawInt(slot));
 					}
 				} else {
 					str[0] = 0;
 					res = false;
 //					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)",
-//						slot->uo->classptr->name.us->name,
-//						slot->uo, slot->uo->size,
-//						slot->uo->obj_sizeclass);
+//						slotRawSymbol(&slotRawObject(slot)->classptr->name)->name,
+//						slotRawObject(slot), slotRawObject(slot)->size,
+//						slotRawObject(slot)->obj_sizeclass);
 				}
 			} else {
 				sprintf(str, "NULL Object Pointer");
@@ -559,7 +559,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "%X", slot->ui);
+			sprintf(str, "%X", slotRawInt(slot));
 			break;
 		default :
 			sprintf(str, "%.14g", slot->uf);
@@ -572,13 +572,13 @@ bool postString(PyrSlot *slot, char *str)
 
 int asCompileString(PyrSlot *slot, char *str)
 {
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
-			sprintf(str, "%d", slot->ui);
+			sprintf(str, "%d", slotRawInt(slot));
 			break;
 		case tagChar :
 		{
-			int c = slot->ui;
+			int c = slotRawInt(slot);
 			if (isprint(c)) {
 				sprintf(str, "$%c", c);
 			} else {

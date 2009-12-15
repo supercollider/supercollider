@@ -74,72 +74,72 @@ int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, 
 
 RGBColor SCtoQDColor(SCColor sccolor)
 {
-    RGBColor qdcolor;
-        
-    qdcolor.red   = (unsigned short)(sccolor.red   * 65535.);
-    qdcolor.green = (unsigned short)(sccolor.green * 65535.);
-    qdcolor.blue  = (unsigned short)(sccolor.blue  * 65535.);
-    return qdcolor;
+	RGBColor qdcolor;
+
+	qdcolor.red   = (unsigned short)(sccolor.red   * 65535.);
+	qdcolor.green = (unsigned short)(sccolor.green * 65535.);
+	qdcolor.blue  = (unsigned short)(sccolor.blue  * 65535.);
+	return qdcolor;
 }
 
 // CoreGraphics coords get switched around in an NSQuickDrawView
 Rect SCtoQDRect(SCRect screct)
 {
-    Rect qdrect;
-    
-    qdrect.left   = (int)screct.x;
-    qdrect.top    = (int)screct.y;
-    qdrect.right  = (int)(screct.x + screct.width);
-    qdrect.bottom = (int)(screct.y + screct.height);
-    return qdrect;
+	Rect qdrect;
+
+	qdrect.left   = (int)screct.x;
+	qdrect.top    = (int)screct.y;
+	qdrect.right  = (int)(screct.x + screct.width);
+	qdrect.bottom = (int)(screct.y + screct.height);
+	return qdrect;
 }
 
 CGRect SCtoCGRect(SCRect screct)
 {
-    CGRect cgrect;
-    
-    cgrect.origin.x    = screct.x;
-    cgrect.origin.y    = screct.y;
-    cgrect.size.width  = screct.width;
-    cgrect.size.height = screct.height;
-    return cgrect;
+	CGRect cgrect;
+
+	cgrect.origin.x    = screct.x;
+	cgrect.origin.y    = screct.y;
+	cgrect.size.width  = screct.width;
+	cgrect.size.height = screct.height;
+	return cgrect;
 }
 
 int slotColorVal(PyrSlot *slot, SCColor *sccolor)
 {
-    if (!(isKindOfSlot(slot, s_color->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(slot, s_color->u.classobj))) return errWrongType;
 
-    PyrSlot *slots = slot->uo->slots;
-        
-    int err;
-    err = slotFloatVal(slots+0, &sccolor->red);
-    if (err) return err;
-    err = slotFloatVal(slots+1, &sccolor->green);
-    if (err) return err;
-    err = slotFloatVal(slots+2, &sccolor->blue);
-    if (err) return err;
-    err = slotFloatVal(slots+3, &sccolor->alpha);
-    return err;
+	PyrSlot *slots = slotRawObject(slot)->slots;
+
+	int err;
+	err = slotFloatVal(slots+0, &sccolor->red);
+	if (err) return err;
+	err = slotFloatVal(slots+1, &sccolor->green);
+	if (err) return err;
+	err = slotFloatVal(slots+2, &sccolor->blue);
+	if (err) return err;
+	err = slotFloatVal(slots+3, &sccolor->alpha);
+	return err;
 }
 
 int setSlotColor(PyrSlot *slot, SCColor *sccolor)
 {
-    if (!(isKindOfSlot(slot, s_color->u.classobj))) return errWrongType;
+	if (!(isKindOfSlot(slot, s_color->u.classobj))) return errWrongType;
 
-    PyrSlot *slots = slot->uo->slots;
-    
-    SetFloat(slots+0, sccolor->red);
-    SetFloat(slots+1, sccolor->green);
-    SetFloat(slots+2, sccolor->blue);
-    SetFloat(slots+3, sccolor->alpha);
-    return errNone;
+	PyrSlot *slots = slotRawObject(slot)->slots;
+
+	SetFloat(slots+0, sccolor->red);
+	SetFloat(slots+1, sccolor->green);
+	SetFloat(slots+2, sccolor->blue);
+	SetFloat(slots+3, sccolor->alpha);
+	return errNone;
 }
 
 int slotGetSCRect(PyrSlot* a, SCRect *r)
 {
 	if (!isKindOfSlot(a, s_rect->u.classobj)) return errWrongType; // arg check - br
-	PyrSlot *slots = a->uo->slots;
-        int err;
+	PyrSlot *slots = slotRawObject(a)->slots;
+	int err;
 	err = slotFloatVal(slots+0, &r->x);
 	if (err) return err;
 	err = slotFloatVal(slots+1, &r->y);
@@ -148,8 +148,8 @@ int slotGetSCRect(PyrSlot* a, SCRect *r)
 	if (err) return err;
 	err = slotFloatVal(slots+3, &r->height);
 	if (err) return err;
-        
-        return errNone;
+
+	return errNone;
 }
 
 
@@ -164,73 +164,73 @@ int getBackgroundVal(PyrSlot *slot, DrawBackground *inPtr)
 int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr);
 int slotBackgroundVal(PyrSlot *slot, DrawBackground **ioPtr)
 {
-    int err, direction, steps;
-    SCColor color1, color2;
-    PyrClass *classobj = classOfSlot(slot);
-    char *classname = classobj->name.us->name;
-        
-    if (strcmp(classname, "Color")==0) {
-        err = slotColorVal(slot, &color1);
-        if (err) return err;
-        
-        delete *ioPtr;
-        *ioPtr = new SolidColorBackground(color1);
-    } else if (strcmp(classname, "Gradient") == 0) {
-        PyrObject *obj = slot->uo;
-        PyrSlot *slots = obj->slots;
-        
-        err = slotColorVal(slots+0, &color1);
-        if (err) return err;
-        err = slotColorVal(slots+1, &color2);
-        if (err) return err;
-        
-        if (IsSym(slots+2)) {
-            if (strncmp(slots[2].us->name, "h", 1)==0) direction = grad_Horizontal;
-            else if (strncmp(slots[2].us->name, "v", 1)==0) direction = grad_Vertical;
-            else if (strncmp(slots[2].us->name, "n", 1)==0) direction = grad_Narrow;
-            else if (strncmp(slots[2].us->name, "w", 1)==0) direction = grad_Wide;
-            else direction = grad_Vertical;
-        } else {
-            direction = grad_Horizontal;
-        }
-        
-        err = slotIntVal(slots+3, &steps);
-        if (err) return err;
+	int err, direction, steps;
+	SCColor color1, color2;
+	PyrClass *classobj = classOfSlot(slot);
+	char *classname = slotRawSymbol(&classobj->name)->name;
 
-        delete *ioPtr;
-        *ioPtr = new GradientBackground(color1, color2, direction, steps);
-        
-    } else if (strcmp(classname, "HiliteGradient") == 0) {
-        PyrObject *obj = slot->uo;
-        PyrSlot *slots = obj->slots;
-        
-        err = slotColorVal(slots+0, &color1);
-        if (err) return err;
-        err = slotColorVal(slots+1, &color2);
-        if (err) return err;
-        
-        if (IsSym(slots+2)) {
-            if (strncmp(slots[2].us->name, "h", 1)==0) direction = grad_Horizontal;
-            else if (strncmp(slots[2].us->name, "v", 1)==0) direction = grad_Vertical;
-            else if (strncmp(slots[2].us->name, "n", 1)==0) direction = grad_Narrow;
-            else if (strncmp(slots[2].us->name, "w", 1)==0) direction = grad_Wide;
-            else direction = grad_Vertical;
-        } else {
-            direction = grad_Horizontal;
-        }
-        
-        err = slotIntVal(slots+3, &steps);
-        if (err) return err;
-        
-        float frac;
-        err = slotFloatVal(slots+4, &frac);
-        if (err) return err;
-        
-        delete *ioPtr;
-        *ioPtr = new HiliteGradientBackground(color1, color2, direction, steps, frac);
-        
-    }
-    return errNone;
+	if (strcmp(classname, "Color")==0) {
+		err = slotColorVal(slot, &color1);
+		if (err) return err;
+
+		delete *ioPtr;
+		*ioPtr = new SolidColorBackground(color1);
+	} else if (strcmp(classname, "Gradient") == 0) {
+		PyrObject *obj = slotRawObject(slot);
+		PyrSlot *slots = obj->slots;
+
+		err = slotColorVal(slots+0, &color1);
+		if (err) return err;
+		err = slotColorVal(slots+1, &color2);
+		if (err) return err;
+
+		if (IsSym(slots+2)) {
+			if (strncmp(slotRawSymbol(&slots[2])->name, "h", 1)==0) direction = grad_Horizontal;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "v", 1)==0) direction = grad_Vertical;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "n", 1)==0) direction = grad_Narrow;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "w", 1)==0) direction = grad_Wide;
+			else direction = grad_Vertical;
+		} else {
+			direction = grad_Horizontal;
+		}
+
+		err = slotIntVal(slots+3, &steps);
+		if (err) return err;
+
+		delete *ioPtr;
+		*ioPtr = new GradientBackground(color1, color2, direction, steps);
+
+	} else if (strcmp(classname, "HiliteGradient") == 0) {
+		PyrObject *obj = slotRawObject(slot);
+		PyrSlot *slots = obj->slots;
+
+		err = slotColorVal(slots+0, &color1);
+		if (err) return err;
+		err = slotColorVal(slots+1, &color2);
+		if (err) return err;
+
+		if (IsSym(slots+2)) {
+			if (strncmp(slotRawSymbol(&slots[2])->name, "h", 1)==0) direction = grad_Horizontal;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "v", 1)==0) direction = grad_Vertical;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "n", 1)==0) direction = grad_Narrow;
+			else if (strncmp(slotRawSymbol(&slots[2])->name, "w", 1)==0) direction = grad_Wide;
+			else direction = grad_Vertical;
+		} else {
+			direction = grad_Horizontal;
+		}
+
+		err = slotIntVal(slots+3, &steps);
+		if (err) return err;
+
+		float frac;
+		err = slotFloatVal(slots+4, &frac);
+		if (err) return err;
+
+		delete *ioPtr;
+		*ioPtr = new HiliteGradientBackground(color1, color2, direction, steps, frac);
+
+	}
+	return errNone;
 }
 
 int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr);
@@ -238,17 +238,16 @@ int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
 {
 	if (!isKindOfSlot(slot, class_array)) return errWrongType;
 
-	PyrSlot *slots = slot->uo->slots;
+	PyrSlot *slots = slotRawObject(slot)->slots;
 	PyrClass *classobj = classOfSlot(slots);
-    char *classname = classobj->name.us->name;
+	char *classname = slotRawSymbol(&classobj->name)->name;
 	if (strcmp(classname, "SCImage") == 0) {
 		int err;
 		SCImage *scImage;
-        PyrObject *obj = slot->uo;
-        PyrSlot *slots = obj->slots;	
+		PyrObject *obj = slotRawObject(slot);
+		PyrSlot *slots = obj->slots;
 
-		scImage = (SCImage *)slots->uo->slots->uo; // Instace of Cocoa SCImage
-	
+		scImage = (SCImage *)slotRawObject(slotRawObject(slots)->slots); // Instace of Cocoa SCImage
 		int tileMode;
 		err = slotIntVal(slots+1, &tileMode);
 		if (err) return err;
@@ -256,24 +255,24 @@ int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
 		float frac;
 		err = slotFloatVal(slots+2, &frac);
 		if (err) return err;
-		
+
 		NSRect fromRect;
 		if (NotNil(slots+3)) {
-			
+
 			SCRect screct;
 			err = slotGetSCRect(slots+3, &screct);
 			if (err) return err;
-			
+
 			fromRect = NSMakeRect(screct.x, screct.y, screct.width, screct.height);
 
 		} else {
-		
+
 			fromRect = NSMakeRect(0., 0., [scImage width], [scImage height]);
 		}
-		
+
 
 		delete *ioPtr;
-		*ioPtr = new SCImageBackground(scImage, fromRect, tileMode, frac);		
+		*ioPtr = new SCImageBackground(scImage, fromRect, tileMode, frac);
 	}
     return errNone;
 }
@@ -315,12 +314,12 @@ Layout::Layout()
 
 SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: mNext(0), mNextAnimatedView(0), mPrevAnimatedView(0),
-		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds), 
+		mParent(0), mTop(0), mObj(inObj), mBounds(inBounds),
 		mBackground(0), mBackgroundImage(0), mVisible(true), mEnabled(true),
         mCanFocus(true), mDragHilite(false),
 		mConstructionMode(-1), mDragLabel(0)
 {
-	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5); 
+	mFocusColor = SCMakeColor(0.0,0.0,0.0, 0.5);
 	mBounds = inBounds;
 	if (inParent){
 		inParent->add(this);
@@ -335,7 +334,7 @@ SCView::SCView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
        }
 	}
 	// store myself into sc object.
-	if (mObj) SetPtr(mObj->slots+0, this);        
+	if (mObj) SetPtr(mObj->slots+0, this);
 }
 
 SCView::~SCView()
@@ -343,16 +342,16 @@ SCView::~SCView()
 	stopAnimation();
 	makeFocus(false);
 	mTop->forgetView(this);
-    if (mParent) mParent->remove(this);
-    if (mObj) SetNil(mObj->slots+0);
+	if (mParent) mParent->remove(this);
+	if (mObj) SetNil(mObj->slots+0);
 
-    delete mBackground;
-    delete mBackgroundImage;
-	
+	delete mBackground;
+	delete mBackgroundImage;
+
 	mTop = 0;
 	mParent = 0;
 }
-	
+
 void SCView::startAnimation()
 {
 	mNextAnimatedView = gAnimatedViews;
@@ -380,65 +379,65 @@ bool SCView::hit(SCPoint where) const
 
 void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("keyDown");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetChar(g->sp, character); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        ++g->sp;  SetInt(g->sp, character); 
-        ++g->sp;  SetInt(g->sp, keycode); 
-        runInterpreter(g, method, 5);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("keyDown");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetChar(g->sp, character);
+		++g->sp;  SetInt(g->sp, modifiers);
+		++g->sp;  SetInt(g->sp, character);
+		++g->sp;  SetInt(g->sp, keycode);
+		runInterpreter(g, method, 5);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 void SCView::keyUp(int character, int modifiers, unsigned short keycode)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("keyUp");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetChar(g->sp, character); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        ++g->sp;  SetInt(g->sp, character); 
-        ++g->sp;  SetInt(g->sp, keycode); 
-        runInterpreter(g, method, 5);		
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("keyUp");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetChar(g->sp, character);
+		++g->sp;  SetInt(g->sp, modifiers);
+		++g->sp;  SetInt(g->sp, character);
+		++g->sp;  SetInt(g->sp, keycode);
+		runInterpreter(g, method, 5);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 void SCView::keyModifiersChanged(int modifiers)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("keyModifiersChanged");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        runInterpreter(g, method, 2);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("keyModifiersChanged");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetInt(g->sp, modifiers);
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 
 }
 
 void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("mouseDown");
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("mouseDown");
 	int clickCount = [theEvent clickCount];
 	int buttonNum = [theEvent buttonNumber];
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
 //		if(mParent->relativeOrigin()){
 //			SCRect tbounds = mParent->getDrawBounds();
 //			where.x = where.x - tbounds.x;
@@ -447,24 +446,24 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x - tbounds.x;
 		where.y = where.y - tbounds.y;
-		++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetFloat(g->sp, where.x); 
-        ++g->sp;  SetFloat(g->sp, where.y); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetFloat(g->sp, where.x);
+		++g->sp;  SetFloat(g->sp, where.y);
+		++g->sp;  SetInt(g->sp, modifiers);
 		++g->sp;  SetInt(g->sp,buttonNum);
 		++g->sp;  SetInt(g->sp,clickCount);
-        runInterpreter(g, method, 6);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+		runInterpreter(g, method, 6);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("mouseMove");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("mouseMove");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
 //		if(mParent->relativeOrigin()){
 //			SCRect tbounds = mParent->getDrawBounds();
 //			where.x = where.x - tbounds.x;
@@ -473,22 +472,22 @@ void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x - tbounds.x;
 		where.y = where.y - tbounds.y;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetFloat(g->sp, where.x); 
-        ++g->sp;  SetFloat(g->sp, where.y); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        runInterpreter(g, method, 4);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetFloat(g->sp, where.x);
+		++g->sp;  SetFloat(g->sp, where.y);
+		++g->sp;  SetInt(g->sp, modifiers);
+		runInterpreter(g, method, 4);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("mouseUp");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("mouseUp");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
 //		if(mParent->relativeOrigin()){
 //			SCRect tbounds = mParent->getDrawBounds();
 //			where.x = where.x - tbounds.x;
@@ -497,20 +496,20 @@ void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x - tbounds.x;
 		where.y = where.y - tbounds.y;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetFloat(g->sp, where.x); 
-        ++g->sp;  SetFloat(g->sp, where.y); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        runInterpreter(g, method, 4);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetFloat(g->sp, where.x);
+		++g->sp;  SetFloat(g->sp, where.y);
+		++g->sp;  SetInt(g->sp, modifiers);
+		runInterpreter(g, method, 4);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 void SCView::setConstructionModeFromPoint(SCPoint where)
 {
 	SCRect bounds;
-	bounds = SCMakeRect(mBounds.x, mBounds.y, mBounds.width*0.6, mBounds.height*0.6);	
+	bounds = SCMakeRect(mBounds.x, mBounds.y, mBounds.width*0.6, mBounds.height*0.6);
 //	post("point: x: %f, y: %f, bounds: x: %f, y: %f\n", where.x, where.y, mBounds.x, mBounds.y);
 	if( SCPointInRect(where, bounds)){
 		mConstructionMode = view_PositionConstructionMode;
@@ -530,11 +529,11 @@ void SCView::doConstructionMove(SCPoint where)
 		mBounds.height = mBounds.height + (where.y - (mBounds.height + mBounds.y));
 	}else if (mConstructionMode == view_PositionConstructionMode) {
 		mBounds.x = where.x;
-		mBounds.y = where.y;	 
+		mBounds.y = where.y;
 	}
 	refresh();
 	mTop->refresh();
-}	
+}
 
 NSMenu* SCView::contextMenu(SCPoint inPoint)
 {
@@ -557,27 +556,27 @@ void SCView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 
 void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = getsym("mouseOver");
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = getsym("mouseOver");
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
 //		if(mParent->relativeOrigin()){
 //			SCRect tbounds = mParent->getDrawBounds();
 //			where.x = where.x - tbounds.x;
 //			where.y = where.y - tbounds.y;
-//		}	
+//		}
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x - tbounds.x;
 		where.y = where.y - tbounds.y;
-        ++g->sp;  SetObject(g->sp, mObj); 
-        ++g->sp;  SetInt(g->sp, (int) where.x); 
-        ++g->sp;  SetInt(g->sp, (int) where.y); 
-        ++g->sp;  SetInt(g->sp, modifiers); 
-        runInterpreter(g, method, 4);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+		++g->sp;  SetObject(g->sp, mObj);
+		++g->sp;  SetInt(g->sp, (int) where.x);
+		++g->sp;  SetInt(g->sp, (int) where.y);
+		++g->sp;  SetInt(g->sp, modifiers);
+		runInterpreter(g, method, 4);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 bool SCView::canReceiveDrag()
@@ -601,9 +600,9 @@ void SCView::draggingUpdated (SCPoint where)
 
 void SCView::setDragHilite(bool inFlag)
 {
-    bool prevFlag = mDragHilite;
-    mDragHilite = inFlag;
-    if (mDragHilite != prevFlag) refresh();
+	bool prevFlag = mDragHilite;
+	mDragHilite = inFlag;
+	if (mDragHilite != prevFlag) refresh();
 }
 
 void hPaintGradient(CGContextRef cgc, CGRect bounds, SCColor startColor, SCColor endColor, int numSteps);
@@ -614,70 +613,69 @@ void SCView::draw(SCRect inDamage)
 	CGRect rect;
 	if ( mBackground || mBackgroundImage ) {
 		SCRect bounds;
-		bounds = getDrawBounds(); 
-        cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-       rect = SCtoCGRect(bounds);
+		bounds = getDrawBounds();
+		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		rect = SCtoCGRect(bounds);
 	}
-	
-    if (mBackground)
-        mBackground->draw(cgc, rect);
 
-    if (mBackgroundImage)
-        mBackgroundImage->draw(cgc, rect);
+	if (mBackground)
+		mBackground->draw(cgc, rect);
+
+	if (mBackgroundImage)
+		mBackgroundImage->draw(cgc, rect);
 }
 
 void SCView::drawDisabled(SCRect inDamage)
 {
-    if (!mEnabled && shouldDim()) {
-		SCRect bounds = getDrawBounds(); 	
-        CGRect rect = SCtoCGRect(bounds);
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGContextSaveGState(cgc);
-        CGContextSetRGBFillColor(cgc, 1., 1., 1., 0.5);
-        CGContextFillRect(cgc, rect);
-        CGContextRestoreGState(cgc);
-    }
+	if (!mEnabled && shouldDim()) {
+		SCRect bounds = getDrawBounds();
+		CGRect rect = SCtoCGRect(bounds);
+		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		CGContextSetRGBFillColor(cgc, 1., 1., 1., 0.5);
+		CGContextFillRect(cgc, rect);
+		CGContextRestoreGState(cgc);
+	}
 }
 
 void SCView::drawFocus(SCRect inDamage)
 {
-    if (isFocus()) {
-		SCRect bounds = getDrawBounds(); 	
-        CGRect rect = SCtoCGRect(bounds);
-        rect.origin.x -= 2;
-        rect.origin.y -= 2;
-        rect.size.width += 4;
-        rect.size.height += 4;
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGContextSaveGState(cgc);
-        CGContextSetLineWidth(cgc, 2);
+	if (isFocus()) {
+		SCRect bounds = getDrawBounds();
+		CGRect rect = SCtoCGRect(bounds);
+		rect.origin.x -= 2;
+		rect.origin.y -= 2;
+		rect.size.width += 4;
+		rect.size.height += 4;
+		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		CGContextSetLineWidth(cgc, 2);
 //        CGContextSetRGBStrokeColor(cgc, 0., 0., 0., 0.5);
 		CGContextSetRGBStrokeColor(cgc, mFocusColor.red, mFocusColor.green, mFocusColor.blue, mFocusColor.alpha);
 
-        CGContextStrokeRect(cgc, rect);
-        CGContextRestoreGState(cgc);
-    }
-	
+		CGContextStrokeRect(cgc, rect);
+		CGContextRestoreGState(cgc);
+	}
 }
 
 
 void SCView::drawDragHilite(SCRect inDamage)
 {
-    if (mDragHilite) {
-		SCRect bounds = getDrawBounds(); 	
-	
-        CGRect rect = SCtoCGRect(bounds);
-        rect.origin.x += 2;
-        rect.origin.y += 2;
-        rect.size.width -= 4;
-        rect.size.height -= 4;
-        CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-        CGContextSaveGState(cgc);
-        CGContextSetLineWidth(cgc, 4);
-        CGContextSetRGBStrokeColor(cgc, 0., 0., 1., 0.4);
-        CGContextStrokeRect(cgc, rect);
-        CGContextRestoreGState(cgc);
-    }
+	if (mDragHilite) {
+		SCRect bounds = getDrawBounds();
+
+		CGRect rect = SCtoCGRect(bounds);
+		rect.origin.x += 2;
+		rect.origin.y += 2;
+		rect.size.width -= 4;
+		rect.size.height -= 4;
+		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+		CGContextSaveGState(cgc);
+		CGContextSetLineWidth(cgc, 4);
+		CGContextSetRGBStrokeColor(cgc, 0., 0., 1., 0.4);
+		CGContextStrokeRect(cgc, rect);
+		CGContextRestoreGState(cgc);
+	}
 }
 
 void SCView::drawIfNecessary(SCRect inDamage)
@@ -709,14 +707,14 @@ SCView* SCView::findViewByID(int32 inID)
 
 bool SCView::shouldDim()
 {
-    return true;
+	return true;
 }
 
 bool SCView::canFocus()
 {
-    bool flag = mEnabled && mVisible && mCanFocus;
-    if (mParent) flag = flag && mParent->canFocus();
-    return flag;
+	bool flag = mEnabled && mVisible && mCanFocus;
+	if (mParent) flag = flag && mParent->canFocus();
+	return flag;
 }
 
 bool SCContainerView::canFocus()
@@ -745,11 +743,11 @@ void SCView::setBounds(SCRect inBounds)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
 	}
-	
+
 }
 
 SCRect SCView::getBounds()
@@ -765,7 +763,7 @@ SCRect SCView::getDrawBounds() //relative to ContainerView
 //		mLayout.bounds.x = mBounds.x + pbounds.x;
 //		mLayout.bounds.y = mBounds.y + pbounds.y;
 //		mLayout.bounds.width = mBounds.width;
-//		mLayout.bounds.height = mBounds.height;	
+//		mLayout.bounds.height = mBounds.height;
 //	} else {
 //		mLayout.bounds = mBounds;
 //	}
@@ -831,7 +829,7 @@ void SCView::refreshInRect(SCRect b)
 {
 	if(SCRectsDoIntersect(b, mLayout.bounds)) {
 		SCRect sect;
-		
+
 		sect.x = sc_max(b.x, mLayout.bounds.x);
 		sect.y = sc_max(b.y, mLayout.bounds.y);
 		sect.width = sc_min(b.x + b.width, mLayout.bounds.x + mLayout.bounds.width);
@@ -843,14 +841,14 @@ void SCView::refreshInRect(SCRect b)
 
 // cannot call from primitives. i.e. new view, or get/set property
 void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot *result)
-{    
+{
 	//CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	//CGContextSaveGState(cgc);
 	pthread_mutex_lock (&gLangMutex);
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, mObj); 
+		++g->sp;  SetObject(g->sp, mObj);
 		for (int i=0; i<numargs; ++i) {
 			++g->sp;
 			slotCopy(g->sp, &args[i]);
@@ -879,7 +877,7 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
                 if (err) return err;
                 refreshFocus();
                 //mBounds = screct;
-				
+
 				if(mTop->isScroller()) {
 					((SCScrollTopView*)mTop)->setInSetClipViewOrigin(true);
 					setBounds(screct);
@@ -972,7 +970,7 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "dragLabel")==0) {
 		if(isKindOfSlot(slot, class_string)) {
-			PyrString* pstring = slot->uos;
+			PyrString* pstring = slotRawString(slot);
 			if(!pstring) return errNone;
 			if(mDragLabel) [mDragLabel release];
 			mDragLabel = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
@@ -993,7 +991,7 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
             if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
                 return errWrongType;
             }
-            PyrSlot *slots = slot->uo->slots;
+            PyrSlot *slots = slotRawObject(slot)->slots;
             SetFloat(slots+0, mBounds.x);
             SetFloat(slots+1, mBounds.y);
             SetFloat(slots+2, mBounds.width);
@@ -1006,7 +1004,7 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
                 return errWrongType;
             }
 			drawBounds = mLayout.bounds;
-            PyrSlot *slots = slot->uo->slots;
+            PyrSlot *slots = slotRawObject(slot)->slots;
             SetFloat(slots+0, drawBounds.x);
             SetFloat(slots+1, drawBounds.y);
             SetFloat(slots+2, drawBounds.width);
@@ -1037,7 +1035,7 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	/*if (strcmp(name, "backColor")==0) {
             return setSlotColor(slot, &mBackColor);
 	}*/
-	
+
 	if (strcmp(name, "focusColor")==0) {
 		return setSlotColor(slot, &mFocusColor);;
 	}
@@ -1046,33 +1044,33 @@ int SCView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 void SCView::beginDrag(SCPoint where)
 {
-    sendMessage(s_beginDrag, 0, 0, 0);
-    
-    PyrSlot slot;
-    PyrSlot stringSlot;
+	sendMessage(s_beginDrag, 0, 0, 0);
+
+	PyrSlot slot;
+	PyrSlot stringSlot;
 	NSString *string = 0;
 	NSString *label = 0;
-    pthread_mutex_lock (&gLangMutex);
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-        slotCopy(&slot, &g->classvars->slots[classVarIndex]);
-        slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
+	pthread_mutex_lock (&gLangMutex);
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
+		slotCopy(&slot, &g->classvars->slots[classVarIndex]);
+		slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
-			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
+			string = [NSString stringWithCString: slotRawString(&stringSlot)->s length: slotRawString(&stringSlot)->size];
 		}
 		if(mDragLabel) label = mDragLabel;
-    }
-    pthread_mutex_unlock (&gLangMutex);
-    
-    mTop->beginDragCallback(where, &slot, string, label);
+	}
+	pthread_mutex_unlock (&gLangMutex);
+
+	mTop->beginDragCallback(where, &slot, string, label);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 SCContainerView::SCContainerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCView(inParent, inObj, inBounds), mChildren(0), mNumChildren(0), mRelativeOrigin(false)
-{ 
+{
 	mLayout.bounds = mBounds;
 	if(mParent ){
 		if(mParent->relativeOrigin()){
@@ -1092,7 +1090,7 @@ SCContainerView::~SCContainerView()
         delete child;
         child = next;
     }
-	
+
 }
 
 int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -1116,14 +1114,14 @@ int SCContainerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "relativeOrigin")==0) {
 		mRelativeOrigin = IsTrue(slot);
 		return errNone;
-    }		
-	
+    }
+
 	return SCView::setProperty(symbol, slot);
-}	
+}
 
 void SCContainerView::setVisibleFromParent()
 {
@@ -1273,7 +1271,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
 	SCView *myTop = mTop;
 	SCRect topBounds = myTop->getBounds();
 	SCRect topPBounds = myTop->getLayout().bounds;
-	
+
 //    float right = mBounds.x + mBounds.width;
 //    float bottom = mBounds.y + mBounds.height;
 	mLayout.bounds = inBounds;
@@ -1289,33 +1287,33 @@ void SCCompositeView::setBounds(SCRect inBounds)
 			mLayout.bounds.y = inBounds.y + pBounds.y;
 		} else {
 			mLayout.bounds.x = inBounds.x;
-			mLayout.bounds.y = inBounds.y;		
+			mLayout.bounds.y = inBounds.y;
 		}
 	}
     while (child) {
         SCRect bounds = child->getBounds();
         Layout layout = child->getLayout();
 //        SCRect bounds = layout.bounds;
-		
+
         float offset;
         switch (layout.mHResize) {
-            case layout_FixedLeft : 
+            case layout_FixedLeft :
                 break;
-				
+
             case layout_FixedRight :
 				// if the parent is a top container, then relative or absolute are irrelevant.
 				if(child->parent()->isTopContainer() || (inBounds.width != child->parent()->getBounds().width)){
 					offset = (mBounds.x + mBounds.width) - (bounds.x + bounds.width);
-					bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset); 
+					bounds.x = (inBounds.x + inBounds.width) - (bounds.width + offset);
 				}else{
 					if(!child->parent()->relativeOrigin()){ //absolute
 						offset = (topBounds.x + topBounds.width) - (bounds.x + bounds.width);
-						bounds.x = (topPBounds.x + topPBounds.width) - (bounds.width + offset); 
-					} 
+						bounds.x = (topPBounds.x + topPBounds.width) - (bounds.width + offset);
+					}
 				}
-			
+
                 break;
-				
+
             case layout_HElastic :
 				if(!child->parent()->relativeOrigin() && !child->parent()->isTopContainer()){
 					offset = topBounds.width - (bounds.x + bounds.width);
@@ -1331,28 +1329,28 @@ void SCCompositeView::setBounds(SCRect inBounds)
 				}
         }
         switch (layout.mVResize) {
-            case layout_FixedTop : 
+            case layout_FixedTop :
 				break;
-				
+
             case layout_FixedBottom :
-				
+
 				// if the parent is a top container, then relative or absolute are irrelevant.
 				if(child->parent()->isTopContainer() || (inBounds.height != child->parent()->getBounds().height)){
 							offset = (mBounds.y + mBounds.height) - (bounds.y + bounds.height);
 							bounds.y = (inBounds.y + inBounds.height) - (bounds.height + offset);
 				}else{
-							
+
 					if(!child->parent()->relativeOrigin()){
 						offset = (topBounds.y + topBounds.height) - (bounds.y + bounds.height);
 						bounds.y = (topPBounds.y + topPBounds.height) - (bounds.height + offset);
-					} 
+					}
 				}
-								
+
 				break;
-				
+
             case layout_VElastic :
-			
-			
+
+
 				if(!child->parent()->relativeOrigin() && !child->parent()->isTopContainer()){
 					offset = topBounds.height - (bounds.y + bounds.height);
 					bounds.height = topPBounds.height - (bounds.y + offset); //absolute
@@ -1368,7 +1366,7 @@ void SCCompositeView::setBounds(SCRect inBounds)
 				}
         }
 
-        child->setBounds(bounds); 
+        child->setBounds(bounds);
         child = child->next();
     }
     // should be limited by the limitations of the contents
@@ -1394,7 +1392,7 @@ SCLayoutView::~SCLayoutView()
 
 
 int SCLayoutView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
 	if (strcmp(name, "spacing")==0) {
@@ -1418,12 +1416,12 @@ int SCLayoutView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCLayoutView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
-        if (strcmp(name, "spacing")==0) {
-            SetFloat(slot, mSpacing);
-            return errNone;
-        }
+	if (strcmp(name, "spacing")==0) {
+		SetFloat(slot, mSpacing);
+		return errNone;
+	}
 
-        return SCView::getProperty(symbol, slot);
+	return SCView::getProperty(symbol, slot);
 }
 
 void SCLayoutView::add(SCView *inChild)
@@ -1459,10 +1457,10 @@ void SCHLayoutView::setBounds(SCRect inBounds)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
-	}	
+	}
 	SCRect absBounds = mLayout.bounds;
     while(child) {
         Layout layout = child->getLayout();
@@ -1473,7 +1471,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     // subtract the spacers we will use
     float totalWidth = absBounds.width - (mSpacing * (mNumChildren - 1));
 
-    // find views who are constrained by a minimum or maximum size 
+    // find views who are constrained by a minimum or maximum size
     // and remove them from the set of weights.
     float scaleWeight = sc_max(totalWidth,0.0) * (1.0 / sc_max(totalWeight,0.01));
     child = mChildren;
@@ -1509,7 +1507,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
         child = child->next();
     }
     //totalWidth is now the remaining flexible width
-    
+
     // now layout the views
     float left = absBounds.x;
     float top = absBounds.y;
@@ -1566,15 +1564,15 @@ void SCVLayoutView::setBounds(SCRect inBounds)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
-	}	
-	SCRect absBounds = mLayout.bounds;	
+	}
+	SCRect absBounds = mLayout.bounds;
     // subtract the spacers we will use
     float totalHeight = absBounds.height - (mSpacing * (mNumChildren - 1));
 
-    // find views who are constrained by a minimum or maximum size 
+    // find views who are constrained by a minimum or maximum size
     // and remove them from the set of weights.
     float scaleWeight = sc_max(totalHeight,0.0) * (1.0 / sc_max(totalWeight,0.01));
     child = mChildren;
@@ -1610,7 +1608,7 @@ void SCVLayoutView::setBounds(SCRect inBounds)
         child = child->next();
     }
     //totalHeight is now the remaining flexible height
-    
+
     // now layout the views
     float left = absBounds.x;
     float top = absBounds.y;
@@ -1631,7 +1629,7 @@ void SCVLayoutView::setBounds(SCRect inBounds)
         top += (height + mSpacing);
         child = child->next();
     }
-	
+
 }
 
 
@@ -1763,20 +1761,20 @@ SCScrollTopView::SCScrollTopView(PyrObject* inObj, SCRect inBounds)
 }
 
 SCRect SCScrollTopView::checkMinimumSize()
-{	
+{
 	// size of SCGraphView must be at least large enough to hold any contained view for correct scrolling
 	// so test against the NSClipView
     SCView *child = mChildren;
-	
+
 	SCRect candidate = SCMakeRect(0.f, 0.f, 1.f, 1.f); // smallest measureable at rect at origin
-	
+
 	// iterate through all the views and see if we need to be bigger
 	while (child) {
         SCRect bounds = child->checkMinimumSize();
 		candidate = SCRectUnion(bounds, candidate);
 		child = child->next();
 	}
-	
+
 	return candidate;
 }
 
@@ -1784,7 +1782,7 @@ SCRect SCScrollTopView::getDrawBounds() //relative to ContainerView
 {
 	return SCRectUnion(mBounds, checkMinimumSize());
 }
-	
+
 void SCScrollTopView::setInternalBounds(SCRect inBounds)
 {
 	// elasticity doesn't work with a scrolltopview
@@ -1794,7 +1792,7 @@ void SCScrollTopView::setInternalBounds(SCRect inBounds)
 int slotGetPoint(PyrSlot* a, NSPoint *p);
 
 int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
 	if (strcmp(name, "setHasHorizontalScroller")==0) {
@@ -1806,7 +1804,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "setHasVerticalScroller")==0) {
 		bool hasScroller = IsTrue(slot);
 		setInSetClipViewOrigin(true);
@@ -1816,14 +1814,14 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "setAutohidesScrollers")==0) {
 		bool autoHides = IsTrue(slot);
 		setInSetClipViewOrigin(true);
 		[mNSScrollView setAutohidesScrollers:autoHides];
 		[(SCGraphView*)mNSView setFrameSizeToMinimum];
 		[mNSScrollView setNeedsDisplay: YES];
-		
+
 		// trick scrollview into redrawing
 		NSRect frame = [mNSScrollView frame];
 		[mNSScrollView setFrame: NSInsetRect(frame,1,1)];
@@ -1832,7 +1830,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "clipViewOrigin")==0) {
 		NSPoint origin;
 		err = slotGetPoint(slot, &origin);
@@ -1843,16 +1841,16 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "setAutoScrolls")==0) {
 		bool autoScrolls = IsTrue(slot);
 		[(SCGraphView*)mNSView setAutoScrolls:autoScrolls];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-		if(visible) 
+		if(visible)
 		{
 			[mNSScrollView setHidden:NO];
 		}
@@ -1865,7 +1863,7 @@ int SCScrollTopView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		resetFocus();
 		return errNone;
 	}
-	
+
 	return SCCompositeView::setProperty(symbol, slot);
 }
 
@@ -1877,38 +1875,38 @@ int SCScrollTopView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 			return errWrongType;
 		}
 		SCRect bounds = NStoSCRect([mNSScrollView frame]);
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		SetFloat(slots+0, bounds.x);
 		SetFloat(slots+1, bounds.y);
 		SetFloat(slots+2, bounds.width);
 		SetFloat(slots+3, bounds.height);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "clipViewOrigin")==0) {
 		if (!(isKindOfSlot(slot, s_point->u.classobj))) {
 			return errWrongType;
 		}
 		NSPoint origin = [mNSScrollView documentVisibleRect].origin;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		SetFloat(slots+0, origin.x);
 		SetFloat(slots+1, origin.y);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "innerBounds")==0) {
 		if (!(isKindOfSlot(slot, s_rect->u.classobj))) {
 			return errWrongType;
 		}
 		SCRect bounds = NStoSCRect([mNSView frame]);
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		SetFloat(slots+0, bounds.x);
 		SetFloat(slots+1, bounds.y);
 		SetFloat(slots+2, bounds.width);
 		SetFloat(slots+3, bounds.height);
 		return errNone;
 	}
-	
+
 	return SCCompositeView::getProperty(symbol, slot);
 }
 
@@ -1954,12 +1952,12 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 			mLayout.bounds = mBounds;
 		}
 	}
-	
-	
+
+
 	NSView *topGraphview = mTop->GetNSView();
 	SCGraphView* view = [[SCGraphView alloc] initWithFrame: NSMakeRect(0, 0, bounds.size.width, bounds.size.height)];
 	[view setSCObject: [(SCGraphView*)topGraphview getSCObject]];
-	
+
 	[view setSCTopView: this];
 	NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame: SCtoNSRect(mLayout.bounds)];
 	[scrollView setHasVerticalScroller:YES];
@@ -1969,33 +1967,33 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	[[scrollView verticalScroller] setControlSize:NSSmallControlSize];
 	[[scrollView horizontalScroller] setControlTint:NSGraphiteControlTint];
 	[[scrollView verticalScroller] setControlTint:NSGraphiteControlTint];
-	
+
 	[scrollView setBackgroundColor:[NSColor clearColor]];
 	[scrollView setDrawsBackground:NO];
 	// configure the scroller to have no visible border
 	[scrollView setBorderType:NSNoBorder];
 	[scrollView setAutoresizingMask:NSViewNotSizable];
 	[scrollView setDocumentView:view];
-	
+
 	[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
 	[[NSNotificationCenter defaultCenter] addObserver:view
 											 selector:@selector(scrollViewResized:)
-												 name:@"NSViewFrameDidChangeNotification" 
+												 name:@"NSViewFrameDidChangeNotification"
 											   object:scrollView];
 
 	NSClipView *contentView = [scrollView contentView];
 	[contentView setPostsBoundsChangedNotifications:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:view
 											 selector:@selector(userScrolled:)
-												 name:@"NSViewBoundsDidChangeNotification" 
+												 name:@"NSViewBoundsDidChangeNotification"
 											   object:contentView];
-	
+
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
 	setBounds(mLayout.bounds);
 	setVisibleFromParent();
-	
+
 }
 
 void SCScrollView::add(SCView *inChild)
@@ -2055,7 +2053,7 @@ SCRect SCScrollView::getBounds()
 }
 
 int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
 	if (strcmp(name, "bounds")==0) {
@@ -2066,13 +2064,13 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(mParent->relativeOrigin()){
 			SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
 			screct.x += pbounds.x;
-			screct.y += pbounds.y;	
+			screct.y += pbounds.y;
 		}
 		setBounds(screct);
 		refreshFocus();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "border")==0) {
 		bool hasBorder = IsTrue(slot);
 		if(hasBorder) {
@@ -2084,7 +2082,7 @@ int SCScrollView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
 		mVisible = visible;
@@ -2132,7 +2130,7 @@ void SCSlider::draw(SCRect inDamage)
 {
     SCRect bounds = getDrawBounds();
     calcThumbRect(bounds);
-    
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(bounds);
@@ -2140,10 +2138,10 @@ void SCSlider::draw(SCRect inDamage)
 
     if (mBackgroundImage)
         mBackgroundImage->draw(cgc, rect);
-	
-#if 1	
+
+#if 1
     QDDrawBevelRect(cgc, rect, 1, true);
-#endif	    
+#endif
 
     CGRect cgThumbRect = SCtoCGRect(mThumbRect);
     if (mKnob) mKnob->draw(cgc, cgThumbRect);
@@ -2164,7 +2162,7 @@ bool SCSlider::setValue(double inValue, bool send)
     if (changed) {
         mValue = inValue;
         refresh();
-        
+
         if (send) sendMessage(s_doaction, 0, 0, 0);
     }
     return changed;
@@ -2173,7 +2171,7 @@ bool SCSlider::setValue(double inValue, bool send)
 void SCSlider::setValueFromPoint(SCPoint point)
 {
     double moveableRange, value;
-	SCRect bounds = getDrawBounds();   
+	SCRect bounds = getDrawBounds();
     if (bounds.width > bounds.height) {
 	moveableRange = bounds.width - mThumbSize - 2;
 	value = (point.x - bounds.x - 1 - mThumbSize/2) / moveableRange;
@@ -2187,19 +2185,19 @@ void SCSlider::setValueFromPoint(SCPoint point)
 void SCSlider::calcThumbRect(SCRect bounds)
 {
     double moveableRange;
-    
-    moveableRange = (bounds.width > bounds.height) 
+
+    moveableRange = (bounds.width > bounds.height)
                   ?  bounds.width : bounds.height;
     moveableRange -= mThumbSize + 2;
-        
+
     double offset = mValue * moveableRange;
 
     if (bounds.width > bounds.height) {
 	mThumbRect = SCMakeRect(bounds.x + offset + 1, bounds.y + 1,
-				mThumbSize, bounds.height - 2);   
+				mThumbSize, bounds.height - 2);
     } else {
 	mThumbRect = SCMakeRect(bounds.x + 1, bounds.y + bounds.height - offset - 1 - mThumbSize,
-				bounds.width - 2, mThumbSize);   
+				bounds.width - 2, mThumbSize);
     }
 }
 
@@ -2213,7 +2211,7 @@ void SCSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 }
 
 int SCSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_value) {
 		double value;
@@ -2304,18 +2302,18 @@ void SCRangeSlider::draw(SCRect inDamage)
 {
     calcRangeRect();
     SCRect bounds = getDrawBounds();
-    
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    
+
     CGRect cgBounds = SCtoCGRect(bounds);
     if (mBackground) mBackground->draw(cgc, cgBounds);
-    
+
 	if (mBackgroundImage)
         mBackgroundImage->draw(cgc, cgBounds);
 
     QDDrawBevelRect(cgc, cgBounds, 1, true);
-    
+
     CGRect cgRangeRect = SCtoCGRect(mRangeRect);
     if (mKnob) mKnob->draw(cgc, cgRangeRect);
     QDDrawBevelRect(cgc, cgRangeRect, 1, false);
@@ -2329,7 +2327,7 @@ bool SCRangeSlider::setValue(double inLo, double inHi, bool send)
 {
     inLo = sc_clip(inLo, 0., 1.);
     inHi = sc_clip(inHi, 0., 1.);
-    
+
     if (mStepSize > 0.) {
         inLo = floor(inLo * mStepScale + 0.5) * mStepSize;
         inHi = floor(inHi * mStepScale + 0.5) * mStepSize;
@@ -2339,7 +2337,7 @@ bool SCRangeSlider::setValue(double inLo, double inHi, bool send)
         mLo = inLo;
         mHi = inHi;
         refresh();
-        
+
         if (send) sendMessage(s_doaction, 0, 0, 0);
     }
     return changed;
@@ -2349,7 +2347,7 @@ void SCRangeSlider::setValueFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi;
     SCRect bounds = getDrawBounds();
-	
+
     if (bounds.width > bounds.height) {
         moveableRange = bounds.width - 5;
         lo = (sc_min(mAnchor.x, where.x) - bounds.x - 2) / moveableRange;
@@ -2365,20 +2363,20 @@ void SCRangeSlider::setValueFromPoint(SCPoint where)
 void SCRangeSlider::calcRangeRect()
 {
     double moveableRange;
-    SCRect bounds = getDrawBounds();    
-    moveableRange = (bounds.width > bounds.height) 
+    SCRect bounds = getDrawBounds();
+    moveableRange = (bounds.width > bounds.height)
                   ?  bounds.width : bounds.height;
     moveableRange -= 5;
-        
+
     double lo = mLo * moveableRange;
     double hi = mHi * moveableRange + 1;
 
     if (bounds.width > bounds.height) {
        mRangeRect = SCMakeRect(bounds.x + lo + 2, bounds.y + 1,
-                     hi - lo, bounds.height - 2);   
+                     hi - lo, bounds.height - 2);
     } else {
        mRangeRect = SCMakeRect(bounds.x + 1, bounds.y + bounds.height - hi - 2,
-                     bounds.width - 2, hi - lo);   
+                     bounds.width - 2, hi - lo);
     }
 }
 
@@ -2392,7 +2390,7 @@ void SCRangeSlider::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEv
 void SCRangeSlider::moveRangeFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos, range;
-    SCRect bounds = getDrawBounds();	
+    SCRect bounds = getDrawBounds();
     if (bounds.width > bounds.height) {
         moveableRange = bounds.width - 5;
         pos = (where.x - bounds.x - 2) / moveableRange;
@@ -2428,7 +2426,7 @@ void SCRangeSlider::moveRangeFromPoint(SCPoint where)
 void SCRangeSlider::adjustLoFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos;
-    SCRect bounds = getDrawBounds();	
+    SCRect bounds = getDrawBounds();
     if (bounds.width > bounds.height) {
         moveableRange = bounds.width - 5;
         pos = (where.x - bounds.x - 2) / moveableRange;
@@ -2445,7 +2443,7 @@ void SCRangeSlider::adjustLoFromPoint(SCPoint where)
 void SCRangeSlider::adjustHiFromPoint(SCPoint where)
 {
     double moveableRange, lo, hi, pos;
-    SCRect bounds = getDrawBounds();	
+    SCRect bounds = getDrawBounds();
     if (bounds.width > bounds.height) {
         moveableRange = bounds.width - 5;
         pos = (where.x - bounds.x - 2) / moveableRange;
@@ -2476,7 +2474,7 @@ void SCRangeSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 }
 
 int SCRangeSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_lo || symbol == s_value) {
 		double lo;
@@ -2518,7 +2516,7 @@ int SCRangeSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -2611,7 +2609,7 @@ bool SC2DSlider::setValue(double inX, double inY, bool send)
         mX = inX;
         mY = inY;
         refresh();
-        
+
         if (send) sendMessage(s_doaction, 0, 0, 0);
     }
     return changed;
@@ -2628,12 +2626,12 @@ void SC2DSlider::setValueFromPoint(SCPoint where)
 }
 
 void SC2DSlider::calcThumbRect()
-{        
+{
     SCRect bounds = getDrawBounds();
     double x = mX * (bounds.width - THUMBSIZE - 2);
     double y = mY * (bounds.height - THUMBSIZE - 2);
 
-    mThumbRect = SCMakeRect(bounds.x + x + 1, bounds.y + bounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);   
+    mThumbRect = SCMakeRect(bounds.x + x + 1, bounds.y + bounds.height - y - 1 - THUMBSIZE, THUMBSIZE, THUMBSIZE);
 }
 
 void SC2DSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
@@ -2646,7 +2644,7 @@ void SC2DSlider::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 }
 
 int SC2DSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_x) {
 		double x;
@@ -2729,10 +2727,10 @@ SCScope::SCScope(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	mZoom = mInvZoom = SCMakePoint(1.,1.);
 	mScroll = SCMakePoint(0.,0.);
 	memset(&mSndBuf, 0, sizeof(SndBuf));
-	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);	
+	mGridColor = SCMakeColor(0.2,0.2,1.0, 1.0);
     mBackground = new SolidColorBackground(
                     SCMakeColor(0.,0.,0., 1.0));
-	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);	
+	SCColor waveColor = SCMakeColor(1.0,1.0,0.0, 1.0);
 	for (int i=0; i<kMaxScopeChannels; ++i) mWaveColors[i] = waveColor;
 	startAnimation();
 }
@@ -2756,7 +2754,7 @@ void SCScope::draw0(CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
 	if (!data) return;
-	
+
 	int samples = mSndBuf.samples;
 	SCRect bounds = getDrawBounds();
 	// draw scope.
@@ -2767,7 +2765,7 @@ void SCScope::draw0(CGContextRef cgc)
 	float chanHeight = (bounds.height - 2.) / channels;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
-	
+
 	for (int j=0; j<channels; ++j)
 	{
 		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
@@ -2776,13 +2774,13 @@ void SCScope::draw0(CGContextRef cgc)
 		int iframe = (int)floor(fframe);
 		int isample = iframe * channels;
 		float val = -data[isample + j];
-		
+
 		CGRect chanRect;
 		chanRect.origin.x = rect.origin.x + 1.;
 		chanRect.origin.y = rect.origin.y + 1. + chanHeight * j + chanHeight2;
 		chanRect.size.width = width;
 		chanRect.size.height = chanHeight;
-		
+
 	//post("width %d\n", width);
 		for (int i = 0; i < width && isample < samples; i++)
 		{
@@ -2800,15 +2798,15 @@ void SCScope::draw0(CGContextRef cgc)
 			}
 			iframe = nextiframe;
 			fframe = nextfframe;
-			
+
 			CGRect wrect;
 			wrect.origin.x = rect.origin.x + 1. + i;
-			wrect.size.width = 1.; 
+			wrect.size.width = 1.;
 			wrect.origin.y = chanRect.origin.y + ymin * yScale;
 			wrect.size.height = (ymax - ymin) * yScale + 1.;
-			
+
 			//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
-			
+
 			CGContextFillRect(cgc, wrect);
 		}
 	}
@@ -2818,10 +2816,10 @@ void SCScope::draw1(CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
 	if (!data) return;
-	
+
 	int samples = mSndBuf.samples;
 	SCRect bounds = getDrawBounds();
-	
+
 	// draw scope.
     CGRect rect = SCtoCGRect(bounds);
 	int width = (int)bounds.width - 2;
@@ -2830,7 +2828,7 @@ void SCScope::draw1(CGContextRef cgc)
 	float chanHeight = bounds.height - 2.;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
-	
+
 	for (int j=0; j < channels; ++j)
 	{
 		CGContextSetRGBFillColor(cgc, mWaveColors[j].red, mWaveColors[j].green, mWaveColors[j].blue, mWaveColors[j].alpha);
@@ -2839,13 +2837,13 @@ void SCScope::draw1(CGContextRef cgc)
 		int iframe = (int)floor(fframe);
 		int isample = iframe * channels;
 		float val = -data[isample + j];
-		
+
 		CGRect chanRect;
 		chanRect.origin.x = rect.origin.x + 1.;
 		chanRect.origin.y = rect.origin.y + 1. + chanHeight2;
 		chanRect.size.width = rect.size.width - 2.;
 		chanRect.size.height = chanHeight;
-		
+
 	//post("width %d\n", width);
 		for (int i = 0; i < width && isample < samples; i++)
 		{
@@ -2863,15 +2861,15 @@ void SCScope::draw1(CGContextRef cgc)
 			}
 			iframe = nextiframe;
 			fframe = nextfframe;
-			
+
 			CGRect wrect;
 			wrect.origin.x = rect.origin.x + 1. + i;
-			wrect.size.width = 1.; 
+			wrect.size.width = 1.;
 			wrect.origin.y = chanRect.origin.y + ymin * yScale;
 			wrect.size.height = (ymax - ymin) * yScale + 1.;
-			
+
 			//if (i == 64) post("%g %g    %g   %g %g\n", ymin, ymin, wrect.origin.x, wrect.origin.y, wrect.size.height);
-			
+
 			CGContextFillRect(cgc, wrect);
 		}
 	}
@@ -2881,7 +2879,7 @@ void SCScope::draw2(CGContextRef cgc)
 {
 	float *data = mSndBuf.data;
 	if (!data) return;
-	
+
 	int samples = mSndBuf.samples;
 	SCRect bounds = getDrawBounds();
 
@@ -2896,21 +2894,21 @@ void SCScope::draw2(CGContextRef cgc)
 	float xScale = mZoom.x * width2;
 	float xoff = rect.origin.x + width2 + 1.;
 	float yoff = rect.origin.y + height2 + 1.;
-	
-	
+
+
 	for (int k=0, j=0; j<channels; k++, j+=2)
 	{
 		CGContextSetRGBStrokeColor(cgc, mWaveColors[k].red, mWaveColors[k].green, mWaveColors[k].blue, mWaveColors[k].alpha);
 		float x = xoff + data[j] * xScale;
 		float y = yoff - data[j+1] * yScale;
 		CGContextMoveToPoint(cgc, x, y);
-		
+
 		for (int i=channels; i<samples; i+=channels) {
 			x = xoff + data[i+j] * xScale;
 			y = yoff - data[i+j+1] * yScale;
 			CGContextAddLineToPoint(cgc, x, y);
 		}
-		CGContextStrokePath(cgc);	
+		CGContextStrokePath(cgc);
 	}
 }
 
@@ -2949,20 +2947,20 @@ void SCScope::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 }
 
 int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_x) {
 		double x;
 		err = slotDoubleVal(slot, &x);
 		if (err) return err;
-		mScroll.x = x; 
+		mScroll.x = x;
 		return errNone;
 	}
 	if (symbol == s_y) {
 		double y;
 		err = slotDoubleVal(slot, &y);
 		if (err) return err;
-		mScroll.y = y; 
+		mScroll.y = y;
 		return errNone;
 	}
 	char *name = symbol->name;
@@ -2970,7 +2968,7 @@ int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		double x;
 		err = slotDoubleVal(slot, &x);
 		if (err) return err;
-		mZoom.x = x; 
+		mZoom.x = x;
 		mInvZoom.x = 1./x;
 		return errNone;
 	}
@@ -2978,7 +2976,7 @@ int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		double y;
 		err = slotDoubleVal(slot, &y);
 		if (err) return err;
-		mZoom.y = y; 
+		mZoom.y = y;
 		mInvZoom.y = 1./y;
 		refresh();
 		return errNone;
@@ -2997,8 +2995,8 @@ int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "waveColors")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
-		for (int i=0; i<slot->uo->size; ++i)
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		for (int i=0; i<slotRawObject(slot)->size; ++i)
 		{
 			err = slotColorVal(slots+i, mWaveColors+i);
 			if (err) return err;
@@ -3012,7 +3010,7 @@ int SCScope::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -3045,8 +3043,8 @@ int SCScope::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "waveColors")==0) {
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
-		for (int i=0; i<slot->uo->size; ++i)
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		for (int i=0; i<slotRawObject(slot)->size; ++i)
 		{
 			int err = setSlotColor(slots+i, mWaveColors+i);
 			if (err) return err;
@@ -3070,7 +3068,7 @@ SC2DTabletSlider::SC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, 
 }
 
 int SC2DTabletSlider::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
     char *name = symbol->name;
     if (strcmp(name, "clipInBounds")==0) {
         slotIntVal(slot, &mClipInBounds);
@@ -3161,15 +3159,15 @@ void SCButton::draw(SCRect inDamage)
 {
     SCColor buttonColor;
 	SCRect bounds = getDrawBounds();
-	
+
     if (mStates) {
         SCButtonState *state = mStates + mValue;
         buttonColor = state->mButtonColor;
         //drawBevelRect(SCtoQDRect(mBounds), 2, mPushed ? 1 : 0, SCtoQDColor(buttonColor), 2);
-    
+
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-    
+
     CGRect cgrect = SCtoCGRect(bounds);
     if (buttonColor.alpha > 0.0) {
         CGContextSetRGBFillColor(cgc, buttonColor.red, buttonColor.green, buttonColor.blue, buttonColor.alpha);
@@ -3208,7 +3206,7 @@ void SCButton::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
-    } else {    
+    } else {
 		bool inside = hit(where);
 		if (inside != mPushed) {
 			mPushed = inside;
@@ -3228,23 +3226,23 @@ int SCMakeButtonState(SCButton* view, SCButtonState *inState, PyrSlot *slot)
 {
     int err;
     if (!isKindOfSlot(slot, class_array)) return errWrongType;
-    PyrSlot *slots = slot->uo->slots;
-    
+    PyrSlot *slots = slotRawObject(slot)->slots;
+
     inState->mLabel[0] = 0;
     inState->mLabelColor = SCMakeColor(0,0,0,1); // black
     inState->mButtonColor = SCMakeColor(0.7,0.7,0.7,1);
-    
-    if (slot->uo->size < 1) return errNone;
+
+    if (slotRawObject(slot)->size < 1) return errNone;
     err = slotStrVal(slots+0, inState->mLabel, kLabelSize);
     if (err) return err;
-    
-    if (slot->uo->size < 2) return errNone;
+
+    if (slotRawObject(slot)->size < 2) return errNone;
     err = slotColorVal(slots+1, &inState->mLabelColor);
     if (err) {
         inState->mLabelColor = SCMakeColor(0,0,0,1); // black
     }
 
-    if (slot->uo->size < 3) return errNone;
+    if (slotRawObject(slot)->size < 3) return errNone;
     err = slotColorVal(slots+2, &inState->mButtonColor);
     if (err) {
         //inState->mButtonColor = view->getBackColor();
@@ -3253,7 +3251,7 @@ int SCMakeButtonState(SCButton* view, SCButtonState *inState, PyrSlot *slot)
 }
 
 int SCButton::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_value) {
             int value;
@@ -3266,27 +3264,27 @@ int SCButton::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 	if (strcmp(name, "font")==0) {
             if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
-            PyrSlot *slots = slot->uo->slots;
-        
-            float fontSize; 
+            PyrSlot *slots = slotRawObject(slot)->slots;
+
+            float fontSize;
             err = slotFloatVal(slots+1, &fontSize);
             if (err) return err;
-            
+
             err = slotStrVal(slots+0, mFontName, kFontNameSize);
             if (err) return err;
-            
+
             mFontSize = fontSize;
             return errNone;
         }
 	if (strcmp(name, "states")==0) {
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            
+
             // wipe out old
             delete [] mStates;
             mStates = 0;
             mNumStates = 0;
-            
-            PyrObject *array = slot->uo;
+
+            PyrObject *array = slotRawObject(slot);
             int numStates = array->size;
             SCButtonState* states = new SCButtonState[numStates];
             if (!states) return errFailed;
@@ -3353,7 +3351,7 @@ SCPopUpMenu::~SCPopUpMenu()
 }
 
 void SCPopUpMenu::draw(SCRect inDamage)
-{    
+{
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
 	SCRect dbounds = getDrawBounds();
@@ -3363,21 +3361,21 @@ void SCPopUpMenu::draw(SCRect inDamage)
 
     if (mBackgroundImage)
 		mBackgroundImage->draw(cgc, rect);
-   
+
     CGRect bounds = SCtoCGRect(dbounds);
     QDDrawBevelRect(cgc, bounds, 1, false);
 
 	CGContextSetRGBFillColor(cgc, mStringColor.red, mStringColor.green, mStringColor.blue, mStringColor.alpha);
-	
+
 	int vc = (int)(bounds.origin.y + bounds.size.height/2);
 	int hc = (int)(bounds.origin.x + 7);
     CGContextMoveToPoint(cgc, hc-3, vc-3);
-	
+
     CGContextAddLineToPoint(cgc, hc+3, vc-3);
     CGContextAddLineToPoint(cgc, hc, vc+3);
     CGContextAddLineToPoint(cgc, hc-3, vc-3);
-    CGContextFillPath(cgc);	
-	
+    CGContextFillPath(cgc);
+
     CGContextRestoreGState(cgc);
 
     if (mMenuH) {
@@ -3401,7 +3399,7 @@ void SCPopUpMenu::draw(SCRect inDamage)
 bool SCPopUpMenu::setValue(int inValue, bool send)
 {
 	if (!mMenuH) return false;
-	
+
     bool changed = inValue != mValue;
 	int numberOfItems = CountMenuItems(mMenuH);
 	inValue = sc_mod(inValue, numberOfItems);
@@ -3415,38 +3413,38 @@ bool SCPopUpMenu::setValue(int inValue, bool send)
 
 
 void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
-{	
+{
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
-    } else {    
+    } else {
 		if (!mMenuH) return;
 		SCRect bounds = getDrawBounds();
-		
+
 		[(SCGraphView*)mTop->GetNSView() startMenuTracking: this];
-	
+
 		int numberOfItems = CountMenuItems(mMenuH);
 		for (int i=0; i<numberOfItems; ++i) {
 			MacCheckMenuItem(mMenuH, i+1, mValue == i);
 		}
-	
+
 		NSPoint p = NSMakePoint(bounds.x, bounds.y);
 		NSView *view = mTop->GetNSView();
 		p = [view convertPoint: p toView: nil];
 		p = [[view window] convertBaseToScreen: p];
-		
+
 		// cocoa to carbon y flip
 		float screenHeight = [[NSScreen mainScreen] frame].size.height;
 		p.y = screenHeight - p.y;
-		
+
 		int val = PopUpMenuSelect(mMenuH, (short)p.y, (short)p.x, mValue + 1);
 		if (val == 0) return;
 		val = (val & 0xFFFF) - 1;
-		setValue(val, true);	
+		setValue(val, true);
 	}
 }
 
 int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	if (symbol == s_value) {
             int value;
@@ -3459,29 +3457,29 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 	if (strcmp(name, "font")==0) {
             if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
-            PyrSlot *slots = slot->uo->slots;
-        
-            float fontSize; 
+            PyrSlot *slots = slotRawObject(slot)->slots;
+
+            float fontSize;
             err = slotFloatVal(slots+1, &fontSize);
             if (err) return err;
-            
+
             err = slotStrVal(slots+0, mFontName, kFontNameSize);
             if (err) return err;
-            
+
             mFontSize = fontSize;
             return errNone;
         }
 	if (strcmp(name, "items")==0) {
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            
+
             // wipe out old
             if (mMenuH) DisposeMenu(mMenuH);
-			
-            PyrObject *array = slot->uo;
+
+            PyrObject *array = slotRawObject(slot);
             int numItems = array->size;
-			
+
 			mMenuH = NewMenu(1, "\p");
-			
+
             for (int i=0; i<numItems; ++i) {
                 PyrSlot *slot = array->slots + i;
 
@@ -3546,11 +3544,11 @@ int allocSlotDoubleArrayVal(PyrSlot *slot, double **arr)
 		*arr = 0;
 	}
     if (isKindOfSlot(slot, class_array)) {
-            len = slot->uo->size;
+            len = slotRawObject(slot)->size;
             *arr = new double[len];
-           // memcpy(*arr, slot->uo->slots, len * sizeof(double));
+           // memcpy(*arr, slotRawObject(slot)->slots, len * sizeof(double));
 			for(int i =0; i<len; i++){
-				err = slotDoubleVal(slot->uo->slots+i, *arr+i);
+				err = slotDoubleVal(slotRawObject(slot)->slots+i, *arr+i);
 				if (err) *(*arr+i) = 0.0;
 			}
             return errNone;
@@ -3563,7 +3561,7 @@ SCView* NewSCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect
 }
 
 SCMultiSliderView::SCMultiSliderView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mThumbSize(12.), mStepSize(0.), 
+	: SCView(inParent, inObj, inBounds), mThumbSize(12.), mStepSize(0.),
 		mStepScale(0.), mKnob(0), mXOffset(1)
 {
         mTabSize = (int) (inBounds.width / mThumbSize);
@@ -3607,17 +3605,17 @@ void SCMultiSliderView::draw(SCRect inDamage)
 		else mElasticIndexStep = (bounds.height - 2)/(mTabSize-mStartIndex);
 	} else mElasticIndexStep = 0.0;
 	double step = mElasticIndexStep;
-	
+
     if (mBackground) mBackground->draw(cgc, rect);
 
     if (mBackgroundImage)
         mBackgroundImage->draw(cgc, rect);
 
     QDDrawBevelRect(cgc, rect, 1, true);
-    
+
     CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
     CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
-    
+
     CGRect drawRect;
     float yval = 0;
 
@@ -3655,7 +3653,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 CGContextMoveToPoint(cgc,  gcx, gcy);
 			else
                 CGContextAddLineToPoint(cgc, gcx, gcy);
-        }        
+        }
 		//these are fixed values: used for the max of soundfiles, need to go backwards to fill
         if (mSecYValues != NULL) {
             int j = xpixels - 1 - xstart;
@@ -3674,7 +3672,7 @@ void SCMultiSliderView::draw(SCRect inDamage)
     if(mShowIndex) {
         if(mCurrentIndex + mSelectionSize >= xstart){
             int currentI, selsize;
-            if(mCurrentIndex < xstart) { 
+            if(mCurrentIndex < xstart) {
                 currentI = 0;
                 selsize = sc_clip(mSelectionSize, xstart, mTabSize);
             } else {
@@ -3682,34 +3680,34 @@ void SCMultiSliderView::draw(SCRect inDamage)
                 selsize = mSelectionSize;
             }
             if(mIsHorizontal){
-				if(mElasticMode) 
-				drawRect = CGRectMake(bounds.x + 1 + (currentI * mElasticIndexStep), 
-							bounds.y + 1, 
-							(selsize * mElasticIndexStep), 
+				if(mElasticMode)
+				drawRect = CGRectMake(bounds.x + 1 + (currentI * mElasticIndexStep),
+							bounds.y + 1,
+							(selsize * mElasticIndexStep),
 							bounds.height);
 				else
-                drawRect = CGRectMake(bounds.x + 1 + (currentI * ( mXOffset + mThumbSize)), 
-							bounds.y + 1, 
-							(selsize * ( mXOffset + mThumbSize)) - mXOffset, 
+                drawRect = CGRectMake(bounds.x + 1 + (currentI * ( mXOffset + mThumbSize)),
+							bounds.y + 1,
+							(selsize * ( mXOffset + mThumbSize)) - mXOffset,
 							bounds.height);
             } else {
-				if(mElasticMode) 
-				drawRect = CGRectMake( bounds.x + 1, 
-							bounds.y + 1 + (currentI * mElasticIndexStep), 
-							bounds.width, 
+				if(mElasticMode)
+				drawRect = CGRectMake( bounds.x + 1,
+							bounds.y + 1 + (currentI * mElasticIndexStep),
+							bounds.width,
 							(selsize * mElasticIndexStep));
 				else
-                drawRect = CGRectMake( bounds.x + 1, 
-							bounds.y + 1 + (currentI * ( mXOffset + mThumbSize)), 
-							bounds.width, 
+                drawRect = CGRectMake( bounds.x + 1,
+							bounds.y + 1 + (currentI * ( mXOffset + mThumbSize)),
+							bounds.width,
 							(selsize * ( mXOffset + mThumbSize))  - mXOffset);
             }
             CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, 0.4);
-            CGContextFillRect (cgc, drawRect); 
-        }   
+            CGContextFillRect (cgc, drawRect);
+        }
     }
     CGContextRestoreGState(cgc);
-    
+
 }
 
 bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
@@ -3717,7 +3715,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
     bool changed;
     yIn = sc_clip(yIn, 0., 1.);
     xIn = sc_clip(xIn, 0, mTabSize - 1);
-    
+
     if (mStepSize > 0.) {
         yIn = floor(yIn * mStepScale + 0.5) * mStepSize;
     }
@@ -3727,7 +3725,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
         if (changed) {
             mYValues[xIn] = yIn;
             mCurrentY = yIn;
-            if (send) sendMessage(s_doaction, 0, 0, 0); 
+            if (send) sendMessage(s_doaction, 0, 0, 0);
             // post("new val: %f  x: %d \n", (float) yIn, xIn);
             refresh();
         }
@@ -3743,7 +3741,7 @@ bool SCMultiSliderView::setValue(int xIn, double yIn, bool send)
         maxSize = mTabSize - mCurrentIndex;
         if(mSelectionSize > maxSize) mSelectionSize = maxSize;
 
-        if (send) sendMessage(s_doaction, 0, 0, 0); 
+        if (send) sendMessage(s_doaction, 0, 0, 0);
         //post("readOnly: x: %d \n", mCurrentIndex);
         if(mShowIndex)	refresh();
     }
@@ -3756,7 +3754,7 @@ int SCMultiSliderView::indexFromPoint(SCPoint where)
 	SCRect bounds = getDrawBounds();
 
     if(mIsHorizontal){
-		if(mElasticMode) 
+		if(mElasticMode)
 			return (int) ((where.x - bounds.x -1)/mElasticIndexStep);
 		else
 			return (int) ((where.x - bounds.x -1)/(mThumbSize + mXOffset)) + mStartIndex;
@@ -3784,13 +3782,13 @@ void SCMultiSliderView::setValueFromPoint(SCPoint where)
 }
 
 SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
-{    
+{
     double x,y, thumbx, thumby;
 	float xoffset = mXOffset;
 	SCRect bounds = getDrawBounds();
-	
+
 	//post("step is: %f ", step);
-	
+
     if(mIsHorizontal){
         thumby = mThumbSizeY;
 		if(mElasticMode){
@@ -3801,7 +3799,7 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
 			thumbx = mThumbSize;
 		}
         y = valIn * (bounds.height - thumby - 2);
-        y = bounds.y + bounds.height - y - 1 - thumby; 
+        y = bounds.y + bounds.height - y - 1 - thumby;
         x = bounds.x + x + 1;
         if(mIsFilled) thumby = bounds.height;
     } else {
@@ -3822,7 +3820,7 @@ SCRect SCMultiSliderView::calcThumbRect(int indexIn, double valIn, double step)
         }
         thumby = mThumbSize;
     }
-    return SCMakeRect( x, y, thumbx, thumby);   
+    return SCMakeRect( x, y, thumbx, thumby);
 }
 
 void SCMultiSliderView::setSelection(SCPoint where)
@@ -3889,7 +3887,7 @@ void SCMultiSliderView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEve
 }
 
 int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
     char *name = symbol->name;
     if (strcmp(name, "step")==0) {
@@ -3897,7 +3895,7 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if (!err) {
 			mStepScale = 1. / mStepSize;
 			bool changed = false;
-			bool changedout = false;			
+			bool changedout = false;
 			for(int i=0; i< mTabSize; ++i){
 				changed = setValue(i, mYValues[i], false);
 				if(changed) changedout = changed;
@@ -3911,25 +3909,25 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         //setVisibleSize();
         refresh();
         return errNone;
-    } 
+    }
     if (strcmp(name, "thumbWidth")==0) {
         err = slotFloatVal(slot, &mThumbSizeY);
         //setVisibleSize();
         refresh();
         return errNone;
-    } 
+    }
     if (strcmp(name, "indexThumbSize")==0) {
         err = slotFloatVal(slot, &mThumbSize);
         //setVisibleSize();
         refresh();
         return errNone;
-    } 
+    }
     if (strcmp(name, "valueThumbSize")==0) {
         err = slotFloatVal(slot, &mThumbSizeY);
         //setVisibleSize();
         refresh();
         return errNone;
-    } 
+    }
     if (strcmp(name, "xOffset")==0) {
         err = slotFloatVal(slot, &mXOffset);
         if(mXOffset < 1.0) mXOffset = 0.0; //mResamp = (int) 1.0 / mXOffset;
@@ -3954,32 +3952,32 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         return errNone;
     }
     if (strcmp(name, "readOnly")==0) {
-        mReadOnly = IsTrue(slot); 
+        mReadOnly = IsTrue(slot);
         refresh();
         return errNone;
     }
     if (strcmp(name, "isHorizontal")==0) {
-        mIsHorizontal = IsTrue(slot); 
+        mIsHorizontal = IsTrue(slot);
         refresh();
         return errNone;
     }
     if (strcmp(name, "drawLines")==0) {
-        mDrawLinesActive = IsTrue(slot); 
+        mDrawLinesActive = IsTrue(slot);
         refresh();
         return errNone;
     }
     if (strcmp(name, "drawRects")==0) {
-        mDrawRectsActive = IsTrue(slot); 
+        mDrawRectsActive = IsTrue(slot);
         refresh();
         return errNone;
     }
     if (strcmp(name, "isFilled")==0) {
-        mIsFilled = IsTrue(slot); 
+        mIsFilled = IsTrue(slot);
         refresh();
         return errNone;
     }
     if (strcmp(name, "showIndex")==0) {
-        mShowIndex = IsTrue(slot); 
+        mShowIndex = IsTrue(slot);
         refresh();
         return errNone;
     }
@@ -4000,23 +3998,23 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
     if (symbol == s_value) {
         if (!isKindOfSlot(slot, class_array)) return errWrongType;
-        if(slot->uo->size != mTabSize) {
+        if(slotRawObject(slot)->size != mTabSize) {
             err = allocSlotDoubleArrayVal(slot, &mYValues);
-            mTabSize = slot->uo->size;
+            mTabSize = slotRawObject(slot)->size;
 			SetBool(slot, true);
-		
+
         } else {
-            int len = slot->uo->size;
+            int len = slotRawObject(slot)->size;
 			double val;
 			bool changed = false;
-           // memcpy(mYValues, slot->uo->slots, len * sizeof(double));
+           // memcpy(mYValues, slotRawObject(slot)->slots, len * sizeof(double));
 			for(int i =0; i<len; i++){
-				err = slotDoubleVal(slot->uo->slots+i, &val);
+				err = slotDoubleVal(slotRawObject(slot)->slots+i, &val);
 				if(mYValues[i] != val) changed = true;
 				if (err) mYValues[i] = 0.0; else mYValues[i] = val;
 			}
 			SetBool(slot, changed);
-			
+
         }
         //setVisibleSize();
         refresh();
@@ -4024,8 +4022,8 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
     if (strcmp(name, "referenceValues")==0) {
         if (!isKindOfSlot(slot, class_array)) return errWrongType;
-        if(slot->uo->size == mTabSize && mSecYValues != NULL) {
-            err = allocSlotDoubleArrayVal(slot, &mSecYValues);    
+        if(slotRawObject(slot)->size == mTabSize && mSecYValues != NULL) {
+            err = allocSlotDoubleArrayVal(slot, &mSecYValues);
         } else {
 			err = allocSlotDoubleArrayVal(slot, &mSecYValues);
         }
@@ -4043,8 +4041,8 @@ int SCMultiSliderView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         refresh();
         return errNone;
     }
-	
-	
+
+
 
     return SCView::setProperty(symbol, slot);
 }
@@ -4068,19 +4066,19 @@ int SCMultiSliderView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
         if (symbol == s_value) {
               int len;
             if (isKindOfSlot(slot, class_array)) {
-                len = slot->uo->size;
+                len = slotRawObject(slot)->size;
                 if(len > mTabSize)  return errWrongType;
-                memcpy(slot->uo->slots, mYValues, len * sizeof(double));
+                memcpy(slotRawObject(slot)->slots, mYValues, len * sizeof(double));
                 }
             return errNone;
 	}
         if (strcmp(name, "referenceValues")==0) {
               int len;
             if (isKindOfSlot(slot, class_array)) {
-                len = slot->uo->size;
+                len = slotRawObject(slot)->size;
                 if(len > mTabSize)  return errWrongType;
                 if (mSecYValues != NULL)
-                memcpy(slot->uo->slots, mSecYValues, len * sizeof(double));
+                memcpy(slotRawObject(slot)->slots, mSecYValues, len * sizeof(double));
                 else SetNil(slot);
                 }
             return errNone;
@@ -4137,7 +4135,7 @@ void SCUserView::draw(SCRect inDamage)
 {
 
 	SCRect bounds = getDrawBounds();
-	SCView::draw(bounds); // draw background	
+	SCView::draw(bounds); // draw background
 	if(!mDrawingEnabled) return;
 	if(bounds.width <= 0 || bounds.height <= 0) return;
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
@@ -4148,7 +4146,7 @@ void SCUserView::draw(SCRect inDamage)
 		CGSize size = CGSizeMake(bounds.width, bounds.height);
 //		post("bounds.width: %f, bounds.height: %f\n",bounds.width, bounds.height);
 		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-		if(!mCGLayer) 
+		if(!mCGLayer)
 		{
 			mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
 			if(!mCGLayer)
@@ -4167,7 +4165,7 @@ void SCUserView::draw(SCRect inDamage)
 		lGCtx = [NSGraphicsContext currentContext];
 		lCGContext = CGLayerGetContext(mCGLayer);
 
-		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
+		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];
 		[NSGraphicsContext setCurrentContext: gclayer];
 		if(mClearOnRefresh){
 			CGContextClearRect(lCGContext,  cgrect);
@@ -4180,11 +4178,11 @@ void SCUserView::draw(SCRect inDamage)
     sendMessage(s_draw, 0, 0, 0);
 	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
 	if(mRelativeOrigin){
-		CGContextEndTransparencyLayer(lCGContext);	
+		CGContextEndTransparencyLayer(lCGContext);
 		CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
 		[NSGraphicsContext setCurrentContext: lGCtx];
 	}
-	#endif	
+	#endif
 }
 void SCUserView::clearDrawing()
 {
@@ -4199,16 +4197,16 @@ void SCUserView::clearDrawing()
 	CGContextSaveGState(cgc);
 
 	lCGContext = CGLayerGetContext(mCGLayer);
-	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];		
+	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];
 //	[NSGraphicsContext setCurrentContext: gclayer];
-		
+
 	CGContextClearRect(lCGContext,  cgrect);
 	CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
 	CGContextFillRect (lCGContext,  cgrect);
 	CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
 	CGContextRestoreGState(cgc);
 //	[NSGraphicsContext setCurrentContext: lGCtx];
-	
+
 }
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
@@ -4219,9 +4217,9 @@ void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
 //	mRealtiveMousePoint.y = where.y - bounds.y;
 
 //    PyrSlot args[3];
-//    SetFloat(args+0, where.x); 
-//    SetFloat(args+1, where.y); 
-//    SetInt(args+2, modifiers); 
+//    SetFloat(args+0, where.x);
+//    SetFloat(args+1, where.y);
+//    SetInt(args+2, modifiers);
 //    sendMessage(method, 3, args, 0);
 }
 
@@ -4241,7 +4239,7 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 //	mRealtiveMousePoint.y = where.y - bounds.y;
 //	if (modifiers & NSCommandKeyMask) {
 //		beginDrag(where);
-//	} 
+//	}
 
 //	else {
 //	mouseAction(getsym("mouseTrack"), where, modifiers);
@@ -4251,17 +4249,17 @@ void SCUserView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent
 void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-	
+
 	if(parent()->isTopContainer()) {
 		mRealtiveMousePoint.x = where.x - bounds.x;
 		mRealtiveMousePoint.y = where.y - bounds.y;
-	}else{		
+	}else{
 		mRealtiveMousePoint.x = where.x - mBounds.x;
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
-//	
+//
 //	SCView::mouseDownAction( (mRelativeOrigin ? mRealtiveMousePoint : where), modifiers, theEvent);
-	
+
 	if(!mRelativeOrigin) {
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x + tbounds.x;
@@ -4277,7 +4275,7 @@ void SCUserView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent
 void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-	
+
 	if(parent()->isTopContainer()) {
 		mRealtiveMousePoint.x = where.x - bounds.x;
 		mRealtiveMousePoint.y = where.y - bounds.y;
@@ -4285,21 +4283,21 @@ void SCUserView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent
 		mRealtiveMousePoint.x = where.x - mBounds.x;
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
-	
+
 	if(!mRelativeOrigin) {
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x + tbounds.x;
 		where.y = where.y + tbounds.y;
 	}
-	
+
 	SCView::mouseMoveAction( where, modifiers, theEvent);
-	
+
 }
 
 void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
 	SCRect bounds = getDrawBounds();
-	
+
 	if(parent()->isTopContainer()) {
 		mRealtiveMousePoint.x = where.x - bounds.x;
 		mRealtiveMousePoint.y = where.y - bounds.y;
@@ -4307,21 +4305,21 @@ void SCUserView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		mRealtiveMousePoint.x = where.x - mBounds.x;
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
-	
+
 	if(!mRelativeOrigin) {
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x + tbounds.x;
 		where.y = where.y + tbounds.y;
 	}
-	
+
 	SCView::mouseUpAction( where, modifiers, theEvent);
 
-}	 
+}
 
 void SCUserView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 {
 	SCRect bounds = getDrawBounds();
-	
+
 	if(parent()->isTopContainer()) {
 		mRealtiveMousePoint.x = where.x - bounds.x;
 		mRealtiveMousePoint.y = where.y - bounds.y;
@@ -4329,13 +4327,13 @@ void SCUserView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 		mRealtiveMousePoint.x = where.x - mBounds.x;
 		mRealtiveMousePoint.y = where.y - mBounds.y;
 	}
-	
+
 	if(!mRelativeOrigin) {
 		SCRect tbounds = getDrawBounds();
 		where.x = where.x + tbounds.x;
 		where.y = where.y + tbounds.y;
 	}
-	
+
 	SCView::mouseOver( where, modifiers, theEvent);
 }
 
@@ -4365,9 +4363,9 @@ void SCUserView::receiveDrag()
 }
 
 int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	char *name = symbol->name;
-	
+
     if (strcmp(name, "clearOnRefresh")==0) {
 		mClearOnRefresh = IsTrue(slot);
 		return errNone;
@@ -4375,33 +4373,33 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "relativeOrigin")==0) {
 		mRelativeOrigin = IsTrue(slot);
 		return errNone;
-    }		
+    }
 	if (strcmp(name, "clearDrawing")==0) {
 		clearDrawing();
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "drawingEnabled")==0) {
 		mDrawingEnabled = IsTrue(slot);
-		return errNone;				
+		return errNone;
 	}
     return SCView::setProperty(symbol, slot);
 }
 
 int SCUserView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	char *name = symbol->name;
-	
+
     if (strcmp(name, "mousePosition")==0) {
 		if(isKindOfSlot(slot, s_point->u.classobj)){
-		
-			PyrSlot *slots = slot->uo->slots;
+
+			PyrSlot *slots = slotRawObject(slot)->slots;
 			SetFloat(slots+0, mRealtiveMousePoint.x);
 			SetFloat(slots+1, mRealtiveMousePoint.y);
 		}
 		return errNone;
     }
-	
-	
+
+
     return SCView::getProperty(symbol, slot);
 }
 
@@ -4451,7 +4449,7 @@ SCAnimationView::~SCAnimationView()
 void SCAnimationView::draw(SCRect inDamage)
 {
 	SCUserView::draw(inDamage);
-	
+
 	if(mShowInfo && mDrawingEnabled) {
 		struct timeval tv;
 		gettimeofday(&tv, 0);
@@ -4476,9 +4474,9 @@ void SCAnimationView::draw(SCRect inDamage)
 }
 
 int SCAnimationView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	char *name = symbol->name;
-	
+
 	if(strcmp(name, "showInfo")==0) {
 		mShowInfo = IsTrue(slot);
 		return errNone;
@@ -4518,7 +4516,7 @@ void SCStaticText::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
 	SCRect bounds = getDrawBounds();
-	
+
 	drawString(bounds);
 }
 
@@ -4543,14 +4541,14 @@ int allocSlotStrVal(PyrSlot *slot, char **str)
 		*str = 0;
 	}
     if (IsSym(slot)) {
-            len = strlen(slot->us->name);
+            len = strlen(slotRawSymbol(slot)->name);
             *str = new char[len+1];
-            strcpy(*str, slot->us->name);
+            strcpy(*str, slotRawSymbol(slot)->name);
             return errNone;
     } else if (isKindOfSlot(slot, class_string)) {
-            len = slot->uo->size;
+            len = slotRawObject(slot)->size;
             *str = new char[len+1];
-            memcpy(*str, slot->uos->s, len);
+            memcpy(*str, slotRawString(slot)->s, len);
             (*str)[len] = 0;
             return errNone;
     }
@@ -4558,7 +4556,7 @@ int allocSlotStrVal(PyrSlot *slot, char **str)
 }
 
 int SCStaticText::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
 	if (strcmp(name, "string")==0) {
@@ -4569,15 +4567,15 @@ int SCStaticText::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 	if (strcmp(name, "font")==0) {
             if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
-            PyrSlot *slots = slot->uo->slots;
-        
-            float fontSize; 
+            PyrSlot *slots = slotRawObject(slot)->slots;
+
+            float fontSize;
             err = slotFloatVal(slots+1, &fontSize);
             if (err) return err;
-            
+
             err = slotStrVal(slots+0, mFontName, kFontNameSize);
             if (err) return err;
-            
+
             mFontSize = fontSize;
             refresh();
             return errNone;
@@ -4591,9 +4589,9 @@ int SCStaticText::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "align")==0) {
                 int align;
                 if (IsSym(slot)) {
-                    if (slot->us->name[0] == 'l') mAlignment = -1;
-                    else if (slot->us->name[0] == 'r') mAlignment = 1;
-                    else if (slot->us->name[0] == 'c') mAlignment = 0;
+                    if (slotRawSymbol(slot)->name[0] == 'l') mAlignment = -1;
+                    else if (slotRawSymbol(slot)->name[0] == 'r') mAlignment = 1;
+                    else if (slotRawSymbol(slot)->name[0] == 'c') mAlignment = 0;
                     else return errFailed;
                 } else {
                     err = slotIntVal(slot, &align);
@@ -4649,40 +4647,40 @@ NSRect SCtoNSRect(SCRect screct);
 void SCListView::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-	SCRect bounds = getDrawBounds();	
+	SCRect bounds = getDrawBounds();
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(cgc);
-	
+
 	CGRect bevelRect = SCtoCGRect(bounds);
 	QDDrawBevelRect(cgc, bevelRect, 1, true);
 
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
 
 	mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
-	
+
 	float itemHeight = mStrSize.height + 3.f;
 	//float totalHeight = itemHeight * numItems;
 	float visibleItems = bounds.height / itemHeight;
 	float fraction = visibleItems / (float)numItems;
 
 	float totalHeight = itemHeight * numItems;
-				
+
 	float maxScroll = totalHeight - bounds.height;
 	if (maxScroll < 0) maxScroll = 0;
 	mScroll = sc_clip(mScroll, 0, maxScroll);
-	
+
 	SCRect itemBounds = bounds;
-	itemBounds.x += 4; 
-	itemBounds.y += 2 - mScroll; 
+	itemBounds.x += 4;
+	itemBounds.y += 2 - mScroll;
 	itemBounds.width -= 6; itemBounds.height -= 4;
-	
+
 	itemBounds.height = itemHeight;
-	
-	if (fraction < 1.f) 
+
+	if (fraction < 1.f)
 	{
-		
+
 		itemBounds.width -= 16;
-		
+
 		// draw slider
 		SCRect sliderBounds = bounds;
 		sliderBounds.x = bounds.x + bounds.width - 16;
@@ -4701,20 +4699,20 @@ void SCListView::draw(SCRect inDamage)
 		bevelRect = SCtoCGRect(thumbBounds);
 		QDDrawBevelRect(cgc, bevelRect, 2, false);
 	}
-	
+
 	if (mArray) {
 		CGRect clipRect = SCtoCGRect(bounds);
 		clipRect.origin.y += 1;
 		clipRect.size.height -= 2;
 		CGContextClipToRect(cgc, clipRect);
-		
+
 		int minIndex = (int)((mScroll - itemHeight + 1) / itemHeight);
 		int maxIndex = (int)(minIndex + 1 + (bounds.height + itemHeight - 1) / itemHeight);
 		if (maxIndex > numItems - 1) maxIndex = numItems - 1;
 		itemBounds.y += minIndex * itemHeight;
 
-				
-		for (int i = minIndex; i <= maxIndex; ++i) 
+
+		for (int i = minIndex; i <= maxIndex; ++i)
 		{
 			NSString* nsstring = (NSString*)CFArrayGetValueAtIndex(mArray, i);
 			NSSize size;
@@ -4722,8 +4720,8 @@ void SCListView::draw(SCRect inDamage)
 				SCColor color = mItemBackgroundColor[i];
 				CGContextSetRGBFillColor(cgc, color.red, color.green, color.blue, color.alpha);
 				CGRect drawRect = SCtoCGRect(itemBounds);
-				CGContextFillRect (cgc, drawRect);					
-			}			
+				CGContextFillRect (cgc, drawRect);
+			}
 			if (i == mValue) {
 				CGContextSetRGBFillColor(cgc, mHiliteColor.red, mHiliteColor.green, mHiliteColor.blue, mHiliteColor.alpha);
 				CGRect drawRect = SCtoCGRect(itemBounds);
@@ -4732,7 +4730,7 @@ void SCListView::draw(SCRect inDamage)
 			} else {
 				nsStringDrawInRectAlign(nsstring, itemBounds, mFontName, mFontSize, mStringColor, mAlignment, -1, &size);
 			}
-		
+
 			itemBounds.y += itemBounds.height;
 		}
 		CGContextRestoreGState(cgc);
@@ -4742,24 +4740,24 @@ void SCListView::draw(SCRect inDamage)
 void SCListView::scrollToValue()
 {
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
-	SCRect bounds = getDrawBounds();	
-	
+	SCRect bounds = getDrawBounds();
+
 	float itemHeight = mStrSize.height + 3.f;
 	//float visibleItems = mBounds.height / itemHeight;
 	//float fraction = visibleItems / (float)numItems;
 	float totalHeight = itemHeight * numItems;
-				
+
 	float maxScroll = totalHeight - bounds.height;
 	if (maxScroll < 0) maxScroll = 0;
 
 	SCRect itemBounds = bounds;
-	itemBounds.x += 4; 
-	itemBounds.y += 2 - mScroll; 
+	itemBounds.x += 4;
+	itemBounds.y += 2 - mScroll;
 	itemBounds.width -= 6; itemBounds.height -= 4;
 	itemBounds.height = itemHeight;
-	
+
 	itemBounds.y += mValue * itemHeight;
-	
+
 	if (itemBounds.y < bounds.y) mScroll = mValue * itemHeight;
 	else if (itemBounds.y + itemHeight > bounds.y + bounds.height) mScroll = (mValue + 1) * itemHeight - bounds.height;
 }
@@ -4772,9 +4770,9 @@ bool SCListView::setValue(int inValue, bool send)
     else if (inValue >= numItems) inValue = 0;
     if (inValue != mValue || numItems < 2) {
         mValue = inValue;
-		
+
 		scrollToValue();
-		
+
         refresh();
         if (send) sendMessage(s_doaction, 0, 0, 0);
     }
@@ -4782,7 +4780,7 @@ bool SCListView::setValue(int inValue, bool send)
 }
 
 int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 
 	if (symbol == s_value) {
@@ -4797,7 +4795,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	char *name = symbol->name;
 	if (strcmp(name, "items")==0) {
 		if (IsNil(slot)) {
-			if (mArray) { 
+			if (mArray) {
 				CFRelease(mArray);
 				mArray = NULL;
 			}
@@ -4805,18 +4803,18 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			return errNone;
 		}
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		
+
 		// wipe out old
-		if (mArray) { 
+		if (mArray) {
 			CFRelease(mArray);
 			mArray = NULL;
 		}
-		
-		PyrObject *array = slot->uo;
+
+		PyrObject *array = slotRawObject(slot);
 		int numItems = array->size;
-		
+
 		mArray = (CFMutableArrayRef)CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-		
+
 		for (int i=0; i<numItems; ++i) {
 			PyrSlot *slot = array->slots + i;
 
@@ -4835,15 +4833,15 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "font")==0) {
 		if (!isKindOfSlot(slot, getsym("SCFont")->u.classobj)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
-	
-		float fontSize; 
+		PyrSlot *slots = slotRawObject(slot)->slots;
+
+		float fontSize;
 		err = slotFloatVal(slots+1, &fontSize);
 		if (err) return err;
-		
+
 		err = slotStrVal(slots+0, mFontName, kFontNameSize);
 		if (err) return err;
-		
+
 		mFontSize = fontSize;
 		refresh();
 		return errNone;
@@ -4856,7 +4854,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	if (strcmp(name, "itemColors")==0) {
 		if (IsNil(slot)) {
-			if (mItemBackgroundColor) { 
+			if (mItemBackgroundColor) {
 //				CFRelease(mItemBackgroundColor);
 				delete(mItemBackgroundColor);
 				mItemBackgroundColor = NULL;
@@ -4865,17 +4863,17 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			return errNone;
 		}
 		if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		
+
 		// wipe out old
-		if (mItemBackgroundColor) { 
+		if (mItemBackgroundColor) {
 //			CFRelease(mItemBackgroundColor);
 			delete(mItemBackgroundColor);
 			mItemBackgroundColor = NULL;
 		}
-		
-		PyrObject *array = slot->uo;
+
+		PyrObject *array = slotRawObject(slot);
 		int numItems = array->size;
-		
+
 //		mItemBackgroundColor = (CFMutableArrayRef)CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
 		mItemBackgroundColor = (SCColor*) malloc(numItems * sizeof(SCColor));
 		for (int i=0; i<numItems; ++i) {
@@ -4889,7 +4887,7 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "selectedStringColor")==0) {
 		err = slotColorVal(slot, &mSelectedStringColor);
 		if (err) return err;
@@ -4905,9 +4903,9 @@ int SCListView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "align")==0) {
 		int align;
 		if (IsSym(slot)) {
-			if (slot->us->name[0] == 'l') mAlignment = -1;
-			else if (slot->us->name[0] == 'r') mAlignment = 1;
-			else if (slot->us->name[0] == 'c') mAlignment = 0;
+			if (slotRawSymbol(slot)->name[0] == 'l') mAlignment = -1;
+			else if (slotRawSymbol(slot)->name[0] == 'r') mAlignment = 1;
+			else if (slotRawSymbol(slot)->name[0] == 'c') mAlignment = 0;
 			else return errFailed;
 		} else {
 			err = slotIntVal(slot, &align);
@@ -4935,8 +4933,8 @@ int SCListView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "itemColors")==0) {
 		int size, err;
 		PyrSlot * slots;
-		slots = slot->uo->slots;
-		size = slot->uo->size;
+		slots = slotRawObject(slot)->slots;
+		size = slotRawObject(slot)->size;
 		for(int i=0; i<size; i++)
 		{
 			err = setSlotColor(slots+i, &mItemBackgroundColor[i]);
@@ -4944,7 +4942,7 @@ int SCListView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		 return errNone;
 	}
-	
+
 	return SCView::getProperty(symbol, slot);
 }
 
@@ -4962,19 +4960,19 @@ void SCListView::receiveDrag()
 }
 
 void SCListView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
-{	
+{
 
 	mAnchor = where;
 	mAnchorScroll = mScroll;
-	SCRect bounds = getDrawBounds();	
+	SCRect bounds = getDrawBounds();
 
 	mStrSize = nsStringSize((NSString*)CFSTR("XWYjpgy"), mFontName, mFontSize, mStringColor);
 	int numItems = mArray ? CFArrayGetCount(mArray) : 0;
-	
+
 	float itemHeight = mStrSize.height + 3.f;
 	float visibleItems = bounds.height / itemHeight;
 	float fraction = visibleItems / (float)numItems;
-	
+
 	mScrolling = fraction < 1.f && where.x >= bounds.x + bounds.width - 16;
 	if (!mScrolling) {
 		int value = (int)((where.y - bounds.y - 2 + mScroll) / itemHeight);
@@ -4988,16 +4986,16 @@ void SCListView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
         beginDrag(where);
 	} else {
 		if (mScrolling) {
-			SCRect bounds = getDrawBounds();	
-	
+			SCRect bounds = getDrawBounds();
+
 			int numItems = mArray ? CFArrayGetCount(mArray) : 0;
-			
+
 			float itemHeight = mStrSize.height + 3.f;
 			float visibleItems = bounds.height / itemHeight;
 			float fraction = visibleItems / (float)numItems;
 			float totalHeight = itemHeight * numItems;
 			float travel = (1.f - fraction) * (bounds.height - 4);
-						
+
 			float maxScroll = totalHeight - bounds.height;
 			if (maxScroll < 0) maxScroll = 0;
 			float sliderOffset = travel * (mAnchorScroll / maxScroll);
@@ -5005,9 +5003,9 @@ void SCListView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 			float change = where.y - mAnchor.y;
 			float newSliderOffset = sliderOffset + change;
 			mScroll = maxScroll * newSliderOffset / travel;
-			
+
 			mScroll = sc_clip(mScroll, 0, maxScroll);
-			
+
 			refresh();
 		}
     }
@@ -5020,22 +5018,22 @@ void SCListView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //SCEnvelopeView by jan trutzschler feb.02.03 // udated feb.22.03
-int allocSlot2DDoubleArrayPyrSlot (PyrSlot *slot, double **arr, int position); 
+int allocSlot2DDoubleArrayPyrSlot (PyrSlot *slot, double **arr, int position);
 int allocSlot2DDoubleArrayPyrSlot(PyrSlot *slot, double **arr, int position)
 {
-    int len;
-    if (*arr) {
+	int len;
+	if (*arr) {
 		delete [] *arr;
 		*arr = 0;
 	}
-	
-    if (isKindOfSlot(slot, class_array)) {
-			len = (slot->uo->slots + position)->uo->size;
-            *arr = new double[len];
-			memcpy(*arr, ((PyrDoubleArray*)(slot->uo->slots+position)->uo)->d, len * sizeof(double));
+
+	if (isKindOfSlot(slot, class_array)) {
+			len = slotRawObject(slotRawObject(slot)->slots + position)->size;
+			*arr = new double[len];
+			memcpy(*arr, ((PyrDoubleArray*)slotRawObject(slotRawObject(slot)->slots+position))->d, len * sizeof(double));
 			return errNone;
-    }
-    return errWrongType;
+	}
+	return errWrongType;
 }
 int allocEnvArray (int size, SCEnvObject **arr);
 int allocEnvArray (int size, SCEnvObject **arr){
@@ -5078,7 +5076,7 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 	mSelectedIndex = -1;
 	mAbsoluteX = 0.0;
 	mIsFixedSelection = false;
-	
+
 	strcpy(mFontName, "Helvetica");
 	mFontSize = 12.;
 	mDrawCenteredConnection = true;
@@ -5088,30 +5086,30 @@ SCEnvelopeView::SCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRe
 }
 SCEnvelopeView::~SCEnvelopeView()
 {
-	
+
 	for(int i = 0; i < mTabSize; i++){
 		if( (mEnvObj+i)->mString)
 			delete [] (mEnvObj+i)->mString;
 		if((mEnvObj+i)->mConnections)
 			delete [] (mEnvObj+i)->mConnections;
-		/*	
+		/*
 		if((mEnvObj+i)->mConnectionOutputs)
 			delete [] (mEnvObj+i)->mConnectionOutputs;
 		if((mEnvObj+i)->mConnectionInputs)
 			delete [] (mEnvObj+i)->mConnectionInputs;
 			*/
-			
+
 	 }
-	 
+
     delete [] mEnvObj;
-	
+
 	if(drawOrder) delete [] drawOrder;
 
 }
 
 int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 {
-	int size = (slot->uo->slots[0]).uo->size;
+	int size = slotRawObject(&(slotRawObject(slot)->slots[0]))->size;
 
 	SCEnvObject * scenv = 0;
 	int err = allocEnvArray(size, &scenv);
@@ -5124,8 +5122,8 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 				(scenv+i)->mString = 0;
 				(scenv+i)->mConnections = 0;
 				(scenv+i)->mColor = mFillColor;
-                (scenv+i)->mEditable = true;
-                (scenv+i)->mIsSelected = false;
+				(scenv+i)->mEditable = true;
+				(scenv+i)->mIsSelected = false;
 				(scenv+i)->mNumConnection = 0;
 				(scenv+i)->mRect.height = mThumbSizeY;
 				(scenv+i)->mRect.width = mThumbSize;
@@ -5151,13 +5149,13 @@ int SCEnvelopeView::allocSlotEnvObjArray(PyrSlot *slot, SCEnvObject **arr)
 			(scenv+i)->mRect.height = mThumbSizeY;
 			(scenv+i)->mRect.width = mThumbSize;
 			(scenv+i)->shape = 1;
-			(scenv+i)->curve = 1.0;			
-		}	
+			(scenv+i)->curve = 1.0;
+		}
 	}
-	
+
 	err = allocEnvArray(size, arr);
 	if(err) return err;
-	memcpy(*arr, scenv, size * sizeof(SCEnvObject));		
+	memcpy(*arr, scenv, size * sizeof(SCEnvObject));
 	delete [] scenv;
 	return errNone;
 }
@@ -5177,27 +5175,27 @@ void SCEnvelopeView::draw(SCRect inDamage)
 {
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-	SCRect bounds = getDrawBounds();	
-	
+	SCRect bounds = getDrawBounds();
+
     CGRect rect = SCtoCGRect(bounds);
     CGContextClipToRect(cgc, rect);
-	
+
     int xpixels = mActiveSize;
     int xstart = 0;
-	
+
     if (mBackground) mBackground->draw(cgc, rect);
-	
+
     if (mBackgroundImage)
 		mBackgroundImage->draw(cgc, rect);
-	
-    QDDrawBevelRect(cgc, rect, 1, true);
-    
 
-    
+    QDDrawBevelRect(cgc, rect, 1, true);
+
+
+
     CGRect drawRect;
     SCColor fillcolor;
     SCEnvObject * envobj;
-	
+
 	//draw grid
 	if(mGridOn){
 		float xgrid, ygrid, xgridpos, ygridpos;
@@ -5205,52 +5203,52 @@ void SCEnvelopeView::draw(SCRect inDamage)
 		float maxheight =  (bounds.height + bounds.y) - 2.f;
 
 		xgrid = mGrid.x;
-		ygrid = mGrid.y;	
+		ygrid = mGrid.y;
 
-		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);	
-		xgrid = xgrid*bounds.width;		
+		CGContextSetRGBFillColor(cgc, mGridColor.red, mGridColor.green, mGridColor.blue, mGridColor.alpha);
+		xgrid = xgrid*bounds.width;
 		xgridpos = bounds.x+1.f + xgrid;
-		ygrid = ygrid*bounds.height;		
-		ygridpos = bounds.y+1.f + ygrid;		
+		ygrid = ygrid*bounds.height;
+		ygridpos = bounds.y+1.f + ygrid;
 		while(xgridpos < maxwidth && (xgrid > 0.0))
 		{
-			drawRect = CGRectMake(xgridpos, 
-								  bounds.y + 1.f, 
-								  1.f, 
-								  bounds.height-2.f);	
-			CGContextFillRect (cgc, drawRect); 	
+			drawRect = CGRectMake(xgridpos,
+								  bounds.y + 1.f,
+								  1.f,
+								  bounds.height-2.f);
+			CGContextFillRect (cgc, drawRect);
 			xgridpos += xgrid;
 		}
-		
+
 		while(ygridpos < maxheight && (ygrid > 0.0))
 		{
-			drawRect = CGRectMake(bounds.x+1.f, 
-								  ygridpos, 
-								  bounds.width-2.f, 
-								  1.f);	
-			CGContextFillRect (cgc, drawRect); 	
+			drawRect = CGRectMake(bounds.x+1.f,
+								  ygridpos,
+								  bounds.width-2.f,
+								  1.f);
+			CGContextFillRect (cgc, drawRect);
 			ygridpos += ygrid;
-		}		
+		}
 	}
-	
+
     CGContextSetRGBFillColor(cgc, mFillColor.red, mFillColor.green, mFillColor.blue, mFillColor.alpha);
-    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);	
-    
+    CGContextSetRGBStrokeColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
+
 	//draw lines
     if (mDrawLinesActive) {
-		
+
 		int numConnection, num;
-		
+
         for(int i = xstart; i < xpixels; i++){
 			//	float gcoDx;
             envobj = &mEnvObj[i];
             setEnvRect(envobj->x, envobj->y, envobj);
-			
+
 			if(mIsEnvView){	//straight connection
-				if(i == xstart) 
+				if(i == xstart)
                     CGContextMoveToPoint(cgc, envobj->mDrawPoint.x,  envobj->mDrawPoint.y);
                 else {
-					float  gcx, gcy, gcox, gcoy;				
+					float  gcx, gcy, gcox, gcoy;
 					SCEnvObject * conObj = (mEnvObj + (i-1));
 					float curve;
 					float dur, numpointsY, yLevel, pos;
@@ -5261,13 +5259,13 @@ void SCEnvelopeView::draw(SCRect inDamage)
 					gcox = envobj->mDrawPoint.x;
 					gcoy = envobj->mDrawPoint.y;
 					gcx = conObj->mDrawPoint.x;
-					gcy =  conObj->mDrawPoint.y;	
+					gcy =  conObj->mDrawPoint.y;
 //					post("shape at i: %i, is: %i\n", i, conObj->shape);
 					switch(conObj->shape){
 						case shape_Step:
 							CGContextMoveToPoint(cgc, gcox, gcoy);
 							CGContextAddLineToPoint(cgc, gcox, gcy);
-							CGContextAddLineToPoint(cgc, gcx, gcy);							
+							CGContextAddLineToPoint(cgc, gcx, gcy);
 							break;
 						case shape_Linear:
 							CGContextMoveToPoint(cgc, gcox, gcoy);
@@ -5280,35 +5278,35 @@ void SCEnvelopeView::draw(SCRect inDamage)
 							{
 								startPointX = gcx;
 								endPointX = gcox;
-								
+
 								startPointY = gcy;
 								endPointY= gcoy;
-								
+
 								begTime = conObj->x;
 								begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
-								
+
 								endTime = envobj->x;
 								endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
 
 							} else {
 								startPointX = gcox;
 								endPointX = gcx;
-								
+
 								startPointY = gcoy;
-								endPointY= gcy;	
-								
+								endPointY= gcy;
+
 								begTime = envobj->x;
 								begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-								
+
 								endTime = conObj->x;
-								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);
 							}
-								
-							numsteps = (int) endPointX - startPointX;								
+
+							numsteps = (int) endPointX - startPointX;
 							dur = endTime - begTime;
 							stepsize = dur/numsteps;
-							CGContextMoveToPoint(cgc, startPointX, startPointY);	
-							
+							CGContextMoveToPoint(cgc, startPointX, startPointY);
+
 							for(int i=1; i<=numsteps+1; i++){
 								double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
 								double pos = step  / dur;
@@ -5316,17 +5314,17 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
 							}
 							CGContextAddLineToPoint(cgc, endPointX, endPointY);
-							
-							
+
+
 							break;
-						
+
 						case shape_Sine:
-							CGContextMoveToPoint(cgc, gcox, gcoy);	
+							CGContextMoveToPoint(cgc, gcox, gcoy);
 							CGContextAddCurveToPoint(cgc, gcox * EXPM1R + gcx * EXPM1, gcoy, gcox * EXPM1 + gcx * EXPM1R, gcy, gcx, gcy );
 							break;
-							
+
 						case shape_Welch:
-							CGContextMoveToPoint(cgc, gcox, gcoy);						
+							CGContextMoveToPoint(cgc, gcox, gcoy);
 							if( gcoy < gcy ) {
 								CGContextAddCurveToPoint(cgc, gcox * 0.556f + gcx * 0.444f, gcoy * 0.278f + gcy * 0.722f, gcox * 0.29f + gcx * 0.71f, gcy, gcx, gcy );
 							} else {
@@ -5334,43 +5332,43 @@ void SCEnvelopeView::draw(SCRect inDamage)
 							}
 							break;
 						case shape_Curve:
-							
+
 							if(conObj->x <= envobj->x)
 							{
 								startPointX = gcx;
 								endPointX = gcox;
-								
+
 								startPointY = gcy;
 								endPointY= gcoy;
-								
+
 								begTime = conObj->x;
 								begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
-								
+
 								endTime = envobj->x;
 								endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-								
+
 							} else {
 								startPointX = gcox;
 								endPointX = gcx;
-								
+
 								startPointY = gcoy;
-								endPointY= gcy;	
-								
+								endPointY= gcy;
+
 								begTime = envobj->x;
 								begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-								
+
 								endTime = conObj->x;
-								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+								endLevel = sc_clip(conObj->y, 0.000001f, 1.f);
 							}
-							
-							numsteps = (int) endPointX - startPointX;								
+
+							numsteps = (int) endPointX - startPointX;
 							dur = endTime - begTime;
 							stepsize = dur/numsteps;
-							CGContextMoveToPoint(cgc, startPointX, startPointY);	
-							
+							CGContextMoveToPoint(cgc, startPointX, startPointY);
+
 							for(int i=1; i<=numsteps+1; i++){
 								double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
-								double pos = step  / dur;								
+								double pos = step  / dur;
 								if (fabs(curve) < 0.0001) {
 									yLevel = pos * (endLevel - begLevel) + begLevel;
 								} else {
@@ -5378,14 +5376,14 @@ void SCEnvelopeView::draw(SCRect inDamage)
 									double numer = 1. - exp(pos * curve);
 									yLevel = begLevel + (endLevel - begLevel) * (numer/denom);
 								}
-								
+
 								CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
 							}
 							CGContextAddLineToPoint(cgc, endPointX, endPointY);
-							
+
 
 							break;
-							
+
 						case shape_Squared:
 							CGContextMoveToPoint(cgc, gcox, gcoy);
 							if( gcoy < gcy ) {
@@ -5394,7 +5392,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								CGContextAddCurveToPoint(cgc,  gcx * 0.5f + gcox * 0.5f, gcy, gcx * 0.9f + gcox * 0.1f, gcy, gcx, gcy );
 							}
 							break;
-							
+
 						case shape_Cubed:
 							CGContextMoveToPoint(cgc, gcox, gcoy);
 							if( gcoy < gcy ) {
@@ -5402,14 +5400,14 @@ void SCEnvelopeView::draw(SCRect inDamage)
 							} else {
 								CGContextAddCurveToPoint(cgc, gcx * 0.3333f + gcox * 0.6667f, gcy, gcx * 0.6667f + gcox * 0.3333f, gcy, gcx, gcy );
 							}
-							break;								
-							
+							break;
+
 					}
 				}
             } else {
-				
+
 				numConnection = envobj->mNumConnection;
-				
+
 				for(int j = 0; j < numConnection; j++){
 					float  gcx, gcy, gcox, gcoy, curve;
 					num = (int) (envobj->mConnections[j]);
@@ -5419,13 +5417,13 @@ void SCEnvelopeView::draw(SCRect inDamage)
 					gcox = envobj->mDrawPoint.x;
 					gcoy = envobj->mDrawPoint.y;
 					gcx = conObj->mDrawPoint.x;
-					gcy =  conObj->mDrawPoint.y;	
+					gcy =  conObj->mDrawPoint.y;
 					if (num >=0 ){
 						switch(conObj->shape){
 							case shape_Step:
 								CGContextMoveToPoint(cgc, gcox, gcoy);
 								CGContextAddLineToPoint(cgc, gcox, gcy);
-								CGContextAddLineToPoint(cgc, gcx, gcy);							
+								CGContextAddLineToPoint(cgc, gcx, gcy);
 								break;
 							case shape_Linear:
 								CGContextMoveToPoint(cgc, gcox, gcoy);
@@ -5435,46 +5433,46 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								CGContextMoveToPoint(cgc, gcox, gcoy);
 								CGContextAddCurveToPoint(cgc, gcox * EXPM1R + gcx * EXPM1, gcox, gcox * EXPM1 + gcx * EXPM1R, gcy, gcx, gcy );
 								break;
-								
+
 							case shape_Exponential:
 								float dur, numpointsY, yLevel, pos;
 								float begTime, endTime, begLevel, endLevel, stepsize, ar, br, yrange;
 								int numsteps;
 								float startPointX, endPointX, startPointY, endPointY;
-								
+
 								if(conObj->x <= envobj->x)
 								{
 									startPointX = gcx;
 									endPointX = gcox;
-									
+
 									startPointY = gcy;
 									endPointY= gcoy;
-									
+
 									begTime = conObj->x;
 									begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
-									
+
 									endTime = envobj->x;
 									endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-									
+
 								} else {
 									startPointX = gcox;
 									endPointX = gcx;
-									
+
 									startPointY = gcoy;
-									endPointY= gcy;	
-									
+									endPointY= gcy;
+
 									begTime = envobj->x;
 									begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-									
+
 									endTime = conObj->x;
-									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);
 								}
-								
-								numsteps = (int) endPointX - startPointX;								
+
+								numsteps = (int) endPointX - startPointX;
 								dur = endTime - begTime;
 								stepsize = dur/numsteps;
-								CGContextMoveToPoint(cgc, startPointX, startPointY);	
-								
+								CGContextMoveToPoint(cgc, startPointX, startPointY);
+
 								for(int i=1; i<=numsteps+1; i++){
 									double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
 									double pos = step  / dur;
@@ -5482,12 +5480,12 @@ void SCEnvelopeView::draw(SCRect inDamage)
 									CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
 								}
 								CGContextAddLineToPoint(cgc, endPointX, endPointY);
-								
-								
+
+
 								break;
-								
+
 							case shape_Welch:
-								CGContextMoveToPoint(cgc, gcox, gcoy);						
+								CGContextMoveToPoint(cgc, gcox, gcoy);
 								if( gcoy < gcy ) {
 									CGContextAddCurveToPoint(cgc, gcox * 0.556f + gcx * 0.444f, gcoy * 0.278f + gcy * 0.722f, gcox * 0.29f + gcx * 0.71f, gcy, gcx, gcy );
 								} else {
@@ -5495,43 +5493,43 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								}
 								break;
 							case shape_Curve:
-								
+
 								if(conObj->x <= envobj->x)
 								{
 									startPointX = gcx;
 									endPointX = gcox;
-									
+
 									startPointY = gcy;
 									endPointY= gcoy;
-									
+
 									begTime = conObj->x;
 									begLevel = sc_clip(conObj->y, 0.000001f, 1.f);
-									
+
 									endTime = envobj->x;
 									endLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-									
+
 								} else {
 									startPointX = gcox;
 									endPointX = gcx;
-									
+
 									startPointY = gcoy;
-									endPointY= gcy;	
-									
+									endPointY= gcy;
+
 									begTime = envobj->x;
 									begLevel = sc_clip(envobj->y, 0.000001f, 1.f);
-									
+
 									endTime = conObj->x;
-									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);								
+									endLevel = sc_clip(conObj->y, 0.000001f, 1.f);
 								}
-								
-								numsteps = (int) endPointX - startPointX;								
+
+								numsteps = (int) endPointX - startPointX;
 								dur = endTime - begTime;
 								stepsize = dur/numsteps;
-								CGContextMoveToPoint(cgc, startPointX, startPointY);	
-								
+								CGContextMoveToPoint(cgc, startPointX, startPointY);
+
 								for(int i=1; i<=numsteps+1; i++){
 									double step = sc_clip((i*stepsize), 0.0, dur); // need to clip when here when clipping endLevel or begLevel
-									double pos = step  / dur;								
+									double pos = step  / dur;
 									if (fabs(curve) < 0.0001) {
 										yLevel = pos * (endLevel - begLevel) + begLevel;
 									} else {
@@ -5539,14 +5537,14 @@ void SCEnvelopeView::draw(SCRect inDamage)
 										double numer = 1. - exp(pos * curve);
 										yLevel = begLevel + (endLevel - begLevel) * (numer/denom);
 									}
-									
+
 									CGContextAddLineToPoint(cgc, linlinNoClip((i*stepsize), 0.f, dur, startPointX, endPointX), linlinNoClip(yLevel, begLevel, endLevel, startPointY, endPointY));
 								}
 								CGContextAddLineToPoint(cgc, endPointX, endPointY);
-								
-								
+
+
 								break;
-								
+
 							case shape_Squared:
 								CGContextMoveToPoint(cgc, gcox, gcoy);
 								if( gcoy < gcy ) {
@@ -5554,7 +5552,7 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								} else {
 									CGContextAddCurveToPoint(cgc,  gcx * 0.5f + gcox * 0.5f, gcy, gcx * 0.9f + gcox * 0.1f, gcy, gcx, gcy );
 								}
-								break;	
+								break;
 							case shape_Cubed:
 								CGContextMoveToPoint(cgc, gcox, gcoy);
 								if( gcoy < gcy ) {
@@ -5562,16 +5560,16 @@ void SCEnvelopeView::draw(SCRect inDamage)
 								} else {
 									CGContextAddCurveToPoint(cgc, gcx * 0.3333f + gcox * 0.6667f, gcy, gcx * 0.6667f + gcox * 0.3333f, gcy, gcx, gcy );
 								}
-								break;								
-								
+								break;
+
 						}
-						
+
 					}
 				}
-				
+
 			}
 		}
-        
+
 		CGContextStrokePath(cgc);
     }
 	///////////////////////////draw rects
@@ -5581,23 +5579,23 @@ void SCEnvelopeView::draw(SCRect inDamage)
 			envobj = &mEnvObj[drawOrder[i]];
 			drawRect = SCtoCGRect(envobj->mRect);
 			setEnvRect(envobj->x, envobj->y, envobj);
-			
+
 			fillcolor = envobj->mColor;
 			CGContextSetRGBFillColor(cgc, fillcolor.red, fillcolor.green, fillcolor.blue, fillcolor.alpha);
 			CGContextFillRect (cgc, drawRect);
 			if(envobj->mRect.width > 1.0 || envobj->mRect.height > 1.0)
 				CGContextStrokeRect(cgc,drawRect);
-			if(envobj->mString) 
+			if(envobj->mString)
 				stringDrawCenteredInRect(envobj->mString, envobj->mRect, mFontName, mFontSize, mStrokeColor);
 			//draw outputs
 			CGContextSetRGBFillColor(cgc, mStrokeColor.red, mStrokeColor.green, mStrokeColor.blue, mStrokeColor.alpha);
-			
+
         }
     }
-	
+
     //draw selection:
     CGContextRestoreGState(cgc);
-    
+
 }
 
 bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool send)
@@ -5620,7 +5618,7 @@ bool SCEnvelopeView::setValue(SCEnvObject * envob,  double xIn, double yIn, bool
     setEnvRect(xIn, yIn, envob);
     mCurrentY = yIn;
     mCurrentX = xIn;
-    if (send) sendMessage(s_doaction, 0, 0, 0); 
+    if (send) sendMessage(s_doaction, 0, 0, 0);
     //refresh();
     return changed;
        // }
@@ -5629,8 +5627,8 @@ void SCEnvelopeView::setValueFromPoint(SCPoint where)
 {
     int indx = mSelectedIndex;
 	float width, height;
-	SCRect bounds = getDrawBounds();	
-	
+	SCRect bounds = getDrawBounds();
+
 	width = (mEnvObj+ mSelectedIndex)->mRect.width;
 	height = (mEnvObj+ mSelectedIndex)->mRect.height;
     double x = (double) (where.x - bounds.x - 1 - width/2) / (bounds.width - width - 2);
@@ -5643,18 +5641,18 @@ void SCEnvelopeView::setValueFromPoint(SCPoint where)
 
 
 bool SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envobIn)
-{    
+{
     double x,y, thumbx, thumby;
 	SCEnvObject * envob = envobIn;
 	envob->x = valXIn;
 	envob->y = valYIn;
 	thumby = envob->mRect.height;
 	thumbx = envob->mRect.width;
-	SCRect bounds = getDrawBounds();	
+	SCRect bounds = getDrawBounds();
 
 	x = valXIn * (bounds.width - thumbx - 2);
 	y = valYIn * (bounds.height - thumby - 2);
-	y = bounds.y + bounds.height - y - 1 - thumby; 
+	y = bounds.y + bounds.height - y - 1 - thumby;
 	x = bounds.x + x + 1;
 
 	envob->mRect = SCMakeRect( x, y, thumbx, thumby);
@@ -5664,7 +5662,7 @@ bool SCEnvelopeView::setEnvRect(double valXIn, double valYIn, SCEnvObject * envo
 //			if(! envob->mObjectColor == NULL) envob->mObjectColor = mFillColor;
 //			envob->mColor = envob->mObjectColor;
 	//}
-  //  return SCMakeRect( x, y, thumbx, thumby);   
+  //  return SCMakeRect( x, y, thumbx, thumby);
   return true;
 }
 void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnection)
@@ -5681,7 +5679,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
 
     }
     //
-    
+
     for(int count=mActiveSize - 1; count>=0; count--) {
 		int i = drawOrder[count];
         envo = &mEnvObj[i]; // check in reverse drawOrder so that 'on top' gets selected first
@@ -5691,11 +5689,11 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
 			// toggle fixed selection
 			if(envo->mIsSelected && mIsFixedSelection){
 //				post("toggle\n");
-				
+
 				envo->mIsSelected = false;
-				envo->mColor = envo->mObjectColor;	
+				envo->mColor = envo->mObjectColor;
 				mSelectedIndex = -1;
-				mIsFixedSelection = false;	
+				mIsFixedSelection = false;
 				return;
 			} else {
 				envo->mIsSelected = true;
@@ -5717,7 +5715,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
 				memcpy(drawOrder, newdrawOrder, mActiveSize * sizeof(int));
 				return;
 			}
-        } 
+        }
     }
    /*
    multiple selection
@@ -5726,7 +5724,7 @@ void SCEnvelopeView::setSelection(SCPoint where, bool fixed, bool checkForConnec
         (&mEnvObj[mSelectedIndex])->mColor = mFillColor;
         mSelectedIndex = -1;
     }
-    */ 
+    */
     refresh();
 }
 
@@ -5750,9 +5748,9 @@ void SCEnvelopeView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEve
 
     }
     }
-	if(mSelectedIndex >= 0) 
+	if(mSelectedIndex >= 0)
 		setValueFromPoint(where);
-	
+
 	mIsTracking = false;
    // mouseTrack(where, modifiers);
 }
@@ -5768,7 +5766,7 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else if (modifiers & NSShiftKeyMask) {
-           
+
             setSelection(where, true, false);
            /* mActiveSize++;
             if(mActiveSize < mTabSize) {
@@ -5791,7 +5789,7 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
     } else {
     if(!mIsFixedSelection && mSelectedIndex < 0)
         setSelection(where, false, false);
-		
+
 		if(mSelectedIndex >= 0) {
 			if(!mIsTracking){
 				mIsTracking = true;
@@ -5808,8 +5806,8 @@ void SCEnvelopeView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 /*
 void SCEnvelopeView::setVisibleSize()
 {
-    
-    
+
+
     float offset;
     float scaledsize;
     if(mThumbSize > 0.0) {
@@ -5821,13 +5819,13 @@ void SCEnvelopeView::setVisibleSize()
     } else {
         mVisibleSize = 0;
     }
- 
+
     mVisibleSize = mActiveSize;
 }
 */
 
 int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 		int err;
         char *name = symbol->name;
         if (strcmp(name, "step")==0) {
@@ -5835,7 +5833,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if (!err) {
 			mStepScale = 1. / mStepSize;
 			bool changed = false;
-			bool changedout = false;			
+			bool changedout = false;
 
 			SCEnvObject * envob;
             for(int i=0; i<mTabSize; ++i){
@@ -5848,10 +5846,10 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 			return errNone;
 		}
-		
+
 		if (strcmp(name, "thumbSize")==0) {
 			if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		    PyrSlot *slots = slot->uo->slots;
+		    PyrSlot *slots = slotRawObject(slot)->slots;
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
@@ -5874,7 +5872,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
         if (strcmp(name, "thumbWidth")==0) {
 			if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		    PyrSlot *slots = slot->uo->slots;
+		    PyrSlot *slots = slotRawObject(slot)->slots;
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
@@ -5891,10 +5889,10 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
-		
+
         if (strcmp(name, "thumbHeight")==0) {
 			if (!isKindOfSlot(slot, class_array)) return errWrongType;
-		    PyrSlot *slots = slot->uo->slots;
+		    PyrSlot *slots = slotRawObject(slot)->slots;
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
@@ -5919,14 +5917,14 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             err = slotIntVal(slot, &newSelection);
 			if(err) return err;
 			if(mSelectedIndex == newSelection) return errNone;
-			
+
 			if(mSelectedIndex >= 0) obj->mColor = obj->mObjectColor;
-			mSelectedIndex = sc_clip(newSelection, -1, mTabSize-1);			
+			mSelectedIndex = sc_clip(newSelection, -1, mTabSize-1);
 			if(mSelectedIndex >= 0)
 			{
-				obj = mEnvObj+mSelectedIndex;				
+				obj = mEnvObj+mSelectedIndex;
 				obj->mColor = mSelectedColor;
-				mCurrentX = obj->x; 
+				mCurrentX = obj->x;
 				mCurrentY = obj->y;
 
 			}
@@ -5946,10 +5944,10 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
 		if (strcmp(name, "connect")==0) { //if this is set all connection start in the middle of the rect
-		
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
-			PyrSlot *slots = slot->uo->slots;
-			
+
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			PyrSlot *slots = slotRawObject(slot)->slots;
+
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
@@ -5957,12 +5955,12 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			SCEnvObject * envobj;
 		    PyrSlot *connections;
 			connections = slots+1;
-			if (!isKindOfSlot(connections, class_array)) return errWrongType;	
-			
+			if (!isKindOfSlot(connections, class_array)) return errWrongType;
+
 			envobj = (mEnvObj + idx);
 			err = allocSlotDoubleArrayVal(connections, &envobj->mConnections);
 			//err = allocSlotIntArrayVal(slot, &(&mEnvObj[mSelectedIndex])->mConnections); //int array crashes sc
-			envobj->mNumConnection = connections->uo->size;
+			envobj->mNumConnection = slotRawObject(connections)->size;
 		//	envobj->deltax = 0;
 		//	envobj->mConnectionInputs = 0;
 		//	envobj->mConnectionOutputs = 0;
@@ -5973,16 +5971,16 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
         }
 
         if (strcmp(name, "fillColor")==0) {
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
-			PyrSlot *slots = slot->uo->slots;
-			
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			PyrSlot *slots = slotRawObject(slot)->slots;
+
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
 			if(idx >= mTabSize) return errIndexOutOfRange;
             err = slotColorVal(slot+1, &mFillColor);
 			if (err) return err;
-			
+
 			if(idx < 0) {
 				for(int i=0; i<mTabSize; i++){
 					(mEnvObj+i)->mColor = (mEnvObj+i)->mObjectColor = mFillColor;
@@ -6004,16 +6002,16 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             refresh();
             return errNone;
         }
-		
+
         if (strcmp(name, "startIndex")==0) {
             err = slotIntVal(slot, &mStartIndex);
             refresh();
             return errNone;
         }
         if (strcmp(name, "editable")==0) {
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
-			PyrSlot *slots = slot->uo->slots;
-			
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			PyrSlot *slots = slotRawObject(slot)->slots;
+
 			int err, idx, editable;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
@@ -6021,39 +6019,39 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			editable = IsTrue(slots+1);
 			if(idx < 0) {
 				for(int i=0; i<mTabSize; i++){
-					(mEnvObj + i)->mEditable = editable; 
+					(mEnvObj + i)->mEditable = editable;
 				}
 			}
 			else
-				(mEnvObj + idx)->mEditable = editable; 
+				(mEnvObj + idx)->mEditable = editable;
             return errNone;
         }
         if (strcmp(name, "drawLines")==0) {
-            mDrawLinesActive = IsTrue(slot); 
+            mDrawLinesActive = IsTrue(slot);
             refresh();
             return errNone;
         }
         if (strcmp(name, "drawRects")==0) {
-            mDrawRectsActive = IsTrue(slot); 
+            mDrawRectsActive = IsTrue(slot);
             refresh();
             return errNone;
         }
 		if (strcmp(name, "string")==0) {
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;	
-			PyrSlot *slots = slot->uo->slots;
-			
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			PyrSlot *slots = slotRawObject(slot)->slots;
+
 			int err, idx;
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
 			if(idx >= mTabSize || idx < 0) return errIndexOutOfRange;
 			PyrSlot *string = slots+1;
-			
+
             err = allocSlotStrVal(string,  &(&mEnvObj[idx])->mString);
             if (err) return err;
             refresh();
             return errNone;
         }
-		
+
         if (symbol == s_x) {
             double y;
             slotDoubleVal(slot, &mCurrentX);
@@ -6076,50 +6074,50 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             }
             return errNone;
 	}
-        if (symbol == s_value) {
-            if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            if (!isKindOfSlot(slot->uo->slots+0, class_array)) return errWrongType;
-            if (!isKindOfSlot(slot->uo->slots+1, class_array)) return errWrongType;
+	if (symbol == s_value) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		if (!isKindOfSlot(slotRawObject(slot)->slots+0, class_array)) return errWrongType;
+		if (!isKindOfSlot(slotRawObject(slot)->slots+1, class_array)) return errWrongType;
 
-            int size = (slot->uo->slots[0]).uo->size;
-            if(size != mTabSize) {
-				// initialise drawing order
-				if(drawOrder) {
-					delete [] drawOrder;
-					drawOrder = 0;
+		int size = slotRawObject(&(slotRawObject(slot)->slots[0]))->size;
+		if(size != mTabSize) {
+			// initialise drawing order
+			if(drawOrder) {
+				delete [] drawOrder;
+				drawOrder = 0;
+			}
+			if(size > 0){
+				drawOrder = new int[size];
+				for(int i=0; i<size; i++){
+					drawOrder[i] = i;
 				}
-				if(size > 0){
-					drawOrder = new int[size];
-					for(int i=0; i<size; i++){
-						drawOrder[i] = i;
-					}
-				}
-			//this should keep the settings of the old ones ... maybe make a  separate add action ...
-                err = allocSlotEnvObjArray(slot, &mEnvObj);
-				if(err) return err;
-                mTabSize = size;
-            } 
-			//move this to allocslotEnvobjArray:
-			double x, y;
-            PyrDoubleArray * xarr;
-            PyrDoubleArray * yarr;
-            xarr = ((PyrDoubleArray*)(slot->uo->slots[0].uo));
-            yarr = ((PyrDoubleArray*)(slot->uo->slots[1].uo));
-            SCEnvObject * envob;
-            for(int i=0; i<size; i++){
-                envob = mEnvObj+i;
-                x = xarr->d[i];
-                y = yarr->d[i];
-				setValue(envob,x,y, false);
-				//post("set x: %f ,y:  %f \n", x, y);
-            }
-            mActiveSize = size;
-            //setVisibleSize();
-			
-			
-            refresh();
-			
-            return errNone;
+			}
+		//this should keep the settings of the old ones ... maybe make a  separate add action ...
+			err = allocSlotEnvObjArray(slot, &mEnvObj);
+			if(err) return err;
+			mTabSize = size;
+		}
+		//move this to allocslotEnvobjArray:
+		double x, y;
+		PyrDoubleArray * xarr;
+		PyrDoubleArray * yarr;
+		xarr = (PyrDoubleArray*)(slotRawObject(&slotRawObject(slot)->slots[0]));
+		yarr = (PyrDoubleArray*)(slotRawObject(&slotRawObject(slot)->slots[1]));
+		SCEnvObject * envob;
+		for(int i=0; i<size; i++){
+			envob = mEnvObj+i;
+			x = xarr->d[i];
+			y = yarr->d[i];
+			setValue(envob,x,y, false);
+			//post("set x: %f ,y:  %f \n", x, y);
+		}
+		mActiveSize = size;
+		//setVisibleSize();
+
+
+		refresh();
+
+		return errNone;
 	}
 	/*
 	if (strcmp(name, "connectFrom")==0) {
@@ -6139,18 +6137,18 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		// set curve for one segment or one curve type for all segments
 		if (strcmp(name, "setCurve")==0) {
 			if (!isKindOfSlot(slot, class_array)) return errWrongType;
-			PyrSlot *slots = slot->uo->slots;
+			PyrSlot *slots = slotRawObject(slot)->slots;
 			int err, idx, curve, shape;
-			
+
 			err = slotIntVal(slots+0, &idx);
 			if (err) return err;
-			
+
 			err = slotIntVal(slots+1, &shape);
 			if (err) return err;
-			
+
 			err = slotIntVal(slots+2, &curve);
 			if (err) return err;
-			
+
 			if(idx >= mTabSize) return errNone;
 			if(idx < 0) {
 				for(int i=0; i<mTabSize; i++){
@@ -6164,51 +6162,51 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			}
 			refresh();
 			return errNone;
-		}	
-		// set curves for all segments 
+		}
+		// set curves for all segments
 		if (strcmp(name, "setCurves")==0) {
 			if (!isKindOfSlot(slot, class_array)) return errWrongType;
-			int size = slot->uo->size;
+			int size = slotRawObject(slot)->size;
 			size = sc_clip(size, 0, mTabSize);
 			for(int i=0; i<size; i++)
 			{
-				PyrSlot * shapeCurveSlot = slot->uo->slots+i;
+				PyrSlot * shapeCurveSlot = slotRawObject(slot)->slots+i;
 				int shape;
 				float curve;
 				if(isKindOfSlot(shapeCurveSlot, class_array))
 				{
-					int err = slotIntVal(shapeCurveSlot->uo->slots+0, &shape);
+					int err = slotIntVal(slotRawObject(shapeCurveSlot)->slots+0, &shape);
 					if (err) return err;
-					err = slotFloatVal(shapeCurveSlot->uo->slots+1, &curve);
-					if (err) return err;	
+					err = slotFloatVal(slotRawObject(shapeCurveSlot)->slots+1, &curve);
+					if (err) return err;
 					(mEnvObj+i)->shape = shape;
-					(mEnvObj+i)->curve = curve;				
+					(mEnvObj+i)->curve = curve;
 				}
 			}
 			refresh();
 			return errNone;
 		}
-	
+
 		if (strcmp(name, "showGrid")==0) {
 			mGridOn = IsTrue(slot);
 			refresh();
 			return errNone;
 		}
-		
+
 		if (strcmp(name, "setGrid")==0) {
-			if (!isKindOfSlot(slot, class_array)) return errWrongType;			
-			err = slotFloatVal(slot->uo->slots+0, &mGrid.x);
-			if (err) return err;	
-			err = slotFloatVal(slot->uo->slots+1, &mGrid.y);
+			if (!isKindOfSlot(slot, class_array)) return errWrongType;
+			err = slotFloatVal(slotRawObject(slot)->slots+0, &mGrid.x);
+			if (err) return err;
+			err = slotFloatVal(slotRawObject(slot)->slots+1, &mGrid.y);
 			if(mGridOn) refresh();
  			return errNone;
 		}
-		
+
 		if (strcmp(name, "setGridColor")==0) {
 			err = slotColorVal(slot, &mGridColor);
-			if(mGridOn) refresh();			
-			return errNone;		
-		}	
+			if(mGridOn) refresh();
+			return errNone;
+		}
 		/*
         if (strcmp(name, "selectionSize")==0) {
             slotIntVal(slot, &mSelectionSize);
@@ -6216,7 +6214,7 @@ int SCEnvelopeView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             return errNone;
         }
         */
-	
+
         return SCView::setProperty(symbol, slot);
 }
 
@@ -6224,18 +6222,18 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 
 	char *name = symbol->name;
-        if (strcmp(name, "step")==0) {
-            SetFloat(slot, mStepSize);
-            return errNone;
-        }
+	if (strcmp(name, "step")==0) {
+		SetFloat(slot, mStepSize);
+		return errNone;
+	}
 
-        if (symbol == s_x) {
-			if(mSelectedIndex >= 0){
-				SetFloat(slot, mCurrentX);
-			} else {
-				SetNil(slot);
-			}
-           return errNone;
+	if (symbol == s_x) {
+		if(mSelectedIndex >= 0){
+			SetFloat(slot, mCurrentX);
+		} else {
+			SetNil(slot);
+		}
+		return errNone;
 	}
 	if (symbol == s_y) {
 		if(mSelectedIndex >= 0){
@@ -6245,54 +6243,54 @@ int SCEnvelopeView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
 	}
-        if (strcmp(name, "selectedIndex")==0) {
-            SetInt(slot, (int) mSelectedIndex);
-            return errNone;
-        }
-           if (strcmp(name, "lastIndex")==0) {
-            SetInt(slot, (int) mLastIndex);
-            return errNone;
-        }
-
-        if (symbol == s_value) {
-            if (!isKindOfSlot(slot, class_array)) return errWrongType;
-            int size = (slot->uo->slots[0]).uo->size;
-            SCEnvObject * envo;
-            if(size > mTabSize)  size = mTabSize;
-            
-            PyrDoubleArray * xarr;
-            PyrDoubleArray * yarr;
-            xarr = ((PyrDoubleArray*)(slot->uo->slots[0].uo));
-            yarr = ((PyrDoubleArray*)(slot->uo->slots[1].uo));
-
-            for(int i=0; i<size; i++){
-                envo = &mEnvObj[i];
-                xarr->d[i] = envo->x;
-                yarr->d[i] = envo->y;
-            }
-            return errNone;
+	if (strcmp(name, "selectedIndex")==0) {
+		SetInt(slot, (int) mSelectedIndex);
+		return errNone;
 	}
-        /*
-        if (strcmp(name, "selectionSize")==0) {
-            SetInt(slot, mSelectionSize);
-            return errNone;
-        }
-        */
-        if (strcmp(name, "absoluteX")==0) {
-            SetInt(slot, (int) mAbsoluteX);
-            return errNone;
-        }
-		/*
-		if (strcmp(name, "connectFrom")==0) {
-            SetInt(slot, (int) mConnectFrom);
-            return errNone;
-        }
-		if (strcmp(name, "connectTo")==0) {
-            SetInt(slot, (int) mConnectTo);
-            return errNone;
-        }
-		*/		
-        return SCView::getProperty(symbol, slot);
+		if (strcmp(name, "lastIndex")==0) {
+		SetInt(slot, (int) mLastIndex);
+		return errNone;
+	}
+
+	if (symbol == s_value) {
+		if (!isKindOfSlot(slot, class_array)) return errWrongType;
+		int size = slotRawObject(&(slotRawObject(slot)->slots[0]))->size;
+		SCEnvObject * envo;
+		if(size > mTabSize)  size = mTabSize;
+
+		PyrDoubleArray * xarr;
+		PyrDoubleArray * yarr;
+		xarr = (PyrDoubleArray*)(slotRawObject(&slotRawObject(slot)->slots[0]));
+		yarr = (PyrDoubleArray*)(slotRawObject(&slotRawObject(slot)->slots[1]));
+
+		for(int i=0; i<size; i++){
+			envo = &mEnvObj[i];
+			xarr->d[i] = envo->x;
+			yarr->d[i] = envo->y;
+		}
+		return errNone;
+	}
+	/*
+	if (strcmp(name, "selectionSize")==0) {
+		SetInt(slot, mSelectionSize);
+		return errNone;
+	}
+	*/
+	if (strcmp(name, "absoluteX")==0) {
+		SetInt(slot, (int) mAbsoluteX);
+		return errNone;
+	}
+	/*
+	if (strcmp(name, "connectFrom")==0) {
+		SetInt(slot, (int) mConnectFrom);
+		return errNone;
+	}
+	if (strcmp(name, "connectTo")==0) {
+		SetInt(slot, (int) mConnectTo);
+		return errNone;
+	}
+	*/
+	return SCView::getProperty(symbol, slot);
 }
 
 bool SCEnvelopeView::canReceiveDrag()
@@ -6335,8 +6333,8 @@ bool SCNumberBox::shouldDim()
 void SCNumberBox::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-   	SCRect bounds = getDrawBounds();	
- 
+   	SCRect bounds = getDrawBounds();
+
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGRect rect = SCtoCGRect(bounds);
@@ -6354,7 +6352,7 @@ void SCNumberBox::draw(SCRect inDamage)
 }
 
 //int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-//{	
+//{
 //	int err;
 //	char *name = symbol->name;
 // 	if (strcmp(name, "boxColor")==0) {
@@ -6370,7 +6368,7 @@ void SCNumberBox::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
-    } 
+    }
 }
 
 //int SCNumberBox::getProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -6415,7 +6413,7 @@ SCDragSource::~SCDragSource()
 void SCDragSource::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-	SCRect bounds = getDrawBounds();	
+	SCRect bounds = getDrawBounds();
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
@@ -6423,7 +6421,7 @@ void SCDragSource::draw(SCRect inDamage)
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, false);
     CGContextRestoreGState(cgc);
-        
+
     //drawBevelRect(SCtoQDRect(mBounds), 1, 0, SCtoQDColor(mBackColor), 2);
     drawString(bounds);
 }
@@ -6461,7 +6459,7 @@ SCDragSink::~SCDragSink()
 void SCDragSink::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
-	SCRect bounds = getDrawBounds();	
+	SCRect bounds = getDrawBounds();
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
@@ -6511,8 +6509,8 @@ void SCDragBoth::draw(SCRect inDamage)
 
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
-	SCRect dbounds = getDrawBounds();	
-	
+	SCRect dbounds = getDrawBounds();
+
     CGRect rect = SCtoCGRect(dbounds);
     if (mBackground) mBackground->draw(cgc, rect);
     QDDrawBevelRect(cgc, rect, 1, true);
@@ -6554,7 +6552,7 @@ SCTabletView::~SCTabletView()
 }
 
 int SCTabletView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
     char *name = symbol->name;
     if (strcmp(name, "clipToBounds")==0) {
         slotIntVal(slot, &mClipToBounds);
@@ -6566,8 +6564,8 @@ int SCTabletView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     float x,y;
-	SCRect bounds = getDrawBounds();	
-	
+	SCRect bounds = getDrawBounds();
+
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
@@ -6584,8 +6582,8 @@ void SCTabletView::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEve
 void SCTabletView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     float x,y;
-	SCRect bounds = getDrawBounds();	
-	
+	SCRect bounds = getDrawBounds();
+
     if (! (modifiers & NSCommandKeyMask)) {
         x = where.x - bounds.x;
         y = where.y - bounds.y;
@@ -6603,8 +6601,8 @@ void SCTabletView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent
     if (modifiers & NSCommandKeyMask) {
         this->receiveDrag();
     } else {
-		SCRect bounds = getDrawBounds();	
-	
+		SCRect bounds = getDrawBounds();
+
         x = where.x - bounds.x;
         y = where.y - bounds.y;
         if(mClipToBounds) {
@@ -6704,24 +6702,24 @@ int prSCView_New(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *args = g->sp - 3;
-        // view, parent, bounds, viewclass
-        PyrSlot parentSlot;
-        SCContainerView *parent;
-        if (isKindOfSlot(args, s_sctopview->u.classobj) && !isKindOfSlot(args, s_scscrollview->u.classobj)) {
-            parent = 0;
-        } else {
-            if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
-            // check if it still has a dataptr
-            parentSlot = args[1].uo->slots[0];
-            if(IsNil(&parentSlot)) return errFailed;
-            parent = (SCContainerView*)parentSlot.ui;
-        }
-        if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
-        
+	// view, parent, bounds, viewclass
+	PyrSlot parentSlot;
+	SCContainerView *parent;
+	if (isKindOfSlot(args, s_sctopview->u.classobj) && !isKindOfSlot(args, s_scscrollview->u.classobj)) {
+		parent = 0;
+	} else {
+		if (!isKindOfSlot(args+1, s_sccontview->u.classobj)) return errWrongType;
+		// check if it still has a dataptr
+		parentSlot = slotRawObject(&args[1])->slots[0];
+		if(IsNil(&parentSlot)) return errFailed;
+		parent = (SCContainerView*)slotRawInt(&parentSlot);
+	}
+	if (!(isKindOfSlot(args+2, s_rect->u.classobj))) return errWrongType;
+
 	SCRect bounds;
 	int err = slotGetSCRect(args+2, &bounds);
 	if (err) return err;
-	SCView *view = MakeSCView(args[0].uo, parent, bounds,args[3].uoc->name.us->name);
+	SCView *view = MakeSCView(slotRawObject(&args[0]), parent, bounds, slotRawSymbol(&slotRawClass(&args[3])->name)->name);
 	if (!view) return errFailed;
 
 	return errNone;
@@ -6733,17 +6731,17 @@ int prSCView_SetProperty(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *args = g->sp - 2;
-	
+
 	if (!IsSym(args+1)) return errWrongType;
-	
-	SCView *view = (SCView*)args[0].uo->slots[0].ui;
+
+	SCView *view = (SCView*)slotRawInt(slotRawObject(&args[0])->slots);
 	if (!view) return errFailed;
 
-	int err = view->setProperty(args[1].us, args+2);
-        if (err) SetNil(args+2);
-        
-        slotCopy(&args[0], &args[2]);
-        
+	int err = view->setProperty(slotRawSymbol(&args[1]), args+2);
+	if (err) SetNil(args+2);
+
+	slotCopy(&args[0], &args[2]);
+
 	return err;
 }
 
@@ -6753,17 +6751,17 @@ int prSCView_GetProperty(struct VMGlobals *g, int numArgsPushed)
 	if (!g->canCallOS) return errCantCallOS;
 
 	PyrSlot *args = g->sp - 2;
-	
+
 	if (!IsSym(args+1)) return errWrongType;
-	
-	SCView *view = (SCView*)args[0].uo->slots[0].ui;
+
+	SCView *view = (SCView*)slotRawInt(slotRawObject(&args[0])->slots);
 	if (!view) return errFailed;
 
-	int err = view->getProperty(args[1].us, args+2);
-        if (err) SetNil(args+2);
-        
-        slotCopy(&args[0], &args[2]);
-        
+	int err = view->getProperty(slotRawSymbol(&args[1]), args+2);
+	if (err) SetNil(args+2);
+
+	slotCopy(&args[0], &args[2]);
+
 	return errNone;
 }
 
@@ -6774,10 +6772,10 @@ int prSCView_FindByID(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-		
-	SCView *view = (SCView*)a->uo->slots[0].ui;
+
+	SCView *view = (SCView*)slotRawInt(slotRawObject(a)->slots);
 	if (!view) return errFailed;
-	
+
 	int32 tag;
 	int err = slotIntVal(b, &tag);
 	if (err) return err;
@@ -6788,7 +6786,7 @@ int prSCView_FindByID(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		SetObjectOrNil(a, view->GetSCObj());
 	}
-	
+
 	return errNone;
 }
 
@@ -6797,13 +6795,13 @@ int prSCView_Focus(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot *viewObjSlot = g->sp - 1;	
-	SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
+	PyrSlot *viewObjSlot = g->sp - 1;
+	SCView *view = (SCView*)slotRawInt(slotRawObject(&viewObjSlot[0])->slots);
 	PyrSlot *boo = g->sp;
-    
+
 	if (!view) return errFailed;
-    view->makeFocus(IsTrue(boo));
-    return errNone;
+	view->makeFocus(IsTrue(boo));
+	return errNone;
 }
 
 int prSCView_HasFocus(struct VMGlobals *g, int numArgsPushed);
@@ -6811,11 +6809,11 @@ int prSCView_HasFocus(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
 
-	PyrSlot *viewObjSlot = g->sp;	
-	SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
-    
+	PyrSlot *viewObjSlot = g->sp;
+	SCView *view = (SCView*)slotRawInt(slotRawObject(&viewObjSlot[0])->slots);
+
 	if (!view) return errFailed;
-    SetBool(viewObjSlot, view->isFocus());
+	SetBool(viewObjSlot, view->isFocus());
 	return errNone;
 }
 
@@ -6823,13 +6821,13 @@ int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed);
 int prSCView_Refresh(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
-	if(::IsNil( g->sp->uo->slots+0 ))
+
+	if(::IsNil( slotRawObject(g->sp)->slots+0 ))
 		return errFailed;
-	
-	SCView *view = (SCView*)(g->sp)[0].uo->slots[0].ui;
-	if(!view) 	return errNone;
-    view->refresh();
+
+	SCView *view = (SCView*)slotRawInt(slotRawObject(g->sp)->slots);
+	if(!view) return errNone;
+	view->refresh();
 	return errNone;
 }
 
@@ -6837,17 +6835,17 @@ int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed);
 int prSCView_RefreshInRect(struct VMGlobals *g, int numArgsPushed)
 {
 	if (!g->canCallOS) return errCantCallOS;
-	
-	if(::IsNil( (g->sp - 1)->uo->slots+0 ))
+
+	if(::IsNil( slotRawObject(g->sp - 1)->slots+0 ))
 		return errFailed;
-	
+
 	SCRect r;
-	SCView *view = (SCView*)(g->sp - 1)[0].uo->slots[0].ui;
-	
+	SCView *view = (SCView*)slotRawInt(slotRawObject(g->sp - 1)->slots);
+
 	if(slotGetSCRect(g->sp, &r) != noErr)
 		return errFailed;
-		
-    view->refreshInRect(r);
+
+	view->refreshInRect(r);
 	return errNone;
 }
 
@@ -6856,49 +6854,49 @@ int prSCView_Remove(struct VMGlobals *g, int numArgsPushed)
 {
 	//if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *viewObjSlot = g->sp;
-    SCView *view = (SCView*)viewObjSlot[0].uo->slots[0].ui;
-    if (!view) return errFailed;
-    
+	PyrSlot *viewObjSlot = g->sp;
+	SCView *view = (SCView*)slotRawInt(slotRawObject(viewObjSlot)->slots);
+	if (!view) return errFailed;
+
 	// removes from parent, set mObj to nil
-    delete view;
-    return errNone;
+	delete view;
+	return errNone;
 }
 
 void initSCViewPrimitives()
 {
 
-        registerSCViewClasses();
-        
+	registerSCViewClasses();
+
 	int base, index;
-	
-        s_x = getsym("x");
-        s_y = getsym("y");
-        s_lo = getsym("lo");
-        s_hi = getsym("hi");
-        s_range = getsym("range");
-        s_scview = getsym("SCView");
-        s_sccontview = getsym("SCContainerView");
-        s_sctopview = getsym("SCTopView");
-		s_scscrollview = getsym("SCScrollView");
-        s_beginDrag = getsym("beginDrag");
-        s_receiveDrag = getsym("receiveDrag");
-        s_canReceiveDrag = getsym("canReceiveDrag");
-        s_mouseDown = getsym("mouseDown");
-        s_mouseUp = getsym("mouseUp");
-		s_callDrawHook = getsym("callDrawHook");
-		s_toggleEditMode = getsym("toggleEditMode");
+
+	s_x = getsym("x");
+	s_y = getsym("y");
+	s_lo = getsym("lo");
+	s_hi = getsym("hi");
+	s_range = getsym("range");
+	s_scview = getsym("SCView");
+	s_sccontview = getsym("SCContainerView");
+	s_sctopview = getsym("SCTopView");
+	s_scscrollview = getsym("SCScrollView");
+	s_beginDrag = getsym("beginDrag");
+	s_receiveDrag = getsym("receiveDrag");
+	s_canReceiveDrag = getsym("canReceiveDrag");
+	s_mouseDown = getsym("mouseDown");
+	s_mouseUp = getsym("mouseUp");
+	s_callDrawHook = getsym("callDrawHook");
+	s_toggleEditMode = getsym("toggleEditMode");
 
 	base = nextPrimitiveIndex();
 	index = 0;
-	
+
 	definePrimitive(base, index++, "_SCView_New", prSCView_New, 4, 0);
 	definePrimitive(base, index++, "_SCView_SetProperty", prSCView_SetProperty, 3, 0);
-	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);	
-	definePrimitive(base, index++, "_SCView_FindByID", prSCView_FindByID, 2, 0);	
-	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);	
-	definePrimitive(base, index++, "_SCView_HasFocus", prSCView_HasFocus, 1, 0);		
-	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);	
+	definePrimitive(base, index++, "_SCView_GetProperty", prSCView_GetProperty, 3, 0);
+	definePrimitive(base, index++, "_SCView_FindByID", prSCView_FindByID, 2, 0);
+	definePrimitive(base, index++, "_SCView_Focus", prSCView_Focus, 2, 0);
+	definePrimitive(base, index++, "_SCView_HasFocus", prSCView_HasFocus, 1, 0);
+	definePrimitive(base, index++, "_SCView_Refresh", prSCView_Refresh, 1, 0);
 	definePrimitive(base, index++, "_SCView_Remove", prSCView_Remove, 1, 0);
 	definePrimitive(base, index++, "_SCView_RefreshInRect", prSCView_RefreshInRect, 2, 0);
 }

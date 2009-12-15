@@ -1,21 +1,21 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 /*
@@ -127,11 +127,11 @@ static void sysexEndInvalid() {
 }
 
 static int midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
-    int index, data;
-    VMGlobals *g = gMainVMGlobals;
-    switch (chan) {
+	int index, data;
+	VMGlobals *g = gMainVMGlobals;
+	switch (chan) {
 	case 7: // added cp: Sysex EOX must be taken into account if first on data packet
-    case 0:
+	case 0:
 		{
 		int last_uid = 0;
 		int m = pkt->length;
@@ -176,49 +176,49 @@ static int midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
 		}
 		return (pkt->length-m);
 		}
-    break;
+	break;
 
-    case 1 :
-        index = pkt->data[1] >> 4;
-        data  = pkt->data[1] & 0xf;
-        switch (index) { case 1: case 3: case 5: case 7: { data = data << 4; } }
-        SetInt(g->sp,  index);		 						// chan unneeded
-        ++g->sp; SetInt(g->sp, data);						// special smpte action in the lang
-        runInterpreter(g, s_midiSMPTEAction, 4 );
+	case 1 :
+		index = pkt->data[1] >> 4;
+		data  = pkt->data[1] & 0xf;
+		switch (index) { case 1: case 3: case 5: case 7: { data = data << 4; } }
+		SetInt(g->sp,  index);		 						// chan unneeded
+		++g->sp; SetInt(g->sp, data);						// special smpte action in the lang
+		runInterpreter(g, s_midiSMPTEAction, 4 );
 		return 2;
 
-    case 2 : 	//songptr
-        ++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
-        runInterpreter(g, s_midiSysrtAction, 4);
+	case 2 : 	//songptr
+		++g->sp; SetInt(g->sp,  (pkt->data[2] << 7) | pkt->data[1]); //val1
+		runInterpreter(g, s_midiSysrtAction, 4);
 		return 3;
 
-    case 3 :	// song select
-        ++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
-        runInterpreter(g, s_midiSysrtAction, 4);
+	case 3 :	// song select
+		++g->sp; SetInt(g->sp,  pkt->data[1]); //val1
+		runInterpreter(g, s_midiSysrtAction, 4);
 		return 2;
 
-    case 8 :	//clock
-    case 10:	//start
-    case 11:	//continue
-    case 12: 	//stop
-    case 15:	//reset
+	case 8 :	//clock
+	case 10:	//start
+	case 11:	//continue
+	case 12: 	//stop
+	case 15:	//reset
 		gRunningStatus = 0; // clear running status
-        runInterpreter(g, s_midiSysrtAction, 3);
-        return 1;
+		runInterpreter(g, s_midiSysrtAction, 3);
+		return 1;
 
-    default:
-        g->sp -= 3; // nevermind
-        break;
-    }
+	default:
+		g->sp -= 3; // nevermind
+		break;
+	}
 
 	return (1);
 }
 
 static void midiProcessPacket(MIDIPacket *pkt, int uid)
 {
- //jt
-    if(pkt) {
-     pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
+//jt
+	if(pkt) {
+	pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
 		// it is needed  -jamesmcc
 	if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
@@ -296,18 +296,18 @@ static void midiProcessPacket(MIDIPacket *pkt, int uid)
 		}
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
-    }
+	pthread_mutex_unlock (&gLangMutex);
+	}
 }
 
 static void midiReadProc(const MIDIPacketList *pktlist, void* readProcRefCon, void* srcConnRefCon)
 {
-    MIDIPacket *pkt = (MIDIPacket*)pktlist->packet;
-    int uid = (int) srcConnRefCon;
-    for (uint32 i=0; i<pktlist->numPackets; ++i) {
-        midiProcessPacket(pkt, uid);
-        pkt = MIDIPacketNext(pkt);
-    }
+	MIDIPacket *pkt = (MIDIPacket*)pktlist->packet;
+	int uid = (int) srcConnRefCon;
+	for (uint32 i=0; i<pktlist->numPackets; ++i) {
+		midiProcessPacket(pkt, uid);
+		pkt = MIDIPacketNext(pkt);
+	}
 }
 
 int midiCleanUp();
@@ -315,34 +315,34 @@ int midiCleanUp();
 int initMIDI(int numIn, int numOut)
 {
 	midiCleanUp();
-    numIn = sc_clip(numIn, 1, kMaxMidiPorts);
-    numOut = sc_clip(numOut, 1, kMaxMidiPorts);
+	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
+	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
-    int enc = kCFStringEncodingMacRoman;
-    CFAllocatorRef alloc = CFAllocatorGetDefault();
+	int enc = kCFStringEncodingMacRoman;
+	CFAllocatorRef alloc = CFAllocatorGetDefault();
 
-    CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
+	CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
 
-    OSStatus err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
-    if (err) {
-        post("Could not create MIDI client. error %d\n", err);
-        return errFailed;
-    }
-    CFRelease(clientName);
+	OSStatus err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
+	if (err) {
+		post("Could not create MIDI client. error %d\n", err);
+		return errFailed;
+	}
+	CFRelease(clientName);
 
-    for (int i=0; i<numIn; ++i) {
-        char str[32];
-        sprintf(str, "in%d\n", i);
-        CFStringRef inputPortName = CFStringCreateWithCString(alloc, str, enc);
+	for (int i=0; i<numIn; ++i) {
+		char str[32];
+		sprintf(str, "in%d\n", i);
+		CFStringRef inputPortName = CFStringCreateWithCString(alloc, str, enc);
 
-        err = MIDIInputPortCreate(gMIDIClient, inputPortName, midiReadProc, &i, gMIDIInPort+i);
-        if (err) {
-            gNumMIDIInPorts = i;
-            post("Could not create MIDI port %s. error %d\n", str, err);
-            return errFailed;
-        }
-        CFRelease(inputPortName);
-    }
+		err = MIDIInputPortCreate(gMIDIClient, inputPortName, midiReadProc, &i, gMIDIInPort+i);
+		if (err) {
+			gNumMIDIInPorts = i;
+			post("Could not create MIDI port %s. error %d\n", str, err);
+			return errFailed;
+		}
+		CFRelease(inputPortName);
+	}
 
 	/*int n = MIDIGetNumberOfSources();
 	printf("%d sources\n", n);
@@ -351,53 +351,53 @@ int initMIDI(int numIn, int numOut)
 		MIDIPortConnectSource(inPort, src, NULL);
 	}*/
 
-    gNumMIDIInPorts = numIn;
+	gNumMIDIInPorts = numIn;
 
-    for (int i=0; i<numOut; ++i) {
-        char str[32];
-        sprintf(str, "out%d\n", i);
-        CFStringRef outputPortName = CFStringCreateWithCString(alloc, str, enc);
+	for (int i=0; i<numOut; ++i) {
+		char str[32];
+		sprintf(str, "out%d\n", i);
+		CFStringRef outputPortName = CFStringCreateWithCString(alloc, str, enc);
 
-        err = MIDIOutputPortCreate(gMIDIClient, outputPortName, gMIDIOutPort+i);
-        if (err) {
-            gNumMIDIOutPorts = i;
-            post("Could not create MIDI out port. error %d\n", err);
-            return errFailed;
-        }
+		err = MIDIOutputPortCreate(gMIDIClient, outputPortName, gMIDIOutPort+i);
+		if (err) {
+			gNumMIDIOutPorts = i;
+			post("Could not create MIDI out port. error %d\n", err);
+			return errFailed;
+		}
 
-        CFRelease(outputPortName);
-    }
-    gNumMIDIOutPorts = numOut;
-    return errNone;
+		CFRelease(outputPortName);
+	}
+	gNumMIDIOutPorts = numOut;
+	return errNone;
 }
 
 int midiCleanUp()
 {
 	/*
-	 * do not catch errors when disposing ports
-	 * MIDIClientDispose should normally dispose the ports attached to it
-	 * but clean up the pointers in case
-	 */
+	* do not catch errors when disposing ports
+	* MIDIClientDispose should normally dispose the ports attached to it
+	* but clean up the pointers in case
+	*/
 	int i = 0;
-    for (i=0; i<gNumMIDIOutPorts; ++i) {
-        MIDIPortDispose(gMIDIOutPort[i]);
+	for (i=0; i<gNumMIDIOutPorts; ++i) {
+		MIDIPortDispose(gMIDIOutPort[i]);
 		gMIDIOutPort[i] = 0;
-    }
+	}
 	gNumMIDIOutPorts = 0;
 
-    for (i=0; i<gNumMIDIInPorts; ++i) {
-        MIDIPortDispose(gMIDIInPort[i]);
+	for (i=0; i<gNumMIDIInPorts; ++i) {
+		MIDIPortDispose(gMIDIInPort[i]);
 		gMIDIInPort[i] = 0;
-    }
+	}
 	gNumMIDIInPorts = 0;
 
-    if (gMIDIClient) {
+	if (gMIDIClient) {
 		if( MIDIClientDispose(gMIDIClient) ) {
 			post( "Error: failed to dispose MIDIClient\n" );
 			return errFailed;
 		}
 		gMIDIClient = 0;
-    }
+	}
 	return errNone;
 }
 
@@ -411,136 +411,136 @@ void midiListEndpoints()
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed);
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 {
-    OSStatus error;
-    PyrSlot *a = g->sp;
-    int numSrc = MIDIGetNumberOfSources();
-    int numDst = MIDIGetNumberOfDestinations();
+	OSStatus error;
+	PyrSlot *a = g->sp;
+	int numSrc = MIDIGetNumberOfSources();
+	int numDst = MIDIGetNumberOfDestinations();
 
-    PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
+	PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 		SetObject(a, idarray);
 
-    PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
-        SetObject(idarray->slots+idarray->size++, idarraySo);
-        g->gc->GCWrite(idarray, idarraySo);
+	PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0 , true);
+		SetObject(idarray->slots+idarray->size++, idarraySo);
+		g->gc->GCWrite(idarray, idarraySo);
 
-    PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, devarraySo);
-        g->gc->GCWrite(idarray, devarraySo);
+	PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+		SetObject(idarray->slots+idarray->size++, devarraySo);
+		g->gc->GCWrite(idarray, devarraySo);
 
-        PyrObject* namearraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, namearraySo);
-        g->gc->GCWrite(idarray, namearraySo);
+		PyrObject* namearraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+		SetObject(idarray->slots+idarray->size++, namearraySo);
+		g->gc->GCWrite(idarray, namearraySo);
 
-    PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(SInt32), 0 , true);
-        SetObject(idarray->slots+idarray->size++, idarrayDe);
-        g->gc->GCWrite(idarray, idarrayDe);
+	PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(SInt32), 0 , true);
+		SetObject(idarray->slots+idarray->size++, idarrayDe);
+		g->gc->GCWrite(idarray, idarrayDe);
 
-    PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, namearrayDe);
-        g->gc->GCWrite(idarray, namearrayDe);
+	PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
+		SetObject(idarray->slots+idarray->size++, namearrayDe);
+		g->gc->GCWrite(idarray, namearrayDe);
 
-    PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
-        SetObject(idarray->slots+idarray->size++, devarrayDe);
-        g->gc->GCWrite(idarray, devarrayDe);
+	PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
+		SetObject(idarray->slots+idarray->size++, devarrayDe);
+		g->gc->GCWrite(idarray, devarrayDe);
 
 
-    for (int i=0; i<numSrc; ++i) {
-        MIDIEndpointRef src = MIDIGetSource(i);
-        SInt32 id;
-        MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
+	for (int i=0; i<numSrc; ++i) {
+		MIDIEndpointRef src = MIDIGetSource(i);
+		SInt32 id;
+		MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &id);
 
-        MIDIEntityRef ent;
-        error = MIDIEndpointGetEntity(src, &ent);
+		MIDIEntityRef ent;
+		error = MIDIEndpointGetEntity(src, &ent);
 
-        CFStringRef devname, endname;
-        char cendname[1024], cdevname[1024];
+		CFStringRef devname, endname;
+		char cendname[1024], cdevname[1024];
 
-        // Virtual sources don't have entities
-        if(error)
-        {
-            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &devname);
-            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
-            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-        }
-        else
-        {
-            MIDIDeviceRef dev;
+		// Virtual sources don't have entities
+		if(error)
+		{
+			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &devname);
+			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
+			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		}
+		else
+		{
+			MIDIDeviceRef dev;
 
-            MIDIEntityGetDevice(ent, &dev);
-            MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
-            MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
-            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-        }
+			MIDIEntityGetDevice(ent, &dev);
+			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
+			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		}
 
-        PyrString *string = newPyrString(g->gc, cendname, 0, true);
-        SetObject(namearraySo->slots+i, string);
-        namearraySo->size++;
-        g->gc->GCWrite(namearraySo, (PyrObject*)string);
+		PyrString *string = newPyrString(g->gc, cendname, 0, true);
+		SetObject(namearraySo->slots+i, string);
+		namearraySo->size++;
+		g->gc->GCWrite(namearraySo, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
-        SetObject(devarraySo->slots+i, devstring);
-        devarraySo->size++;
-        g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
+		PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+		SetObject(devarraySo->slots+i, devstring);
+		devarraySo->size++;
+		g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
 
-        SetInt(idarraySo->slots+i, id);
-        idarraySo->size++;
+		SetInt(idarraySo->slots+i, id);
+		idarraySo->size++;
 
-        CFRelease(devname);
-        CFRelease(endname);
-    }
+		CFRelease(devname);
+		CFRelease(endname);
+	}
 
 
 
 //      post("numDst %d\n",  numDst);
-    for (int i=0; i<numDst; ++i) {
-        MIDIEndpointRef dst = MIDIGetDestination(i);
-        SInt32 id;
-        MIDIObjectGetIntegerProperty(dst, kMIDIPropertyUniqueID, &id);
+	for (int i=0; i<numDst; ++i) {
+		MIDIEndpointRef dst = MIDIGetDestination(i);
+		SInt32 id;
+		MIDIObjectGetIntegerProperty(dst, kMIDIPropertyUniqueID, &id);
 
-        MIDIEntityRef ent;
-        error = MIDIEndpointGetEntity(dst, &ent);
+		MIDIEntityRef ent;
+		error = MIDIEndpointGetEntity(dst, &ent);
 
-        CFStringRef devname, endname;
-        char cendname[1024], cdevname[1024];
+		CFStringRef devname, endname;
+		char cendname[1024], cdevname[1024];
 
-        // Virtual destinations don't have entities either
-        if(error)
-        {
-            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &devname);
-            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
-            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		// Virtual destinations don't have entities either
+		if(error)
+		{
+			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &devname);
+			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
+			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 
-        }
-        else
-        {
-            MIDIDeviceRef dev;
+		}
+		else
+		{
+			MIDIDeviceRef dev;
 
-            MIDIEntityGetDevice(ent, &dev);
-            MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
-            MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
-            CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-            CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
-        }
+			MIDIEntityGetDevice(ent, &dev);
+			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
+			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
+			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+		}
 
-        PyrString *string = newPyrString(g->gc, cendname, 0, true);
-        SetObject(namearrayDe->slots+namearrayDe->size++, string);
-        g->gc->GCWrite(namearrayDe, (PyrObject*)string);
+		PyrString *string = newPyrString(g->gc, cendname, 0, true);
+		SetObject(namearrayDe->slots+namearrayDe->size++, string);
+		g->gc->GCWrite(namearrayDe, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
+		PyrString *devstring = newPyrString(g->gc, cdevname, 0, true);
 
-        SetObject(devarrayDe->slots+devarrayDe->size++, devstring);
-        g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
+		SetObject(devarrayDe->slots+devarrayDe->size++, devstring);
+		g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
 
-        SetInt(idarrayDe->slots+idarrayDe->size++, id);
+		SetInt(idarrayDe->slots+idarrayDe->size++, id);
 
-        CFRelease(devname);
-        CFRelease(endname);
+		CFRelease(devname);
+		CFRelease(endname);
 
-    }
-    return errNone;
+	}
+	return errNone;
 }
 
 
@@ -566,7 +566,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&src, &mtype);
 	if (mtype != kMIDIObjectType_Source) return errFailed;
 
-        //pass the uid to the midiReadProc to identify the src
+	//pass the uid to the midiReadProc to identify the src
 
 	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, (void*)uid);
 
@@ -575,7 +575,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *b = g->sp - 1;
+	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
 	int err, inputIndex, uid;
@@ -619,73 +619,73 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 int prRestartMIDI(VMGlobals *g, int numArgsPushed);
 int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 {
-    MIDIRestart();
-    return errNone;
+	MIDIRestart();
+	return errNone;
 }
 
 void freeSysex(MIDISysexSendRequest* pk);
 void freeSysex(MIDISysexSendRequest* pk)
 {
-    free(pk);
+	free(pk);
 }
 
 
 int prSendSysex(VMGlobals *g, int numArgsPushed);
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {
-    int err, uid, size;
+	int err, uid, size;
 
-    if( !isKindOfSlot(g->sp, s_int8array->u.classobj) )
-        return errWrongType;
+	if( !isKindOfSlot(g->sp, s_int8array->u.classobj) )
+		return errWrongType;
 
-    PyrInt8Array* packet = g->sp->uob;
-    size = packet->size;
+	PyrInt8Array* packet = slotRawInt8Array(g->sp);
+	size = packet->size;
 
-    PyrSlot *u = g->sp - 1;
-    err = slotIntVal(u, &uid);
-    if (err) return err;
+	PyrSlot *u = g->sp - 1;
+	err = slotIntVal(u, &uid);
+	if (err) return err;
 
-    MIDIEndpointRef dest;
-    MIDIObjectType mtype;
-    MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
-    if (mtype != kMIDIObjectType_Destination) return errFailed;
-    if (!dest) return errFailed;
+	MIDIEndpointRef dest;
+	MIDIObjectType mtype;
+	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
+	if (mtype != kMIDIObjectType_Destination) return errFailed;
+	if (!dest) return errFailed;
 
-    MIDISysexSendRequest *pk = (MIDISysexSendRequest*) malloc (sizeof(MIDISysexSendRequest) + size);
-    Byte *data = (Byte *)pk + sizeof(MIDISysexSendRequest);
+	MIDISysexSendRequest *pk = (MIDISysexSendRequest*) malloc (sizeof(MIDISysexSendRequest) + size);
+	Byte *data = (Byte *)pk + sizeof(MIDISysexSendRequest);
 
-    memcpy(data,packet->b, size);
+	memcpy(data,packet->b, size);
 	pk->complete = false;
-    pk -> destination = dest;
-    pk -> data = data;
-    pk -> bytesToSend = size;
-    pk->completionProc = freeSysex;
-    pk->completionRefCon = 0;
+	pk -> destination = dest;
+	pk -> data = data;
+	pk -> bytesToSend = size;
+	pk->completionProc = freeSysex;
+	pk->completionRefCon = 0;
 
-    return ((MIDISendSysex(pk) == (OSStatus)0) ? errNone : errFailed);
+	return ((MIDISendSysex(pk) == (OSStatus)0) ? errNone : errFailed);
 }
 
 void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late);
 void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late)
 {
-    MIDIPacketList mpktlist;
-    MIDIPacketList * pktlist = &mpktlist;
-    MIDIPacket * pk = MIDIPacketListInit(pktlist);
-    //lets add some latency
-    float  latency =  1000000000 * late ; //secs to nano
-    UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
-    ByteCount nData = (ByteCount) length;
-    pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F);
-    pk->data[1] = (Byte) aval;
-    pk->data[2] = (Byte) bval;
-    pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
-   	/*OSStatus error =*/ MIDISend(gMIDIOutPort[port],  dest, pktlist );
+	MIDIPacketList mpktlist;
+	MIDIPacketList * pktlist = &mpktlist;
+	MIDIPacket * pk = MIDIPacketListInit(pktlist);
+	//lets add some latency
+	float  latency =  1000000000 * late ; //secs to nano
+	UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
+	ByteCount nData = (ByteCount) length;
+	pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F);
+	pk->data[1] = (Byte) aval;
+	pk->data[2] = (Byte) bval;
+	pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
+	/*OSStatus error =*/ MIDISend(gMIDIOutPort[port],  dest, pktlist );
 }
 
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed);
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
-        //port, uid, len, hiStatus, loStatus, a, b, latency
+		//port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;
 
@@ -695,30 +695,30 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *his = g->sp - 4;
 	PyrSlot *los = g->sp - 3;
 
-    PyrSlot *a = g->sp - 2;
+	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
-    PyrSlot *plat = g->sp;
+	PyrSlot *plat = g->sp;
 
 
 	int err, outputIndex, uid, length, hiStatus, loStatus, aval, bval;
-    float late;
+	float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
 	if (outputIndex < 0 || outputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 
 	err = slotIntVal(u, &uid);
 	if (err) return err;
-        err = slotIntVal(l, &length);
+		err = slotIntVal(l, &length);
 	if (err) return err;
-        err = slotIntVal(his, &hiStatus);
+		err = slotIntVal(his, &hiStatus);
 	if (err) return err;
-        err = slotIntVal(los, &loStatus);
+		err = slotIntVal(los, &loStatus);
 	if (err) return err;
-        err = slotIntVal(a, &aval);
+		err = slotIntVal(a, &aval);
 	if (err) return err;
-        err = slotIntVal(b, &bval);
+		err = slotIntVal(b, &bval);
 	if (err) return err;
-        err = slotFloatVal(plat, &late);
+		err = slotFloatVal(plat, &late);
 	if (err) return err;
 
 	MIDIEndpointRef dest;
@@ -728,8 +728,8 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 
 	if (!dest) return errFailed;
 
-    sendmidi(outputIndex, dest, length, hiStatus, loStatus, aval, bval, late);
-    return errNone;
+	sendmidi(outputIndex, dest, length, hiStatus, loStatus, aval, bval, late);
+	return errNone;
 }
 
 // not needed in CoreMIDI:
@@ -753,29 +753,29 @@ void initMIDIPrimitives()
 	gSysexData.reserve(1024);
 
 	s_midiin = getsym("MIDIIn");
-    s_domidiaction = getsym("doAction");
-    s_midiNoteOnAction = getsym("doNoteOnAction");
-    s_midiNoteOffAction = getsym("doNoteOffAction");
-    s_midiTouchAction = getsym("doTouchAction");
-    s_midiControlAction = getsym("doControlAction");
-    s_midiPolyTouchAction = getsym("doPolyTouchAction");
-    s_midiProgramAction = getsym("doProgramAction");
-    s_midiBendAction = getsym("doBendAction");
-    s_midiSysexAction = getsym("doSysexAction");
+	s_domidiaction = getsym("doAction");
+	s_midiNoteOnAction = getsym("doNoteOnAction");
+	s_midiNoteOffAction = getsym("doNoteOffAction");
+	s_midiTouchAction = getsym("doTouchAction");
+	s_midiControlAction = getsym("doControlAction");
+	s_midiPolyTouchAction = getsym("doPolyTouchAction");
+	s_midiProgramAction = getsym("doProgramAction");
+	s_midiBendAction = getsym("doBendAction");
+	s_midiSysexAction = getsym("doSysexAction");
 	s_midiInvalidSysexAction = getsym("doInvalidSysexAction"); // client can handle incorrect case
-    s_midiSysrtAction = getsym("doSysrtAction");
-    s_midiSMPTEAction = getsym("doSMPTEaction");
-    s_numMIDIDev = getsym("prSetNumberOfDevices");
-    s_midiclient = getsym("MIDIClient");
+	s_midiSysrtAction = getsym("doSysrtAction");
+	s_midiSMPTEAction = getsym("doSMPTEaction");
+	s_numMIDIDev = getsym("prSetNumberOfDevices");
+	s_midiclient = getsym("MIDIClient");
 
-       definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);
+	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
 	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);
 	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
 	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
-    definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
-    definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
-    if(gMIDIClient) midiCleanUp();
+	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
+	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
+	if(gMIDIClient) midiCleanUp();
 }

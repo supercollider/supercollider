@@ -30,7 +30,7 @@
 }
 
 -(id)initWithReceiver:(PyrObject*)argReceiver result:(PyrObject*)argResult
-{	
+{
     if(self == [super init]) {
         receiver = argReceiver;
         result = argResult;
@@ -46,13 +46,13 @@
     [invocation setTarget:self];
     [invocation setSelector: selector];
     [invocation retainArguments];
-    
+
     [[SCVirtualMachine sharedInstance] defer: invocation];
 }
 
 
 -(void)getPaths:(BOOL)allowsMultiple
-{  
+{
     if (!openPanel) {
 		openPanel = [NSOpenPanel openPanel];
 		[openPanel retain];
@@ -65,60 +65,60 @@
     }
 }
 
-        
+
 -(void)returnPaths:(NSArray*)urls
 {
-    int i;
-    int count = [urls count];
-    
-    VMGlobals *g = gMainVMGlobals;
-    pthread_mutex_lock (&gLangMutex);
+	int i;
+	int count = [urls count];
+
+	VMGlobals *g = gMainVMGlobals;
+	pthread_mutex_lock (&gLangMutex);
 	PyrObject* array = newPyrArray(g->gc, count, 0, true);
-    for (i = 0; i < count; i++)
-    {
-        PyrString* pyrPathString = newPyrString(g->gc,[[[urls objectAtIndex: i ] path] cString],0,true);
-        
-        SetObject(array->slots + array->size, pyrPathString);
+	for (i = 0; i < count; i++)
+	{
+		PyrString* pyrPathString = newPyrString(g->gc,[[[urls objectAtIndex: i ] path] cString],0,true);
+
+		SetObject(array->slots + array->size, pyrPathString);
 		array->size++;
 
-        g->gc->GCWrite(array,pyrPathString);
+		g->gc->GCWrite(array,pyrPathString);
 
-    }
-	
-	int classVarIndex = getsym("CocoaDialog")->u.classobj->classVarIndex.ui;
+	}
+
+	int classVarIndex = slotRawInt(&getsym("CocoaDialog")->u.classobj->classVarIndex);
 	SetObject(&g->classvars->slots[classVarIndex+0], array);
 	g->gc->GCWrite(g->classvars, array);
-	
-    pthread_mutex_unlock (&gLangMutex);
 
-    [self ok];
+	pthread_mutex_unlock (&gLangMutex);
+
+	[self ok];
 }
 
 -(void)savePanel
 {
-    NSSavePanel *savePanel = [NSSavePanel savePanel];
-    if([savePanel runModal] == NSFileHandlingPanelOKButton) {
-        [self returnPath: [savePanel filename]];
-    } else {
-        [self cancel];
-    }
+	NSSavePanel *savePanel = [NSSavePanel savePanel];
+	if([savePanel runModal] == NSFileHandlingPanelOKButton) {
+		[self returnPath: [savePanel filename]];
+	} else {
+		[self cancel];
+	}
 }
 
 -(void)returnPath:(NSString*)path
 {
-    // check if greater than 512
-    int size = [path cStringLength];
-    if(size > 512) {
-        [self error];
-        return;
-    }
-    
-    pthread_mutex_lock (&gLangMutex);    
-    memcpy(result->slots,[path cString], size);
-    result->size = size;
-    pthread_mutex_unlock (&gLangMutex);
+	// check if greater than 512
+	int size = [path cStringLength];
+	if(size > 512) {
+		[self error];
+		return;
+	}
 
-    [self ok];
+	pthread_mutex_lock (&gLangMutex);
+	memcpy(result->slots,[path cString], size);
+	result->size = size;
+	pthread_mutex_unlock (&gLangMutex);
+
+	[self ok];
 }
 
 /*  better done using SCTextField
@@ -130,7 +130,7 @@
         if (![NSBundle loadNibNamed:@"GetStringDlg" owner:self])  {
             NSLog(@"Failed to load GetStringDlg.nib");
         }
-        //if (self == sharedGetStringObject) 
+        //if (self == sharedGetStringObject)
         [[textField window] setFrameAutosaveName:@"GetString"];
     }
 }
@@ -145,7 +145,7 @@
 		PyrSymbol *method = getsym("ok");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, receiver ); 
+        ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
     pthread_mutex_unlock (&gLangMutex);
@@ -157,7 +157,7 @@
 		PyrSymbol *method = getsym("cancel");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, receiver ); 
+        ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
     pthread_mutex_unlock (&gLangMutex);
@@ -169,7 +169,7 @@
 		PyrSymbol *method = getsym("errir");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
-        ++g->sp;  SetObject(g->sp, receiver ); 
+        ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
     pthread_mutex_unlock (&gLangMutex);
@@ -177,5 +177,5 @@
 
 
 
-    
+
 @end

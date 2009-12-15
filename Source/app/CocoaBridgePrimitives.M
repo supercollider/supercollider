@@ -41,12 +41,12 @@
 #define COCOABRIDGE_VERBOSITY						0
 #define COCOABRIDGE_STORE_OBJECTS_IN_ARRAY			1 // Conditional for storing all created objects in an NSArray. For future test with special Pool.
 #define COCOABRIDGE_AUTOCONVERT_NSSTRING			1 /* for backward compat. set to 0.
-														Used only for converting NSString to PyrString on INVOCATION RETURN. 
+														Used only for converting NSString to PyrString on INVOCATION RETURN.
 														PyrString are automatically converted to NSString when passed as arguments
                                                       */
 #if COCOABRIDGE_VERBOSITY
 	#define COCOABRIDGE_OBJ_RETAIN_LOG(nsobj) NSLog(@"OBJ_RETA NSObject(%p), type(%@)", nsobj, [nsobj class]);
-	#define COCOABRIDGE_OBJ_RELEASE_LOG(nsobj) NSLog(@"OBJ_RELE NSObject(%p), type(%@)", nsobj, [nsobj class]); 
+	#define COCOABRIDGE_OBJ_RELEASE_LOG(nsobj) NSLog(@"OBJ_RELE NSObject(%p), type(%@)", nsobj, [nsobj class]);
 	#define COCOABRIDGE_POOL_ADD_LOG(nsobj) NSLog(@"POOL_ADD NSObject(%p), type(%@), POOL_OBJ_NUMBER: %i", nsobj, [nsobj class], [nsobjects count]);
 	#define COCOABRIDGE_POOL_REM_LOG(nsobj)	NSLog(@"POOL_REM NSObject(%p), type(%@), POOL_OBJ_NUMBER: %i", nsobj, [nsobj class], [nsobjects count]-1);
 #else
@@ -62,17 +62,17 @@
 		[nsobjects addObject: nsobj];	\
 		COCOABRIDGE_POOL_ADD_LOG(nsobj)	\
 	} while(0);
-	
+
 # define COCOABRIDGE_POOL_REM(nsobj)	\
 	do {	\
 		COCOABRIDGE_POOL_REM_LOG(nsobj)	\
 		[nsobjects removeObject: nsobj];	\
 	} while(0);
 #else
-# define COCOABRIDGE_POOL_ADD(nsobj) 
-# define COCOABRIDGE_POOL_REM(nsobj) 
+# define COCOABRIDGE_POOL_ADD(nsobj)
+# define COCOABRIDGE_POOL_REM(nsobj)
 #endif
-	
+
 #define COCOABRIDGE_OBJ_RETAIN(nsobj)	\
 	do {	\
 		/*[nsobj retain];*/	\
@@ -86,7 +86,7 @@
 		COCOABRIDGE_POOL_REM(nsobj)	\
 		/*[nsobj release];*/	\
 	}while(0)
-	
+
 #define TryInvocation(anInvocation, receiver)	\
 	@try {	\
 		[anInvocation invoke];	\
@@ -110,10 +110,10 @@ inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 {
 	if(IsSym(slot)) {
 		NSString* retval;
-		int len = strlen(slot->us->name);
+		int len = strlen(slotRawSymbol(slot)->name);
 		char* symstr = (char*)malloc(len+1);
-		strcpy(symstr, slot->us->name);
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4 
+		strcpy(symstr, slotRawSymbol(slot)->name);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
 		retval = [NSString stringWithCString:symstr length:len]; // Deprecated 10.4
 #else
 		retval = [NSString stringWithCString:symstr encoding:NSASCIIStringEncoding];
@@ -122,8 +122,8 @@ inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 		return retval;
 	}
     else {
-		PyrString* pyrString = slot->uos;
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4 
+		PyrString* pyrString = slotRawString(slot);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
 		return [NSString stringWithCString: pyrString->s length: pyrString->size]; // Deprecated 10.4
 #else
 		char* symstr = (char*)malloc(pyrString->size + 1);
@@ -138,13 +138,13 @@ inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 
 inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, PyrObjectHdr** retPyrObject ) {
 	VMGlobals *g = gMainVMGlobals;
-	
+
 	if(retPyrObject)
 		*retPyrObject = NULL;
-	
+
 	if(*type == 'r') ++type;
 	switch(*type) {
-		case _C_ID: 
+		case _C_ID:
 			{
 				id idval = *(id*)value;
 				if([idval isKindOfClass:[NSColor class]]) {
@@ -174,27 +174,27 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 					//NSLog(@"ObjcTypeFillPyrSlot [_C_ID]");
 					if(idval) {
 						COCOABRIDGE_OBJ_RETAIN(idval);
-						SetPtr(slot, (id) idval); 	
+						SetPtr(slot, (id) idval);
 					}else
 						SetNil(slot);
 				}
 			}
 			break;
-		
+
 		case _C_VOID:
 		case _C_UNDEF:
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_VOID | _C_UNDEF]");
 			SetNil(slot);
 			break;
-			
+
 		case _C_CHR:
 		case _C_UCHR:
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_CHR | _C_UCHAR]");
 			//SetChar(slot, *(char*)value);
 			SetInt(slot, *(char*)value);
 			break;
-			
-		
+
+
 		case _C_LNG:
 		case _C_ULNG:
 			{
@@ -203,7 +203,7 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 			SetInt(slot, sval);
 			}
 			break;
-		
+
 		case _C_SHT:
 		case _C_USHT:
 			{
@@ -212,52 +212,52 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 			SetInt(slot, sval);
 			}
 			break;
-		
+
 		case _C_INT:
 		case _C_UINT:
-			{	
+			{
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_INT...]");
 			SetInt(slot, *(int*)value);
 			}
 			break;
-		
+
 		case _C_FLT:
 			{
 			float fval = *(float*)value;
 			SetFloat(slot, fval);
 			}
 			break;
-		
-		case _C_DBL: 
+
+		case _C_DBL:
 			{
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_FLT...]");
 			double dval = *(double*)value;
 			SetFloat(slot, dval);
 			}
 			break;
-		
+
 		case 'B':
 			{
 			//NSLog(@"ObjcTypeFillPyrSlot [BOOLEAN...]");
 			bool b = *(bool*)value;
-			if(b) 
+			if(b)
 				SetTrue(slot);
 			else
 				SetFalse(slot);
 			}
 			break;
-			
-		case _C_BFLD: 
+
+		case _C_BFLD:
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_BFLD BITFIELD...]");
 			SetNil(slot);
 			break;
-			
+
 		case _C_PTR:
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_CHR | _C_UCHAR]");
 			SetPtr(slot, *(void**)value);
 			break;
-		
-		case _C_SEL: 
+
+		case _C_SEL:
 			{
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_SEL]");
 			SEL sel = *(SEL*)value;
@@ -278,14 +278,14 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 				*retPyrObject = pyrPathString;
 			}
 			break;
-		
+
 		case _C_STRUCT_B:
-			{	
+			{
 				/*
 				 support only for basic types.
 				 TODO: plug some functions of the PyObjc to parse structure types.
 				 */
-				
+
 				if(strncmp(type+1, "_NSSize", 7) == 0) {
 					//NSLog(@"ObjcTypeFillPyrSlot [_NSSize]");
 					// return an array
@@ -297,7 +297,7 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 					SetObject(slot, array);
 					if(retPyrObject)
 						*retPyrObject = array;
-					
+
 				}else if(strncmp(type+1, "_NSRange", 8) == 0) {
 					//NSLog(@"ObjcTypeFillPyrSlot [_NSRange]");
 					// return an array
@@ -315,7 +315,7 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 					PyrSlot			*slots;
 					PyrObject		*rect = instantiateObject(g->gc, s_rect->u.classobj, 0, false, true);
 					NSRect			r = *(NSRect*)value;
-					
+
 					slots = rect->slots;
 					SetFloat(slots+0, r.origin.x);
 					SetFloat(slots+1, r.origin.y);
@@ -330,9 +330,9 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 					PyrSlot			*slots;
 					PyrObject		*point = instantiateObject(g->gc, s_point->u.classobj, 0, false, true);
 					NSPoint			p = *(NSPoint*)value;
-					
+
 					slots = point->slots;
-					SetFloat(slots+0, p.x); 
+					SetFloat(slots+0, p.x);
 					SetFloat(slots+1, p.y);
 					SetObject(slot, point);
 					if(retPyrObject)
@@ -355,28 +355,28 @@ inline int ObjcTypeFillPyrSlot(PyrSlot* slot, const char* type, void* value, Pyr
 				//cType[ptr-cType-1] = '=';
 			}
 			break;
-		
+
 		case _C_ARY_E:
 		case _C_UNION_E:
 		case _C_STRUCT_E:
 			//NSLog(@"ObjcTypeFillPyrSlot [_C_STRUCT | _C_UNION | _C_ARY_E]");
 			return errNone;
-		
+
 		// not handled
-		case _C_CLASS: 
+		case _C_CLASS:
 		case _C_ARY_B:
 		case _C_UNION_B:
 		//case _C_STRUCT_B:
-		default: 
+		default:
 			SetNil(slot);
 			post("ERROR: ObjcType conversion not handled: %c!\n", *type);
 			return errWrongType;
 	}
-	
+
 	return errNone;
 }
 
-	
+
 //put this in a .h
 @interface SCCocoaToLangAction : NSResponder
 {
@@ -434,8 +434,8 @@ extern bool compiledOK;
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		++g->sp;  SetFloat(g->sp, [sender floatValue]); 
+		++g->sp;  SetObject(g->sp, pobj);
+		++g->sp;  SetFloat(g->sp, [sender floatValue]);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
@@ -443,118 +443,118 @@ extern bool compiledOK;
 - (void) doAction: (id) sender
 {
 //	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		++g->sp;  SetInt(g->sp, 1); 
+		++g->sp;  SetObject(g->sp, pobj);
+		++g->sp;  SetInt(g->sp, 1);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);		
+    pthread_mutex_unlock (&gLangMutex);
 }
 - (void) doStateAction: (id) sender
 {
 //	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-//		
-		++g->sp;  SetObject(g->sp, pobj); 
-		++g->sp;  SetInt(g->sp, [sender state]); 
+//
+		++g->sp;  SetObject(g->sp, pobj);
+		++g->sp;  SetInt(g->sp, [sender state]);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 
 }
 - (void) doIntAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		++g->sp;  SetInt(g->sp, [sender intValue]); 
+		++g->sp;  SetObject(g->sp, pobj);
+		++g->sp;  SetInt(g->sp, [sender intValue]);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
-	
+    pthread_mutex_unlock (&gLangMutex);
+
 }
 - (void) doArrayAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetObject(g->sp, pobj);
 		//get Size
 		size_t size = (size_t) [sender arraySize];
 		float *src = (float*) [sender floatArray];
 		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
 		for(int i=0; i<size; i++){
 			array->d[i] = src[i];
-		}		
-		++g->sp;  SetObject(g->sp, array); 
+		}
+		++g->sp;  SetObject(g->sp, array);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
-	
+    pthread_mutex_unlock (&gLangMutex);
+
 }
 
 /* experimental ! */
 - (void) doFloatArrayAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetObject(g->sp, pobj);
 		//get Size
 		size_t size = (size_t) [sender arraySize];
 		float *src = (float*) [sender floatArray];
 		PyrDoubleArray* array = newPyrDoubleArray(g->gc, size, 0 , true);
 		for(int i=0; i<size; i++){
 			array->d[i] = src[i];
-		}		
-		++g->sp;  SetObject(g->sp, array); 
+		}
+		++g->sp;  SetObject(g->sp, array);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 }
 /* experimental ! */
 - (void) doSCObjectAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetObject(g->sp, pobj);
 		//push values from sender
 		PyrObject* reslut = (PyrObject*) [sender valueWith: self];
-	
-		++g->sp;  SetObject(g->sp, reslut); 
+
+		++g->sp;  SetObject(g->sp, reslut);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 - (void) keyUp: (NSEvent*) event
@@ -579,43 +579,43 @@ extern bool compiledOK;
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-   pthread_mutex_lock (&gLangMutex);	
+   pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
+		++g->sp;  SetObject(g->sp, pobj);
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 
 //// added thelych
 #pragma mark __SCCOCOATOLANG_FORWARD___
 - (void)notificationReceived:(NSNotification*)aNotification
-{	
+{
 	//post("notification received by delegate\n");
 	pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doNotificationAction");
 		VMGlobals *g = gMainVMGlobals;
-		
+
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		
+		++g->sp;  SetObject(g->sp, pobj);
+
 		PyrString* pyrString = newPyrString(g->gc,[[aNotification name] cString],0,true);
 		++g->sp;  SetObject(g->sp, pyrString);
-		++g->sp;  SetPtr(g->sp, (void*)aNotification); 
+		++g->sp;  SetPtr(g->sp, (void*)aNotification);
 		++g->sp;  SetPtr(g->sp, (void*)[aNotification object]);
-		
+
 		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);		
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 /*
@@ -643,41 +643,41 @@ extern bool compiledOK;
 }
 
 -(void)forwardInvocation:(NSInvocation*)inv {
-	
+
 	SEL selector = [inv selector];
 	const char* retType = [[inv methodSignature]methodReturnType];
 	const char* csel = sel_getName(selector);
-	
+
 	pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
-	
+
 		NSMethodSignature* nsSignature = [inv methodSignature];
 		int maxArgs = [nsSignature numberOfArguments];
-		
+
 		PyrSymbol *method = getsym("doDelegateAction");
 		VMGlobals *g = gMainVMGlobals;
-		
+
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		
+		++g->sp;  SetObject(g->sp, pobj);
+
 		PyrString* pyrString = newPyrString(g->gc, csel, 0, true);
-		++g->sp;  SetObject(g->sp, pyrString); 
+		++g->sp;  SetObject(g->sp, pyrString);
 		void* value;
-		
+
 		//NSLog(@"NSInvocation Name: %s has %i number of arguments", csel, maxArgs);
-		
+
 		++g->sp;
 		if(maxArgs - 2 > 0) {
 			PyrObject*		array;
 			PyrObjectHdr*	pyrObject;
-			
+
 			//array = newPyrArray(g->gc, 2, 0, true);
 			array = ::instantiateObject(g->gc, s_array->u.classobj, maxArgs-2, true, true);
 			SetObject(g->sp, array);
-			
+
 			PyrSlot* slots = array->slots;
-			for(int i=2; i < maxArgs; ++i) 
+			for(int i=2; i < maxArgs; ++i)
 			{
 				[inv getArgument:(void*)&value atIndex:i];
 				ObjcTypeFillPyrSlot(slots++, [nsSignature getArgumentTypeAtIndex:i], (void*)&value, &pyrObject);
@@ -690,28 +690,28 @@ extern bool compiledOK;
 			SetNil(g->sp);
 
 		runInterpreter(g, method, 3);
-		
+
 		g->canCallOS = false;
 		if(*retType != _C_VOID && *retType != _C_UNDEF) {
 			//NSLog(@"Setting NSInvocation Return Type");
 			//[inv retainArguments];
-			
+
 			g = gMainVMGlobals;
 			PyrSlot* slot = &(g->result);
 			void * retbuffer=NULL;
-			
+
 			if(*retType == 'r') ++retType;
 			switch(*retType) {
-				case _C_ID: 
+				case _C_ID:
 				{
 					//NSLog(@"Setting [_C_ID]");
 					id retval = nil;
 					if(
-					   isKindOfSlot(slot, s_nsObject->u.classobj) || 
-					   isKindOfSlot(slot, s_nsObject->u.classobj->superclass.us->u.classobj)
+					   isKindOfSlot(slot, s_nsObject->u.classobj) ||
+					   isKindOfSlot(slot, slotRawSymbol(&s_nsObject->u.classobj->superclass)->u.classobj)
 					) {
 						//NSLog(@"Slot is a NSObject");
-						retval = (id)slot->uo->slots[0].ui;
+						retval = (id)slotRawInt(slotRawObject(slot)->slots);
 					}
 					else if(isKindOfSlot(slot, class_string) || IsSym(slot)) {
 						//NSLog(@"Slot is a string");
@@ -719,7 +719,7 @@ extern bool compiledOK;
 					}
 					else if(IsPtr(slot) ) {
 						//NSLog(@"Slot is a Pointer");
-						retval = (id)slot->uptr;
+						retval = (id)slotRawPtr(slot);
 					}
 					else if(IsFloat(slot)) {
 						//NSLog(@"Slot is a Float");
@@ -738,7 +738,7 @@ extern bool compiledOK;
 					else if(isKindOfSlot(slot, s_color->u.classobj)) {
 						//NSLog(@"Slot is a Color");
 						float r, g, b, a;
-						PyrSlot *slots = slot->uo->slots;
+						PyrSlot *slots = slotRawObject(slot)->slots;
 						slotFloatVal(slots+0, &r);
 						slotFloatVal(slots+1, &g);
 						slotFloatVal(slots+2, &b);
@@ -751,20 +751,20 @@ extern bool compiledOK;
 					retbuffer = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_UCHR:
-				case _C_CHR: 
+				case _C_CHR:
 				{
 					//NSLog(@"Setting [_C_CHR]");
 					char retval = 0;
-					if( (slot)->utag == tagChar)
-						retval = slot->uc;
+					if( IsChar(slot) )
+						retval = slotRawChar(slot);
 					else
 						post("ERROR: Cocoa Bridge wrong type. expected %c. Set to 0\n", _C_CHR);
 					retbuffer = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_SHT:
 				case _C_USHT: // same size PPC, PPC64, IA32...ect...
 				{
@@ -779,7 +779,7 @@ extern bool compiledOK;
 					shortval = retval;
 					retbuffer  = (void*)&shortval;
 				}
-				
+
 				case _C_INT:
 				case _C_UINT: // same size PPC, PPC64, IA32...ect...
 				{
@@ -794,7 +794,7 @@ extern bool compiledOK;
 					retbuffer  = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_LNG:
 				case _C_ULNG: // same size PPC, PPC64, IA32...ect...
 				{
@@ -810,7 +810,7 @@ extern bool compiledOK;
 					retbuffer  = (void*)&longval;
 				}
 				break;
-				
+
 				case _C_FLT:
 				{
 					//NSLog(@"Setting [_C_FLT]");
@@ -820,71 +820,71 @@ extern bool compiledOK;
 					retbuffer = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_DBL:
 				{
 					//NSLog(@"Setting [_C_DBL]");
 					double retval = 0;
 					if(slotDoubleVal(slot, &retval) != errNone)
 						post("ERROR: Cocoa Bridge wrong type. expected %c\n", _C_DBL);
-					retbuffer = (void*)&retval;					
+					retbuffer = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_PTR:
 				{
 					//NSLog(@"Setting [_C_PTR]");
 					void* ptr = 0;
 					if(IsPtr( slot )) {
-						ptr = (slot)->uptr;
+						ptr = slotRawPtr(slot);
 						retbuffer = &ptr;
 					}
 					else
 						post("ERROR: Cocoa Bridge wrong type. expected %c\n", _C_PTR);
 				}
 				break;
-				
-				case _C_CHARPTR: 
+
+				case _C_CHARPTR:
 				{
 					//NSLog(@"Setting [_C_CHARPTR | STRING]");
 					int size = 0;
 					char *retval = "";
-					
+
 					if ( IsSym(slot) )
-						size = strlen(slot->us->name);
+						size = strlen(slotRawSymbol(slot)->name);
 					else if( isKindOfSlot(slot, class_string) ) {
-						size = ((PyrString*)slot->uo)->size;
+						size = ((PyrString*)slotRawObject(slot))->size;
 					}
 					else {
 						post("ERROR: Cocoa Bridge wrong type. expected %c. return ("")\n", _C_CHARPTR);
 						retbuffer = (void*)&retval;
 						break;
 					}
-					
+
 					retval = (char*)malloc(sizeof(char) * (size+1));
 					slotStrVal(slot, retval, size);
 					retbuffer = (void*)&retval;
 				}
 				break;
-				
+
 				case _C_STRUCT_B:
-				{	
+				{
 					/*
 					 support only for basic types.
 					 TODO: plug some functions of the PyObjc to parse structure types.
 					 */
-					
+
 					char * ptr, * cType;
 					cType = (char*)retType;
 					ptr = strchr(retType, '=') + 1;
 					cType[ptr-cType-1] = '\0';
-					
+
 					if( (strcmp(cType+1, "_NSSize") == 0) && (
 							isKindOfSlot(slot, s_point->u.classobj) ||
 							isKindOfSlot(slot, class_array))
 					) {
-						PyrSlot *slots = slot->uo->slots;
-						NSSize s; 
+						PyrSlot *slots = slotRawObject(slot)->slots;
+						NSSize s;
 						slotFloatVal(slots+0, &s.width);
 						slotFloatVal(slots+1, &s.height);
 						retbuffer = (void*)&s;
@@ -893,7 +893,7 @@ extern bool compiledOK;
 							isKindOfSlot(slot, s_point->u.classobj) ||
 							isKindOfSlot(slot, class_array))
 					) {
-						PyrSlot *slots = slot->uo->slots;
+						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSRange s;
 						slotIntVal(slots+0, (int*)&s.location);
 						slotIntVal(slots+1, (int*)&s.length);
@@ -903,7 +903,7 @@ extern bool compiledOK;
 							isKindOfSlot(slot, s_rect->u.classobj) ||
 							isKindOfSlot(slot, class_array))
 					){
-						PyrSlot *slots = slot->uo->slots;
+						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSRect s;
 						slotFloatVal(slots+0, &(s.origin.x));
 						slotFloatVal(slots+1, &(s.origin.y));
@@ -915,38 +915,38 @@ extern bool compiledOK;
 							isKindOfSlot(slot, s_point->u.classobj) ||
 							isKindOfSlot(slot, class_array))
 					) {
-						PyrSlot *slots = slot->uo->slots;
+						PyrSlot *slots = slotRawObject(slot)->slots;
 						NSPoint s;
 						slotFloatVal(slots+0, &s.x);
 						slotFloatVal(slots+1, &s.y);
 						retbuffer = (void*)&s;
 					}else{
-						post("ERROR: Warning structure type not supported %c.\n", _C_STRUCT_B); 
+						post("ERROR: Warning structure type not supported %c.\n", _C_STRUCT_B);
 					}
 					cType[ptr-cType-1] = '=';
 				}
 				break;
-				
+
 				//// Not handled
-				case _C_BFLD: 
-				case _C_CLASS: 
-				case _C_SEL: 
-				case _C_ARY_B: 	
-				case _C_UNION_B: 
+				case _C_BFLD:
+				case _C_CLASS:
+				case _C_SEL:
+				case _C_ARY_B:
+				case _C_UNION_B:
 				case _C_UNION_E:
 				case _C_ARY_E:
 				case _C_STRUCT_E:
-				default: 
+				default:
 					NSLog(@"ERROR: UNHANDLED RETURN TYPE OF INVOCATION: %c", *retType);
 				//post("return type not handled");
 				break;
 			}
-			
+
 			//NSLog(@"Returning NSInvocation");
 			[inv setReturnValue:retbuffer];
 		} // End Of RetValue
 	} // End Of Compiled ok
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 -(void)dummy{
@@ -957,17 +957,17 @@ extern bool compiledOK;
 {
 	NSNumber* n = [NSNumber numberWithLong:(long)aSelector];
 	NSMethodSignature *signature;
-	
+
 	if(cTypes && strlen(cTypes) > 0)
 		signature = [NSMethodSignature signatureWithObjCTypes:cTypes]; // defined in <Foundation/NSMethodSignature>
 	else
 		signature = [[self class] instanceMethodSignatureForSelector:@selector(dummy)];
-	
+
 	if(!signature) {
 		post("ERROR: CocoaBridge Failed Creating valid signature for delegate !\n");
 		return;
 	}
-	
+
 	[mSelectorArray setObject:signature forKey:n];
 }
 
@@ -989,7 +989,7 @@ messages.
 		^this.primitiveFailed;
 	}
 	prDealloc {
-		_ObjC_dealloc;		
+		_ObjC_dealloc;
 	}
 */
 
@@ -998,19 +998,19 @@ int slotGetPoint(PyrSlot* a, NSPoint *r);
 
 static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 {
-	int len = args->uo->size;
+	int len = slotRawObject(args)->size;
 	for(int i =0; i<len; i++)
 	{
-		PyrSlot * slot = args->uo->slots+i;
+		PyrSlot * slot = slotRawObject(args)->slots+i;
 		char *cType = (char *)[[anInvocation methodSignature] getArgumentTypeAtIndex: i+2];
 		if(*cType == 'r') ++cType; // increment and go
-		
+
 		if(IsFloat(slot))
 		{
 			float val;
 			if(slotFloatVal(slot, &val) != noErr)
 				return errFailed;
-				
+
 			if(*cType == _C_FLT) {
 				[anInvocation setArgument: &val atIndex: i+2];
 			}
@@ -1043,17 +1043,17 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: &number atIndex: i+2];
 			}
 			else {
-				post("wrong type (Float / Double) at arg: %i expected float\n", i); 
+				post("wrong type (Float / Double) at arg: %i expected float\n", i);
 				return errWrongType;
 			}
-			
-		} 
+
+		}
 		else if(IsInt(slot))
 		{
 			int val;
 			if(slotIntVal(slot, &val) != noErr)
 				return errFailed;
-				
+
 			if(*cType == _C_INT || *cType == _C_UINT) {
 				[anInvocation setArgument: &val atIndex: i+2];
 			}
@@ -1082,19 +1082,19 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: &number atIndex: i+2];
 			}else{
 				post("wrong type (Integer) at arg: %i expected %c \n", i, *cType); return errWrongType;
-			}				
-		} 
+			}
+		}
 		else if(
-			isKindOfSlot(slot, s_nsObject->u.classobj) || 
-			isKindOfSlot(slot, s_nsObject->u.classobj->superclass.us->u.classobj)
+			isKindOfSlot(slot, s_nsObject->u.classobj) ||
+			isKindOfSlot(slot, slotRawSymbol(&s_nsObject->u.classobj->superclass)->u.classobj)
 		)
 		{
 			if(*cType != _C_ID) {
 				post("wrong type (SCNSObject) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
-			id val = (id) slot->uo->slots[0].ui;
-			[anInvocation setArgument: &val atIndex: i+2];       
+			id val = (id) slotRawInt(slotRawObject(slot)->slots);
+			[anInvocation setArgument: &val atIndex: i+2];
 		}
 		else if(IsFalse(slot)) {
 			bool val = false;
@@ -1123,7 +1123,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 			}
 			else{
 				post("wrong type (Boolean False) at arg: %i expected %c \n", i, *cType); return errWrongType;
-			}	
+			}
 		}
 		else if(IsTrue(slot)) {
 			bool val = true;
@@ -1152,7 +1152,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 			}
 			else{
 				post("wrong type (Boolean True) at arg: %i expected %c \n", i, *cType); return errWrongType;
-			}	
+			}
 		}
 		else if(IsNil(slot))
 		{
@@ -1170,14 +1170,14 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_rect->u.classobj))
 		{
 			if(*cType != _C_STRUCT_B) {
-				post("wrong type (Rect) at arg: %i expected %c \n", i, *cType); 
+				post("wrong type (Rect) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
-			
+
 			NSRect bounds;
-			int err = slotGetNSRect(slot, &bounds);		
+			int err = slotGetNSRect(slot, &bounds);
 			if (err) return err;
-			[anInvocation setArgument: &bounds atIndex: i+2];       
+			[anInvocation setArgument: &bounds atIndex: i+2];
 		}
 		else if (isKindOfSlot(slot, s_color->u.classobj))
 		{
@@ -1185,12 +1185,12 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				post("wrong type (Color) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
-			
-			PyrSlot *slots = slot->uo->slots;
-			int err; 
+
+			PyrSlot *slots = slotRawObject(slot)->slots;
+			int err;
 			float r, g, b, a;
 			NSColor * col;
-			
+
 			err = slotFloatVal(slots+0, &r);
 			if (err) return err;
 			err = slotFloatVal(slots+1, &g);
@@ -1199,19 +1199,19 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 			if (err) return err;
 			err = slotFloatVal(slots+3, &a);
 			if (err) return err;
-			
+
 			col = [NSColor colorWithCalibratedRed:r green:g blue:b alpha:a];
 			[anInvocation setArgument: &col atIndex: i+2];
-		} 
+		}
 		else if (isKindOfSlot(slot, s_string->u.classobj))
 		{
-			if( 
+			if(
 			   *cType == _C_CHARPTR ||
 			   *cType == _C_PTR
 			) {
-				char * ch = slot->uos->s;
+				char * ch = slotRawString(slot)->s;
 				if(!ch) return errFailed;
-				[anInvocation setArgument: (void*)  &ch atIndex: i+2]; 
+				[anInvocation setArgument: (void*)  &ch atIndex: i+2];
 			}
 			else if(*cType == _C_ID) {
 				NSString *s = nsStringFromPyrSlot(slot);
@@ -1225,28 +1225,28 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				[anInvocation setArgument: (void*)&sel atIndex: i+2];
 			}
 			else {
-				post("wrong type (String) at arg: %i expected %c \n", i, *cType); 
+				post("wrong type (String) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
-		} 
+		}
 		else if (isKindOfSlot(slot, s_point->u.classobj))
 		{
-			if(*cType != _C_STRUCT_B) return errWrongType;			
+			if(*cType != _C_STRUCT_B) return errWrongType;
 			NSPoint point;
-			int err = slotGetPoint(slot, &point);		
+			int err = slotGetPoint(slot, &point);
 			if (err) return err;
-			[anInvocation setArgument: &point atIndex: i+2];   				
-		} 
+			[anInvocation setArgument: &point atIndex: i+2];
+		}
 		else if (isKindOfSlot(slot, class_signal))
 		{
-			float *slotvalues = (float*)(slot->uo->slots) ;
-			[anInvocation setArgument: &slotvalues atIndex: i+2];  
-		
+			float *slotvalues = (float*)(slotRawObject(slot)->slots) ;
+			[anInvocation setArgument: &slotvalues atIndex: i+2];
+
 		}
 		else if (isKindOfSlot(slot, s_int8array->u.classobj))
 		{
 			if( *cType == _C_PTR ) {
-				void* ptr = (void*)(((PyrInt8Array*)slot->uo)->b);
+				void* ptr = (void*)(((PyrInt8Array*)slotRawObject(slot))->b);
 				if(!ptr) return errFailed;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
@@ -1256,7 +1256,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_int16array->u.classobj))
 		{
 			if( *cType == _C_PTR ) {
-				void* ptr = (void*)(((PyrInt16Array*)slot->uo)->i);
+				void* ptr = (void*)(((PyrInt16Array*)slotRawObject(slot))->i);
 				if(!ptr) return errFailed;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
@@ -1266,7 +1266,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_int32array->u.classobj))
 		{
 			if( *cType == _C_PTR ) {
-				void* ptr = (void*)(((PyrInt32Array*)slot->uo)->i);
+				void* ptr = (void*)(((PyrInt32Array*)slotRawObject(slot))->i);
 				if(!ptr) return errFailed;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
@@ -1276,7 +1276,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_doublearray->u.classobj))
 		{
 			if( *cType == _C_PTR ) {
-				void* ptr = (void*)(((PyrDoubleArray*)slot->uo)->d);
+				void* ptr = (void*)(((PyrDoubleArray*)slotRawObject(slot))->d);
 				if(!ptr) return errFailed;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
@@ -1286,7 +1286,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 		else if (isKindOfSlot(slot, s_floatarray->u.classobj))
 		{
 			if( *cType == _C_PTR ) {
-				void* ptr = (void*)(((PyrFloatArray*)slot->uo)->f);
+				void* ptr = (void*)(((PyrFloatArray*)slotRawObject(slot))->f);
 				if(!ptr) return errFailed;
 				[anInvocation setArgument: &ptr atIndex: i+2];
 			}else{
@@ -1298,12 +1298,12 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 			if(strncmp(cType, "{_NSSize", 8) == 0) {
 				NSSize size =  (NSSize){0.f, 0.f};
 				float value;
-				if(slot->uo->size > 0) {
-					if(slotFloatVal(slot->uo->slots+0, &value)) return errFailed;
+				if(slotRawObject(slot)->size > 0) {
+					if(slotFloatVal(slotRawObject(slot)->slots+0, &value)) return errFailed;
 					size.width = value;
 				}
-				if(slot->uo->size > 1) {
-					if(slotFloatVal(slot->uo->slots+1, &value)) return errFailed;
+				if(slotRawObject(slot)->size > 1) {
+					if(slotFloatVal(slotRawObject(slot)->slots+1, &value)) return errFailed;
 					size.height = value;
 				}
 				[anInvocation setArgument: (void*)&size atIndex: i+2];
@@ -1311,70 +1311,70 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 			else if(strncmp(cType, "{_NSRange", 9) == 0) {
 				NSRange range =  (NSRange){0, 0};
 				int value;
-				if(slot->uo->size > 0) {
-					if(slotIntVal(slot->uo->slots+0, &value)) return errFailed;
+				if(slotRawObject(slot)->size > 0) {
+					if(slotIntVal(slotRawObject(slot)->slots+0, &value)) return errFailed;
 					range.location = (unsigned int)value;
 				}
-				if(slot->uo->size > 1) {
-					if(slotIntVal(slot->uo->slots+1, &value)) return errFailed;
+				if(slotRawObject(slot)->size > 1) {
+					if(slotIntVal(slotRawObject(slot)->slots+1, &value)) return errFailed;
 					range.length = (unsigned int)value;
 				}
 				[anInvocation setArgument: (void*)&range atIndex: i+2];
 			}
 			else if( strncmp(cType, "{?=qll}", 6) == 0 ) { // special QTTime structure
-				
+
 				QTTime time;
-				PyrSlot* slots = slot->uo->slots;
-				
-				if(slot->uo->size < 2) {
+				PyrSlot* slots = slotRawObject(slot)->slots;
+
+				if(slotRawObject(slot)->size < 2) {
 					post("wrong number of elements in Array : 2 elements expected\n"); return errFailed;
 				}
-				
+
 				time = QTMakeTime(
-					(long long) (IsInt(slots+0) ? (slots[0].ui) : (IsFloat(slots+0) ? slots[0].uf : 0)),
-					(long) (IsInt(slots+1) ? (slots[1].ui) : (IsFloat(slots+1) ? slots[1].uf : 0))
+					(long long) (IsInt(slots+0) ? (slotRawInt(&slots[0]) : (IsFloat(slots+0) ? slotRawFloat(slots) : 0)),
+					(long) (IsInt(slots+1) ? (slotRawInt(&slots[1]) : (IsFloat(slots+1) ? slotRawFloat(&slots[1]) : 0))
 				);
-				
-				if( slot->uo->size > 2 )
-					time.flags = (long) (IsInt(slots+2) ? (slots[2].ui) : (IsFloat(slots+2) ? slots[2].uf : 0));
-				
+
+				if( slotRawObject(slot)->size > 2 )
+					time.flags = (long) (IsInt(slots+2) ? (slotRawInt(&slots[2]) : (IsFloat(slots+2) ? slotRawFloat(&slots[2]) : 0));
+
 				[anInvocation setArgument: (void*)&time atIndex: i+2];
 			}
 			else if( strncmp(cType, "{?={?=qll}{?=qll}}", 18) == 0 ) { // special QTTimeRange structure
-				
+
 				QTTimeRange timeRange; QTTime* time;
-				if(slot->uo->size < 2) {
+				if(slotRawObject(slot)->size < 2) {
 					post("wrong number of elements in Array: expected 2 elements\n"); return errFailed;
 				}
-				
+
 				PyrSlot* slots;
 				for( int i=0; i < 2; ++i ) {
-					if(slot->uo->slots[i].uo->size < 2) {
+					if(slotRawObject(&slotRawObject(slot)->slots[i])->size < 2) {
 						post("wrong number of elements in sub Array: expected 2 elements\n"); return errFailed;
 					}
-					
-					slots = slot->uo->slots[i].uo->slots;
+
+					slots = slotRawObject(&slotRawObject(slot)->slots[i])->slots;
 					time = (i == 0) ? &timeRange.time : &timeRange.duration;
 					*time = QTMakeTime(
-									   (long long) (IsInt(slots+0) ? (slots[0].ui) : (IsFloat(slots+0) ? slots[0].uf : 0)),
-									   (long) (IsInt(slots+1) ? (slots[1].ui) : (IsFloat(slots+1) ? slots[1].uf : 0))
+									   (long long) (IsInt(slots+0) ? slotRawInt(&slots[0]) : (IsFloat(slots+0) ? slotRawFloat(slots) : 0)),
+									   (long) (IsInt(slots+1) ? slotRawInt(&slots[1]) : (IsFloat(slots+1) ? slotRawFloat(&slots[1]) : 0))
 									   );
-					if( slot->uo->size > 2 )
-						time->flags = (long) (IsInt(slots+2) ? (slots[2].ui) : (IsFloat(slots+2) ? slots[2].uf : 0));
+					if( slotRawObject(slot)->size > 2 )
+						time->flags = (long) (IsInt(slots+2) ? slotRawInt(&slots[2]) : (IsFloat(slots+2) ? slotRawFloat(&slots[2]) : 0));
 
 				}
-				
+
 			}
 			else {
 				//for now only arrays of SCNSObject
-				id * nsObjects = (id*) malloc(args->uo->size * sizeof(id));
-				for(int j=0;  j<slot->uo->size; j++)
+				id * nsObjects = (id*) malloc(slotRawObject(args)->size * sizeof(id));
+				for(int j=0;  j<slotRawObject(slot)->size; j++)
 				{
-					PyrSlot * nsslot = slot->uo->slots+j;
-					nsObjects[j] =  (id) nsslot->uo->slots[0].ui;
+					PyrSlot * nsslot = slotRawObject(slot)->slots+j;
+					nsObjects[j] = (id) slotRawInt(slotRawObject(nsslot)->slots);
 				}
 				if(!nsObjects) return errFailed;
-				[anInvocation setArgument: &nsObjects atIndex: i+2];  
+				[anInvocation setArgument: &nsObjects atIndex: i+2];
 			}
 		}
 		else {
@@ -1388,38 +1388,38 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed);
 int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *receiver = g->sp - 4;
-    PyrSlot *classname = g->sp - 3;
+	PyrSlot *receiver = g->sp - 4;
+	PyrSlot *classname = g->sp - 3;
 	PyrSlot *initname = g->sp - 2;
-    PyrSlot *args  = g->sp-1;
-    PyrSlot *defer  = g->sp;
-	
-	
+	PyrSlot *args  = g->sp-1;
+	PyrSlot *defer  = g->sp;
+
+
 	bool hasArg = NotNil(args);
 	bool isCollection = isKindOfSlot(args, class_array);
 	NSString * nsclassname = nsStringFromPyrSlot(classname);
 	if([nsclassname length] < 1){
 		post("ERROR: CocoaBridge NSClass name invalid\n");
-		SetNil(receiver); 
-		return errFailed; 
+		SetNil(receiver);
+		return errFailed;
 	}
-	
+
     Class nsclass = [NSClassFromString( nsclassname ) class];
 	if(!nsclass){
 		post("ERROR: CocoaBridge Failed finding valid NSClass\n");
-		SetNil(receiver); 
+		SetNil(receiver);
 		return errFailed;
 	}
-	
+
 	NSString * nsinitname = nsStringFromPyrSlot(initname);
 	if([nsinitname length] < 1) {
 		post("ERROR: CocoaBridge Failed converting method to NSString\n");
-		SetNil(receiver); 
+		SetNil(receiver);
 		return errFailed;
 	}
 
 	//post("Trying Class: %s selector: %s\n", [nsclassname UTF8String], [nsinitname UTF8String]);
-	
+
 	SEL sel = NSSelectorFromString(nsinitname);
 	BOOL isInstanceMethod = [nsclass instancesRespondToSelector: sel];
 	if(
@@ -1427,43 +1427,43 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		((isInstanceMethod = ![nsclass respondsToSelector: sel]) == YES)
 	) {
 		// not an instance method and not a class method
-		SetNil(receiver);	
+		SetNil(receiver);
 		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	}
-	
-	id newThing = NULL;	
+
+	id newThing = NULL;
 	NSMethodSignature *sig = isInstanceMethod ? [nsclass  instanceMethodSignatureForSelector: sel] : [nsclass methodSignatureForSelector: sel];
 	if(!sig) {
 		post("ERROR: CocoaBridge NSMethodSignature not found\n");
 		return errFailed;
 	}
-	
+
 	NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 	if(!anInvocation) {
 		post("ERROR: CocoaBridge Failed creating NSInvocation\n");
 		return errFailed;
-	}  
-	
+	}
+
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 
 	int numberOfArgs = (int) [sig numberOfArguments] - 2; //cocoa args start at 2
-	
+
 	if (hasArg && isCollection && numberOfArgs>0)
 	{
-		int len = args->uo->size;
-		
+		int len = slotRawObject(args)->size;
+
 		//should check for type [sig getArgumentTypeAtIndex: i];
-		if(numberOfArgs != len) 
+		if(numberOfArgs != len)
 		{
-			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);		
-			SetNil(receiver);			
+			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);
+			SetNil(receiver);
 			return errFailed;
 		}
 		int err = nsinvocationSetArguments(args, anInvocation);
 		if(err){
 			post("ERROR: CocoaBridge failed setting arguments for Invocation\n");
-			SetNil(receiver); 
+			SetNil(receiver);
 			return err;
 		}
 	} else if (numberOfArgs>0)
@@ -1472,65 +1472,65 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		SetNil(receiver);
 		return errFailed;
 	}
-	
+
 	[anInvocation setTarget: isInstanceMethod ? [nsclass alloc] : nsclass];
 	[anInvocation setSelector: sel];
-		
+
 	if(IsTrue(defer))
 		[scvm defer: anInvocation];
-	else 
+	else
 	{
 		PyrObjectHdr	*convertedObject=NULL;
 		PyrSlot			retslot;
 		const char		*cType=NULL;
 		unsigned int	length;
 		void			*retval=NULL;
-		
+
 		TryInvocation(anInvocation, receiver);
-		
+
 		cType = [[anInvocation methodSignature]methodReturnType];
 		length = [[anInvocation methodSignature] methodReturnLength];
 		//NSLog(@"AllocInit type: %c length: %i", cType, length);
-		
+
 		SetNil(&retslot);
-		
+
 		if(length > 0) {
 			retval = (void*)malloc(length);
 			[anInvocation getReturnValue: (void*)retval];
 		}
-		
+
 		if(ObjcTypeFillPyrSlot(&retslot, cType, retval, &convertedObject) != noErr) {
 			post("ERROR: CocoaBridge returned object type: %c is not-of-type _C_ID !\n", *cType);
 			if(retval) free(retval);
 			return errFailed;
 		}
-		
+
 		// If no suitable Cocoa<->SCLang conversion can be done for the object value
 		if(*cType == _C_ID && !convertedObject) {
-			
-			if(retslot.utag == tagNil) { // the returned object is Nil - might lead to EXC_BAD_ACCESS after
-				SetNil(receiver->uo->slots+0); // set the dataptr slot to nil
+
+			if(IsNil(&retslot)) { // the returned object is Nil - might lead to EXC_BAD_ACCESS after
+				SetNil(slotRawObject(receiver)->slots+0); // set the dataptr slot to nil
 				SetNil(receiver); // return nil
 				if(retval) free(retval);
 				return errNone; // should returning nil be considered as an error ?
 			}
-			
-			slotCopy(&receiver->uo->slots[0], &retslot);
-			newThing = (id) (receiver->uo->slots[0].uptr);
-			
+
+			slotCopy(&slotRawObject(receiver)->slots[0], &retslot);
+			newThing = (id) slotRawPtr(slotRawObject(receiver)->slots);
+
 			if([newThing isKindOfClass:[NSWindow class]])
 				[newThing setReleasedWhenClosed:NO]; // prevent user crash for this specific UI
-				
+
 			NSString *classNameString = NSStringFromClass( [newThing class] );
 			PyrString *pyrClassNameString = newPyrString(g->gc,[classNameString UTF8String],0,true);
-			SetObject(receiver->uo->slots + 1, pyrClassNameString);
+			SetObject(slotRawObject(receiver)->slots + 1, pyrClassNameString);
 
-			if(isInstanceMethod) 
+			if(isInstanceMethod)
 				[newThing release]; // retained and added already in ObjcTypeFillPyrSlot
 		}
 		else
 			slotCopy(receiver, &retslot);
-			
+
 		if(retval)
 			free(retval);
 	}
@@ -1543,31 +1543,31 @@ int prObjcSetActionForControl(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	id objc = (id) a->uo->slots[0].ui;
+	id objc = (id) slotRawInt(slotRawObject(a)->slots);
 	if(!objc) return errFailed;
 	NSString * actionname = nsStringFromPyrSlot(c);
 	if([actionname length] < 1){  return errFailed; }
 	SEL selAc = NSSelectorFromString(actionname);
-		
+
 	if(![[objc  class] instancesRespondToSelector:@selector(setAction:)])
-	{ 
-		post("Warning: %s does not respond to setAction:.\n", [[objc className] UTF8String]); 
-		SetNil(b); 
+	{
+		post("Warning: %s does not respond to setAction:.\n", [[objc className] UTF8String]);
+		SetNil(b);
 		return errNone;
 	}
 	SCCocoaToLangAction *action = [[SCCocoaToLangAction alloc] init];
 	if(!action)
 		return errFailed;
-	
+
 	COCOABRIDGE_OBJ_RETAIN(action);
 	[action release]; // already retained
-	
-	[action setSCObject: b->uo];
-	
+
+	[action setSCObject: slotRawObject(b)];
+
 	[objc setAction: selAc];
 	[objc setTarget: action];
 
-	SetPtr(b->uo->slots + 0, action);	
+	SetPtr(slotRawObject(b)->slots + 0, action);
     return errNone;
 }
 
@@ -1579,43 +1579,43 @@ int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *a = g->sp - 2;
-	id objc = (id) a->uo->slots[0].ui;
+	id objc = (id) slotRawInt(slotRawObject(a)->slots);
 	id delegate = nil;
 	if(!objc) return errFailed;
-	
+
 	if([[objc class] instancesRespondToSelector:@selector(delegate)])
 		delegate = [objc delegate];
-	
+
 	if(!delegate) {
 		//post("ERROR delegate does not exists\n"); // try to recover
 		//return errFailed;
 		if(
-			IsNil(&(a->uo->slots[3])) ||
-			IsNil((a->uo->slots[3].uo)->slots)
+			IsNil(&(slotRawObject(a)->slots[3])) ||
+			IsNil((slotRawObject(&slotRawObject(a)->slots[3]))->slots)
 		) {
 			printf("Error: Slot is nil\n");
 			return errNone;
 		}
 		else
-			delegate = (id) ((a->uo->slots[3].uo)->slots[0].ui); // some objects do not respond to
+			delegate = (id) slotRawInt(slotRawObject(&slotRawObject(a)->slots[3])->slots); // some objects do not respond to
 		// setDelegate but do post notifications...
 	}
-	
+
 	NSString *notificationName = nsStringFromPyrSlot(b);
 	post([[NSString stringWithFormat:@"Registering Notification: %@\n", notificationName] UTF8String]);
-	
+
 	if (IsNil(c)) { // br
 		objc = nil;
 		post("Listening to Notifications from any Object.\n");
 	} else
-		objc = (id) c->uo->slots[0].ui;
+		objc = (id) slotRawInt(slotRawObject(c)->slots);
 
 	[[NSNotificationCenter defaultCenter] addObserver:delegate
 		selector:@selector(notificationReceived:)
 		name:notificationName object:objc // apply only to object
 	];
 
-    return errNone;
+	return errNone;
 }
 
 int prObjcSetDelegate(struct VMGlobals *g, int numArgsPushed);
@@ -1623,7 +1623,7 @@ int prObjcSetDelegate(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
     PyrSlot *b  = g->sp;
-	id objc = (id) a->uo->slots[0].ui;
+	id objc = (id) slotRawInt(slotRawObject(a)->slots);
 	if(!objc) {
 #pragma mark __TEST_CUSTOM_DELEGATE_
 			SCCocoaToLangAction *action = [[SCCocoaToLangAction alloc] init];
@@ -1632,42 +1632,42 @@ int prObjcSetDelegate(struct VMGlobals *g, int numArgsPushed)
 				return errFailed;
 			COCOABRIDGE_OBJ_RETAIN(action);
 			[action release]; // already retained
-			
-			[action setSCObject: b->uo];
-			SetPtr(b->uo->slots + 0, action);
+
+			[action setSCObject: slotRawObject(b)];
+			SetPtr(slotRawObject(b)->slots + 0, action);
 			return errNone;
 	}
 
 	if(![[objc  class] instancesRespondToSelector:@selector(setDelegate:)])
-	{ 
+	{
 		// setting void action so it can register notifications
 		SCCocoaToLangAction *action = [[SCCocoaToLangAction alloc] init];
 		post("Warning: creating a void delegate\n");
-		if(!action) 
+		if(!action)
 			return errFailed;
-			
+
 		COCOABRIDGE_OBJ_RETAIN(action);
 		[action release]; // already retained
-		[action setSCObject: b->uo];
-		SetPtr(b->uo->slots + 0, action);
+		[action setSCObject: slotRawObject(b)];
+		SetPtr(slotRawObject(b)->slots + 0, action);
 		return errNone;
 	}
 
 	// do not create a delegate if a previous delegate exists already
 	// default delegate can be SCVirtualMachine
-	if(![objc delegate]) { 
+	if(![objc delegate]) {
 		SCCocoaToLangAction *action = [[SCCocoaToLangAction alloc] init];
 		if(!action)
 			return errFailed;
-			
+
 		COCOABRIDGE_OBJ_RETAIN(action);
 		[action release]; // already retained
-		[action setSCObject: b->uo];
+		[action setSCObject: slotRawObject(b)];
 		[objc setDelegate: action];
-		SetPtr(b->uo->slots + 0, action);
+		SetPtr(slotRawObject(b)->slots + 0, action);
 	}else{
 		post("Warning: There is already a delegate for this NSObject (%s).\n", [[objc delegate]className]);
-		SetNil(b->uo->slots + 0);
+		SetNil(slotRawObject(b)->slots + 0);
 	}
 	post("delegate created successfully for object %p of class %s\n", objc, [[objc className]UTF8String]);
     return errNone;
@@ -1678,11 +1678,11 @@ int prObjcGetClass(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *receiver = g->sp - 1;
     PyrSlot *classname = g->sp ;
-	
-	id nsclass = [objc_getClass(classname->uos->s) class];
-	
+
+	id nsclass = [objc_getClass(slotRawString(classname)->s) class];
+
 	[nsclass retain];
-	SetPtr(receiver->uo->slots + 0, nsclass);
+	SetPtr(slotRawObject(receiver)->slots + 0, nsclass);
     return errNone;
 }
 
@@ -1691,32 +1691,32 @@ int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *receiver = g->sp - 2;
 	PyrSlot *msgname = g->sp - 1;
-    PyrSlot *args  = g->sp;
+	PyrSlot *args  = g->sp;
 //    PyrSlot *defer  = g->sp;
-	
-	
+
+
 //	bool hasArg = NotNil(args);
 //	bool isCollection = isKindOfSlot(args, class_array);
 
-	id newThing = (id) receiver->uo->slots[0].ui;
-    if (!newThing) return errFailed;
+	id newThing = (id) slotRawInt(slotRawObject(receiver)->slots);
+	if (!newThing) return errFailed;
 
 	NSString * nsinitname = nsStringFromPyrSlot(msgname);
 	if([nsinitname length] < 1){  return errNone; }
 
 	SEL sel = NSSelectorFromString(nsinitname);
-	
-	
+
+
 //	int val;
-//	slotIntVal(args->uo->slots+0, &val);
+//	slotIntVal(slotRawObject(args)->slots+0, &val);
 	newThing = objc_msgSend(newThing, sel, args);
 //	[newThing retain];
 	if(newThing)
-		SetPtr(receiver->uo->slots + 0, newThing);
+		SetPtr(slotRawObject(receiver)->slots + 0, newThing);
 	else
-		SetNil(receiver->uo->slots + 0);
-		
-    return errNone;
+		SetNil(slotRawObject(receiver)->slots + 0);
+
+	return errNone;
 }
 
 int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed);
@@ -1727,8 +1727,8 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *classname = g->sp - 2;
 	PyrSlot *initname = g->sp - 1;
 //    PyrSlot *args  = g->sp;
-	
-	
+
+
 //	bool hasArg = NotNil(args);
 //	bool isCollection = isKindOfSlot(args, class_array);
 
@@ -1738,26 +1738,26 @@ int prObjcAllocSend(struct VMGlobals *g, int numArgsPushed)
 	if([nsinitname length] < 1){  return errNone; }
 
 	SEL sel = NSSelectorFromString(nsinitname);
-	
+
 //	NSMethodSignature *sig = [[NSClassFromString( nsclassname ) class]  instanceMethodSignatureForSelector: sel];
 	#if 1
-	id nsclass = objc_getClass(classname->uos->s);
-	
+	id nsclass = objc_getClass(slotRawString(classname)->s);
+
 	int val = 0;
-//	slotIntVal(args->uo->slots+0, &val);
+//	slotIntVal(slotRawObject(args)->slots+0, &val);
 	id newThing = objc_msgSend(nsclass, sel, val);
 	[newThing retain];
 	#else
 	/// //for alloc
 	int val = NULL;
-	slotIntVal(args->uo->slots+0, &val);
-	
+	slotIntVal(slotRawObject(args)->slots+0, &val);
+
     id newThing = [[NSClassFromString( nsclassname ) class] sel val];
 	[newThing retain];
 
 	#endif
-	SetPtr(receiver->uo->slots + 0, newThing);
-//	SetInt(receiver->uo->slots + 0, 123);
+	SetPtr(slotRawObject(receiver)->slots + 0, newThing);
+//	SetInt(slotRawObject(receiver)->slots + 0, 123);
 
     return errNone;
 }
@@ -1767,8 +1767,8 @@ int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 //	PyrSlot *b  = g->sp;
-	id objc = (id) a->uo->slots[0].ui;
-	if(!objc) return errFailed;	
+	id objc = (id) slotRawInt(slotRawObject(a)->slots);
+	if(!objc) return errFailed;
 	PyrString *pyrPathString = newPyrString(g->gc, [[objc className] UTF8String], 0, true);
 	SetObject(a, pyrPathString);
 	return errNone;
@@ -1782,36 +1782,36 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *args = g->sp - 1;
     PyrSlot *defer  = g->sp;
 
-    if (!g->canCallOS) 
+    if (!g->canCallOS)
 		return errCantCallOS; //moght be better to check this ?
-	
+
 	bool hasArg = NotNil(args) && isKindOfSlot(args, class_array);
 	bool isCollection = isKindOfSlot(args, class_array);
 	if(!isCollection) return errFailed;
-	
+
     // must defer in case of large loads and gui
-	id newThing = (id) receiver->uo->slots[0].ui;
+	id newThing = (id) slotRawInt(slotRawObject(receiver)->slots);
     if (!newThing) {
 		post("ERROR: no valid NSObject to defer Invocation to !\n");
 		return errFailed;
 	}
-		
+
 	NSString * nsclassname = [newThing className];
     Class nsclass = [NSClassFromString( nsclassname ) class];
 	NSString * nsinitname = nsStringFromPyrSlot(initname);
-	
-	if([nsinitname length] < 1){ 
+
+	if([nsinitname length] < 1){
 		post("ERROR: Method argument is invalid !\n");
-		return errFailed; 
+		return errFailed;
 	}
-	
+
 	SEL sel = NSSelectorFromString(nsinitname);
-	if(![nsclass instancesRespondToSelector:sel]) 
+	if(![nsclass instancesRespondToSelector:sel])
 	{
 		post("Warning: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	}
-	
+
 	NSMethodSignature *sig = [nsclass instanceMethodSignatureForSelector: sel];
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
@@ -1819,19 +1819,19 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
     [anInvocation setSelector: sel];
 
 	int numberOfArgs = (int) [sig numberOfArguments] - 2; //cocoa args start at 2
-	int len = args->uo->size;
-	
+	int len = slotRawObject(args)->size;
+
 	if(len < numberOfArgs) return errFailed;
 	if(len > numberOfArgs) len = numberOfArgs;
 
-	if(hasArg) 
+	if(hasArg)
 	{
 		int err = nsinvocationSetArguments(args, anInvocation);
 		if(err) return err;
 	}
 
 	if(IsTrue(defer)){
-		[anInvocation retainArguments];       
+		[anInvocation retainArguments];
 		[scvm defer: anInvocation];
 	}
 	else
@@ -1841,23 +1841,23 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 		unsigned int	length = 0;
 		char			*cType = NULL;
 		void			*retval = NULL;
-		
+
 		TryInvocation(anInvocation, receiver);
-		
+
 		length = [[anInvocation methodSignature] methodReturnLength];
 		cType = (char *)[[anInvocation methodSignature] methodReturnType];
-		
+
 		if(*cType != _C_VOID && *cType != _C_UNDEF && (length > 0)) {
 			retval = (void*)malloc(length);
 			[anInvocation getReturnValue: (void*)retval];
-			
+
 			if(ObjcTypeFillPyrSlot(receiver, cType, retval, &convertedObject) != noErr) {
 				post("ERROR: CocoaBridge returned object type: %c is not-of-type _C_ID !\n", *cType);
 				if(retval) free(retval);
 				return errFailed;
 			}
 		}
-		
+
 		if(retval)
 			free(retval);
 	}
@@ -1870,21 +1870,21 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
     //PyrSlot *receiver = g->sp - 1;
 	PyrSlot *receiver = g->sp;
     //PyrSlot *dataptr = g->sp;
-    
+
     // have to put them in a specific pool so they can be released on command
-    //if(! IsInt(dataptr) ) 
+    //if(! IsInt(dataptr) )
 	//	return errWrongType;
-		
+
 	//id nsobj = (id)dataptr->ui;
 	// check retain count and return in case
-	id nsobj = (id)(receiver->uo->slots[0].ui);
+	id nsobj = (id)slotRawInt(slotRawObject(receiver)->slots);
 	if(nsobj) {
 		COCOABRIDGE_OBJ_RELEASE(nsobj);
-		receiver->uo->slots[0].ui = nil;
+		SetInt(&slotRawObject(receiver)->slots, nil);
 	}else
 		post("SCNSObject object pointer is nil\n");
-		
-    return errNone;
+
+	return errNone;
 }
 
 int prObjcLoadBundle(struct VMGlobals *g, int numArgsPushed);
@@ -1893,10 +1893,10 @@ int prObjcLoadBundle(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *a = g->sp - 1;
 	PyrSlot *path = g->sp;
 //lazy load of a bundle and its principla class as desciped by apple
- 	NSString * bundlePath = nsStringFromPyrSlot(path);	
-	NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];       
+ 	NSString * bundlePath = nsStringFromPyrSlot(path);
+	NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
 	if(bundle)
-		SetPtr(a->uo->slots + 0, bundle);
+		SetPtr(slotRawObject(a)->slots + 0, bundle);
 	else
 		SetNil(a);
 	return errNone;
@@ -1907,11 +1907,11 @@ int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed)
 {
 
 	PyrSlot *receiver = g->sp;
-    
+
     // have to put them in a specific pool so they can be released on command
-	id bundle = (id) receiver->uo->slots[0].ui;
+	id bundle = (id) slotRawInt(slotRawObject(receiver)->slots);
     if (!bundle) return errFailed;
-	Class principalClass = [bundle principalClass];            
+	Class principalClass = [bundle principalClass];
 	NSObject * _bundleObject = NULL;
 
 	if(principalClass)
@@ -1921,29 +1921,29 @@ int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed)
 	if(_bundleObject)
 		SetPtr(receiver, _bundleObject);
 	else
-		SetNil(receiver);	
+		SetNil(receiver);
 	return errNone;
 }
 
 int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed);
 int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 {
-	
+
     PyrSlot *receiver = g->sp - 4;
     PyrSlot *name = g->sp - 3;
 	PyrSlot *initname = g->sp - 2;
     PyrSlot *args  = g->sp-1;
     PyrSlot *defer  = g->sp;
-	
+
 	bool hasArg = NotNil(args);
-	bool isCollection = isKindOfSlot(args, class_array);	
-	
+	bool isCollection = isKindOfSlot(args, class_array);
+
 	//lazy load of a bundle and its principla class as desciped by apple
- 	NSString * nsclassname = nsStringFromPyrSlot(name);
-	id bundle = (id) receiver->uo->slots[0].ui;
-    if (!bundle) return errFailed;
+	NSString * nsclassname = nsStringFromPyrSlot(name);
+	id bundle = (id) slotRawInt(slotRawObject(receiver)->slots);
+	if (!bundle) return errFailed;
 	Class nsclass = NULL;
-	NSObject * newThing = NULL;	
+	NSObject * newThing = NULL;
 	nsclass = [bundle classNamed:nsclassname];
 	if(!nsclass){SetNil(receiver); post("class %s not found in bundle\n", [nsclassname cStringUsingEncoding: NSMacOSRomanStringEncoding]);return errFailed;}
 	// sort out initMethod
@@ -1953,30 +1953,30 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 	SEL sel = NSSelectorFromString(nsinitname);
 	if(![nsclass instancesRespondToSelector:sel])
 	{
-		SetNil(receiver);	
+		SetNil(receiver);
 		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
 		return errNone;
 	}
 	NSMethodSignature *sig = [nsclass  instanceMethodSignatureForSelector: sel];
-    NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
-    SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+	NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+	SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
 
 	int numberOfArgs = (int) [sig numberOfArguments] - 2; //cocoa args start at 2
-	
+
 	if (hasArg && isCollection && numberOfArgs>0)
 	{
-		int len = args->uo->size;
-		
+		int len = slotRawObject(args)->size;
+
 		//should check for type [sig getArgumentTypeAtIndex: i];
-		if(numberOfArgs != len) 
+		if(numberOfArgs != len)
 		{
-			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);		
-			SetNil(receiver);			
+			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);
+			SetNil(receiver);
 			return errFailed;
 		};
 		int err = nsinvocationSetArguments(args, anInvocation);
 		if(err){ SetNil(receiver); return err;}
-		
+
 
 	} else if (numberOfArgs>0)
 	{
@@ -1984,18 +1984,18 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 		SetNil(receiver);
 		return errFailed;
 	}
-	newThing = [nsclass alloc];	
-	[anInvocation setTarget: newThing];				
-	[anInvocation setSelector: sel];	
+	newThing = [nsclass alloc];
+	[anInvocation setTarget: newThing];
+	[anInvocation setSelector: sel];
 	if(IsTrue(defer))
 	{
 		[scvm defer: anInvocation];
 	}
-	else 
+	else
 	{
 		id val;
 		[anInvocation invoke];
-		[anInvocation getReturnValue: (void*)&val];				
+		[anInvocation getReturnValue: (void*)&val];
 		newThing = (id) val;
 		[newThing retain];
 		SetPtr(receiver, newThing);
@@ -2003,11 +2003,11 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 	}
 
     return errNone;
-	    
+
 //	if(_bundleObject)
 //		SetPtr(receiver, _bundleObject);
 //	else
-//		SetNil(receiver);	
+//		SetNil(receiver);
 }
 
 
@@ -2015,7 +2015,7 @@ int prObjcNSStringToPyrString(struct VMGlobals *g, int numArgsPushed);
 int prObjcNSStringToPyrString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a  = g->sp; // the scns_object
-	id nsstring = (id)a->uo->slots[0].ui;
+	id nsstring = (id)slotRawInt(slotRawObject(a)->slots);
 	PyrString * pyrString;
 	NSString* className = [nsstring className];
 	if(
@@ -2024,7 +2024,7 @@ int prObjcNSStringToPyrString(struct VMGlobals *g, int numArgsPushed)
 		pyrString = newPyrString(g->gc, [(NSString*)nsstring UTF8String], 0, true);
 	else
 		pyrString = newPyrString(g->gc, [className UTF8String], 0, true);
-		
+
 	SetObject(a, pyrString);
 	return errNone;
 }
@@ -2034,22 +2034,22 @@ int prObjcIsSubclassOfNSClass(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
-	
+
+
 	NSString *nsstr = nsStringFromPyrSlot(b);
 	if(!nsstr)
 		return errFailed;
-		
+
 	Class objcclass = NSClassFromString(nsstr);
 	if(objcclass != nil) {
-		id obj = (id)a->uo->slots[0].ui;
+		id obj = (id)slotRawInt(slotRawObject(a)->slots);
 		if([obj isKindOfClass:objcclass]) {
 			SetTrue(a);
 			return errNone;
 		}
 	}
-	
-	SetFalse(a);	
+
+	SetFalse(a);
 	return errNone;
 }
 
@@ -2061,24 +2061,24 @@ int prObjcDelegateAddSelector(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 	//PyrObject* obj;
 	char slotString[64];
-	
-	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(a->uo->slots[0].ui);
-	
+
+	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(slotRawInt(slotRawObject(a)->slots));
+
 	if(!isKindOfSlot(b, class_string) || !isKindOfSlot(c, class_string))
 		return errWrongType;
-	
+
 	if(slotStrVal(b, slotString, 64) != noErr)
 		return errWrongType;
-		
+
 	SEL selector = sel_getUid(slotString);
 	if(!selector)
 		return errFailed;
-	
+
 	if(slotStrVal(c, slotString, 64) != noErr)
 		return errWrongType;
-		
+
 	[nsobj addSelector:selector withObjcTypes:slotString];
-	
+
 	return errNone;
 }
 
@@ -2087,19 +2087,19 @@ int prObjcDelegateRemoveSelector(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(a->uo->slots[0].ui);
-	
+	SCCocoaToLangAction* nsobj = (SCCocoaToLangAction*)(slotRawInt(slotRawObject(a)->slots));
+
 	if(!isKindOfSlot(b, class_string))
 		return errWrongType;
-	
+
 	char slotString[64];
 	if(slotStrVal(b, slotString, 64) != noErr)
 		return errWrongType;
-		
+
 	SEL selector = sel_getUid(slotString);
 	if(!selector)
 		return errFailed;
-		
+
 	[nsobj removeSelector:selector];
 	return errNone;
 }
@@ -2144,55 +2144,55 @@ int prObjcNSDataToPyrArray(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a  = g->sp - 2; // the scns_object
 	PyrSlot *b  = g->sp - 1; // the array (or string)
 	PyrSlot *c  = g->sp;	 // length to retrieve
-	
-	PyrObject*	pyrarray = b->uo;
+
+	PyrObject*	pyrarray = slotRawObject(b);
 	PyrClass*	pyrclass = pyrarray->classptr;
-	
-	NSData*		nsobject = (NSData*)(a->uo->slots[0].ui);
+
+	NSData*		nsobject = (NSData*)(slotRawInt(slotRawObject(a)->slots));
 	int			size=0, nssize = [nsobject length]; // in bytes
-	
+
 	if(!IsInt(c) && !IsFloat(c))
 		return errWrongType;
-	
-	size = IsFloat(c) ? (int)c->uf : (int)c->ui;
+
+	size = IsFloat(c) ? (int)slotRawFloat(c) : (int)slotRawInt(c);
 	if(size <= 0 || nssize <= 0) {
 		SetNil(a);
 		return errNone;
 	}
-	
+
 	if(pyrclass == class_int8array) {
-	
+
 		size = sc_min(nssize, size);
-		memcpy(((PyrInt8Array*)pyrarray)->b, [nsobject bytes], size);	
-		
+		memcpy(((PyrInt8Array*)pyrarray)->b, [nsobject bytes], size);
+
 	} else if(pyrclass == class_int32array){
-	
+
 		size = sc_min(nssize, size/* >> 2*/);
 		memcpy(((PyrInt32Array*)pyrarray)->i, [nsobject bytes], size);
-		
+
 	} else if(pyrclass == class_int16array) {
-		
+
 		size = sc_min(nssize, size/* >> 1*/);
 		memcpy(((PyrInt32Array*)pyrarray)->i, [nsobject bytes], size);
-		
+
 	} else if(pyrclass == class_doublearray) {
-	
-		size = sc_min(nssize, size/* >> (sizeof(double)>>1)*/); // double size same for PPC32 - IA32 - IA64 according to Mac ABI 
+
+		size = sc_min(nssize, size/* >> (sizeof(double)>>1)*/); // double size same for PPC32 - IA32 - IA64 according to Mac ABI
 		memcpy(((PyrDoubleArray*)pyrarray)->d, [nsobject bytes], size);
-		
+
 	} else if(pyrclass == class_floatarray) {
-	
+
 		size = sc_min(nssize, size /*>> (sizeof(float)>>1)*/); // float size same for PPC32 - IA32 - IA64 according to Mac ABI
 		memcpy(((PyrFloatArray*)pyrarray)->f, [nsobject bytes], size);
-		
+
 	} else if(pyrclass == class_string) {
-	
+
 		size = sc_min(nssize, size);
 		memcpy(((PyrString*)pyrarray)->s, [nsobject bytes], size);
-		
+
 	} else
 		return errWrongType;
-	
+
 	//pyrarray->size = size;
 	SetObject(a, pyrarray);
 	return errNone;
@@ -2201,7 +2201,7 @@ int prObjcNSDataToPyrArray(struct VMGlobals *g, int numArgsPushed)
 void initCocoaBridgePrimitives()
 {
     int base, index;
-    
+
     base = nextPrimitiveIndex();
     index = 0;
 	s_nsObject = getsym("SCNSObject");
@@ -2220,7 +2220,7 @@ void initCocoaBridgePrimitives()
 				NSLog(@"Already FREED NSObject in POOL -> will cause crash");
 				continue;
 			}
-			
+
 			COCOABRIDGE_POOL_REM_LOG(nsobj)
 			if([nsobj isKindOfClass:[NSWindow class]]) {
 				// NSWindows are special since they are directly deallocated (freed - not just released)
@@ -2239,19 +2239,19 @@ void initCocoaBridgePrimitives()
 	// nsobjects = [[NSMutableSet setWithCapacity: 8]retain];
 	nsobjects = [[NSMutableArray arrayWithCapacity: 8]retain];
 #endif
-	
-    definePrimitive(base, index++, "_ObjC_AllocInit", prObjcAllocInit, 5, 0);	
-    definePrimitive(base, index++, "_ObjC_Dealloc", prObjcDealloc, 1, 0);	
+
+    definePrimitive(base, index++, "_ObjC_AllocInit", prObjcAllocInit, 5, 0);
+    definePrimitive(base, index++, "_ObjC_Dealloc", prObjcDealloc, 1, 0);
     definePrimitive(base, index++, "_ObjC_Invoke", prObjcDeferInvocation, 4, 0);
-	definePrimitive(base, index++, "_ObjC_GetClassName", prObjcGetClassName, 2, 0);	
-    definePrimitive(base, index++, "_ObjC_SetActionForControl", prObjcSetActionForControl, 3, 0);	
-    definePrimitive(base, index++, "_ObjC_SetDelegate", prObjcSetDelegate, 2, 0);	
-    definePrimitive(base, index++, "_ObjC_AllocSend", prObjcAllocSend, 4, 0);	
-    definePrimitive(base, index++, "_ObjC_GetClass", prObjcGetClass, 2, 0);	
-    definePrimitive(base, index++, "_ObjC_SendMessage", prObjcSendMessage, 3, 0);	
-    definePrimitive(base, index++, "_ObjC_LoadBundle", prObjcLoadBundle, 2, 0);	
-    definePrimitive(base, index++, "_ObjcBundleAllocPrincipalClass", prObjcBundleAllocPrincipalClass, 1, 0);	
-    definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 5, 0);	
+	definePrimitive(base, index++, "_ObjC_GetClassName", prObjcGetClassName, 2, 0);
+    definePrimitive(base, index++, "_ObjC_SetActionForControl", prObjcSetActionForControl, 3, 0);
+    definePrimitive(base, index++, "_ObjC_SetDelegate", prObjcSetDelegate, 2, 0);
+    definePrimitive(base, index++, "_ObjC_AllocSend", prObjcAllocSend, 4, 0);
+    definePrimitive(base, index++, "_ObjC_GetClass", prObjcGetClass, 2, 0);
+    definePrimitive(base, index++, "_ObjC_SendMessage", prObjcSendMessage, 3, 0);
+    definePrimitive(base, index++, "_ObjC_LoadBundle", prObjcLoadBundle, 2, 0);
+    definePrimitive(base, index++, "_ObjcBundleAllocPrincipalClass", prObjcBundleAllocPrincipalClass, 1, 0);
+    definePrimitive(base, index++, "_ObjcBundleAllocClassNamed", prObjcBundleAllocClassNamed, 5, 0);
 	definePrimitive(base, index++, "_ObjC_RegisterNotification", prObjcRegisterNotification, 3, 0);	 // added cp
 	definePrimitive(base, index++, "_ObjC_NSDataToSCArray", prObjcNSDataToPyrArray, 3, 0);
 	definePrimitive(base, index++, "_ObjC_NSStringToPyrString", prObjcNSStringToPyrString, 1, 0);

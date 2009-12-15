@@ -61,17 +61,17 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
 //	post("prString_FindRegexp\n");
 	int maxfind = MAXREGEXFIND;
-	int offset = c->ui;
-	int stringsize = a->uo->size + 1;
-	int patternsize =  b->uo->size + 1;
-	char *string = (char*)malloc(a->uo->size + 1);
-	err = slotStrVal(a, string, a->uo->size + 1);
+	int offset = slotRawInt(c);
+	int stringsize = slotRawObject(a)->size + 1;
+	int patternsize =  slotRawObject(b)->size + 1;
+	char *string = (char*)malloc(slotRawObject(a)->size + 1);
+	err = slotStrVal(a, string, slotRawObject(a)->size + 1);
 	if (err){
 		free(string);
 		return err;
 	}
-	char *pattern = (char*)malloc(b->uo->size + 1);
-	err = slotStrVal(b, pattern, b->uo->size + 1);
+	char *pattern = (char*)malloc(slotRawObject(b)->size + 1);
+	err = slotStrVal(b, pattern, slotRawObject(b)->size + 1);
 	if (err) return err;
 	UParseError uerr;
 	UErrorCode status = (UErrorCode)0;

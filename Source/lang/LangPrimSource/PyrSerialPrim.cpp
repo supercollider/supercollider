@@ -509,7 +509,7 @@ done:
 
 static SerialPort* getSerialPort(PyrSlot* slot)
 {
-	return (SerialPort*)slot->uo->slots[0].uptr;
+	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
 static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
@@ -552,7 +552,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	options.xonxoff = IsTrue(args+8);
 
 	try {
-		port = new SerialPort(self->uo, portName, options);
+		port = new SerialPort(slotRawObject(self), portName, options);
 	} catch (SerialPort::Error& e) {
 		std::ostringstream os;
 		os << "SerialPort Error: " << e.what();
@@ -560,7 +560,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	SetPtr(self->uo->slots+0, port);
+	SetPtr(slotRawObject(self)->slots+0, port);
 
 	return errNone;
 }
@@ -588,7 +588,7 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 	post("SerialPort Cleanup\n");
 
 	delete port;
-	SetNil(self->uo->slots+0);
+	SetNil(slotRawObject(self)->slots+0);
 	return errNone;
 }
 
@@ -620,7 +620,7 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 
 	int val;
 	if (IsChar(src)) {
-		val = src->uc;
+		val = slotRawChar(src);
 	} else {
 		int err = slotIntVal(src, &val);
 		if (err) return err;

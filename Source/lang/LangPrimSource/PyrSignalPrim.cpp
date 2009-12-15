@@ -45,7 +45,7 @@ int prSignalFill(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
-	signal_fill(a->uo, value);
+	signal_fill(slotRawObject(a), value);
 	return errNone;
 }
 
@@ -60,7 +60,7 @@ int prSignalScale(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
-	signal_scale(a->uo, value);
+	signal_scale(slotRawObject(a), value);
 	return errNone;
 }
 
@@ -75,7 +75,7 @@ int prSignalOffset(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotFloatVal(b, &value);
 	if (err != errNone) return err;
-	signal_offset(a->uo, value);
+	signal_offset(slotRawObject(a), value);
 	return errNone;
 }
 
@@ -90,13 +90,13 @@ int prSignalString(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 	slotString(a, str);
 
-	signal = a->uo;
+	signal = slotRawObject(a);
 	if (signal->size) {
 		x = (float*)(signal->slots);
-		sprintf(str, "%s[%g .. %g]", signal->classptr->name.us->name,
+		sprintf(str, "%s[%g .. %g]", slotRawSymbol(&signal->classptr->name)->name,
 			x[0], x[signal->size-1]);
 	} else {
-		sprintf(str, "%s[none]", signal->classptr->name.us->name);
+		sprintf(str, "%s[none]", slotRawSymbol(&signal->classptr->name)->name);
 	}
 	string = newPyrString(g->gc, str, 0, true);
 	SetObject(a, string);
@@ -109,7 +109,7 @@ int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uf = signal_findpeak(a->uo);
+	a->uf = signal_findpeak(slotRawObject(a));
 	return errNone;
 }
 
@@ -130,11 +130,11 @@ int prSignalNormalize(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(c, &end);
 	if (err) {
-		if (IsNil(c)) end = a->uo->size;
+		if (IsNil(c)) end = slotRawObject(a)->size;
 		else return err;
 	}
 
-	signal_normalize_range(a->uo, start, end);
+	signal_normalize_range(slotRawObject(a), start, end);
 	return errNone;
 }
 
@@ -144,7 +144,7 @@ int prSignalNormalizeTransferFn(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	signal_normalize_transfer_fn(a->uo);
+	signal_normalize_transfer_fn(slotRawObject(a));
 	return errNone;
 }
 
@@ -154,7 +154,7 @@ int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	a->uf = signal_integral(a->uo);
+	a->uf = signal_integral(slotRawObject(a));
 	return errNone;
 }
 
@@ -175,11 +175,11 @@ int prSignalInvert(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(c, &end);
 	if (err) {
-		if (IsNil(c)) end = a->uo->size;
+		if (IsNil(c)) end = slotRawObject(a)->size;
 		else return err;
 	}
 
-	signal_invert_range(a->uo, start, end);
+	signal_invert_range(slotRawObject(a), start, end);
 	return errNone;
 }
 
@@ -200,11 +200,11 @@ int prSignalReverse(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(c, &end);
 	if (err) {
-		if (IsNil(c)) end = a->uo->size;
+		if (IsNil(c)) end = slotRawObject(a)->size;
 		else return err;
 	}
 
-	signal_reverse_range(a->uo, start, end);
+	signal_reverse_range(slotRawObject(a), start, end);
 	return errNone;
 }
 
@@ -219,7 +219,7 @@ int prSignalRotate(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(b, &rot);
 	if (err) return err;
 
-	a->uo = signal_rotate(g, a->uo, rot);
+	SetRaw(a, signal_rotate(g, slotRawObject(a), rot));
 	return errNone;
 }
 
@@ -233,11 +233,11 @@ int prSignalOverDub(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (NotObj(b) || !isKindOf(b->uo, class_signal)) return errWrongType;
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
 
-	signal_overdub(g, a->uo, b->uo, index);
+	signal_overdub(g, slotRawObject(a), slotRawObject(b), index);
 	return errNone;
 }
 
@@ -251,11 +251,11 @@ int prSignalOverWrite(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (NotObj(b) || !isKindOf(b->uo, class_signal)) return errWrongType;
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_signal)) return errWrongType;
 	err = slotIntVal(c, &index);
 	if (err) return errWrongType;
 
-	signal_overwrite(g, a->uo, b->uo, index);
+	signal_overwrite(g, slotRawObject(a), slotRawObject(b), index);
 	return errNone;
 }
 
@@ -280,7 +280,7 @@ int prSignalFade(struct VMGlobals *g, int numArgsPushed)
 
 	err = slotIntVal(c, &end);
 	if (err) {
-		if (IsNil(c)) end = a->uo->size;
+		if (IsNil(c)) end = slotRawObject(a)->size;
 		else return err;
 	}
 
@@ -290,7 +290,7 @@ int prSignalFade(struct VMGlobals *g, int numArgsPushed)
 	err = slotFloatVal(e, &lvl1);
 	if (err) return err;
 
-	signal_fade_range(a->uo, start, end, lvl0, lvl1);
+	signal_fade_range(slotRawObject(a), start, end, lvl0, lvl1);
 	return errNone;
 }
 
@@ -315,7 +315,7 @@ int prSignalAddHarmonic(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(d, &phase);
 	if (err) return errWrongType;
 
-	signal = a->uo;
+	signal = slotRawObject(a);
 	out = (float*)(signal->slots) - 1;
 	step = twopi * harmonic / signal->size;
 	UNROLL_CODE(signal->size, out, *++out += sin(phase) * amp; phase += step; );
@@ -342,7 +342,7 @@ int prSignalAddChebyshev(struct VMGlobals *g, int numArgsPushed)
 	err = slotFloatVal(c, &amp);
 	if (err) return errWrongType;
 
-	signal = a->uo;
+	signal = slotRawObject(a);
 	out = (float*)(signal->slots) - 1;
 	x = -1.0;
 	step = 2.0 / (signal->size - 1);
@@ -398,7 +398,7 @@ int prSignalAsWavetable(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	signal = a->uo;
+	signal = slotRawObject(a);
 
 	size = signal->size;
 	if ((size & (size - 1)) != 0) {
@@ -421,7 +421,7 @@ int prWavetableAsSignal(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-	wavetable = a->uo;
+	wavetable = slotRawObject(a);
 	signal = newPyrSignal(g, wavetable->size / 2);
 	wavetableAsSignal((float*)wavetable->slots, (float*)signal->slots, signal->size);
 	SetObject(a, signal);
@@ -443,8 +443,8 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	asize = a->uo->size;
-	if (b->uf != 0.0 && !(isKindOfSlot(b, class_signal) && b->uo->size == asize)) {
+	asize = slotRawObject(a)->size;
+	if (b->uf != 0.0 && !(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) {
 		error("Signal::fft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
@@ -456,11 +456,11 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 		error("Signal::fft must be provided a table containing 1/4 cycle of a cosine.\n");
 		return errFailed;
 	}
-	if (c->uo->size != fftsize/4+1) {
-		error("Signal::fft cosine table wrong size (%d), expected %d.\n", c->uo->size, fftsize/4+1);
+	if (slotRawObject(c)->size != fftsize/4+1) {
+		error("Signal::fft cosine table wrong size (%d), expected %d.\n", slotRawObject(c)->size, fftsize/4+1);
 		return errFailed;
 	}
-	costable = (float*)c->uo->slots;
+	costable = (float*)slotRawObject(c)->slots;
 
 	fftbufsize = fftsize * 2;
 	fftoutobj = newPyrSignal(g, fftbufsize);
@@ -478,7 +478,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	SetObject(complexobj->slots + 1, imagobj);
 	g->gc->GCWriteNew(complexobj, imagobj);
 
-	inreal = (float*)a->uo->slots - 1;
+	inreal = (float*)slotRawObject(a)->slots - 1;
 	if (b->uf == 0.0) {
 
 		fftbuf = (float*)fftoutobj->slots - 1;
@@ -492,7 +492,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 		fftbuf = (float*)fftoutobj->slots;
 		rffts(fftbuf, M, 1, costable);
 	} else {
-		inimag = (float*)b->uo->slots - 1;
+		inimag = (float*)slotRawObject(b)->slots - 1;
 
 		fftbuf = (float*)fftoutobj->slots - 1;
 		for (i=0; i<asize; ++i) {
@@ -518,7 +518,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	imagobj->size = fftsize;
 
 	g->sp -= 2;
-	a->uo = complexobj;
+	SetRaw(a, complexobj);
 
 	return errNone;
 }
@@ -536,8 +536,8 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	asize = a->uo->size;
-	if (!(isKindOfSlot(b, class_signal) && b->uo->size == asize)) {
+	asize = slotRawObject(a)->size;
+	if (!(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) {
 		error("Signal::ifft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
@@ -549,11 +549,11 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 		error("Signal::ifft must be provided a table containing 1/4 cycle of a cosine.\n");
 		return errFailed;
 	}
-	if (c->uo->size != fftsize/4+1) {
-		error("Signal::ifft cosine table wrong size (%d), expected %d.\n", c->uo->size, fftsize/4+1);
+	if (slotRawObject(c)->size != fftsize/4+1) {
+		error("Signal::ifft cosine table wrong size (%d), expected %d.\n", slotRawObject(c)->size, fftsize/4+1);
 		return errFailed;
 	}
-	costable = (float*)c->uo->slots;
+	costable = (float*)slotRawObject(c)->slots;
 
 	fftbufsize = fftsize * 2;
 	fftoutobj = newPyrSignal(g, fftbufsize);
@@ -571,8 +571,8 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	SetObject(complexobj->slots + 1, imagobj);
 	g->gc->GCWriteNew(complexobj, imagobj);
 
-	inreal = (float*)a->uo->slots - 1;
-	inimag = (float*)b->uo->slots - 1;
+	inreal = (float*)slotRawObject(a)->slots - 1;
+	inimag = (float*)slotRawObject(b)->slots - 1;
 
 	fftbuf = (float*)fftoutobj->slots - 1;
 	for (i=0; i<asize; ++i) {
@@ -598,7 +598,7 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	imagobj->size = fftsize;
 
 	g->sp -= 2;
-	a->uo = complexobj;
+	SetRaw(a, complexobj);
 
 	return errNone;
 }

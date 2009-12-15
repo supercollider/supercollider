@@ -64,7 +64,7 @@ static id sharedSCVM = nil;
     }
     return sharedSCVM;
 }
- 
+
 - (id)init
 {
     if (sharedSCVM) {
@@ -77,7 +77,7 @@ static id sharedSCVM = nil;
     deferredOperations = [NSMutableArray arrayWithCapacity: 8];
     [deferredOperations retain];
     deferredTaskInterval = 1.f/60;
-	
+
     guiWindows = [NSMutableArray arrayWithCapacity: 8];
     [guiWindows retain];
     [NSApp setDelegate: self]; //just to get a notification when sc quits. jan.t
@@ -88,67 +88,67 @@ static id sharedSCVM = nil;
 - (void)start
 {
 	gIdeName = "scapp"; // declare that code specific to SC.app IDE will be compiled in
-	deferredTaskTimer = 
+	deferredTaskTimer =
 			[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
-				@selector(doPeriodicTask:) userInfo: nil repeats: YES];        
-        
-	appClockTimer = 
+				@selector(doPeriodicTask:) userInfo: nil repeats: YES];
+
+	appClockTimer =
 			[NSTimer scheduledTimerWithTimeInterval: 0.020 target: self selector:
-				@selector(doClockTask:) userInfo: nil repeats: YES]; 
-				       
+				@selector(doClockTask:) userInfo: nil repeats: YES];
+
 	[deferredTaskTimer retain];
 	[appClockTimer retain];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer
 		forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer
 		forMode: NSEventTrackingRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: appClockTimer
 		forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: appClockTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: appClockTimer
 		forMode: NSEventTrackingRunLoopMode];
-	
+
 	SetupHomeDirectory();
 	pyr_init_mem_pools( 2*1024*1024, 256*1024 );
 	initPostBuffer();
 	init_OSC(57120);
 	schedInit();
 	compileLibrary();
-	
+
 	// CR ADDED
 	[[RendezvousClient sharedClient] findOSCServices];
-	
+
 	[self sendMain: "applicationStart"];
-	
+
 	// Sleep - Technical Q&A QA1340
-	//These notifications are filed on NSWorkspace's notification center, not the default notification center. 
+	//These notifications are filed on NSWorkspace's notification center, not the default notification center.
 	//  You will not receive sleep/wake notifications if you file with the default notification center.
-	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self 
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
 			selector: @selector(receiveSleepNote:) name: NSWorkspaceWillSleepNotification object: NULL];
-	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self 
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
 			selector: @selector(receiveWakeNote:) name: NSWorkspaceDidWakeNotification object: NULL];
 
 }
 
 -(void)setDeferredTaskInterval: (float) interval
 {
-	
+
 	[deferredTaskTimer invalidate];
 	[deferredTaskTimer release];
 	deferredTaskInterval = sc_max(interval, 1.f/600);
-	deferredTaskTimer = 
+	deferredTaskTimer =
 	[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
-	 @selector(doPeriodicTask:) userInfo: nil repeats: YES];        
-	
+	 @selector(doPeriodicTask:) userInfo: nil repeats: YES];
+
 	[deferredTaskTimer retain];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer
 								 forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer 
+
+	[[NSRunLoop currentRunLoop] addTimer: deferredTaskTimer
 								 forMode: NSEventTrackingRunLoopMode];
 }
 
@@ -167,7 +167,7 @@ static id sharedSCVM = nil;
 //	NSLog(@"receiveSleepNote: %@", [note name]);
 	[self sendMain: "sleep"];
 }
- 
+
 - (void) receiveWakeNote: (NSNotification*) note
 {
 //    NSLog(@"receiveSleepNote: %@", [note name]);
@@ -193,48 +193,48 @@ static id sharedSCVM = nil;
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
-		
-			int textlen = length;
+
+		int textlen = length;
 		PyrString* strobj = newPyrStringN(g->gc, textlen, 0, true);
 		memcpy(strobj->s, (char*)text, textlen);
-	
-		SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-		g->gc->GCWrite(g->process->interpreter.uo, strobj);
+
+		SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
+		g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 	}
 	pthread_mutex_unlock(&gLangMutex);
 }
 
 - (void)sendMain: (char*) methodName
 {
-    pthread_mutex_lock(&gLangMutex);
-    runLibrary(getsym(methodName));
-    pthread_mutex_unlock(&gLangMutex);
+	pthread_mutex_lock(&gLangMutex);
+	runLibrary(getsym(methodName));
+	pthread_mutex_unlock(&gLangMutex);
 }
 
 - (void)compileLibrary:(id)sender
 {
-    // if not and user pref, open first error file to that line
-    if(! compileLibrary() ) [self postWindowToFront: NULL];
+// if not and user pref, open first error file to that line
+if(! compileLibrary() ) [self postWindowToFront: NULL];
 }
 
 - (void)runMain:(id)sender
 {
-    [self sendMain: "run"];
+	[self sendMain: "run"];
 }
 
 - (void)stopMain:(id)sender
 {
-    [self sendMain: "stop"];
+	[self sendMain: "stop"];
 }
 
 - (void)hardStopMain:(id)sender
 {
-    [self sendMain: "hardStop"];
+	[self sendMain: "hardStop"];
 }
 
 - (IBAction) preferences: (id) sender
 {
-    [self sendMain: "preferences"];
+	[self sendMain: "preferences"];
 }
 
 - (IBAction) newSCWindow: (id) sender
@@ -251,22 +251,22 @@ extern NSTextView *gPostView;
 
 - (void)postWindowToFront:(id)sender
 {
-    if (gPostView) [[gPostView window] makeKeyAndOrderFront: sender];
+	if (gPostView) [[gPostView window] makeKeyAndOrderFront: sender];
 }
 - (void)clearPostWindow:(id)sender
 {
-    if(gPostView) {
-        NSTextStorage *textStorage = [gPostView textStorage];
+	if(gPostView) {
+		NSTextStorage *textStorage = [gPostView textStorage];
 		NSRange range = NSMakeRange(0, [textStorage length]);
 		if ([gPostView shouldChangeTextInRange: range replacementString: @""]) {
 			[gPostView replaceCharactersInRange: range withString: @""];
 			[gPostView didChangeText];
 		}
-    }
+	}
 }
 - (void)defer: (NSInvocation*) action
 {
-    [deferredOperations addObject: action];
+	[deferredOperations addObject: action];
 }
 
 
@@ -286,14 +286,14 @@ extern NSTextView *gPostView;
 
 - (void)performDeferredOperations
 {
-    while ([deferredOperations count]) {
+	while ([deferredOperations count]) {
 		NSInvocation* action = (NSInvocation*)[deferredOperations objectAtIndex: 0];
 		[action retain];
-        [deferredOperations removeObjectAtIndex: 0];
+		[deferredOperations removeObjectAtIndex: 0];
 		///NSLog(@"%d %@ %08X\n", [deferredOperations count], action, [action target]);
 		[action invoke];
 		[action release];
-    }
+	}
 }
 
 - (void)doAnimatedViews
@@ -308,94 +308,94 @@ extern NSTextView *gPostView;
 
 - (void)closeAllGUIWindows
 {
-    [UserPanel closeAll];
-    
-    if ([guiWindows count]) {
-        NSMutableArray *copy = [guiWindows copy];
-        [guiWindows removeAllObjects];
-        [copy makeObjectsPerformSelector: @selector(close)];
-        [copy release];
-    }
-    
-    [deferredOperations removeAllObjects];
+	[UserPanel closeAll];
+
+	if ([guiWindows count]) {
+		NSMutableArray *copy = [guiWindows copy];
+		[guiWindows removeAllObjects];
+		[copy makeObjectsPerformSelector: @selector(close)];
+		[copy release];
+	}
+
+	[deferredOperations removeAllObjects];
 }
 
 - (void)addWindow: (NSWindow*)window;
 {
-    [guiWindows addObject: window];
+	[guiWindows addObject: window];
 }
 
 void setupUserPaneViews(id target, id view, int tagsum)
 {
 
-    int newTagSum = tagsum;
-    if ([view respondsToSelector: @selector(setTag:)]) {
-        int thisTag = [view tag];
-        if (thisTag > 0) newTagSum += thisTag;
-    }
-    post("  view '%s' %d %d\n", view->isa->name, tagsum, newTagSum);
-   
-    if ([view respondsToSelector: @selector(setTarget:)]) {
-        [view setTarget: target];
-    }
-    if ([view respondsToSelector: @selector(setAction:)]) {
-        [view setAction: @selector(panelAction:)];
-    }
-    if ([view respondsToSelector: @selector(setTag:)]) {
-        [view setTag: newTagSum];
-    }
+	int newTagSum = tagsum;
+	if ([view respondsToSelector: @selector(setTag:)]) {
+		int thisTag = [view tag];
+		if (thisTag > 0) newTagSum += thisTag;
+	}
+	post("  view '%s' %d %d\n", view->isa->name, tagsum, newTagSum);
 
-    if ([view respondsToSelector: @selector(subviews)]) {
-        NSArray *subviews = [view subviews];
-        int numSubviews = [subviews count];
-        for (int i=0; i<numSubviews; ++i) {
-            id subview = [subviews objectAtIndex: i];
-            setupUserPaneViews(target, subview, newTagSum);
-        }
-    }
-    if ([view respondsToSelector: @selector(cells)]) {
-        NSArray *cells = [view cells];
-        if (cells) {
-            int numCells = [cells count];
-            for (int i=0; i<numCells; ++i) {
-                id cell = [cells objectAtIndex: i];
-                setupUserPaneViews(target, cell, newTagSum);
-            }
-        }
-    }
+	if ([view respondsToSelector: @selector(setTarget:)]) {
+		[view setTarget: target];
+	}
+	if ([view respondsToSelector: @selector(setAction:)]) {
+		[view setAction: @selector(panelAction:)];
+	}
+	if ([view respondsToSelector: @selector(setTag:)]) {
+		[view setTag: newTagSum];
+	}
+
+	if ([view respondsToSelector: @selector(subviews)]) {
+		NSArray *subviews = [view subviews];
+		int numSubviews = [subviews count];
+		for (int i=0; i<numSubviews; ++i) {
+			id subview = [subviews objectAtIndex: i];
+			setupUserPaneViews(target, subview, newTagSum);
+		}
+	}
+	if ([view respondsToSelector: @selector(cells)]) {
+		NSArray *cells = [view cells];
+		if (cells) {
+			int numCells = [cells count];
+			for (int i=0; i<numCells; ++i) {
+				id cell = [cells objectAtIndex: i];
+				setupUserPaneViews(target, cell, newTagSum);
+			}
+		}
+	}
 }
 
 - (void)loadUserPanel:(NSString*)filename SCObject: (void*)scobj
 {
-    UserPanel* panel = [[UserPanel alloc] init];
-    [panel retain];
-    
-    NSURL *url = [NSURL fileURLWithPath: filename];
-    [filename release];
-    NSString *nspath = [url path];
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setObject: panel forKey: @"NSOwner"];
-    NSZone *zone = [NSApp zone];
-    post("path '%s'\n", [nspath cString]);
-    BOOL result = [NSBundle loadNibFile: nspath externalNameTable: dict withZone: zone];
-    if (!result) {
-        post("loadNibFile failed\n");
-        return;
-    }
-    
-    NSWindow *window = [panel window];
-    if (!window) {
-        post("UserPanel window outlet was not bound.\n");
-        return;
-    }
-    
-    NSView *view = [window contentView];
-    [panel setSCObject: (PyrObject*)scobj];
-    setupUserPaneViews(panel, view, 0);
+	UserPanel* panel = [[UserPanel alloc] init];
+	[panel retain];
 
-    [window makeKeyAndOrderFront: nil];
-    
-    // set all targets
+	NSURL *url = [NSURL fileURLWithPath: filename];
+	[filename release];
+	NSString *nspath = [url path];
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	[dict setObject: panel forKey: @"NSOwner"];
+	NSZone *zone = [NSApp zone];
+	post("path '%s'\n", [nspath cString]);
+	BOOL result = [NSBundle loadNibFile: nspath externalNameTable: dict withZone: zone];
+	if (!result) {
+		post("loadNibFile failed\n");
+		return;
+	}
+
+	NSWindow *window = [panel window];
+	if (!window) {
+		post("UserPanel window outlet was not bound.\n");
+		return;
+	}
+
+	NSView *view = [window contentView];
+	[panel setSCObject: (PyrObject*)scobj];
+	setupUserPaneViews(panel, view, 0);
+
+	[window makeKeyAndOrderFront: nil];
+
+	// set all targets
 };
 
 
@@ -412,16 +412,16 @@ bool gIsFullScreen = false;
     int windowLevel = CGShieldingWindowLevel();
     [window setLevel: windowLevel];
     gIsFullScreen = true;
-    
+
     NSRect bounds = [[NSScreen mainScreen] frame];
     [window setFrame: bounds display: YES];
     [window setShowsResizeIndicator: NO];
 
     //can't set NSBorderlessWindowMask after created
-    // but if you create it with that, 
+    // but if you create it with that,
     //  subclass NSWindow,override canBecomeKeyWindow { return YES; }
     // or you can't get key events
-    
+
     // then you can't move it
 }
 
@@ -440,7 +440,7 @@ bool gIsFullScreen = false;
     SCNSWindow* window = [aNotification object];
     [self endFullScreen: window];
     [guiWindows removeObject: window];
-    
+
     [(SCGraphView*)[window getSCGraphView] willClose];
 }
 
@@ -455,7 +455,7 @@ bool gIsFullScreen = false;
 - (void) windowDidBecomeKey:(NSNotification *)aNotification
 {
     SCNSWindow* window = [aNotification object];
-    [(SCGraphView*)[window getSCGraphView] didBecomeKey];	
+    [(SCGraphView*)[window getSCGraphView] didBecomeKey];
 }
 
 - (void) windowDidResignKey:(NSNotification *)aNotification
@@ -466,7 +466,7 @@ bool gIsFullScreen = false;
 
 - (void) runAsModal:(NSWindow*)window {
 	[NSApp runModalForWindow: window];
-	
+
 	// after abort:
 	[window close];
 }
@@ -479,7 +479,7 @@ bool gIsFullScreen = false;
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
 	SEL sel = @selector(close);
     NSMethodSignature *sig = [SCNSWindow instanceMethodSignatureForSelector: sel];
-    
+
     NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: sheet];

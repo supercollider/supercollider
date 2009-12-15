@@ -84,11 +84,9 @@ typedef union pyrslot {
 			struct PyrInt8Array *ob;
 			struct PyrDoubleArray *od;
 			struct PyrSymbolArray *osym;
-			struct PyrParseNode *opn;
 			struct PyrProcess *op;
 			struct PyrThread *ot;
 			struct PyrInterpreter *oi;
-			struct PyrPlug *plug;
 		} u;
 #if BYTE_ORDER == LITTLE_ENDIAN
 		// need to swap on intel <sk>
@@ -125,9 +123,7 @@ typedef union pyrslot {
 //symbol array
 #define uosym s.u.osym
 #define uoblk s.u.oblk
-#define uopn s.u.opn
 #define uptr s.u.ptr
-#define uplug s.u.plug
 
 #if DOUBLESLOTS
 #define uf f
@@ -139,6 +135,8 @@ typedef union pyrslot {
 	Note that on the PowerPC, the fastest way to copy a slot is to
 	copy the double field, not the struct.
 */
+
+inline int GetTag(PyrSlot* slot) { return slot->utag; }
 
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
@@ -167,6 +165,14 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
 #else
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
 #endif
+
+inline void SetRawChar(PyrSlot* slot, int val) { slot->uc = val; }
+inline void SetRaw(PyrSlot* slot, int val) { slot->ui = val; }
+inline void SetRaw(PyrSlot* slot, PyrObject * val) { slot->uo = val; }
+inline void SetRaw(PyrSlot* slot, PyrSymbol * val) { slot->us = val; }
+inline void SetRaw(PyrSlot* slot, double val) { SetFloat(slot, val); }
+
+inline void SetTagRaw(PyrSlot* slot, int tag) { slot->utag = tag; }
 
 inline bool IsObj(PyrSlot* slot) { return ((slot)->utag == tagObj); }
 inline bool NotObj(PyrSlot* slot) { return ((slot)->utag != tagObj); }
@@ -261,6 +267,91 @@ inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)
 	return errNone;
 }
 
+inline void* slotRawPtr(PyrSlot *slot)
+{
+	return slot->s.u.ptr;
+}
+
+inline PyrBlock* slotRawBlock(PyrSlot *slot)
+{
+	return slot->s.u.oblk;
+}
+
+inline PyrSymbolArray* slotRawSymbolArray(PyrSlot *slot)
+{
+	return slot->s.u.osym;
+}
+
+inline PyrDoubleArray* slotRawDoubleArray(PyrSlot *slot)
+{
+	return slot->s.u.od;
+}
+
+inline PyrInt8Array* slotRawInt8Array(PyrSlot *slot)
+{
+	return slot->s.u.ob;
+}
+
+inline PyrMethod* slotRawMethod(PyrSlot *slot)
+{
+	return slot->s.u.om;
+}
+
+inline PyrThread* slotRawThread(PyrSlot *slot)
+{
+	return slot->s.u.ot;
+}
+
+inline PyrString* slotRawString(PyrSlot *slot)
+{
+	return slot->s.u.os;
+}
+
+inline PyrList* slotRawList(PyrSlot *slot)
+{
+	return slot->s.u.ol;
+}
+
+inline PyrFrame* slotRawFrame(PyrSlot *slot)
+{
+	return slot->s.u.of;
+}
+
+inline PyrClass* slotRawClass(PyrSlot *slot)
+{
+	return slot->s.u.oc;
+}
+
+inline PyrInterpreter* slotRawInterpreter(PyrSlot *slot)
+{
+	return slot->s.u.oi;
+}
+
+inline PyrSymbol* slotRawSymbol(PyrSlot *slot)
+{
+	return slot->s.u.s;
+}
+
+inline int slotRawChar(PyrSlot *slot)
+{
+	return slot->s.u.c;
+}
+
+inline int slotRawInt(PyrSlot *slot)
+{
+	return slot->s.u.i;
+}
+
+inline double slotRawFloat(PyrSlot *slot)
+{
+	return slot->s.u.f;
+}
+
+inline PyrObject* slotRawObject(PyrSlot *slot)
+{
+	return slot->s.u.o;
+}
+
 inline void slotCopy(PyrSlot *dst, PyrSlot *src)
 {
 	double *dstp = (double*)dst;
@@ -275,5 +366,25 @@ inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 	for (int i=0;i<num;++i) { *++dstp = *++srcp; }
 }
 
+#undef uptr
+#undef uoblk
+#undef uosym
+#undef uom
+#undef uot
+#undef uos
+#undef uod
+#undef uob
+#undef uol
+#undef uof
+#undef uoc
+#undef utag
+#undef us
+#undef uc
+#undef uo
+#undef uoi
+#undef ui
+//#undef uf
+
+#undef uop
 
 #endif

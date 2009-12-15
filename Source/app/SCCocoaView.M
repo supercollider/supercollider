@@ -3,7 +3,7 @@
 
     Created by falkenst on Tue Feb 08 2005.
     Copyright (c) 2005 jan truetzschler. All rights reserved.
- 
+
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
@@ -75,7 +75,7 @@ extern PyrSymbol *s_scview;
 {
 	mSCViewObject = inObject;
 }
-	
+
 
 - (IBAction) executeSelection: (id) sender
 {
@@ -84,7 +84,7 @@ extern PyrSymbol *s_scview;
 }
 
 - (void)sendSelection: (char*) methodName
-{        
+{
     if (!compiledOK) {
         return;
     }
@@ -96,14 +96,14 @@ extern PyrSymbol *s_scview;
 	int textlength = strlen(text);
 
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
-    
+
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
     [txtView setSelectedRange: newSelectedRange];
-    
+
     pthread_mutex_lock(&gLangMutex);
     runLibrary(getsym(methodName));
     pthread_mutex_unlock(&gLangMutex);
-    
+
 }
 
 //- (void) keyDown: (NSEvent*) event
@@ -114,22 +114,22 @@ extern PyrSymbol *s_scview;
 	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
 	if(usesTabToFocusNextView && ([event type] == NSKeyDown)){
 		NSString *characters = [event characters];
-		unsigned int modifiers = [event modifierFlags];	
-		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+		unsigned int modifiers = [event modifierFlags];
+		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask
 			| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
 		unichar character = 0;
 		if([characters length] > 0) {
 			character = [characters characterAtIndex: 0];
-		}				
+		}
 		if(character == 9 && ((modifiers & allKnownModifiers) == 0)) {
-			mSCViewObject->tabPrevFocus(); 
+			mSCViewObject->tabPrevFocus();
 			return YES;
 		} else if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
 			//NSLog(@"backtab");
 			/////[mSCViewObject->getTextView() resignFirstResponder];
 			mSCViewObject->tabNextFocus();
 			return YES;
-		} // other tab keys avail for user 
+		} // other tab keys avail for user
 	}
 	return NO;
 
@@ -140,22 +140,22 @@ extern PyrSymbol *s_scview;
 //	// for some reason modifiers becomes 256 on my machine with no keys pressed. So need to mask against known keys.
 //	if(usesTabToFocusNextView){
 //		NSString *characters = [event characters];
-//		unsigned int modifiers = [event modifierFlags];	
-//		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask 
+//		unsigned int modifiers = [event modifierFlags];
+//		uint32 allKnownModifiers = NSAlphaShiftKeyMask | NSShiftKeyMask | NSControlKeyMask | NSCommandKeyMask
 //		| NSAlternateKeyMask | NSHelpKeyMask | NSFunctionKeyMask;
 //		unichar character = 0;
 //		if([characters length] > 0) {
 //			character = [characters characterAtIndex: 0];
 //			//NSLog(@"char %i", character);
-//		}				
+//		}
 //		if (character == 25 && ((modifiers & allKnownModifiers) == NSShiftKeyMask)) { // check above for tab
 //			//NSLog(@"backtab");
 //			/////[mSCViewObject->getTextView() resignFirstResponder];
 //			mSCViewObject->tabNextFocus();
 //			return YES;
-//		} // other tab keys avail for user 
+//		} // other tab keys avail for user
 //	}
-//	return NO;		
+//	return NO;
 //}
 - (void) keyUp: (NSEvent*) event
 {
@@ -183,9 +183,9 @@ extern PyrSymbol *s_scview;
 	bool loadLinkInView = mSCViewObject->getLoadLinkInView();
 	NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
 	if (!docctl && !loadLinkInView) return YES;
-	
+
 	NSURL *desiredURL;
-	
+
 	// is it a NSURL link or a NSString link?
 	if ([link isKindOfClass: [NSString class]])
     {
@@ -197,7 +197,7 @@ extern PyrSymbol *s_scview;
 			}
 			desiredURL = [NSURL URLWithString: helpPath];
 		} else desiredURL = [NSURL URLWithString: [link stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: mSCViewObject->getLastURL()];
-        
+
     } else if ([link isKindOfClass: [NSURL class]])
     {
 		// check for schemes which we'll handle
@@ -220,13 +220,13 @@ extern PyrSymbol *s_scview;
 			desiredURL = link; // it's a regular file:// URL
 		}
     } else return NO;
-	
+
 	// try the link action first then use default
 	if(mSCViewObject->linkAction([desiredURL absoluteString])) return YES;
-	
+
 	MyDocument *doc = nil;
 	int result = 0;
-	
+
 	if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
 		if(!loadLinkInView) doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
 	} else NSLog(@"file doesn't exist at path");
@@ -243,7 +243,7 @@ extern PyrSymbol *s_scview;
 			if(!desiredURL) NSLog(@"foo");
 			NSLog(@"url path %@", [desiredURL path]);
 			NSString *desiredHelpName = [[[[desiredURL path] lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension];
-			NSString *helpPath = pathOfHelpFileFor(desiredHelpName); 
+			NSString *helpPath = pathOfHelpFileFor(desiredHelpName);
 			if(!helpPath) {
 				post("Can't find Help File Document for: '%s'\n", [desiredHelpName cString]);
 				return YES;
@@ -286,13 +286,13 @@ extern PyrSymbol *s_scview;
 	[text beginEditing];	// Bracket with begin/end editing for efficiency
 
 	NSAttributedString *htmlAttributedString = [HTMLRenderer attributedStringWithURL:url];
-	
+
 	if(htmlAttributedString)
 	{
 		[text setAttributedString:htmlAttributedString];
 		[textView setDefaultTabsTo: 28.0f];
 	}
-	
+
 	[text endEditing];
 	[url release];
 }
@@ -329,7 +329,7 @@ extern PyrSymbol *s_scview;
 //    CGContextSetRGBFillColor(cgc, 1.0, 0.0, 0.0, 0.5);
 //    CGContextFillRect(cgc, (*(CGRect *)&(aRect)));
 //    CGContextRestoreGState(cgc);
-//	
+//
 //	[super drawRect:aRect]; // call superclass here for everything else
 //}
 
@@ -347,8 +347,8 @@ extern PyrSymbol *s_scview;
 //		if (mObj = mSCViewObject->GetSCObj()) {
 //			VMGlobals *g = gMainVMGlobals;
 //			g->canCallOS = true;
-//			++g->sp;  SetObject(g->sp, mObj); 
-//			runInterpreter(g, method, 1);		
+//			++g->sp;  SetObject(g->sp, mObj);
+//			runInterpreter(g, method, 1);
 //			g->canCallOS = false;
 //		}
 //		pthread_mutex_unlock (&gLangMutex);
@@ -361,7 +361,7 @@ extern PyrSymbol *s_scview;
 //{
 //	post("foo\n");
 //	if(mSCViewObject->isFocus()) return YES;
-//	
+//
 //	return NO;
 //}
 
@@ -381,7 +381,7 @@ extern PyrSymbol *s_scview;
 
 //- (void)mouseDown:(NSEvent *)theEvent
 //{
-//	
+//
 //	mSCViewObject->makeFocus(true);
 //	unsigned int modifiers = [theEvent modifierFlags];
 //    //control tab/escape doesn't get passed here at all ?
@@ -427,30 +427,30 @@ extern PyrSymbol *s_scview;
 		[anInvocation setTarget: [self superview]];
 		[anInvocation setSelector: sel];
 		BOOL flag = YES;
-		[anInvocation setArgument: &flag atIndex: 2];       
+		[anInvocation setArgument: &flag atIndex: 2];
 		[scvm defer: anInvocation];
-		
+
 		[self setEditingInactive:NO]; // in this way we know that editing was started by a mouse click rather than a key down
-		
+
 		bool constructionmode = mTopView->ConstructionMode();
 		if(!constructionmode)
 		{
-			mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);				
+			mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);
 			mSCViewObject->mouseBeginTrack(scpoint, modifiers,theEvent);
 		}else
 			mSCViewObject->setConstructionModeFromPoint(scpoint);
-		
+
         [self displayIfNeeded];
-        
+
         while (keepOn && !mDragStarted) {
             theEvent = [[self window] nextEventMatchingMask: NSLeftMouseUpMask |NSRightMouseUp | NSOtherMouseUp |
-						NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged 
+						NSLeftMouseDraggedMask | NSRightMouseDragged | NSOtherMouseDragged
 						| NSKeyDownMask | NSKeyUpMask
 						];
 			modifiers = [theEvent modifierFlags]; // added
             mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];
             //isInside = [self mouse:mouseLoc inRect:[self bounds]];
-            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);			
+            scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
             int evtype = [theEvent type];
             switch ([theEvent type]) {
 				case NSLeftMouseDown:
@@ -460,7 +460,7 @@ extern PyrSymbol *s_scview;
 						mSCViewObject->doConstructionMove(scpoint);
 						mTopView->refresh();
 					}else
-						mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);	
+						mSCViewObject->mouseDownAction(scpoint, modifiers,theEvent);
 					//						post("down \n");
 					break;
                 case NSLeftMouseDragged:
@@ -472,7 +472,7 @@ extern PyrSymbol *s_scview;
 						mTopView->refresh();
 					}else
 						mSCViewObject->mouseTrack(scpoint, modifiers,theEvent);
-					mSCViewObject->mouseMoveAction(scpoint, modifiers,theEvent);				
+					mSCViewObject->mouseMoveAction(scpoint, modifiers,theEvent);
 					mouseMoved = YES;
 					//							post("drag \n");
 					break;
@@ -489,7 +489,7 @@ extern PyrSymbol *s_scview;
 							[[self window] endEditingFor:self];
 							[self setEditingInactive:YES];
 							//[[self window] makeFirstResponder:[self superview]];
-							// trick focus ring into drawing 
+							// trick focus ring into drawing
 							SEL sel = @selector(setNeedsDisplay:);
 							NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
 							NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
@@ -497,11 +497,11 @@ extern PyrSymbol *s_scview;
 							[anInvocation setTarget: [self superview]];
 							[anInvocation setSelector: sel];
 							BOOL flag = YES;
-							[anInvocation setArgument: &flag atIndex: 2];       
+							[anInvocation setArgument: &flag atIndex: 2];
 							[scvm defer: anInvocation];
 						}
-						//							if(!view.GetSCObj()) break;						
-						mSCViewObject->mouseUpAction(scpoint, modifiers,theEvent);						
+						//							if(!view.GetSCObj()) break;
+						mSCViewObject->mouseUpAction(scpoint, modifiers,theEvent);
 						mSCViewObject->mouseEndTrack(scpoint, modifiers,theEvent);
 					}
 					keepOn = NO;
@@ -532,7 +532,7 @@ extern PyrSymbol *s_scview;
     return;
 }
 
--(void)mouseMoved:(NSEvent*)theEvent 
+-(void)mouseMoved:(NSEvent*)theEvent
 {
 	NSPoint mouseLoc;
     unsigned int modifiers = [theEvent modifierFlags];
@@ -549,92 +549,92 @@ const int circDiam = 20;
 
 - (NSImage*) makeDragImage: (PyrSlot*)slot label: (NSString*)label
 {
-	
+
     if (!slot) return 0;
-    
+
     NSString *nsstring;
     if(label) {
 		nsstring = label;
 	} else if (slot) {
         PyrClass *classobj = classOfSlot(slot);
-        nsstring = [NSString stringWithCString: classobj->name.us->name];
+        nsstring = [NSString stringWithCString: slotRawSymbol(&classobj->name)->name];
         if (!nsstring) return 0;
     } else {
         nsstring = @"No Data!";
     }
-	
+
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     NSFont *font = [NSFont fontWithName: @"Helvetica" size: 12];
     if (!font) return 0;
     [dict setObject: font forKey: NSFontAttributeName ];
-	
+
     NSSize strSize = [nsstring sizeWithAttributes: dict];
     NSRect strRect = NSMakeRect(circDiam, 0, circDiam + strSize.width, strSize.height);
-    
+
     NSSize size = NSMakeSize(circDiam+strSize.width, sc_max(circDiam, strSize.height));
-    
+
     NSImage *image = [[NSImage alloc] initWithSize: size];
     if (!image) return 0;
-    
+
     [image autorelease];
-    
+
     float alpha = 0.6;
     NSColor *colorClear = [NSColor colorWithCalibratedRed: 0
-													green: 0 
-													 blue: 0 
+													green: 0
+													 blue: 0
 													alpha: 0];
     NSColor *colorTransBlack = [NSColor colorWithCalibratedRed: 0
-														 green: 0 
-														  blue: 0 
+														 green: 0
+														  blue: 0
 														 alpha: alpha];
     NSColor *colorTransBlue = [NSColor colorWithCalibratedRed: 0
-														green: 0 
-														 blue: 1 
+														green: 0
+														 blue: 1
 														alpha: alpha];
     /*NSColor *colorTransLtBlue = [NSColor colorWithCalibratedRed: 0.8
-	 green: 0.8 
-	 blue: 1 
+	 green: 0.8
+	 blue: 1
 	 alpha: alpha];*/
     NSColor *colorTransWhite = [NSColor colorWithCalibratedRed: 1
-														 green: 1 
-														  blue: 1 
+														 green: 1
+														  blue: 1
 														 alpha: alpha];
     NSColor *colorCaptionBackgnd = [NSColor colorWithCalibratedRed: 0
 															 green: 0
-															  blue: 0 
+															  blue: 0
 															 alpha: 0.4];
     NSColor *colorWhite = [NSColor colorWithCalibratedRed: 1
-													green: 1 
-													 blue: 1 
+													green: 1
+													 blue: 1
 													alpha: 1];
-    
+
     [dict setObject: colorWhite forKey: NSForegroundColorAttributeName ];
-	
+
     [image lockFocus];
     [colorClear set];
     [NSBezierPath fillRect: NSMakeRect(0,0,size.width,size.height)];
     NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(1,1,circDiam-2,circDiam-2)];
-    
+
     [path setLineWidth: 1.5];
     [colorTransBlue set];
     [path fill];
-    
-    NSBezierPath *hilite = [NSBezierPath bezierPathWithOvalInRect: 
+
+    NSBezierPath *hilite = [NSBezierPath bezierPathWithOvalInRect:
 							NSMakeRect(circDiam*0.3, circDiam*0.7, circDiam*0.4, circDiam*0.15)];
-	
+
     [colorTransWhite set];
     [hilite fill];
-	
+
     [colorTransBlack set];
     [path stroke];
-	
+
     [colorCaptionBackgnd set];
     [NSBezierPath fillRect: strRect];
-    
+
     [nsstring drawInRect: strRect withAttributes: dict];
-	
+
     [image unlockFocus];
-    
+
     return image;
 }
 
@@ -642,20 +642,20 @@ const int circDiam = 20;
 - (void) beginDragFrom: (NSPoint)where of: (PyrSlot*)slot string:(NSString*) string label:(NSString*) label
 {
     NSImage *image = [self makeDragImage: slot label: label];
-    
+
     NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
     [pboard declareTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, nil] owner: self];
-    
+
 	int fakeData;
     NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
-    
+
     [pboard setData: data forType: sSCObjType];
     [pboard setString: string forType: NSStringPboardType];
-	
+
     NSSize imageSize = [image size];
     where.x -= circDiam / 2;
     where.y += circDiam / 4;
-    
+
     NSSize dragOffset = NSMakeSize(0.0, 0.0);
     mDragStarted = YES;
     [self dragImage: image at: where offset: dragOffset event: [NSApp currentEvent]
@@ -666,19 +666,19 @@ const int circDiam = 20;
 //{
 //    NSSize dragOffset = NSMakeSize(0.0, 0.0);
 //    NSPasteboard *pboard;
-//	
+//
 //    pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
 //    [pboard declareTypes:[NSArray arrayWithObjects:sSCObjType, NSStringPboardType, nil]  owner:self];
-//    
+//
 //	int fakeData;
 //    NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
-//    
+//
 //    [pboard setData: data forType: sSCObjType];
 //    [pboard setString: [self stringValue] forType: NSStringPboardType];
-//	
+//
 //    [self dragImage:[[[self window] fieldEditor:NO forObject:self] dragImageForSelectionWithEvent:NSMakePoint(0.0, 0.0)] at:[self imageLocation] offset:dragOffset
 //			  event:theEvent pasteboard:pboard source:self slideBack:YES];
-//	
+//
 //    return;
 //}
 
@@ -719,9 +719,9 @@ const int circDiam = 20;
 //	return YES;
 //}
 
-// this for keyDowns. KeyUps come in keyUp below. 
+// this for keyDowns. KeyUps come in keyUp below.
 - (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
-{	
+{
 	//post("sctir\n");
 	NSEvent* event = [NSApp currentEvent];
 	NSString *characters = [event characters];
@@ -743,7 +743,7 @@ const int circDiam = 20;
 	//post("dcbs\n");
 	//NSLog(@"sel: %@", NSStringFromSelector(aSelector));
 	if (aSelector == @selector(insertTab:)){
-		mSCViewObject->tabPrevFocus(); 
+		mSCViewObject->tabPrevFocus();
 		return YES;
 	} else if (aSelector == @selector(insertBacktab:)){
 		mSCViewObject->tabNextFocus();
@@ -757,8 +757,8 @@ const int circDiam = 20;
 		if (mObj = mSCViewObject->GetSCObj()) {
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
-			++g->sp;  SetObject(g->sp, mObj); 
-			runInterpreter(g, method, 1);		
+			++g->sp;  SetObject(g->sp, mObj);
+			runInterpreter(g, method, 1);
 			g->canCallOS = false;
 		}
 		pthread_mutex_unlock (&gLangMutex);
@@ -792,25 +792,25 @@ const int circDiam = 20;
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
 		if (!nsstring) return NSDragOperationNone;
-		
+
 		pthread_mutex_lock (&gLangMutex);
 		VMGlobals *g = gMainVMGlobals;
 		PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
-		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
 		SetObject(&g->classvars->slots[classVarIndex+0], pstrobj);
 		g->gc->GCWrite(g->classvars, pstrobj);
 		//PyrSymbol *method = getsym("importDrag");
 		//g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, s_scview->u.classobj); 
+		++g->sp;  SetObject(g->sp, s_scview->u.classobj);
 		//runInterpreter(g, method, 1);
 		//g->canCallOS = false;
-		
+
 		pthread_mutex_unlock (&gLangMutex);
-		
+
 		int fakeData;
-		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
 		[pboard setData: data forType: sSCObjType];
-		
+
 	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
 		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
 		if (!files) return NSDragOperationNone;
@@ -818,7 +818,7 @@ const int circDiam = 20;
 		VMGlobals *g = gMainVMGlobals;
 		int size = [files count];
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
-		
+
 		for (int i=0; i<size; ++i) {
 			NSString *path = [files objectAtIndex: i];
 			PyrString *string = newPyrString(g->gc, [path UTF8String], 0, true);
@@ -826,21 +826,21 @@ const int circDiam = 20;
 			array->size++;
 			g->gc->GCWrite(array, string);
 		}
-		
-		int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
+
+		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
 		SetObject(&g->classvars->slots[classVarIndex+0], array);
 		g->gc->GCWrite(g->classvars, array);
-		
+
 		pthread_mutex_unlock (&gLangMutex);
-		
+
 		int fakeData;
-		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];		
+		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
 		[pboard setData: data forType: sSCObjType];
-		
+
 	} else {
         return NSDragOperationNone;
 	}
-	
+
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
@@ -914,23 +914,23 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)doAction: (id)sender
 {
 	//	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);	
+    pthread_mutex_lock (&gLangMutex);
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
-		++g->sp;  SetObject(g->sp, pobj); 
-		++g->sp;  SetInt(g->sp, 1); 
+		++g->sp;  SetObject(g->sp, pobj);
+		++g->sp;  SetInt(g->sp, 1);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);	
+    pthread_mutex_unlock (&gLangMutex);
 }
 
 @end
 
-@implementation SCNSLevelIndicator 
+@implementation SCNSLevelIndicator
 
 - (void)drawRect:(NSRect)aRect
 {
@@ -958,16 +958,16 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 				[self setCriticalValue: -0.1];
 			}
 		}
-		
+
 		[super drawRect:aRect];
-		
+
 		CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		CGContextSaveGState(cgc);
 		CGContextSetRGBFillColor(cgc, 1.0, 1.0, 0.0, 0.6);
 		CGRect peakRect;
 		//peakRect = CGRectMake(peakLevel, aRect.origin.y + peakSubtract, 3.f, aRect.size.height - peakSubtract);
 		peakRect = CGRectMake(peakLevel, peakY, 3.f, peakHeight);
-		CGContextFillRect(cgc, peakRect); 
+		CGContextFillRect(cgc, peakRect);
 		CGContextRestoreGState(cgc);
 	} else  {
 		[super drawRect:aRect];
@@ -1088,7 +1088,7 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	mLastURL = nil;
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mTextView = [[SCTextView alloc] initWithFrame:matrect];
-	NSView *view = mTop->GetNSView();		
+	NSView *view = mTop->GetNSView();
 	mCocoaToLangAction = [SCCocoaTextViewResponder alloc];
 	[mCocoaToLangAction setSCView: this];
     [mTextView setAutoresizingMask: 63];
@@ -1099,9 +1099,9 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
     [mTextView setImportsGraphics: YES];
     [mTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
 	[mTextView setSelectedRange: NSMakeRange(0,0)];
-	[mTextView setLangClassToCall:@"SCView" 
+	[mTextView setLangClassToCall:@"SCView"
 			withKeyDownActionIndex:1 withKeyUpActionIndex:2];
-	[mTextView  setObjectKeyDownActionIndex:4 setObjectKeyUpActionIndex:5];	
+	[mTextView  setObjectKeyDownActionIndex:4 setObjectKeyUpActionIndex:5];
 	mScrollView = [[NSScrollView alloc] initWithFrame: matrect];
 	[mScrollView setDocumentView: mTextView];
 	[mTextView setDelegate: mCocoaToLangAction];
@@ -1111,10 +1111,10 @@ SCCocoaTextView::SCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, SC
 	[mTextView setAcceptsFirstResponder:NO];
 	[mScrollView setDrawsBackground:YES];
 	[mCocoaToLangAction setUsesTabToFocusNextView:YES];
-	[mCocoaToLangAction setEnterExecutesSelection:YES];	
+	[mCocoaToLangAction setEnterExecutesSelection:YES];
 //	[mTextView autorelease];
 //	[mScrollView autorelease];
-	
+
 	setVisibleFromParent();
 }
 
@@ -1141,7 +1141,7 @@ void SCCocoaTextView::makeFocus(bool focus)
     if (focus) {
         if (canFocus() && !isFocus()) {
 			[mTextView setAcceptsFirstResponder:YES];
-			//[[mTextView window] makeFirstResponder: mTextView];	
+			//[[mTextView window] makeFirstResponder: mTextView];
         }
     } else {
         if (isFocus()) {
@@ -1165,7 +1165,7 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 			mLayout.bounds.x = mBounds.x + pbounds.x;
 			mLayout.bounds.y = mBounds.y + pbounds.y;
 			mLayout.bounds.width = mBounds.width;
-			mLayout.bounds.height = mBounds.height;	
+			mLayout.bounds.height = mBounds.height;
 		} else {
 			mLayout.bounds = mBounds;
 		}
@@ -1191,7 +1191,7 @@ int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 int setSlotColor(PyrSlot *slot, SCColor *sccolor);
 
 int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
 
@@ -1201,17 +1201,17 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setVisibleFromParent();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "usesTabToFocusNextView")==0) {
 		if(IsTrue(slot))[mCocoaToLangAction setUsesTabToFocusNextView:YES];
 		else [mCocoaToLangAction setUsesTabToFocusNextView:NO];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "enterExecutesSelection")==0) {
 		if(IsTrue(slot))[mCocoaToLangAction setEnterExecutesSelection:YES];
 		else [mCocoaToLangAction setEnterExecutesSelection:NO];
-		return errNone;		
-	}	
+		return errNone;
+	}
 	if (strcmp(name, "setScrollersSize")==0) {
 		if(IsTrue(slot)) [[mScrollView verticalScroller] setControlSize: NSMiniControlSize];
 		else  [mScrollView setAutohidesScrollers:NO];
@@ -1219,34 +1219,34 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 
 	}
-	
+
 	if (strcmp(name, "setAutohidesScrollers")==0) {
 		if(IsTrue(slot)) [mScrollView setAutohidesScrollers:YES];
 		else  [mScrollView setAutohidesScrollers:NO];
-		[mScrollView setNeedsDisplay: YES];		
+		[mScrollView setNeedsDisplay: YES];
 		return errNone;
 
 	}
-	
+
 	if (strcmp(name, "setHasHorizontalScroller")==0) {
 		if(IsTrue(slot)) [mScrollView setHasHorizontalScroller:YES];
 		else  [mScrollView setHasHorizontalScroller:NO];
 		[mScrollView setNeedsDisplay: YES];
 		return errNone;
-		
+
 	}
-	
+
 	if (strcmp(name, "setHasVerticalScroller")==0) {
 		if(IsTrue(slot)) [mScrollView setHasVerticalScroller:YES];
 		else  [mScrollView setHasVerticalScroller:NO];
 		[mScrollView setNeedsDisplay: YES];
-		return errNone;		
-	}	
+		return errNone;
+	}
 	if (strcmp(name, "setEditable")==0) {
 		if(IsTrue(slot)) [mTextView setEditable:YES];
 		else  [mTextView setEditable:NO];
-		return errNone;		
-	}		
+		return errNone;
+	}
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		//add avariable to choos if this should resize the textview too
@@ -1254,10 +1254,10 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if (err) return err;
 
 		setBounds(screct);
-	
+
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "textBounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
@@ -1271,12 +1271,12 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	//	[mTextView setBounds: SCtoNSRect(mBounds)];
 		[mScrollView setNeedsDisplay: YES];
 		[mTextView setNeedsDisplay: YES];
-	
+
 		return errNone;
 	}
 	if (strcmp(name, "selectedString")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
-		PyrString* pstring = slot->uos;
+		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
 		NSRange selectedRange = [mTextView selectedRange];
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
@@ -1287,10 +1287,10 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[string release];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "open")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
-		PyrString* pstring = slot->uos;
+		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
 		NSRange selectedRange = [mTextView selectedRange];
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
@@ -1300,7 +1300,7 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[path release];
 		return result;
 	}
-	
+
 	if (strcmp(name, "background")==0) {
 		err = slotBackgroundVal(slot, &mBackground);
 		if (err) return err;
@@ -1308,34 +1308,34 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotColorVal(slot, &rgb);
 		if (err) return err;
 		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-                            green: rgb.green 
-                            blue: rgb.blue 
+                            green: rgb.green
+                            blue: rgb.blue
                             alpha: rgb.alpha];
 		[mTextView setBackgroundColor: color];
 		[mScrollView setBackgroundColor: color];
 		return errNone;
-	}	
+	}
 
 	if (strcmp(name, "setTextColor")==0) {
 		if(!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;	
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		SCColor rgb;
 		int rangeStart, rangeSize;
 		err = slotColorVal(slots+0, &rgb);
 		if (err) return err;
 		err = slotIntVal(slots+1, &rangeStart);
-		if (err) return err;		
+		if (err) return err;
 		err = slotIntVal(slots+2, &rangeSize);
 		if (err) return err;
 
 
 		NSColor *color = [NSColor colorWithCalibratedRed: rgb.red
-                            green: rgb.green 
-                            blue: rgb.blue 
+                            green: rgb.green
+                            blue: rgb.blue
                             alpha: rgb.alpha];
-		
+
 		//[[doc textView] setBackgroundColor: color];
-		
+
 		if(rangeStart < 0){
 			[mTextView setTextColor: color];
 			[mTextView didChangeText];
@@ -1345,31 +1345,31 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
-		
+
+
 		[mTextView setTextColor: color range: selectedRange];
 		[mTextView didChangeText];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "setFont")==0) {
-		if(!isKindOfSlot(slot, class_array)) return errWrongType;	
-		PyrSlot *slots =slot->uo->slots;
+		if(!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots =slotRawObject(slot)->slots;
 		PyrSlot *fontSlot = slots+0;
 		if (IsNil(fontSlot)) return errNone; // use default font
 		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
-		PyrSlot *nameSlot = fontSlot->uo->slots+0;
-		PyrSlot *sizeSlot = fontSlot->uo->slots+1;
+		PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
+		PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
 		float size;
 		int err = slotFloatVal(sizeSlot, &size);
 		if (err) return err;
 
-		PyrString *pstring = nameSlot->uos;
+		PyrString *pstring = slotRawString(nameSlot);
 		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
 		if (!fontName) return errFailed;
 		NSFont *font = [NSFont fontWithName: fontName size: size];
 		if (!font) return errFailed;
-		
+
 		int rangeStart, rangeSize;
 		err = slotIntVal(slots+1, &rangeStart); //if -1 do not use range
         if (err) return err;
@@ -1382,25 +1382,25 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		NSString* string = [mTextView string];
 		int length = [string length];
-		if(length < 1) return errFailed;		
+		if(length < 1) return errFailed;
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
+
         [mTextView setFont: font range: selectedRange];
 		return errNone;
 	}
-	
+
 //	if (strcmp(name, "insertString")==0) {
 //		if (!(isKindOfSlot(slot, class_string))) return errWrongType;
-//        PyrString* string = slot->uos;
+//        PyrString* string = slotRawString(slot);
 ////        [doc insertText: string->s length: string->size];
 //        return errNone;
 //	}
 	if (strcmp(name, "insertStringInRange")==0) {
-		if(!isKindOfSlot(slot, class_array)) return errWrongType;	
-		PyrSlot *slots =slot->uo->slots;	
-		PyrSlot *stringSlot = slots+0;	
+		if(!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots =slotRawObject(slot)->slots;
+		PyrSlot *stringSlot = slots+0;
 		if (!(isKindOfSlot(stringSlot, class_string))) return errWrongType;
 
 		int rangeStart, rangeSize;
@@ -1409,30 +1409,30 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotIntVal(slots+2, &rangeSize);
         if (err) return err;
 
-		PyrString* pstring = stringSlot->uos;
+		PyrString* pstring = slotRawString(stringSlot);
 		NSRange selectedRange;
 		int length = [[mTextView string] length];
-		
+
 		if(rangeSize < 0) rangeSize = length - 1;
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
-		
+
 		if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
 		else selectedRange =	NSMakeRange(rangeStart, rangeSize);
-		
+
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		BOOL editable = [mTextView isEditable];
 		if(!editable) [mTextView setEditable:YES]; //always allow programmatic editing
-		
+
 		if ([mTextView  shouldChangeTextInRange: selectedRange replacementString: string]) {
 			[mTextView  replaceCharactersInRange: selectedRange withString: string];
 			[mTextView  didChangeText];
 		}
 
 		if(!editable) [mTextView setEditable:NO];
-		
+
 		[string release];
-	
+
         return errNone;
 	}
 	
@@ -1456,35 +1456,35 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 
-	if (strcmp(name, "selectedString")==0) {        
+	if (strcmp(name, "selectedString")==0) {
 		NSString* str = [mTextView currentlySelectedTextOrLine:NULL];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(NULL, cstr, 0, true);
         SetObject(slot, string);
-		return errNone;		
+		return errNone;
 	}
 
-	if (strcmp(name, "selectedRange")==0) {        
+	if (strcmp(name, "selectedRange")==0) {
 		NSRange range = [mTextView selectedRange];
 		SetInt(slot, range.length);
 		return errNone;
 	}
 
-	if (strcmp(name, "selectedRangeLocation")==0) {        	
+	if (strcmp(name, "selectedRangeLocation")==0) {
 		NSRange range = [mTextView selectedRange];
 		SetInt(slot, range.location);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "path")==0) {
 		if(mLastURL) {
 			const char * cstr = [[mLastURL path] UTF8String];
 			PyrString *string = newPyrString(NULL, cstr, 0, true);
 			SetObject(slot, string);
 		} else SetNil(slot);
-		return errNone;		
+		return errNone;
 	}
-	
+
 	return SCView::getProperty(symbol, slot);
 }
 
@@ -1494,15 +1494,15 @@ int SCCocoaTextView::open(NSString *path)
 	if(!url) return errFailed;
 
 	NSTextStorage* text = [mTextView textStorage];
-		
+
 	NSString* extension = [path pathExtension];
-	
+
 	if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
 
 		SEL sel = @selector(loadHTMLToTextView:);
 		NSMethodSignature *sig = [SCCocoaTextViewResponder instanceMethodSignatureForSelector: sel];
 		SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-		
+
 		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 		[anInvocation setTarget: mCocoaToLangAction];
 		[anInvocation setSelector: sel];
@@ -1523,7 +1523,7 @@ int SCCocoaTextView::open(NSString *path)
 			return errFailed;
 		}
 	}
-	
+
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"scd"]) {
 		[mTextView setFont: [NSFont fontWithName: @"Monaco" size: 9]];
 		SyntaxColorize(mTextView);
@@ -1545,13 +1545,13 @@ void SCCocoaTextView::setVisibleFromParent()
 		[mScrollView setHidden:YES];
 		[mTextView setHidden:YES];
 	}
-	
+
 }
 
 extern int ivxSCTextView_linkAction;
 
 bool SCCocoaTextView::linkAction(NSString *url)
-{	
+{
 	if(NotNil(mObj->slots + ivxSCTextView_linkAction)){
 		pthread_mutex_lock (&gLangMutex);
 		PyrSymbol *method = getsym("doLinkAction");
@@ -1560,9 +1560,9 @@ bool SCCocoaTextView::linkAction(NSString *url)
 			g->canCallOS = true;
 			const char * cstr = [url UTF8String];
 			PyrString *string = newPyrString(NULL, cstr, 0, true);
-			++g->sp;  SetObject(g->sp, mObj); 
-			++g->sp;  SetObject(g->sp, string); 
-			++g->sp;  SetObject(g->sp, string); 
+			++g->sp;  SetObject(g->sp, mObj);
+			++g->sp;  SetObject(g->sp, string);
+			++g->sp;  SetObject(g->sp, string);
 			runInterpreter(g, method, 3);
 			g->canCallOS = false;
 		}
@@ -1585,9 +1585,9 @@ SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 {
 		NSRect matrect = SCtoNSRect(getDrawBounds());
 		mMovieView = [[NSMovieView alloc] initWithFrame:matrect];
-		NSView *view = mTop->GetNSView();	
+		NSView *view = mTop->GetNSView();
 		[view addSubview: mMovieView];
-		
+
 		//need to call EnterMovies for other qt c calls
 		EnterMovies();
 		setVisibleFromParent();
@@ -1608,7 +1608,7 @@ void SCMovieView::setBounds(SCRect screct)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
 	}
@@ -1619,17 +1619,17 @@ void SCMovieView::setBounds(SCRect screct)
 }
 
 int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
 		mVisible = visible;
 		setVisibleFromParent();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "stop")==0) {
 		[mMovieView stop: nil];
 		return errNone;
@@ -1637,16 +1637,16 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
 	if (strcmp(name, "start")==0) {
 		[mMovieView start: nil];
-		return errNone;	
+		return errNone;
 	}
 	if (strcmp(name, "stepForward")==0) {
 		[mMovieView stepForward: nil];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "stepBack")==0) {
 		[mMovieView stepBack: nil];
-		return errNone;		
-	}		
+		return errNone;
+	}
 	if (strcmp(name, "resizeWithMagnification")==0) {
 		float mag;
 		err = slotFloatVal(slot, &mag);
@@ -1656,7 +1656,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		mBounds.width = size.width;
 		mBounds.height = size.height;
 		return errNone;
-	}	
+	}
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
@@ -1664,13 +1664,13 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setBounds(screct);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "setMovie")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
-		PyrString* pstring = slot->uos;
+		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
-		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];		
-		NSURL * url = [[NSURL alloc] initFileURLWithPath: string];		
+		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		NSURL * url = [[NSURL alloc] initFileURLWithPath: string];
 		NSMovie *movie = [[NSMovie alloc] initWithURL: url byReference: YES];
 		if(!movie) return errFailed;
 		//check for current movie:
@@ -1683,29 +1683,29 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[url release];
 		/* QT: */
 		mMovie = (Movie) [[mMovieView movie] QTMovie];
-		mTimeBase = GetMovieTimeBase (mMovie); 
+		mTimeBase = GetMovieTimeBase (mMovie);
 		mTimeRecord.base = mTimeBase;
 		GetMovieTime(mMovie, &mTimeRecord);
-		
+
 		return errNone;
 	}
 
 	if (strcmp(name, "setMuted")==0) {
 		if(IsTrue(slot))[mMovieView setMuted: YES];
 		else [mMovieView setMuted: NO];
-		return errNone;		
+		return errNone;
 	}
-	
+
 	if (strcmp(name, "setEditable")==0) {
 		if(IsTrue(slot))[mMovieView setEditable: YES];
 		else [mMovieView setEditable: NO];
-		return errNone;		
+		return errNone;
 	}
 
 	if (strcmp(name, "setPlaysSelectionOnly")==0) {
 		if(IsTrue(slot))[mMovieView setPlaysSelectionOnly: YES];
 		else [mMovieView setPlaysSelectionOnly: NO];
-		return errNone;		
+		return errNone;
 	}
 
 	if (strcmp(name, "setRate")==0) {
@@ -1713,14 +1713,14 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotFloatVal(slot, &rate);
 		if(err) return err;
 		[mMovieView setRate:rate];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "setVolume")==0) {
 		float vol;
 		err = slotFloatVal(slot, &vol);
 		if(err) return err;
 		[mMovieView setVolume:vol];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "setLoopMode")==0) {
 		int mode;
@@ -1731,55 +1731,55 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 				case 1: [mMovieView setLoopMode:NSQTMovieLoopingPlayback]; break;
 				case 2: [mMovieView setLoopMode:NSQTMovieNormalPlayback]; break;
 		}
-		return errNone;		
+		return errNone;
 	}
-	
+
 	if (strcmp(name, "gotoEnd")==0) {
 		[mMovieView gotoEnd: NULL];
-		return errNone;		
+		return errNone;
 	}
 
 	if (strcmp(name, "gotoBeginning")==0) {
 		[mMovieView gotoBeginning: NULL];
-		return errNone;		
-	}	
-	
+		return errNone;
+	}
+
 	if (strcmp(name, "showControllerAndAdjustSize")==0) {
 		if(!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		BOOL showC, adjust;
 		if(IsTrue(slots+0)) showC=YES;
 		else showC = NO;
 		if(IsTrue(slots+1)) adjust=YES;
 		else adjust = NO;
 		[mMovieView showController: showC adjustingSize: adjust];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "copy")==0) {
 		[mMovieView copy: NULL];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "clear")==0) {
 		[mMovieView clear: NULL];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "cut")==0) {
 		[mMovieView cut: NULL];
-		return errNone;		
+		return errNone;
 	}
 	if (strcmp(name, "paste")==0) {
 		[mMovieView paste: NULL];
-		return errNone;		
-	}					
-	
+		return errNone;
+	}
+
 	if (strcmp(name, "setCurrentTime")==0) {
 		float time;
 		err = slotFloatVal(slot, &time);
-		if(err) return err;		
+		if(err) return err;
 		SetMovieTimeValue(mMovie, (TimeValue) (time *  mTimeRecord.scale));
-		return errNone;		
+		return errNone;
 	}
-		
+
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -1792,7 +1792,7 @@ int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		//post("timescale: %d  \n",  mTimeRecord.scale);
 		time = (float) ((float)GetMovieTime(mMovie, NULL) / mTimeRecord.scale);
 		SetFloat(slot, time);
-		return errNone;		
+		return errNone;
 	}
 	return SCView::getProperty(symbol, slot);
 }
@@ -1803,7 +1803,7 @@ void SCMovieView::setVisibleFromParent()
 		[mMovieView setHidden:NO];
 	} else {
 		[mMovieView setHidden:YES];
-	}	
+	}
 	[mMovieView setNeedsDisplay:YES];
 	NSRect frame = [mMovieView frame];
 	[mMovieView setFrame: NSInsetRect(frame,1,1)];
@@ -1835,9 +1835,9 @@ SCQuartzComposerView::SCQuartzComposerView(SCContainerView *inParent, PyrObject*
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mQCView = [[QCView alloc] initWithFrame:matrect];
 	[mQCView setEventForwardingMask: NSAnyEventMask];
-	NSView *view = mTop->GetNSView();	
+	NSView *view = mTop->GetNSView();
 	[view addSubview: mQCView];
-	
+
 	setVisibleFromParent();
 }
 
@@ -1857,36 +1857,36 @@ void SCQuartzComposerView::setBounds(SCRect screct)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
-	}	
+	}
 	[mQCView setFrame: SCtoNSRect(mLayout.bounds)];
 	[mQCView setNeedsDisplay: YES];
-	
+
 }
 
 
 int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
-//		if(visible  && mParent->isVisible()) 
+//		if(visible  && mParent->isVisible())
 //		{
 //			[mQCView setHidden:NO];
 //		}
 //		else
 //		{
 //			[mQCView setHidden:YES];
-//			mTop->resetFocus(); 
+//			mTop->resetFocus();
 //		}
-		mVisible = visible; 
+		mVisible = visible;
 		setVisibleFromParent();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		int err = slotGetSCRect(slot, &screct);
@@ -1895,35 +1895,35 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setBounds(screct);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "loadCompositionFromFile")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
-		PyrString* pstring = slot->uos;
+		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
-		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];		
+		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		BOOL success = [mQCView loadCompositionFromFile: string];
 		if(!success) return errFailed;
 		[string release];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "stop")==0) {
 		[mQCView stopRendering];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "start")==0) {
 		BOOL success = [mQCView startRendering];
 		if(!success) return errFailed;
-		return errNone;	
+		return errNone;
 	}
-	
+
 	//// doesn't seem to work ; fix later
 	//	if (strcmp(name, "erase")==0) {
 	//		[mQCView erase];
-	//		return errNone;	
+	//		return errNone;
 	//	}
-	//	
+	//
 //	if (strcmp(name, "eraseColor")==0) {
 //		SCColor rgb;
 //		int err = slotColorVal(slot, &rgb);
@@ -1933,40 +1933,40 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //		//NSColor *color = [NSColor blueColor];
 //		[mQCView setEraseColor: color];
 //		[mQCView erase];
-//		return errNone;	
+//		return errNone;
 //	}
-	
+
 	if (strcmp(name, "setMaxRenderingFrameRate")==0) {
 		float rate;
 		int err = slotFloatVal(slot, &rate);
 		if (err) return err;
 		[mQCView setMaxRenderingFrameRate: rate];
-		return errNone;	
+		return errNone;
 	}
-	
+
 	if (strcmp(name, "setInputValue")==0) {
 		if(!isKindOfSlot(slot, class_array)) return errWrongType;
-		PyrSlot *slots = slot->uo->slots;
+		PyrSlot *slots = slotRawObject(slot)->slots;
 		PyrSymbol *keysymbol;
 		int err = slotSymbolVal(slots + 0, &keysymbol);
 		if (err) return err;
-		
+
 		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
 		if(![[mQCView inputKeys] containsObject: key]) {
 			[key release];
-			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			//post("There is no port with key \"%s\".\n\n", [key cString]);
 			return errFailed;
 		}
-		
+
 		id nsObject = getNSObjectForSCObject(slots + 1, &err);
 		if(!nsObject) {[key release]; return err;}
 		BOOL success = [mQCView setValue: nsObject forInputKey: key];
 		[key release];
 		if(!success) return errFailed;
-		return errNone;	
-		
+		return errNone;
+
 	}
-	
+
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -1974,30 +1974,30 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 
 	int err;
 	// find the value type and set appropriately
-	if(((scobject->utag & 0xFFFFFFF0) != 0x7FF90000)) { // it's a float
+	if(IsFloat(scobject)) { // it's a float
 		float val;
 		err = slotFloatVal(scobject, &val);
 		if (err) {returnErr = &err; return NULL;}
 		NSNumber *returnObject = [NSNumber numberWithFloat: val];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
 		return returnObject;
-	} else if((scobject->utag == tagInt)) { // it's an int
+	} else if(IsInt(scobject)) { // it's an int
 		int val;
 		err = slotIntVal(scobject, &val);
 		if (err) {returnErr = &err; return NULL;}
 		NSNumber *returnObject = [NSNumber numberWithInt: val];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-		return returnObject;	
-	} else if((scobject->utag == tagTrue)) { // it's bool true
+		return returnObject;
+	} else if(IsTrue(scobject)) { // it's bool true
 		NSNumber *returnObject = [NSNumber numberWithBool: YES];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-		return returnObject;	
-	} else if((scobject->utag == tagFalse)) { // it's bool false
+		return returnObject;
+	} else if(IsFalse(scobject)) { // it's bool false
 		NSNumber *returnObject = [NSNumber numberWithBool: NO];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
 		return returnObject;
 	} else if(isKindOfSlot(scobject, s_string->u.classobj)) { // it's a string
-		PyrString *string = scobject->uos;
+		PyrString *string = slotRawString(scobject);
 		if(string->size == 0) { err = errFailed; returnErr = &err; return NULL;}
 		NSString *returnObject =  [NSString stringWithCString: string->s length: string->size];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
@@ -2011,11 +2011,11 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 		return returnObject;
 	} else if(isKindOfSlot(scobject, s_identitydictionary->u.classobj)) { // it's a structure (dict)
 		PyrObject *array;
-		array = (scobject)->uo->slots[ivxIdentDict_array].uo;
+		array = slotRawObject(&(slotRawObject(scobject)->slots[ivxIdentDict_array]));
 		if (!isKindOf((PyrObject*)array, class_array)) { err = errFailed; returnErr = &err; return NULL;}
 		NSMutableDictionary *structure = [NSMutableDictionary dictionary];
 		int len = array->size;
-		
+
 		for(int i=0; i<len; i=i+2){
 			PyrSlot *element = array->slots+i;
 			if(!IsNil(element)) {
@@ -2034,11 +2034,11 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 		return structure;
 	} else if(isKindOfSlot(scobject, class_array)) { // it's a structure (array)
 		PyrSlot *array = scobject;
-		int len = array->uo->size;
+		int len = slotRawObject(array)->size;
 		NSMutableArray *structure = [NSMutableArray arrayWithCapacity: (unsigned)len];
 
 		for(int i =0; i<len; i++){
-			PyrSlot *element = array->uo->slots+i;
+			PyrSlot *element = slotRawObject(array)->slots+i;
 			int innerErr;
 			id innerSCObject = getNSObjectForSCObject(element, &innerErr);
 			if(!innerSCObject) { returnErr = &innerErr; return NULL;}
@@ -2047,13 +2047,13 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 
 		err = errNone;
 		returnErr = &err;
-		return structure;	
+		return structure;
 	} else if(isKindOfSlot(scobject, s_scimage->u.classobj)) { // it's an SCImage : )
-		SCImage *scimage = (SCImage *)scobject->uo->slots[0].uptr;
+		SCImage *scimage = (SCImage *)slotRawPtr(slotRawObject(scobject)->slots);
 		if(scimage) {
-			if([scimage isAccelerated]) 
+			if([scimage isAccelerated])
 				return [scimage ciimage];
-			else 
+			else
 				return [scimage nsimage];
 		}
 		else {
@@ -2077,51 +2077,51 @@ int SCQuartzComposerView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		PyrSymbol *keysymbol;
 		int err = slotSymbolVal(slot, &keysymbol);
 		if (err) return err;
-		
+
 		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
 		if(![[mQCView outputKeys] containsObject: key]) {
 			[key release];
-			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			//post("There is no port with key \"%s\".\n\n", [key cString]);
 			return errFailed;
 		}
-		
+
 		NSDictionary *outputAttributes = [[mQCView attributes] objectForKey: key];
 		NSString *type = [outputAttributes objectForKey:QCPortAttributeTypeKey];
-		
+
 		id nsObject = [mQCView valueForOutputKey: key];
 		[key release];
 		err = getSCObjectForNSObject(slot, nsObject, type);
 		if (err) return err;
 		return errNone;
-		
+
 	} else if(strcmp(name, "getInputValue")==0) {
 		PyrSymbol *keysymbol;
 		int err = slotSymbolVal(slot, &keysymbol);
 		if (err) return err;
-		
+
 		NSString *key = [[NSString alloc] initWithCString: keysymbol->name encoding: NSASCIIStringEncoding];
 		if(![[mQCView inputKeys] containsObject: key]) {
 			[key release];
-			//post("There is no port with key \"%s\".\n\n", [key cString]); 
+			//post("There is no port with key \"%s\".\n\n", [key cString]);
 			return errFailed;
 		}
-		
+
 		NSDictionary *inputAttributes = [[mQCView attributes] objectForKey: key];
 		NSString *type = [inputAttributes objectForKey:QCPortAttributeTypeKey];
-		
+
 		id nsObject = [mQCView valueForInputKey: key];
 		[key release];
 		err = getSCObjectForNSObject(slot, nsObject, type);
 		if (err) return err;
 		return errNone;
-		
+
 	} else if(strcmp(name, "getInputKeys")==0) {
 		NSArray* inputKeys = [mQCView inputKeys];
 		int size = [inputKeys count];
 		VMGlobals *g = gMainVMGlobals;
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
 		SetObject(slot, array);
-		
+
 		for (int i=0; i<size; ++i) {
 			NSString *name = [inputKeys objectAtIndex: i];
 			PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
@@ -2129,16 +2129,16 @@ int SCQuartzComposerView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 			array->size++;
 			g->gc->GCWrite(array, string);
 		}
-		
+
 		return errNone;
-		
+
 	} else if(strcmp(name, "getOutputKeys")==0) {
 		NSArray* inputKeys = [mQCView outputKeys];
 		int size = [inputKeys count];
 		VMGlobals *g = gMainVMGlobals;
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
 		SetObject(slot, array);
-		
+
 		for (int i=0; i<size; ++i) {
 			NSString *name = [inputKeys objectAtIndex: i];
 			PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
@@ -2146,14 +2146,14 @@ int SCQuartzComposerView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 			array->size++;
 			g->gc->GCWrite(array, string);
 		}
-		
+
 		return errNone;
 	}
 
 	return SCView::getProperty(symbol, slot);
 }
 
-int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type) 
+int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
 {
 	if([type isEqualToString:QCPortTypeBoolean]) {
 		SetBool(slot, [nsObject boolValue]);
@@ -2170,7 +2170,7 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		SetObject(slot, string);
 		return errNone;
 	} else if([type isEqualToString:QCPortTypeColor]) {
-		
+
 		VMGlobals *g = gMainVMGlobals;
 		PyrObject* colorObj = instantiateObject(g->gc, s_color->u.classobj, 0, false, true);
 		SCColor rgb = SCMakeColor([nsObject redComponent], [nsObject greenComponent], [nsObject blueComponent], [nsObject alphaComponent]);
@@ -2181,14 +2181,14 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 	} else if([type isEqualToString:QCPortTypeStructure]) {
 		//NSLog(@"QCPortTypeStructure");
 		//NSLog(@"class: %@", [nsObject class]);
-		
+
 		// for the moment QC seems to deal with all internal structures as NSCFDictionary
 		// but check here to be safe
 		if([nsObject isKindOfClass: [NSDictionary class]]){
 			//NSLog(@"it's a dict");
 			PyrObject *dict, *array;
 			VMGlobals *g = gMainVMGlobals;
-			
+
 			dict = instantiateObject(g->gc, class_identdict, 5, true, false);
 			array = newPyrArray(g->gc, 4, 0, false);
 			array->size = 4;
@@ -2196,17 +2196,17 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 			SetObject(dict->slots + ivxIdentDict_array, array);
 			g->gc->GCWrite(dict, array);
 			SetObject(slot, dict);
-			
+
 			NSEnumerator *enumerator = [nsObject keyEnumerator];
 			id key;
-			
+
 			while ((key = [enumerator nextObject])) {
 				//NSLog(@"key class: %@", [key class]);
 				id innerNSObject = [nsObject objectForKey: key];
 				//NSLog(@"innerNSObject: %@", innerNSObject);
 				PyrSlot innerSlot;
 				NSString *innerType;
-				
+
 				if([innerNSObject isKindOfClass: [NSNumber class]]){
 					//NSLog(@"objCType: %s", [innerNSObject objCType]);
 					if(!strcmp([innerNSObject objCType], @encode(BOOL))) {
@@ -2225,17 +2225,17 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 					//NSLog(@"Structure");
 					innerType = QCPortTypeStructure;
 				} else return errWrongType; // it's something else
-				
+
 				//NSLog(@"innerObject Class: %@", [innerNSObject class]);
 				int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType);
 				if(err) return err;
-				
+
 				PyrSlot outKey;
 				SetSymbol(&outKey, getsym([key cString]));
 				err = identDictPut(g, dict, &outKey, &innerSlot);
 				if(err) return err;
 			}
-			
+
 
 			return errNone;
 		}
@@ -2243,9 +2243,9 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 	}
 	else if([type isEqualToString:QCPortTypeImage]) { // SCImage
 		NSImage *nsimage = (NSImage*)nsObject;
-		if(!nsimage) 
+		if(!nsimage)
 			post("SCQuartzComposerView: bad return value as QCPortTypeImage");
-		
+
 		SCImage *scimage = [[SCImage alloc]initWithNSImage:nsimage];
 		if(scimage) {
 			VMGlobals *g		= gMainVMGlobals;
@@ -2263,9 +2263,9 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 			post("SCQuartzComposerView: failed NSImage to SCImage conversion !");
 		}
 	}
-	return errWrongType; // it's something else	
+	return errWrongType; // it's something else
 
-		
+
 }
 
 void SCQuartzComposerView::setVisibleFromParent()
@@ -2275,7 +2275,7 @@ void SCQuartzComposerView::setVisibleFromParent()
 		return;
 	} else {
 		[mQCView setHidden:YES];
-	}	
+	}
 	mTop->resetFocus();
 }
 
@@ -2293,9 +2293,9 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 {
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mTextField = [[SCTextFieldResponder alloc] initWithFrame:matrect];
-	NSView *view = mTop->GetNSView();	
+	NSView *view = mTop->GetNSView();
 	[view addSubview: mTextField];
-	
+
 	[mTextField setFocusRingType:NSFocusRingTypeNone];
 	//NSLog(@"SCTextField init\n");
 
@@ -2306,11 +2306,11 @@ SCTextField::SCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 
 	[mTextField setBordered:NO]; // for some reason, if we don't set this we can't have transparency
 	[mTextField setDrawsBackground:NO]; // SCView will draw for us. This also allows 0 < alpha < 1
-	
+
 	[[mTextField cell] setScrollable:YES];
-	
+
 	mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
-	
+
 	[mTextField registerForDraggedTypes: [NSArray arrayWithObjects: sSCObjType, NSStringPboardType, NSFilenamesPboardType, nil]];
 	//This is a hack, otherwise the mTextField always has focus even if makeFirstResponder: view is called...
 	[mTextField setAcceptsFirstResponder:NO];
@@ -2333,7 +2333,7 @@ void SCTextField::setBounds(SCRect screct)
 	) { // in case - prevent a refresh if the bounds are the same
 		return;
 	}
-	
+
 	//[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
 	mBounds = screct;
 	if(mParent->relativeOrigin()){
@@ -2341,7 +2341,7 @@ void SCTextField::setBounds(SCRect screct)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
 	}
@@ -2351,20 +2351,20 @@ void SCTextField::setBounds(SCRect screct)
 }
 
 int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "string")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
-		PyrString* pstring = slot->uos;
+		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		[mTextField setStringValue: string];
 		[string release];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
 		mVisible = visible;
@@ -2375,14 +2375,14 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "font")==0) {
 		NSFont *font;
 		if (IsNil(slot)){
-			
+
 			font = [NSFont controlContentFontOfSize: 0.0 ];
-			
+
 		}else{
-		
+
 			if (!(isKindOfSlot(slot, s_font->u.classobj))) return errWrongType;
-			PyrSlot *nameSlot = slot->uo->slots+0;
-			PyrSlot *sizeSlot = slot->uo->slots+1;
+			PyrSlot *nameSlot = slotRawObject(slot)->slots+0;
+			PyrSlot *sizeSlot = slotRawObject(slot)->slots+1;
 			float size;
 			if (IsNil(sizeSlot)){
 				size = [[mTextField font] pointSize];
@@ -2391,29 +2391,29 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 				if (err) return err;
 			}
 
-			PyrString *pstring = nameSlot->uos;
+			PyrString *pstring = slotRawString(nameSlot);
 			NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
 			if (!fontName) return errFailed;
 			font = [NSFont fontWithName: fontName size: size];
 			if (!font) return errFailed;
 		}
-		
+
 		[mTextField setFont: font];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "stringColor")==0) {
 		err = slotColorVal(slot, &mStringColor);
 		if (err) return err;
 		NSColor *color = [NSColor colorWithCalibratedRed: mStringColor.red
-                            green: mStringColor.green 
-                            blue: mStringColor.blue 
+                            green: mStringColor.green
+                            blue: mStringColor.blue
                             alpha: mStringColor.alpha];
 		[mTextField setTextColor: color];
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
@@ -2426,11 +2426,11 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		int align;
 		if (IsSym(slot)) {
 			[[mTextField window] endEditingFor:mTextField];
-			if (slot->us->name[0] == 'l')      [mTextField setAlignment: NSLeftTextAlignment];
-			else if (slot->us->name[0] == 'r') [mTextField setAlignment: NSRightTextAlignment];
-			else if (slot->us->name[0] == 'c') [mTextField setAlignment: NSCenterTextAlignment];
+			if (slotRawSymbol(slot)->name[0] == 'l')      [mTextField setAlignment: NSLeftTextAlignment];
+			else if (slotRawSymbol(slot)->name[0] == 'r') [mTextField setAlignment: NSRightTextAlignment];
+			else if (slotRawSymbol(slot)->name[0] == 'c') [mTextField setAlignment: NSCenterTextAlignment];
 			else return errFailed;
-			
+
 			//[mTextField display];
 		}/* else {
 			err = slotIntVal(slot, &align);
@@ -2440,7 +2440,7 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		refresh();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "enabled")==0) {
 		bool enabled = IsTrue(slot);
 		if (mEnabled != enabled) {
@@ -2451,7 +2451,7 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
 	}
-	
+
 	//return SCStaticText::setProperty(symbol, slot);
 	return SCView::setProperty(symbol, slot);
 }
@@ -2486,7 +2486,7 @@ void SCTextField::setVisibleFromParent()
 		[mTextField setHidden:NO];
 	} else {
 		[mTextField setHidden:YES];
-	}	
+	}
 	[mTextField setNeedsDisplay:YES];
 	NSRect frame = [mTextField frame];
 	[mTextField setFrame: NSInsetRect(frame,1,1)];
@@ -2500,8 +2500,8 @@ void SCTextField::makeFocus(bool focus)
     if (focus) {
 		if (canFocus() && !isFocus()) {
 			[mTextField setAcceptsFirstResponder:YES];
-			
-			// trick focus ring into drawing 
+
+			// trick focus ring into drawing
 			SEL sel = @selector(setNeedsDisplay:);
 			NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
 			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
@@ -2509,7 +2509,7 @@ void SCTextField::makeFocus(bool focus)
 			[anInvocation setTarget: [mTextField superview]];
 			[anInvocation setSelector: sel];
 			BOOL flag = YES;
-			[anInvocation setArgument: &flag atIndex: 2];       
+			[anInvocation setArgument: &flag atIndex: 2];
 			[scvm defer: anInvocation];
         }
     } else {
@@ -2562,13 +2562,13 @@ NSDragOperation SCTextField::draggingEntered()
 	bool flag = canReceiveDrag();
 	mTop->setDragView(flag ? this : 0);
 	[mTextField displayIfNeeded];
-	return flag ? NSDragOperationEvery : NSDragOperationNone;	
+	return flag ? NSDragOperationEvery : NSDragOperationNone;
 }
 
 extern PyrSymbol* s_receiveDrag;
 
 BOOL SCTextField::performDrag()
-{	
+{
         bool flag = canReceiveDrag();
         if (flag) {
             mTop->setDragView(this);
@@ -2585,35 +2585,35 @@ void SCTextField::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
-    } 
+    }
 }
 
 extern PyrSymbol *s_beginDrag;
 
 void SCTextField::beginDrag(SCPoint where)
 {
-    sendMessage(s_beginDrag, 0, 0, 0);
-    
-    PyrSlot slot;
-    PyrSlot stringSlot;
+	sendMessage(s_beginDrag, 0, 0, 0);
+
+	PyrSlot slot;
+	PyrSlot stringSlot;
 	NSString *string = 0;
 	NSString *label = 0;
-    pthread_mutex_lock (&gLangMutex);
-    if (mObj) {
-        VMGlobals *g = gMainVMGlobals;
-        int classVarIndex = getsym("SCView")->u.classobj->classVarIndex.ui;
-        slotCopy(&slot, &g->classvars->slots[classVarIndex]);
-        slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
+	pthread_mutex_lock (&gLangMutex);
+	if (mObj) {
+		VMGlobals *g = gMainVMGlobals;
+		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
+		slotCopy(&slot, &g->classvars->slots[classVarIndex]);
+		slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
-			string = [NSString stringWithCString: stringSlot.uos->s length: stringSlot.uos->size];
+			string = [NSString stringWithCString: slotRawString(&stringSlot)->s length: slotRawString(&stringSlot)->size];
 		}
 		if(mDragLabel) label = mDragLabel;
-    }
-    pthread_mutex_unlock (&gLangMutex);
-    
-    //mTop->beginDragCallback(where, &slot, string, label);
+	}
+	pthread_mutex_unlock (&gLangMutex);
+
+	//mTop->beginDragCallback(where, &slot, string, label);
 	NSPoint point = NSMakePoint(where.x, where.y);
-    [mTextField beginDragFrom: point of: &slot string: string label: label];
+	[mTextField beginDragFrom: point of: &slot string: string label: label];
 }
 
 ////////////////////
@@ -2634,10 +2634,10 @@ SCNumberBox2::~SCNumberBox2()
 }
 
 int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "value")==0) {
 		double value;
 		err = slotDoubleVal(slot, &value);
@@ -2645,7 +2645,7 @@ int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[mTextField setDoubleValue:value];
 		return errNone;
 	}
-	
+
 //	if (strcmp(name, "clipLo")==0) {
 //		double value;
 //		err = slotDoubleVal(slot, &value);
@@ -2653,7 +2653,7 @@ int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //		[[mTextField formatter] setMinimum:[NSNumber numberWithDouble:value]];
 //		return errNone;
 //	}
-//	
+//
 //	if (strcmp(name, "clipHi")==0) {
 //		double value;
 //		err = slotDoubleVal(slot, &value);
@@ -2661,14 +2661,14 @@ int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //		[[mTextField formatter] setMaximum:[NSNumber numberWithDouble:value]];
 //		return errNone;
 //	}
-	
+
 	return SCTextField::setProperty(symbol, slot);
 }
 
 int SCNumberBox2::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "value")==0) {
 		double val = [mTextField doubleValue];
         SetFloat(slot, val);
@@ -2681,7 +2681,7 @@ int SCNumberBox2::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 void SCNumberBox2::keyDown(int character, int modifiers, unsigned short keycode)
 {
 	// test for arrows enter and return
-	if([mTextField editingInactive] && (character == 63232 || character == 63233 || character == 63234 || character == 63235 || character == 3 || character == 13)){ 
+	if([mTextField editingInactive] && (character == 63232 || character == 63233 || character == 63234 || character == 63235 || character == 3 || character == 13)){
 		SCView::keyDown(character, modifiers, keycode);
 	} else {
 		SCTextField::keyDown(character, modifiers, keycode);
@@ -2699,9 +2699,9 @@ SCLevelIndicator::SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, 
 {
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mLevelIndicator = [[SCNSLevelIndicator alloc] initWithFrame:matrect];
-	NSView *view = mTop->GetNSView();	
+	NSView *view = mTop->GetNSView();
 	[view addSubview: mLevelIndicator];
-	
+
 	[[mLevelIndicator cell] setLevelIndicatorStyle:NSContinuousCapacityLevelIndicatorStyle];
 	[mLevelIndicator setMinValue:0.0];
 	[mLevelIndicator setMaxValue:1.0];
@@ -2713,14 +2713,14 @@ SCLevelIndicator::SCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, 
 		[mLevelIndicator setNeedsDisplay: YES];
 		mIsVertical = true;
 	} else mIsVertical = false;
-	
+
 	mWarning = 0.0;
 	mCritical = 0.0;
 	mTickHeight = 0.f;
-	
+
 	mImage = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
 	setImage();
-	
+
 	setVisibleFromParent();
 }
 
@@ -2739,11 +2739,11 @@ void SCLevelIndicator::setBounds(SCRect screct)
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
-		mLayout.bounds.height = mBounds.height;	
+		mLayout.bounds.height = mBounds.height;
 	} else {
 		mLayout.bounds = mBounds;
 	}
-	
+
 	if(mBounds.height > mBounds.width) {
 		[mLevelIndicator setBoundsRotation: 90.0]; // vertical
 		mIsVertical = true;
@@ -2753,14 +2753,14 @@ void SCLevelIndicator::setBounds(SCRect screct)
 		mIsVertical = false;
 		[mLevelIndicator setIsVertical:NO];
 	}
-	
-	if([mLevelIndicator numberOfTickMarks] > 0) 
+
+	if([mLevelIndicator numberOfTickMarks] > 0)
 		mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
-	else 
+	else
 		mTickHeight = 0.f;
-	
+
 	[mLevelIndicator setPeakSubtract:mTickHeight];
-	
+
 	setImage();
 	[mLevelIndicator setFrame: SCtoNSRect(mLayout.bounds)];
 	[mLevelIndicator setNeedsDisplay: YES];
@@ -2769,11 +2769,11 @@ void SCLevelIndicator::setBounds(SCRect screct)
 void SCLevelIndicator::setImage()
 {
 	NSImage* newImage = nil;
-	
+
 	NSSize imageSize = [mImage size];
 	float width = imageSize.width;
 	float height = imageSize.height;
-	
+
 	SCRect bounds = getDrawBounds();
 	NSSize targetSize;
 	if(mIsVertical) {
@@ -2781,18 +2781,18 @@ void SCLevelIndicator::setImage()
 	} else {
 		targetSize = NSMakeSize(bounds.width / mNumSteps, bounds.height - mTickHeight);
 	}
-	
+
 	float targetWidth = targetSize.width;
 	float targetHeight = targetSize.height;
-	
-	float scaleFactor = 0.0; 
+
+	float scaleFactor = 0.0;
 	float scaledWidth = targetWidth;
 	float scaledHeight = targetHeight;
-	
+
 	NSPoint newPoint = NSMakePoint(0,0);
-	
+
 	if ( NSEqualSizes( imageSize, targetSize ) == NO )
-	{ 
+	{
 		float widthFactor, heightFactor;
 		if(mIsVertical){
 			widthFactor = targetHeight / width;
@@ -2801,15 +2801,15 @@ void SCLevelIndicator::setImage()
 			widthFactor = targetWidth / width;
 			heightFactor = targetHeight / height;
 		}
-		
+
 		if ( widthFactor < heightFactor)
 			scaleFactor = widthFactor;
 		else
 			scaleFactor = heightFactor;
-		
+
 		scaledWidth = width * scaleFactor;
 		scaledHeight = height * scaleFactor;
-		
+
 		if(mIsVertical) {
 			if ( widthFactor < heightFactor)
 				newPoint.y = (targetWidth - scaledHeight) * 0.5;
@@ -2822,38 +2822,38 @@ void SCLevelIndicator::setImage()
 				newPoint.x = (targetWidth - scaledWidth) * 0.5;
 		}
 	}
-	
+
 	//NSLog(@"targetSize: %@", NSStringFromSize(targetSize));
 
-	// create a new image to draw into 
-	newImage = [[NSImage alloc] initWithSize:targetSize]; 
-	
+	// create a new image to draw into
+	newImage = [[NSImage alloc] initWithSize:targetSize];
+
 	[newImage lockFocus];
-	
+
 	NSRect newRect;
 	newRect.origin = newPoint;
 	newRect.size.width = scaledWidth;
 	newRect.size.height = scaledHeight;
-	
+
 	//NSLog(@"newPoint: %@", NSStringFromRect(newRect));
-	
+
 	if(mIsVertical) {
-		
+
 		NSAffineTransform *rotateTF = [NSAffineTransform transform];
 		NSPoint centerPoint = NSMakePoint(targetSize.width / 2, targetSize.height / 2);
-		
+
 		[rotateTF translateXBy: centerPoint.x yBy: centerPoint.y];
 		[rotateTF rotateByDegrees: - 90];
 		[rotateTF translateXBy: -centerPoint.y yBy: -centerPoint.x];
 		[rotateTF concat];
 	}
-	
+
 	[mImage drawInRect: newRect fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1.0];
-	
+
 	[newImage unlockFocus];
 
 	[[mLevelIndicator cell] setImage:newImage];
-	
+
 	[newImage autorelease];
 }
 void SCLevelIndicator::resetParams()
@@ -2871,10 +2871,10 @@ void SCLevelIndicator::resetParams()
 }
 
 int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{	
+{
 	int err;
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "value")==0) {
 		double value;
 		err = slotDoubleVal(slot, &value);
@@ -2883,7 +2883,7 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[mLevelIndicator setDoubleValue:value];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "warning")==0) {
 		double value;
 		err = slotDoubleVal(slot, &value);
@@ -2901,14 +2901,14 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		resetParams();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "visible")==0) {
 		bool visible = IsTrue(slot);
 		mVisible = visible;
 		setVisibleFromParent();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
@@ -2916,7 +2916,7 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setBounds(screct);
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "enabled")==0) {
 		bool enabled = IsTrue(slot);
 		if (mEnabled != enabled) {
@@ -2927,7 +2927,7 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "style")==0) {
 		int style;
 		err = slotIntVal(slot, &style);
@@ -2949,7 +2949,7 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		resetParams();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "numSteps")==0) {
 		int numSteps;
 		err = slotIntVal(slot, &numSteps);
@@ -2959,38 +2959,38 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		setImage();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "numTicks")==0) {
 		int numTicks;
 		err = slotIntVal(slot, &numTicks);
 		if (err) return err;
 		[mLevelIndicator setNumberOfTickMarks:numTicks];
-		if(numTicks > 0) 
+		if(numTicks > 0)
 			mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
-		else 
+		else
 			mTickHeight = 0.f;
 		[mLevelIndicator setPeakSubtract:mTickHeight];
 		setImage();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "numMajorTicks")==0) {
 		int numTicks;
 		err = slotIntVal(slot, &numTicks);
 		if (err) return err;
 		[mLevelIndicator setNumberOfMajorTickMarks:numTicks];
-		if([mLevelIndicator numberOfTickMarks] > 0) 
+		if([mLevelIndicator numberOfTickMarks] > 0)
 			mTickHeight = [mLevelIndicator rectOfTickMarkAtIndex:0].size.height; // 0 will be major if there are any
-		else 
+		else
 			mTickHeight = 0.f;
 		[mLevelIndicator setPeakSubtract:mTickHeight];
 		setImage();
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "image")==0) {
 		if(isKindOfSlot(slot, s_scimage->u.classobj)) { // it's an SCImage : )
-			SCImage *scimage = (SCImage *)slot->uo->slots[0].uptr;
+			SCImage *scimage = (SCImage *)slotRawPtr(slotRawObject(slot)->slots);
 			if(scimage) {
 				NSImage *oldImage = mImage;
 				mImage = [[scimage nsimage] retain];
@@ -3006,13 +3006,13 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			return errWrongType;
 		}
 	}
-	
+
 	if (strcmp(name, "drawsPeak")==0) {
 		bool drawsPeak = IsTrue(slot);
 		[mLevelIndicator setDrawPeak:drawsPeak];
 		return errNone;
 	}
-	
+
 	if (strcmp(name, "peakLevel")==0) {
 		float value;
 		err = slotFloatVal(slot, &value);
@@ -3020,7 +3020,7 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		[mLevelIndicator setPeakLevel:sc_clip(value, 0.f, 1.f)];
 		return errNone;
 	}
-	
+
 	return SCView::setProperty(symbol, slot);
 }
 
@@ -3028,13 +3028,13 @@ int SCLevelIndicator::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCLevelIndicator::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
-	
+
 	if (strcmp(name, "value")==0) {
 		double value = [mLevelIndicator doubleValue];
 		SetFloat(slot, value);
 		return errNone;
 	}
-	
+
 	return SCView::getProperty(symbol, slot);
 }
 
@@ -3045,7 +3045,7 @@ void SCLevelIndicator::setVisibleFromParent()
 		[mLevelIndicator setHidden:NO];
 	} else {
 		[mLevelIndicator setHidden:YES];
-	}	
+	}
 	[mLevelIndicator setNeedsDisplay:YES];
 	mTop->resetFocus();
 	refresh();

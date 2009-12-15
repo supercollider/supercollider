@@ -1043,7 +1043,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	// rcvr, uid, packet
 	PyrSlot* args = g->sp - 2;
 
-	err = slotIntVal(args->uo->slots + g_ivx_MIDIOut_port, &outputIndex);
+	err = slotIntVal(slotRawObject(args)->slots + g_ivx_MIDIOut_port, &outputIndex);
 	if (err) return err;
 
     err = slotIntVal(args+1, &uid);
@@ -1052,7 +1052,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	if( !isKindOfSlot(args+2, s_int8array->u.classobj) )
 		return errWrongType;
 
-    packet = args[2].uob;
+    packet = slotRawInt8Array(&args[2]);
 
 	return sendMIDISysex(outputIndex, uid, packet->size, packet->b);
 }

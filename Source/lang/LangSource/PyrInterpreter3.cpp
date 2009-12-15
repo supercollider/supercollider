@@ -178,13 +178,13 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	// fill class vars from prototypes:
 	classobj = gClassList;
 	while (classobj) {
-		if (classobj->cprototype.uo) {
-			numClassVars = classobj->cprototype.uo->size;
+		if (slotRawObject(&classobj->cprototype)) {
+			numClassVars = slotRawObject(&classobj->cprototype)->size;
 			if (numClassVars > 0) {
-				memcpy(g->classvars->slots + classobj->classVarIndex.ui, classobj->cprototype.uo->slots, numClassVars * sizeof(PyrSlot));
+				memcpy(g->classvars->slots + slotRawInt(&classobj->classVarIndex), slotRawObject(&classobj->cprototype)->slots, numClassVars * sizeof(PyrSlot));
 			}
 		}
-		classobj = classobj->nextclass.uoc;
+		classobj = slotRawClass(&classobj->nextclass);
 	}
 
 	class_thread = getsym("Thread")->u.classobj;
@@ -214,9 +214,9 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	PyrMethod *meth;
 
 	contextsym = getsym("functionCompileContext");
-	index = class_interpreter->classIndex.ui + contextsym->u.index;
+	index = slotRawInt(&class_interpreter->classIndex) + contextsym->u.index;
 	meth = gRowTable[index];
-	if (!meth || meth->name.us != contextsym) {
+	if (!meth || slotRawSymbol(&meth->name) != contextsym) {
 		error("compile context method 'functionCompileContext' not found.\n");
 		//SetNil(&proc->interpreter);
 	} else {
@@ -226,7 +226,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 
 		interpreter = (PyrInterpreter*)instantiateObject(gc, class_interpreter, 0, true, false);
 		SetObject(&proc->interpreter, interpreter);
-		proto = meth->prototypeFrame.uo;
+		proto = slotRawObject(&meth->prototypeFrame);
 
 		methraw = METHRAW(meth);
 		frame = (PyrFrame*)gc->New(methraw->frameSize, 0, obj_slot, false);
@@ -333,7 +333,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	g->allocPool = inPool;
 	g->gc = (PyrGC*)g->allocPool->Alloc(sizeof(PyrGC));
 	new (g->gc) PyrGC(g, g->allocPool, class_main, poolSize);
-	g->thread = g->process->mainThread.uot;
+	g->thread = slotRawThread(&g->process->mainThread);
 	SetObject(&g->receiver, g->process);
 
 	// these will be set up when the run method is called
@@ -343,7 +343,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	g->ip = NULL;
 
 	// initialize process random number generator
-	g->rgen = (RGen*)(g->thread->randData.uo->slots);
+	g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
 
 	//initUGenFuncs();
 	signal_init_globs();
@@ -370,9 +370,9 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 
 bool initAwakeMessage(VMGlobals *g)
 {
-	//post("initAwakeMessage %08X %08X\n", g->thread, g->process->mainThread.uot);
+	//post("initAwakeMessage %08X %08X\n", g->thread, slotRawThread(&g->process->mainThread));
 	slotCopy(&g->process->curThread, &g->process->mainThread); //??
-	g->thread = g->process->mainThread.uot; //??
+	g->thread = slotRawThread(&g->process->mainThread); //??
 
 	// these will be set up when the run method is called
 	g->method = NULL;
@@ -399,7 +399,7 @@ bool initAwakeMessage(VMGlobals *g)
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 	slotCopy(&g->process->curThread, &g->process->mainThread);
-	g->thread = g->process->mainThread.uot;
+	g->thread = slotRawThread(&g->process->mainThread);
 
 	// these will be set up when the run method is called
 #if TAILCALLOPTIMIZE
@@ -545,7 +545,7 @@ void Interpret(VMGlobals *g)
 	prevop = op1;
 #endif
 	//printf("op1 %d\n", op1);
-	//postfl("sp %08X   frame %08X  caller %08X  ip %08X\n", sp, g->frame, g->frame->caller.uof, g->frame->caller.uof->ip.ui);
+	//postfl("sp %08X   frame %08X  caller %08X  ip %08X\n", sp, g->frame, g->frame->caller.uof, slotRawInt(&g->frame->caller.uof->ip));
 	//postfl("sp %08X   frame %08X   diff %d    caller %08X\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
 #if DEBUGINTERPRETER
 	if (gTraceInterpreter) {
@@ -560,7 +560,7 @@ void Interpret(VMGlobals *g)
 			sp = g->sp; ip = g->ip;
 		postfl("[%3d] %20s-%-16s  ",
 			(sp - g->gc->Stack()->slots) + 1,
-			g->method->ownerclass.uoc->name.us->name, g->method->name.us->name);
+			g->method->ownerclass.uoc->name.us->name, g->slotRawSymbol(&method->name)->name);
 		dumpOneByteCode(g->block, NULL, ip);
 	}
 #endif
@@ -572,29 +572,29 @@ void Interpret(VMGlobals *g)
 #endif
 #if METHODMETER
 	if (gTraceInterpreter) {
-		g->method->byteMeter.ui++;
+		slotRawInt(&g->method->byteMeter)++;
 	}
 #endif
 	switch (op1) {
 		case 0 : //	push class
 			op2 = ip[1]; ++ip; // get literal index
-			classobj = g->block->selectors.uo->slots[op2].us->u.classobj;
+			classobj = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->u.classobj;
 			if (classobj) {
 				++sp; SetObject(sp, classobj);
 			} else {
-				postfl("Execution warning: Class '%s' not found\n", g->block->selectors.uo->slots[op2].us->name);
+				postfl("Execution warning: Class '%s' not found\n", slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->name);
 				slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]);
 			}
 			break;
 		case 1 : // opExtended, opPushInstVar
 			op2 = ip[1]; ++ip; // get inst var index
-			slotCopy(++sp, &g->receiver.uo->slots[op2]);
+			slotCopy(++sp, &slotRawObject(&g->receiver)->slots[op2]);
 			break;
 		case 2 : // opExtended, opPushTempVar
 			op2 = ip[1]; // get temp var level
 			op3 = ip[2]; // get temp var index
 			ip += 2;
-			for (tframe = g->frame; --op2; tframe = tframe->context.uof) { /* noop */ }
+			for (tframe = g->frame; --op2; tframe = slotRawFrame(&tframe->context)) { /* noop */ }
 			slotCopy(++sp, &tframe->vars[op3]);
 			break;
 		case 3 : // opExtended, opPushTempZeroVar
@@ -604,8 +604,8 @@ void Interpret(VMGlobals *g)
 		case 4 : // opExtended, opPushLiteral
 			op2 = ip[1]; ++ip; // get literal index
 			// push a block as a closure if it is one
-			slot = g->block->selectors.uo->slots + op2;
-			if (IsObj(slot) && slot->uo->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
+			slot = slotRawObject(&g->block->selectors)->slots + op2;
+			if (IsObj(slot) && slotRawObject(slot)->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
 				// push a closure
 				g->sp = sp; // gc may push the stack
 				closure = (PyrClosure*)g->gc->New(2*sizeof(PyrSlot), 0, obj_notindexed, true);
@@ -613,8 +613,8 @@ void Interpret(VMGlobals *g)
 				closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 				closure->size = 2;
 				slotCopy(&closure->block, slot);
-				if (IsNil(&slot->uoblk->contextDef)) {
-					slotCopy(&closure->context, &g->process->interpreter.uoi->context);
+				if (IsNil(&slotRawBlock(slot)->contextDef)) {
+					slotCopy(&closure->context, &slotRawInterpreter(&g->process->interpreter)->context);
 				} else {
 					SetObject(&closure->context, g->frame);
 				}
@@ -640,7 +640,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 7 : // opExtended, opStoreInstVar
 			op2 = ip[1]; ++ip; // get inst var index
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + op2;
@@ -652,7 +652,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; // get temp var level
 			op3 = ip[2]; // get temp var index
 			ip += 2;
-			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
+			for (tframe = g->frame; op2--; tframe = slotRawFrame(&tframe->context)) { /* noop */ }
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp);
 			g->gc->GCWrite(tframe, slot);
@@ -669,7 +669,7 @@ void Interpret(VMGlobals *g)
 			numKeyArgsPushed = ip[2]; // get num keyword args
 			op3 = ip[3]; // get selector index
 			ip += 3;
-			selector = g->block->selectors.uo->slots[op3].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op3]);
 
 			slot = sp - numArgsPushed + 1;
 
@@ -681,10 +681,10 @@ void Interpret(VMGlobals *g)
 			numKeyArgsPushed = ip[2]; // get num keyword args
 			op3 = ip[3]; // get selector index
 			ip += 3;
-			selector = g->block->selectors.uo->slots[op3].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op3]);
 
 			slot = g->sp - numArgsPushed + 1;
-			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+			classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 
 			if (numKeyArgsPushed) goto key_msg_lookup;
 			else goto msg_lookup;
@@ -737,7 +737,7 @@ void Interpret(VMGlobals *g)
 					closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
 					closure->size = 2;
 					SetObject(&closure->block, g->block);
-					SetObject(&closure->context, g->frame->context.uof);
+					SetObject(&closure->context, slotRawFrame(&g->frame->context));
 					++sp; SetObject(sp, closure);
 					break;
 				default :
@@ -745,22 +745,22 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		// opPushInstVar, 0..15
-		case 16 : slotCopy(++sp, &g->receiver.uo->slots[ 0]); break;
-		case 17 : slotCopy(++sp, &g->receiver.uo->slots[ 1]); break;
-		case 18 : slotCopy(++sp, &g->receiver.uo->slots[ 2]); break;
-		case 19 : slotCopy(++sp, &g->receiver.uo->slots[ 3]); break;
-		case 20 : slotCopy(++sp, &g->receiver.uo->slots[ 4]); break;
-		case 21 : slotCopy(++sp, &g->receiver.uo->slots[ 5]); break;
-		case 22 : slotCopy(++sp, &g->receiver.uo->slots[ 6]); break;
-		case 23 : slotCopy(++sp, &g->receiver.uo->slots[ 7]); break;
-		case 24 : slotCopy(++sp, &g->receiver.uo->slots[ 8]); break;
-		case 25 : slotCopy(++sp, &g->receiver.uo->slots[ 9]); break;
-		case 26 : slotCopy(++sp, &g->receiver.uo->slots[10]); break;
-		case 27 : slotCopy(++sp, &g->receiver.uo->slots[11]); break;
-		case 28 : slotCopy(++sp, &g->receiver.uo->slots[12]); break;
-		case 29 : slotCopy(++sp, &g->receiver.uo->slots[13]); break;
-		case 30 : slotCopy(++sp, &g->receiver.uo->slots[14]); break;
-		case 31 : slotCopy(++sp, &g->receiver.uo->slots[15]); break;
+		case 16 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 0]); break;
+		case 17 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 1]); break;
+		case 18 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 2]); break;
+		case 19 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 3]); break;
+		case 20 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 4]); break;
+		case 21 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 5]); break;
+		case 22 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 6]); break;
+		case 23 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 7]); break;
+		case 24 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 8]); break;
+		case 25 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[ 9]); break;
+		case 26 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[10]); break;
+		case 27 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[11]); break;
+		case 28 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[12]); break;
+		case 29 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[13]); break;
+		case 30 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[14]); break;
+		case 31 : slotCopy(++sp, &slotRawObject(&g->receiver)->slots[15]); break;
 
 		case 32 : // JumpIfTrue
 			// cannot compare with o_false because it is NaN
@@ -780,38 +780,38 @@ void Interpret(VMGlobals *g)
 			break;
 
 		// opPushTempVar, levels 1..7
-		case 33 : slotCopy(++sp, &g->frame->context.uof->vars[ip[1]]); ++ip; break;
-		case 34 : slotCopy(++sp, &g->frame->context.uof->context.uof->vars[ip[1]]); ++ip; break;
-		case 35 : slotCopy(++sp, &g->frame->context.uof->context.uof->context.uof->vars[ip[1]]); ++ip; break;
-		case 36 : slotCopy(++sp, &g->frame->context.uof->context.uof->context.uof->
-					context.uof->vars[ip[1]]); ++ip; break;
-		case 37 : slotCopy(++sp, &g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->vars[ip[1]]); ++ip; break;
-		case 38 : slotCopy(++sp, &g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->vars[ip[1]]); ++ip; break;
-		case 39 : slotCopy(++sp, &g->frame->context.uof->context.uof->context.uof->
-					context.uof->context.uof->context.uof->context.uof->vars[ip[1]]); ++ip; break;
+		case 33 : slotCopy(++sp, &slotRawFrame(&g->frame->context)->vars[ip[1]]); ++ip; break;
+		case 34 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&g->frame->context)->context)->vars[ip[1]]); ++ip; break;
+		case 35 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->vars[ip[1]]); ++ip; break;
+		case 36 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->
+					context)->vars[ip[1]]); ++ip; break;
+		case 37 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->
+					context)->context)->vars[ip[1]]); ++ip; break;
+		case 38 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->
+					context)->context)->context)->vars[ip[1]]); ++ip; break;
+		case 39 : slotCopy(++sp, &slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->
+					context)->context)->context)->context)->vars[ip[1]]); ++ip; break;
 
 		// push literal constants.
 		case 40 :
 			ival = ip[1];
 			ip+=1;
-			slotCopy(++sp, &g->block->constants.uo->slots[ival]);
+			slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
 			break;
 		case 41 :
 			ival = (ip[1] << 8) | ip[2];
 			ip+=2;
-			slotCopy(++sp, &g->block->constants.uo->slots[ival]);
+			slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
 			break;
 		case 42 :
 			ival = (ip[1] << 16) | (ip[2] << 8) | ip[3];
 			ip+=3;
-			slotCopy(++sp, &g->block->constants.uo->slots[ival]);
+			slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
 			break;
 		case 43 :
 			ival = (ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4];
 			ip+=4;
-			slotCopy(++sp, &g->block->constants.uo->slots[ival]);
+			slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
 			break;
 
 		// push integers.
@@ -856,22 +856,22 @@ void Interpret(VMGlobals *g)
 		case 63 : slotCopy(++sp, &g->frame->vars[15]); break;
 
 		// case opPushLiteral
-		case 64 : slotCopy(++sp, &g->block->constants.uo->slots[ 0]); break;
-		case 65 : slotCopy(++sp, &g->block->constants.uo->slots[ 1]); break;
-		case 66 : slotCopy(++sp, &g->block->constants.uo->slots[ 2]); break;
-		case 67 : slotCopy(++sp, &g->block->constants.uo->slots[ 3]); break;
-		case 68 : slotCopy(++sp, &g->block->constants.uo->slots[ 4]); break;
-		case 69 : slotCopy(++sp, &g->block->constants.uo->slots[ 5]); break;
-		case 70 : slotCopy(++sp, &g->block->constants.uo->slots[ 6]); break;
-		case 71 : slotCopy(++sp, &g->block->constants.uo->slots[ 7]); break;
-		case 72 : slotCopy(++sp, &g->block->constants.uo->slots[ 8]); break;
-		case 73 : slotCopy(++sp, &g->block->constants.uo->slots[ 9]); break;
-		case 74 : slotCopy(++sp, &g->block->constants.uo->slots[10]); break;
-		case 75 : slotCopy(++sp, &g->block->constants.uo->slots[11]); break;
-		case 76 : slotCopy(++sp, &g->block->constants.uo->slots[12]); break;
-		case 77 : slotCopy(++sp, &g->block->constants.uo->slots[13]); break;
-		case 78 : slotCopy(++sp, &g->block->constants.uo->slots[14]); break;
-		case 79 : slotCopy(++sp, &g->block->constants.uo->slots[15]); break;
+		case 64 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 0]); break;
+		case 65 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 1]); break;
+		case 66 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 2]); break;
+		case 67 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 3]); break;
+		case 68 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 4]); break;
+		case 69 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 5]); break;
+		case 70 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 6]); break;
+		case 71 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 7]); break;
+		case 72 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 8]); break;
+		case 73 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ 9]); break;
+		case 74 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[10]); break;
+		case 75 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[11]); break;
+		case 76 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[12]); break;
+		case 77 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[13]); break;
+		case 78 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[14]); break;
+		case 79 : slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[15]); break;
 
 		//	opPushClassVar
 		case 80 :  case 81 :  case 82 :  case 83 :
@@ -887,7 +887,7 @@ void Interpret(VMGlobals *g)
 		case  96 : slotCopy(++sp, &g->receiver); break;
 		case  97 : // push one and subtract
 			if (IsInt(sp)) {
-				sp->ui--;
+				SetRaw(sp, slotRawInt(sp) - 1);
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
@@ -910,7 +910,7 @@ void Interpret(VMGlobals *g)
 		case 106 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFTwo]); break;
 		case 107 : // push one and add
 			if (IsInt(sp)) {
-				sp->ui++;
+				SetRaw(sp, slotRawInt(sp) + 1);
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
@@ -930,7 +930,7 @@ void Interpret(VMGlobals *g)
 		// opStoreInstVar, 0..15
 #if 1
 		case 112 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots;
@@ -939,7 +939,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 113 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 1;
@@ -948,7 +948,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 114 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 2;
@@ -957,7 +957,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 115 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 3;
@@ -966,7 +966,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 116 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 4;
@@ -975,7 +975,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 117 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 5;
@@ -984,7 +984,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 118 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 6;
@@ -993,7 +993,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 119 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 7;
@@ -1002,7 +1002,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 120 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 8;
@@ -1011,7 +1011,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 121 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 9;
@@ -1020,7 +1020,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 122 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 10;
@@ -1029,7 +1029,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 123 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 11;
@@ -1038,7 +1038,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 124 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 12;
@@ -1047,7 +1047,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 125 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 13;
@@ -1056,7 +1056,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 126 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 14;
@@ -1065,7 +1065,7 @@ void Interpret(VMGlobals *g)
 			}
 			break;
 		case 127 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + 15;
@@ -1078,7 +1078,7 @@ void Interpret(VMGlobals *g)
 		case 116 :  case 117 :  case 118 :  case 119 :
 		case 120 :  case 121 :  case 122 :  case 123 :
 		case 124 :  case 125 :  case 126 :  case 127 :
-			obj = g->receiver.uo;
+			obj = slotRawObject(&g->receiver);
 			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, (PyrSlot*&)sp, ip); }
 			else {
 				slot = obj->slots + (op1 & 15);
@@ -1099,7 +1099,7 @@ void Interpret(VMGlobals *g)
 
 		case 129 :
 			op3 = ip[1]; ++ip;  // get temp var index
-			tframe = g->frame->context.uof; // one level
+			tframe = slotRawFrame(&g->frame->context); // one level
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp--);
 			g->gc->GCWrite(tframe, slot);
@@ -1107,7 +1107,7 @@ void Interpret(VMGlobals *g)
 
 		case 130 :
 			op3 = ip[1]; ++ip;  // get temp var index
-			tframe = g->frame->context.uof->context.uof; // two levels
+			tframe = slotRawFrame(&slotRawFrame(&g->frame->context)->context); // two levels
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp--);
 			g->gc->GCWrite(tframe, slot);
@@ -1115,7 +1115,7 @@ void Interpret(VMGlobals *g)
 
 		case 131 :
 			op3 = ip[1]; ++ip;  // get temp var index
-			tframe = g->frame->context.uof->context.uof->context.uof; // three levels
+			tframe = slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context); // three levels
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp--);
 			g->gc->GCWrite(tframe, slot);
@@ -1123,7 +1123,7 @@ void Interpret(VMGlobals *g)
 
 		case 132 :
 			op3 = ip[1]; ++ip;  // get temp var index
-			tframe = g->frame->context.uof->context.uof->context.uof->context.uof; // four levels
+			tframe = slotRawFrame(&slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->context); // four levels
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp--);
 			g->gc->GCWrite(tframe, slot);
@@ -1132,7 +1132,7 @@ void Interpret(VMGlobals *g)
 		case 133 : case 134 : case 135 :
 			op2 = op1 & 15;
 			op3 = ip[1]; ++ip; // get temp var index
-			for (tframe = g->frame; op2--; tframe = tframe->context.uof) { /* noop */ }
+			for (tframe = g->frame; op2--; tframe = slotRawFrame(&tframe->context)) { /* noop */ }
 			slot = tframe->vars + op3;
 			slotCopy(slot, sp);
 			g->gc->GCWrite(tframe, slot);
@@ -1143,7 +1143,7 @@ void Interpret(VMGlobals *g)
 			op3 = ip[2]; // get selector
 			ip+=2;
 
-			slotCopy(++sp, &g->receiver.uo->slots[op2]);
+			slotCopy(++sp, &slotRawObject(&g->receiver)->slots[op2]);
 
 			numArgsPushed = 1;
 			selector = gSpecialSelectors[op3];
@@ -1157,7 +1157,7 @@ void Interpret(VMGlobals *g)
 			for (m=0,mmax=numArgsPushed; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ++ip; // get selector index
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp - numArgsPushed + 1;
 
 			goto class_lookup;
@@ -1168,7 +1168,7 @@ void Interpret(VMGlobals *g)
 			for (m=0,mmax=numArgsPushed-1; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ++ip; // get selector index
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp - numArgsPushed + 1;
 
 			goto class_lookup;
@@ -1201,7 +1201,7 @@ void Interpret(VMGlobals *g)
 			for (m=0,mmax=numArgsPushed-2; m<mmax; ++m) *++sp = *++pslot;
 
 			op2 = ip[1]; ++ip; // get selector index
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp - numArgsPushed + 1;
 
 			goto class_lookup;
@@ -1225,7 +1225,7 @@ void Interpret(VMGlobals *g)
 				// Integer-do : 143 0, 143 1
 				case 0 :
 					vars = g->frame->vars;
-					if (vars[2].ui < g->receiver.ui) {
+					if (slotRawInt(&vars[2]) < slotRawInt(&g->receiver)) {
 						slotCopy(++sp, &vars[1]); // push function
 						slotCopy(++sp, &vars[2]); // push i
 						slotCopy(++sp, &vars[2]); // push i
@@ -1244,17 +1244,17 @@ void Interpret(VMGlobals *g)
 				break;
 				case 1 :
 					-- sp ; // Drop
-					g->frame->vars[2].ui ++; // inc i
+					SetRaw(&g->frame->vars[2], slotRawInt(&g->frame->vars[2]) + 1); // inc i
 					ip -= 4;
 					break;
 
 				// Integer-reverseDo : 143 2, 143 3, 143 4
 				case 2 :
-					g->frame->vars[2].ui = g->receiver.ui - 1;
+					SetRaw(&g->frame->vars[2], slotRawInt(&g->receiver) - 1);
 					break;
 				case 3 :
 					vars = g->frame->vars;
-					if (vars[2].ui >= 0) {
+					if (slotRawInt(&vars[2]) >= 0) {
 						slotCopy(++sp, &vars[1]); // push function
 						slotCopy(++sp, &vars[2]); // push i
 						slotCopy(++sp, &vars[3]); // push j
@@ -1274,15 +1274,15 @@ void Interpret(VMGlobals *g)
 				case 4 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
-					vars[2].ui --; // dec i
-					vars[3].ui ++; // inc j
+					SetRaw(&vars[2], slotRawInt(&vars[2]) - 1); // dec i
+					SetRaw(&vars[3], slotRawInt(&vars[3]) + 1); // inc j
 					ip -= 4;
 					break;
 
 				// Integer-for : 143 5, 143 6, 143 16
 				case 5 :
 					vars = g->frame->vars;
-					tag = vars[1].utag;
+					tag = GetTag(&vars[1]);
 
 					if (tag != tagInt) {
 						if (IsFloat(&vars[1])) {
@@ -1300,18 +1300,18 @@ void Interpret(VMGlobals *g)
 						}
 					}
 
-					if (g->receiver.ui <= vars[1].ui) {
-						vars[5].ui = 1;
+					if (slotRawInt(&g->receiver) <= slotRawInt(&vars[1])) {
+						SetRaw(&vars[5], 1);
 					} else {
-						vars[5].ui = -1;
+						SetRaw(&vars[5], -1);
 					}
 					slotCopy(&vars[3], &g->receiver);
 
 					break;
 				case 6 :
 					vars = g->frame->vars;
-					if ((vars[5].ui > 0 && vars[3].ui <= vars[1].ui)
-							|| (vars[5].ui < 0 && vars[3].ui >= vars[1].ui))
+					if ((slotRawInt(&vars[5]) > 0 && slotRawInt(&vars[3]) <= slotRawInt(&vars[1]))
+							|| (slotRawInt(&vars[5]) < 0 && slotRawInt(&vars[3]) >= slotRawInt(&vars[1])))
 					{
 						slotCopy(++sp, &vars[2]); // push function
 						slotCopy(++sp, &vars[3]); // push i
@@ -1339,7 +1339,7 @@ void Interpret(VMGlobals *g)
 					if (IsFloat(vars+2)) {
 						SetInt(&vars[2], (int32)(vars[2].uf));
 					}
-					tag = vars[1].utag;
+					tag = GetTag(&vars[1]);
 					if ((tag != tagInt)
 							|| NotInt(&vars[2])) {
 						error("Integer-forBy : endval or stepval not an Integer.\n");
@@ -1355,8 +1355,8 @@ void Interpret(VMGlobals *g)
 					break;
 				case 8 :
 					vars = g->frame->vars;
-					if ((vars[2].ui >= 0 && vars[4].ui <= vars[1].ui)
-							|| (vars[2].ui < 0 && vars[4].ui >= vars[1].ui)) {
+					if ((slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
+							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]))) {
 						slotCopy(++sp, &vars[3]); // push function
 						slotCopy(++sp, &vars[4]); // push i
 						slotCopy(++sp, &vars[5]); // push j
@@ -1376,8 +1376,8 @@ void Interpret(VMGlobals *g)
 				case 9 :
 					--sp ; // Drop
 					vars = g->frame->vars;
-					vars[4].ui += vars[2].ui; // inc i
-					++ vars[5].ui; // inc j
+					SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
+					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
 					break;
 
@@ -1386,9 +1386,9 @@ void Interpret(VMGlobals *g)
 					// 0 this, 1 func, 2 i
 					vars = g->frame->vars;
 
-					if (vars[2].ui < g->receiver.uo->size) {
+					if (slotRawInt(&vars[2]) < slotRawObject(&g->receiver)->size) {
 						slotCopy(++sp, &vars[1]); // push function
-						getIndexedSlot(g->receiver.uo, ++sp, vars[2].ui); // push this.at(i)
+						getIndexedSlot(slotRawObject(&g->receiver), ++sp, slotRawInt(&vars[2])); // push this.at(i)
 						slotCopy(++sp, &vars[2]); // push i
 						// SendSpecialMsg value
 						numArgsPushed = 3;
@@ -1406,13 +1406,13 @@ void Interpret(VMGlobals *g)
 
 				// ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
 				case 11 :
-					g->frame->vars[2].ui = g->receiver.uo->size - 1;
+					SetRaw(&g->frame->vars[2], slotRawObject(&g->receiver)->size - 1);
 					break;
 				case 12 :
 					vars = g->frame->vars;
-					if (vars[2].ui >= 0) {
+					if (slotRawInt(&vars[2]) >= 0) {
 						slotCopy(++sp, &vars[1]); // push function
-						getIndexedSlot(g->receiver.uo, ++sp, vars[2].ui); // push this.at(i)
+						getIndexedSlot(slotRawObject(&g->receiver), ++sp, slotRawInt(&vars[2])); // push this.at(i)
 						slotCopy(++sp, &vars[3]); // push j
 						// SendSpecialMsg value
 						numArgsPushed = 3;
@@ -1431,24 +1431,24 @@ void Interpret(VMGlobals *g)
 				// Dictionary-keysValuesArrayDo
 				case 13 :
 					vars = g->frame->vars;
-					m = vars[3].ui;
-					obj = vars[1].uo;
+					m = slotRawInt(&vars[3]);
+					obj = slotRawObject(&vars[1]);
 					if ( m < obj->size ) {
 						slot = obj->slots + m;	// key
 						while (IsNil(slot)) {
 							m += 2;
 							if ( m >= obj->size ) {
-								vars[3].ui = m;
+								SetRaw(&vars[3], m);
 								goto keysValuesArrayDo_return;
 							}
 							slot = obj->slots + m;	// key
 						}
-						vars[3].ui = m;
+						SetRaw(&vars[3], m);
 						slotCopy(++sp, &vars[2]); // function
 						slotCopy(++sp, &slot[0]); // key
 						slotCopy(++sp, &slot[1]); // val
 						slotCopy(++sp, &vars[4]); // j
-						++vars[4].ui;
+						SetRaw(&vars[4], slotRawInt(&vars[4]) + 1);
 
 						// SendSpecialMsg value
 						numArgsPushed = 4;
@@ -1466,7 +1466,7 @@ void Interpret(VMGlobals *g)
 					break;
 				case 14 :
 					-- sp; // Drop
-					g->frame->vars[3].ui += 2; // inc i
+					SetRaw(&g->frame->vars[3], slotRawInt(&g->frame->vars[3]) + 2); // inc i
 					ip -= 4;
 					break;
 				case 15 :
@@ -1476,8 +1476,8 @@ void Interpret(VMGlobals *g)
 				case 16 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
-					vars[3].ui += vars[5].ui; // inc i by stepval
-					++ vars[4].ui; // inc j
+					SetRaw(&vars[3], slotRawInt(&vars[3]) + slotRawInt(&vars[5])); // inc i by stepval
+					SetRaw(&vars[4], slotRawInt(&vars[4]) + 1); // inc j
 					ip -= 4;
 					break;
 
@@ -1590,10 +1590,10 @@ void Interpret(VMGlobals *g)
 					}
 					break;
 				case 28 : // switch
-					obj = sp->uo;
+					obj = slotRawObject(sp);
 					op2 = 1 + arrayAtIdentityHashInPairs(obj, (sp-1));
 					sp-=2;
-					ip += obj->slots[op2].ui;
+					ip += slotRawInt(&obj->slots[op2]);
 					break;
 
 				// Number-forSeries : 143 29, 143 30, 143 31
@@ -1603,19 +1603,19 @@ void Interpret(VMGlobals *g)
 					if (IsInt(vars+0) && (IsInt(vars+1) || IsNil(vars+1)) && (IsInt(vars+2) || IsNil(vars+2))) {
 						if (IsNil(vars+1)) {
 							if (IsNil(vars+2)) SetInt(vars+2, 0x7FFFFFFF);
-							if (vars[0].ui < vars[2].ui) SetInt(vars+1, 1);
+							if (slotRawInt(&vars[0]) < slotRawInt(&vars[2])) SetInt(vars+1, 1);
 							else SetInt(vars+1, -1);
 						} else {
 							if (IsNil(vars+2)) {
-								if (vars[1].ui < vars[0].ui) SetInt(vars+2, 0x80000000);
+								if (slotRawInt(&vars[1]) < slotRawInt(&vars[0])) SetInt(vars+2, 0x80000000);
 								else SetInt(vars+2, 0x7FFFFFFF);
 							}
-							SetInt(vars+1, vars[1].ui - vars[0].ui);
+							SetInt(vars+1, slotRawInt(&vars[1]) - slotRawInt(&vars[0]));
 						}
 						slotCopy(&vars[4], &vars[0]);
 					} else {
 						if (IsInt(vars+0)) {
-							vars[4].uf = vars[0].ui;
+							vars[4].uf = slotRawInt(&vars[0]);
 						} else if (IsFloat(vars+0)) {
 							vars[4].uf = vars[0].uf;
 						} else {
@@ -1632,20 +1632,20 @@ void Interpret(VMGlobals *g)
 
 						if (IsNil(vars+1)) {
 							if (IsNil(vars+2)) SetFloat(vars+2, kBigBigFloat);
-							else if (IsInt(vars+2)) vars[2].uf = vars[2].ui;
+							else if (IsInt(vars+2)) vars[2].uf = slotRawInt(&vars[2]);
 							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
 
 							if (vars[4].uf < vars[2].uf) SetFloat(vars+1, 1.);
 							else SetFloat(vars+1, -1.);
 						} else {
-							if (IsInt(vars+1)) vars[1].uf = vars[1].ui;
+							if (IsInt(vars+1)) vars[1].uf = slotRawInt(&vars[1]);
 							else if (!IsFloat(vars+1)) goto bailFromNumberSeries;
 
 							if (IsNil(vars+2)) {
 								if (vars[1].uf < vars[4].uf) SetFloat(vars+2, kSmallSmallFloat);
 								else SetFloat(vars+2, kBigBigFloat);
 							}
-							else if (IsInt(vars+2)) vars[2].uf = vars[2].ui;
+							else if (IsInt(vars+2)) vars[2].uf = slotRawInt(&vars[2]);
 							else if (!IsFloat(vars+2)) goto bailFromNumberSeries;
 							SetFloat(vars+1, vars[1].uf - vars[4].uf);
 						}
@@ -1653,10 +1653,10 @@ void Interpret(VMGlobals *g)
 					break;
 				case 30 :
 					vars = g->frame->vars;
-					tag = vars[1].utag;
+					tag = GetTag(&vars[1]);
 					if (tag == tagInt) {
-						if ((vars[1].ui >= 0 && vars[4].ui <= vars[2].ui)
-								|| (vars[1].ui < 0 && vars[4].ui >= vars[2].ui)) {
+						if ((slotRawInt(&vars[1]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[2]))
+								|| (slotRawInt(&vars[1]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[2]))) {
 							slotCopy(++sp, &vars[3]); // push function
 							slotCopy(++sp, &vars[4]); // push i
 							slotCopy(++sp, &vars[5]); // push j
@@ -1696,13 +1696,13 @@ void Interpret(VMGlobals *g)
 					-- sp ; // Drop
 					vars = g->frame->vars;
 
-					tag = vars[1].utag;
+					tag = GetTag(&vars[1]);
 					if (tag == tagInt) {
-						vars[4].ui += vars[1].ui; // inc i
+						SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[1])); // inc i
 					} else {
 						vars[4].uf += vars[1].uf; // inc i
 					}
-					vars[5].ui ++; // inc j
+					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
 					break;
 
@@ -1727,7 +1727,7 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ++ip; // get selector index
 			slotCopy(++sp, &g->receiver);
 			numArgsPushed = 1;
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp;
 
 			goto class_lookup;
@@ -1739,7 +1739,7 @@ void Interpret(VMGlobals *g)
 
 			op2 = ip[1]; ++ip; // get selector index
 			numArgsPushed = op1 & 15;
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp - numArgsPushed + 1;
 
 			goto class_lookup;
@@ -1755,9 +1755,9 @@ void Interpret(VMGlobals *g)
 			op2 = ip[1]; ++ip; // get selector index
 			slotCopy(++sp, &g->receiver);
 			numArgsPushed = 1;
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp;
-			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+			classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 
 			goto msg_lookup;
 
@@ -1768,9 +1768,9 @@ void Interpret(VMGlobals *g)
 
 			op2 = ip[1]; ++ip; // get selector index
 			numArgsPushed = op1 & 15;
-			selector = g->block->selectors.uo->slots[op2].us;
+			selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2]);
 			slot = sp - numArgsPushed + 1;
-			classobj = g->method->ownerclass.uoc->superclass.us->u.classobj;
+			classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 
 			goto msg_lookup;
 
@@ -1805,7 +1805,7 @@ void Interpret(VMGlobals *g)
 				g->tailCall = 0;
 #endif
 			} else if (IsInt(&sp[0])) {
-				sp[0].ui = -sp[0].ui;
+				SetRaw(&sp[0], -slotRawInt(&sp[0]));
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
@@ -1813,12 +1813,12 @@ void Interpret(VMGlobals *g)
 			break;
 		case 209 : // opNot
 			if (IsTrue(&sp[0])) {
-				sp[0].utag = tagFalse;
+				SetTagRaw(&sp[0], tagFalse);
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
 			} else if (IsFalse(&sp[0])) {
-				sp[0].utag = tagTrue;
+				SetTagRaw(&sp[0], tagTrue);
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
@@ -1826,7 +1826,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 210 : // opIsNil
 			if (IsNil(&sp[0])) {
-				sp[0].utag = tagTrue;
+				SetTagRaw(&sp[0], tagTrue);
 			} else {
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svFalse]);
 			}
@@ -1838,7 +1838,7 @@ void Interpret(VMGlobals *g)
 			if (NotNil(&sp[0])) {
 				slotCopy(sp, (PyrSlot*)&gSpecialValues[svTrue]);
 			} else {
-				sp[0].utag = tagFalse;
+				SetTagRaw(&sp[0], tagFalse);
 			}
 #if TAILCALLOPTIMIZE
 			g->tailCall = 0;
@@ -1859,7 +1859,7 @@ void Interpret(VMGlobals *g)
 		case 224 : // add
 			if (IsInt(&sp[-1])) {
 				if (IsInt(&sp[0])) {
-					--sp; sp[0].ui += sp[1].ui;
+					--sp; SetRaw(&sp[0], slotRawInt(&sp[0]) + slotRawInt(&sp[1]));
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
@@ -1879,7 +1879,7 @@ void Interpret(VMGlobals *g)
 		case 225 : // subtract
 			if (IsInt(&sp[-1])) {
 				if (IsInt(&sp[0])) {
-					--sp; sp[0].ui -= sp[1].ui;
+					--sp; SetRaw(&sp[0], slotRawInt(&sp[0]) - slotRawInt(&sp[1]));
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
@@ -1899,7 +1899,7 @@ void Interpret(VMGlobals *g)
 		case 226 :  // multiply
 			if (IsInt(&sp[-1])) {
 				if (IsInt(&sp[0])) {
-					--sp; sp[0].ui *= sp[1].ui;
+					--sp; SetRaw(&sp[0], slotRawInt(&sp[0]) * slotRawInt(&sp[1]));
 #if TAILCALLOPTIMIZE
 					g->tailCall = 0;
 #endif
@@ -2063,10 +2063,10 @@ void Interpret(VMGlobals *g)
 
 			// message sends handled here:
 			msg_lookup:
-			index = classobj->classIndex.ui + selector->u.index;
+			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
-			if (meth->name.us != selector) {
+			if (slotRawSymbol(&meth->name) != selector) {
 				g->sp = sp; g->ip = ip;
 				doesNotUnderstand(g, selector, numArgsPushed);
 				sp = g->sp; ip = g->ip;
@@ -2092,18 +2092,18 @@ void Interpret(VMGlobals *g)
 						if (index < numArgsPushed) {
 							slotCopy(sp, &sp[index]);
 						} else {
-							slotCopy(sp, &meth->prototypeFrame.uo->slots[index]);
+							slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
 						}
 						break;
 					case methReturnInstVar : /* return inst var */
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
-						slotCopy(sp, &slot->uo->slots[index]);
+						slotCopy(sp, &slotRawObject(slot)->slots[index]);
 						break;
 					case methAssignInstVar : /* assign inst var */
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
-						obj = slot->uo;
+						obj = slotRawObject(slot);
 						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
@@ -2134,36 +2134,36 @@ void Interpret(VMGlobals *g)
 							/* push default arg values */
 							PyrSlot *qslot;
 							int m, mmax;
-							qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+							qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++sp, ++qslot);
 							numArgsPushed = methraw->numargs;
 						}
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 						goto msg_lookup;
 					case methRedirectSuper : /* send a different selector to self */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
 							PyrSlot *qslot;
 							int m, mmax;
-							qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+							qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++sp, ++qslot);
 							numArgsPushed = methraw->numargs;
 						}
-						selector = meth->selectors.us;
-						classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+						selector = slotRawSymbol(&meth->selectors);
+						classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 						goto msg_lookup;
 					case methForwardInstVar : /* forward to an instance variable */
 						if (numArgsPushed < methraw->numargs) { // not enough args pushed
 							/* push default arg values */
 							PyrSlot *qslot;
 							int m, mmax;
-							qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+							qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++sp, ++qslot);
 							numArgsPushed = methraw->numargs;
 						}
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 						index = methraw->specialIndex;
-						slotCopy(slot, &slot->uo->slots[index]);
+						slotCopy(slot, &slotRawObject(slot)->slots[index]);
 
 						classobj = classOfSlot(slot);
 
@@ -2173,11 +2173,11 @@ void Interpret(VMGlobals *g)
 							/* push default arg values */
 							PyrSlot *qslot;
 							int m, mmax;
-							qslot = meth->prototypeFrame.uo->slots + numArgsPushed - 1;
+							qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
 							for (m=0, mmax=methraw->numargs - numArgsPushed; m<mmax; ++m) slotCopy(++sp, ++qslot);
 							numArgsPushed = methraw->numargs;
 						}
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 						slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
 
 						classobj = classOfSlot(slot);
@@ -2203,10 +2203,10 @@ void Interpret(VMGlobals *g)
 
 			// message sends handled here:
 			key_msg_lookup:
-			index = classobj->classIndex.ui + selector->u.index;
+			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
-			if (meth->name.us != selector) {
+			if (slotRawSymbol(&meth->name) != selector) {
 				g->sp = sp; g->ip = ip;
 				doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 				sp = g->sp; ip = g->ip;
@@ -2236,19 +2236,19 @@ void Interpret(VMGlobals *g)
 						if (index < numArgsPushed) {
 							slotCopy(sp, &sp[index]);
 						} else {
-							slotCopy(sp, &meth->prototypeFrame.uo->slots[index]);
+							slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
 						}
 						break;
 					case methReturnInstVar : /* return inst var */
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
-						slotCopy(sp, &slot->uo->slots[index]);
+						slotCopy(sp, &slotRawObject(slot)->slots[index]);
 						break;
 					case methAssignInstVar : /* assign inst var */
 						sp -= numArgsPushed - 1;
 						numArgsPushed -= numKeyArgsPushed << 1;
 						index = methraw->specialIndex;
-						obj = slot->uo;
+						obj = slotRawObject(slot);
 						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, (PyrSlot*&)sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
@@ -2279,7 +2279,7 @@ void Interpret(VMGlobals *g)
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
 						sp = g->sp;
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 
 						goto msg_lookup;
 					case methRedirectSuper : /* send a different selector to super */
@@ -2287,9 +2287,9 @@ void Interpret(VMGlobals *g)
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
 						sp = g->sp;
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 
-						classobj = meth->ownerclass.uoc->superclass.us->u.classobj;
+						classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 
 						goto msg_lookup;
 					case methForwardInstVar : /* forward to an instance variable */
@@ -2297,9 +2297,9 @@ void Interpret(VMGlobals *g)
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
 						sp = g->sp;
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 						index = methraw->specialIndex;
-						slotCopy(slot, &slot->uo->slots[index]);
+						slotCopy(slot, &slotRawObject(slot)->slots[index]);
 
 						classobj = classOfSlot(slot);
 
@@ -2309,7 +2309,7 @@ void Interpret(VMGlobals *g)
 						numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
 						numKeyArgsPushed = 0;
 						sp = g->sp;
-						selector = meth->selectors.us;
+						selector = slotRawSymbol(&meth->selectors);
 						slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
 
 						classobj = classOfSlot(slot);
@@ -2348,8 +2348,8 @@ void DumpSimpleBackTrace(VMGlobals *g)
 	for (i=0; i<16; ++i) {
 		char str[256];
 		slotOneWord(&frame->method, str);
-		post("%s ip %d\n", str, (char*)frame->ip.ui - (char*)frame->method.uom->code.uo->slots);
-		frame = frame->caller.uof;
+		post("%s ip %d\n", str, (char*)slotRawInt(&frame->ip) - (char*)slotRawObject(&slotRawMethod(&frame->method)->code)->slots);
+		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }
@@ -2372,7 +2372,7 @@ void DumpBackTrace(VMGlobals *g)
 			return;
 		}
 		DumpFrame(frame);
-		frame = frame->caller.uof;
+		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }
@@ -2397,7 +2397,7 @@ void DumpDetailedBackTrace(VMGlobals *g)
 			return;
 		}
 		DumpDetailedFrame(frame);
-		frame = frame->caller.uof;
+		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }

@@ -161,7 +161,7 @@ void dumpheap(PyrObject *heap)
 	mintime = heap->slots[0].uf;
 	post("SCHED QUEUE (%d)\n", heap->size);
 	for (i=0; i<heap->size; i+=2) {
-		post("%3d %9.2f %08X\n", i>>1, heap->slots[i].uf, heap->slots[i+1].ui);
+		post("%3d %9.2f %08X\n", i>>1, heap->slots[i].uf, slotRawInt(&heap->slots[i+1]));
 		if (heap->slots[i].uf < mintime)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
@@ -321,7 +321,7 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 	if (!added) post("scheduler queue is full.\n");
 	else {
 		if (isKindOfSlot(inTask, class_thread)) {
-			SetFloat(&inTask->uot->nextBeat, inSeconds);
+			SetFloat(&slotRawThread(inTask)->nextBeat, inSeconds);
 		}
 		if (inQueue->slots->uf != prevTime) {
 			//post("pthread_cond_signal\n");
@@ -369,7 +369,7 @@ void schedClearUnsafe()
 	//postfl("->schedClear %d\n", gRunSched);
 	if (gRunSched) {
 		VMGlobals *g = gMainVMGlobals;
-		PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+		PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 		inQueue->size = 0;
 		pthread_cond_signal (&gSchedCond);
 		//pthread_mutex_unlock (&gLangMutex);
@@ -400,7 +400,7 @@ void* schedRunFunc(void* arg)
 
 
 	VMGlobals *g = gMainVMGlobals;
-	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 	//dumpObject(inQueue);
 
 	gRunSched = true;
@@ -441,7 +441,7 @@ void* schedRunFunc(void* arg)
 			getheap(g, inQueue, &schedtime, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
-				SetNil(&task.uot->nextBeat);
+				SetNil(&slotRawThread(&task)->nextBeat);
 			}
 
 			slotCopy((++g->sp), &task);
@@ -731,7 +731,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	if (sAll) sAll->mPrev = this;
 	sAll = this;
 
-	mQueue = mTempoClockObj->slots[0].uo;
+	mQueue = slotRawObject(&mTempoClockObj->slots[0]);
 	pthread_cond_init (&mCondition, NULL);
 
 	int err = pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
@@ -875,7 +875,7 @@ void* TempoClock::Run()
 			getheap(g, mQueue, &mBeats, &task);
 
 			if (isKindOfSlot(&task, class_thread)) {
-				SetNil(&task.uot->nextBeat);
+				SetNil(&slotRawThread(&task)->nextBeat);
 			}
 
 			slotCopy((++g->sp), &task);
@@ -933,7 +933,7 @@ void TempoClock::Add(double inBeats, PyrSlot* inTask)
 	if (!added) post("scheduler queue is full.\n");
 	else {
 		if (isKindOfSlot(inTask, class_thread)) {
-			SetFloat(&inTask->uot->nextBeat, inBeats);
+			SetFloat(&slotRawThread(inTask)->nextBeat, inBeats);
 		}
 		if (mQueue->slots->uf != prevBeats) {
 			pthread_cond_signal (&mCondition);
@@ -983,8 +983,8 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(d, &seconds);
 	if (err) seconds = elapsedTime();
 
-	TempoClock* clock = new TempoClock(g, a->uo, tempo, beats, seconds);
-	SetPtr(a->uo->slots+1, clock);
+	TempoClock* clock = new TempoClock(g, slotRawObject(a), tempo, beats, seconds);
+	SetPtr(slotRawObject(a)->slots+1, clock);
 	return errNone;
 }
 
@@ -992,10 +992,10 @@ int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) return errNone;	// not running
 
-	SetNil(a->uo->slots + 1);
+	SetNil(slotRawObject(a)->slots + 1);
 	clock->StopReq();
 
 	return errNone;
@@ -1005,7 +1005,7 @@ int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (clock) clock->Clear();
 
 	return errNone;
@@ -1015,7 +1015,7 @@ int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (clock) clock->Dump();
 
 	return errNone;
@@ -1026,7 +1026,7 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1041,7 +1041,7 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1056,7 +1056,7 @@ int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1077,7 +1077,7 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 		int err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errWrongType;
 	} else {
-		TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+		TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 		if (!clock) {
 			error("clock is not running.\n");
 			return errFailed;
@@ -1101,7 +1101,7 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	double delta, beats;
 	int err;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1132,7 +1132,7 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1154,7 +1154,7 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1184,7 +1184,7 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp - 1;
 	PyrSlot *d = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1212,7 +1212,7 @@ int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1238,7 +1238,7 @@ int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1259,7 +1259,7 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
-	TempoClock *clock = (TempoClock*)a->uo->slots[1].uptr;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1298,7 +1298,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errNone; // return nil OK, just don't schedule
 	seconds += delta;
-	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
 	schedAdd(g, inQueue, seconds, c);
 
@@ -1315,7 +1315,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	double time;
 	int err = slotDoubleVal(b, &time);
 	if (err) return errNone; // return nil OK, just don't schedule
-	PyrObject* inQueue = g->process->sysSchedulerQueue.uo;
+	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
 	schedAdd(g, inQueue, time, c);
 

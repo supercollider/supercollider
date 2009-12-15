@@ -156,8 +156,8 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(a, class_string)) return errWrongType;
 
-	char *cmdline = (char*)malloc(a->uo->size + 1);
-	err = slotStrVal(a, cmdline, a->uo->size + 1);
+	char *cmdline = (char*)malloc(slotRawObject(a)->size + 1);
+	err = slotStrVal(a, cmdline, slotRawObject(a)->size + 1);
 	if(err) {
 		free(cmdline);
 		return errFailed;
@@ -199,7 +199,7 @@ int prPidRunning(VMGlobals *g, int numArgsPushed)
 #ifdef SC_WIN32
 	HANDLE handle;
 
-	handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, a->ui);
+	handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, slotRawInt(a));
 	if(handle) {
 		unsigned long exitCode;
 
@@ -213,7 +213,7 @@ int prPidRunning(VMGlobals *g, int numArgsPushed)
 	else
 		SetFalse(a);
 #else
-	if(kill(a->ui, 0) == 0)
+	if(kill(slotRawInt(a), 0) == 0)
 		SetTrue(a);
 	else
 		SetFalse(a);
@@ -244,7 +244,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed);
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
 
 	struct timeval tv;
 	gettimeofday(&tv, 0);
@@ -268,7 +268,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed);
 int prGMTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrSlot *slots = a->uo->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
 
 	struct timeval tv;
 	gettimeofday(&tv, 0);
@@ -292,7 +292,7 @@ int prAscTime(struct VMGlobals *g, int numArgsPushed);
 int prAscTime(struct VMGlobals *g, int numArgsPushed)
 {
         PyrSlot *a = g->sp;
-        PyrSlot *slots = a->uo->slots;
+        PyrSlot *slots = slotRawObject(a)->slots;
 
         if (IsNil(slots + 0)) {
           SetNil(a);
@@ -328,7 +328,7 @@ int prStrFTime(struct VMGlobals *g, int numArgsPushed)
         PyrSlot *a = g->sp - 1;
         PyrSlot *b = g->sp;
 
-        PyrSlot *slots = a->uo->slots;
+        PyrSlot *slots = slotRawObject(a)->slots;
 
         if (IsNil(slots + 0)) {
           SetNil(a);

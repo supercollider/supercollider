@@ -102,22 +102,22 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 void addMsgSlot(big_scpacket *packet, PyrSlot *slot);
 void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 {
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
-			packet->addi(slot->ui);
+			packet->addi(slotRawInt(slot));
 			break;
 		case tagSym :
-			packet->adds(slot->us->name);
+			packet->adds(slotRawSymbol(slot)->name);
 			break;
 		case tagObj :
-			if (isKindOf(slot->uo, class_string)) {
-				PyrString *stringObj = slot->uos;
+			if (isKindOf(slotRawObject(slot), class_string)) {
+				PyrString *stringObj = slotRawString(slot);
 				packet->adds(stringObj->s, stringObj->size);
-			} else if (isKindOf(slot->uo, class_int8array)) {
-				PyrInt8Array *arrayObj = slot->uob;
+			} else if (isKindOf(slotRawObject(slot), class_int8array)) {
+				PyrInt8Array *arrayObj = slotRawInt8Array(slot);
 				packet->addb(arrayObj->b, arrayObj->size);
-			} else if (isKindOf(slot->uo, class_array)) {
-				PyrObject *arrayObj = slot->uo;
+			} else if (isKindOf(slotRawObject(slot), class_array)) {
+				PyrObject *arrayObj = slotRawObject(slot);
 				big_scpacket packet2;
 				if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
 					makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
@@ -134,8 +134,8 @@ void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 		case tagPtr :
 			break;
 		default :
-			if (gUseDoubles) packet->addd(slot->uf);
-			else packet->addf(slot->uf);
+			if (gUseDoubles) packet->addd(slotRawFloat(slot));
+			else packet->addf(slotRawFloat(slot));
 			break;
 	}
 }
@@ -143,26 +143,26 @@ void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot);
 void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 {
-	switch (slot->utag) {
+	switch (GetTag(slot)) {
 		case tagInt :
 			packet->addtag('i');
-			packet->addi(slot->ui);
+			packet->addi(slotRawInt(slot));
 			break;
 		case tagSym :
 			packet->addtag('s');
-			packet->adds(slot->us->name);
+			packet->adds(slotRawSymbol(slot)->name);
 			break;
 		case tagObj :
-			if (isKindOf(slot->uo, class_string)) {
-				PyrString *stringObj = slot->uos;
+			if (isKindOf(slotRawObject(slot), class_string)) {
+				PyrString *stringObj = slotRawString(slot);
 				packet->addtag('s');
 				packet->adds(stringObj->s, stringObj->size);
-			} else if (isKindOf(slot->uo, class_int8array)) {
-				PyrInt8Array *arrayObj = slot->uob;
+			} else if (isKindOf(slotRawObject(slot), class_int8array)) {
+				PyrInt8Array *arrayObj = slotRawInt8Array(slot);
 				packet->addtag('b');
 				packet->addb(arrayObj->b, arrayObj->size);
-			} else if (isKindOf(slot->uo, class_array)) {
-				PyrObject *arrayObj = slot->uo;
+			} else if (isKindOf(slotRawObject(slot), class_array)) {
+				PyrObject *arrayObj = slotRawObject(slot);
 				if (arrayObj->size) {
 					packet->addtag('b');
 					big_scpacket packet2;
@@ -183,7 +183,7 @@ void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 			packet->addi(1);
 			break;
 		case tagChar :
-		    packet->addtag(slot->uc);
+		    packet->addtag(slotRawChar(slot));
 		    break;
 		case tagFalse :
 		case tagNil :
@@ -194,10 +194,10 @@ void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 		default :
 			if (gUseDoubles) {
 				packet->addtag('d');
-				packet->addd(slot->uf);
+				packet->addd(slotRawFloat(slot));
 			} else {
 				packet->addtag('f');
-				packet->addf(slot->uf);
+				packet->addf(slotRawFloat(slot));
 			}
 			break;
 	}
@@ -224,8 +224,8 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 	// First component: OSC Address Pattern.
 	// For convenience, we allow the user to omit the initial '/', when
 	//  expressing it as a symbol (e.g. \g_new) - we add it back on here, for OSC compliance.
-	if(slots->utag == tagSym && slots->us->name[0]!='/'){
-		packet->adds_slpre(slots->us->name);
+	if(GetTag(slots) == tagSym && slotRawSymbol(slots)->name[0]!='/'){
+		packet->adds_slpre(slotRawSymbol(slots)->name);
 	}else{
 		addMsgSlot(packet, slots);
 	}
@@ -286,7 +286,7 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 
 	for (int i=1; i<size; ++i) {
 		if (isKindOfSlot(slots+i, class_array)) {
-			PyrObject *obj = slots[i].uo;
+			PyrObject *obj = slotRawObject(&slots[i]);
 			makeSynthMsgWithTags(packet, obj->slots, obj->size);
 		}
 	}
@@ -299,7 +299,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 {
 	int err, port, addr;
 
-	SC_TcpClientPort* comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
+	SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
 
 	if (comPort) {
 		// send TCP
@@ -375,7 +375,7 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
-	PyrObject* netAddrObj = netAddrSlot->uo;
+	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
 	int err, port, addr;
 
@@ -431,9 +431,9 @@ int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed);
 int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
-	PyrObject* netAddrObj = netAddrSlot->uo;
+	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
-	SC_TcpClientPort *comPort = (SC_TcpClientPort*)(netAddrObj->slots + ivxNetAddr_Socket)->uptr;
+	SC_TcpClientPort *comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
 	if (comPort) comPort->Close();
 
 	return errNone;
@@ -452,7 +452,7 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
 
-	return netAddrSend(netAddrSlot->uo, packet.size(), (char*)packet.buf);
+	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
 
 
@@ -466,7 +466,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	double time;
 	int err = slotDoubleVal(args, &time);
 	if (!err) {
-		time += g->thread->seconds.uf;
+		time += slotRawFloat(&g->thread->seconds);
 		SetFloat(args, time);
 	}
 	int numargs = numArgsPushed - 1;
@@ -474,7 +474,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
 
-	return netAddrSend(netAddrSlot->uo, packet.size(), (char*)packet.buf);
+	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
 
 int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed);
@@ -482,13 +482,13 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* arraySlot = g->sp;
-	PyrObject* netAddrObj = netAddrSlot->uo;
+	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
-	if (!IsObj(arraySlot) || !isKindOf(arraySlot->uo, class_rawarray)) {
+	if (!IsObj(arraySlot) || !isKindOf(slotRawObject(arraySlot), class_rawarray)) {
 		error("sendRaw arg must be a kind of RawArray.\n");
 		return errWrongType;
 	}
-	PyrObject *array = arraySlot->uo;
+	PyrObject *array = slotRawObject(arraySlot);
 
 	char *bufptr = (char*)array->slots;
 	int32 msglen = array->size * gFormatElemSize[array->obj_format];
@@ -531,9 +531,9 @@ int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
-	int numargs = args->uo->size;
+	int numargs = slotRawObject(args)->size;
 	if (numargs < 1) return errFailed;
-	makeSynthBundle(&packet, args->uo->slots, numargs, true);
+	makeSynthBundle(&packet, slotRawObject(args)->slots, numargs, true);
 	SetInt(args, packet.size());
 	return errNone;
 }
@@ -544,9 +544,9 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
 
-	int numargs = args->uo->size;
+	int numargs = slotRawObject(args)->size;
 	if (numargs < 1) return errFailed;
-	makeSynthMsgWithTags(&packet, args->uo->slots, numargs);
+	makeSynthMsgWithTags(&packet, slotRawObject(args)->slots, numargs);
 	SetInt(args, packet.size());
 	return errNone;
 }
@@ -567,7 +567,7 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed);
 int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;
-	PyrObject *array = a->uo;
+	PyrObject *array = slotRawObject(a);
 	PyrSlot* args = array->slots;
 	int numargs = array->size;
 	if (numargs < 1) return errFailed;
@@ -812,9 +812,9 @@ int prExit(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	exit(a->ui);
+	exit(slotRawInt(a));
 
-	//post("exit %d\n", a->ui);
+	//post("exit %d\n", slotRawInt(a));
 	//DumpBackTrace(g);
 	return errNone;
 }
@@ -833,7 +833,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		SetPrintFunc(&vpost);
 		WorldOptions options = kDefaultWorldOptions;
 
-		PyrObject *optionsObj = a->uo;
+		PyrObject *optionsObj = slotRawObject(a);
 		PyrSlot *optionsSlots = optionsObj->slots;
 
 		static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mDeviceName[512];

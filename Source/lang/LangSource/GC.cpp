@@ -157,9 +157,9 @@ void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 	PyrSlot *slot = inSlots;
 	PyrSlot *endslot = inSlots + inNumToScan;
 	for (; slot < endslot; ++slot) {
-		int32 tag = slot->utag;
+		int32 tag = GetTag(slot);
 		if (tag == rtagObj) {
-			PyrObject *obj = slot->uo;
+			PyrObject *obj = slotRawObject(slot);
 			if (obj->gc_color == whiteColor) {
 				ToGrey2(obj);
 			}
@@ -261,9 +261,9 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 
 	mProcess = newPyrProcess(g, mainProcessClass);
 
-	mStack = mProcess->mainThread.uot->stack.uo;
+	mStack = slotRawObject(&slotRawThread(&mProcess->mainThread)->stack);
 	ToBlack(mStack);
-	SetNil(&mProcess->mainThread.uot->stack);
+	SetNil(&slotRawThread(&mProcess->mainThread)->stack);
 
 	mNumGrey = 0;
 	ToGrey2(mProcess);
@@ -560,7 +560,7 @@ void PyrGC::DoPartialScan(int32 inObjSize)
 	}
 	if (mNumToScan < 0) mNumToScan = 0;
 	//post("partial %5d xx %4d %2d %s\n", mScans, mNumToScan, mNumGrey);
-	//post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, obj->classptr->name.us->name);
+	//post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, slotRawSymbol(&obj->classptr->name)->name);
 }
 
 bool PyrGC::ScanOneObj()
@@ -638,7 +638,7 @@ void PyrGC::ScanFrames()
 			ScanSlots(slots, size);
 		}
 #endif
-		frame = frame->caller.uof;
+		frame = slotRawFrame(&frame->caller);
 	}
 }
 
@@ -758,9 +758,9 @@ void PyrGC::Finalize(PyrObject *finalizer)
 	if (!IsPtr(finalizer->slots+0)) return;
 	if (!IsObj(finalizer->slots+1)) return;
 
-	ObjFuncPtr func = (ObjFuncPtr)finalizer->slots[0].ui;
-	PyrObject *obj = finalizer->slots[1].uo;
-	//post("FINALIZE %s %p\n", obj->classptr->name.us->name, obj);
+	ObjFuncPtr func = (ObjFuncPtr)slotRawInt(&finalizer->slots[0]);
+	PyrObject *obj = slotRawObject(&finalizer->slots[1]);
+	//post("FINALIZE %s %p\n", slotRawSymbol(&obj->classptr->name)->name, obj);
 	(func)(mVMGlobals, obj);
 
 	SetNil(obj->slots+0);
@@ -1036,9 +1036,9 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 		slot = objA->slots;
 		for (j=size; j--; ++slot) {
 			objB = NULL;
-			tag = slot->utag;
-			if (tag == tagObj && slot->uo) {
-				objB = slot->uo;
+			tag = GetTag(slot);
+			if (tag == tagObj && slotRawObject(slot)) {
+				objB = slotRawObject(slot);
 			}
 			if (objB && (long)objB < 100) {
 				fprintf(stderr, "weird obj ptr\n");
@@ -1084,9 +1084,9 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 			slot = objA->slots;
 			for (j=size; j--; ++slot) {
 				objB = NULL;
-				tag = slot->utag;
-				if (tag == tagObj && slot->uo) {
-					objB = slot->uo;
+				tag = GetTag(slot);
+				if (tag == tagObj && slotRawObject(slot)) {
+					objB = slotRawObject(slot);
 				}
 				if (objB && (long)objB < 100) {
 					fprintf(stderr, "weird obj ptr\n");
@@ -1140,9 +1140,9 @@ bool PyrGC::SanityClearObj(PyrObject *objA, int level)
 			PyrSlot *slot = objA->slots;
 			for (int j=size; j--; ++slot) {
 				PyrObject *objB = NULL;
-				int tag = slot->utag;
-				if (tag == tagObj && slot->uo) {
-					objB = slot->uo;
+				int tag = GetTag(slot);
+				if (tag == tagObj && slotRawObject(slot)) {
+					objB = slotRawObject(slot);
 				}
 				if (objB) {
 					/*if (level > 40) {
@@ -1225,7 +1225,7 @@ void PyrGC::DumpGrey()
 	// scan grey list
 	PyrObjectHdr *obj = mGrey.next;
 	while (!IsMarker(obj)) {
-		post("grey %s %d %d\n", obj->classptr->name.us->name, obj->obj_sizeclass, obj->size);
+		post("grey %s %d %d\n", slotRawSymbol(&obj->classptr->name)->name, obj->obj_sizeclass, obj->size);
 		obj = obj->next;
 	}
 }
@@ -1237,21 +1237,21 @@ void PyrGC::DumpSet(int i)
 	// scan black list
 	PyrObjectHdr *obj = set->mBlack.next;
 	while (!IsMarker(obj)) {
-		post("black %s %d %d\n", obj->classptr->name.us->name, obj->obj_sizeclass, obj->size);
+		post("black %s %d %d\n", slotRawSymbol(&obj->classptr->name)->name, obj->obj_sizeclass, obj->size);
 		obj = obj->next;
 	}
 
 	// scan white list
 	obj = set->mWhite.next;
 	while (obj != set->mFree) {
-		post("white %s %d %d\n", obj->classptr->name.us->name, obj->obj_sizeclass, obj->size);
+		post("white %s %d %d\n", slotRawSymbol(&obj->classptr->name)->name, obj->obj_sizeclass, obj->size);
 		obj = obj->next;
 	}
 
 	// scan free list
 	obj = set->mFree;
 	while (!IsMarker(obj)) {
-		post("free %s %d %d\n", obj->classptr->name.us->name, obj->obj_sizeclass, obj->size);
+		post("free %s %d %d\n", slotRawSymbol(&obj->classptr->name)->name, obj->obj_sizeclass, obj->size);
 		obj = obj->next;
 	}
 }

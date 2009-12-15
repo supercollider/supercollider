@@ -113,7 +113,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 	UInt32 numElements = HIDCountDeviceElements (pCurrentHIDDevice, kHIDElementTypeAll );
 
 //		PyrObject* devAllElementsArray = newPyrArray(g->gc, numElements * sizeof(PyrObject), 0 , true);
-		PyrObject *devAllElementsArray = c->uo;
+		PyrObject *devAllElementsArray = slotRawObject(c);
 //		post("numElements: %d\n", numElements);
 		numElements = sc_clip(numElements, 0, devAllElementsArray->size);
 		for(uint i=0; i<numElements; i++){
