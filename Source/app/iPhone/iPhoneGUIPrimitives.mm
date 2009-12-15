@@ -194,7 +194,7 @@ int prSCWindow_Refresh(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SEL sel = @selector(setNeedsDisplay:);
@@ -217,7 +217,7 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
    if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SCNSWindow *window = (SCNSWindow *) [view superview];
@@ -235,7 +235,7 @@ int prSCWindow_Close(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 /*
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SEL sel = @selector(closeWindow);
@@ -258,7 +258,7 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
     if (!g->canCallOS) return errCantCallOS;
 
     PyrSlot *a = g->sp;
-    SCGraphView* view = (SCGraphView*)slotRawInt(slotRawObject(a)->slots);
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
     if (!view) return errNone;
 
     SCNSWindow *window = (SCNSWindow *) [view superview];
