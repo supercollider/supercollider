@@ -2269,7 +2269,7 @@ zerolength:
 	} else return errWrongType;
 
 	if (IsInt(c)) second = slotRawInt(c);
-	else if (IsNil(c)) second = first < last ? slotRawInt(b) + 1 : slotRawInt(b) - 1;
+	else if (IsNil(c)) second = first < last ? first + 1 : first - 1;
 	else return errWrongType;
 
 	int step = second - first;
