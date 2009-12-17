@@ -24,6 +24,8 @@
 #include "SC_Types.h"
 #include "SC_Constants.h"
 
+#include <cmath>
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 inline bool sc_isnan(float x)
@@ -197,18 +199,13 @@ inline float32 taylorsin(float32 x)
 
 inline float32 sc_trunc(float32 x)
 {
-	// truncFloat is a number which causes a loss of precision of
-	// the fractional part.
-	// NOTE: this will only work if the FPU is set to round downward.
-	// That is NOT the default rounding mode. SC sets it to this mode.
-	float32 tmp1 = x + truncFloat;
-	float32 tmp2 = tmp1 - truncFloat;
-	return tmp2;
+	return truncf(x);
 }
 
 inline float32 sc_frac(float32 x)
 {
-	return x - sc_trunc(x);
+	float32 intpart;
+	return std::modf(x, &intpart);
 }
 
 inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32 d)
@@ -408,18 +405,13 @@ inline float64 taylorsin(float64 x)
 
 inline float64 sc_trunc(float64 x)
 {
-	// truncDouble is a number which causes a loss of precision of
-	// the fractional part.
-	// NOTE: this will only work if the FPU is set to round downward.
-	// That is NOT the default rounding mode. SC sets it to this mode.
-	float64 tmp1 = x + truncDouble;
-	float64 tmp2 = tmp1 - truncDouble;
-	return tmp2;
+	return trunc(x);
 }
 
 inline float64 sc_frac(float64 x)
 {
-	return x - sc_trunc(x);
+	float64 intpart;
+	return std::modf(x, &intpart);
 }
 
 inline float64 sc_wrap1(float64 x)
