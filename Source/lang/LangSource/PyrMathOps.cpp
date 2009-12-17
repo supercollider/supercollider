@@ -218,7 +218,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opCeil : SetRaw(a, ceil(slotRawFloat(a))); break;
 				case opFloor : SetRaw(a, floor(slotRawFloat(a))); break;
 				case opFrac : SetRaw(a, sc_frac(slotRawFloat(a))); break;
-				case opSign : SetRaw(a, slotRawFloat(a) > 0. ? 1 : (slotRawFloat(a) == 0 ? 0 : -1)); break;
+				case opSign : SetRaw(a, slotRawFloat(a) > 0. ? 1.0 : (slotRawFloat(a) == 0 ? 0.0 : -1.0)); break;
 				case opSquared : SetRaw(a, slotRawFloat(a) * slotRawFloat(a)); break;
 				case opCubed : SetRaw(a, slotRawFloat(a) * slotRawFloat(a) * slotRawFloat(a)); break;
 				case opSqrt : SetRaw(a, sqrt(slotRawFloat(a))); break;
