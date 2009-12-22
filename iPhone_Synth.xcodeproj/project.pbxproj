@@ -13,6 +13,7 @@
 		770903C60F50A468005C05DC /* iscsynthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C20F50A468005C05DC /* iscsynthAppDelegate.m */; };
 		770903C70F50A468005C05DC /* iSCSynthController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903C40F50A468005C05DC /* iSCSynthController.mm */; };
 		770903C80F50A468005C05DC /* iscsynthmain.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C50F50A468005C05DC /* iscsynthmain.m */; };
+		7714609B1054654500476976 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F126B0F50A87300CB6629 /* libsndfile_iphone.a */; };
 		7742A4B60FEA960D00AE1A03 /* GendynUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8470F43603A0044CAC0 /* GendynUGens.cpp */; };
 		7742A4CE0FEA972500AE1A03 /* GendynUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8470F43603A0044CAC0 /* GendynUGens.cpp */; };
 		7751B8680F4363C40044CAC0 /* BinaryOpUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8390F43603A0044CAC0 /* BinaryOpUGens.cpp */; };
@@ -35,8 +36,6 @@
 		7751B8910F4368AE0044CAC0 /* TriggerUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8640F43603A0044CAC0 /* TriggerUGens.cpp */; };
 		7751B8920F4368B00044CAC0 /* UnaryOpUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8650F43603A0044CAC0 /* UnaryOpUGens.cpp */; };
 		775384800FBDE6EA00DADEB2 /* iPhoneUGens.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7751B84A0F43603A0044CAC0 /* iPhoneUGens.mm */; };
-		775D93D80F509D2F00112D87 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 7772497E0EABE96E00732A1C /* dtoa.c */; };
-		775D93D90F509D2F00112D87 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 777249800EABE96E00732A1C /* g_fmt.c */; };
 		775D93DA0F509D2F00112D87 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249810EABE96E00732A1C /* SC_AllocPool.cpp */; };
 		775D93DB0F509D2F00112D87 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249820EABE96E00732A1C /* SC_DirUtils.cpp */; };
 		775D93DC0F509D2F00112D87 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249840EABE96E00732A1C /* SC_Sem.cpp */; };
@@ -93,11 +92,8 @@
 		778F12530F50A72900CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12510F50A72900CB6629 /* synthdefs */; };
 		77A489380FBFA8DA00E909E1 /* SuperCollider_Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */; };
 		77A489390FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */; };
-		77A489470FBFA95800E909E1 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77A489460FBFA95800E909E1 /* libsndfile.a */; };
 		77A489510FBFA99700E909E1 /* DirBrowserView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77A489500FBFA99700E909E1 /* DirBrowserView.mm */; };
 		77A4896A0FBFAA1000E909E1 /* iscsynth_MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */; };
-		77AA93A10EB368B700DC0BCB /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 7772497E0EABE96E00732A1C /* dtoa.c */; };
-		77AA93A30EB368B700DC0BCB /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 777249800EABE96E00732A1C /* g_fmt.c */; };
 		77AA93A40EB368B700DC0BCB /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249810EABE96E00732A1C /* SC_AllocPool.cpp */; };
 		77AA93A50EB368B700DC0BCB /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249820EABE96E00732A1C /* SC_DirUtils.cpp */; };
 		77AA93A70EB368B700DC0BCB /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249840EABE96E00732A1C /* SC_Sem.cpp */; };
@@ -259,9 +255,7 @@
 		7751B8650F43603A0044CAC0 /* UnaryOpUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnaryOpUGens.cpp; sourceTree = "<group>"; };
 		7751B8660F43603A0044CAC0 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnpackFFTUGens.cpp; sourceTree = "<group>"; };
 		775D94270F509DBE00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
-		7772497E0EABE96E00732A1C /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		7772497F0EABE96E00732A1C /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
-		777249800EABE96E00732A1C /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		777249810EABE96E00732A1C /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		777249820EABE96E00732A1C /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		777249830EABE96E00732A1C /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
@@ -429,7 +423,7 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				77724C6B0EABF92400732A1C /* AudioToolbox.framework in Frameworks */,
 				77724C6D0EABF92400732A1C /* CoreAudio.framework in Frameworks */,
-				77A489470FBFA95800E909E1 /* libsndfile.a in Frameworks */,
+				7714609B1054654500476976 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,9 +629,7 @@
 			isa = PBXGroup;
 			children = (
 				778F12660F50A85200CB6629 /* iPhone */,
-				7772497E0EABE96E00732A1C /* dtoa.c */,
 				7772497F0EABE96E00732A1C /* fftlib.c */,
-				777249800EABE96E00732A1C /* g_fmt.c */,
 				777249810EABE96E00732A1C /* SC_AllocPool.cpp */,
 				777249820EABE96E00732A1C /* SC_DirUtils.cpp */,
 				777249830EABE96E00732A1C /* sc_popen.cpp */,
@@ -958,8 +950,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				775D93D80F509D2F00112D87 /* dtoa.c in Sources */,
-				775D93D90F509D2F00112D87 /* g_fmt.c in Sources */,
 				775D93DA0F509D2F00112D87 /* SC_AllocPool.cpp in Sources */,
 				775D93DB0F509D2F00112D87 /* SC_DirUtils.cpp in Sources */,
 				775D93DC0F509D2F00112D87 /* SC_Sem.cpp in Sources */,
@@ -1023,8 +1013,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				77AA93A10EB368B700DC0BCB /* dtoa.c in Sources */,
-				77AA93A30EB368B700DC0BCB /* g_fmt.c in Sources */,
 				77AA93A40EB368B700DC0BCB /* SC_AllocPool.cpp in Sources */,
 				77AA93A50EB368B700DC0BCB /* SC_DirUtils.cpp in Sources */,
 				77AA93A70EB368B700DC0BCB /* SC_Sem.cpp in Sources */,

@@ -233,7 +233,7 @@ void setCmdLine(const char *buf)
 			PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
 			memcpy(strobj->s, buf, size);
 
-			SetObject(slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
+			SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
 			g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 		}
 		pthread_mutex_unlock(&gLangMutex);
