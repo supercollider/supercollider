@@ -951,8 +951,8 @@ void SCView::beginDrag(SCPoint where)
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
 		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
-		slotCopy(slot, &g->classvars->slots[classVarIndex]);
-		slotCopy(stringSlot, &g->classvars->slots[classVarIndex+1]);
+		slotCopy(&slot, &g->classvars->slots[classVarIndex]);
+		slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
 			string = [NSString stringWithCString: slotRawString(&stringSlot)->s length: slotRawString(&stringSlot)->size];
 		}

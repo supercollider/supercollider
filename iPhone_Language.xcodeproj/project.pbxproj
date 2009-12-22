@@ -6,6 +6,21 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		77C6D7D210D6D58800D8E4E9 /* Package */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 77C6D7DC10D6D59300D8E4E9 /* Build configuration list for PBXAggregateTarget "Package" */;
+			buildPhases = (
+				77C6D7D110D6D58800D8E4E9 /* ShellScript */,
+			);
+			dependencies = (
+				77C6D7D710D6D58E00D8E4E9 /* PBXTargetDependency */,
+			);
+			name = Package;
+			productName = Package;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		7708A0AD0FBF9B7A00A151DD /* SuperCollider_Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */; };
 		7709038C0F509FAA005C05DC /* iPhoneGUIPrimitives.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */; };
@@ -70,8 +85,6 @@
 		7713C69D0F422BE400B0055E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7751ABDE0EB373490051CF38 /* AudioToolbox.framework */; };
 		7713C69E0F422BE400B0055E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 778214610EBCABF200A8A56F /* QuartzCore.framework */; };
 		7713C69F0F422BE400B0055E /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 771DA70F0EC262390024AB95 /* MediaPlayer.framework */; };
-		7713C6CF0F422F7E00B0055E /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9590EB36D500051CF38 /* dtoa.c */; };
-		7713C6D00F422F7E00B0055E /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 7751A95B0EB36D500051CF38 /* g_fmt.c */; };
 		7713C6D10F422F7E00B0055E /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A95C0EB36D500051CF38 /* SC_AllocPool.cpp */; };
 		7713C6D20F422F7F00B0055E /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A95D0EB36D500051CF38 /* SC_DirUtils.cpp */; };
 		7713C6D40F422F8000B0055E /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9600EB36D500051CF38 /* SC_StandAloneInfo_Darwin.cpp */; };
@@ -93,8 +106,8 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
+		7795B81F10D6C0920053700A /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */; };
 		77CF86040FC2212100C81F75 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77CF86030FC2212100C81F75 /* CFNetwork.framework */; };
-		77CF86270FC2226100C81F75 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +131,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 77AA93910EB3685300DC0BCB;
 			remoteInfo = libscsynth;
+		};
+		77C6D7D610D6D58E00D8E4E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7713C5EB0F422BE400B0055E;
+			remoteInfo = SuperCollider;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -212,9 +232,7 @@
 		7751A9550EB36D500051CF38 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabletEvents.m; sourceTree = "<group>"; };
 		7751A9560EB36D500051CF38 /* TextFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextFinder.m; sourceTree = "<group>"; };
 		7751A9570EB36D500051CF38 /* UserPanel.M */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UserPanel.M; sourceTree = "<group>"; };
-		7751A9590EB36D500051CF38 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
 		7751A95A0EB36D500051CF38 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
-		7751A95B0EB36D500051CF38 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		7751A95C0EB36D500051CF38 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		7751A95D0EB36D500051CF38 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		7751A95E0EB36D500051CF38 /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
@@ -450,7 +468,7 @@
 				7713C69E0F422BE400B0055E /* QuartzCore.framework in Frameworks */,
 				7713C69F0F422BE400B0055E /* MediaPlayer.framework in Frameworks */,
 				77CF86040FC2212100C81F75 /* CFNetwork.framework in Frameworks */,
-				77CF86270FC2226100C81F75 /* libsndfile_iphone.a in Frameworks */,
+				7795B81F10D6C0920053700A /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,9 +673,7 @@
 			isa = PBXGroup;
 			children = (
 				770903A80F50A015005C05DC /* iPhone */,
-				7751A9590EB36D500051CF38 /* dtoa.c */,
 				7751A95A0EB36D500051CF38 /* fftlib.c */,
-				7751A95B0EB36D500051CF38 /* g_fmt.c */,
 				7751A95C0EB36D500051CF38 /* SC_AllocPool.cpp */,
 				7751A95D0EB36D500051CF38 /* SC_DirUtils.cpp */,
 				7751A95E0EB36D500051CF38 /* sc_popen.cpp */,
@@ -1014,6 +1030,7 @@
 			projectRoot = "";
 			targets = (
 				7713C5EB0F422BE400B0055E /* SuperCollider */,
+				77C6D7D210D6D58800D8E4E9 /* Package */,
 			);
 		};
 /* End PBXProject section */
@@ -1048,6 +1065,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		77C6D7D110D6D58800D8E4E9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here\nexport CODESIGN_ALLOCATE=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate\nexport COPYFILE_DISABLE\nexport COPY_EXTENDED_ATTRIBUTES_DISABLE\n\n/usr/local/bin/ldid -S $SYMROOT/Cydia-iphoneos/SuperCollider.app/SuperCollider\nmkdir -p $SYMROOT/Cydia/SuperCollider/Applications\nmkdir -p $SYMROOT/Cydia/SuperCollider/DEBIAN\ncp iPhone\\ Resources/control $SYMROOT/Cydia/SuperCollider/DEBIAN/\ncp -R $SYMROOT/Cydia-iphoneos/SuperCollider.app $SYMROOT/Cydia/SuperCollider/Applications/\n\ncd $SYMROOT/Cydia\nrm -f SuperCollider.deb\n/sw/bin/dpkg-deb -b SuperCollider\nrm -Rf SuperCollider\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7713C5EF0F422BE400B0055E /* Sources */ = {
@@ -1101,8 +1134,6 @@
 				7713C67F0F422BE400B0055E /* PyrArchiver.cpp in Sources */,
 				7713C6800F422BE400B0055E /* SC_ComPort.cpp in Sources */,
 				7713C6970F422BE400B0055E /* DrawBackground.M in Sources */,
-				7713C6CF0F422F7E00B0055E /* dtoa.c in Sources */,
-				7713C6D00F422F7E00B0055E /* g_fmt.c in Sources */,
 				7713C6D10F422F7E00B0055E /* SC_AllocPool.cpp in Sources */,
 				7713C6D20F422F7F00B0055E /* SC_DirUtils.cpp in Sources */,
 				7713C6D40F422F8000B0055E /* SC_StandAloneInfo_Darwin.cpp in Sources */,
@@ -1131,6 +1162,11 @@
 			name = libscsynth;
 			targetProxy = 7751B8260F435F9C0044CAC0 /* PBXContainerItemProxy */;
 		};
+		77C6D7D710D6D58E00D8E4E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7713C5EB0F422BE400B0055E /* SuperCollider */;
+			targetProxy = 77C6D7D610D6D58E00D8E4E9 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -1138,6 +1174,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Axel STANTUM (Q7D76E7W4F)";
 				COPY_PHASE_STRIP = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1153,6 +1190,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;
+				SDKROOT = iphoneos2.2.1;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
 			};
@@ -1181,12 +1219,84 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos2.2.1;
 				SEPARATE_STRIP = NO;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
 			};
 			name = Release;
+		};
+		7795B82310D6D01E0053700A /* Cydia */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = iphoneos2.2;
+				SYMROOT = build_iphone;
+			};
+			name = Cydia;
+		};
+		7795B82410D6D01E0053700A /* Cydia */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = NO;
+				GCC_AUTO_VECTORIZATION = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = SC_IPHONE;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_UNROLL_LOOPS = YES;
+				GENERATE_MASTER_OBJECT_FILE = NO;
+				HEADER_SEARCH_PATHS = libsndfile;
+				INFOPLIST_FILE = "iPhone Resources/SuperCollider_Cydia.plist";
+				LIBRARY_SEARCH_PATHS = (
+					libsndfile,
+					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+				);
+				PRODUCT_NAME = SuperCollider;
+				SDKROOT = iphoneos2.2.1;
+				SEPARATE_STRIP = NO;
+				SKIP_INSTALL = YES;
+				SYMROOT = build_iphone;
+			};
+			name = Cydia;
+		};
+		77C6D7D310D6D58800D8E4E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = Package;
+			};
+			name = Debug;
+		};
+		77C6D7D410D6D58800D8E4E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = Package;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		77C6D7D510D6D58800D8E4E9 /* Cydia */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = Package;
+			};
+			name = Cydia;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1225,6 +1335,17 @@
 			buildConfigurations = (
 				7713C6A70F422BE400B0055E /* Debug */,
 				7713C6A80F422BE400B0055E /* Release */,
+				7795B82410D6D01E0053700A /* Cydia */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		77C6D7DC10D6D59300D8E4E9 /* Build configuration list for PBXAggregateTarget "Package" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77C6D7D310D6D58800D8E4E9 /* Debug */,
+				77C6D7D410D6D58800D8E4E9 /* Release */,
+				77C6D7D510D6D58800D8E4E9 /* Cydia */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1234,6 +1355,7 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+				7795B82310D6D01E0053700A /* Cydia */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
