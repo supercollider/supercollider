@@ -469,13 +469,16 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	document { arg title="";	// platform dependent ...
 		var docTitle;
-		if (thisProcess.platform.isKindOf(OSXPlatform)) {
-			docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
-			Document.new(docTitle, this.storyString)
-			.path_(docTitle); // don't lose title.
-		} {
-			this.storyString.newTextWindow("History_documented");
-		}
+		Platform.case(
+			\windows, {
+				this.storyString.newTextWindow("History_documented");
+			},
+			{
+				docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
+				Document.new(docTitle, this.storyString)
+					.path_(docTitle); // don't lose title.
+			}
+		)
 	}
 
 	*readFromDoc { |path|
