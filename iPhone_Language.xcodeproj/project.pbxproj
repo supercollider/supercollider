@@ -1174,7 +1174,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Axel STANTUM (Q7D76E7W4F)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1190,6 +1190,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos2.2.1;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
