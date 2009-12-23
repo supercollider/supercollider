@@ -106,8 +106,8 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
-		7795B81F10D6C0920053700A /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */; };
 		77CF86040FC2212100C81F75 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77CF86030FC2212100C81F75 /* CFNetwork.framework */; };
+		77D86FF210E235680024A880 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -468,7 +468,7 @@
 				7713C69E0F422BE400B0055E /* QuartzCore.framework in Frameworks */,
 				7713C69F0F422BE400B0055E /* MediaPlayer.framework in Frameworks */,
 				77CF86040FC2212100C81F75 /* CFNetwork.framework in Frameworks */,
-				7795B81F10D6C0920053700A /* libsndfile_iphone.a in Frameworks */,
+				77D86FF210E235680024A880 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1208,7 +1208,10 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = SC_IPHONE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					SC_IPHONE,
+					NDEBUG,
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_UNROLL_LOOPS = YES;
@@ -1252,7 +1255,10 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = SC_IPHONE;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					SC_IPHONE,
+					NDEBUG,
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_UNROLL_LOOPS = YES;
