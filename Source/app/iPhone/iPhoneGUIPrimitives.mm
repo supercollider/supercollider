@@ -176,7 +176,7 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 		[scrollView autorelease];
 */
 	} else {
-		[view setSCTopView: (SCTopView*)slotRawInt(slotRawObject(f)->slots)];
+		[view setSCTopView: (SCTopView*)slotRawPtr(slotRawObject(f)->slots)];
 		[window addSubview: view];
 		[view autorelease];
 	}
