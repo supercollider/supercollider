@@ -3,11 +3,16 @@ OSCresponder {
 	var <>addr, <>cmdName, <>action;
 
 	*new { arg addr, cmdName, action;
-		^super.newCopyArgs(addr, cmdName.asSymbol, action);
+		^super.newCopyArgs(addr, this.formatCmd(cmdName), action);
 	}
 
 	*initClass {
 		all = Set.new;
+	}
+	
+	*formatCmd { arg cmdName;
+		var str = cmdName.asString;
+		^if(str[0] != $/) { str.addFirst($/) } { cmdName }.asSymbol;
 	}
 
 	*respond { arg time, addr, msg;
@@ -78,7 +83,7 @@ OSCMultiResponder : OSCresponder {
 OSCresponderNode {
 	var <addr, <cmdName, <>action;
 	*new { arg addr, cmdName, action;
-		^super.newCopyArgs(addr, cmdName.asSymbol, action);
+		^super.newCopyArgs(addr, OSCresponder.formatCmd(cmdName), action);
 
 	}
 	//i.zannos fix
