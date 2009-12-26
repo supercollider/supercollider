@@ -67,7 +67,6 @@ Other additions/improvements:
 * 2009-11-23 menu system improvements in Windows IDE - mv
 * 2009-12-13 tidyups for "sclang when on osx but not in sc.app" - ds
 * 2009-12-13 added lincurve and curvelin methods for numbers and UGens - jr
-* 2009-12-26 restore compatibility of message format of OSCresponder with that of sc server app: if a command has no preceding slash, add one. This allows us to write \cmd instead of '/cmd', independent of server or language as receiver. - jr
 
 
 SuperCollider v3.3.1, released 2009-06-19
