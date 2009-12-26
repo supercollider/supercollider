@@ -11,9 +11,14 @@ OSCresponder {
 	}
 	
 	*formatCmd { arg cmdName;
-		var str = cmdName.asString;
-		^if(str[0] != $/) { str.addFirst($/) } { cmdName }.asSymbol;
+		^cmdName.asSymbol
 	}
+
+	/*	
+	*formatCmd { arg cmdName;
+		var str = cmdName.asString;
+		^if(str[0] != $/) { str.addFirst($/).postcs } { cmdName }.asSymbol;
+	}*/
 
 	*respond { arg time, addr, msg;
 		var cmdName, hit = false;
