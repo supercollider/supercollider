@@ -216,7 +216,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 	if(!view) return errNone;
 	NSColor * color = [view backgroundColor];
 	if(!color) return errNone;
-	CGFloat red, green, blue, alpha;
+	float red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -314,7 +314,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	if(!view) return errNone;
 	NSColor * color = [[[view selectedTextAttributes] objectForKey: NSBackgroundColorAttributeName] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
 	if(!color) return errNone;
-	CGFloat red, green, blue, alpha;
+	float red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -3280,7 +3280,7 @@ typedef struct GradientInfo {
 
 static GradientInfo gGradientInfo;
 
-static void					GradientCalcLinear(void *info, const CGFloat *in, float *out)
+static void					GradientCalcLinear(void *info, const float *in, float *out)
 {
     size_t k;
 	/*
