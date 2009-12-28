@@ -28,6 +28,14 @@
 #include "GC.h"
 #include <Carbon/Carbon.h>
 
+#if __LP64__
+typedef long NSInteger;
+typedef unsigned long NSUInteger;
+#else
+typedef int NSInteger;
+typedef unsigned int NSUInteger;
+#endif
+
 extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
 extern PyrSymbol *s_closed;
