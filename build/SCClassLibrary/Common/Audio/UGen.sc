@@ -64,7 +64,6 @@ UGen : AbstractFunction {
  		^MulAdd(this, mul, add);
  	}
  	exprange { arg lo = 0.01, hi = 1.0;
- 		var rate = if(this.rate == \audio) { \audio } { \control };
 		^if (this.signalRange == \bipolar) {
 			this.linexp(-1, 1, lo, hi)
 		} {
