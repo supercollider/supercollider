@@ -3175,7 +3175,9 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		//post("thread %08X\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
-
+		
+		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
+		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
 		slotCopy(&thread->clock, &g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
