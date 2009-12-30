@@ -502,11 +502,9 @@ bool SC_AudioDriver::Setup()
 	mBuffersPerSecond = sampleRate / mNumSamplesPerCallback;
 	mMaxPeakCounter = (int)mBuffersPerSecond;
 
-#ifndef NDEBUG
 	if(mWorld->mVerbosity >= 0){
 		scprintf("SC_AudioDriver: sample rate = %f, driver's block size = %d\n", sampleRate, mNumSamplesPerCallback);
 	}
-#endif
 
 	return true;
 }
