@@ -467,7 +467,7 @@ SimpleNumber : Number {
 	}
 	
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
-		thisThread.clock.sched(this, {
+		clock.sched(this, {
 					if (lag != 0) {
 						SystemClock.sched(lag, { 
 							server.sendBundle(latency ? server.latency, *bundleArray)
@@ -476,5 +476,10 @@ SimpleNumber : Number {
 						server.sendBundle(latency ? server.latency, *bundleArray)
 					}
 		})
+	}
+	
+	maxDelta {
+		// the minimum significant network time difference is platform specific
+		^max(this, thisProcess.platform.minimalSignificantNetTimeDiff)
 	}
 }
