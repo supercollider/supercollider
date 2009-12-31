@@ -250,7 +250,7 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "Integer %d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "Character %d '%c'", slotRawInt(slot), slotRawInt(slot));
+			sprintf(str, "Character %d '%c'", static_cast<int>(slotRawChar(slot)), static_cast<int>(slotRawChar(slot)));
 			break;
 		case tagSym :
 			if (strlen(slotRawSymbol(slot)->name) > 240) {
@@ -358,7 +358,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "%d", slotRawInt(slot));
 			break;
 		case tagChar :
-			sprintf(str, "$%c", slotRawInt(slot));
+			sprintf(str, "$%c", static_cast<int>(slotRawChar(slot)));
 			break;
 		case tagSym :
 			if (strlen(slotRawSymbol(slot)->name) > 240) {
