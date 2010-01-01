@@ -204,8 +204,7 @@ inline float32 sc_trunc(float32 x)
 
 inline float32 sc_frac(float32 x)
 {
-	float32 intpart;
-	return std::modf(x, &intpart);
+	return x - std::floor(x);
 }
 
 inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32 d)
@@ -410,8 +409,7 @@ inline float64 sc_trunc(float64 x)
 
 inline float64 sc_frac(float64 x)
 {
-	float64 intpart;
-	return std::modf(x, &intpart);
+	return x - std::floor(x);
 }
 
 inline float64 sc_wrap1(float64 x)
