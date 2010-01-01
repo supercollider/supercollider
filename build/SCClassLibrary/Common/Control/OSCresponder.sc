@@ -1,30 +1,41 @@
 OSCresponder {
 	classvar <>all;
-	var <>addr, <>cmdName, <>action;
+	var <>addr, <cmdName, <>action;
+	var <cmdNameWithoutSlash;
 
 	*new { arg addr, cmdName, action;
-		^super.newCopyArgs(addr, this.formatCmd(cmdName), action);
+		^super.new.init(addr, cmdName, action);
 	}
 
 	*initClass {
 		all = Set.new;
 	}
-	
-	*formatCmd { arg cmdName;
-		^cmdName.asSymbol
+		
+	init { arg argAddr, argCmdName, argAction;
+		addr = argAddr;
+		action = argAction;
+		this.cmdName = argCmdName;
+		// cmdName = argCmdName.asSymbol;
 	}
-
-	/*	
-	*formatCmd { arg cmdName;
-		var str = cmdName.asString;
-		^if(str[0] != $/) { str.addFirst($/).postcs } { cmdName }.asSymbol;
-	}*/
+	
+	cmdName_ { arg string;
+		string = string.asString;
+		if(string[0] == $/) { string = string.drop(1) };
+		cmdNameWithoutSlash = string.asSymbol;
+		cmdName = ("/" ++ string).asSymbol;
+	}
+	
 
 	*respond { arg time, addr, msg;
 		var cmdName, hit = false;
 		#cmdName = msg;
-		all.do{ |resp|
-			if((resp.cmdName == cmdName) and: { addr.matches(resp.addr) }) {
+		all.do { |resp|
+			if(
+				(resp.cmdName === cmdName) 
+				or: 
+				{ resp.cmdNameWithoutSlash === cmdName } 
+				and: { addr.matches(resp.addr) }
+			) {
 				resp.value(time, msg, addr);
 				hit = true;
 			};
@@ -85,12 +96,8 @@ OSCMultiResponder : OSCresponder {
 }
 
 
-OSCresponderNode {
-	var <addr, <cmdName, <>action;
-	*new { arg addr, cmdName, action;
-		^super.newCopyArgs(addr, OSCresponder.formatCmd(cmdName), action);
-
-	}
+OSCresponderNode : OSCresponder {
+	
 	//i.zannos fix
 	add {
 		var made, found;
