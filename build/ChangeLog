@@ -67,6 +67,7 @@ Other additions/improvements:
 * 2009-11-23 menu system improvements in Windows IDE - mv
 * 2009-12-13 tidyups for "sclang when on osx but not in sc.app" - ds
 * 2009-12-13 added lincurve and curvelin methods for numbers and UGens - jr
+* 2010-01-01 OSCresponder and OSCresponderNode respond equally to messages with or without preceding slash - jr
 
 
 SuperCollider v3.3.1, released 2009-06-19
