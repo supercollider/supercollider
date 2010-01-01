@@ -1233,7 +1233,7 @@ void AudioStatusCmd::CallDestructor()
 bool AudioStatusCmd::Stage2()
 {
 	small_scpacket packet;
-	packet.adds("status.reply");
+	packet.adds("/status.reply");
 	packet.maketags(10);
 	packet.addtag(',');
 	packet.addtag('i');
