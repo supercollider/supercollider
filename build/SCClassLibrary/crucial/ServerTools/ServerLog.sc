@@ -51,7 +51,7 @@ ServerLog : NetAddr {
 	slinit {
 		thisProcess.recvOSCfunc = { arg time,replyAddr,msg;
 			var status;
-			if(msg[0] == 'status.reply') {
+			if(msg[0] == '/status.reply') {
 				status = msg[0..5];
 				if(status != lastStatus,{
 					msgs = msgs.add( ServerLogReceivedEvent(time,status) );
@@ -186,7 +186,7 @@ ServerLogReceivedEvent {
 	report {
 		var cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate;
-		if(msg[0] == 'status.reply',{
+		if(msg[0] == '/status.reply',{
 			#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 			("<<< % % ugens % synths % groups % synthDefs".format(this.eventTime,numUGens,numSynths,numGroups,numSynthDefs)).postln

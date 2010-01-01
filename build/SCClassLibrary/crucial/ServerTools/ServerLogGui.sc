@@ -229,7 +229,7 @@ ServerLogGui : ObjectGui {
 		 #cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 
-			("status.reply % ugens % synths % groups % synthDefs".format(numUGens,numSynths,numGroups,numSynthDefs)).gui(r);
+			("/status.reply % ugens % synths % groups % synthDefs".format(numUGens,numSynths,numGroups,numSynthDefs)).gui(r);
 	}
 
 }

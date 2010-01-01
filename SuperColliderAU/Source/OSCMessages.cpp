@@ -27,7 +27,7 @@ size_t OSCMessages::parameterMessage(small_scpacket *packet, CFStringRef name, f
 	CFStringGetCString(name, buf, bufLength, kCFStringEncodingUTF8);
     size_t nameSize = ((strlen(buf)+ 4) >> 2)*4;
     size_t messageSize = nameSize + 24;
-    packet->adds("n_set");
+	packet->adds("/n_set");
     packet->maketags(4);
     packet->addtag(',');
     packet->addtag('i');
@@ -45,7 +45,7 @@ small_scpacket OSCMessages::sendTickMessage(int64 oscTime, int bus){
     small_scpacket packet;
     packet.OpenBundle(oscTime);
 	packet.BeginMsg();
-    packet.adds("c_set");
+	packet.adds("/c_set");
     packet.maketags(3);
     packet.addtag(',');
     packet.addtag('i');
@@ -60,7 +60,7 @@ small_scpacket OSCMessages::sendTickMessage(int64 oscTime, int bus){
 
 small_scpacket OSCMessages::initTreeMessage(){
 	small_scpacket packet;
-	packet.adds("g_new");
+	packet.adds("/g_new");
 	packet.maketags(2);
 	packet.addtag(',');
 	packet.addtag('i');
@@ -70,7 +70,7 @@ small_scpacket OSCMessages::initTreeMessage(){
 
 small_scpacket OSCMessages::quitMessage(){
 	small_scpacket packet;
-	packet.adds("quit");
+	packet.adds("/quit");
     return packet;
 }
 
@@ -82,7 +82,7 @@ size_t OSCMessages::createSynthMessage(small_scpacket *packet, CFStringRef name)
 	CFStringGetCString(name, buf, bufLength, kCFStringEncodingUTF8);
     size_t nameSize = ((strlen(buf)+ 4) >> 2)*4;
     size_t messageSize = nameSize+16;
-	packet->adds("s_new");
+	packet->adds("/s_new");
 	packet->maketags(3);
 	packet->addtag(',');
 	packet->addtag('s');
@@ -98,25 +98,25 @@ small_scpacket OSCMessages::noteMessage(int64 oscTime, int note, int velocity){
     packet.OpenBundle(oscTime);
 
 	packet.BeginMsg();
-    packet.adds("n_set");
+	packet.adds("/n_set");
     packet.maketags(4);
     packet.addtag(',');
     packet.addtag('i');
     packet.addi(kDefaultNodeId);
 	packet.addtag('s');
-    packet.adds("note");
+	packet.adds("/note");
     packet.addtag('i');
     packet.addi(note);
 	packet.EndMsg();
 
 	packet.BeginMsg();
-    packet.adds("n_set");
+	packet.adds("/n_set");
     packet.maketags(4);
     packet.addtag(',');
     packet.addtag('i');
     packet.addi(kDefaultNodeId);
 	packet.addtag('s');
-    packet.adds("velocity");
+	packet.adds("/velocity");
     packet.addtag('i');
     packet.addi(velocity);
 	packet.EndMsg();
