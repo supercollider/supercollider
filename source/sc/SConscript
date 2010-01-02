@@ -58,6 +58,7 @@ pluginenv.Append(CPPDEFINES=['SUPERNOVA', 'NOVA_SIMD'],
                           "#source",
                           "#libs/boost",
                           "#libs/boost_lockfree",
+                          "#libs/nova-tt",
                           ],
                  )
 

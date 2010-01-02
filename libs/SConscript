@@ -76,6 +76,7 @@ tlsf_sources = [File("tlsf/src/tlsf.c")]
 #
 # nova thread tools
 
+env.Append(CPPPATH=Dir("#/libs/nova-tt/"))
 env.Append(CPPPATH=Dir("#/libs/nova-tt/nova-tt/"))
 
 ######################################################################
