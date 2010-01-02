@@ -250,15 +250,7 @@
 				Name="common"
 				>
 				<File
-					RelativePath="..\..\source\common\dtoa.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Source\common\fftlib.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\common\g_fmt.c"
 					>
 				</File>
 				<File

@@ -107,11 +107,6 @@ def sc_plugin_gen(bld, name, source, uselib='', add_objects=[]):
 
 def build(bld):
     # objects for other targets
-    dtoa = bld.new_task_gen('cc')
-    dtoa.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
-    dtoa.source = 'Source/common/dtoa.c'
-    dtoa.target = 'dtoa'
-
     fftlib = bld.new_task_gen('cc')
     fftlib.includes = '#Headers/common'
     fftlib.source = 'Source/common/fftlib.c'
@@ -121,7 +116,6 @@ def build(bld):
     libcommon = bld.new_task_gen('cxx', 'staticlib')
     libcommon.includes = '#Headers/common #Headers/plugin_interface #Headers/server'
     libcommon.source = [
-        'Source/common/g_fmt.c',
         'Source/common/SC_AllocPool.cpp',
         'Source/common/SC_DirUtils.cpp',
         'Source/common/sc_popen.cpp',
@@ -130,7 +124,6 @@ def build(bld):
         'Source/common/SC_StringParser.cpp',
         'Source/common/scsynthsend.cpp',
     ] # libcommon_source
-    libcommon.add_objects = 'dtoa'
     libcommon.target = 'common'
     libcommon.install_path = None
 
