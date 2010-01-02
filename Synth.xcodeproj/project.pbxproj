@@ -342,10 +342,8 @@
 		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = xtralibs/include/curl/curlver.h; sourceTree = SOURCE_ROOT; };
 		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = xtralibs/include/curl/curl.h; sourceTree = SOURCE_ROOT; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
-		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
+		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
-		949309CB0C190FB10018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
-		949309CC0C190FB10018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		949309CF0C190FB10018AB50 /* SC_Sem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Sem.cpp; sourceTree = "<group>"; };
@@ -555,8 +553,6 @@
 		949309C90C190FB10018AB50 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				949309CB0C190FB10018AB50 /* dtoa.c */,
-				949309CC0C190FB10018AB50 /* g_fmt.c */,
 				949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */,
 				949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */,
 				949309CF0C190FB10018AB50 /* SC_Sem.cpp */,

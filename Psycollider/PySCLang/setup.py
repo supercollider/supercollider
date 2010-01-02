@@ -41,9 +41,7 @@ except:
 # platform independent
 defines = [('PYSCLANG', '1')]
 
-sourceFiles = [	'../../Source/common/dtoa.c',
-				'../../Source/common/fftlib.c',
-				'../../Source/common/g_fmt.c',
+sourceFiles = [	'../../Source/common/fftlib.c',
 				'../../Source/common/SC_AllocPool.cpp',
 				'../../Source/common/SC_DirUtils.cpp',
 				'../../Source/common/SC_Sem.cpp',

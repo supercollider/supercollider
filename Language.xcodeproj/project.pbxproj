@@ -103,8 +103,6 @@
 		94442C760C2C8AE40050BF9F /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BB0C1921F90018AB50 /* TabletEvents.m */; };
 		94442C770C2C8AE40050BF9F /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 949310BC0C1921F90018AB50 /* TextFinder.m */; };
 		94442C780C2C8AE40050BF9F /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310BD0C1921F90018AB50 /* UserPanel.M */; };
-		94442C790C2C8AE40050BF9F /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C00C1921F90018AB50 /* dtoa.c */; };
-		94442C7A0C2C8AE40050BF9F /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310C10C1921F90018AB50 /* g_fmt.c */; };
 		94442C7B0C2C8AE40050BF9F /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C20C1921F90018AB50 /* SC_AllocPool.cpp */; };
 		94442C7C0C2C8AE40050BF9F /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C30C1921F90018AB50 /* SC_DirUtils.cpp */; };
 		94442C7D0C2C8AE40050BF9F /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310C40C1921F90018AB50 /* SC_Sem.cpp */; };
@@ -507,8 +505,6 @@
 		949310BB0C1921F90018AB50 /* TabletEvents.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TabletEvents.m; sourceTree = "<group>"; };
 		949310BC0C1921F90018AB50 /* TextFinder.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TextFinder.m; sourceTree = "<group>"; };
 		949310BD0C1921F90018AB50 /* UserPanel.M */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = UserPanel.M; sourceTree = "<group>"; };
-		949310C00C1921F90018AB50 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = dtoa.c; sourceTree = "<group>"; };
-		949310C10C1921F90018AB50 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = g_fmt.c; sourceTree = "<group>"; };
 		949310C20C1921F90018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		949310C30C1921F90018AB50 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		949310C40C1921F90018AB50 /* SC_Sem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Sem.cpp; sourceTree = "<group>"; };
@@ -950,8 +946,6 @@
 			children = (
 				94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */,
 				949314390C1925B90018AB50 /* fftlib.c */,
-				949310C00C1921F90018AB50 /* dtoa.c */,
-				949310C10C1921F90018AB50 /* g_fmt.c */,
 				949310C20C1921F90018AB50 /* SC_AllocPool.cpp */,
 				949310C30C1921F90018AB50 /* SC_DirUtils.cpp */,
 				949310C40C1921F90018AB50 /* SC_Sem.cpp */,
@@ -1512,8 +1506,6 @@
 				94442C760C2C8AE40050BF9F /* TabletEvents.m in Sources */,
 				94442C770C2C8AE40050BF9F /* TextFinder.m in Sources */,
 				94442C780C2C8AE40050BF9F /* UserPanel.M in Sources */,
-				94442C790C2C8AE40050BF9F /* dtoa.c in Sources */,
-				94442C7A0C2C8AE40050BF9F /* g_fmt.c in Sources */,
 				94442C7B0C2C8AE40050BF9F /* SC_AllocPool.cpp in Sources */,
 				94442C7C0C2C8AE40050BF9F /* SC_DirUtils.cpp in Sources */,
 				94442C7D0C2C8AE40050BF9F /* SC_Sem.cpp in Sources */,

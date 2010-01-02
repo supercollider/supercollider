@@ -110,8 +110,6 @@
 		A25EAD5309444DD900B00A87 /* PYSCLang_Module.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAD4209444DD900B00A87 /* PYSCLang_Module.h */; };
 		A25EAD5409444DD900B00A87 /* PySCLang_VM.h in Headers */ = {isa = PBXBuildFile; fileRef = A25EAD4309444DD900B00A87 /* PySCLang_VM.h */; };
 		A25EAD6309444E0D00B00A87 /* dlopen.c in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5909444E0D00B00A87 /* dlopen.c */; };
-		A25EAD6409444E0D00B00A87 /* dtoa.c in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5A09444E0D00B00A87 /* dtoa.c */; };
-		A25EAD6509444E0D00B00A87 /* g_fmt.c in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5B09444E0D00B00A87 /* g_fmt.c */; };
 		A25EAD6609444E0D00B00A87 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5C09444E0D00B00A87 /* SC_AllocPool.cpp */; };
 		A25EAD6709444E0D00B00A87 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5D09444E0D00B00A87 /* SC_DirUtils.cpp */; };
 		A25EAD6809444E0D00B00A87 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A25EAD5E09444E0D00B00A87 /* SC_Sem.cpp */; };
@@ -294,8 +292,6 @@
 		A25EAD4209444DD900B00A87 /* PYSCLang_Module.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PYSCLang_Module.h; sourceTree = "<group>"; };
 		A25EAD4309444DD900B00A87 /* PySCLang_VM.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PySCLang_VM.h; sourceTree = "<group>"; };
 		A25EAD5909444E0D00B00A87 /* dlopen.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = dlopen.c; path = ../../source/common/dlopen.c; sourceTree = SOURCE_ROOT; };
-		A25EAD5A09444E0D00B00A87 /* dtoa.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = dtoa.c; path = ../../source/common/dtoa.c; sourceTree = SOURCE_ROOT; };
-		A25EAD5B09444E0D00B00A87 /* g_fmt.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = g_fmt.c; path = ../../source/common/g_fmt.c; sourceTree = SOURCE_ROOT; };
 		A25EAD5C09444E0D00B00A87 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_AllocPool.cpp; path = ../../source/common/SC_AllocPool.cpp; sourceTree = SOURCE_ROOT; };
 		A25EAD5D09444E0D00B00A87 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_DirUtils.cpp; path = ../../source/common/SC_DirUtils.cpp; sourceTree = SOURCE_ROOT; };
 		A25EAD5E09444E0D00B00A87 /* SC_Sem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_Sem.cpp; path = ../../source/common/SC_Sem.cpp; sourceTree = SOURCE_ROOT; };
@@ -452,8 +448,6 @@
 			children = (
 				A26ECFBE0988E7940007F9E1 /* SC_StandAloneInfo_Darwin.cpp */,
 				A25EAD5909444E0D00B00A87 /* dlopen.c */,
-				A25EAD5A09444E0D00B00A87 /* dtoa.c */,
-				A25EAD5B09444E0D00B00A87 /* g_fmt.c */,
 				A25EAD5C09444E0D00B00A87 /* SC_AllocPool.cpp */,
 				A25EAD5D09444E0D00B00A87 /* SC_DirUtils.cpp */,
 				A25EAD5E09444E0D00B00A87 /* SC_Sem.cpp */,
@@ -926,8 +920,6 @@
 				A25EAD5109444DD900B00A87 /* PYSCLang_Module_GUIStuff.cpp in Sources */,
 				A25EAD5209444DD900B00A87 /* PYSCLang_Module.cpp in Sources */,
 				A25EAD6309444E0D00B00A87 /* dlopen.c in Sources */,
-				A25EAD6409444E0D00B00A87 /* dtoa.c in Sources */,
-				A25EAD6509444E0D00B00A87 /* g_fmt.c in Sources */,
 				A25EAD6609444E0D00B00A87 /* SC_AllocPool.cpp in Sources */,
 				A25EAD6709444E0D00B00A87 /* SC_DirUtils.cpp in Sources */,
 				A25EAD6809444E0D00B00A87 /* SC_Sem.cpp in Sources */,
