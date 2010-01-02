@@ -108,10 +108,14 @@ Prout : Pattern {
 	asStream {
 		^Routine.new(routineFunc)
 	}
+	embedInStream { arg inval; ^routineFunc.value(inval) }
 }
 
 Proutine : Prout {
-	embedInStream { arg inval; ^routineFunc.value(inval) }
+	*new { |routineFunc|
+		"Proutine is deprecated. Use Prout instead.".postln;
+		^Prout(routineFunc)
+	}
 }
 
 Pfuncn : Pattern {
