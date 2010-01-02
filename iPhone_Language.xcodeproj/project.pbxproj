@@ -432,9 +432,9 @@
 		7751ABD90EB3732A0051CF38 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		7751ABDE0EB373490051CF38 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		7751B8120F435F6F0044CAC0 /* iPhone_Synth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = iPhone_Synth.xcodeproj; sourceTree = "<group>"; };
-		775384570FBDE41800DADEB2 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = libsndfile/libsndfile.a; sourceTree = "<group>"; };
+		775384570FBDE41800DADEB2 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = xtralibs/mac/libsndfile.a; sourceTree = "<group>"; };
 		775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
-		775D93940F509B7A00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		775D93940F509B7A00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		778214610EBCABF200A8A56F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		77876B940EBBA94F00D14B78 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		778F129E0F50A92100CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
@@ -443,7 +443,7 @@
 		778F12AD0F50A92100CB6629 /* patches */ = {isa = PBXFileReference; lastKnownFileType = folder; name = patches; path = "iPhone Resources/patches"; sourceTree = "<group>"; };
 		778F12BB0F50A92100CB6629 /* Extensions */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Extensions; path = "iPhone Resources/Extensions"; sourceTree = "<group>"; };
 		778F12C90F50A94600CB6629 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "iPhone Resources/icon.png"; sourceTree = "<group>"; };
-		778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = libsndfile/libsndfile_iphone.a; sourceTree = "<group>"; };
+		778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = xtralibs/mac/libsndfile_iphone.a; sourceTree = "<group>"; };
 		778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow.xib; path = "iPhone Resources/SuperCollider_MainWindow.xib"; sourceTree = "<group>"; };
 		778F17E50F50AE1100CB6629 /* SuperCollider.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SuperCollider.plist; path = "iPhone Resources/SuperCollider.plist"; sourceTree = "<group>"; };
 		778F18440F50B1D000CB6629 /* backwards_compatibility */ = {isa = PBXFileReference; lastKnownFileType = folder; name = backwards_compatibility; path = build/SCClassLibrary/backwards_compatibility; sourceTree = "<group>"; };
@@ -1183,11 +1183,11 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = SC_IPHONE;
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = libsndfile;
+				HEADER_SEARCH_PATHS = xtralibs/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/SuperCollider.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
 				LIBRARY_SEARCH_PATHS = (
-					libsndfile,
+					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;
@@ -1217,10 +1217,10 @@
 				GCC_THUMB_SUPPORT = NO;
 				GCC_UNROLL_LOOPS = YES;
 				GENERATE_MASTER_OBJECT_FILE = NO;
-				HEADER_SEARCH_PATHS = libsndfile;
+				HEADER_SEARCH_PATHS = xtralibs/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/SuperCollider.plist";
 				LIBRARY_SEARCH_PATHS = (
-					libsndfile,
+					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;
@@ -1264,10 +1264,10 @@
 				GCC_THUMB_SUPPORT = NO;
 				GCC_UNROLL_LOOPS = YES;
 				GENERATE_MASTER_OBJECT_FILE = NO;
-				HEADER_SEARCH_PATHS = libsndfile;
+				HEADER_SEARCH_PATHS = xtralibs/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/SuperCollider_Cydia.plist";
 				LIBRARY_SEARCH_PATHS = (
-					libsndfile,
+					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 				);
 				PRODUCT_NAME = SuperCollider;

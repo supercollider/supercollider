@@ -143,6 +143,9 @@ how to generate "lib" files for your system.
 
 6: libsndfile
 -----------------------
+
+NOTE: THIS SECTION ABOUT LIBSNDFILE MAY BE OUT OF DATE. Libsndfile windows headers are now included by default. Please first try skipping this section, then come back if it doesn't work.
+
 Some libsndfile files are included in the sc3 source distribution - however, you need to do a couple of things to get libsndfile stuff compiling correctly on your system:
 
 * go to http://www.mega-nerd.com/libsndfile/#Download section and download the "Windows zip file including precompiled binaries"
@@ -150,11 +153,11 @@ Some libsndfile files are included in the sc3 source distribution - however, you
 * When done, place the following files into SuperCollider's "libsndfile" folder:
 
 ...
-ROOT\libsndfile\libsndfile-1.def
-ROOT\libsndfile\libsndfile-1.dll
-ROOT\libsndfile\libsndfile-1.exp
-ROOT\libsndfile\libsndfile-1.lib
-ROOT\libsndfile\sndfile.h
+ROOT\xtralibs\win\libsndfile\libsndfile-1.def
+ROOT\xtralibs\win\libsndfile\libsndfile-1.dll
+ROOT\xtralibs\win\libsndfile\libsndfile-1.exp
+ROOT\xtralibs\win\libsndfile\libsndfile-1.lib
+ROOT\xtralibs\include\libsndfile\sndfile.h
 ...
 
 

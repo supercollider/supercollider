@@ -123,7 +123,7 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\headers\plugin_interface;..\headers\server;..\headers\common;..\libsndfile;&quot;..\..\pthread-win32&quot;;..\..\portaudio\src\common;..\..\portaudio\include;&quot;..\..\asio-sdk\common&quot;;&quot;..\..\asio-sdk\host&quot;;&quot;..\..\asio-sdk\host\pc&quot;"
+				AdditionalIncludeDirectories="..\headers\plugin_interface;..\headers\server;..\headers\common;..\xtralibs\include\libsndfile;&quot;..\..\pthread-win32&quot;;..\..\portaudio\src\common;..\..\portaudio\include;&quot;..\..\asio-sdk\common&quot;;&quot;..\..\asio-sdk\host&quot;;&quot;..\..\asio-sdk\host\pc&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;SC_WIN32;NOMINMAX;PTW32_BUILD;SC_WIN32_STATIC_PTHREADS;PA_NO_DS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
