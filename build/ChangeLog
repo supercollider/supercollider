@@ -23,6 +23,7 @@ Headlines:
 * 2009-11-28 windows: system "application support path", previously hardcoded as C:\SuperCollider, now settable by environment variable SC_SYSAPPSUP_PATH. Default setting for that env var (when using official wix bundle) will be [SC3INSTALLLOCATION] - ds
 * 2009-12-15 sclang: 64bit safety - tb
 * 2009-12-15 sclang: performance improvement of math ops - tb
+* 2010-01-02 scsynth: use osc-compilant address patterns for server/lang communication - tb
 
 
 Bugfixes:
@@ -146,7 +147,7 @@ Headlines:
 * 2009-01-06 SendReply UGen - jr
 * 2009-01-06 VDiskIn sends file position to client - jr
 * 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
-* 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative. 
+* 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative.
 * 2009-01-15 SCLevelIndicator view added - sw
 * 2009-01-16 Scale and Tuning classes added - tw
 * 2009-01-17 SuperColliderAU (scsynth as a Mac OSX "Audio Unit") added to main distribution - gr
@@ -289,7 +290,7 @@ Headlines:
 * 2007-xx-xx many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
 * 2007-10-20 added a Glossary file - sw
 * 2007-10-xx various new help files added, and many help files improved - various
-* 2007-10-26 changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb 
+* 2007-10-26 changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb
 
 Other additions/improvements:
 ---------------------------
@@ -306,7 +307,7 @@ Other additions/improvements:
 * 2007-10-25 Collection : histo method improved and moved from mathLib to common - jr
 * 2007-10-30 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
 * 2007-10-31 refactored Pbrown, added Pgbrown - jr
- 
+
 Bugfixes:
 ---------
 * 2007-09-29 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
