@@ -847,7 +847,8 @@
 				6A1C636F0CFB6D27004ED3DA /* LICENSE.html */,
 				6A1C63700CFB6D27004ED3DA /* unicode */,
 			);
-			path = icu;
+			name = icu;
+			path = ../xtralibs/include/icu;
 			sourceTree = "<group>";
 		};
 		6A1C63700CFB6D27004ED3DA /* unicode */ = {
@@ -1910,7 +1911,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = ./Headers/icu;
+				HEADER_SEARCH_PATHS = ./xtralibs/include/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				PREBINDING = NO;
@@ -1934,7 +1935,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = ./Headers/icu;
+				HEADER_SEARCH_PATHS = ./xtralibs/include/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DNDEBUG";

@@ -767,7 +767,8 @@
 				77724A790EABEA3B00732A1C /* LICENSE.html */,
 				77724A7A0EABEA3B00732A1C /* unicode */,
 			);
-			path = icu;
+			name = icu;
+			path = ../xtralibs/include/icu;
 			sourceTree = "<group>";
 		};
 		77724A7A0EABEA3B00732A1C /* unicode */ = {

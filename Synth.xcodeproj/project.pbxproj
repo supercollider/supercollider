@@ -333,14 +333,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		37044CA00DE71893005F25E1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = curl/types.h; sourceTree = SOURCE_ROOT; };
-		37044CA10DE71893005F25E1 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "typecheck-gcc.h"; path = "curl/typecheck-gcc.h"; sourceTree = SOURCE_ROOT; };
-		37044CA20DE71893005F25E1 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdcheaders.h; path = curl/stdcheaders.h; sourceTree = SOURCE_ROOT; };
-		37044CA30DE71893005F25E1 /* multi.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = multi.h; path = curl/multi.h; sourceTree = SOURCE_ROOT; };
-		37044CA40DE71893005F25E1 /* mprintf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = mprintf.h; path = curl/mprintf.h; sourceTree = SOURCE_ROOT; };
-		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = easy.h; path = curl/easy.h; sourceTree = SOURCE_ROOT; };
-		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = curl/curlver.h; sourceTree = SOURCE_ROOT; };
-		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = curl/curl.h; sourceTree = SOURCE_ROOT; };
+		37044CA00DE71893005F25E1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = xtralibs/include/curl/types.h; sourceTree = SOURCE_ROOT; };
+		37044CA10DE71893005F25E1 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "typecheck-gcc.h"; path = "xtralibs/include/curl/typecheck-gcc.h"; sourceTree = SOURCE_ROOT; };
+		37044CA20DE71893005F25E1 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdcheaders.h; path = xtralibs/include/curl/stdcheaders.h; sourceTree = SOURCE_ROOT; };
+		37044CA30DE71893005F25E1 /* multi.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = multi.h; path = xtralibs/include/curl/multi.h; sourceTree = SOURCE_ROOT; };
+		37044CA40DE71893005F25E1 /* mprintf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = mprintf.h; path = xtralibs/include/curl/mprintf.h; sourceTree = SOURCE_ROOT; };
+		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = easy.h; path = xtralibs/include/curl/easy.h; sourceTree = SOURCE_ROOT; };
+		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = xtralibs/include/curl/curlver.h; sourceTree = SOURCE_ROOT; };
+		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = xtralibs/include/curl/curl.h; sourceTree = SOURCE_ROOT; };
 		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
 		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
@@ -473,10 +473,10 @@
 		D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperColliderAUVersion.h; sourceTree = "<group>"; };
 		D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperColliderAU.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55DEBD80EF32CE300968B95 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
-		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = serverConfig.plist; sourceTree = "<group>"; };
-		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
+		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
+		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
+		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serverConfig.plist; sourceTree = "<group>"; };
+		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = version.plist; sourceTree = "<group>"; };
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
@@ -520,7 +520,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		37044C9F0DE71876005F25E1 /* libcurl */ = {
+		37044C9F0DE71876005F25E1 /* curl */ = {
 			isa = PBXGroup;
 			children = (
 				37044CA00DE71893005F25E1 /* types.h */,
@@ -532,7 +532,8 @@
 				37044CA60DE71893005F25E1 /* curlver.h */,
 				37044CA70DE71893005F25E1 /* curl.h */,
 			);
-			name = libcurl;
+			name = curl;
+			path = ../xtralibs/include/curl;
 			sourceTree = "<group>";
 		};
 		9456F7F60C1A1FBC00634E4D /* Resources */ = {
@@ -603,7 +604,7 @@
 		94930B770C190FB80018AB50 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				37044C9F0DE71876005F25E1 /* libcurl */,
+				37044C9F0DE71876005F25E1 /* curl */,
 				942C379C0C1B3FB600360A35 /* sndfile.h */,
 				94930B8D0C190FB80018AB50 /* common */,
 				94930BD40C190FB80018AB50 /* plugin_interface */,

@@ -547,7 +547,7 @@ else:
 
 # libicu
 if env['LANG']:
-    if conf.CheckCHeader('unicode/uregex.h'):
+    if PLATFORM == 'darwin' or conf.CheckCHeader('unicode/uregex.h'):
         libraries['libicu'] = Environment(
              LINKFLAGS = '-licui18n -licuuc -licudata',
         )
@@ -998,7 +998,7 @@ if PLATFORM == 'darwin':
     langEnv.Append(
                 LIBS = ['icucore'],
                 LINKFLAGS = ['-framework', 'CoreServices'], #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'],
-                CPPPATH = ['#Headers/icu/unicode'])
+                CPPPATH = ['#xtralibs/include/icu/unicode'])
 elif PLATFORM == 'linux':
     langEnv.Append(
         LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
