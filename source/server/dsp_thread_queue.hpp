@@ -23,7 +23,7 @@
 #include <memory>
 #include <algorithm>
 
-#include <boost/lockfree/atomic_int.hpp>
+#include <boost/atomic.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
 
@@ -122,7 +122,7 @@ private:
             interpreter.mark_as_runnable(this);
     }
 
-    boost::lockfree::atomic_int<activation_limit_t> activation_count; /**< current activation count */
+    boost::atomic<activation_limit_t> activation_count; /**< current activation count */
 
     runnable job;
     successor_list successors;                                 /**< list of successing nodes */
@@ -390,7 +390,7 @@ private:
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
     boost::lockfree::fifo<dsp_thread_queue_item*> fifo;
-    boost::lockfree::atomic_int<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
 };
 
 } /* namespace nova */
