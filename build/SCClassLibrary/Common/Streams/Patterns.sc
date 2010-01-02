@@ -99,7 +99,7 @@ Pfunc : Pattern {
 //	embedInStream { arg inval; loop { inval = yield(nextFunc.value(inval)) }  }
 }
 
-Prout : Pattern {
+Proutine : Pattern {
 	var <>routineFunc;
 	*new { arg routineFunc;
 		^super.newCopyArgs(routineFunc)
@@ -111,10 +111,10 @@ Prout : Pattern {
 	embedInStream { arg inval; ^routineFunc.value(inval) }
 }
 
-Proutine : Prout {
+Prout : Proutine {
 	*new { |routineFunc|
-		"Proutine is deprecated. Use Prout instead.".postln;
-		^Prout(routineFunc)
+		"Prout is deprecated. Use Proutine instead.".postln;
+		^Proutine(routineFunc)
 	}
 }
 
