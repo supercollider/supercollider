@@ -579,7 +579,8 @@
 				7713C8790F42381B00B0055E /* LICENSE.html */,
 				7713C87A0F42381B00B0055E /* unicode */,
 			);
-			path = icu;
+			name = icu;
+			path = ../xtralibs/include/icu;
 			sourceTree = "<group>";
 		};
 		7713C87A0F42381B00B0055E /* unicode */ = {
