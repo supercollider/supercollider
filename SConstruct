@@ -430,8 +430,8 @@ if isDefaultBuild():
         libraries['sndfile'] = Environment(CPPDEFINES = ['NO_LIBSNDFILE'])
     else:
         if PLATFORM == 'darwin' and env['INTERNAL_LIBSNDFILE']:
-            libraries['sndfile'] = Environment(LINKFLAGS = ['libsndfile/libsndfile.a'],
-                                               CPPPATH = ['#libsndfile'])
+            libraries['sndfile'] = Environment(LINKFLAGS = ['xtralibs/mac/libsndfile.a'],
+                                               CPPPATH = ['#xtralibs/include/libsndfile'])
         else:
             success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
             if not success: Exit(1)

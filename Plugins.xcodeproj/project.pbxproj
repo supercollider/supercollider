@@ -336,7 +336,7 @@
 		92CCC51E045B451100CA2167 /* MouseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MouseUGens.cpp; path = ../../Source/plugins/MouseUGens.cpp; sourceTree = "<group>"; };
 		92CCC51F045B4BDE00CA2167 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
-		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		9451F5E20C1CAC250037197F /* OSCUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = OSCUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = BinaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5E40C1CAC250037197F /* NoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = NoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -367,7 +367,7 @@
 		DC29B0A40E925FE3009D97C0 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
 		DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnpackFFTUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UnpackFFTUGens.cpp; path = Source/plugins/UnpackFFTUGens.cpp; sourceTree = SOURCE_ROOT; };
-		F3B003521051D10800929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = libsndfile/scUBlibsndfile.a; sourceTree = "<group>"; };
+		F3B003521051D10800929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F3F479180D03BCB0001A470F /* GrainUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GrainUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479230D03BCDB001A470F /* ReverbUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = ReverbUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479260D03BD1A001A470F /* GrainUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrainUGens.cpp; path = ../../Source/plugins/GrainUGens.cpp; sourceTree = "<group>"; };
@@ -1868,8 +1868,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
 				PRODUCT_NAME = DiskIOUGens;
 			};
 			name = Development;
@@ -1885,8 +1885,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/libsndfile\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/libsndfile\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
 				PRODUCT_NAME = DiskIOUGens;
 				SDKROOT = "";
 			};
