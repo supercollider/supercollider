@@ -38,6 +38,8 @@ def independent():
         BoolOption("debug_release", "Compile release with debugging symbols and frame pointer", False),
         BoolOption("omit_frame_pointer", "compile with -fomit-frame-pointer (seems to be broken on gcc-4.1)", False),
         BoolOption("debug_stl", "compile debug build with stl debugging features", False),
+        BoolOption("sse41", "compile with sse4.1 support", False),
+        BoolOption("sse42", "compile with sse4.2 support", False),
         ('arch', 'Optimize for specific architecture', None),
         ('cc', 'c comiler', None),
         ('cxx', 'c++ comiler', None),
@@ -137,6 +139,12 @@ def independent():
 
         #conf.CheckCFlag("-Wabi")
         #conf.CheckCFlag("-Wextra")
+
+    if env.get('sse41', False):
+        conf.CheckCFlag("-msse4.1")
+
+    if env.get('sse42', False):
+        conf.CheckCFlag("-msse4.2")
 
     env['libnova_extra_linkflags'] = ['-Wl,-E']
 
