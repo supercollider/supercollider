@@ -57,15 +57,18 @@ if [ $package_type == "source" ]; then
     fi
         
     # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
-    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" > LinuxExclusions.txt
+    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -name "iPhone*" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/Psycollider
 SuperCollider-Source/Resources
 SuperCollider-Source/Intermediate Build Files
 SuperCollider-Source/README OS X
 SuperCollider-Source/README WINDOWS
-SuperCollider-Source/libsndfile
-SuperCollider-Source/curl
+SuperCollider-Source/README IPHONE
+SuperCollider-Source/xtralibs/include/libsndfile
+SuperCollider-Source/xtralibs/include/curl
+SuperCollider-Source/xtralibs/include/icu
+SuperCollider-Source/xtralibs/mac
 SuperCollider-Source/Standalone Resources
 SuperCollider-Source/clean-compile.sh
 SuperCollider-Source/compile.sh
