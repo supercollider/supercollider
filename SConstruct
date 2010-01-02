@@ -357,7 +357,7 @@ env = Environment(options = opts,
 env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
 
 # for nova-simd
-env.Append(CPPPATH = ["nova-simd"])
+env.Append(CPPPATH = ["xtralibs/include/nova-simd"])
 env.Append(CPPDEFINES = ["NOVA_SIMD"])
 
 if not env['GPL3']:
