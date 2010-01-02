@@ -23,6 +23,12 @@ sources = list()
 
 ######################################################################
 #
+# boost lockfree
+
+env.Append(CPPPATH=Dir("#/libs/boost_lockfree"))
+
+######################################################################
+#
 # boost
 boost_sources = SConscript("SConscript.boost", exports={'env':env, 'env_specific':True})
 
@@ -34,9 +40,9 @@ env.Append(CPPPATH=Dir("#/libs/uuid"))
 
 ######################################################################
 #
-# boost lockfree
+# boost endian
 
-env.Append(CPPPATH=Dir("#/libs/boost_lockfree"))
+env.Append(CPPPATH=Dir("#/libs/endian"))
 
 ######################################################################
 #

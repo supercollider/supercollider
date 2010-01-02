@@ -172,13 +172,12 @@ def specific():
         #conf.CheckCFlag("--param large-function-growth=1000")
         #conf.CheckCFlag("--param inline-unit-growth=1000")
 
+        conf.CheckCFlag("-O3")
         if env.get('debug_release', False):
             conf.CheckCFlag("-g")
-            conf.CheckCFlag("-O2")
-        else:
-            conf.CheckCFlag("-O3")      # -O3 seems to generate bad code in gcc-4.2.2
-            if env.get('omit_frame_pointer', False):
-                conf.CheckCFlag("-fomit-frame-pointer")
+
+        if env.get('omit_frame_pointer', False):
+            conf.CheckCFlag("-fomit-frame-pointer")
 
         if env.get('strip', False):
             env.Append(LINKFLAGS=["-Wl,--strip-all"])
