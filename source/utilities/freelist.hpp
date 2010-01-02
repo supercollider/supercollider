@@ -20,7 +20,7 @@
 #define UTILITIES_FREELIST_HPP
 
 #include <boost/lockfree/detail/tagged_ptr.hpp>
-#include <boost/lockfree/atomic_int.hpp>
+#include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 
 
@@ -41,42 +41,47 @@ class freelist
 
 public:
     freelist(void):
-        pool_(NULL)
+        pool_(tagged_ptr(NULL))
     {}
 
     void * pop (void)
     {
         for(;;)
         {
-            tagged_ptr old_pool(pool_);
+            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
 
-            if (!old_pool)
+            if (!old_pool.get_ptr())
                 return 0;
 
-            freelist_node * new_pool = old_pool->next.get_ptr();
+            freelist_node * new_pool_ptr = old_pool->next.get_ptr();
+            tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
 
-            if (pool_.cas(old_pool, new_pool))
-                return reinterpret_cast<void*>(old_pool.get_ptr());
+            if (pool_.compare_exchange_strong(old_pool, new_pool)) {
+                void * ptr = old_pool.get_ptr();
+                return reinterpret_cast<void*>(ptr);
+            }
         }
     }
 
     void push (void * n)
     {
+        void * node = n;
         for(;;)
         {
-            tagged_ptr old_pool (pool_);
+            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
 
-            freelist_node * new_pool = reinterpret_cast<freelist_node*>(n);
+            freelist_node * new_pool_ptr = reinterpret_cast<freelist_node*>(node);
+            tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
 
             new_pool->next.set_ptr(old_pool.get_ptr());
 
-            if (pool_.cas(old_pool, new_pool))
+            if (pool_.compare_exchange_strong(old_pool, new_pool))
                 return;
         }
     }
 
 private:
-    tagged_ptr pool_;
+    boost::atomic<tagged_ptr> pool_;
 };
 
 

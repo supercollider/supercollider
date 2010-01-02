@@ -20,7 +20,7 @@
 #define TICKET_SCHEDULER_HPP
 
 #include <boost/noncopyable.hpp>
-#include <boost/lockfree/atomic_int.hpp>
+#include <boost/atomic.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 
@@ -33,7 +33,7 @@ class ticket_scheduler:
     boost::noncopyable
 {
     typedef std::size_t size_t;
-    typedef boost::lockfree::atomic_int<size_t> atomic_int;
+    typedef boost::atomic<size_t> atomic_int;
 
 public:
     size_t get_ticket(void)
