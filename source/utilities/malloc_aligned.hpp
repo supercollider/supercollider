@@ -22,9 +22,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef HAVE_TBB
+#ifdef __SSE2__
+#include <xmmintrin.h>
+#elif defined(HAVE_TBB)
 #include <tbb/cache_aligned_allocator.h>
 #endif /* HAVE_TBB */
+
 
 namespace nova
 {
@@ -52,6 +55,20 @@ inline void* malloc_aligned(std::size_t nbytes)
 inline void free_aligned(void *ptr)
 {
     free(ptr);
+}
+
+#elif defined(__SSE2__)
+
+const int malloc_memory_alignment = 64;
+
+inline void* malloc_aligned(std::size_t nbytes)
+{
+    return _mm_malloc(nbytes, malloc_memory_alignment);
+}
+
+inline void free_aligned(void *ptr)
+{
+    _mm_free(ptr);
 }
 
 #elif defined(HAVE_TBB)
