@@ -205,30 +205,6 @@ public:
         set_thread_count(tc);
     }
 
-    void tick(thread_count_t thread_index)
-    {
-        for(;;)
-        {
-            bool done = run_item(thread_index);
-            if (unlikely(done))
-                return;
-        }
-    }
-
-    void tick_master(void)
-    {
-        for(;;)
-        {
-            bool done = run_item_master();
-            if (unlikely(done))
-            {
-                assert(end_sem.value() == 0);
-                assert(sem.value() == 0);
-                return;
-            }
-        }
-    }
-
     /** prepares queue and queue interpreter for dsp tick
      *
      *  \return true, if dsp queue is valid
@@ -249,7 +225,6 @@ public:
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
             mark_as_runnable(initially_runnable_items[i]);
 
-        qdone = false;
         return true;
     }
 
@@ -299,73 +274,79 @@ public:
         return used_helper_threads;
     }
 
+    void tick(thread_count_t thread_index)
+    {
+        run_item(thread_index);
+    }
+
+
 private:
-    bool run_item(thread_count_t index)
+    void run_item(thread_count_t index)
     {
         for (;;)
         {
-            if (sem.try_wait())
+            if (node_count.load(boost::memory_order_acquire))
             {
+                /* we still have some nodes to process */
+                int state = run_next_item(index);
 
-                bool done = run_next_item(index);
-
-                /* wake master thread on end */
-                if (unlikely(done))
+                if (state == no_remaining_items ||
+                    ((state == fifo_empty) && (node_count.load(boost::memory_order_acquire) == 0)) )
                 {
                     assert(node_count == 0);
-                    qdone = true;
-                    end_sem.post(); /* wake master */
-
-                    if (used_helper_threads > 0) /* wake helper threads */
-                        for (int i = 1; i != used_helper_threads; ++i)
-                            done_sem.post();
-                    return true;
+                    return;
                 }
-                return false;
             }
-            if (done_sem.try_wait())
-                return true;
+            else
+                return;
         }
     }
 
-    bool run_item_master(void)
+public:
+    void tick_master(void)
+    {
+        run_item_master();
+    }
+
+private:
+    void run_item_master(void)
     {
         for(;;)
         {
-            if (sem.try_wait())
+            if (node_count.load(boost::memory_order_acquire))
             {
-                bool cont = run_next_item(0);
+                /* we still have some nodes to process */
+                int state = run_next_item(0);
 
                 /* wake other threads on end */
-                if (likely(cont))
+                if (state == no_remaining_items ||
+                    ((state == fifo_empty) && (node_count.load(boost::memory_order_acquire) == 0)) )
                 {
                     assert(node_count == 0);
-                    qdone = true;
-
-                    if (used_helper_threads > 0) /* wake helper threads */
-                        for (int i = 0; i != used_helper_threads; ++i)
-                            done_sem.post();
-                    /* end master thread loop */
-                    return true;
+                    return;
                 }
             }
-            if (end_sem.try_wait())
-                return true;
+            else
+                return;
         }
     }
 
-
-    bool run_next_item(thread_count_t index)
+    int run_next_item(thread_count_t index)
     {
         dsp_thread_queue_item * item;
         bool success = fifo.dequeue(&item);
-        assert(success);
+
+        if (!success)
+            return fifo_empty;
 
         item->run(*this, index);
 
         node_count_t remaining = node_count--;
 
-        return (remaining == 1);
+        if (remaining == 1)
+            return no_remaining_items;
+        else
+            return remaining_items;
     }
 
     friend class nova::dsp_threads<runnable, Alloc>;
@@ -373,18 +354,18 @@ private:
     void mark_as_runnable(dsp_thread_queue_item * item)
     {
         fifo.enqueue(item);
-        sem.post();
     }
 
     friend class nova::dsp_thread_queue_item<runnable, Alloc>;
 
 private:
-    dsp_thread_queue_ptr queue;
-    semaphore sem;               /* semaphore for dsp threads */
-    semaphore end_sem;           /* semaphore for main audio thread to wait for */
-    semaphore done_sem;          /* semaphore for helper threads to wait for */
+    enum {
+        fifo_empty,
+        remaining_items,
+        no_remaining_items
+    };
 
-    bool qdone;
+    dsp_thread_queue_ptr queue;
 
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
