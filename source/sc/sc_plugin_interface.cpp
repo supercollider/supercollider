@@ -521,6 +521,8 @@ void sc_plugin_interface::initialize(void)
     memset(world.mSndBufUpdates, 0, world.mNumSndBufs*sizeof(SndBufUpdates));
     world.mBufCounter = 0;
 
+    async_buffer_guards.reset(new boost::mutex[world.mNumSndBufs]);
+
     /* audio settings */
     world.mBufLength = args.blocksize;
     world.mSampleRate = args.samplerate;

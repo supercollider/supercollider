@@ -390,6 +390,12 @@ void fire_system_callback(Functor const & f)
     instance->add_system_callback(new fn_system_callback<Functor>(f));
 }
 
+template <typename Functor>
+void fire_io_callback(Functor const & f)
+{
+    instance->add_io_callback(new fn_system_callback<Functor>(f));
+}
+
 
 template <typename Functor>
 struct fn_sync_callback:
@@ -1402,6 +1408,7 @@ void b_alloc_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endp
 
 void b_alloc_1_nrt(uint32_t index, uint32_t frames, uint32_t channels, completion_message & msg, udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
     ugen_factory.allocate_buffer(index, frames, channels);
     fire_rt_callback(boost::bind(b_alloc_2_rt, index, msg, free_buf, endpoint));
@@ -1435,7 +1442,7 @@ void handle_b_alloc(received_message const & msg, udp::endpoint const & endpoint
 
     completion_message message = extract_completion_message(args);
 
-    fire_system_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint));
+    fire_io_callback(boost::bind(b_alloc_1_nrt, index, frames, channels, message, endpoint));
 }
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
@@ -1444,6 +1451,7 @@ void b_free_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpo
 
 void b_free_1_nrt(uint32_t index, completion_message & msg, udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
     ugen_factory.free_buffer(index);
     fire_rt_callback(boost::bind(b_free_2_rt, index, free_buf, msg, endpoint));
@@ -1472,7 +1480,7 @@ void handle_b_free(received_message const & msg, udp::endpoint const & endpoint)
 
     completion_message message = extract_completion_message(args);
 
-    fire_system_callback(boost::bind(b_free_1_nrt, index, message, endpoint));
+    fire_io_callback(boost::bind(b_free_1_nrt, index, message, endpoint));
 }
 
 void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
@@ -1481,6 +1489,7 @@ void b_allocRead_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & 
 void b_allocRead_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
                        udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
     int error = ugen_factory.buffer_read_alloc(index, filename.c_str(), start, frames);
     if (!error)
@@ -1535,6 +1544,7 @@ void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, u
                               movable_array<uint32_t> const & channels, completion_message & msg,
                               udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     sample * free_buf = ugen_factory.get_nrt_mirror_buffer(index);
     int error = ugen_factory.buffer_alloc_read_channels(index, filename.c_str(), start, frames,
                                                         channels.length(), channels.data());
@@ -1586,7 +1596,7 @@ void handle_b_allocReadChannel(received_message const & msg, udp::endpoint const
     movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
     movable_string fname(filename);
 
-    fire_system_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
+    fire_io_callback(boost::bind(b_allocReadChannel_1_nrt, index, fname, start, frames, channel_mapping, message, endpoint));
 }
 
 const char * b_write = "/b_write";
@@ -1595,6 +1605,7 @@ void b_write_nrt_1(uint32_t index, movable_string const & filename, movable_stri
                    movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
                    completion_message & msg, udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     ugen_factory.buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
     msg.trigger_async(endpoint);
     fire_done_message(endpoint, b_write, index);
@@ -1655,17 +1666,16 @@ fire_callback:
     movable_string header_f(header_format);
     movable_string sample_f(sample_format);
 
-    fire_system_callback(boost::bind(b_write_nrt_1, index, fname, header_f, sample_f,
-                                     start, frames, bool(leave_open), message, endpoint));
+    fire_io_callback(boost::bind(b_write_nrt_1, index, fname, header_f, sample_f,
+                                 start, frames, bool(leave_open), message, endpoint));
 }
-
-
 
 void b_read_rt_2(uint32_t index, completion_message & msg, udp::endpoint const & endpoint);
 
 void b_read_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file, uint32_t frames,
                   uint32_t start_buffer, bool leave_open, completion_message & msg, udp::endpoint const & endpoint)
 {
+    sc_ugen_factory::buffer_lock_t buffer_lock(ugen_factory.buffer_guard(index));
     ugen_factory.buffer_read(index, filename.c_str(), start_file, frames, start_buffer, leave_open);
     fire_rt_callback(boost::bind(b_read_rt_2, index, msg, endpoint));
 }
@@ -1751,7 +1761,7 @@ void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t sta
 {
     ugen_factory.buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
                                      channel_map.length(), channel_map.data());
-    fire_rt_callback(boost::bind(b_readChannel_rt_2, index, msg, endpoint));
+    fire_io_callback(boost::bind(b_readChannel_rt_2, index, msg, endpoint));
 }
 
 const char * b_readChannel = "/b_readChannel";
@@ -1837,8 +1847,8 @@ fire_callback:
     movable_string fname(filename);
     movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
 
-    fire_system_callback(boost::bind(b_readChannel_nrt_1, index, fname, start_file, frames, start_buffer,
-                                     bool(leave_open), channel_map, message, endpoint));
+    fire_io_callback(boost::bind(b_readChannel_nrt_1, index, fname, start_file, frames, start_buffer,
+                                 bool(leave_open), channel_map, message, endpoint));
 }
 
 
@@ -1866,7 +1876,7 @@ void handle_b_zero(received_message const & msg, udp::endpoint const & endpoint)
     args >> index;
     completion_message message = extract_completion_message(args);
 
-    fire_system_callback(boost::bind(b_zero_nrt_1, index, message, endpoint));
+    fire_io_callback(boost::bind(b_zero_nrt_1, index, message, endpoint));
 }
 
 void handle_b_set(received_message const & msg)
@@ -1970,7 +1980,7 @@ void handle_b_close(received_message const & msg, udp::endpoint const & endpoint
 
     args >> index;
 
-    fire_system_callback(boost::bind(b_close_nrt_1, index));
+    fire_io_callback(boost::bind(b_close_nrt_1, index));
 }
 
 void handle_b_get(received_message const & msg, udp::endpoint const & endpoint)

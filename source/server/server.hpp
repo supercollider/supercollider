@@ -103,6 +103,11 @@ public:
 
     ~nova_server(void);
 
+    void add_io_callback(system_callback * cb)
+    {
+        system_interpreter.add_callback(cb);
+    }
+
     /* system interpreter */
     /* @{ */
     void add_system_callback(system_callback * cb)
@@ -171,6 +176,7 @@ private:
     void update_dsp_queue(void);
 
     callback_interpreter<system_callback> system_interpreter;
+    callback_interpreter_threadpool<system_callback> io_interpreter;
     uint32_t synth_count_, group_count_;
 };
 

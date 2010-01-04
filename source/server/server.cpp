@@ -31,6 +31,7 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(unsigned int port, unsigned int threads):
     scheduler(threads), buffer_manager(1024), sc_osc_handler(port),
+    io_interpreter(4, true, thread_priority_interval_rt().first),
     synth_count_(0), group_count_(1)
 {
     assert(instance == 0);

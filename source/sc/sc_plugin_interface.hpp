@@ -28,6 +28,9 @@
 #include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
 #include "supercollider/Headers/plugin_interface/SC_World.h"
 
+#include <boost/scoped_array.hpp>
+#include <boost/thread/pthread/mutex.hpp>
+
 namespace nova
 {
 
@@ -132,8 +135,19 @@ public:
     }
 
     void free_buffer(uint32_t index);
+
+    typedef boost::mutex::scoped_lock buffer_lock_t;
+
+    boost::mutex & buffer_guard(size_t index)
+    {
+        return async_buffer_guards[index];
+    }
+
+private:
+    boost::scoped_array<boost::mutex> async_buffer_guards;
     /* @} */
 
+public:
     /* copies nrt mirror to rt buffers */
     void buffer_sync(uint32_t index);
 
