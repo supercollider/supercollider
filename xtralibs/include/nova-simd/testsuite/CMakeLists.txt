@@ -5,9 +5,10 @@ set(tests
   simd_memory_tests.cpp
   simd_mix_tests.cpp
   simd_pan_tests.cpp
+  simd_peak_tests.cpp
   simd_round_tests.cpp
-  simd_tests.cpp
   simd_ternary_tests.cpp
+  simd_tests.cpp
   simd_unary_tests.cpp
   softclip_test.cpp
 )

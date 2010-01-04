@@ -5,45 +5,27 @@
 
 #include <cmath>
 
-#include "../benchmarks/cache_aligned_array.hpp"
-#include "../simd_peakmeter.hpp"
+#include "../simd_utils.hpp"
 
 using namespace nova;
 using namespace std;
 
-static const int size = 64;
+#ifdef __SSE__
 
-template <typename F>
-void run_peak(void)
+void test_register(__m128 arg, float f)
 {
-    aligned_array<F, size> ALIGNED in;
-    in.assign(0);
-
-    in[63] = -0.5;
-    in[40] = 1;
-    {
-        F peak = 0;
-        F last = nova::peak_vec_simd(in.begin(), &peak, size);
-
-        BOOST_REQUIRE_EQUAL( peak, 1 );
-        BOOST_REQUIRE_EQUAL( last, 0.5 );
-    }
-
-    {
-        F peak = 0;
-        F last = nova::peak_vec(in.begin(), &peak, size);
-
-        BOOST_REQUIRE_EQUAL( peak, 1 );
-        BOOST_REQUIRE_EQUAL( last, 0.5 );
-    }
+    float data[4];
+    _mm_storeu_ps(data, arg);
+    for (int i = 0; i != 4; ++ i)
+        BOOST_REQUIRE_EQUAL(data[i], f);
 }
 
-BOOST_AUTO_TEST_CASE( peak_test_float )
+
+BOOST_AUTO_TEST_CASE( utils_test )
 {
-    run_peak<float>();
+    test_register(detail::gen_one(), 1.f);
+    test_register(detail::gen_05(), 0.5f);
+    test_register(detail::gen_025(), 0.25f);
 }
 
-BOOST_AUTO_TEST_CASE( peak_test_double )
-{
-    run_peak<double>();
-}
+#endif
