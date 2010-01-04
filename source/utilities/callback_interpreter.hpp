@@ -23,6 +23,7 @@
 #include "callback_system.hpp"
 #include "semaphore.hpp"
 
+#include <boost/atomic.hpp>
 #include <boost/bind.hpp>
 #include <boost/checked_delete.hpp>
 #include <boost/ref.hpp>
@@ -67,7 +68,7 @@ public:
         for(;;)
         {
             sem.wait();
-            if (unlikely(not running))
+            if (unlikely(not running.load(boost::memory_order_relaxed)))
             {
                 callback_system<callback_type>::run_callbacks();
                 return;
@@ -84,7 +85,7 @@ public:
 
     void terminate(void)
     {
-        running = false;
+        running.store(false, boost::memory_order_relaxed);
         sem.post();
     }
 
@@ -92,13 +93,13 @@ public:
     {
         semaphore sync_sem;
         sem_sync sync(sync_sem);
-        running = true;
+        running.store(true, boost::memory_order_release);
         return boost::thread (boost::bind(&callback_interpreter::run, this, boost::ref(sync_sem)));
     }
 
 private:
     semaphore sem;
-    volatile bool running;
+    boost::atomic<bool> running;
 };
 
 } /* namespace nova */
