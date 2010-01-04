@@ -21,8 +21,11 @@
 
 #include "branch_hints.hpp"
 #include "callback_system.hpp"
-#include "semaphore.hpp"
 
+#include "nova-tt/semaphore.hpp"
+#include "nova-tt/thread_priority.hpp"
+
+#include <boost/atomic.hpp>
 #include <boost/bind.hpp>
 #include <boost/checked_delete.hpp>
 #include <boost/ref.hpp>
@@ -32,30 +35,20 @@
 namespace nova
 {
 
+namespace detail
+{
+
 template <class callback_type,
           class callback_deleter = boost::checked_deleter<callback_type> >
-class callback_interpreter:
+class callback_interpreter_base:
     callback_system<callback_type>
 {
-    struct sem_sync
-    {
-        sem_sync(semaphore & sem):
-            sem(sem)
-        {}
-
-        ~sem_sync(void)
-        {
-            sem.wait();
-        }
-
-        semaphore & sem;
-    };
-
-public:
-    callback_interpreter(void):
-        running(true)
+protected:
+    callback_interpreter_base(void):
+        sem(0), running(false)
     {}
 
+public:
     void add_callback(callback_type * cb)
     {
         callback_system<callback_type>::add_callback(cb);
@@ -64,42 +57,108 @@ public:
 
     void run(void)
     {
-        for(;;)
+        running.store(true, boost::memory_order_relaxed);
+
+        do
         {
             sem.wait();
-            if (unlikely(not running))
-            {
-                callback_system<callback_type>::run_callbacks();
-                return;
-            }
-            callback_system<callback_type>::run_callback();
+            callback_system<callback_type>::run_callbacks();
         }
+        while(likely(running.load(boost::memory_order_relaxed)));
     }
 
-    void run(semaphore & sync_sem)
+protected:
+    semaphore sem;
+    boost::atomic<bool> running;
+};
+
+
+} /* namespace detail */
+
+template <class callback_type,
+          class callback_deleter = boost::checked_deleter<callback_type> >
+class callback_interpreter:
+    public detail::callback_interpreter_base<callback_type, callback_deleter>
+{
+    typedef detail::callback_interpreter_base<callback_type, callback_deleter> super;
+
+public:
+    callback_interpreter(void)
+    {}
+
+    void run(void)
     {
-        sync_sem.post();
-        run();
+        super::run();
     }
 
     void terminate(void)
     {
-        running = false;
-        sem.post();
+        super::running.store(false, boost::memory_order_relaxed);
+        super::sem.post();
     }
 
     boost::thread start_thread(void)
     {
         semaphore sync_sem;
-        sem_sync sync(sync_sem);
-        running = true;
+        semaphore_sync sync(sync_sem);
         return boost::thread (boost::bind(&callback_interpreter::run, this, boost::ref(sync_sem)));
     }
 
 private:
-    semaphore sem;
-    volatile bool running;
+    void run(semaphore & sync_sem)
+    {
+        sync_sem.post();
+        run();
+    }
 };
+
+template <class callback_type,
+          class callback_deleter = boost::checked_deleter<callback_type> >
+class callback_interpreter_threadpool:
+    public detail::callback_interpreter_base<callback_type, callback_deleter>
+{
+    typedef detail::callback_interpreter_base<callback_type, callback_deleter> super;
+
+public:
+    callback_interpreter_threadpool(uint16_t worker_thread_count, bool rt, uint16_t priority):
+        worker_thread_count_(worker_thread_count), priority(priority), rt(rt)
+    {
+        semaphore sync_sem;
+        for (uint16_t i = 0; i != worker_thread_count; ++i)
+            threads.create_thread(boost::bind(&callback_interpreter_threadpool::run, this, boost::ref(sync_sem)));
+
+        for (uint16_t i = 0; i != worker_thread_count; ++i)
+            sync_sem.wait();
+    }
+
+    ~callback_interpreter_threadpool(void)
+    {
+        super::running.store(false, boost::memory_order_relaxed);
+
+        for (uint16_t i = 0; i != worker_thread_count_; ++i)
+            super::sem.post();
+        threads.join_all();
+    }
+
+private:
+    void run(semaphore & sync_sem)
+    {
+        sync_sem.post();
+
+        if (rt)
+            thread_set_priority_rt(priority);
+        else
+            thread_set_priority(priority);
+
+        super::run();
+    }
+
+    boost::thread_group threads;
+    uint16_t worker_thread_count_;
+    uint16_t priority;
+    bool rt;
+};
+
 
 } /* namespace nova */
 

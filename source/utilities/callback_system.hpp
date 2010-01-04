@@ -46,10 +46,8 @@ public:
     }
 
     /** \brief run all callbacks */
-    inline bool run_callbacks(void)
+    inline void run_callbacks(void)
     {
-        bool didsomething = false;
-
         for (;;)
         {
             callback_type* runme;
@@ -57,10 +55,8 @@ public:
             if (not callbacks.dequeue(&runme))
                 break;
 
-            if (run_callback(runme))
-                didsomething = true;
+            run_callback(runme);
         }
-        return didsomething;
     }
 
     /** \brief run one callback
