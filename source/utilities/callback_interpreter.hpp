@@ -21,7 +21,8 @@
 
 #include "branch_hints.hpp"
 #include "callback_system.hpp"
-#include "semaphore.hpp"
+
+#include "nova-tt/semaphore.hpp"
 
 #include <boost/atomic.hpp>
 #include <boost/bind.hpp>
@@ -38,20 +39,6 @@ template <class callback_type,
 class callback_interpreter:
     callback_system<callback_type>
 {
-    struct sem_sync
-    {
-        sem_sync(semaphore & sem):
-            sem(sem)
-        {}
-
-        ~sem_sync(void)
-        {
-            sem.wait();
-        }
-
-        semaphore & sem;
-    };
-
 public:
     callback_interpreter(void):
         running(true)
@@ -92,7 +79,7 @@ public:
     boost::thread start_thread(void)
     {
         semaphore sync_sem;
-        sem_sync sync(sync_sem);
+        semaphore_sync sync(sync_sem);
         running.store(true, boost::memory_order_release);
         return boost::thread (boost::bind(&callback_interpreter::run, this, boost::ref(sync_sem)));
     }

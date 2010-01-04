@@ -29,7 +29,7 @@
 
 #include <boost/lockfree/fifo.hpp>
 
-#include "utilities/semaphore.hpp"
+#include "nova-tt/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
 
 namespace nova
