@@ -86,7 +86,7 @@ Spawner : Pattern {
 
 }
 
-Pspawner : Proutine {
+Pspawner : Prout {
 
 	asStream {
 		^Routine({ | ev | this.embedInStream(ev) })
