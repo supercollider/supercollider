@@ -19,8 +19,6 @@
 /* \todo for now we use dlopen, later we want to become cross-platform
  */
 
-#define DLOPEN
-
 #ifdef DLOPEN
 #include <dlfcn.h>
 #endif
