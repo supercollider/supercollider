@@ -5,6 +5,7 @@
 
 #include "../source/utilities/callback_system.hpp"
 #include "../source/utilities/callback_interpreter.hpp"
+#include <thread_priority.hpp>
 
 using namespace nova;
 
@@ -44,4 +45,15 @@ BOOST_AUTO_TEST_CASE( callback_interpreter_test )
     cbi.terminate();
     thread.join();
     BOOST_REQUIRE_EQUAL(i, 21);
+}
+
+BOOST_AUTO_TEST_CASE( callback_interpreter_threadpool_test )
+{
+    {
+        callback_interpreter_threadpool<dummy> cbi(4, true, thread_priority_interval().first);
+
+        for (int j = 0; j != 20; ++j)
+            cbi.add_callback(new dummy());
+    }
+    BOOST_REQUIRE_EQUAL(i, 41);
 }
