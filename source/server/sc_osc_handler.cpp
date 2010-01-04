@@ -508,7 +508,7 @@ void status_perform(udp::endpoint const & endpoint)
     char buffer[1024];
     typedef osc::int32 i32;
     osc::OutboundPacketStream p(buffer, 1024);
-    p << osc::BeginMessage("status.reply")
+    p << osc::BeginMessage("/status.reply")
       << (i32)1                                    /* unused */
       << (i32)ugen_factory.ugen_count()   /* ugens */
       << (i32)instance->synth_count()     /* synths */
