@@ -25,6 +25,11 @@
 #include <emmintrin.h>
 #endif /* __SSE2__ */
 
+#ifdef __SSE4_1__
+#include <smmintrin.h>
+#endif /* __SSE41__ */
+
+
 namespace nova
 {
 namespace detail
@@ -59,13 +64,6 @@ inline __m128 gen_05(void)
     return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 26), 24);
 }
 
-inline __m128 gen_025(void)
-{
-    __m128i x = _mm_setzero_si128();
-    __m128i ones = _mm_cmpeq_epi32(x, x);
-    return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 27), 25);
-}
-
 #else
 
 /* SSE fallback */
@@ -94,12 +92,59 @@ inline __m128 gen_05(void)
     return _mm_set_ps1(0.5f);
 }
 
+#endif
+
 inline __m128 gen_025(void)
 {
     return _mm_set_ps1(0.25f);
 }
-#endif
 
+inline float extract_0(__m128 arg)
+{
+    float r;
+    _mm_store_ss(&r, arg);
+    return r;
+}
+
+inline float extract_3(__m128 arg)
+{
+    __m128 last = _mm_shuffle_ps(arg, arg, _MM_SHUFFLE(2, 1, 0, 3));
+    float r;
+    _mm_store_ss(&r, last);
+    return r;
+}
+
+inline float horizontal_min(__m128 args)
+{
+    __m128 xmm0, xmm1;
+    xmm0 = args;
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+    xmm0 = _mm_min_ps(xmm0, xmm1);
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+    xmm0 = _mm_min_ss(xmm0, xmm1);
+    return extract_0(xmm0);
+}
+
+inline float horizontal_max(__m128 args)
+{
+    __m128 xmm0, xmm1;
+    xmm0 = args;
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(2,2,2,2));
+    xmm0 = _mm_max_ps(xmm0, xmm1);
+    xmm1 = _mm_shuffle_ps(xmm0, xmm0, _MM_SHUFFLE(1,1,1,1));
+    xmm0 = _mm_max_ss(xmm0, xmm1);
+    return extract_0(xmm0);
+}
+
+#ifdef __SSE4_1__
+
+inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
+{
+    /* if bitmask is set, return value in val1, else value in val0 */
+    return _mm_blendv_ps(val0, val1, sel);
+}
+
+#else
 
 inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
 {
@@ -108,6 +153,7 @@ inline __m128 select_vector(__m128 val0, __m128 val1, __m128 sel)
                      _mm_and_ps(val1, sel));
 }
 
+#endif
 
 } /* namespace detail */
 } /* namespace nova */

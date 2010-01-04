@@ -53,22 +53,11 @@ inline float peak_vec_simd(const float * in, float * peak, unsigned int n)
         in += 16;
     } while(--n);
 
-    /* horizonal accumulation  */
-    __m128 max0 = maximum;
-    __m128 max1 = _mm_shuffle_ps(maximum, maximum, _MM_SHUFFLE(0, 3, 2, 1));
-    __m128 max2 = _mm_shuffle_ps(maximum, maximum, _MM_SHUFFLE(1, 0, 3, 2));
-    __m128 max3 = _mm_shuffle_ps(maximum, maximum, _MM_SHUFFLE(2, 1, 0, 3));
+    /* horizonal accumulation */
+    *peak = detail::horizontal_max(maximum);
 
-    __m128 max = _mm_max_ss (_mm_max_ss(max0, max1),
-                             _mm_max_ss(max2, max3));
-
-    _mm_store_ss(peak, max);
-
-    __m128 last = _mm_shuffle_ps(abs3, abs3, _MM_SHUFFLE(2, 1, 0, 3));
-
-    float ret;
-    _mm_store_ss(&ret, last);
-    return ret;
+    /* return absolute of last sample */
+    return detail::extract_3(abs3);
 }
 
 } /* namespace nova */

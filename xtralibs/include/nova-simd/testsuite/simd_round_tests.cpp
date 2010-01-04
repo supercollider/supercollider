@@ -12,7 +12,7 @@
 using namespace nova;
 using namespace std;
 
-static const int size = 10000;
+static const int size = 1024;
 
 #define COMPARE_TEST(name)                                              \
 template <typename float_type>                                          \
