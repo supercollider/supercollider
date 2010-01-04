@@ -121,7 +121,7 @@ PatternProxy : Pattern {
 
 	endless {
 
-		^Proutine { arg inval;
+		^Prout { arg inval;
 
 			var outval, count = 0;
 			var pat = pattern;
@@ -477,7 +477,7 @@ EventPatternProxy : TaskProxy {
 
 	endless {
 
-		^Proutine { arg inval;
+		^Prout { arg inval;
 
 			var outval;
 			var cleanup = EventStreamCleanup.new;
