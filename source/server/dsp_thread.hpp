@@ -75,7 +75,7 @@ public:
         for (;;)
         {
             cycle_sem.wait();
-            if (unlikely(stop))
+            if (unlikely(stop.load(boost::memory_order_acquire)))
                 return;
 
             interpreter.tick(index);
@@ -83,7 +83,7 @@ public:
     }
     void terminate(void)
     {
-        stop = true;
+        stop.store(true, boost::memory_order_release);
         wake_thread();
     }
 
@@ -95,7 +95,7 @@ public:
 private:
     semaphore cycle_sem;
     dsp_queue_interpreter & interpreter;
-    bool stop;
+    boost::atomic<bool> stop;
     uint16_t index;
 };
 
@@ -169,7 +169,6 @@ public:
         foreach(dsp_thread & thread, threads)
         {
             thread.terminate();
-            interpreter.sem.post();
         }
         thread_group_.join_all();
     }
