@@ -347,3 +347,31 @@ BOOST_AUTO_TEST_CASE( pgroup_test_7 )
     }
     n.remove_node(g);
 }
+
+BOOST_AUTO_TEST_CASE( noid_test )
+{
+    rt_pool.init(1024 * 1024);
+
+    node_graph n;
+
+    node_position_constraint to_root = std::make_pair(n.root_group(), insert);
+
+    {
+        synth * s = new synth(1000, 0);
+        n.add_node(s, to_root);
+        BOOST_REQUIRE(s->id() == 1000 );
+        n.synth_reassign_id(1000);
+        BOOST_REQUIRE(s->id() != 1000 );
+        n.remove_node(s);
+    }
+
+    {
+        synth * s = new synth(1000, 0);
+        n.add_node(s/* , node_position_constraint() */);
+        BOOST_REQUIRE(s->id() == 1000 );
+        n.synth_reassign_id(1000);
+        BOOST_REQUIRE(s->id() != 1000 );
+        n.remove_node(s);
+    }
+}
+

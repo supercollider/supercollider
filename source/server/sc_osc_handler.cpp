@@ -783,7 +783,7 @@ void handle_g_deepFree(received_message const & msg)
 
 void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_node const & node)
 {
-    p << osc::int32(node.node_id);
+    p << osc::int32(node.id());
     if (node.is_synth())
         p << -1;
     else
@@ -880,14 +880,14 @@ void g_dump_node(server_node & node, bool flag, int level)
 
     if (node.is_synth()) {
         abstract_synth const & synth = static_cast<abstract_synth const &>(node);
-        cout << synth.node_id << " " << synth.prototype_name() << endl;
+        cout << synth.id() << " " << synth.prototype_name() << endl;
 
         if (flag) {
             /* dump controls */
         }
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
-        cout << group.node_id;
+        cout << group.id();
 
         if (group.is_parallel())
             cout << " parallel group";
@@ -1289,6 +1289,19 @@ void handle_n_run(received_message const & msg)
             node->pause();
     }
 }
+
+void handle_s_noid(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_id;
+        args >> node_id;
+        instance->synth_reassign_id(node_id);
+    }
+}
+
 
 /** wrapper class for osc completion message
  */
@@ -2470,6 +2483,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_s_new(message);
         break;
 
+    case cmd_s_noid:
+        handle_s_noid(message);
+        break;
+
     case cmd_notify:
         handle_notify(message, endpoint);
         break;
@@ -2963,6 +2980,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "s_new") == 0) {
         handle_s_new(message);
+        return;
+    }
+
+    if (strcmp(address+1, "s_noid") == 0) {
+        handle_s_noid(message);
         return;
     }
 

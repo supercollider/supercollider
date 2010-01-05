@@ -55,7 +55,23 @@ protected:
         assert(parent_ == 0);
     }
 
+
+    /* @{ */
+    /** node id handling */
+    void reset_id(uint32_t new_id)
+    {
+        node_id = new_id;
+    }
+
+    uint32_t node_id;
+
 public:
+    uint32_t id(void) const
+    {
+        return node_id;
+    }
+    /* @} */
+
     typedef bi::list_base_hook<bi::link_mode<bi::auto_unlink> > parent_hook;
 
     /* @{ */
@@ -68,7 +84,6 @@ public:
     {
         return lhs.node_id == rhs.node_id;
     }
-    const uint32_t node_id;
     /* @} */
 
     bool is_synth(void) const

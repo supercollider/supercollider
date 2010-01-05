@@ -86,6 +86,26 @@ public:
         return (it == node_set.end());
     }
 
+    void synth_reassign_id(int node_id)
+    {
+        const uint32_t base = 0xffffffff;
+        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        if (it == node_set.end())
+            throw std::runtime_error("node id not found");
+        server_node * node = &(*it);
+
+        if (!node->is_synth())
+            return;
+
+        uint32_t hidden_id = base;
+        while (!node_id_available(hidden_id))
+            hidden_id -= 1;
+
+        node_set.erase(*node);
+        node->reset_id(hidden_id);
+        node_set.insert(*node);
+    }
+
 private:
     struct compare_node
     {
