@@ -140,6 +140,12 @@ vec_float4 C-style expressions
 #define vec_nmsub(a,b,c)      ((c)-(a)*(b))
 #define vec_splat(x,n)        (typeof(x))_mm_shuffle_ps(x,x,_MM_SHUFFLE(n,n,n,n))
 
+#ifdef __SSE4_1__
+#include <smmintrin.h>
+
+#define vec_sel(a,b,mask)     _mm_blendv_ps(a,b,(__m128)mask)
+
+#else
 
 static vec_float4 __attribute__((__always_inline__)) vec_sel( vec_float4 a, vec_float4 b, vec_int4 sel ){
       VEC_AND(b, sel);
@@ -147,6 +153,8 @@ static vec_float4 __attribute__((__always_inline__)) vec_sel( vec_float4 a, vec_
       VEC_OR(b,sel);
       return b;
 }
+
+#endif
 
 static inline vec_int4 __attribute__((__always_inline__)) vec_sign_mask(void)
 {
