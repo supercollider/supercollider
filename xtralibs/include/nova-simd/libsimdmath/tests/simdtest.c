@@ -413,6 +413,7 @@ void test_function2(  float a, float b,                     // Interval to test
 static void print_vec_float4_epsilon(){
       union{
             vec_uint4 v;
+            vec_float4 fv;
             int i[4];
       }at;
       union{
@@ -420,10 +421,10 @@ static void print_vec_float4_epsilon(){
             float f[4];
       }x,y;
       x.v = y.v = CF4_1;
-      at.v = VEC_GT( CF4_1 + y.v, CF4_1 );
+      at.fv = VEC_GT( CF4_1 + y.v, CF4_1 );
       while(at.i[0]){
             y.v = x.v*CF4_05;
-            at.v = VEC_GT( CF4_1 + y.v, CF4_1 );
+            at.fv = VEC_GT( CF4_1 + y.v, CF4_1 );
             if(at.i[0])
                   x.v=y.v;
       }
