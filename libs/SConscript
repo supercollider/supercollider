@@ -23,12 +23,6 @@ sources = list()
 
 ######################################################################
 #
-# boost lockfree
-
-env.Append(CPPPATH=Dir("#/libs/boost_lockfree"))
-
-######################################################################
-#
 # boost
 boost_sources = SConscript("SConscript.boost", exports={'env':env, 'env_specific':True})
 
