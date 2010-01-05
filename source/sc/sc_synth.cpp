@@ -27,7 +27,7 @@ namespace nova
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), unit_buffers(0)
 {
-    World const & world = ugen_factory.world;
+    World const & world = sc_factory.world;
     Rate_Init(&full_rate, world.mSampleRate, world.mBufLength);
     Rate_Init(&control_rate, world.mSampleRate/world.mBufLength, 1);
     rgen.init((uint32_t)(uint64_t)this);
@@ -84,7 +84,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        struct Unit * unit = ugen_factory.allocate_ugen(this, *it);
+        struct Unit * unit = sc_factory.allocate_ugen(this, *it);
         units.push_back(unit);
     }
 
@@ -98,7 +98,7 @@ sc_synth::~sc_synth(void)
     free(mControls);
     free(unit_buffers);
 
-    std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &ugen_factory, _1));
+    std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &sc_factory, _1));
 }
 
 void sc_synth::prepare(void)

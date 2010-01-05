@@ -62,10 +62,10 @@ int main(int argc, char * argv[])
 
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
 
-    ugen_factory.initialize();
+    sc_factory.initialize();
 #ifdef __linux__
-    ugen_factory.load_plugin_folder("/usr/local/lib/supernova/plugins");
-    ugen_factory.load_plugin_folder("/usr/lib/supernova/plugins");
+    sc_factory.load_plugin_folder("/usr/local/lib/supernova/plugins");
+    sc_factory.load_plugin_folder("/usr/lib/supernova/plugins");
 #else
 #error "Don't know how to locate plugins on this platform"
 #endif

@@ -46,19 +46,19 @@ namespace
 void pause_node(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_pause_node(node);
+    sc_factory.add_pause_node(node);
 }
 
 void free_node(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 }
 
 void free_node_and_preceding(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
@@ -67,13 +67,13 @@ void free_node_and_preceding(Unit * unit)
 
     server_node * preceding = node->previous_node();
     if (preceding)
-        ugen_factory.add_done_node(preceding);
+        sc_factory.add_done_node(preceding);
 }
 
 void free_node_and_pause_preceding(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
@@ -82,13 +82,13 @@ void free_node_and_pause_preceding(Unit * unit)
 
     server_node * preceding = node->previous_node();
     if (preceding)
-        ugen_factory.add_pause_node(preceding);
+        sc_factory.add_pause_node(preceding);
 }
 
 void free_node_and_preceding_children(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
@@ -99,10 +99,10 @@ void free_node_and_preceding_children(Unit * unit)
     if (!preceding)
         return;
     if (preceding->is_synth())
-        ugen_factory.add_done_node(preceding);
+        sc_factory.add_done_node(preceding);
     else {
         abstract_group * preceding_group = static_cast<abstract_group*>(preceding);
-        ugen_factory.add_freeAll_node(preceding_group);
+        sc_factory.add_freeAll_node(preceding_group);
     }
 }
 
@@ -110,7 +110,7 @@ void free_node_and_preceding_children(Unit * unit)
 void free_node_and_preceding_deep(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
@@ -121,17 +121,17 @@ void free_node_and_preceding_deep(Unit * unit)
     if (!preceding)
         return;
     if (preceding->is_synth())
-        ugen_factory.add_done_node(preceding);
+        sc_factory.add_done_node(preceding);
     else {
         abstract_group * preceding_group = static_cast<abstract_group*>(preceding);
-        ugen_factory.add_freeDeep_node(preceding_group);
+        sc_factory.add_freeDeep_node(preceding_group);
     }
 }
 
 void free_node_and_all_preceding(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
@@ -142,7 +142,7 @@ void free_node_and_all_preceding(Unit * unit)
     {
         node = node->previous_node();
         if (node)
-            ugen_factory.add_done_node(node);
+            sc_factory.add_done_node(node);
         else
             return;
     }
@@ -151,7 +151,7 @@ void free_node_and_all_preceding(Unit * unit)
 void free_node_and_following(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of following nodes" << std::endl;
@@ -160,13 +160,13 @@ void free_node_and_following(Unit * unit)
 
     server_node * next = node->next_node();
     if (next)
-        ugen_factory.add_done_node(next);
+        sc_factory.add_done_node(next);
 }
 
 void free_node_and_pause_following(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of following nodes" << std::endl;
@@ -175,13 +175,13 @@ void free_node_and_pause_following(Unit * unit)
 
     server_node * next = node->next_node();
     if (next)
-        ugen_factory.add_pause_node(next);
+        sc_factory.add_pause_node(next);
 }
 
 void free_node_and_following_children(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of following nodes" << std::endl;
@@ -192,17 +192,17 @@ void free_node_and_following_children(Unit * unit)
     if (!following)
         return;
     if (following->is_synth())
-        ugen_factory.add_done_node(following);
+        sc_factory.add_done_node(following);
     else {
         abstract_group * following_group = static_cast<abstract_group*>(following);
-        ugen_factory.add_freeAll_node(following_group);
+        sc_factory.add_freeAll_node(following_group);
     }
 }
 
 void free_node_and_following_deep(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of following nodes" << std::endl;
@@ -213,17 +213,17 @@ void free_node_and_following_deep(Unit * unit)
     if (!following)
         return;
     if (following->is_synth())
-        ugen_factory.add_done_node(following);
+        sc_factory.add_done_node(following);
     else {
         abstract_group * following_group = static_cast<abstract_group*>(following);
-        ugen_factory.add_freeDeep_node(following_group);
+        sc_factory.add_freeDeep_node(following_group);
     }
 }
 
 void free_node_and_all_following(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
-    ugen_factory.add_done_node(node);
+    sc_factory.add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
         std::cerr << "parallel groups have no notion of following nodes" << std::endl;
@@ -234,7 +234,7 @@ void free_node_and_all_following(Unit * unit)
     {
         node = node->previous_node();
         if (node)
-            ugen_factory.add_done_node(node);
+            sc_factory.add_done_node(node);
         else
             return;
     }
@@ -245,14 +245,14 @@ void free_group_members(Unit * unit)
     server_node * node = static_cast<sc_synth*>(unit->mParent);
     abstract_group * group = const_cast<abstract_group*>(node->get_parent());
 
-    ugen_factory.add_freeAll_node(group);
+    sc_factory.add_freeAll_node(group);
 }
 
 void free_parent_group(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
     abstract_group * group = const_cast<abstract_group*>(node->get_parent());
-    ugen_factory.add_done_node(group);
+    sc_factory.add_done_node(group);
 }
 
 } /* namespace */
@@ -265,7 +265,7 @@ bool define_unit(const char *inUnitClassName, size_t inAllocSize,
                  UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
     try {
-        nova::ugen_factory.register_ugen(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
+        nova::sc_factory.register_ugen(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
         return true;
     }
     catch(...)
@@ -277,7 +277,7 @@ bool define_unit(const char *inUnitClassName, size_t inAllocSize,
 bool define_bufgen(const char * name, BufGenFunc func)
 {
     try {
-        nova::ugen_factory.register_bufgen(name, func);
+        nova::sc_factory.register_bufgen(name, func);
         return true;
     }
     catch(...)
@@ -341,7 +341,7 @@ void clear_outputs(Unit *unit, int samples)
 void node_end(struct Node * node)
 {
     nova::server_node * s = nova::instance->find_node(node->mID);
-    nova::ugen_factory.add_done_node(s);
+    nova::sc_factory.add_done_node(s);
 }
 
 int print(const char *fmt, ...)
@@ -445,7 +445,7 @@ void done_action(int done_action, struct Unit *unit)
 
 int buf_alloc(SndBuf * buf, int channels, int frames, double samplerate)
 {
-    return nova::ugen_factory.allocate_buffer(buf, channels, frames, samplerate);
+    return nova::sc_factory.allocate_buffer(buf, channels, frames, samplerate);
 }
 
 } /* extern "C" */
@@ -952,7 +952,7 @@ sample * sc_plugin_interface::buffer_generate(uint32_t index, const char* cmd_na
     SndBuf * buf = World_GetNRTBuf(&world, index);
     sample * data = buf->data;
 
-    BufGenFunc bufgen = ugen_factory.find_bufgen(cmd_name);
+    BufGenFunc bufgen = sc_factory.find_bufgen(cmd_name);
     (bufgen)(&world, buf, &msg);
     if (data == buf->data)
         return NULL;

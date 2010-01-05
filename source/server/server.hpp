@@ -185,20 +185,20 @@ inline void run_scheduler_tick(void)
     const int blocksize = instance->get_audio_blocksize();
     const int input_channels = instance->get_input_count();
     const int output_channels = instance->get_output_count();
-    const int buf_counter = ++ugen_factory.world.mBufCounter;
+    const int buf_counter = ++sc_factory.world.mBufCounter;
     for (int channel = 0; channel != input_channels; ++channel) {
-        instance->fetch_adc_input(ugen_factory.world.mAudioBus + (blocksize * (output_channels + channel)),
+        instance->fetch_adc_input(sc_factory.world.mAudioBus + (blocksize * (output_channels + channel)),
                                   channel, blocksize);
-        ugen_factory.world.mAudioBusTouched[output_channels + channel] = buf_counter;
+        sc_factory.world.mAudioBusTouched[output_channels + channel] = buf_counter;
     }
 
     (*instance)();
 
-    ugen_factory.update_nodegraph();
+    sc_factory.update_nodegraph();
 
     for (int channel = 0; channel != output_channels; ++channel) {
-        if (ugen_factory.world.mAudioBusTouched[channel] == buf_counter)
-            instance->deliver_dac_output(ugen_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
+        if (sc_factory.world.mAudioBusTouched[channel] == buf_counter)
+            instance->deliver_dac_output(sc_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
     }
 }
 
