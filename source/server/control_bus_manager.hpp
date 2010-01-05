@@ -19,11 +19,13 @@
 #ifndef SERVER_CONTROL_BUS_MANAGER_HPP
 #define SERVER_CONTROL_BUS_MANAGER_HPP
 
+#include <vector>
+
 #include <boost/noncopyable.hpp>
 
 #include "sample_types.hpp"
 
-#include "spin_lock.hpp"
+#include "nova-tt/spin_lock.hpp"
 
 namespace nova
 {

@@ -5,7 +5,7 @@
 
 #include "../source/utilities/callback_system.hpp"
 #include "../source/utilities/callback_interpreter.hpp"
-#include <thread_priority.hpp>
+#include "nova-tt/thread_priority.hpp"
 
 using namespace nova;
 

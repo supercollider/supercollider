@@ -32,8 +32,8 @@
 #define foreach BOOST_FOREACH
 #endif
 
-#include "thread_affinity.hpp"
-#include "thread_priority.hpp"
+#include "nova-tt/thread_affinity.hpp"
+#include "nova-tt/thread_priority.hpp"
 
 #include "dsp_thread_queue.hpp"
 

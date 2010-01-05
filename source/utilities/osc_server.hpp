@@ -30,7 +30,7 @@
 #include "osc_dispatcher.hpp"
 
 #include "static_allocator.hpp"
-#include "semaphore.hpp"
+#include "nova-tt/semaphore.hpp"
 
 namespace nova
 {

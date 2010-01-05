@@ -32,7 +32,7 @@ extern "C"
 #include <boost/mpl/arithmetic.hpp>
 #include <boost/mpl/modulus.hpp>
 
-#include "spin_lock.hpp"
+#include "nova-tt/spin_lock.hpp"
 #include "dummy_mutex.hpp"
 
 namespace nova
