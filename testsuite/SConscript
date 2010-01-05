@@ -59,9 +59,8 @@ else:
 
 unit_test_env = Environment(LIBS=["pthread", "sndfile", libboost_thread, libboost_fs, libboost_po, 'dl'] + env['LIBS'],
                             CC=env['CC'], CXX=env['CXX'],
-                            CPPPATH=["#libs/boost", "#libs/sparsehash-0.6/src", "#libs/libatomic_ops/src", "#libs",
-                                     "#source", "#libs/intrusive", "#libs/boost_lockfree", "#libs/oscpack", "#libs/pri_queue",
-                                     "#libs/tlsf/src", "#libs/endian", "#libs/nova-tt/nova-tt/", "#libs/nova-tt/", ],
+                            CPPPATH=["#libs/boost", "#source", "#libs/oscpack", "#libs/pri_queue",
+                                     "#libs/tlsf/src", "#libs/nova-tt/", ],
                             CCFLAGS=unit_test_cflags,
                             CPPDEFINES=["SUPERNOVA", "TLSF_STATISTIC=1"] + env['CPPDEFINES'])
 

@@ -23,32 +23,8 @@ sources = list()
 
 ######################################################################
 #
-# boost lockfree
-
-env.Append(CPPPATH=Dir("#/libs/boost_lockfree"))
-
-######################################################################
-#
 # boost
 boost_sources = SConscript("SConscript.boost", exports={'env':env, 'env_specific':True})
-
-######################################################################
-#
-# boost's uuid
-
-env.Append(CPPPATH=Dir("#/libs/uuid"))
-
-######################################################################
-#
-# boost endian
-
-env.Append(CPPPATH=Dir("#/libs/endian"))
-
-######################################################################
-#
-# boost endian
-
-env.Append(CPPPATH=Dir("#/libs/endian"))
 
 ######################################################################
 #
@@ -83,7 +59,6 @@ tlsf_sources = [File("tlsf/src/tlsf.c")]
 # nova thread tools
 
 env.Append(CPPPATH=Dir("#/libs/nova-tt/"))
-env.Append(CPPPATH=Dir("#/libs/nova-tt/nova-tt/"))
 
 ######################################################################
 

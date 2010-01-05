@@ -29,8 +29,8 @@
 
 #include "simd/simd_memory.hpp"
 
-#include "spin_lock.hpp"
-#include "thread_affinity.hpp"
+#include "nova-tt/spin_lock.hpp"
+#include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
 
 namespace nova

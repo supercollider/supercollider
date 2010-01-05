@@ -24,7 +24,7 @@
 #include "sample_types.hpp"
 
 #include "../utilities/malloc_aligned.hpp"
-#include "rw_spinlock.hpp"
+#include "nova-tt/rw_spinlock.hpp"
 
 namespace nova
 {
