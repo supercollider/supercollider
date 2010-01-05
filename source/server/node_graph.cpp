@@ -87,6 +87,29 @@ std::auto_ptr<node_graph::dsp_thread_queue> node_graph::generate_dsp_queue(void)
     return std::auto_ptr<node_graph::dsp_thread_queue>(ret);
 }
 
+void node_graph::synth_reassign_id(int32_t node_id)
+{
+    node_set_type::iterator it = node_set.find(node_id, compare_node());
+    if (it == node_set.end())
+        throw std::runtime_error("node id not found");
+    server_node * node = &(*it);
+
+    if (!node->is_synth())
+        return;
+
+    boost::hash<int32_t> hasher;
+
+    int32_t hidden_id = -std::abs(node_id);
+
+    while (!node_id_available(hidden_id))
+        hidden_id = -std::abs<int32_t>(hasher(node_id));
+
+    assert(hidden_id < 0);
+    node_set.erase(*node);
+    node->reset_id(hidden_id);
+    node_set.insert(*node);
+}
+
 
 void group::fill_queue(thread_queue & queue)
 {

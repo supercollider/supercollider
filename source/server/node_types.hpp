@@ -46,7 +46,7 @@ class server_node:
     public bi::set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
-    server_node(uint32_t node_id, bool type):
+    server_node(int32_t node_id, bool type):
         node_id(node_id), synth_(type), running_(true), parent_(0), use_count_(0)
     {}
 
@@ -58,15 +58,15 @@ protected:
 
     /* @{ */
     /** node id handling */
-    void reset_id(uint32_t new_id)
+    void reset_id(int32_t new_id)
     {
         node_id = new_id;
     }
 
-    uint32_t node_id;
+    int32_t node_id;
 
 public:
-    uint32_t id(void) const
+    int32_t id(void) const
     {
         return node_id;
     }
