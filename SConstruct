@@ -317,6 +317,8 @@ opts.AddOptions(
                'Enable the SCED (based on gedit) user interface; NOTE see the README in /editors/sced for setting variables', 0),
     BoolOption('SSE',
                'Build with SSE support', 1),
+    BoolOption('SSE2',
+               'Build with SSE2 support', 1),
     BoolOption('STRIP',
                'Strip symbols from binaries', 0),
     BoolOption('CROSSCOMPILE',
@@ -580,6 +582,10 @@ if env['SSE']:
     libraries['sse'].Append(
         CCFLAGS = ['-msse', '-mfpmath=sse'],
         CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+    if env['SSE2']:
+        libraries['sse'].Append(
+            CCFLAGS = ['-msse2'])
+
     sseConf = Configure(libraries['sse'])
     hasSSEHeader = sseConf.CheckCHeader('xmmintrin.h')
     if env['CROSSCOMPILE']:
