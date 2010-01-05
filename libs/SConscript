@@ -28,12 +28,6 @@ boost_sources = SConscript("SConscript.boost", exports={'env':env, 'env_specific
 
 ######################################################################
 #
-# boost endian
-
-env.Append(CPPPATH=Dir("#/libs/endian"))
-
-######################################################################
-#
 # dietmar kuehl's heap data structures
 
 env.Append(CPPPATH=Dir("#/libs/pri_queue"))
