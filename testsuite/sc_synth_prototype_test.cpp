@@ -15,5 +15,5 @@ BOOST_AUTO_TEST_CASE( sc_synth_factory )
 
     path home(home_ptr);
 
-    sc_read_synthdefs_dir(factory, home / "share/SuperCollider/synthdefs");
+    register_synthdefs(factory, sc_read_synthdefs_dir(home / "share/SuperCollider/synthdefs"));
 }

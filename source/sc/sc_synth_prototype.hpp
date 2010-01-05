@@ -24,17 +24,16 @@
 #include "sc_synthdef.hpp"
 
 #include "server/synth_prototype.hpp"
+#include "utilities/sized_array.hpp"
 
 namespace nova
 {
 
 using boost::filesystem::path;
 
-void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> const &);
-
 /* read synthdefs from path pattern */
-void sc_read_synthdefs_dir(class synth_factory & factory, path const & dir);
-void sc_read_synthdefs_file(class synth_factory & factory, path const & filename);
+std::vector<sc_synthdef> sc_read_synthdefs_file(path const & filename);
+std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir);
 
 class sc_synth_prototype:
     public synth_prototype
@@ -52,9 +51,8 @@ private:
 
 typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;
 
-
+void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> const &);
 
 } /* namespace nova */
-
 
 #endif /* SC_SYNTH_PROTOTYPE_HPP */

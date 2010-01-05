@@ -2273,6 +2273,15 @@ void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
     fire_system_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
+std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
+{
+    size_t count = defs.size();
+    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
+
+    for (size_t i = 0; i != count; ++i)
+        prototypes[i].reset(new sc_synth_prototype(defs[i]));
+    return std::make_pair(prototypes, count);
+}
 
 void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
                 udp::endpoint const & endpoint);
@@ -2280,12 +2289,9 @@ void d_recv_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endp
 
 void d_recv_nrt(movable_array<char> & def, completion_message & msg, udp::endpoint const & endpoint)
 {
-    std::vector<sc_synthdef> synthdefs(read_synthdefs(def.data()));
-    size_t count = synthdefs.size();
-    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
-
-    for (size_t i = 0; i != count; ++i)
-        prototypes[i].reset(new sc_synth_prototype(synthdefs[i]));
+    size_t count;
+    sc_synth_prototype_ptr * prototypes;
+    boost::tie(prototypes, count) = wrap_synthdefs(read_synthdefs(def.data()));
 
     fire_rt_callback(boost::bind(d_recv_rt2, prototypes, count, msg, endpoint));
 }
@@ -2296,7 +2302,7 @@ void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, com
     std::for_each(prototypes, prototypes + prototype_count,
                   boost::bind(&synth_factory::register_prototype, instance, _1));
 
-    msg.trigger_async(endpoint);
+    msg.handle(endpoint);
     fire_system_callback(boost::bind(d_recv_nrt3, prototypes, endpoint));
 }
 
@@ -2321,11 +2327,33 @@ void handle_d_recv(received_message const & msg,
     fire_system_callback(boost::bind(d_recv_nrt, def, message, endpoint));
 }
 
+void d_load_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                udp::endpoint const & endpoint);
+void d_load_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint);
 
 void d_load_nrt(movable_string & path, completion_message & msg, udp::endpoint const & endpoint)
 {
-    sc_read_synthdefs_file(*instance, path.c_str()); /* todo: we need to implment some file name pattern matching */
-    msg.trigger_async(endpoint);
+    size_t count;
+    sc_synth_prototype_ptr * prototypes;
+    /* todo: we need to implment some file name pattern matching */
+    boost::tie(prototypes, count) = wrap_synthdefs(sc_read_synthdefs_file(path.c_str()));
+
+    fire_rt_callback(boost::bind(d_load_rt2, prototypes, count, msg, endpoint));
+}
+
+void d_load_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                udp::endpoint const & endpoint)
+{
+    std::for_each(prototypes, prototypes + prototype_count,
+                  boost::bind(&synth_factory::register_prototype, instance, _1));
+
+    msg.handle(endpoint);
+    fire_system_callback(boost::bind(d_load_nrt3, prototypes, endpoint));
+}
+
+void d_load_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint)
+{
+    delete[] prototypes;
     send_done_message(endpoint, "/d_load");
 }
 
@@ -2341,10 +2369,32 @@ void handle_d_load(received_message const & msg,
 }
 
 
-void d_loadDir_nrt(movable_string & path, completion_message & msg, udp::endpoint const & endpoint)
+void d_loadDir_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                   udp::endpoint const & endpoint);
+void d_loadDir_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint);
+
+void d_loadDir_nrt1(movable_string & path, completion_message & msg, udp::endpoint const & endpoint)
 {
-    sc_read_synthdefs_dir(*instance, path.c_str());
-    msg.trigger_async(endpoint);
+    size_t count;
+    sc_synth_prototype_ptr * prototypes;
+    boost::tie(prototypes, count) = wrap_synthdefs(sc_read_synthdefs_dir(path.c_str()));
+
+    fire_rt_callback(boost::bind(d_loadDir_rt2, prototypes, count, msg, endpoint));
+}
+
+void d_loadDir_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                   udp::endpoint const & endpoint)
+{
+    std::for_each(prototypes, prototypes + prototype_count,
+                  boost::bind(&synth_factory::register_prototype, instance, _1));
+
+    msg.handle(endpoint);
+    fire_system_callback(boost::bind(d_loadDir_nrt3, prototypes, endpoint));
+}
+
+void d_loadDir_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint)
+{
+    delete[] prototypes;
     send_done_message(endpoint, "/d_loadDir");
 }
 
@@ -2357,7 +2407,7 @@ void handle_d_loadDir(received_message const & msg,
     args >> path;
     completion_message message = extract_completion_message(args);
 
-    fire_system_callback(boost::bind(d_loadDir_nrt, movable_string(path), message, endpoint));
+    fire_system_callback(boost::bind(d_loadDir_nrt1, movable_string(path), message, endpoint));
 }
 
 

@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
     if (args.load_synthdefs) {
         boost::filesystem::path synthdef_path(getenv("HOME"));
         synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
-        sc_read_synthdefs_dir(server, synthdef_path);
+        register_synthdefs(server, sc_read_synthdefs_dir(synthdef_path));
     }
 
     server.run();

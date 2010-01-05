@@ -39,34 +39,38 @@ void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> const 
     }
 }
 
-void sc_read_synthdefs_file(synth_factory & factory, path const & file)
+std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 {
     try {
-        std::vector<sc_synthdef> defs = read_synthdef_file(file.string());
-        register_synthdefs(factory, defs);
+        return read_synthdef_file(file.string());
     }
     catch(std::exception & e)
     {
         cout << "Exception when parsing synthdef: " << e.what() << endl;
+        return std::vector<sc_synthdef>();
     }
 }
 
-void sc_read_synthdefs_dir(synth_factory & factory, path const & dir)
+std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 {
     using namespace boost::filesystem;
+    std::vector<sc_synthdef> ret;
 
     if (!exists(dir))
-        return;
+        return ret;
 
     directory_iterator end;
     for (directory_iterator it(dir);
          it != end; ++it)
     {
+        std::vector<sc_synthdef> to_append;
         if (is_directory(it->status()))
-            sc_read_synthdefs_dir(factory, it->path());
+            to_append = sc_read_synthdefs_dir(it->path());
         else
-            sc_read_synthdefs_file(factory, it->path());
+            to_append = sc_read_synthdefs_file(it->path());
+        ret.insert(ret.end(), to_append.begin(), to_append.end());
     }
+    return ret;
 }
 
 sc_synth_prototype::sc_synth_prototype(sc_synthdef const & sd):
