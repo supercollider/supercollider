@@ -2274,12 +2274,35 @@ void handle_c_getn(received_message const & msg, udp::endpoint const & endpoint)
 }
 
 
+void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                udp::endpoint const & endpoint);
+void d_recv_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint);
+
 void d_recv_nrt(movable_array<char> & def, completion_message & msg, udp::endpoint const & endpoint)
 {
-    std::vector<sc_synthdef> synthdefs = read_synthdefs(def.data());
-    register_synthdefs(*instance, synthdefs);
+    std::vector<sc_synthdef> synthdefs(read_synthdefs(def.data()));
+    size_t count = synthdefs.size();
+    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
+
+    for (size_t i = 0; i != count; ++i)
+        prototypes[i].reset(new sc_synth_prototype(synthdefs[i]));
+
+    fire_rt_callback(boost::bind(d_recv_rt2, prototypes, count, msg, endpoint));
+}
+
+void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+                udp::endpoint const & endpoint)
+{
+    std::for_each(prototypes, prototypes + prototype_count,
+                  boost::bind(&synth_factory::register_prototype, instance, _1));
 
     msg.trigger_async(endpoint);
+    fire_system_callback(boost::bind(d_recv_nrt3, prototypes, endpoint));
+}
+
+void d_recv_nrt3(sc_synth_prototype_ptr * prototypes, udp::endpoint const & endpoint)
+{
+    delete[] prototypes;
     send_done_message(endpoint, "/d_recv");
 }
 
