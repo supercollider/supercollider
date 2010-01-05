@@ -31,6 +31,21 @@ BOOST_AUTO_TEST_CASE( sized_array_test_1 )
     BOOST_REQUIRE_EQUAL( long_array.size(), 5u );
     BOOST_REQUIRE_EQUAL( long_array[1], 3 );
     BOOST_REQUIRE_EQUAL( long_array[0], -1 );
+
+    // move assignment
+    sized_array<int> array3(0);
+    boost::move(&array, &array+1, &array3);
+    BOOST_REQUIRE_EQUAL( array3.size(), 5u );
+    BOOST_REQUIRE_EQUAL( array3[1], 3 );
+    BOOST_REQUIRE_EQUAL( array3[0], -1 );
+    BOOST_REQUIRE_EQUAL( array.size(), 0u );
+
+    // move assignment
+    sized_array<int> array4(boost::move(array3));
+    BOOST_REQUIRE_EQUAL( array4.size(), 5u );
+    BOOST_REQUIRE_EQUAL( array4[1], 3 );
+    BOOST_REQUIRE_EQUAL( array4[0], -1 );
+    BOOST_REQUIRE_EQUAL( array3.size(), 0u );
 }
 
 
