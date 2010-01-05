@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#include <boost/move/move.hpp>
+
 namespace nova
 {
 
@@ -43,6 +45,8 @@ class sized_array:
     private Alloc::template rebind<T>::other
 {
     typedef typename Alloc::template rebind<T>::other Allocator;
+
+    BOOST_COPYABLE_AND_MOVABLE(sized_array);
 
 public:
     // types
@@ -90,11 +94,27 @@ public:
         assert(index == size());
     }
 
+    explicit sized_array(BOOST_RV_REF(sized_array) arg)
+    {
+        operator=(arg);
+    }
+
+    /** move assignment */
+    sized_array & operator=(BOOST_RV_REF(sized_array) arg)
+    {
+        data_ = arg.data_;
+        size_ = arg.size();
+        arg.data_ = 0;
+        arg.size_ = 0;
+        return *this;
+    }
+
     ~sized_array(void)
     {
         for (size_type i = 0; i != size(); ++i)
             Allocator::destroy(data_ + i);
-        Allocator::deallocate(data_, size());
+        if (size())
+            Allocator::deallocate(data_, size());
     }
 
     // iterator support
@@ -214,8 +234,8 @@ public:
     }
 
 private:
-    T * const data_;
-    const size_type size_;
+    T * data_;
+    size_type size_;
 };
 
 } /* namespace nova */
