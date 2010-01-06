@@ -70,6 +70,8 @@ Other additions/improvements:
 * 2009-12-13 added lincurve and curvelin methods for numbers and UGens - jr
 * 2010-01-01 OSCresponder and OSCresponderNode respond equally to messages with or without preceding slash - jr
 * 2010-01-04 sclang: deprecated Proutine - switch back to the original Prout
+* 2010-01-06 UnitTest Quark improved, added script support - jr
+
 
 
 SuperCollider v3.3.1, released 2009-06-19
