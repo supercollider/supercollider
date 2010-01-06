@@ -20,17 +20,15 @@
 #define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 
 #include <string>
-#include <vector>
 
 #include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 
 #include <sndfile.hh>
 
-#include "nova-simd/simd_memory.hpp"
-#include "nova-tt/spin_lock.hpp"
 #include "utilities/branch_hints.hpp"
-#include "utilities/malloc_aligned.hpp"
+
+#include "audio_backend_common.hpp"
 
 namespace nova
 {
@@ -40,9 +38,11 @@ namespace nova
  *  audio backend, reading/writing sound files via libsndfile
  *
  */
-template <void(*dsp_cb)(void), typename sample_type = float>
-class sndfile_backend
+template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
+class sndfile_backend:
+    public detail::audio_delivery_helper<sample_type, blocking, true>
 {
+    typedef detail::audio_delivery_helper<sample_type, blocking> super;
     typedef std::size_t size_t;
 
 public:
@@ -52,37 +52,6 @@ public:
 
     ~sndfile_backend(void)
     {}
-
-    /* to be called from the audio callback */
-    /* @{  */
-    void deliver_dac_output(const sample_type * source, size_t channel, size_t frames)
-    {
-        assert(audio_is_active());
-        assert(channel < output_channels);
-        spin_lock::scoped_lock lock(output_lock);
-        addvec_simd(output_samples[channel].get(), source, frames);
-    }
-
-    void deliver_dac_output_64(const sample_type * source, size_t channel)
-    {
-        assert(audio_is_active());
-        assert(channel < output_channels);
-        spin_lock::scoped_lock lock(output_lock);
-        addvec_simd<64>(output_samples[channel].get(), source);
-    }
-
-    void fetch_adc_input(sample_type * destination, size_t channel, size_t frames)
-    {
-        assert(audio_is_active());
-        copyvec_simd(destination, input_samples[channel].get(), frames);
-    }
-
-    void fetch_adc_input_64(sample_type * destination, size_t channel)
-    {
-        assert(audio_is_active());
-        copyvec_simd<64>(destination, input_samples[channel].get());
-    }
-    /* @} */
 
     size_t get_audio_blocksize(void)
     {
@@ -115,10 +84,7 @@ public:
         if (!output_file)
             throw std::runtime_error("cannot open output file");
 
-        input_samples.resize(input_channels, aligned_storage_ptr<float>());
-        output_samples.resize(output_channels, aligned_storage_ptr<float>());
-        std::generate(input_samples.begin(), input_samples.end(), boost::bind(calloc_aligned<float>, 64));
-        std::generate(output_samples.begin(), output_samples.end(), boost::bind(calloc_aligned<float>, 64));
+        super::prepare_helper_buffers(input_channels, output_channels, 64);
 
         temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * 64));
     }
@@ -170,18 +136,6 @@ public:
     }
 
 private:
-    void clear_inputs(size_t frames_per_tick)
-    {
-        for (uint16_t channel = 0; channel != input_channels; ++channel)
-            zerovec_simd(input_samples[channel].get(), frames_per_tick);
-    }
-
-    void clear_outputs(size_t frames_per_tick)
-    {
-        for (uint16_t channel = 0; channel != input_channels; ++channel)
-            zerovec_simd(output_samples[channel].get(), frames_per_tick);
-    }
-
     void read_input_buffers(size_t frames_per_tick)
     {
         if (input_file && (read_position < (size_t)input_file.frames()))
@@ -200,12 +154,12 @@ private:
             for (size_t frame = 0; frame != frames_per_tick; ++frame)
             {
                 for (uint16_t channel = 0; channel != input_channels; ++channel)
-                    input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
+                    super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
             }
             read_position += frames;
         }
         else
-            clear_inputs(frames_per_tick);
+            super::clear_inputs(frames_per_tick);
     }
 
     void write_output_buffers(size_t frames_per_tick)
@@ -213,7 +167,7 @@ private:
         for (size_t frame = 0; frame != frames_per_tick; ++frame)
         {
             for (uint16_t channel = 0; channel != output_channels; ++channel)
-                temp_buffer.get()[frame * output_channels + channel] = output_samples[channel].get()[frame];
+                temp_buffer.get()[frame * output_channels + channel] = super::output_samples[channel].get()[frame];
 
             output_file.writef(temp_buffer.get(), frames_per_tick);
         }
@@ -235,7 +189,7 @@ private:
         while (running.load(boost::memory_order_acquire))
         {
             size_t frames_per_tick = 64;
-            clear_outputs(frames_per_tick);
+            super::clear_outputs(frames_per_tick);
             read_input_buffers(frames_per_tick);
             (*dsp_cb)();
             write_output_buffers(frames_per_tick);
@@ -249,9 +203,6 @@ private:
     std::size_t read_position;
 
     aligned_storage_ptr<sample_type> temp_buffer;
-    std::vector<aligned_storage_ptr<sample_type> > input_samples, output_samples;
-
-    spin_lock output_lock;
 
     boost::thread audio_thread;
     boost::atomic<bool> running;
