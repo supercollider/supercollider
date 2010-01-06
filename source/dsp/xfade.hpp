@@ -24,8 +24,8 @@
 
 #include "../utilities/branch_hints.hpp"
 
-#include "../simd/simd_memory.hpp"
-#include "../simd/simd_mix.hpp"
+#include "nova-simd/simd_memory.hpp"
+#include "nova-simd/simd_mix.hpp"
 #include "muladd_helpers.hpp"
 #include "sample_extractor.hpp"
 #include "shared_function_tables.hpp"

@@ -27,7 +27,7 @@
 
 #include <jack/jack.h>
 
-#include "simd/simd_memory.hpp"
+#include "nova-simd/simd_memory.hpp"
 
 #include "nova-tt/spin_lock.hpp"
 #include "nova-tt/thread_affinity.hpp"
