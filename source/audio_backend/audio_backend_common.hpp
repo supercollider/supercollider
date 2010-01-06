@@ -110,6 +110,33 @@ protected:
                 aligned_allocator<sample_type> > input_samples, output_samples;
 };
 
+class audio_settings_basic
+{
+protected:
+    float samplerate_;
+    uint16_t input_channels, output_channels;
+
+public:
+    audio_settings_basic(void):
+        samplerate_(0.f), input_channels(0), output_channels(0)
+    {}
+
+    float get_samplerate(void) const
+    {
+        return samplerate_;
+    }
+
+    uint16_t get_input_count(void) const
+    {
+        return input_channels;
+    }
+
+    uint16_t get_output_count(void) const
+    {
+        return output_channels;
+    }
+};
+
 } /* namespace detail */
 } /* namespace nova */
 

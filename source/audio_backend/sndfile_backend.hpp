@@ -40,7 +40,8 @@ namespace nova
  */
 template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
 class sndfile_backend:
-    public detail::audio_delivery_helper<sample_type, blocking, true>
+    public detail::audio_delivery_helper<sample_type, blocking, true>,
+    public detail::audio_settings_basic
 {
     typedef detail::audio_delivery_helper<sample_type, blocking> super;
     typedef std::size_t size_t;
@@ -63,7 +64,7 @@ public:
                      float samplerate, int format, uint32_t output_channel_count)
     {
         output_channels = output_channel_count;
-        samplerate_ = std::floor(samplerate);
+        samplerate_ = samplerate = std::floor(samplerate);
 
         if (input_file_name != "_")
         {
@@ -71,7 +72,7 @@ public:
             if (!input_file)
                 throw std::runtime_error("cannot open input file");
 
-            if (input_file.samplerate() != samplerate_)
+            if (input_file.samplerate() != samplerate)
                 throw std::runtime_error("input file: samplerate mismatch");
 
             input_channels = input_file.channels();
@@ -80,7 +81,7 @@ public:
             input_channels = 0;
         read_position = 0;
 
-        output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate_);
+        output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
         if (!output_file)
             throw std::runtime_error("cannot open output file");
 
@@ -118,21 +119,6 @@ public:
     {
         running.store(false);
         audio_thread.join();
-    }
-
-    float get_samplerate(void) const
-    {
-        return samplerate_;
-    }
-
-    uint16_t get_input_count(void) const
-    {
-        return input_channels;
-    }
-
-    uint16_t get_output_count(void) const
-    {
-        return output_channels;
     }
 
 private:
@@ -195,9 +181,6 @@ private:
             write_output_buffers(frames_per_tick);
         }
     }
-
-    float samplerate_;
-    uint16_t input_channels, output_channels;
 
     SndfileHandle input_file, output_file;
     std::size_t read_position;

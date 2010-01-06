@@ -44,7 +44,8 @@ namespace nova
  */
 template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
 class jack_backend:
-    public detail::audio_delivery_helper<sample_type, blocking, false>
+    public detail::audio_delivery_helper<sample_type, blocking, false>,
+    public detail::audio_settings_basic
 {
     typedef detail::audio_delivery_helper<sample_type, blocking, false> super;
 
@@ -138,21 +139,6 @@ public:
         is_active = false;
     }
 
-    float get_samplerate(void) const
-    {
-        return samplerate_;
-    }
-
-    uint16_t get_input_count(void) const
-    {
-        return input_channels;
-    }
-
-    uint16_t get_output_count(void) const
-    {
-        return output_channels;
-    }
-
 private:
     static void jack_thread_init_callback(void * arg)
     {
@@ -213,8 +199,6 @@ private:
     jack_status_t status;
 
     bool is_active;
-    float samplerate_;
-    uint16_t input_channels, output_channels;
 
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;
