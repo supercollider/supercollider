@@ -3,6 +3,7 @@
 TestNoOps.run
 UnitTest.gui
 
+
 */
 
 TestNoOps : UnitTest {
@@ -50,14 +51,14 @@ TestNoOps : UnitTest {
 		
 	test_numerical_homomorphisms {
 		var n = [
-				100.rand2, // integers
+				10.rand2, // integers
 				10.0.rand2, // floats
 				{ 100.rand2 }.dup(8), // arrays
 				{ 100.0.rand2 }.dup(8),
 				Complex(100.rand2, 100.rand2), // complex
 				{ 1 }, // function
 			];
-		var numbers = n.dup(2).allTuples.flatten(1).postcs;
+		var numbers = n.dup(2).allTuples.flatten(1);
 		var test = { |name, f, h, a, b|
 			var x = f.(h.(a, b));
 			var y = h.(f.(a), f.(b));
@@ -80,6 +81,47 @@ TestNoOps : UnitTest {
 			item.value
 		}
 	
+	}
+	
+	assertEqualValue { |a, b, comment, report = true, onFailure|
+		var diff, size;
+		a = a.value;
+		b = b.value;
+		diff = absdif(a, b).asArray.maxItem;
+		// faliures with 1e-13 in new build
+		^this.assert(diff < 1e-12, comment, report, { onFailure.value(diff) })
+	}
+	
+	test_arithmetics {
+		var n = [
+				rrand(2, 4), // integers
+				1.0.rand + 2, // floats
+				{ rrand(2, 4) }.dup(4), // arrays
+				{ 1.0.rand + 2 }.dup(4),
+				{ 2.0 }, // function
+			];
+		var numbers = n.dup(3).allTuples;
+		var farmulae = [
+				"{|a,b,c| (a ** b) * (a ** c) }", "{|a,b,c| a ** (b + c) }",
+			//	"{|a,b,c| (a ** b ** c) }", "{|a,b,c| a ** (b * c) }",
+				"{|a,b,c| (a ** c) * (b ** c) }", "{|a,b,c| (a * b) ** c }",
+				"{|a,b,c| (a ** c) / (b ** c) }", "{|a,b,c| (a / b) ** c }",
+				"{|a,b,c| (a ** c.neg) }", "{|a,b,c| 1 / (a ** c) }",
+				"{|a,b,c| log(a * b) }", "{|a,b,c| log(a) + log(b) }",
+				"{|a,b,c| log(a ** c) }", "{|a,b,c| c * log(a) }"
+		];
+				
+		numbers.do { |triple|
+			farmulae.pairsDo { |a, b, i|
+				var x = a.interpret.value(*triple);
+				var y = b.interpret.value(*triple);
+				this.assertEqualValue(x, y, "arithmetic test " ++ i, 
+					onFailure: 
+						postf("%\nshould equal close enough\n%\n"
+							"For the values: %\n. Difference: %\n", a, b, triple, _)
+				);
+			};
+		}
 	}
 	
 }
