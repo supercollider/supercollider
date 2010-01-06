@@ -57,40 +57,30 @@ public:
     /* @{  */
     void deliver_dac_output(const sample_type * source, size_t channel, size_t frames)
     {
-        if (likely(audio_is_active()))
-        {
-            if (channel < output_channels) {
-                spin_lock::scoped_lock lock(output_lock);
-                addvec_simd(output_samples[channel].get(), source, frames);
-            }
-        }
+        assert(audio_is_active());
+        assert(channel < output_channels);
+        spin_lock::scoped_lock lock(output_lock);
+        addvec_simd(output_samples[channel].get(), source, frames);
     }
 
     void deliver_dac_output_64(const sample_type * source, size_t channel)
     {
-        if (likely(audio_is_active()))
-        {
-            if (channel < output_channels) {
-                spin_lock::scoped_lock lock(output_lock);
-                addvec_simd<64>(output_samples[channel].get(), source);
-            }
-        }
+        assert(audio_is_active());
+        assert(channel < output_channels);
+        spin_lock::scoped_lock lock(output_lock);
+        addvec_simd<64>(output_samples[channel].get(), source);
     }
 
     void fetch_adc_input(sample_type * destination, size_t channel, size_t frames)
     {
-        if (likely(audio_is_active()))
-            copyvec_simd(destination, input_samples[channel].get(), frames);
-        else
-            zerovec_simd(destination, frames);
+        assert(audio_is_active());
+        copyvec_simd(destination, input_samples[channel].get(), frames);
     }
 
     void fetch_adc_input_64(sample_type * destination, size_t channel)
     {
-        if (likely(audio_is_active()))
-            copyvec_simd<64>(destination, input_samples[channel].get());
-        else
-            zerovec_simd<64>(destination);
+        assert(audio_is_active());
+        copyvec_simd<64>(destination, input_samples[channel].get());
     }
     /* @} */
 
@@ -146,7 +136,7 @@ public:
 
     bool audio_is_active(void)
     {
-        return running.load();
+        return running.load(boost::memory_order_acquire);
     }
 
     void activate_audio(void)
