@@ -22,6 +22,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <boost/noncopyable.hpp>
+
 #ifdef __SSE2__
 #include <xmmintrin.h>
 #elif defined(HAVE_TBB)
@@ -138,6 +140,65 @@ T* calloc_aligned(std::size_t n)
 {
     return static_cast<T*>(calloc_aligned(n * sizeof(T)));
 }
+
+/** smart-pointer, freeing the managed pointer via free_aligned */
+template<class T>
+class aligned_storage_ptr
+{
+public:
+    explicit aligned_storage_ptr(T * p = 0):
+        ptr(p)
+    {}
+
+    ~aligned_storage_ptr(void)
+    {
+        if (ptr)
+            free_aligned(ptr);
+    }
+
+    void reset(T * p = 0)
+    {
+        if (ptr)
+            free_aligned(ptr);
+        ptr = p;
+    }
+
+    T & operator*() const
+    {
+        return *ptr;
+    }
+
+    T * operator->() const
+    {
+        return ptr;
+    }
+
+    T * get() const
+    {
+        return ptr;
+    }
+
+    aligned_storage_ptr & operator=(T * p)
+    {
+        reset(p);
+        return *this;
+    }
+
+    operator bool() const
+    {
+        return bool(ptr);
+    }
+
+    void swap(aligned_storage_ptr & b)
+    {
+        T * p = ptr;
+        ptr = b.ptr;
+        b.ptr = p;
+    }
+
+private:
+    T * ptr;
+};
 
 } /* namespace nova */
 
