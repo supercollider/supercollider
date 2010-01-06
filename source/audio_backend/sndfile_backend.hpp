@@ -27,10 +27,8 @@
 
 #include <sndfile.hh>
 
-#include "server/sample_types.hpp"
 #include "nova-simd/simd_memory.hpp"
 #include "nova-tt/spin_lock.hpp"
-#include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
 #include "utilities/malloc_aligned.hpp"
 
@@ -42,9 +40,11 @@ namespace nova
  *  audio backend, reading/writing sound files via libsndfile
  *
  */
-template <void(*dsp_cb)(void)>
+template <void(*dsp_cb)(void), typename sample_type = float>
 class sndfile_backend
 {
+    typedef std::size_t size_t;
+
 public:
     sndfile_backend(void):
         running(false)
@@ -55,7 +55,7 @@ public:
 
     /* to be called from the audio callback */
     /* @{  */
-    void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
+    void deliver_dac_output(const sample_type * source, size_t channel, size_t frames)
     {
         if (likely(audio_is_active()))
         {
@@ -66,7 +66,7 @@ public:
         }
     }
 
-    void deliver_dac_output_64(const_restricted_sample_ptr source, uint channel)
+    void deliver_dac_output_64(const sample_type * source, size_t channel)
     {
         if (likely(audio_is_active()))
         {
@@ -77,7 +77,7 @@ public:
         }
     }
 
-    void fetch_adc_input(restricted_sample_ptr destination, uint channel, uint frames)
+    void fetch_adc_input(sample_type * destination, size_t channel, size_t frames)
     {
         if (likely(audio_is_active()))
             copyvec_simd(destination, input_samples[channel].get(), frames);
@@ -85,7 +85,7 @@ public:
             zerovec_simd(destination, frames);
     }
 
-    void fetch_adc_input_64(restricted_sample_ptr destination, uint channel)
+    void fetch_adc_input_64(sample_type * destination, size_t channel)
     {
         if (likely(audio_is_active()))
             copyvec_simd<64>(destination, input_samples[channel].get());
@@ -94,7 +94,7 @@ public:
     }
     /* @} */
 
-    uint get_audio_blocksize(void)
+    size_t get_audio_blocksize(void)
     {
         return 64;
     }
@@ -183,7 +183,13 @@ private:
     void clear_inputs(size_t frames_per_tick)
     {
         for (uint16_t channel = 0; channel != input_channels; ++channel)
-            zerovec_simd(input_samples[channel].get(), input_channels * frames_per_tick);
+            zerovec_simd(input_samples[channel].get(), frames_per_tick);
+    }
+
+    void clear_outputs(size_t frames_per_tick)
+    {
+        for (uint16_t channel = 0; channel != input_channels; ++channel)
+            zerovec_simd(output_samples[channel].get(), frames_per_tick);
     }
 
     void read_input_buffers(size_t frames_per_tick)
@@ -198,7 +204,8 @@ private:
 
             size_t remaining = frames_per_tick - frames;
             if (unlikely(remaining))
-                std::memset(temp_buffer.get(), 0, sizeof(float) * input_channels * remaining);
+                std::memset(temp_buffer.get() + frames*input_channels, 0,
+                            sizeof(float) * input_channels * remaining);
 
             for (size_t frame = 0; frame != frames_per_tick; ++frame)
             {
@@ -238,6 +245,7 @@ private:
         while (running.load(boost::memory_order_acquire))
         {
             size_t frames_per_tick = 64;
+            clear_outputs(frames_per_tick);
             read_input_buffers(frames_per_tick);
             (*dsp_cb)();
             write_output_buffers(frames_per_tick);
@@ -250,8 +258,8 @@ private:
     SndfileHandle input_file, output_file;
     std::size_t read_position;
 
-    aligned_storage_ptr<float> temp_buffer;
-    std::vector<aligned_storage_ptr<float> > input_samples, output_samples;
+    aligned_storage_ptr<sample_type> temp_buffer;
+    std::vector<aligned_storage_ptr<sample_type> > input_samples, output_samples;
 
     spin_lock output_lock;
 
