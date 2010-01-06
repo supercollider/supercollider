@@ -216,7 +216,7 @@ bool operator!=( aligned_allocator<T> const& left, aligned_allocator<U> const& r
 
 
 /** smart-pointer, freeing the managed pointer via free_aligned */
-template<class T>
+template<class T, bool managed = true>
 class aligned_storage_ptr
 {
 public:
@@ -226,13 +226,13 @@ public:
 
     ~aligned_storage_ptr(void)
     {
-        if (ptr)
+        if (managed && ptr)
             free_aligned(ptr);
     }
 
     void reset(T * p = 0)
     {
-        if (ptr)
+        if (managed && ptr)
             free_aligned(ptr);
         ptr = p;
     }
