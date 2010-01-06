@@ -61,7 +61,7 @@ public:
     typedef std::ptrdiff_t                        difference_type;
 
     // construct/copy/destruct
-    explicit sized_array(size_type size, T const & def):
+    explicit sized_array(size_type size = 0, T const & def = T()):
         data_(Allocator::allocate(size)), size_(size)
     {
         for (size_type i = 0; i != size; ++i)
@@ -231,6 +231,24 @@ public:
     {
         for (size_type i = 0; i != size_; ++i)
             data_[i] = t;
+    }
+
+    void resize(size_type new_size, T const & t = T())
+    {
+        T * new_data = Allocator::allocate(new_size);
+
+        for (size_type i = 0; i != new_size; ++i)
+            Allocator::construct(new_data+i, t);
+
+        std::copy(data_, data_+std::min(new_size, size_), new_data);
+
+        T * old_data = data_;
+        data_ = new_data;
+        for (size_type i = 0; i != size_; ++i)
+            Allocator::destroy(old_data+i);
+        if (size_)
+            Allocator::deallocate(old_data, size_);
+        size_ = new_size;
     }
 
 private:
