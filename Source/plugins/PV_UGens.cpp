@@ -1138,14 +1138,19 @@ void PV_MagFreeze_next(PV_MagFreeze *unit, int inNumSamples)
 {
 	PV_GET_BUF
 
+	float freeze = ZIN0(1);
+
 	if (!unit->m_mags) {
 		unit->m_mags = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
 		unit->m_numbins = numbins;
+			// The first fft frame must use the else branch below
+			// so that unit->m_mags gets populated with actual mag data
+			// before reading; otherwise it might be used uninitialized.
+		freeze = 0.f;
 	} else if (numbins != unit->m_numbins) return;
 
 	SCPolarBuf *p = ToPolarApx(buf);
 
-	float freeze = ZIN0(1);
 	float *mags = unit->m_mags;
 	if (freeze > 0.f) {
 		for (int i=0; i<numbins; ++i) {
