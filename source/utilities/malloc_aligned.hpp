@@ -141,6 +141,80 @@ T* calloc_aligned(std::size_t n)
     return static_cast<T*>(calloc_aligned(n * sizeof(T)));
 }
 
+
+/** aligned allocator. uses malloc_aligned and free_aligned internally
+ *  */
+template <class T>
+class aligned_allocator
+{
+public:
+    typedef std::size_t size_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef T*        pointer;
+    typedef const T*  const_pointer;
+    typedef T&        reference;
+    typedef const T&  const_reference;
+    typedef T         value_type;
+
+    template <class U> struct rebind
+    {
+        typedef aligned_allocator<U> other;
+    };
+
+    pointer address(reference x) const
+    {
+        return &x;
+    }
+
+    const_pointer address(const_reference x) const
+    {
+        return &x;
+    }
+
+    pointer allocate(size_type n,
+                     const_pointer hint = 0)
+    {
+        pointer ret = malloc_aligned<T>(n);
+        if (ret == 0)
+            throw std::bad_alloc();
+        return ret;
+    }
+
+    void deallocate(pointer p, size_type n)
+    {
+        return free_aligned(p);
+    }
+
+    size_type max_size() const throw()
+    {
+        return size_type(-1) / sizeof(T);
+    }
+
+    void construct(pointer p, const T& val)
+    {
+        ::new(p) T(val);
+    }
+
+    void destroy(pointer p)
+    {
+        p->~T();
+    }
+};
+
+
+template<typename T, typename U>
+bool operator==( aligned_allocator<T> const& left, aligned_allocator<U> const& right )
+{
+    return !(left != right);
+}
+
+template<typename T, typename U>
+bool operator!=( aligned_allocator<T> const& left, aligned_allocator<U> const& right )
+{
+    return true;
+}
+
+
 /** smart-pointer, freeing the managed pointer via free_aligned */
 template<class T>
 class aligned_storage_ptr
