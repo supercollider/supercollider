@@ -22,10 +22,12 @@
 #include <string>
 
 #include <boost/atomic.hpp>
+#include <boost/lockfree/ringbuffer.hpp>
 #include <boost/thread.hpp>
 
 #include <sndfile.hh>
 
+#include "nova-tt/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
@@ -48,7 +50,7 @@ class sndfile_backend:
 
 public:
     sndfile_backend(void):
-        running(false)
+        read_frames(64 * 16), write_frames(64 * 16), running(false), reader_running(false), writer_running(false)
     {}
 
     ~sndfile_backend(void)
@@ -108,44 +110,105 @@ public:
 
     void activate_audio(void)
     {
+        if (input_file)
+        {
+            reader_running.store(true);
+            reader_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_read_thread, this));
+        }
+
         running.store(true);
         if (input_file)
             audio_thread = boost::thread(boost::bind(&sndfile_backend::audio_thread_fn, this));
         else
             audio_thread = boost::thread(boost::bind(&sndfile_backend::audio_thread_fn_noinput, this));
+
+        writer_running.store(true);
+        writer_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_write_thread, this));
     }
 
     void deactivate_audio(void)
     {
+        reader_running.store(false);
+        reader_thread.join();
+
         running.store(false);
         audio_thread.join();
+        write_semaphore.post();
+        writer_running.store(false);
+        writer_thread.join();
     }
 
 private:
     void read_input_buffers(size_t frames_per_tick)
     {
-        if (input_file && (read_position < (size_t)input_file.frames()))
+        if (reader_running.load(boost::memory_order_acquire))
         {
-            size_t frames = input_file.frames() - read_position;
-            if (frames > frames_per_tick)
-                frames = frames_per_tick;
+            const size_t total_samples = input_channels * frames_per_tick;
+            size_t remaining = total_samples;
 
-            input_file.readf(temp_buffer.get(), frames);
+            read_semaphore.wait();
+            do {
+                remaining -= read_frames.dequeue(temp_buffer.get(), remaining);
 
-            size_t remaining = frames_per_tick - frames;
-            if (unlikely(remaining))
-                std::memset(temp_buffer.get() + frames*input_channels, 0,
-                            sizeof(float) * input_channels * remaining);
+                if (unlikely(read_frames.empty() &&
+                             !reader_running.load(boost::memory_order_acquire)))
+                {
+                    /* at the then, we are not able to read a full sample block, clear the final parts */
+                    assert(remaining % input_channels == 0);
 
-            for (size_t frame = 0; frame != frames_per_tick; ++frame)
+                    const size_t frames = (total_samples - remaining) / input_channels;
+                    for (size_t frame = frames; frame != frames_per_tick; ++frame)
+                    {
+                        for (uint16_t channel = 0; channel != input_channels; ++channel)
+                            super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
+                    }
+                    break;
+                }
+            } while (remaining);
+
+            const size_t frames = (total_samples - remaining) / input_channels;
+            for (size_t frame = 0; frame != frames; ++frame)
             {
                 for (uint16_t channel = 0; channel != input_channels; ++channel)
                     super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
             }
-            read_position += frames;
         }
         else
             super::clear_inputs(frames_per_tick);
+    }
+
+    void sndfile_read_thread(void)
+    {
+        assert(input_file);
+
+        const size_t frames_per_tick = get_audio_blocksize();
+        sized_array<sample_type, aligned_allocator<sample_type> > data_to_read(input_channels * frames_per_tick, 0.f);
+
+        for (;;)
+        {
+            if (unlikely(reader_running.load(boost::memory_order_acquire) == false))
+                return;
+
+            if (read_position < (size_t)input_file.frames())
+            {
+                size_t frames = input_file.frames() - read_position;
+                if (frames > frames_per_tick)
+                    frames = frames_per_tick;
+
+                input_file.readf(data_to_read.c_array(), frames);
+                read_position += frames;
+
+                const size_t item_to_enqueue = input_channels * frames;
+                size_t remaining = item_to_enqueue;
+
+                do {
+                    remaining -= read_frames.enqueue(data_to_read.c_array(), remaining);
+                } while(remaining);
+                read_semaphore.post();
+            }
+            else
+                reader_running.store(false, boost::memory_order_release);
+        }
     }
 
     void write_output_buffers(size_t frames_per_tick)
@@ -154,8 +217,34 @@ private:
         {
             for (uint16_t channel = 0; channel != output_channels; ++channel)
                 temp_buffer.get()[frame * output_channels + channel] = super::output_samples[channel].get()[frame];
+        }
 
-            output_file.writef(temp_buffer.get(), frames_per_tick);
+        const size_t total_samples = output_channels * frames_per_tick;
+        size_t remaining = total_samples;
+
+        do {
+            remaining -= write_frames.enqueue(temp_buffer.get(), remaining);
+            write_semaphore.post();
+        } while (remaining);
+    }
+
+    void sndfile_write_thread(void)
+    {
+        const size_t frames_per_tick = get_audio_blocksize();
+        sized_array<sample_type, aligned_allocator<sample_type> > data_to_write(output_channels * frames_per_tick, 0.f);
+
+        for (;;)
+        {
+            write_semaphore.wait();
+            for (;;)
+            {
+                size_t dequeued = write_frames.dequeue(data_to_write.c_array(), data_to_write.size());
+                if (dequeued == 0)
+                    break;
+                output_file.write(temp_buffer.get(), dequeued);
+            }
+            if (unlikely(writer_running.load(boost::memory_order_acquire) == false))
+                return;
         }
     }
 
@@ -187,11 +276,12 @@ private:
 
     aligned_storage_ptr<sample_type> temp_buffer;
 
-    boost::thread audio_thread;
-    boost::atomic<bool> running;
+    boost::thread reader_thread, audio_thread, writer_thread;
+    boost::lockfree::ringbuffer< sample_type, 0 > read_frames, write_frames;
+    nova::semaphore read_semaphore, write_semaphore;
+    boost::atomic<bool> running, reader_running, writer_running;
 };
 
 } /* namespace nova */
-
 
 #endif /* AUDIO_BACKEND_SNDFILE_BACKEND_HPP */
