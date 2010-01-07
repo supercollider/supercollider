@@ -91,7 +91,7 @@ class nova_server:
 #ifdef PORTAUDIO_BACKEND
     public audio_frontend<&run_scheduler_tick>,
 #elif defined(JACK_BACKEND)
-    public jack_backend<&run_scheduler_tick>,
+    public jack_backend<&run_scheduler_tick, float, false>,
 #endif
     public synth_factory,
     public buffer_manager,
@@ -198,7 +198,7 @@ inline void run_scheduler_tick(void)
 
     for (int channel = 0; channel != output_channels; ++channel) {
         if (sc_factory.world.mAudioBusTouched[channel] == buf_counter)
-            instance->deliver_dac_output(sc_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
+            instance->copy_dac_output(sc_factory.world.mAudioBus + blocksize * channel, channel, blocksize);
     }
 }
 
