@@ -1,5 +1,3 @@
-//  $Id$
-//
 //  buffer classes
 //  Copyright (C) 2006, 2007 Tim Blechmann
 //
@@ -18,11 +16,6 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-//  $Revision$
-//  $LastChangedRevision$
-//  $LastChangedDate$
-//  $LastChangedBy$
-
 
 #ifndef _BUFFER_HPP
 #define _BUFFER_HPP
@@ -30,7 +23,7 @@
 #include "utilities.hpp"
 #include "utilities/template_functions.hpp"
 #include "utilities/utils.hpp"
-#include "simd/simd_memory.hpp"
+#include "nova-simd/simd_memory.hpp"
 #include "interpolation.hpp"
 #include "server/sample_types.hpp"
 

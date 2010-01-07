@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "simd/simd_memory.hpp"
+#include "nova-simd/simd_memory.hpp"
 #include "utilities/malloc_aligned.hpp"
 
 

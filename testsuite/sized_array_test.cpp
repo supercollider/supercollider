@@ -72,3 +72,44 @@ BOOST_AUTO_TEST_CASE( sized_array_test_2 )
     run_test_2<std::allocator<void*>, rt_pool_allocator<void*> >();
     run_test_2<rt_pool_allocator<void*>, rt_pool_allocator<void*> >();
 }
+
+BOOST_AUTO_TEST_CASE( sized_array_test_3 )
+{
+    sized_array<int> array(5);
+    array[0] = -1;
+    array[1] = 3;
+    array[4] = 44;
+
+    BOOST_REQUIRE_EQUAL( array.size(), 5u );
+    BOOST_REQUIRE_EQUAL( array[0], -1 );
+    BOOST_REQUIRE_EQUAL( array[1], 3 );
+    BOOST_REQUIRE_EQUAL( *array.begin(), -1 );
+
+    array.resize(6, 444);
+    BOOST_REQUIRE_EQUAL( array.size(), 6u );
+    BOOST_REQUIRE_EQUAL( array[0], -1 );
+    BOOST_REQUIRE_EQUAL( array[1], 3 );
+    BOOST_REQUIRE_EQUAL( array[5], 444 );
+
+    array.resize(2);
+    BOOST_REQUIRE_EQUAL( array.size(), 2u );
+    BOOST_REQUIRE_EQUAL( array[0], -1 );
+    BOOST_REQUIRE_EQUAL( array[1], 3 );
+}
+
+BOOST_AUTO_TEST_CASE( sized_array_test_4 )
+{
+    sized_array<int> array0(int8_t(5));
+    sized_array<int> array1(uint8_t(5));
+    sized_array<int> array2(int16_t(5));
+    sized_array<int> array3(uint16_t(5));
+    sized_array<int> array4(int32_t(5));
+    sized_array<int> array5(uint32_t(5));
+    sized_array<int> array6(int64_t(5));
+    sized_array<int> array7(uint64_t(5));
+
+    sized_array<int> array8(size_t(5));
+    sized_array<int> array9(short(5));
+    sized_array<int> array10(int(5));
+    sized_array<int> array11(long(5));
+}

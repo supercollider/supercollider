@@ -27,11 +27,10 @@
 
 #include <jack/jack.h>
 
-#include "simd/simd_memory.hpp"
-
-#include "nova-tt/spin_lock.hpp"
 #include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
+
+#include "audio_backend_common.hpp"
 
 namespace nova
 {
@@ -43,9 +42,13 @@ namespace nova
  *  \todo later it may be interesting to directly map the io busses to the jack port regions
  *  \todo rethink the use of output port lock
  */
-template <void(*dsp_cb)(void)>
-class jack_backend
+template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
+class jack_backend:
+    public detail::audio_delivery_helper<sample_type, blocking, false>,
+    public detail::audio_settings_basic
 {
+    typedef detail::audio_delivery_helper<sample_type, blocking, false> super;
+
 public:
     jack_backend(void):
         client(NULL)
@@ -55,47 +58,6 @@ public:
     {
         close_client();
     }
-
-    /* to be called from the audio callback */
-    /* @{  */
-    void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
-    {
-        if (likely(audio_is_active()))
-        {
-            if (channel < output_channels) {
-                spin_lock::scoped_lock lock(output_lock);
-                addvec_simd(output_samples[channel], source, frames);
-            }
-        }
-    }
-
-    void deliver_dac_output_64(const_restricted_sample_ptr source, uint channel)
-    {
-        if (likely(audio_is_active()))
-        {
-            if (channel < output_channels) {
-                spin_lock::scoped_lock lock(output_lock);
-                addvec_simd<64>(output_samples[channel], source);
-            }
-        }
-    }
-
-    void fetch_adc_input(restricted_sample_ptr destination, uint channel, uint frames)
-    {
-        if (likely(audio_is_active()))
-            copyvec_simd(destination, input_samples[channel], frames);
-        else
-            zerovec_simd(destination, frames);
-    }
-
-    void fetch_adc_input_64(restricted_sample_ptr destination, uint channel)
-    {
-        if (likely(audio_is_active()))
-            copyvec_simd<64>(destination, input_samples[channel]);
-        else
-            zerovec_simd<64>(destination);
-    }
-    /* @} */
 
     uint32_t get_audio_blocksize(void) const
     {
@@ -131,7 +93,7 @@ public:
             input_ports.push_back(port);
         }
         input_channels = input_port_count;
-        input_samples.resize(input_port_count);
+        super::input_samples.resize(input_port_count);
 
         output_ports.clear();
         for (uint32_t i = 0; i != output_port_count; ++i) {
@@ -142,7 +104,7 @@ public:
             output_ports.push_back(port);
         }
         output_channels = output_port_count;
-        output_samples.resize(output_port_count);
+        super::output_samples.resize(output_port_count);
 
         samplerate_ = jack_get_sample_rate(client);
         jack_frames = jack_get_buffer_size(client);
@@ -179,21 +141,6 @@ public:
         is_active = false;
     }
 
-    float get_samplerate(void) const
-    {
-        return samplerate_;
-    }
-
-    uint16_t get_input_count(void) const
-    {
-        return input_channels;
-    }
-
-    uint16_t get_output_count(void) const
-    {
-        return output_channels;
-    }
-
     float get_cpuload(void) const
     {
         if (likely(client))
@@ -218,11 +165,11 @@ private:
     {
         /* get port regions */
         for (uint16_t i = 0; i != input_channels; ++i)
-            input_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
+            super::input_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
 
         for (uint16_t i = 0; i != output_channels; ++i) {
-            output_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
-            zerovec_simd(output_samples[i], frames); /* we clear the outputs, that we can simply add the delivered data */
+            super::output_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
+            zerovec_simd(super::output_samples[i].get(), frames); /* we clear the outputs, that we can simply add the delivered data */
         }
 
         jack_nframes_t i = 0;
@@ -236,9 +183,9 @@ private:
 
             /* increment cached port regions */
             for (uint16_t i = 0; i != input_channels; ++i)
-                input_samples[i] += blocksize_;
+                super::input_samples[i] = super::input_samples[i].get() + 64;
             for (uint16_t i = 0; i != output_channels; ++i)
-                output_samples[i] += blocksize_;
+                super::output_samples[i] = super::output_samples[i].get() + 64;
         }
 
         return 0;
@@ -262,15 +209,10 @@ private:
     jack_status_t status;
 
     bool is_active;
-    float samplerate_;
-    uint16_t input_channels, output_channels;
     uint32_t blocksize_;
 
-    std::vector<jack_default_audio_sample_t*> input_samples, output_samples;
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;
-
-    spin_lock output_lock;
 };
 
 } /* namespace nova */

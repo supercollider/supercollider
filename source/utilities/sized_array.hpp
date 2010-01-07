@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#include <boost/mpl/if.hpp>
+#include <boost/type_traits/is_integral.hpp>
 #include <boost/move/move.hpp>
 
 namespace nova
@@ -61,37 +63,62 @@ public:
     typedef std::ptrdiff_t                        difference_type;
 
     // construct/copy/destruct
-    explicit sized_array(size_type size, T const & def):
+    explicit sized_array(size_type size = 0, T const & def = T()):
         data_(Allocator::allocate(size)), size_(size)
     {
         for (size_type i = 0; i != size; ++i)
             Allocator::construct(data_ + i, def);
     }
 
-#define EXPLICIT_CONSTRUCTOR(INT_TYPE)                  \
-    explicit sized_array(INT_TYPE size):                \
-        data_(Allocator::allocate(size)), size_(size)   \
-    {                                                   \
-        for (size_type i = 0; i != size_type(size); ++i)\
-            Alloc::construct(data_ + i, T());           \
+private:
+    template <typename int_type>
+    void init_from_int(int_type size)
+    {
+        data_ = Allocator::allocate(size);
+        size_ = size;
+        for (size_type i = 0; i != size_; ++i)
+            Alloc::construct(data_ + i, T());
     }
 
-    EXPLICIT_CONSTRUCTOR(int32_t);
-    EXPLICIT_CONSTRUCTOR(uint32_t);
-    EXPLICIT_CONSTRUCTOR(int64_t);
-    EXPLICIT_CONSTRUCTOR(uint64_t);
-
-#undef EXPLICIT_CONSTRUCTOR
-
-    template<typename Container>
-    explicit sized_array(Container const & container):
-        data_(Allocator::allocate(container.size())), size_(container.size())
+    template <typename Container>
+    void init_from_container(Container const & container)
     {
+        data_ = Allocator::allocate(container.size());
+        size_ = container.size();
+
         size_type index = 0;
         typedef typename Container::const_iterator iterator;
         for (iterator it = container.begin(); it != container.end(); ++it)
             Allocator::construct(data_ + index++, *it);
         assert(index == size());
+    }
+
+    struct call_int_ctor
+    {
+        template <typename int_type>
+        static void init(sized_array & array, int_type const & i)
+        {
+            array.init_from_int<int_type>(i);
+        }
+    };
+
+    struct call_container_ctor
+    {
+        template <typename Container>
+        static void init(sized_array & array, Container const & c)
+        {
+            array.init_from_container<Container>(c);
+        }
+    };
+
+public:
+    template<typename Constructor_arg>
+    explicit sized_array(Constructor_arg const & arg)
+    {
+        typedef typename boost::mpl::if_<boost::is_integral<Constructor_arg>,
+                                         call_int_ctor,
+                                         call_container_ctor>::type ctor;
+        ctor::init(*this, arg);
     }
 
     explicit sized_array(BOOST_RV_REF(sized_array) arg)
@@ -231,6 +258,24 @@ public:
     {
         for (size_type i = 0; i != size_; ++i)
             data_[i] = t;
+    }
+
+    void resize(size_type new_size, T const & t = T())
+    {
+        T * new_data = Allocator::allocate(new_size);
+
+        for (size_type i = 0; i != new_size; ++i)
+            Allocator::construct(new_data+i, t);
+
+        std::copy(data_, data_+std::min(new_size, size_), new_data);
+
+        T * old_data = data_;
+        data_ = new_data;
+        for (size_type i = 0; i != size_; ++i)
+            Allocator::destroy(old_data+i);
+        if (size_)
+            Allocator::deallocate(old_data, size_);
+        size_ = new_size;
     }
 
 private:

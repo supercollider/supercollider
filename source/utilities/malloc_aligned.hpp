@@ -22,6 +22,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <boost/noncopyable.hpp>
+
 #ifdef __SSE2__
 #include <xmmintrin.h>
 #elif defined(HAVE_TBB)
@@ -138,6 +140,139 @@ T* calloc_aligned(std::size_t n)
 {
     return static_cast<T*>(calloc_aligned(n * sizeof(T)));
 }
+
+
+/** aligned allocator. uses malloc_aligned and free_aligned internally
+ *  */
+template <class T>
+class aligned_allocator
+{
+public:
+    typedef std::size_t size_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef T*        pointer;
+    typedef const T*  const_pointer;
+    typedef T&        reference;
+    typedef const T&  const_reference;
+    typedef T         value_type;
+
+    template <class U> struct rebind
+    {
+        typedef aligned_allocator<U> other;
+    };
+
+    pointer address(reference x) const
+    {
+        return &x;
+    }
+
+    const_pointer address(const_reference x) const
+    {
+        return &x;
+    }
+
+    pointer allocate(size_type n,
+                     const_pointer hint = 0)
+    {
+        pointer ret = malloc_aligned<T>(n);
+        if (ret == 0)
+            throw std::bad_alloc();
+        return ret;
+    }
+
+    void deallocate(pointer p, size_type n)
+    {
+        return free_aligned(p);
+    }
+
+    size_type max_size() const throw()
+    {
+        return size_type(-1) / sizeof(T);
+    }
+
+    void construct(pointer p, const T& val)
+    {
+        ::new(p) T(val);
+    }
+
+    void destroy(pointer p)
+    {
+        p->~T();
+    }
+};
+
+
+template<typename T, typename U>
+bool operator==( aligned_allocator<T> const& left, aligned_allocator<U> const& right )
+{
+    return !(left != right);
+}
+
+template<typename T, typename U>
+bool operator!=( aligned_allocator<T> const& left, aligned_allocator<U> const& right )
+{
+    return true;
+}
+
+
+/** smart-pointer, freeing the managed pointer via free_aligned */
+template<class T, bool managed = true>
+class aligned_storage_ptr
+{
+public:
+    explicit aligned_storage_ptr(T * p = 0):
+        ptr(p)
+    {}
+
+    ~aligned_storage_ptr(void)
+    {
+        if (managed && ptr)
+            free_aligned(ptr);
+    }
+
+    void reset(T * p = 0)
+    {
+        if (managed && ptr)
+            free_aligned(ptr);
+        ptr = p;
+    }
+
+    T & operator*() const
+    {
+        return *ptr;
+    }
+
+    T * operator->() const
+    {
+        return ptr;
+    }
+
+    T * get() const
+    {
+        return ptr;
+    }
+
+    aligned_storage_ptr & operator=(T * p)
+    {
+        reset(p);
+        return *this;
+    }
+
+    operator bool() const
+    {
+        return bool(ptr);
+    }
+
+    void swap(aligned_storage_ptr & b)
+    {
+        T * p = ptr;
+        ptr = b.ptr;
+        b.ptr = p;
+    }
+
+private:
+    T * ptr;
+};
 
 } /* namespace nova */
 

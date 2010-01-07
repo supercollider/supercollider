@@ -13,12 +13,12 @@
 [submodule "libs/boost"]
 	path = libs/boost
 	url = git://tim.klingt.org/boost.git
-[submodule "source/simd"]
-	path = source/simd
-	url = git://tim.klingt.org/nova-simd.git
 [submodule "source/sc/supercollider"]
 	path = source/sc/supercollider
 	url = git://tim.klingt.org/nova-sc.git
 [submodule "libs/nova-tt"]
 	path = libs/nova-tt
 	url = git://tim.klingt.org/nova-tt.git
+[submodule "libs/nova-simd"]
+	path = libs/nova-simd
+	url = git://tim.klingt.org/nova-simd.git

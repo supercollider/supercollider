@@ -25,10 +25,11 @@
 #include "sc_ugen_factory.hpp"
 #include "sc_synth.hpp"
 
+#include "nova-simd/simd_memory.hpp"
+
 #include "../server/server_args.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server.hpp"
-#include "../simd/simd_memory.hpp"
 #include "../utilities/malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
