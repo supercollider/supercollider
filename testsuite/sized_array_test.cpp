@@ -96,3 +96,20 @@ BOOST_AUTO_TEST_CASE( sized_array_test_3 )
     BOOST_REQUIRE_EQUAL( array[0], -1 );
     BOOST_REQUIRE_EQUAL( array[1], 3 );
 }
+
+BOOST_AUTO_TEST_CASE( sized_array_test_4 )
+{
+    sized_array<int> array0(int8_t(5));
+    sized_array<int> array1(uint8_t(5));
+    sized_array<int> array2(int16_t(5));
+    sized_array<int> array3(uint16_t(5));
+    sized_array<int> array4(int32_t(5));
+    sized_array<int> array5(uint32_t(5));
+    sized_array<int> array6(int64_t(5));
+    sized_array<int> array7(uint64_t(5));
+
+    sized_array<int> array8(size_t(5));
+    sized_array<int> array9(short(5));
+    sized_array<int> array10(int(5));
+    sized_array<int> array11(long(5));
+}
