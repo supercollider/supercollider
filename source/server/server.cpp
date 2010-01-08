@@ -31,8 +31,7 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(unsigned int port, unsigned int threads):
     scheduler(threads), buffer_manager(1024), sc_osc_handler(port),
-    io_interpreter(4, true, thread_priority_interval_rt().first),
-    synth_count_(0), group_count_(1)
+    io_interpreter(4, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);
     instance = this;
@@ -71,7 +70,6 @@ abstract_synth * nova_server::add_synth(std::string const & name, int id, node_p
 
     node_graph::add_node(ret, constraints);
     update_dsp_queue();
-    ++synth_count_;
     return ret;
 }
 
@@ -84,7 +82,6 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
 
     node_graph::add_node(ret, constraints);
     update_dsp_queue();
-    ++synth_count_;
     return ret;
 }
 
@@ -96,7 +93,6 @@ group * nova_server::add_group(int id, node_position_constraint const & constrai
 
     instance->add_node(g, constraints);
     /* no need to update the dsp queue */
-    ++group_count_;
     return g;
 }
 
@@ -107,7 +103,6 @@ parallel_group * nova_server::add_parallel_group(int id, node_position_constrain
         return 0;
     instance->add_node(g, constraints);
     /* no need to update the dsp queue */
-    ++group_count_;
     return g;
 }
 
@@ -137,11 +132,6 @@ void nova_server::free_node(int node_id)
 
 void nova_server::free_node(server_node * node)
 {
-    if (node->is_synth())
-        --synth_count_;
-    else
-        --group_count_;
-
     node_graph::remove_node(node);
     update_dsp_queue();
 }
