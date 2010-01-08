@@ -743,19 +743,11 @@ void handle_g_freeall(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        server_node * node = find_node(id);
+        bool success = instance->group_free_all(id);
 
-        if (node == NULL)
-            continue;
-
-        if (node->is_synth()) {
-            cerr << "node is a synth\n" << endl;
-            continue;
-        }
-
-        abstract_group * group = static_cast<abstract_group*>(node);
-
-        group->free_children();
+        if (!success)
+            cerr << "/g_freeAll failue" << endl;
+        instance->update_dsp_queue();
     }
 }
 
@@ -768,16 +760,11 @@ void handle_g_deepFree(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        server_node * node = find_node(id);
+        bool success = instance->group_free_deep(id);
 
-        if (node->is_synth()) {
-            cerr << "node is a synth\n" << endl;
-            continue;
-        }
-
-        abstract_group * group = static_cast<abstract_group*>(node);
-
-        group->free_synths_deep();
+        if (!success)
+            cerr << "/g_freeDeep failue" << endl;
+        instance->update_dsp_queue();
     }
 }
 

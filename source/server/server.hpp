@@ -176,9 +176,10 @@ public:
     void set_group_slot(node_id, slot_id, float);
 #endif
 
-private:
+public:
     void update_dsp_queue(void);
 
+private:
     callback_interpreter<system_callback> system_interpreter;
     callback_interpreter_threadpool<system_callback> io_interpreter;
     uint32_t synth_count_, group_count_;
