@@ -46,7 +46,7 @@ class server_node:
     public bi::set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
-    server_node(uint32_t node_id, bool type):
+    server_node(int32_t node_id, bool type):
         node_id(node_id), synth_(type), running_(true), parent_(0), use_count_(0)
     {}
 
@@ -55,7 +55,23 @@ protected:
         assert(parent_ == 0);
     }
 
+
+    /* @{ */
+    /** node id handling */
+    void reset_id(int32_t new_id)
+    {
+        node_id = new_id;
+    }
+
+    int32_t node_id;
+
 public:
+    int32_t id(void) const
+    {
+        return node_id;
+    }
+    /* @} */
+
     typedef bi::list_base_hook<bi::link_mode<bi::auto_unlink> > parent_hook;
 
     /* @{ */
@@ -68,7 +84,6 @@ public:
     {
         return lhs.node_id == rhs.node_id;
     }
-    const uint32_t node_id;
     /* @} */
 
     bool is_synth(void) const

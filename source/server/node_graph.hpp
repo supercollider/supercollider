@@ -44,7 +44,7 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(1000)
+        root_group_(0)
     {
         root_group_.add_ref();
         node_set.insert(root_group_);
@@ -72,12 +72,38 @@ public:
 
     node_position_constraint to_root;
 
-    server_node * find_node(uint32_t node_id)
+    server_node * find_node(int32_t node_id)
     {
         node_set_type::iterator it = node_set.find(node_id, compare_node());
         if (it == node_set.end())
             return 0;
         return &(*it);
+    }
+
+    bool node_id_available(int32_t node_id)
+    {
+        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        return (it == node_set.end());
+    }
+
+    void synth_reassign_id(int32_t node_id)
+    {
+        const uint32_t base = 0xffffffff;
+        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        if (it == node_set.end())
+            throw std::runtime_error("node id not found");
+        server_node * node = &(*it);
+
+        if (!node->is_synth())
+            return;
+
+        uint32_t hidden_id = base;
+        while (!node_id_available(hidden_id))
+            hidden_id -= 1;
+
+        node_set.erase(*node);
+        node->reset_id(hidden_id);
+        node_set.insert(*node);
     }
 
 private:

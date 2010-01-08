@@ -15,13 +15,13 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_1 )
     node_position_constraint to_root = std::make_pair(n.root_group(), insert);
 
     {
-        synth * s = new synth(0, 0);
+        synth * s = new synth(1, 0);
         n.add_node(s, to_root);
         n.remove_node(s);
     }
 
     {
-        synth * s = new synth(0, 0);
+        synth * s = new synth(1, 0);
         n.add_node(s/* , node_position_constraint() */);
         n.remove_node(s);
     }
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_2 )
 {
     node_graph n;
 
-    group * g = new group(0);
+    group * g = new group(1);
     n.add_node(g);
     n.remove_node(g);
 }
@@ -40,14 +40,14 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_3 )
 {
     node_graph n;
 
-    group * g = new group(0);
+    group * g = new group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
 
         n.add_node(s, to_group);
         n.remove_node(s);
@@ -59,11 +59,11 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_4 )
 {
     node_graph n;
 
-    group * g = new group(0);
+    group * g = new group(1);
 
     n.add_node(g);
 
-    synth * s = new synth(1, 0);
+    synth * s = new synth(2, 0);
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_6 )
 {
     node_graph n;
 
-    synth * s1 = new  synth(1, 0);
+    synth * s1 = new synth(1, 0);
     n.add_node(s1);
 
     synth * s2 = new synth(2, 0);
@@ -127,17 +127,17 @@ BOOST_AUTO_TEST_CASE( free_all_test )
 {
     node_graph n;
 
-    group * g = new group(0);
+    group * g = new group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
 
-        synth * s2 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
         n.add_node(s2, to_group);
     }
     g->free_children();
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_2 )
 {
     node_graph n;
 
-    group * g = new group(0);
+    group * g = new group(1);
 
     n.add_node(g);
     auto_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_1 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
     n.add_node(g);
     n.remove_node(g);
 }
@@ -210,14 +210,14 @@ BOOST_AUTO_TEST_CASE( pgroup_test_2 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
         n.remove_node(s);
     }
@@ -228,11 +228,11 @@ BOOST_AUTO_TEST_CASE( pgroup_test_3 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     n.add_node(g);
 
-    synth * s = new synth(1, 0);
+    synth * s = new synth(2, 0);
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
@@ -245,14 +245,14 @@ BOOST_AUTO_TEST_CASE( pgroup_test_4 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1, 0);
+        synth * s = new synth(2, 0);
         n.add_node(s, to_group);
 
         auto_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
@@ -268,15 +268,15 @@ BOOST_AUTO_TEST_CASE( pgroup_test_5 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s1 = new synth(1, 0);
-        synth * s2 = new synth(2, 0);
+        synth * s1 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
         n.add_node(s1, to_group);
         n.add_node(s2, to_group);
 
@@ -294,16 +294,16 @@ BOOST_AUTO_TEST_CASE( pgroup_test_6 )
 {
     node_graph n;
 
-    parallel_group * g = new parallel_group(0);
+    parallel_group * g = new parallel_group(1);
 
     n.add_node(g);
 
     {
         node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s1 = new synth(1, 0);
-        synth * s2 = new synth(2, 0);
-        synth * s3 = new synth(3, 0);
+        synth * s1 = new synth(2, 0);
+        synth * s2 = new synth(3, 0);
+        synth * s3 = new synth(4, 0);
         n.add_node(s1, to_group);
         n.add_node(s2, to_group);
         n.add_node(s3, to_group);
@@ -312,4 +312,61 @@ BOOST_AUTO_TEST_CASE( pgroup_test_6 )
         BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 3u);
     }
     n.remove_node(g);
+}
+BOOST_AUTO_TEST_CASE( pgroup_test_7 )
+{
+    node_graph n;
+
+    parallel_group * g = new parallel_group(1);
+
+    n.add_node(g);
+
+    {
+        node_position_constraint to_group = std::make_pair(g, insert);
+
+        group * g1 = new group(2);
+        group * g2 = new group(3);
+        group * g3 = new group(4);
+        n.add_node(g1, to_group);
+        n.add_node(g2, to_group);
+        n.add_node(g3, to_group);
+
+        node_position_constraint to_g1 = std::make_pair(g1, insert);
+        node_position_constraint to_g2 = std::make_pair(g2, insert);
+        synth * s1 = new synth(1000, 0);
+        synth * s2 = new synth(1001, 0);
+        n.add_node(s1, to_g1);
+        n.add_node(s2, to_g2);
+
+        auto_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
+        BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 2u);
+    }
+    n.remove_node(g);
+}
+
+BOOST_AUTO_TEST_CASE( noid_test )
+{
+    rt_pool.init(1024 * 1024);
+
+    node_graph n;
+
+    node_position_constraint to_root = std::make_pair(n.root_group(), insert);
+
+    {
+        synth * s = new synth(1000, 0);
+        n.add_node(s, to_root);
+        BOOST_REQUIRE(s->id() == 1000 );
+        n.synth_reassign_id(1000);
+        BOOST_REQUIRE(s->id() != 1000 );
+        n.remove_node(s);
+    }
+
+    {
+        synth * s = new synth(1000, 0);
+        n.add_node(s/* , node_position_constraint() */);
+        BOOST_REQUIRE(s->id() == 1000 );
+        n.synth_reassign_id(1000);
+        BOOST_REQUIRE(s->id() != 1000 );
+        n.remove_node(s);
+    }
 }
