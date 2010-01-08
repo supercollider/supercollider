@@ -44,10 +44,10 @@ namespace nova
  */
 template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
 class jack_backend:
-    public detail::audio_delivery_helper<sample_type, blocking, false>,
+    public detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false>,
     public detail::audio_settings_basic
 {
-    typedef detail::audio_delivery_helper<sample_type, blocking, false> super;
+    typedef detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
     jack_backend(void):
@@ -59,14 +59,16 @@ public:
         close_client();
     }
 
-    uint get_audio_blocksize(void)
+    uint32_t get_audio_blocksize(void) const
     {
-        return 64;
+        return blocksize_;
     }
 
 public:
-    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count)
+    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count, uint32_t blocksize)
     {
+        blocksize_ = blocksize;
+
         /* open client */
         client = jack_client_open(name.c_str(), JackNoStartServer, &status);
         if (status & JackServerFailed)
@@ -107,8 +109,8 @@ public:
         samplerate_ = jack_get_sample_rate(client);
         jack_frames = jack_get_buffer_size(client);
 
-        if (jack_frames % 64)
-            throw std::runtime_error("jack buffer size is not a multiple of 64");
+        if (jack_frames % blocksize_)
+            throw std::runtime_error("jack buffer size is not a multiple of blocksize");
     }
 
     void close_client(void)
@@ -154,28 +156,36 @@ private:
     int perform(jack_nframes_t frames)
     {
         /* get port regions */
-        for (uint16_t i = 0; i != input_channels; ++i)
-            super::input_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
-
         for (uint16_t i = 0; i != output_channels; ++i) {
             super::output_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
             zerovec_simd(super::output_samples[i].get(), frames); /* we clear the outputs, that we can simply add the delivered data */
         }
 
-        jack_nframes_t i = 0;
-        while (true)
+        jack_default_audio_sample_t * inputs[input_channels];
+        jack_default_audio_sample_t * outputs[output_channels];
+        for (uint16_t i = 0; i != input_channels; ++i)
+            inputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
+
+        for (uint16_t i = 0; i != output_channels; ++i)
+            outputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
+
+        jack_nframes_t processed = 0;
+        while (processed != frames)
         {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+
             (*dsp_cb)();
 
-            i += 64;
-            if (i == frames)
-                break;
-
-            /* increment cached port regions */
-            for (uint16_t i = 0; i != input_channels; ++i)
-                super::input_samples[i] = super::input_samples[i].get() + 64;
             for (uint16_t i = 0; i != output_channels; ++i)
-                super::output_samples[i] = super::output_samples[i].get() + 64;
+            {
+                copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+
+            processed += blocksize_;
         }
 
         return 0;
@@ -189,8 +199,8 @@ private:
     int buffer_size_callback(jack_nframes_t frames)
     {
         jack_frames = frames;
-        if (jack_frames % 64)
-            /* we need a multiple of 64 */
+        if (jack_frames % blocksize_)
+            /* we need a multiple of the blocksize */
             return 1;
         return 0;
     }
@@ -199,6 +209,7 @@ private:
     jack_status_t status;
 
     bool is_active;
+    uint32_t blocksize_;
 
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;

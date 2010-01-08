@@ -180,7 +180,7 @@ int main(int argc, char * argv[])
                                  samplerate);
     }
 #elif defined (JACK_BACKEND)
-    server.open_client("supernova", inchannels, outchannels);
+    server.open_client("supernova", inchannels, outchannels, 64);
 #endif
 
     server.activate_audio();
