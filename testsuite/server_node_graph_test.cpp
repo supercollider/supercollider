@@ -210,12 +210,10 @@ BOOST_AUTO_TEST_CASE( free_deep_test )
     BOOST_REQUIRE_EQUAL(n.group_count(), 3u);
 
     BOOST_REQUIRE(n.find_node(g2->id()));
-    n.remove_node(g2);
-    BOOST_REQUIRE(!n.find_node(g2->id()));
-
     BOOST_REQUIRE(n.find_node(g->id()));
     n.remove_node(g);
     BOOST_REQUIRE(!n.find_node(g->id()));
+    BOOST_REQUIRE(!n.find_node(g2->id()));
     BOOST_REQUIRE_EQUAL(n.group_count(), 1u);
 }
 
