@@ -38,6 +38,25 @@ nova_server::nova_server(unsigned int port, unsigned int threads):
     instance = this;
 }
 
+void nova_server::prepare_backend(void)
+{
+    /* register audio backend ports */
+    const int blocksize = get_audio_blocksize();
+    const int input_channels = get_input_count();
+    const int output_channels = get_output_count();
+
+    std::vector<sample*> inputs, outputs;
+    for (int channel = 0; channel != input_channels; ++channel)
+        inputs.push_back(sc_factory.world.mAudioBus + (blocksize * (output_channels + channel)));
+
+    audio_backend::input_mapping(inputs.begin(), inputs.end());
+
+    for (int channel = 0; channel != output_channels; ++channel)
+        outputs.push_back(sc_factory.world.mAudioBus + blocksize * channel);
+
+    audio_backend::output_mapping(outputs.begin(), outputs.end());
+}
+
 nova_server::~nova_server(void)
 {
     instance = 0;
