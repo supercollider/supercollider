@@ -19,6 +19,7 @@
 #ifndef AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 #define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 
+#include <cmath>
 #include <string>
 
 #include <boost/atomic.hpp>
@@ -42,10 +43,10 @@ namespace nova
  */
 template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
 class sndfile_backend:
-    public detail::audio_delivery_helper<sample_type, blocking, true>,
+    public detail::audio_delivery_helper<sample_type, float, blocking, false>,
     public detail::audio_settings_basic
 {
-    typedef detail::audio_delivery_helper<sample_type, blocking> super;
+    typedef detail::audio_delivery_helper<sample_type, float, blocking, false> super;
     typedef std::size_t size_t;
 
 public:
@@ -86,8 +87,6 @@ public:
         output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
         if (!output_file)
             throw std::runtime_error("cannot open output file");
-
-        super::prepare_helper_buffers(input_channels, output_channels, 64);
 
         temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * 64));
     }
@@ -139,6 +138,7 @@ public:
     }
 
 private:
+    /* read input fifo from the rt context */
     void read_input_buffers(size_t frames_per_tick)
     {
         if (reader_running.load(boost::memory_order_acquire))
@@ -153,15 +153,15 @@ private:
                 if (unlikely(read_frames.empty() &&
                              !reader_running.load(boost::memory_order_acquire)))
                 {
-                    /* at the then, we are not able to read a full sample block, clear the final parts */
+                    /* at the end, we are not able to read a full sample block, clear the final parts */
+                    const size_t last_frame = (total_samples - remaining) / input_channels;
+                    const size_t remaining_per_channel = remaining / input_channels;
                     assert(remaining % input_channels == 0);
+                    assert(remaining_per_channel % input_channels == 0);
 
-                    const size_t frames = (total_samples - remaining) / input_channels;
-                    for (size_t frame = frames; frame != frames_per_tick; ++frame)
-                    {
-                        for (uint16_t channel = 0; channel != input_channels; ++channel)
-                            super::input_samples[channel].get()[frame] = temp_buffer.get()[frame * input_channels + channel];
-                    }
+                    for (uint16_t channel = 0; channel != input_channels; ++channel)
+                        zerovec(super::input_samples[channel].get() + last_frame, remaining_per_channel);
+
                     break;
                 }
             } while (remaining);
@@ -211,6 +211,7 @@ private:
         }
     }
 
+    /* write output fifo from rt context */
     void write_output_buffers(size_t frames_per_tick)
     {
         for (size_t frame = 0; frame != frames_per_tick; ++frame)

@@ -14,7 +14,8 @@ aligned_storage_ptr<float> data(nova::calloc_aligned<float>(64));
 
 void tick(void)
 {
-    be.deliver_dac_output(data.get(), 0, 64);
+    float * data_ptr = data.get();
+    be.output_mapping(&data_ptr, &data_ptr + 1);
 }
 }
 
@@ -23,7 +24,7 @@ BOOST_AUTO_TEST_CASE( sndfile_backend_test_1 )
     BOOST_REQUIRE(!be.audio_is_opened());
     BOOST_REQUIRE(!be.audio_is_active());
 
-    be.open_client("_", "./output.wav", 44100, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 2);
+    be.open_client("_", "./output.wav", 44100, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 1);
     BOOST_REQUIRE(be.audio_is_opened());
 
     be.activate_audio();

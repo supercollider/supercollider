@@ -44,10 +44,10 @@ namespace nova
  */
 template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
 class jack_backend:
-    public detail::audio_delivery_helper<sample_type, blocking, false>,
+    public detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false>,
     public detail::audio_settings_basic
 {
-    typedef detail::audio_delivery_helper<sample_type, blocking, false> super;
+    typedef detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
     jack_backend(void):
@@ -164,28 +164,36 @@ private:
     int perform(jack_nframes_t frames)
     {
         /* get port regions */
-        for (uint16_t i = 0; i != input_channels; ++i)
-            super::input_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
-
         for (uint16_t i = 0; i != output_channels; ++i) {
             super::output_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
             zerovec_simd(super::output_samples[i].get(), frames); /* we clear the outputs, that we can simply add the delivered data */
         }
 
-        jack_nframes_t i = 0;
-        while (true)
+        jack_default_audio_sample_t * inputs[input_channels];
+        jack_default_audio_sample_t * outputs[output_channels];
+        for (uint16_t i = 0; i != input_channels; ++i)
+            inputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
+
+        for (uint16_t i = 0; i != output_channels; ++i)
+            outputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
+
+        jack_nframes_t processed = 0;
+        while (processed != frames)
         {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+
             (*dsp_cb)();
 
-            i += blocksize_;
-            if (i == frames)
-                break;
-
-            /* increment cached port regions */
-            for (uint16_t i = 0; i != input_channels; ++i)
-                super::input_samples[i] = super::input_samples[i].get() + 64;
             for (uint16_t i = 0; i != output_channels; ++i)
-                super::output_samples[i] = super::output_samples[i].get() + 64;
+            {
+                copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+
+            processed += blocksize_;
         }
 
         return 0;

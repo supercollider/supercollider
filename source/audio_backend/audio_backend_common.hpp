@@ -35,7 +35,7 @@ namespace nova
 namespace detail
 {
 
-template <typename sample_type, bool blocking, bool managed_memory = true>
+template <typename sample_type, typename io_sample_type, bool blocking, bool managed_memory = true>
 class audio_delivery_helper:
     boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type
 {
@@ -80,6 +80,31 @@ public:
     void fetch_adc_input_64(sample_type * destination, size_t channel)
     {
         copyvec_simd<64>(destination, input_samples[channel].get());
+    }
+    /* @} */
+
+    /* @{ */
+    /** buffers can be directly mapped to the io regions of the host application */
+    template <typename Iterator>
+    void input_mapping(Iterator const & buffer_begin, Iterator const & buffer_end)
+    {
+        BOOST_STATIC_ASSERT(!managed_memory);
+
+        size_t input_count = buffer_end - buffer_begin;
+
+        input_samples.resize(input_count);
+        std::copy(buffer_begin, buffer_end, input_samples.begin());
+    }
+
+    template <typename Iterator>
+    void output_mapping(Iterator const & buffer_begin, Iterator const & buffer_end)
+    {
+        BOOST_STATIC_ASSERT(!managed_memory);
+
+        size_t output_count = buffer_end - buffer_begin;
+
+        output_samples.resize(output_count);
+        std::copy(buffer_begin, buffer_end, output_samples.begin());
     }
     /* @} */
 
