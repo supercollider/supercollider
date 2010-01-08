@@ -17,14 +17,22 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_1 )
     {
         synth * s = new synth(1000, 0);
         n.add_node(s, to_root);
+        BOOST_REQUIRE_EQUAL(n.synth_count(), 1u);
         n.remove_node(s);
+        BOOST_REQUIRE_EQUAL(n.synth_count(), 0u);
     }
+
+    BOOST_REQUIRE_EQUAL(n.group_count(), 1u);
 
     {
         synth * s = new synth(1000, 0);
         n.add_node(s/* , node_position_constraint() */);
+        BOOST_REQUIRE_EQUAL(n.synth_count(), 1u);
         n.remove_node(s);
+        BOOST_REQUIRE_EQUAL(n.synth_count(), 0u);
     }
+
+    BOOST_REQUIRE_EQUAL(n.group_count(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE( simple_synth_test_2 )
@@ -130,18 +138,83 @@ BOOST_AUTO_TEST_CASE( free_all_test )
     group * g = new group(1);
 
     n.add_node(g);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 2u);
 
-    {
-        node_position_constraint to_group = std::make_pair(g, insert);
+    node_position_constraint to_group = std::make_pair(g, insert);
 
-        synth * s = new synth(1000, 0);
-        n.add_node(s, to_group);
+    synth * s = new synth(1000, 0);
+    n.add_node(s, to_group);
 
-        synth * s2 = new synth(1001, 0);
-        n.add_node(s2, to_group);
-    }
-    g->free_children();
+    synth * s2 = new synth(1001, 0);
+    n.add_node(s2, to_group);
+
+    group * g2 = new group(1002);
+    n.add_node(g2, to_group);
+
+    BOOST_REQUIRE_EQUAL(n.synth_count(), 2u);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 3u);
+
+    BOOST_REQUIRE(n.find_node(s->id()));
+    BOOST_REQUIRE(n.find_node(s2->id()));
+    BOOST_REQUIRE(n.find_node(g2->id()));
+
+    BOOST_REQUIRE(n.group_free_all(1));
+
+    BOOST_REQUIRE(!n.find_node(s->id()));
+    BOOST_REQUIRE(!n.find_node(s2->id()));
+    BOOST_REQUIRE(!n.find_node(g2->id()));
+
+    BOOST_REQUIRE_EQUAL(n.synth_count(), 0u);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 2u);
+
+    BOOST_REQUIRE(n.find_node(g->id()));
     n.remove_node(g);
+    BOOST_REQUIRE(!n.find_node(g->id()));
+    BOOST_REQUIRE_EQUAL(n.group_count(), 1u);
+}
+
+BOOST_AUTO_TEST_CASE( free_deep_test )
+{
+    node_graph n;
+
+    group * g = new group(1);
+
+    n.add_node(g);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 2u);
+
+    node_position_constraint to_group = std::make_pair(g, insert);
+
+    synth * s = new synth(1000, 0);
+    n.add_node(s, to_group);
+
+    synth * s2 = new synth(1001, 0);
+    n.add_node(s2, to_group);
+
+    group * g2 = new group(1002);
+    n.add_node(g2, to_group);
+
+    BOOST_REQUIRE_EQUAL(n.synth_count(), 2u);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 3u);
+
+    BOOST_REQUIRE(n.find_node(s->id()));
+    BOOST_REQUIRE(n.find_node(s2->id()));
+    BOOST_REQUIRE(n.find_node(g2->id()));
+
+    BOOST_REQUIRE(n.group_free_deep(1));
+
+    BOOST_REQUIRE(!n.find_node(s->id()));
+    BOOST_REQUIRE(!n.find_node(s2->id()));
+    BOOST_REQUIRE(n.find_node(g2->id()));
+
+    BOOST_REQUIRE_EQUAL(n.synth_count(), 0u);
+    BOOST_REQUIRE_EQUAL(n.group_count(), 3u);
+
+    BOOST_REQUIRE(n.find_node(g2->id()));
+    BOOST_REQUIRE(n.find_node(g->id()));
+    n.remove_node(g);
+    BOOST_REQUIRE(!n.find_node(g->id()));
+    BOOST_REQUIRE(!n.find_node(g2->id()));
+    BOOST_REQUIRE_EQUAL(n.group_count(), 1u);
 }
 
 

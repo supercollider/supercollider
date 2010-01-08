@@ -61,6 +61,11 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
     default:
         assert(false);      /* this point should not be reached! */
     }
+
+    if (n->is_synth())
+        synth_count_ += 1;
+    else
+        group_count_ += 1;
 }
 
 void node_graph::add_node(server_node * n)
@@ -70,6 +75,9 @@ void node_graph::add_node(server_node * n)
 
 void node_graph::remove_node(server_node * n)
 {
+    if (!n->is_synth())
+        group_free_all(n->id());
+
     node_set.erase(*n);
     /** \todo recursively remove nodes from node_set
      *        for now this is done by the auto-unlink hook
@@ -77,6 +85,10 @@ void node_graph::remove_node(server_node * n)
 
     abstract_group * parent = n->parent_;
     parent->remove_child(n);
+    if (n->is_synth())
+        synth_count_ -= 1;
+    else
+        group_count_ -= 1;
 }
 
 std::auto_ptr<node_graph::dsp_thread_queue> node_graph::generate_dsp_queue(void)

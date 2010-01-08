@@ -44,7 +44,7 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(0)
+        root_group_(0), synth_count_(0), group_count_(1)
     {
         root_group_.add_ref();
         node_set.insert(root_group_);
@@ -55,6 +55,17 @@ public:
 
     ~node_graph(void)
     {}
+
+    uint32_t synth_count(void) const
+    {
+        return synth_count_;
+    }
+
+    uint32_t group_count(void) const
+    {
+        return group_count_;
+    }
+
 
     void add_node(server_node * s, node_position_constraint const & constraint);
     void add_node(server_node * s);
@@ -89,6 +100,51 @@ public:
     void synth_reassign_id(int32_t node_id);
 
 private:
+    boost::tuple<abstract_group *, size_t, size_t> group_free_prepare(int32_t node_id)
+    {
+        server_node * node = find_node(node_id);
+        if (node)
+        {
+            abstract_group * group = static_cast<abstract_group*>(node);
+            size_t synths, groups;
+            boost::tie(synths, groups) = group->child_count_deep();
+            return boost::make_tuple(group, synths, groups);
+        }
+        else
+            return boost::make_tuple((abstract_group*)NULL, 0, 0);
+    }
+
+public:
+    bool group_free_all(int32_t node_id)
+    {
+        abstract_group * group;
+        size_t synths, groups;
+        boost::tie(group, synths, groups) = group_free_prepare(node_id);
+
+        if (group == NULL)
+            return false;
+
+        group->free_children();
+        synth_count_ -= synths;
+        group_count_ -= groups;
+        return true;
+    }
+
+    bool group_free_deep(int32_t node_id)
+    {
+        abstract_group * group;
+        size_t synths, groups;
+        boost::tie(group, synths, groups) = group_free_prepare(node_id);
+
+        if (group == NULL)
+            return false;
+
+        group->free_synths_deep();
+        synth_count_ -= synths;
+        return true;
+    }
+
+private:
     struct compare_node
     {
         bool operator()(server_node const & lhs,
@@ -108,8 +164,8 @@ private:
                                    boost::intrusive::constant_time_size<false>
                                    > node_set_type;
     node_set_type node_set;
+    uint32_t synth_count_, group_count_;
 };
-
 
 } /* namespace nova */
 
