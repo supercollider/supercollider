@@ -85,6 +85,33 @@ public:
         return child_nodes.empty();
     }
 
+    /** number of direct children */
+    std::size_t child_count(void) const
+    {
+        return child_nodes.size();
+    }
+
+    /** number of child synths and groups */
+    std::pair<std::size_t, std::size_t> child_count_deep(void) const
+    {
+        std::size_t synths(0), groups(0);
+
+        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
+        {
+            if (it->is_synth())
+                synths += 1;
+            else
+            {
+                std::size_t recursive_synths, recursive_groups;
+                const abstract_group * group = static_cast<const abstract_group*>(&*it);
+                boost::tie(recursive_synths, recursive_groups) = group->child_count_deep();
+                groups += 1 + recursive_groups;
+                synths += recursive_synths;
+            }
+        }
+        return std::make_pair(synths, groups);
+    }
+
     template<typename functor>
     void apply_on_children(functor const & f)
     {
