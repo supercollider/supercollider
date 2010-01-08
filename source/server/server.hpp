@@ -155,7 +155,7 @@ public:
 #ifdef JACK_BACKEND
         return get_cpuload();
 #else
-        return 0.f
+        return 0.f;
 #endif
     }
 
