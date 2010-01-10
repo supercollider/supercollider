@@ -37,7 +37,7 @@ TaskProxyEditor {
 
 	getUsedKeys {
 		if (proxy.envir.isNil) { ^[] };
-		^usedKeys = proxy.envir.keys.rejectAs(_ == \self, Array);
+		^usedKeys = proxy.envir.keys.rejectAs(_ == \self, Array).sort;
 	}
 
 	openDoc { |strings, bounds|
