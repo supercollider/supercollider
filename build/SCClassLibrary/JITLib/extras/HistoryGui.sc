@@ -58,27 +58,28 @@ HistoryGui {
 			.items_([\all] ++ history.keys).value_(0)
 			.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 
-		filTextV = TextView(w, Rect(0,0, 100 ,20)).string_("")
+		filTextV = TextView(w, Rect(0,0, 88, 20)).string_("")
 			.enterInterpretsSelection_(false)
 			.resize_(2)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode|
 				this.setStrFilter(txvw.string);
 				if (this.filtering) { this.filterLines; }
 			});
-		topBut = Button(w, Rect(0, 0, 24, 20))
+		topBut = Button(w, Rect(0, 0, 32, 20))
 			.states_([["top"], ["keep"]]).value_(0)
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |but| this.stickMode_(but.value) });
 
-		Button(w, Rect(0, 0, 24, 20)) ////
+		Button(w, Rect(0, 0, 32, 20)) ////
 			.states_([["rip"]])
 			.resize_(3)
 			.canFocus_(false)
-			.action_({ |btn| this.findDoc; doc.string_(textV.string); doc.front; });
+			.action_({ |btn| this.rip(textV.string) });
 		
 		Button(w, Rect(0,0, 16, 20))
 			.states_([["v"], ["^"]])
+			.resize_(3)
 			.action_ { |btn| 
 				var views = w.view.children; 
 				var resizes = [ 
@@ -210,10 +211,17 @@ HistoryGui {
 			)
 		)
 	}
+	
+	rip { 
+		this.findDoc; doc.view.children.first.string_(textV.string); doc.front;
+	}
+	
 	findDoc {
 		if (docFlag == \newDoc) { oldDocs = oldDocs.add(doc) };
-		if (docFlag == \newDoc or: doc.isNil or: { Document.allDocuments.includes(doc).not }) {
-			doc = Document(docTitle).bounds_(Rect(300, 500, 300, 100));
+		if (docFlag == \newDoc or: doc.isNil or: { Window.allWindows.includes(doc).not }) {
+			doc = Window(docTitle, Rect(300, 500, 300, 100));
+			doc.addFlowLayout;
+			TextView(doc, doc.bounds.resizeBy(-8, -8)).resize_(5);
 		};
 		oldDocs = oldDocs.select {|d| d.notNil and: { d.dataptr.notNil } };
 	}
