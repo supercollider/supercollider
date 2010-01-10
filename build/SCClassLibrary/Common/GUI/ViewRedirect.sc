@@ -48,6 +48,7 @@ Pen : ViewRedirect { *key { ^\pen }}
 
 Stethoscope : ViewRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
+		index = index.asControlInput;
 		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
 		}
 	*key { ^\stethoscope }
@@ -58,6 +59,7 @@ FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqS
 
 FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
+		busNum = busNum.asControlInput;
 		^this.implClass.new(width, height, busNum, scopeColor)
 		}
 	*key { ^\freqScope }
