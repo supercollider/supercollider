@@ -49,7 +49,7 @@ Bugfixes:
 * 2009-11-03 fix unsafe implementation of methods that allow sending collections to buffers - jr
 * 2009-11-04 fix signalRange for MouseX, MouseY and KeyState, so that the range message works now - jr
 * 2009-12-14 fix uninitialised variable in Pulse (could sometimes cause small glitch on init), thanks to rhian lloyd - ds
-
+* 2010-01-10 Demand ugens can now handle more than 32 channels, thanks Patrick Borgeat for the patch - ds
 
 
 Other additions/improvements:
