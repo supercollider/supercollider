@@ -27,13 +27,12 @@
 
 static InterfaceTable *ft;
 
-#define MAXCHANNELS 32
-
 struct Demand : public Unit
 {
 	float m_prevtrig;
 	float m_prevreset;
-	float m_prevout[MAXCHANNELS];
+	float *m_prevout;
+	float **m_out;
 };
 
 struct Duty : public Unit
@@ -189,16 +188,24 @@ void load(InterfaceTable *inTable);
 
 
 void Demand_Ctor(Demand *unit);
-void Demand_next(Demand *unit, int inNumSamples);
+void Demand_Dtor(Demand *unit);
+void Demand_next_aa(Demand *unit, int inNumSamples);
+void Demand_next_ak(Demand *unit, int inNumSamples);
+void Demand_next_ka(Demand *unit, int inNumSamples);
 
 void Duty_Ctor(Duty *unit);
-void Duty_next(Duty *unit, int inNumSamples);
+void Duty_next_da(Duty *unit, int inNumSamples);
+void Duty_next_dk(Duty *unit, int inNumSamples);
+void Duty_next_dd(Duty *unit, int inNumSamples);
 
 void TDuty_Ctor(TDuty *unit);
-void TDuty_next(TDuty *unit, int inNumSamples);
+void TDuty_next_da(TDuty *unit, int inNumSamples);
+void TDuty_next_dk(TDuty *unit, int inNumSamples);
+void TDuty_next_dd(TDuty *unit, int inNumSamples);
 
 void DemandEnvGen_Ctor(DemandEnvGen *unit);
-void DemandEnvGen_next(DemandEnvGen *unit, int inNumSamples);
+void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples);
+void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples);
 
 void Dseries_Ctor(Dseries *unit);
 void Dseries_next(Dseries *unit, int inNumSamples);
@@ -222,6 +229,7 @@ void Dseq_Ctor(Dseq *unit);
 void Dseq_next(Dseq *unit, int inNumSamples);
 
 void Dshuf_Ctor(Dshuf *unit);
+void Dshuf_Dtor(Dshuf *unit);
 void Dshuf_next(Dshuf *unit, int inNumSamples);
 void Dshuf_scramble(Dshuf *unit);
 
@@ -250,6 +258,10 @@ void Dswitch_next(Dswitch *unit, int inNumSamples);
 void Dstutter_Ctor(Dstutter *unit);
 void Dstutter_next(Dstutter *unit, int inNumSamples);
 
+void Dpoll_Ctor(Dpoll *unit);
+void Dpoll_Ctor(Dpoll *unit);
+void Dpoll_next(Dpoll *unit, int inNumSamples);
+
 void Donce_Ctor(Donce *unit);
 void Donce_next(Donce *unit, int inNumSamples);
 
@@ -261,13 +273,14 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
 	float *reset = ZIN(1);
-
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
+	
+	float** out = unit->m_out;
+	float* prevout = unit->m_prevout;
+	
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		out[i] = OUT(i);
-		prevout[i] = unit->m_prevout[i];
 	}
+	
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
 
@@ -297,12 +310,6 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
-
-	unit->m_prevtrig = prevtrig;
-	unit->m_prevreset = prevreset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
 }
 
 
@@ -310,12 +317,12 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
 	float zreset = IN0(1);
-
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
+	
+	float** out = unit->m_out;
+	float *prevout = unit->m_prevout;
+	
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		out[i] = OUT(i);
-		prevout[i] = unit->m_prevout[i];
 	}
 
 	float prevtrig = unit->m_prevtrig;
@@ -349,9 +356,6 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
 }
 
 
@@ -359,12 +363,12 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 {
 	float ztrig = IN0(0);
 	float *reset = ZIN(1);
+	
+	float** out = unit->m_out;
+	float *prevout = unit->m_prevout;
 
-	float *out[MAXCHANNELS];
-	float prevout[MAXCHANNELS];
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		out[i] = OUT(i);
-		prevout[i] = unit->m_prevout[i];
 	}
 
 	float prevtrig = unit->m_prevtrig;
@@ -391,9 +395,6 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = prevout[i];
-	}
 }
 
 
@@ -414,6 +415,10 @@ void Demand_Ctor(Demand *unit)
 			SETCALC(Demand_next_aa);
 		}
 	}
+		
+	unit->m_prevout = (float*) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
+	unit->m_out = (float**) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float*));
+	
 	//Print("Demand_Ctor calc %08X\n", unit->mCalcFunc);
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
@@ -421,6 +426,12 @@ void Demand_Ctor(Demand *unit)
 		unit->m_prevout[i] = 0.f;
 		OUT0(i) = 0.f;
 	}
+}
+
+void Demand_Dtor(Demand* unit)
+{
+	if(unit->m_prevout) RTFree(unit->mWorld, unit->m_prevout);
+	if(unit->m_out)     RTFree(unit->mWorld, unit->m_out);
 }
 
 
@@ -2185,7 +2196,7 @@ PluginLoad(Demand)
 {
 	ft = inTable;
 
-	DefineSimpleCantAliasUnit(Demand);
+	DefineDtorCantAliasUnit(Demand);
 	DefineSimpleCantAliasUnit(Duty);
 	DefineSimpleCantAliasUnit(DemandEnvGen);
 	DefineSimpleCantAliasUnit(TDuty);
