@@ -141,7 +141,8 @@ NodeProxyEditor {
 			zone.decorator.nextLine; 
 
 			sink = DragBoth(zone, Rect(0,0, sinkWidth, skin.buttonHeight))
-				.string_("-").align_(\center).visible_(false);
+				.string_("-").align_(\center).visible_(false)
+				.font_(font);
 				
 			sink.action_({ arg sink; var px;
 				if (sink.object.notNil) { 
