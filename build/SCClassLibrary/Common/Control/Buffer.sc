@@ -159,6 +159,7 @@ Buffer {
 	}
 
 	cueSoundFile { arg path,startFrame,completionMessage;
+		this.path_(path);
 		server.listSendMsg(
 			this.cueSoundFileMsg(path,startFrame,completionMessage)
 		)
