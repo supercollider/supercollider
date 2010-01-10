@@ -75,6 +75,11 @@ float fhypotx(float real, float imag)
 }
 */
 
+/**
+* Converts cartesian to polar representation, using lookup tables.
+* Note: in this implementation the phase values returned lie in the range [-pi/4, 7pi/4]
+* rather than the more conventional [0, 2pi] or [-pi, pi].
+*/
 Polar Complex::ToPolarApx()
 {
 	int32 index;
