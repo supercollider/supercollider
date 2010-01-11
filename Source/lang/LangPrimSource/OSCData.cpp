@@ -299,8 +299,8 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 {
 	int err, port, addr;
 
-	if (IsObj(netAddrObj->slots + ivxNetAddr_Socket)) {
-		SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawObject(netAddrObj->slots + ivxNetAddr_Socket);
+	if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
+		SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
 
 		// send TCP
 		int tcpSocket = comPort->Socket();
