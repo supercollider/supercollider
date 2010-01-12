@@ -67,6 +67,7 @@ def specific():
 
     else:
         env.Append(CPPPATH=Dir("#/libs/boost"))
+        env.Append(CXXFLAGS="-include assert.h") # boost.thread compile fix
 
         def collect_sources():
             import os
