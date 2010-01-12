@@ -15,7 +15,6 @@ OSCresponder {
 		addr = argAddr;
 		action = argAction;
 		this.cmdName = argCmdName;
-		// cmdName = argCmdName.asSymbol;
 	}
 	
 	cmdName_ { arg string;
