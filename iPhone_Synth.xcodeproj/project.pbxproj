@@ -404,7 +404,7 @@
 		778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = iscsynth_MainWindow.xib; path = "iPhone Resources/iscsynth_MainWindow.xib"; sourceTree = "<group>"; };
 		778F12510F50A72900CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
 		778F12670F50A85200CB6629 /* DirBrowserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirBrowserView.h; sourceTree = "<group>"; };
-		778F126B0F50A87300CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = xtralibs/mac/libsndfile_iphone.a; sourceTree = "<group>"; };
+		778F126B0F50A87300CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = xtralibs/iphone/libsndfile_iphone.a; sourceTree = "<group>"; };
 		778F5F4C0ECB9D9200822AF1 /* iPhoneUGens.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneUGens.mm; sourceTree = "<group>"; };
 		77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_Browser.xib; path = "iPhone Resources/SuperCollider_Browser.xib"; sourceTree = "<group>"; };
 		77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
