@@ -32,7 +32,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><b>numChannels</b> - the number of channels to output. If 1, mono is returned and pan is ignored.</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>trigger </b>- a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.</p>
 <p class="p3"><span class="Apple-tab-span">	</span>The following args are polled at grain creation time</p>
-<p class="p3"><span class="Apple-tab-span">	</span><b>dur</b> - size of the grain.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><b>dur</b> - size of the grain (in seconds).</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>sndbuf</b> - the buffer holding a mono audio signal. If using multi-channel files, use Buffer.readChannel.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>rate</b> - the playback rate of the sampled sound</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>pos</b> - the playback position for the grain to start with (0 is beginning, 1 is end of file)</p>
@@ -42,7 +42,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If numChannels = 2, panning is similar to Pan2.</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if numChannels &gt; 2, pannins is the same as PanAz.<span class="Apple-tab-span">	</span></p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>envbufnum</b> - the buffer number containing a singal to use for the grain envelope. -1 uses a built-in<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Hanning envelope.</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Hann envelope.</p>
 <p class="p3"><b><span class="Apple-tab-span">	</span>maxGrains </b>- the maximum number of overlapping grains that can be used at a given time. This value</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>efficient use of memory.</p>
