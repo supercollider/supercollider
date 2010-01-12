@@ -14,9 +14,9 @@ OSCpathDispatcher : OSCMultiResponder {
 	var <>maxPathSize = 0;
 
 	*new {  arg addr, cmdName, action, pathSize;
-		^super.new(addr, cmdName, action).init(pathSize);
+		^super.new(addr, cmdName, action).initPathSize(pathSize);
 	}
-	init { arg pathSize;
+	initPathSize { arg pathSize;
 		maxPathSize = pathSize;
 		pathResponders = Set.new;
 	}
@@ -64,7 +64,7 @@ OSCpathResponder : OSCresponder {
 	*new { arg addr, cmdPath, action;
 		var cmdName, path;
 		#cmdName ...path = cmdPath;
-		^super.newCopyArgs(addr, cmdName, action, path);
+		^super.new(addr, cmdName, action).path_(path);
 	}
 
 	findDispatcher {
