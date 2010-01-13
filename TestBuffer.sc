@@ -30,6 +30,7 @@ TestBuffer : UnitTest {
 		0.2.wait;
 		Server.default.sync;
 		b.loadToFloatArray(0, -1, action:{|data|
+			this.assert(data.size==d.size,       "test_serverlang_dataexchange sendCollection->loadToFloatArray received full-length data (%==%)".format(data.size, d.size));
 			this.assertArrayFloatEquals(data, d, "test_serverlang_dataexchange sendCollection->loadToFloatArray", report: true)
 		});
 		Server.default.sync;
@@ -41,6 +42,7 @@ TestBuffer : UnitTest {
 		0.2.wait;
 		Server.default.sync;
 		b.loadToFloatArray(0, -1, action:{|data| 
+			this.assert(data.size==d.size,       "test_serverlang_dataexchange loadCollection->loadToFloatArray received full-length data (%==%)".format(data.size, d.size));
 			this.assertArrayFloatEquals(data, d, "test_serverlang_dataexchange loadCollection->loadToFloatArray", report: true)
 		});
 		Server.default.sync;
