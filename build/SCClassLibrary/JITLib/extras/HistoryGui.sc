@@ -28,9 +28,9 @@ HistoryGui {
 		textV = TextView(w, Rect(0,0, 300 - 4, numTextLines * 12)).string_("")
 			.enterInterpretsSelection_(false)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode|
-				char.postcs;
+				// char.postcs;
 				if ([3, 13].includes(char.ascii)) {
-					this.findDoc; doc.string_(textV.string);
+					this.rip(textV.string);
 				};
 			})
 			.resize_(2);

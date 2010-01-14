@@ -539,4 +539,27 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			}
 		};
 	}
+	
+	rewrite { |path, open = true| 
+		var lines, time, repath, file2; 
+		lines = path.load;
+		
+		if (lines.isNil) { "no history, no future.".warn; ^this }; 
+		
+		time = path.basename.splitext.first.keep(-13).split($_).collect { |str, i| 
+			str.clump(2).join("-:"[i]);
+		}.join($ );
+		
+		repath = path.splitext.collect { |str, i| str ++ ["_rewritten.", ""][i] }.join;
+	
+		file2 = File.open(repath, "w");
+		file2.write("// History rewritten from" + time); 
+		lines.do { |line| 
+			var time, tag, code; 
+			#time, tag, code = line;
+			file2.write("\n\n\n// when: % - who: % \n\n(\n%\n)\n".format(time, tag, code));
+		};
+		file2.close;
+		if (open) { repath.openTextFile };
+	}
 }
