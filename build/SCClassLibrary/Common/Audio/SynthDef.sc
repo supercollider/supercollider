@@ -288,7 +288,15 @@ SynthDef {
 		^stream.collection;
 	}
 	writeDefFile { arg dir, overwrite;
-		super.writeDefFile(name, dir, overwrite);
+		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			super.writeDefFile(name, dir, overwrite);
+		} {
+			// actual error, not just warning as in .send and .load,
+			// because you might try to write the file somewhere other than
+			// the default location - could be fatal later, so crash now
+			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to write back to disk. File was not written."
+				.format(name), this).throw
+		}
 	}
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
@@ -485,19 +493,37 @@ SynthDef {
 		};
 	}
 
-
+		// these 2 methods warn, not throw fatal error
+		// because loading existing def from disk is a viable alternative
+		// to get the synthdef to the server
 	send { arg server,completionMsg;
-		server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
-		//server.sendMsg("/d_recv", this.asBytes,completionMsg);
+		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
+			//server.sendMsg("/d_recv", this.asBytes,completionMsg);
+		} {
+			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to send back to the server."
+				.format(name).warn;
+			if(server.isLocal) {
+				"Loading from disk instead.".postln;
+				server.listSendBundle(nil, [["/d_load", metadata[\loadPath], completionMsg]]);
+			} {
+				MethodError("Server is remote, cannot load from disk.", this).throw;
+			};
+		};
 	}
 	load { arg server, completionMsg,dir;
-		// i should remember what dir i was written to
-		var path;
-		dir = dir ? synthDefDir;
-		this.writeDefFile(dir);
-		server.listSendMsg(
-			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
-		)
+		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+				// i should remember what dir i was written to
+			dir = dir ? synthDefDir;
+			this.writeDefFile(dir);
+			server.listSendMsg(
+				["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
+			)
+		} {
+			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to load back onto the server. Loading from disk instead."
+				.format(name).warn;
+			server.listSendBundle(nil, [["/d_load", metadata[\loadPath], completionMsg]]);
+		};
 	}
 
 	storeOnce { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
@@ -513,30 +539,39 @@ SynthDef {
 		};
 	}
 	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
-		var bytes;
 		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
 		var path = dir ++ name ++ ".scsyndef";
-		var file = File(path, "w");
-		var desc;
-		protect {
-			bytes = this.asBytes;
-			file.putAll(bytes);
-			file.close;
+		var file;
+		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			protect {
+				var bytes, desc;
+				file = File(path, "w");
+				bytes = this.asBytes;
+				file.putAll(bytes);
+				file.close;
+				lib.read(path);
+				lib.servers.do { arg server;
+					server.value.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
+				};
+				desc = lib[this.name.asSymbol];
+				desc.metadata = metadata;
+				SynthDesc.populateMetadataFunc.value(desc);
+				if(desc.metadata.notNil) {
+					(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(desc.metadata, this, path);
+				} {
+					AbstractMDPlugin.clearMetadata(path);
+				};
+			} {
+				file.close
+			}
+		} {
+			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to load back onto the server. Loading from disk instead."
+				.format(name).warn;
 			lib.read(path);
 			lib.servers.do { arg server;
-				server.value.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
+				server.value.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
 			};
-			desc = lib[this.name.asSymbol];
-			desc.metadata = metadata;
-			SynthDesc.populateMetadataFunc.value(desc);
-			if(desc.metadata.notNil) {
-				(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(desc.metadata, this, path);
-			} {
-				AbstractMDPlugin.clearMetadata(path);
-			};
-		} {
-			file.close
-		}
+		};
 	}
 
 	play { arg target,args,addAction=\addToHead;

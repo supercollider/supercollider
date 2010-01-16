@@ -70,6 +70,11 @@ SynthDesc {
 				desc.metadata = AbstractMDPlugin.readMetadata(path);
 			};
 			this.populateMetadataFunc.value(desc);
+			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
+				desc.def.metadata ?? { desc.def.metadata = () };
+				desc.def.metadata.put(\shouldNotSend, true)
+					.put(\loadPath, path);
+			};
 		}
 		^dict
 	}
