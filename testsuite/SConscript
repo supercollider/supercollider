@@ -64,7 +64,6 @@ unit_test_common = ["boost_test.cpp",
 
 # simple standalone tests
 unit_test_sources = ["mutex_test.cpp",
-                     "string_resource_test.cpp",
                      "interpolation.cpp",
                      "parameter.cpp",
                      "dsp_ringbuffer_test.cpp",
