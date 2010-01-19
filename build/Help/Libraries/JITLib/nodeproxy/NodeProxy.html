@@ -9,161 +9,155 @@
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Futura; min-height: 15.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Helvetica; min-height: 16.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 18.0px Futura}
-span.s3 {text-decoration: underline ; color: #0000bf}
-span.s4 {color: #000000}
-span.s5 {text-decoration: underline ; color: #0000bf}
+span.s3 {color: #000000}
+span.s4 {color: #0000bf}
+span.s5 {color: #0000bf}
 span.s6 {color: #0000bf}
 span.s7 {text-decoration: underline ; color: #0000bf}
-span.s8 {text-decoration: underline ; color: #0000bf}
-span.s9 {text-decoration: underline}
-span.s10 {color: #0000bf}
-span.s11 {color: #0000bf}
-span.s12 {color: #007300}
-span.s13 {color: #606060}
-span.s14 {color: #bf0000}
+span.s8 {text-decoration: underline}
+span.s9 {color: #0000bf}
+span.s10 {color: #007300}
+span.s11 {color: #606060}
+span.s12 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>NodeProxy</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>a reference on a server<span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
-<p class="p1"><b>superclass: BusPlug</b></p>
+<p class="p3"><span class="s3"><b>Inherits from:<span class="Apple-converted-space">  </span></b><a href="../../../Core/Object.html"><b>Object</b></a></span><span class="s4"><b> : </b><a href="../../../Core/Kernel/AbstractFunction.html"><span class="s5"><b>AbstractFunction</b></span></a></span><b> :</b><span class="s3"><b> </b><a href="BusPlug.html"><span class="s6"><b>BusPlug</b></span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1">Generally a proxy is a placeholder for something, which in this case<span class="Apple-converted-space"> </span></p>
-<p class="p1">is something playing on a server that writes to a limited number of busses.</p>
-<p class="p3"><br></p>
-<p class="p1">(this can be for example a synth or an event stream). The rate and number</p>
-<p class="p1">of channels is determined either when the instance is created (.control/.audio)<span class="Apple-converted-space"> </span></p>
-<p class="p1">or by lazy initialisation from the first source. <a href="../tutorials/the_lazy_proxy.html"><span class="s3">the_lazy_proxy</span></a></p>
-<p class="p1">These objects<span class="Apple-converted-space">  </span>can be replaced, mapped and patched and used for calculation.<span class="Apple-converted-space"> </span></p>
-<p class="p3"><br></p>
-<p class="p1"><b>ProxySpace</b> returns instances of NodeProxy. all the examples below apply to ProxySpace accordingly:</p>
-<p class="p3"><br></p>
+<p class="p1">Generally a proxy is a placeholder for something, which in this case is something playing on a server that writes to a limited number of busses (this can be for example a synth or an event stream). The rate and number</p>
+<p class="p1">of channels is determined either when the instance is created (.control/.audio) or by lazy initialisation from the first source (see <a href="../tutorials/the_lazy_proxy.html"><span class="s7">the_lazy_proxy</span></a><span class="s7">)</span> These objects<span class="Apple-converted-space">  </span>can be replaced, mapped and patched and used for calculation.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p1"><span class="s6"><a href="../environments/ProxySpace.html">ProxySpace</a></span> returns instances of NodeProxy. all the examples below apply to ProxySpace accordingly:</p>
+<p class="p4"><br></p>
 <p class="p1">a = NodeProxy(s) <span class="Apple-tab-span">	</span>is equivalent to<span class="Apple-converted-space">  </span>~a;</p>
 <p class="p1">a.source = ...<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>is equivalent to<span class="Apple-converted-space">  </span>~a = ...</p>
 <p class="p1">a[3] = ...<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>is equivalent to<span class="Apple-converted-space">  </span>~a[3] = ...</p>
-<p class="p3"><br></p>
-<p class="p4"><span class="s4">see also: <a href="../tutorials/the_lazy_proxy.html"><span class="s3">the_lazy_proxy</span></a> <a href="../tutorials/jitlib_efficiency.html"><span class="s5">jitlib_efficiency</span></a></span><span class="s6">, <a href="../tutorials/jitlib_fading.html"><span class="s7">jitlib_fading</span></a>, <a href="../tutorials/jitlib_asCompileString.html"><span class="s8">jitlib_asCompileString</span></a></span><span class="s9">,</span><span class="s4"> <a href="NodeProxy_roles.html"><span class="s10">NodeProxy_roles</span></a></span></p>
-<p class="p1">General overview: <a href="../JITLib.html"><span class="s6">JITLib</span></a></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p5"><span class="s3">see also: <a href="../tutorials/the_lazy_proxy.html"><span class="s8">the_lazy_proxy</span></a> <a href="../tutorials/jitlib_efficiency.html"><span class="s8">jitlib_efficiency</span></a></span>, <a href="../tutorials/jitlib_fading.html"><span class="s8">jitlib_fading</span></a>, <a href="../tutorials/jitlib_asCompileString.html"><span class="s8">jitlib_asCompileString</span></a><span class="s8">,</span><span class="s3"> <a href="NodeProxy_roles.html">NodeProxy_roles</a></span></p>
+<p class="p1">General overview: <a href="../JITLib.html"><span class="s9">JITLib</span></a></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p1">Note that NodeProxy plays on a <i>private bus.<span class="Apple-converted-space"> </span></i></p>
 <p class="p1"><b>if you want to hear</b> the output, use a.<b>play</b> and a.<b>stop</b>.</p>
 <p class="p1">free only the inner players:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.<b>free</b><span class="Apple-converted-space"> </span></p>
 <p class="p1">for free inner players and stop listen:<span class="Apple-tab-span">	</span>a.<b>end</b></p>
 <p class="p1">entirely removing all inner settings: <span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span>a.<b>clear</b></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p5"><b>instance creation</b></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><b>instance creation</b></p>
+<p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*new(server)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*audio(server, numChannels)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*control(server, numChannels)</b></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p5"><b>reading from the bus</b></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><b>reading from the bus</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>play(outbus, numChannels, target, multi, vol, fadeTime, addAction)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays from a bus index with a number of channels to another index with a number</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>of channels, within a target group, or a server.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>multi</b>: keep old links and add new one</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>volume</b>: volume at which to monitor</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fadeTime</b>: fade in fade out time</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>playN(outs, amps, ins, vol, fadeTime, group, addAction)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>outs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>array of destination channels</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>amps<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>array of<span class="Apple-converted-space">  </span>amplitudes for each channel</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>outs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>array of source channels</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="playN.html"><span class="s6">playN</span></a></p>
-<p class="p3"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="playN.html"><span class="s9">playN</span></a></p>
+<p class="p4"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>stop(fadeTime)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>stop to play out public channels (private channels keep playing as others might listen still)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this stop the monitoring. to stop the objects playing, use <b>free, release</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>fadeTime: </b>decay time for this action</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>end(fadeTime)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>releases the synths and stops playback</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fadeTime: </b>decay time for this action</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>ar(numChannels)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>kr(numChannels)</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>return a link to my output, which is limited by [numChannels]</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>causes an uninitialized proxy to create a matching bus.</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>normally ar defaults to stereo, kr to mono. this can be set in the classvars:</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>defaultNumAudio, defaultNumControl</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p6"><br></p>
-<p class="p7">/*</p>
-<p class="p7"><span class="Apple-tab-span">	</span>supported inputs:</p>
-<p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>NodeProxy<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played by reading from</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Function<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>interpreted as UGenFunc</p>
-<p class="p7"><span class="Apple-tab-span">	</span>SimpleNumber<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>used to write to bus continously</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Bus<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reads from that bus</p>
-<p class="p7"><span class="Apple-tab-span">	</span>SynthDef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays a synth from the def</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Symbol<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays a synth from the def with this name</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Pattern<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played as event pattern</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Stream<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played as event stream</p>
-<p class="p7"><span class="Apple-tab-span">	</span>nil<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>removes all objects</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Pdef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played like a stream</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Task<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played, no output assigned</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Tdef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played like Task</p>
-<p class="p7"><span class="Apple-tab-span">	</span>AbstractPlayer<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>started in a separate bus, mapped to this bus</p>
-<p class="p7"><span class="Apple-tab-span">	</span>Instr<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>converted to player and started</p>
-<p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>Associations:<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>(\filter -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>filter previous input (with post control)</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(\filterIn -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>filter previous input (with pre control)</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(\set -&gt; event pattern)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set controls</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(\control -&gt; array or number)<span class="Apple-tab-span">	</span>prepare an efficient way to set values by index</p>
-<p class="p7"><span class="Apple-tab-span">	</span>(\mix -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>mix audio</p>
-<p class="p7">*/<span class="s4"><span class="Apple-tab-span">	</span></span></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p5"><b>setting the source:</b></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
+<p class="p7"><br></p>
+<p class="p8">/*</p>
+<p class="p8"><span class="Apple-tab-span">	</span>supported inputs:</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>NodeProxy<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played by reading from</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Function<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>interpreted as UGenFunc</p>
+<p class="p8"><span class="Apple-tab-span">	</span>SimpleNumber<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>used to write to bus continously</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Bus<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>reads from that bus</p>
+<p class="p8"><span class="Apple-tab-span">	</span>SynthDef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays a synth from the def</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Symbol<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>plays a synth from the def with this name</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Pattern<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played as event pattern</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Stream<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played as event stream</p>
+<p class="p8"><span class="Apple-tab-span">	</span>nil<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>removes all objects</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Pdef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played like a stream</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Task<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played, no output assigned</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Tdef<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>played like Task</p>
+<p class="p8"><span class="Apple-tab-span">	</span>AbstractPlayer<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>started in a separate bus, mapped to this bus</p>
+<p class="p8"><span class="Apple-tab-span">	</span>Instr<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>converted to player and started</p>
+<p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>Associations:<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>(\filter -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>filter previous input (with post control)</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(\filterIn -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>filter previous input (with pre control)</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(\set -&gt; event pattern)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set controls</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(\control -&gt; array or number)<span class="Apple-tab-span">	</span>prepare an efficient way to set values by index</p>
+<p class="p8"><span class="Apple-tab-span">	</span>(\mix -&gt; func)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>mix audio</p>
+<p class="p8">*/<span class="s3"><span class="Apple-tab-span">	</span></span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><b>setting the source:</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>source_(anObject)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>play a new synth through me, release old one.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>anObject can be one of the supported inputs (see above)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[only if the used synthdef (applies also to patterns) has the right number of channels</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and an out argument, this can be used to do filtering.<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if you supply a gate, the nodeProxy will assume doneAction 2 and fade out].</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>prime(anObject)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set source without starting the synth. To start it, send can be used later.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>running synths are released</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>add(anObject, channelOffset, extraArgs)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>play a new synth, add it to the present ones</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>removeAt(index)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>remove the synth at index i and its player definition</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>removeLast</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>remove the last synth and its player definition</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>put(index, anObject, channelOffset, extraArgs, now)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the source by index.<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index</b>:<span class="Apple-tab-span">	</span></p>
@@ -175,77 +169,77 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>channelOffset</b>:<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>using a multichannel setup it can be useful to set this.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>when the objects numChannels is smaller than the proxy<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>extraArgs</b>: <span class="Apple-tab-span">	</span>extra arguments that can be sent with the object directly (not cached)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>now</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if set to false, only prepare the source and do not start the object (see <b>prime</b>)</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>put </b>can be used as array indexing: <b>a[0]</b> = { SinOsc.ar }</p>
 <p class="p1"><span class="Apple-tab-span">	</span>one can put an object at any index, only the order of indices is relevant.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>if the index equals an existing index, the object at this index is replaced.</p>
 <p class="p1"><span class="Apple-tab-span">	</span>using multiple index expands into multiple objects: <b>a[0..3] </b>= ... or <b>a[[0, 4, 6]]</b> = [ .., ..., ..]</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>pause</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>pause all objects and set proxy to paused</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>resume</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>if paused, start all objects<span class="Apple-converted-space"> </span></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>orderNodes(nodeProxy, nodeProxy...)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>arrange the order of groups from this to the last.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>this can be important when external input is filtered in order to minimize latency.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if a <b>parentGroup</b> was provided, the nodes must be in the same parentGroup.</p>
-<p class="p3"><br></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><br></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b>group-like behaviour:</b></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b>group-like behaviour:</b></p>
+<p class="p4"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>set(key, val, ...)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>I behave like my nodeMap: see [NodeMap]</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set, setn, unset, unmap</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>map(key(s), proxy,<span class="Apple-converted-space">  </span>... )</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>map the arguments in keys to the subsequent channels of a <b>control proxy</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(keys can be a symbol or a number)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if the proxy has <b>multiple channels</b>, subsequent channels of the control,<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if present, are mapped (mapn)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>note that you should not map to more channels than the control has.</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>setn(key, list, ...)</b><span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set ranges of controls</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>run(flag)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pause/unpause all synths in the group</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>xset(key, val, ...)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set with crossfade into new setting</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>x<b>map(keys, proxy)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>map with crossfade into new setting</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>xsetn()</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>untested</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>lag(key, val, ...)<span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the lag values of these args (identical to setRates)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to remove these settings, use: <b>lag(\key1, nil, key2, nil, ...)</b></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>setRates(key, rate1, ...)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>set the default rate (\tr, \ir, numerical) for synthDef arg</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rate of <b>nil</b> removes setting</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p5"><b>bus-like behaviour:</b></p>
-<p class="p3"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p6"><b>bus-like behaviour:</b></p>
+<p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>line(value, dur)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set my bus to the new value in dur time linearly</p>
 <p class="p1"><span class="Apple-tab-span">	</span>x<b>line(value, dur)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set my bus to the new value in dur time exponentially</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>gate(value, dur)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>gate my bus to the level value for dur time</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span>// do not work properly yet !</p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>lineAt(key, value, dur)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the control value to the new value in dur time linearly</p>
@@ -254,71 +248,71 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><b>gateAt(key, value, dur)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>gate my control to the level value for dur time.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if the control was not set before, stay at the new value</p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><br></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><b>sending synths to server</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b>sending synths to server</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span>(normally the source_() message does the sending already, but it can be used for spawning)</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>wakeUp<span class="Apple-converted-space"> </span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>until the proxy is not used by any output ( either .play or .ar/.kr )</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>it is not running on the server. you can wake it up to force it playing.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>normally this is not needed.</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>send(argList, index, freeLast)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>send a new synth without releasing the old one.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the argument list is applied to the synth only.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freeLast: if to free the last synth at that index</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if index is nil, sends all</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>sendAll(argList, freeLast)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>send all synths without releasing the old one.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the argument list is applied to all synths.</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freeLast: if to free present synths</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><b>release and cleaning up:</b></p>
-<p class="p3"><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b>release and cleaning up:</b></p>
+<p class="p4"><br></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>free(fadeTime)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>release all my running synths and the group</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fadeTime: </b>decay time for this action</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>release(fadeTime)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>release running synths</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>fadeTime: </b>decay time for this action</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>clear(fadeTime)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>reset everything to nil, neutralizes rate/numChannels</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if a fadeTime is given, first fade out, then clear.</p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p3"><br></p>
-<p class="p5"><b>setting properties:</b></p>
-<p class="p3"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><br></p>
+<p class="p6"><b>setting properties:</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>fadeTime_(time)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the attack/release time<span class="Apple-converted-space"> </span></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>clock_(aClock)</b></p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>use a tempo clock for scheduling beat accurate</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><b>misc:</b></p>
-<p class="p3"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b>misc:</b></p>
+<p class="p4"><br></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>record(path, headerFormat, sampleFormat)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>record output to file (returns a [RecNodeProxy] that you can use for control)</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>returns a [RecNodeProxy]</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><span class="Apple-tab-span">	</span><b>*defaultNumAudio_(n)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the default channel number for audio busses</p>
-<p class="p3"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>*defaultNumControl_(n)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>set the default channel number for control busses</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><br></p>
-<p class="p1"><b>for more examples see </b><a href="../environments/ProxySpace.html"><span class="s6"><b>ProxySpace</b></span></a><span class="Apple-tab-span">	</span></p>
+<p class="p10"><br></p>
+<p class="p1"><b>for more examples see </b><a href="../environments/ProxySpace.html"><span class="s9"><b>ProxySpace</b></span></a><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -326,262 +320,262 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">///////////////////// using node proxy with ugen functions<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
+<p class="p8">///////////////////// using node proxy with ugen functions<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p10">s.boot;</p>
+<p class="p11">s.boot;</p>
 <p class="p2"><br></p>
-<p class="p10">a = <span class="s11">NodeProxy</span>.audio(s, 2);</p>
-<p class="p7"><span class="s4">a.play; </span>// play to hardware output, return a group with synths</p>
+<p class="p11">a = <span class="s9">NodeProxy</span>.audio(s, 2);</p>
+<p class="p8"><span class="s3">a.play; </span>// play to hardware output, return a group with synths</p>
 <p class="p2"><br></p>
-<p class="p7">// setting the source</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar([350, 351.3], 0, 0.2) };</p>
+<p class="p8">// setting the source</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar([350, 351.3], 0, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p7">// the proxy has two channels now:</p>
-<p class="p10">a.numChannels.postln;</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar([390, 286] * 1.2, 0, 0.2) };</p>
+<p class="p8">// the proxy has two channels now:</p>
+<p class="p11">a.numChannels.postln;</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar([390, 286] * 1.2, 0, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p7">// exeeding channels wrap:</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };</p>
+<p class="p8">// exeeding channels wrap:</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p7">// other inputs</p>
-<p class="p10">a.source = { <span class="s11">WhiteNoise</span>.ar([0.01,0.01]) };</p>
-<p class="p10">a.source = 0;</p>
-<p class="p7"><span class="s4">a.source = </span><span class="s12">\default</span><span class="s4">; </span>// synthDef on server</p>
-<p class="p10">a.source = <span class="s11">SynthDef</span>(<span class="s13">"w"</span>, { <span class="s11">arg</span> out=0; <span class="s11">Out</span>.ar(out,<span class="s11">SinOsc</span>.ar([<span class="s11">Rand</span>(430, 600), 600], 0, 0.2)) });</p>
-<p class="p7"><span class="s4">a.source = </span><span class="s11">nil</span><span class="s4">; </span>//<span class="Apple-converted-space">  </span>removes any object</p>
+<p class="p8">// other inputs</p>
+<p class="p11">a.source = { <span class="s9">WhiteNoise</span>.ar([0.01,0.01]) };</p>
+<p class="p11">a.source = 0;</p>
+<p class="p8"><span class="s3">a.source = </span><span class="s10">\default</span><span class="s3">; </span>// synthDef on server</p>
+<p class="p11">a.source = <span class="s9">SynthDef</span>(<span class="s11">"w"</span>, { <span class="s9">arg</span> out=0; <span class="s9">Out</span>.ar(out,<span class="s9">SinOsc</span>.ar([<span class="s9">Rand</span>(430, 600), 600], 0, 0.2)) });</p>
+<p class="p8"><span class="s3">a.source = </span><span class="s9">nil</span><span class="s3">; </span>//<span class="Apple-converted-space">  </span>removes any object</p>
 <p class="p2"><br></p>
-<p class="p7">// feedback</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar(a.ar * 7000 * <span class="s11">LFNoise1</span>.kr(1, 0.3, 0.6) + 200, 0, 0.1) };</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar(a.ar * 6000 * <span class="s11">MouseX</span>.kr(0, 2) + [100, 104], 0, 0.1) };</p>
+<p class="p8">// feedback</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar(a.ar * 7000 * <span class="s9">LFNoise1</span>.kr(1, 0.3, 0.6) + 200, 0, 0.1) };</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar(a.ar * 6000 * <span class="s9">MouseX</span>.kr(0, 2) + [100, 104], 0, 0.1) };</p>
 <p class="p2"><br></p>
-<p class="p7">// fadeTime</p>
-<p class="p10">a.fadeTime = 2.0;</p>
-<p class="p10">a.source = { <span class="s11">SinOsc</span>.ar([390, 286] * <span class="s11">ExpRand</span>(1, 3), 0, 0.2) };</p>
+<p class="p8">// fadeTime</p>
+<p class="p11">a.fadeTime = 2.0;</p>
+<p class="p11">a.source = { <span class="s9">SinOsc</span>.ar([390, 286] * <span class="s9">ExpRand</span>(1, 3), 0, 0.2) };</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// adding nodes</p>
-<p class="p10">a.add({ <span class="s11">SinOsc</span>.ar([50, 390]*1.25, 0, 0.1) });</p>
-<p class="p10">a.add({ <span class="s11">BrownNoise</span>.ar([0.02,0.02]) });</p>
+<p class="p8">// adding nodes</p>
+<p class="p11">a.add({ <span class="s9">SinOsc</span>.ar([50, 390]*1.25, 0, 0.1) });</p>
+<p class="p11">a.add({ <span class="s9">BrownNoise</span>.ar([0.02,0.02]) });</p>
 <p class="p2"><br></p>
-<p class="p7">// setting nodes at indices:</p>
-<p class="p10">a[0] = { <span class="s11">SinOsc</span>.ar( 700 * <span class="s11">LFNoise1</span>.kr(1, 0.3, 0.6) + 200, 0, 0.1) };</p>
-<p class="p10">a[1] = { <span class="s11">LFPulse</span>.kr(3, 0.3) * <span class="s11">SinOsc</span>.ar(500, 0, 0.1) };</p>
-<p class="p10">a[2] = { <span class="s11">LFPulse</span>.kr(3.5, 0.3) * <span class="s11">SinOsc</span>.ar(600, 0, 0.1) };</p>
-<p class="p10">a[3] = { <span class="s11">SinOsc</span>.ar([1,1.25] * 840, 0, 0.1) };</p>
+<p class="p8">// setting nodes at indices:</p>
+<p class="p11">a[0] = { <span class="s9">SinOsc</span>.ar( 700 * <span class="s9">LFNoise1</span>.kr(1, 0.3, 0.6) + 200, 0, 0.1) };</p>
+<p class="p11">a[1] = { <span class="s9">LFPulse</span>.kr(3, 0.3) * <span class="s9">SinOsc</span>.ar(500, 0, 0.1) };</p>
+<p class="p11">a[2] = { <span class="s9">LFPulse</span>.kr(3.5, 0.3) * <span class="s9">SinOsc</span>.ar(600, 0, 0.1) };</p>
+<p class="p11">a[3] = { <span class="s9">SinOsc</span>.ar([1,1.25] * 840, 0, 0.1) };</p>
 <p class="p2"><br></p>
-<p class="p7">// filtering: the first argument is the previous bus content. more args can be used as usual.</p>
-<p class="p10">a[3] = <span class="s12">\filter</span> -&gt; { <span class="s11">arg</span> in; in * <span class="s11">SinOsc</span>.ar(<span class="s11">Rand</span>(100,1000)) };</p>
-<p class="p10">a[2] = <span class="s12">\filter</span> -&gt; { <span class="s11">arg</span> in; in * <span class="s11">MouseY</span>.kr(0,1) };</p>
-<p class="p10">a[8] = <span class="s12">\filter</span> -&gt; { <span class="s11">arg</span> in; in * <span class="s11">MouseX</span>.kr(0,1) };</p>
-<p class="p10">a[4] = <span class="s12">\filter</span> -&gt; { <span class="s11">arg</span> in; in * <span class="s11">SinOsc</span>.ar(<span class="s11">ExpRand</span>(1,5)).max(0) };</p>
+<p class="p8">// filtering: the first argument is the previous bus content. more args can be used as usual.</p>
+<p class="p11">a[3] = <span class="s10">\filter</span> -&gt; { <span class="s9">arg</span> in; in * <span class="s9">SinOsc</span>.ar(<span class="s9">Rand</span>(100,1000)) };</p>
+<p class="p11">a[2] = <span class="s10">\filter</span> -&gt; { <span class="s9">arg</span> in; in * <span class="s9">MouseY</span>.kr(0,1) };</p>
+<p class="p11">a[8] = <span class="s10">\filter</span> -&gt; { <span class="s9">arg</span> in; in * <span class="s9">MouseX</span>.kr(0,1) };</p>
+<p class="p11">a[4] = <span class="s10">\filter</span> -&gt; { <span class="s9">arg</span> in; in * <span class="s9">SinOsc</span>.ar(<span class="s9">ExpRand</span>(1,5)).max(0) };</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// setting controls</p>
-<p class="p10">a.fadeTime = 2.0;</p>
-<p class="p10">a.source = { <span class="s11">arg</span> f=400; <span class="s11">SinOsc</span>.ar(f * [1,1.2] * rrand(0.9, 1.1), 0, 0.1) };</p>
-<p class="p10">a.set(<span class="s12">\f</span>, rrand(900, 300));</p>
-<p class="p10">a.set(<span class="s12">\f</span>, rrand(1500, 700));</p>
-<p class="p10">a.xset(<span class="s12">\f</span>, rrand(1500, 700)); <span class="s14">// crossfaded setting</span></p>
-<p class="p10">a.source = { <span class="s11">arg</span> f=400; <span class="s11">RLPF</span>.ar(<span class="s11">Pulse</span>.ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };</p>
+<p class="p8">// setting controls</p>
+<p class="p11">a.fadeTime = 2.0;</p>
+<p class="p11">a.source = { <span class="s9">arg</span> f=400; <span class="s9">SinOsc</span>.ar(f * [1,1.2] * rrand(0.9, 1.1), 0, 0.1) };</p>
+<p class="p11">a.set(<span class="s10">\f</span>, rrand(900, 300));</p>
+<p class="p11">a.set(<span class="s10">\f</span>, rrand(1500, 700));</p>
+<p class="p11">a.xset(<span class="s10">\f</span>, rrand(1500, 700)); <span class="s12">// crossfaded setting</span></p>
+<p class="p11">a.source = { <span class="s9">arg</span> f=400; <span class="s9">RLPF</span>.ar(<span class="s9">Pulse</span>.ar(f * [1,1.02] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p7">// control lags</p>
-<p class="p7"><span class="s4">a.lag(</span><span class="s12">\f</span><span class="s4">, 0.5); </span>// the objects are built again internally and sent to the server.</p>
-<p class="p10">a.set(<span class="s12">\f</span>, rrand(1500, 700));</p>
-<p class="p10">a.lag(<span class="s12">\f</span>, <span class="s11">nil</span>);</p>
-<p class="p10">a.set(<span class="s12">\f</span>, rrand(1500, 700));</p>
+<p class="p8">// control lags</p>
+<p class="p8"><span class="s3">a.lag(</span><span class="s10">\f</span><span class="s3">, 0.5); </span>// the objects are built again internally and sent to the server.</p>
+<p class="p11">a.set(<span class="s10">\f</span>, rrand(1500, 700));</p>
+<p class="p11">a.lag(<span class="s10">\f</span>, <span class="s9">nil</span>);</p>
+<p class="p11">a.set(<span class="s10">\f</span>, rrand(1500, 700));</p>
 <p class="p2"><br></p>
-<p class="p10">a.fadeTime = 1.0;</p>
+<p class="p11">a.fadeTime = 1.0;</p>
 <p class="p2"><br></p>
-<p class="p7">// mapping controls to other node proxies</p>
+<p class="p8">// mapping controls to other node proxies</p>
 <p class="p2"><br></p>
-<p class="p10">c = <span class="s11">NodeProxy</span>.control(s, 2);</p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr([10,20] * 0.1, 0, 150, 1300) };</p>
-<p class="p10">a.map(<span class="s12">\f</span>, c);</p>
-<p class="p10">a[0] = { <span class="s11">arg</span> f=400; <span class="s11">RHPF</span>.ar(<span class="s11">Pulse</span>.ar(f * [1,1.2] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };</p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr([10,16] * 0.02, 0, 50, 700) };</p>
-<p class="p10">c.source = { <span class="s11">Line</span>.kr(300, 1500, 10) + <span class="s11">SinOsc</span>.kr(20 * [1,2], 0, 100) };</p>
-<p class="p10">a[1] = { <span class="s11">arg</span> f; <span class="s11">LFPar</span>.ar(f % <span class="s11">MouseX</span>.kr(1, 40, 1) * 4 + 360, 0, 0.2) };</p>
+<p class="p11">c = <span class="s9">NodeProxy</span>.control(s, 2);</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr([10,20] * 0.1, 0, 150, 1300) };</p>
+<p class="p11">a.map(<span class="s10">\f</span>, c);</p>
+<p class="p11">a[0] = { <span class="s9">arg</span> f=400; <span class="s9">RHPF</span>.ar(<span class="s9">Pulse</span>.ar(f * [1,1.2] * 0.05, 0.5, 0.2), f * 0.58, 0.2) };</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr([10,16] * 0.02, 0, 50, 700) };</p>
+<p class="p11">c.source = { <span class="s9">Line</span>.kr(300, 1500, 10) + <span class="s9">SinOsc</span>.kr(20 * [1,2], 0, 100) };</p>
+<p class="p11">a[1] = { <span class="s9">arg</span> f; <span class="s9">LFPar</span>.ar(f % <span class="s9">MouseX</span>.kr(1, 40, 1) * 4 + 360, 0, 0.2) };</p>
 <p class="p2"><br></p>
-<p class="p7">// map multiple channels of one proxy to multiple controls of another</p>
-<p class="p7">// recently changed behaviour!</p>
+<p class="p8">// map multiple channels of one proxy to multiple controls of another</p>
+<p class="p8">// recently changed behaviour!</p>
 <p class="p2"><br></p>
-<p class="p10">a.source = { <span class="s11">arg</span> f=#[400, 400]; <span class="s11">LPF</span>.ar(<span class="s11">Pulse</span>.ar(f[0] * [0.4,1], 0.2, 0.2), f[1] * 3) };</p>
-<p class="p7"><span class="s4">a.map(</span><span class="s12">\f</span><span class="s4">, c); </span>// multichannel proxy c is mapped to multichannel control of a</p>
-<p class="p10">a.source = { <span class="s11">arg</span> f=#[400, 400]; <span class="s11">LPF</span>.ar(<span class="s11">Pulse</span>.ar(f, 0.2, 0.2), f[1]) };</p>
-<p class="p10">a.source = { <span class="s11">arg</span> f=#[400, 400]; <span class="s11">Formant</span>.ar(140, f * 1.5, 100, 0.1)<span class="Apple-converted-space">  </span>};</p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr([<span class="s11">Line</span>.kr(1, 30, 10), 1], 0, [100, 700], [300, 700]) };</p>
-<p class="p10">c.source = 400;</p>
+<p class="p11">a.source = { <span class="s9">arg</span> f=#[400, 400]; <span class="s9">LPF</span>.ar(<span class="s9">Pulse</span>.ar(f[0] * [0.4,1], 0.2, 0.2), f[1] * 3) };</p>
+<p class="p8"><span class="s3">a.map(</span><span class="s10">\f</span><span class="s3">, c); </span>// multichannel proxy c is mapped to multichannel control of a</p>
+<p class="p11">a.source = { <span class="s9">arg</span> f=#[400, 400]; <span class="s9">LPF</span>.ar(<span class="s9">Pulse</span>.ar(f, 0.2, 0.2), f[1]) };</p>
+<p class="p11">a.source = { <span class="s9">arg</span> f=#[400, 400]; <span class="s9">Formant</span>.ar(140, f * 1.5, 100, 0.1)<span class="Apple-converted-space">  </span>};</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr([<span class="s9">Line</span>.kr(1, 30, 10), 1], 0, [100, 700], [300, 700]) };</p>
+<p class="p11">c.source = 400;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10">c.fadeTime = 5.5;</p>
-<p class="p10">c.source = { <span class="s11">LFNoise0</span>.kr([2.3, 1.0], [100, 700], [300, 1700]) };</p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr([2.3, 1.0], 0, [100, 700], [300, 1700]) };</p>
-<p class="p10">c.source = 400;</p>
+<p class="p11">c.fadeTime = 5.5;</p>
+<p class="p11">c.source = { <span class="s9">LFNoise0</span>.kr([2.3, 1.0], [100, 700], [300, 1700]) };</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr([2.3, 1.0], 0, [100, 700], [300, 1700]) };</p>
+<p class="p11">c.source = 400;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// behave like a sc2 plug</p>
-<p class="p10">c.gate(1400, 0.1);</p>
-<p class="p10">c.gate(1000, 0.1);</p>
-<p class="p10">c.line(1000, 1);</p>
+<p class="p8">// behave like a sc2 plug</p>
+<p class="p11">c.gate(1400, 0.1);</p>
+<p class="p11">c.gate(1000, 0.1);</p>
+<p class="p11">c.line(1000, 1);</p>
 <p class="p2"><br></p>
-<p class="p7">// direct access</p>
-<p class="p10">a.lineAt(<span class="s12">\f</span>, 300, 2);</p>
-<p class="p10">a.xlineAt(<span class="s12">\f</span>, 600, 0.3);</p>
-<p class="p10">a.gateAt(<span class="s12">\f</span>, 1600, 0.3);</p>
+<p class="p8">// direct access</p>
+<p class="p11">a.lineAt(<span class="s10">\f</span>, 300, 2);</p>
+<p class="p11">a.xlineAt(<span class="s10">\f</span>, 600, 0.3);</p>
+<p class="p11">a.gateAt(<span class="s10">\f</span>, 1600, 0.3);</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// changing nodeMaps</p>
-<p class="p10">a.unmap(<span class="s12">\f</span>);</p>
-<p class="p10">n = a.nodeMap.copy;</p>
-<p class="p10">n.set(<span class="s12">\f</span>, 700);</p>
-<p class="p10">a.fadeToMap(n);</p>
-<p class="p10">n = a.nodeMap.copy;</p>
-<p class="p10">n.set(<span class="s12">\f</span>, 400);</p>
-<p class="p10">a.fadeTime = 1.0;</p>
-<p class="p7"><span class="s4">a.fadeToMap(n, [</span><span class="s12">\f</span><span class="s4">]); </span>// linear interpolation to new map: experimental</p>
-<p class="p7"><span class="s4">a.map(</span><span class="s12">\f</span><span class="s4">, c); </span>// restore mapping</p>
+<p class="p8">// changing nodeMaps</p>
+<p class="p11">a.unmap(<span class="s10">\f</span>);</p>
+<p class="p11">n = a.nodeMap.copy;</p>
+<p class="p11">n.set(<span class="s10">\f</span>, 700);</p>
+<p class="p11">a.fadeToMap(n);</p>
+<p class="p11">n = a.nodeMap.copy;</p>
+<p class="p11">n.set(<span class="s10">\f</span>, 400);</p>
+<p class="p11">a.fadeTime = 1.0;</p>
+<p class="p8"><span class="s3">a.fadeToMap(n, [</span><span class="s10">\f</span><span class="s3">]); </span>// linear interpolation to new map: experimental</p>
+<p class="p8"><span class="s3">a.map(</span><span class="s10">\f</span><span class="s3">, c); </span>// restore mapping</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// sending envelopes (up to 8 levels)</p>
-<p class="p10">w = <span class="s11">Env</span>.new(<span class="s11">Array</span>.rand(3, 400, 1000),<span class="s11">Array</span>.rand(2, 0.3, 0.001), -4);</p>
-<p class="p10">c.env(w);</p>
-<p class="p10">c.env(w);</p>
-<p class="p10">w = <span class="s11">Env</span>.new(<span class="s11">Array</span>.rand(8, 400, 1000),<span class="s11">Array</span>.rand(7, 0.03, 0.1));</p>
-<p class="p10">c.env(w);</p>
-<p class="p10">c.env(w);</p>
+<p class="p8">// sending envelopes (up to 8 levels)</p>
+<p class="p11">w = <span class="s9">Env</span>.new(<span class="s9">Array</span>.rand(3, 400, 1000),<span class="s9">Array</span>.rand(2, 0.3, 0.001), -4);</p>
+<p class="p11">c.env(w);</p>
+<p class="p11">c.env(w);</p>
+<p class="p11">w = <span class="s9">Env</span>.new(<span class="s9">Array</span>.rand(8, 400, 1000),<span class="s9">Array</span>.rand(7, 0.03, 0.1));</p>
+<p class="p11">c.env(w);</p>
+<p class="p11">c.env(w);</p>
 <p class="p2"><br></p>
-<p class="p7">// stop synthesis, then wake up proxies:</p>
+<p class="p8">// stop synthesis, then wake up proxies:</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s4">a.stop; </span>// stop the monitor</p>
-<p class="p7"><span class="s4">a.play; </span>// start the monitor</p>
-<p class="p7"><span class="s4">a.end;<span class="Apple-tab-span">	</span></span>// release the synths and stop the monitor</p>
-<p class="p7"><span class="s4">c.free;<span class="Apple-converted-space">  </span></span>// free the control proxy c</p>
+<p class="p8"><span class="s3">a.stop; </span>// stop the monitor</p>
+<p class="p8"><span class="s3">a.play; </span>// start the monitor</p>
+<p class="p8"><span class="s3">a.end;<span class="Apple-tab-span">	</span></span>// release the synths and stop the monitor</p>
+<p class="p8"><span class="s3">c.free;<span class="Apple-converted-space">  </span></span>// free the control proxy c</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">///////////////////// channel offset/object index<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
-<p class="p8"><br></p>
+<p class="p8">///////////////////// channel offset/object index<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
 <p class="p2"><br></p>
-<p class="p10">a = <span class="s11">NodeProxy</span>.audio(s,2);</p>
-<p class="p10">a.play;</p>
-<p class="p10">a[0] = { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar(5, 0, 0.1), 1260) };</p>
-<p class="p10">a.put(1, { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar(5.3, 0, 0.1), 420) }, 1);</p>
-<p class="p10">a.put(0, { <span class="s11">Ringz</span>.ar(<span class="s11">Dust</span>.ar([1,1]*15.3,<span class="Apple-converted-space">  </span>0.1), 720) }, 1);</p>
-<p class="p10">a.put(1, { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar(5.3, 0, 0.1), 420) }, 1);</p>
-<p class="p10">a.end;</p>
+<p class="p11">a = <span class="s9">NodeProxy</span>.audio(s,2);</p>
+<p class="p11">a.play;</p>
+<p class="p11">a[0] = { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar(5, 0, 0.1), 1260) };</p>
+<p class="p11">a.put(1, { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar(5.3, 0, 0.1), 420) }, 1);</p>
+<p class="p11">a.put(0, { <span class="s9">Ringz</span>.ar(<span class="s9">Dust</span>.ar([1,1]*15.3,<span class="Apple-converted-space">  </span>0.1), 720) }, 1);</p>
+<p class="p11">a.put(1, { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar(5.3, 0, 0.1), 420) }, 1);</p>
+<p class="p11">a.end;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">///////////////////// beat accurate playing<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
+<p class="p8">///////////////////// beat accurate playing<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p8"><br></p>
+<p class="p9"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10">a = <span class="s11">NodeProxy</span>.audio(s,2);</p>
-<p class="p10">a.play;</p>
+<p class="p11">a = <span class="s9">NodeProxy</span>.audio(s,2);</p>
+<p class="p11">a.play;</p>
 <p class="p2"><br></p>
-<p class="p10">a.clock = <span class="s11">TempoClock</span>(2.0).permanent_(<span class="s11">true</span>); <span class="s14">// round to every 2.0 seconds</span></p>
-<p class="p10">a.source = { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar(0.5, 0, 0.3), 3000, 0.01) };</p>
-<p class="p10">a[1] = { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar([0.5, 1], 0, 0.3), 1000, 0.01) };</p>
-<p class="p10">a[2] = { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar([3, 5]/2, 0, 0.3), 8000, 0.01) };</p>
-<p class="p10">a[3] = { <span class="s11">Ringz</span>.ar(<span class="s11">Impulse</span>.ar([3, 5]*16, 0, 0.3), 5000, 0.01) * <span class="s11">LFPulse</span>.kr(0.5, 0, 0.05) };</p>
+<p class="p11">a.clock = <span class="s9">TempoClock</span>(2.0).permanent_(<span class="s9">true</span>); <span class="s12">// round to every 2.0 seconds</span></p>
+<p class="p11">a.source = { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar(0.5, 0, 0.3), 3000, 0.01) };</p>
+<p class="p11">a[1] = { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar([0.5, 1], 0, 0.3), 1000, 0.01) };</p>
+<p class="p11">a[2] = { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar([3, 5]/2, 0, 0.3), 8000, 0.01) };</p>
+<p class="p11">a[3] = { <span class="s9">Ringz</span>.ar(<span class="s9">Impulse</span>.ar([3, 5]*16, 0, 0.3), 5000, 0.01) * <span class="s9">LFPulse</span>.kr(0.5, 0, 0.05) };</p>
 <p class="p2"><br></p>
-<p class="p10">a.removeLast;</p>
-<p class="p10">a.removeAt(2);</p>
+<p class="p11">a.removeLast;</p>
+<p class="p11">a.removeAt(2);</p>
 <p class="p2"><br></p>
-<p class="p10">a.clear;</p>
+<p class="p11">a.clear;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">///////////////////// using patterns - event streams<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
+<p class="p8">///////////////////// using patterns - event streams<span class="Apple-converted-space">  </span>/////////////////////<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10">(</p>
-<p class="p7">// must have 'out' or 'i_out' argument to work properly</p>
-<p class="p10"><span class="s11">SynthDef</span>(<span class="s13">"who"</span>, { <span class="s11">arg</span> freq, gate=1, out=0, ffreq=800, amp=0.1;<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s11">var</span> env;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>env = <span class="s11">Env</span>.asr(0.01, amp, 0.5);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s11">Out</span>.ar(out, <span class="s11">Pan2</span>.ar(</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">Formant</span>.ar(freq, ffreq, 300, <span class="s11">EnvGen</span>.kr(env, gate, doneAction:2)), <span class="s11">Rand</span>(-1.0, 1.0))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>)</p>
-<p class="p10">}).memStore;</p>
+<p class="p11">(</p>
+<p class="p8">// must have 'out' or 'i_out' argument to work properly</p>
+<p class="p11"><span class="s9">SynthDef</span>(<span class="s11">"who"</span>, { <span class="s9">arg</span> freq, gate=1, out=0, ffreq=800, amp=0.1;<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s9">var</span> env;</p>
+<p class="p11"><span class="Apple-tab-span">	</span>env = <span class="s9">Env</span>.asr(0.01, amp, 0.5);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="s9">Out</span>.ar(out, <span class="s9">Pan2</span>.ar(</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">Formant</span>.ar(freq, ffreq, 300, <span class="s9">EnvGen</span>.kr(env, gate, doneAction:2)), <span class="s9">Rand</span>(-1.0, 1.0))</p>
+<p class="p11"><span class="Apple-tab-span">	</span>)</p>
+<p class="p11">}).memStore;</p>
 <p class="p2"><br></p>
-<p class="p10">)</p>
+<p class="p11">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10">(</p>
-<p class="p10">s.boot;</p>
-<p class="p10">a = <span class="s11">NodeProxy</span>.audio(s, 2);</p>
-<p class="p10">a.fadeTime = 2;</p>
-<p class="p10">b = <span class="s11">NodeProxy</span>.audio(s,2);</p>
-<p class="p10">b.fadeTime = 3;</p>
-<p class="p10">)</p>
+<p class="p11">(</p>
+<p class="p11">s.boot;</p>
+<p class="p11">a = <span class="s9">NodeProxy</span>.audio(s, 2);</p>
+<p class="p11">a.fadeTime = 2;</p>
+<p class="p11">b = <span class="s9">NodeProxy</span>.audio(s,2);</p>
+<p class="p11">b.fadeTime = 3;</p>
+<p class="p11">)</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s4">a.play; </span>// monitor output</p>
+<p class="p8"><span class="s3">a.play; </span>// monitor output</p>
 <p class="p2"><br></p>
-<p class="p7">// play the pattern silently in b</p>
-<p class="p10">b.source = <span class="s11">Pbind</span>(<span class="s12">\instrument</span>, <span class="s12">\who</span>, <span class="s12">\freq</span>, 500, <span class="s12">\ffreq</span>, 700, <span class="s12">\legato</span>, 0.02);</p>
+<p class="p8">// play the pattern silently in b</p>
+<p class="p11">b.source = <span class="s9">Pbind</span>(<span class="s10">\instrument</span>, <span class="s10">\who</span>, <span class="s10">\freq</span>, 500, <span class="s10">\ffreq</span>, 700, <span class="s10">\legato</span>, 0.02);</p>
 <p class="p2"><br></p>
-<p class="p7">// play b out through a:</p>
-<p class="p10">a.source = b;</p>
+<p class="p8">// play b out through a:</p>
+<p class="p11">a.source = b;</p>
 <p class="p2"><br></p>
-<p class="p7">// filter b with ring modulation:</p>
-<p class="p10">a.source = {<span class="Apple-converted-space">  </span>b.ar<span class="Apple-converted-space">  </span>* <span class="s11">SinOsc</span>.ar(<span class="s11">SinOsc</span>.kr(0.2, 300, 330))<span class="Apple-converted-space">  </span>}; <span class="s14">// filter the input of the pattern</span></p>
-<p class="p10">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s11">LFCub</span>.ar([2, 8], add: -0.5)<span class="Apple-converted-space">  </span>}; <span class="s14">// filter the input of the pattern</span></p>
+<p class="p8">// filter b with ring modulation:</p>
+<p class="p11">a.source = {<span class="Apple-converted-space">  </span>b.ar<span class="Apple-converted-space">  </span>* <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.kr(0.2, 300, 330))<span class="Apple-converted-space">  </span>}; <span class="s12">// filter the input of the pattern</span></p>
+<p class="p11">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s9">LFCub</span>.ar([2, 8], add: -0.5)<span class="Apple-converted-space">  </span>}; <span class="s12">// filter the input of the pattern</span></p>
 <p class="p2"><br></p>
-<p class="p10">a.source = b;</p>
+<p class="p11">a.source = b;</p>
 <p class="p2"><br></p>
-<p class="p7">// map b to another proxy</p>
-<p class="p10">c = <span class="s11">NodeProxy</span>.control(s, 1).fadeTime_(1);</p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr(2, 0, 400, 700) };</p>
+<p class="p8">// map b to another proxy</p>
+<p class="p11">c = <span class="s9">NodeProxy</span>.control(s, 1).fadeTime_(1);</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr(2, 0, 400, 700) };</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7">// now one can simply embed a control node proxy into an event pattern.</p>
-<p class="p7">// (this works not for \degree, \midinote, etc.)</p>
-<p class="p7">// embedding in other patterns it will still return itself.</p>
+<p class="p8">// now one can simply embed a control node proxy into an event pattern.</p>
+<p class="p8">// (this works not for \degree, \midinote, etc.)</p>
+<p class="p8">// embedding in other patterns it will still return itself.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10">b.source = <span class="s11">Pbind</span>(<span class="s12">\instrument</span>, <span class="s12">\who</span>, <span class="s12">\freq</span>, 500, <span class="s12">\ffreq</span>, c, <span class="s12">\legato</span>, 0.02);</p>
+<p class="p11">b.source = <span class="s9">Pbind</span>(<span class="s10">\instrument</span>, <span class="s10">\who</span>, <span class="s10">\freq</span>, 500, <span class="s10">\ffreq</span>, c, <span class="s10">\legato</span>, 0.02);</p>
 <p class="p2"><br></p>
-<p class="p10">c.source = { <span class="s11">SinOsc</span>.kr(<span class="s11">SinOsc</span>.kr(0.2, 0, 10, 10), 0, 400, 700) };</p>
+<p class="p11">c.source = { <span class="s9">SinOsc</span>.kr(<span class="s9">SinOsc</span>.kr(0.2, 0, 10, 10), 0, 400, 700) };</p>
 <p class="p2"><br></p>
-<p class="p10">c.source = { <span class="s11">LFNoise1</span>.kr(5, 1300, 1500) };</p>
-<p class="p10">c.source = { <span class="s11">MouseX</span>.kr(100, 5500, 1) };</p>
+<p class="p11">c.source = { <span class="s9">LFNoise1</span>.kr(5, 1300, 1500) };</p>
+<p class="p11">c.source = { <span class="s9">MouseX</span>.kr(100, 5500, 1) };</p>
 <p class="p2"><br></p>
-<p class="p10">(</p>
-<p class="p10">b.source = <span class="s11">Pbind</span>(</p>
-<p class="p11"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s4">, </span>\who<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">\freq</span>, <span class="s11">Pseq</span>([600, 350, 300],<span class="s11">inf</span>),</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">\legato</span>, 0.1,</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">\ffreq</span>, <span class="s11">Pseq</span>([c, 100, c, 100, 300, 600], <span class="s11">inf</span>), <span class="s14">// use proxy in a pattern</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">\dur</span>, <span class="s11">Pseq</span>([1, 0.5, 0.75, 0.25] * 0.4, <span class="s11">inf</span>),</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">\amp</span>, <span class="s11">Pseq</span>([0.2, 0.2, 0.1, 0.1, 0.2], <span class="s11">inf</span>)</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
-<p class="p10">)</p>
+<p class="p11">(</p>
+<p class="p11">b.source = <span class="s9">Pbind</span>(</p>
+<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\who<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\freq</span>, <span class="s9">Pseq</span>([600, 350, 300],<span class="s9">inf</span>),</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\legato</span>, 0.1,</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\ffreq</span>, <span class="s9">Pseq</span>([c, 100, c, 100, 300, 600], <span class="s9">inf</span>), <span class="s12">// use proxy in a pattern</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\dur</span>, <span class="s9">Pseq</span>([1, 0.5, 0.75, 0.25] * 0.4, <span class="s9">inf</span>),</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">\amp</span>, <span class="s9">Pseq</span>([0.2, 0.2, 0.1, 0.1, 0.2], <span class="s9">inf</span>)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p11">)</p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p10">b[2] = <span class="s11">Pbind</span>(<span class="s12">\instrument</span>, <span class="s12">\who</span>, <span class="s12">\freq</span>, 620, <span class="s12">\ffreq</span>, <span class="s11">Prand</span>([500,c],<span class="s11">inf</span>), <span class="s12">\legato</span>, 0.1, <span class="s12">\dur</span>, 0.1);</p>
-<p class="p10">b[3] = <span class="s11">Pbind</span>(<span class="s12">\instrument</span>, <span class="s12">\who</span>, <span class="s12">\ffreq</span>, 5000, <span class="s12">\freq</span>, <span class="s11">Pseq</span>([720, 800],<span class="s11">inf</span>), <span class="s12">\legato</span>, 0.1, <span class="s12">\dur</span>, 0.1, <span class="s12">\amp</span>, 0.01);</p>
-<p class="p10">b[4] = <span class="s11">Pbind</span>(<span class="s12">\instrument</span>, <span class="s12">\who</span>, <span class="s12">\freq</span>, <span class="s11">Pseq</span>([700, 400],<span class="s11">inf</span>), <span class="s12">\legato</span>, 0.1, <span class="s12">\ffreq</span>, 200);</p>
-<p class="p10">b[1] = { <span class="s11">WhiteNoise</span>.ar([0.01,0.01]) };<span class="Apple-converted-space"> </span></p>
-<p class="p10">b[4] = { <span class="s11">arg</span> ffreq=800; <span class="s11">Resonz</span>.ar(<span class="s11">WhiteNoise</span>.ar([1,1]), ffreq, 0.05) };<span class="Apple-converted-space"> </span></p>
+<p class="p11">b[2] = <span class="s9">Pbind</span>(<span class="s10">\instrument</span>, <span class="s10">\who</span>, <span class="s10">\freq</span>, 620, <span class="s10">\ffreq</span>, <span class="s9">Prand</span>([500,c],<span class="s9">inf</span>), <span class="s10">\legato</span>, 0.1, <span class="s10">\dur</span>, 0.1);</p>
+<p class="p11">b[3] = <span class="s9">Pbind</span>(<span class="s10">\instrument</span>, <span class="s10">\who</span>, <span class="s10">\ffreq</span>, 5000, <span class="s10">\freq</span>, <span class="s9">Pseq</span>([720, 800],<span class="s9">inf</span>), <span class="s10">\legato</span>, 0.1, <span class="s10">\dur</span>, 0.1, <span class="s10">\amp</span>, 0.01);</p>
+<p class="p11">b[4] = <span class="s9">Pbind</span>(<span class="s10">\instrument</span>, <span class="s10">\who</span>, <span class="s10">\freq</span>, <span class="s9">Pseq</span>([700, 400],<span class="s9">inf</span>), <span class="s10">\legato</span>, 0.1, <span class="s10">\ffreq</span>, 200);</p>
+<p class="p11">b[1] = { <span class="s9">WhiteNoise</span>.ar([0.01,0.01]) };<span class="Apple-converted-space"> </span></p>
+<p class="p11">b[4] = { <span class="s9">arg</span> ffreq=800; <span class="s9">Resonz</span>.ar(<span class="s9">WhiteNoise</span>.ar([1,1]), ffreq, 0.05) };<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s4">b.map(</span><span class="s12">\ffreq</span><span class="s4">, c); </span>// map the control to the proxy</p>
-<p class="p10">b.removeLast;</p>
-<p class="p10">b.removeLast;</p>
-<p class="p10">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s11">WhiteNoise</span>.ar(0.1, 1)<span class="Apple-converted-space">  </span>};<span class="Apple-converted-space"> </span></p>
-<p class="p10">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s11">WhiteNoise</span>.ar(0.1, 1) + (b.ar * <span class="s11">SinOsc</span>.ar(<span class="s11">SinOsc</span>.kr(0.01, 0, 50, 330)))<span class="Apple-converted-space">  </span>};<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="s3">b.map(</span><span class="s10">\ffreq</span><span class="s3">, c); </span>// map the control to the proxy</p>
+<p class="p11">b.removeLast;</p>
+<p class="p11">b.removeLast;</p>
+<p class="p11">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s9">WhiteNoise</span>.ar(0.1, 1)<span class="Apple-converted-space">  </span>};<span class="Apple-converted-space"> </span></p>
+<p class="p11">a.source = {<span class="Apple-converted-space">  </span>b.ar * <span class="s9">WhiteNoise</span>.ar(0.1, 1) + (b.ar * <span class="s9">SinOsc</span>.ar(<span class="s9">SinOsc</span>.kr(0.01, 0, 50, 330)))<span class="Apple-converted-space">  </span>};<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
-<p class="p10">c.source = { <span class="s11">XLine</span>.kr(1900, 10, 10) };</p>
+<p class="p11">c.source = { <span class="s9">XLine</span>.kr(1900, 10, 10) };</p>
 <p class="p2"><br></p>
-<p class="p7"><span class="s4">a.clear(10); b.clear(10); c.clear(10); </span>// fade out and clear all (free bus, group and synths)</p>
+<p class="p8"><span class="s3">a.clear(10); b.clear(10); c.clear(10); </span>// fade out and clear all (free bus, group and synths)</p>
 <p class="p2"><br></p>
 </body>
 </html>
