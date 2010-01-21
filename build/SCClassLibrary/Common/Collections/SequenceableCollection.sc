@@ -616,7 +616,10 @@ SequenceableCollection : Collection {
 
 	rho { ^this.performUnaryOp('rho') }
 	theta { ^this.performUnaryOp('theta') }
-
+	
+	degrad { ^this.performUnaryOp('degrad') }
+	raddeg { ^this.performUnaryOp('raddeg') }
+	
 	// binary math ops
 	+ { arg aNumber, adverb; ^this.performBinaryOp('+', aNumber, adverb) }
 	- { arg aNumber, adverb; ^this.performBinaryOp('-', aNumber, adverb) }
