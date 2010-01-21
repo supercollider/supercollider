@@ -128,7 +128,10 @@ SimpleNumber : Number {
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
-
+	
+	degrad { ^this*pi/180 }
+	raddeg { ^this*180/pi }
+	
 	fontID { ^this }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }

@@ -181,6 +181,9 @@ Symbol {
 
 	degreeToKey { ^this }
 
+	degrad { ^this }
+	raddeg { ^this }
+
 	doNumberOp { ^this }
 	doComplexOp { ^this }
 	doSignalOp { ^this }

@@ -178,6 +178,10 @@ AbstractFunction {
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
 	}
+	
+	degrad { ^this.composeUnaryOp('degrad') }
+	raddeg { ^this.composeUnaryOp('raddeg') }
+	
 	applyTo { arg ... args;
 		^this.valueArray(args)
 	}
