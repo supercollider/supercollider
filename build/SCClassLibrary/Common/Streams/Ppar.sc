@@ -41,7 +41,7 @@ Ppar : ListPattern {
 //						outval = inval.copy;
 //						outval.put(\freq, \rest);
 //						outval.put(\delta, nexttime - now);
-						outval = Event.silent(nexttime - now, outval);
+						outval = Event.silent(nexttime - now, inval);
 						inval = outval.yield;
 						// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 						now = nexttime;
