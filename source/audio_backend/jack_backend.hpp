@@ -164,11 +164,6 @@ private:
     int perform(jack_nframes_t frames)
     {
         /* get port regions */
-        for (uint16_t i = 0; i != output_channels; ++i) {
-            super::output_samples[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
-            zerovec_simd(super::output_samples[i].get(), frames); /* we clear the outputs, that we can simply add the delivered data */
-        }
-
         jack_default_audio_sample_t * inputs[input_channels];
         jack_default_audio_sample_t * outputs[output_channels];
         for (uint16_t i = 0; i != input_channels; ++i)
