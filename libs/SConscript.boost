@@ -94,8 +94,6 @@ def specific():
 
         sources.append(collect_sources())
 
-    env.Append(CPPPATH=Dir("#/libs/property_tree"))
-
     Return("sources")
 
 if env_specific:
