@@ -309,6 +309,10 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 		toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
 	}
 
+	// (nescivi) by default carriage returns are translated to line feeds,
+	// we don't want that
+	toptions.c_iflag &= ~ICRNL;
+
 	// enable READ & ignore ctrl lines
 	toptions.c_cflag |= (CREAD | CLOCAL);
 	// non-canonical (raw) i/o
