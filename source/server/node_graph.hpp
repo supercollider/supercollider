@@ -166,12 +166,12 @@ private:
     struct compare_node
     {
         bool operator()(server_node const & lhs,
-                        uint32_t const & rhs) const
+                        int32_t const & rhs) const
         {
             return lhs.node_id < rhs;
         }
 
-        bool operator()(uint32_t const &lhs,
+        bool operator()(int32_t const &lhs,
                         server_node const & rhs) const
         {
             return lhs < rhs.node_id;
