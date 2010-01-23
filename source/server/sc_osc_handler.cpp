@@ -3053,6 +3053,23 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
     }
 }
 
+template <bool realtime>
+void dispatch_synth_commands(const char * address, received_message const & message)
+{
+    assert(address[1] == 's');
+    assert(address[2] == '_');
+
+    if (strcmp(address+3, "new") == 0) {
+        handle_s_new(message);
+        return;
+    }
+
+    if (strcmp(address+3, "noid") == 0) {
+        handle_s_noid(message);
+        return;
+    }
+}
+
 } /* namespace */
 
 template <bool realtime>
@@ -3091,16 +3108,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
             dispatch_synthdef_commands<realtime>(address, message, endpoint);
             return;
         }
-    }
 
-    if (strcmp(address+1, "s_new") == 0) {
-        handle_s_new(message);
-        return;
-    }
-
-    if (strcmp(address+1, "s_noid") == 0) {
-        handle_s_noid(message);
-        return;
+        if (address[1] == 's') {
+            dispatch_synth_commands<realtime>(address, message);
+            return;
+        }
     }
 
     if (strcmp(address+1, "p_new") == 0) {
