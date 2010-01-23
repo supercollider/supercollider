@@ -1129,8 +1129,8 @@ Ndef : NodeProxy {
 		^dict
 	}
 
-	*clear {
-		all.do { arg dict; dict.do { arg item; item.clear } };
+	*clear { arg fadeTime;
+		all.do { arg dict; dict.do { arg item; item.clear(fadeTime) } };
 		all.clear;
 	}
 
