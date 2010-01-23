@@ -916,7 +916,7 @@ NodeProxy : BusPlug {
 
 	// map to a control proxy
 
-	map { arg ... args; // key, proxy ... args;
+	map { arg ... args; // key(s), proxy, key(s), proxy ... 
 		var bundle;
 		if(this.isPlaying) {
 			bundle = List.new;
@@ -928,6 +928,7 @@ NodeProxy : BusPlug {
 	}
 
 	mapn { arg ... args; // for now, avoid errors.
+		"NodeProxy: mapn is decrepated, please use map instead".postln;
 		^this.map(*args)
 	}
 
@@ -997,6 +998,7 @@ NodeProxy : BusPlug {
 		{ "not playing".inform }
 	}
 
+	// play proxy as source of receiver
 	<-- { arg proxy;
 		var bundle = MixedBundle.new;
 		this.source = proxy;
@@ -1009,6 +1011,27 @@ NodeProxy : BusPlug {
 		};
 		bundle.add(proxy.moveBeforeMsg(this));
 		bundle.send(server, server.latency);
+	}
+	
+	// map receiver to proxy input
+	// second argument is an adverb
+	<>> { arg proxy, key = \in;
+		^proxy.perform('<<>', this, key)
+	}
+	
+	// map proxy to receiver input
+	// second argument is an adverb
+	<<> { arg proxy, key = \in;
+		var ctl = proxy.controlNames.detect { |x| x.name == key };
+		var rate = ctl.rate ? this.rate ? \audio;
+		var numChannels = ctl !? { ctl.defaultValue.size } ?? { 
+			if(rate == \audio) { this.class.defaultNumAudio } { this.class.defaultNumControl } 
+		};
+		var canBeMapped = proxy.initBus(rate, numChannels);
+		if(canBeMapped) {
+			this.xmap(key, proxy);
+		} { "Could not link node proxies, no matching input found.".warn };
+		^proxy; // returns argument for further chaining
 	}
 
 	moveBeforeMsg { arg ... proxies;
@@ -1038,8 +1061,21 @@ NodeProxy : BusPlug {
 		^"ir";
 	}
 
-	edit { |nSliders, parent, bounds|
+	edit { arg nSliders, parent, bounds;
 		^NodeProxyEditor(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
+	}
+	
+	findCode { arg doc;
+		var str = this.source.asCompileString;
+		try {
+			doc = doc ? Document.current;
+			doc.selectRange(	
+				doc.text.find(str),
+				str.size
+			)
+		};
+		
+		
 	}
 }
 
