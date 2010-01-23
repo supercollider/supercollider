@@ -91,19 +91,12 @@ ProxyNodeMapSetting : NodeMapSetting {
 	isEmpty {
 		^value.isNil and: { rate.isNil }
 	}
+	
 	map { arg proxy;
 		value = proxy;
 		isMapped = true;
 		busNumChannels = proxy.numChannels;
 		busNumChannels !? { isMultiChannel = busNumChannels > 1 };
-		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
-	}
-	// can be thrown out.
-	mapn { arg proxy, numChannels;
-		value = proxy;
-		busNumChannels = numChannels;
-		isMultiChannel = true;
-		isMapped = true;
 		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
 	}
 
