@@ -63,27 +63,18 @@ void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * 
 
     new(node) bundle_node(timeout, cpy, endpoint);
 
-    bundle_list_t::iterator it;
-    for (it = bundles.begin(); it != bundles.end(); ++it)
-    {
-        if (!(timeout < it->timeout_))
-            break;
-    }
-
-    bundles.insert(it, *node);
+    bundle_q.insert(*node);
 }
 
 void sc_scheduled_bundles::execute_bundles(time_tag const & now)
 {
-    while(!bundles.empty())
+    while(!bundle_q.empty())
     {
-        bundle_node & front = *bundles.begin();
+        bundle_node & front = *bundle_q.top();
 
         if (front.timeout_ <= now) {
             front.run();
-            bundles.pop_front();
-            front.~bundle_node();
-            rt_pool.free(&front);
+            bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
         }
         else
             return;

@@ -23,7 +23,7 @@
 #include <algorithm>
 
 #include <boost/date_time/microsec_time_clock.hpp>
-#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/treap_set.hpp>
 
 #include "osc/OscReceivedElements.h"
 
@@ -89,7 +89,7 @@ class sc_scheduled_bundles
 {
 public:
     struct bundle_node:
-        public boost::intrusive::list_base_hook<>
+        public boost::intrusive::bs_set_base_hook<>
     {
         bundle_node(time_tag const & timeout, const char * data, udp::endpoint const & endpoint):
             timeout_(timeout), data_(data), endpoint_(endpoint)
@@ -100,29 +100,38 @@ public:
         const time_tag timeout_;
         const char * const data_;
         const udp::endpoint endpoint_;
+
+        friend bool operator< (const bundle_node & lhs, const bundle_node & rhs)
+        {
+            return priority_order(lhs, rhs);
+        }
+
+        friend bool priority_order (const bundle_node & lhs, const bundle_node & rhs)
+        {
+            return lhs.timeout_ < rhs.timeout_; // lower value, higher priority
+        }
     };
 
-    typedef boost::intrusive::list<bundle_node> bundle_list_t;
+    typedef boost::intrusive::treap_multiset<bundle_node> bundle_queue_t;
 
     void insert_bundle(time_tag const & timeout, const char * data, size_t length,
-                    udp::endpoint const & endpoint);
+                       udp::endpoint const & endpoint);
 
     void execute_bundles(time_tag const & now);
 
     void clear_bundles(void)
     {
-        while(!bundles.empty())
-        {
-            bundle_node & front = *bundles.begin();
+        bundle_q.clear_and_dispose(dispose_bundle);
+    }
 
-            bundles.pop_front();
-            front.~bundle_node();
-            rt_pool.free(&front);
-        }
+    static void dispose_bundle(bundle_node * node)
+    {
+        node->~bundle_node();
+        rt_pool.free(node);
     }
 
 private:
-    bundle_list_t bundles;
+    bundle_queue_t bundle_q;
 };
 
 class sc_osc_handler:
