@@ -59,6 +59,11 @@ public:
     void set(slot_index_t slot_index, sample val);
     void set(slot_index_t slot_index, size_t count, sample * val);
 
+    sample get(slot_index_t slot_index)
+    {
+        return mControls[slot_index];
+    }
+
     /* @{ */
     /** control mapping */
     void map_control_bus(unsigned int slot_index, int control_bus_index);

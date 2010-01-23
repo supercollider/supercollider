@@ -1346,6 +1346,134 @@ void handle_s_noid(received_message const & msg)
     }
 }
 
+template <bool realtime>
+void handle_s_get(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+
+    if (!it->IsInt32())
+        throw std::runtime_error("wrong argument type");
+
+    int32_t node_id = it->AsInt32Unchecked(); ++it;
+
+    server_node * node = find_node(node_id);
+    if (!node || !node->is_synth())
+        throw std::runtime_error("node is not a synth");
+
+    sc_synth * s = static_cast<sc_synth*>(node);
+
+    size_t alloc_size = msg.MessageSize() + sizeof(float) * (msg.ArgumentCount()-1) + 128;
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/n_set")
+      << node_id;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        int32_t control;
+        if (it->IsInt32())
+        {
+            int32_t control = it->AsInt32Unchecked(); ++it;
+            p << control;
+        }
+        else if (it->IsString())
+        {
+            const char * control_str = it->AsStringUnchecked(); ++it;
+            control = s->resolve_slot(control_str);
+            p << control_str;
+        }
+        else if (it->IsSymbol())
+        {
+            const char * control_str = it->AsSymbolUnchecked(); ++it;
+            control = s->resolve_slot(control_str);
+            p << osc::Symbol(control_str);
+        }
+        else
+            throw std::runtime_error("wrong argument type");
+
+        p << s->get(control);
+    }
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+}
+
+template <bool realtime>
+void handle_s_getn(received_message const & msg, udp::endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+
+    if (!it->IsInt32())
+        throw std::runtime_error("wrong argument type");
+
+    int32_t node_id = it->AsInt32Unchecked(); ++it;
+
+    server_node * node = find_node(node_id);
+    if (!node || !node->is_synth())
+        throw std::runtime_error("node is not a synth");
+
+    sc_synth * s = static_cast<sc_synth*>(node);
+
+    /* count argument values */
+    size_t argument_count = 0;
+    for (osc::ReceivedMessageArgumentIterator local = it; local != msg.ArgumentsEnd(); ++local)
+    {
+        ++local; /* skip control */
+        if (local == msg.ArgumentsEnd())
+            break;
+        if (!it->IsInt32())
+            throw std::runtime_error("invalid count");
+        argument_count += it->AsInt32Unchecked(); ++it;
+    }
+
+    size_t alloc_size = msg.MessageSize() + sizeof(float) * (argument_count) + 128;
+
+    sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
+
+    osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
+    p << osc::BeginMessage("/n_setn")
+      << node_id;
+
+    while (it != msg.ArgumentsEnd())
+    {
+        int32_t control;
+        if (it->IsInt32())
+        {
+            int32_t control = it->AsInt32Unchecked(); ++it;
+            p << control;
+        }
+        else if (it->IsString())
+        {
+            const char * control_str = it->AsStringUnchecked(); ++it;
+            control = s->resolve_slot(control_str);
+            p << control_str;
+        }
+        else if (it->IsSymbol())
+        {
+            const char * control_str = it->AsSymbolUnchecked(); ++it;
+            control = s->resolve_slot(control_str);
+            p << osc::Symbol(control_str);
+        }
+        else
+            throw std::runtime_error("wrong argument type");
+
+        assert(it->IsInt32());
+        int32_t control_count = it->AsInt32Unchecked(); ++it;
+        if (control_count < 0)
+            break;
+
+        for (int i = 0; i != control_count; ++i)
+            p << s->get(control + i);
+    }
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), return_message.c_array());
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+}
+
 
 /** wrapper class for osc completion message
  */
@@ -2596,6 +2724,14 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_s_noid(message);
         break;
 
+    case cmd_s_get:
+        handle_s_get<realtime>(message, endpoint);
+        break;
+
+    case cmd_s_getn:
+        handle_s_getn<realtime>(message, endpoint);
+        break;
+
     case cmd_notify:
         handle_notify<realtime>(message, endpoint);
         break;
@@ -3054,7 +3190,8 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
 }
 
 template <bool realtime>
-void dispatch_synth_commands(const char * address, received_message const & message)
+void dispatch_synth_commands(const char * address, received_message const & message,
+                             udp::endpoint const & endpoint)
 {
     assert(address[1] == 's');
     assert(address[2] == '_');
@@ -3066,6 +3203,16 @@ void dispatch_synth_commands(const char * address, received_message const & mess
 
     if (strcmp(address+3, "noid") == 0) {
         handle_s_noid(message);
+        return;
+    }
+
+    if (strcmp(address+3, "get") == 0) {
+        handle_s_get<realtime>(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "getn") == 0) {
+        handle_s_getn<realtime>(message, endpoint);
         return;
     }
 }
@@ -3110,7 +3257,7 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         }
 
         if (address[1] == 's') {
-            dispatch_synth_commands<realtime>(address, message);
+            dispatch_synth_commands<realtime>(address, message, endpoint);
             return;
         }
     }
