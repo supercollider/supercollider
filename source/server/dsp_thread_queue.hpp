@@ -85,13 +85,14 @@ public:
         activation_count(0), job(job), successors(successors), activation_limit(activation_limit)
     {}
 
-    void run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index)
+    void run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index,
+             std::auto_ptr<dsp_thread_queue_item> & ptr)
     {
         assert(activation_count == 0);
 
         job(thread_index);
 
-        update_dependencies(interpreter);
+        update_dependencies(interpreter, ptr);
         reset_activation_count();
     }
 
@@ -109,17 +110,22 @@ public:
 
 private:
     /** \brief update all successors and possibly mark them as runnable */
-    void update_dependencies(dsp_queue_interpreter & interpreter)
+    void update_dependencies(dsp_queue_interpreter & interpreter, std::auto_ptr<dsp_thread_queue_item> & ptr)
     {
         for (std::size_t i = 0; i != successors.size(); ++i)
-            successors[i]->dec_ref_count(interpreter);
+            successors[i]->dec_ref_count(interpreter, ptr);
     }
 
     /** \brief decrement reference count and possibly mark as runnable */
-    inline void dec_ref_count(dsp_queue_interpreter & interpreter)
+    inline void dec_ref_count(dsp_queue_interpreter & interpreter, std::auto_ptr<dsp_thread_queue_item> & ptr)
     {
         if (activation_count-- == 1)
-            interpreter.mark_as_runnable(this);
+        {
+            if (ptr.get() == NULL)
+                ptr.reset(this);
+            else
+                interpreter.mark_as_runnable(this);
+        }
     }
 
     boost::atomic<activation_limit_t> activation_count; /**< current activation count */
@@ -339,11 +345,23 @@ private:
         if (!success)
             return fifo_empty;
 
-        item->run(*this, index);
+        std::auto_ptr<dsp_thread_queue_item> ptr;
 
-        node_count_t remaining = node_count--;
+        node_count_t consumed = 0;
+        for(;;)
+        {
+            item->run(*this, index, ptr);
+            consumed += 1;
 
-        if (remaining == 1)
+            if (ptr.get())
+                item = ptr.release();
+            else
+                break;
+        }
+
+        node_count_t remaining = (node_count -= consumed);;
+
+        if (remaining == 0)
             return no_remaining_items;
         else
             return remaining_items;
