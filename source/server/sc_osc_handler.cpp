@@ -519,20 +519,6 @@ struct cmd_dispatcher<false>
     }
 };
 
-struct sc_response_callback:
-    public system_callback
-{
-    sc_response_callback(udp::endpoint const & endpoint):
-        endpoint_(endpoint)
-    {}
-
-    inline void send_done(void)
-    {
-        send_done_message(endpoint_);
-    }
-
-    const udp::endpoint endpoint_;
-};
 
 void quit_perform(udp::endpoint const & endpoint)
 {
@@ -1562,32 +1548,6 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentIterat
 }
 
 
-/** responding callback, which is executing an osc message when done */
-struct sc_async_callback:
-    public sc_response_callback
-{
-protected:
-    sc_async_callback(completion_message & msg, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint), msg_(msg)
-    {}
-
-    static char * copy_string(const char * str)
-    {
-        size_t length = strlen(str);
-        char * ret = (char*)system_callback::allocate(length + 1); /* terminating \0 */
-        strcpy(ret, str);
-        return ret;
-    }
-
-    void schedule_async_message(void)
-    {
-        msg_.trigger_async(endpoint_);
-    }
-
-    completion_message msg_;
-};
-
-
 template <bool realtime>
 void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, udp::endpoint const & endpoint);
 void b_alloc_3_nrt(uint32_t index, sample * free_buf, udp::endpoint const & endpoint);
@@ -2393,52 +2353,6 @@ void handle_c_fill(received_message const & msg)
         sc_factory.controlbus_fill(bus_index, bus_count, value);
     }
 }
-
-struct c_get_callback:
-    public sc_response_callback
-{
-    static const int reply_size = sizeof(int) + sizeof(float);
-
-public:
-    c_get_callback(received_message const & msg, udp::endpoint const & endpoint):
-        sc_response_callback(endpoint)
-    {
-        const size_t elements = msg.ArgumentCount() / 2;
-        const size_t size = elements * reply_size + 128; /* more than required */
-        data_ = (char*)allocate(size);
-
-        osc::OutboundPacketStream p(data_, size);
-
-        osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-        p << osc::BeginMessage("/c_set");
-        while (!args.Eos()) {
-            osc::int32 bus_index;
-            args >> bus_index;
-
-            float value = sc_factory.controlbus_get(bus_index);
-
-            p << bus_index
-              << value;
-        }
-
-        p << osc::EndMessage;
-        msg_size_ = p.Size();
-    }
-
-private:
-    void run(void)
-    {
-        instance->send_udp(data_, msg_size_, endpoint_);
-    }
-
-    ~c_get_callback(void)
-    {
-        deallocate(data_);
-    }
-
-    char * data_;
-    size_t msg_size_;
-};
 
 template <bool realtime>
 void handle_c_get(received_message const & msg,
