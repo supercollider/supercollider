@@ -44,10 +44,10 @@ void sc_scheduled_bundles::bundle_node::run(void)
 
     if (element.IsBundle()) {
         received_bundle bundle(element);
-        instance->handle_bundle(bundle, endpoint_);
+        instance->handle_bundle<true>(bundle, endpoint_);
     } else {
         received_message message(element);
-        instance->handle_message(message, endpoint_);
+        instance->handle_message<true>(message, endpoint_);
     }
 }
 
@@ -103,6 +103,22 @@ void sc_osc_handler::handle_packet(const char * data, size_t length)
     instance->add_sync_callback(p);
 }
 
+void sc_osc_handler::handle_packet_nrt(const char * data, size_t length)
+{
+    osc_received_packet packet(data, length);
+    if (packet.IsBundle())
+    {
+        received_bundle bundle(packet);
+        handle_bundle<false> (bundle, udp::endpoint());
+    }
+    else
+    {
+        received_message message(packet);
+        handle_message<false> (message, udp::endpoint());
+    }
+}
+
+
 sc_osc_handler::received_packet::received_packet *
 sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
                                               udp::endpoint const & remote_endpoint)
@@ -128,16 +144,16 @@ void sc_osc_handler::handle_packet(const char * data, std::size_t length, udp::e
     if (packet.IsBundle())
     {
         received_bundle bundle(packet);
-        handle_bundle(bundle, endpoint);
+        handle_bundle<true> (bundle, endpoint);
     }
     else
     {
         received_message message(packet);
-        handle_message (message, endpoint);
+        handle_message<true> (message, endpoint);
     }
 }
 
-
+template <bool realtime>
 void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint)
 {
     time_tag now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
@@ -152,10 +168,10 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint
 
             if (element.IsBundle()) {
                 received_bundle inner_bundle(element);
-                handle_bundle(inner_bundle, endpoint);
+                handle_bundle<realtime>(inner_bundle, endpoint);
             } else {
                 received_message message(element);
-                handle_message(message, endpoint);
+                handle_message<realtime>(message, endpoint);
             }
         }
     } else {
@@ -166,14 +182,15 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, udp::endpoint
     }
 }
 
+template <bool realtime>
 void sc_osc_handler::handle_message(received_message const & message, udp::endpoint const & endpoint)
 {
     try
     {
         if (message.AddressPatternIsUInt32())
-            handle_message_int_address(message, endpoint);
+            handle_message_int_address<realtime>(message, endpoint);
         else
-            handle_message_sym_address(message, endpoint);
+            handle_message_sym_address<realtime>(message, endpoint);
     }
     catch (std::exception const & e)
     {
@@ -2568,6 +2585,7 @@ void handle_p_new(received_message const & msg)
 
 } /* namespace */
 
+template <bool realtime>
 void sc_osc_handler::handle_message_int_address(received_message const & message,
                                                 udp::endpoint const & endpoint)
 {
@@ -2576,7 +2594,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
     switch (address)
     {
     case cmd_quit:
-        handle_quit<true>(endpoint);
+        handle_quit<realtime>(endpoint);
         break;
 
     case cmd_s_new:
@@ -2588,11 +2606,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_notify:
-        handle_notify<true>(message, endpoint);
+        handle_notify<realtime>(message, endpoint);
         break;
 
     case cmd_status:
-        handle_status<true>(endpoint);
+        handle_status<realtime>(endpoint);
         break;
 
     case cmd_dumpOSC:
@@ -2600,7 +2618,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_sync:
-        handle_sync<true>(message, endpoint);
+        handle_sync<realtime>(message, endpoint);
         break;
 
     case cmd_clearSched:
@@ -2632,7 +2650,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_g_queryTree:
-        handle_g_queryTree<true>(message, endpoint);
+        handle_g_queryTree<realtime>(message, endpoint);
         break;
 
     case cmd_g_dumpTree:
@@ -2688,35 +2706,35 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_b_alloc:
-        handle_b_alloc<true>(message, endpoint);
+        handle_b_alloc<realtime>(message, endpoint);
         break;
 
     case cmd_b_free:
-        handle_b_free<true>(message, endpoint);
+        handle_b_free<realtime>(message, endpoint);
         break;
 
     case cmd_b_allocRead:
-        handle_b_allocRead<true>(message, endpoint);
+        handle_b_allocRead<realtime>(message, endpoint);
         break;
 
     case cmd_b_allocReadChannel:
-        handle_b_allocReadChannel<true>(message, endpoint);
+        handle_b_allocReadChannel<realtime>(message, endpoint);
         break;
 
     case cmd_b_read:
-        handle_b_read<true>(message, endpoint);
+        handle_b_read<realtime>(message, endpoint);
         break;
 
     case cmd_b_readChannel:
-        handle_b_readChannel<true>(message, endpoint);
+        handle_b_readChannel<realtime>(message, endpoint);
         break;
 
     case cmd_b_write:
-        handle_b_write<true>(message, endpoint);
+        handle_b_write<realtime>(message, endpoint);
         break;
 
     case cmd_b_zero:
-        handle_b_zero<true>(message, endpoint);
+        handle_b_zero<realtime>(message, endpoint);
         break;
 
     case cmd_b_set:
@@ -2732,19 +2750,19 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_b_query:
-        handle_b_query<true>(message, endpoint);
+        handle_b_query<realtime>(message, endpoint);
         break;
 
     case cmd_b_get:
-        handle_b_get<true>(message, endpoint);
+        handle_b_get<realtime>(message, endpoint);
         break;
 
     case cmd_b_getn:
-        handle_b_getn<true>(message, endpoint);
+        handle_b_getn<realtime>(message, endpoint);
         break;
 
     case cmd_b_gen:
-        handle_b_gen<true>(message, endpoint);
+        handle_b_gen<realtime>(message, endpoint);
         break;
 
     case cmd_c_set:
@@ -2760,23 +2778,23 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_c_get:
-        handle_c_get<true>(message, endpoint);
+        handle_c_get<realtime>(message, endpoint);
         break;
 
     case cmd_c_getn:
-        handle_c_getn<true>(message, endpoint);
+        handle_c_getn<realtime>(message, endpoint);
         break;
 
     case cmd_d_recv:
-        handle_d_recv<true>(message, endpoint);
+        handle_d_recv<realtime>(message, endpoint);
         break;
 
     case cmd_d_load:
-        handle_d_load<true>(message, endpoint);
+        handle_d_load<realtime>(message, endpoint);
         break;
 
     case cmd_d_loadDir:
-        handle_d_loadDir<true>(message, endpoint);
+        handle_d_loadDir<realtime>(message, endpoint);
         break;
 
     case cmd_d_free:
@@ -2795,6 +2813,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 namespace
 {
 
+template <bool realtime>
 void dispatch_group_commands(const char * address, received_message const & message,
                              udp::endpoint const & endpoint)
 {
@@ -2822,7 +2841,7 @@ void dispatch_group_commands(const char * address, received_message const & mess
         return;
     }
     if (strcmp(address+3, "queryTree") == 0) {
-        handle_g_queryTree<true>(message, endpoint);
+        handle_g_queryTree<realtime>(message, endpoint);
         return;
     }
 
@@ -2832,6 +2851,7 @@ void dispatch_group_commands(const char * address, received_message const & mess
     }
 }
 
+template <bool realtime>
 void dispatch_node_commands(const char * address, received_message const & message,
                             udp::endpoint const & endpoint)
 {
@@ -2899,6 +2919,7 @@ void dispatch_node_commands(const char * address, received_message const & messa
     }
 }
 
+template <bool realtime>
 void dispatch_buffer_commands(const char * address, received_message const & message,
                               udp::endpoint const & endpoint)
 {
@@ -2906,41 +2927,41 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
     assert(address[2] == '_');
 
     if (strcmp(address+3, "alloc") == 0) {
-        handle_b_alloc<true>(message, endpoint);
+        handle_b_alloc<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "free") == 0) {
-        handle_b_free<true>(message, endpoint);
+        handle_b_free<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "allocRead") == 0) {
-        handle_b_allocRead<true>(message, endpoint);
+        handle_b_allocRead<realtime>(message, endpoint);
         return;
     }
     if (strcmp(address+3, "allocReadChannel") == 0) {
-        handle_b_allocReadChannel<true>(message, endpoint);
+        handle_b_allocReadChannel<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "read") == 0) {
-        handle_b_read<true>(message, endpoint);
+        handle_b_read<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "readChannel") == 0) {
-        handle_b_readChannel<true>(message, endpoint);
+        handle_b_readChannel<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "write") == 0) {
-        handle_b_write<true>(message, endpoint);
+        handle_b_write<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "zero") == 0) {
-        handle_b_zero<true>(message, endpoint);
+        handle_b_zero<realtime>(message, endpoint);
         return;
     }
 
@@ -2960,26 +2981,27 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
     }
 
     if (strcmp(address+3, "query") == 0) {
-        handle_b_query<true>(message, endpoint);
+        handle_b_query<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "get") == 0) {
-        handle_b_get<true>(message, endpoint);
+        handle_b_get<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "getn") == 0) {
-        handle_b_getn<true>(message, endpoint);
+        handle_b_getn<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "gen") == 0) {
-        handle_b_gen<true>(message, endpoint);
+        handle_b_gen<realtime>(message, endpoint);
         return;
     }
 }
 
+template <bool realtime>
 void dispatch_control_bus_commands(const char * address, received_message const & message,
                                    udp::endpoint const & endpoint)
 {
@@ -3002,16 +3024,17 @@ void dispatch_control_bus_commands(const char * address, received_message const 
     }
 
     if (strcmp(address+3, "get") == 0) {
-        handle_c_get<true>(message, endpoint);
+        handle_c_get<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "getn") == 0) {
-        handle_c_getn<true>(message, endpoint);
+        handle_c_getn<realtime>(message, endpoint);
         return;
     }
 }
 
+template <bool realtime>
 void dispatch_synthdef_commands(const char * address, received_message const & message,
                                 udp::endpoint const & endpoint)
 {
@@ -3019,17 +3042,17 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
     assert(address[2] == '_');
 
     if (strcmp(address+3, "recv") == 0) {
-        handle_d_recv<true>(message, endpoint);
+        handle_d_recv<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "load") == 0) {
-        handle_d_load<true>(message, endpoint);
+        handle_d_load<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+3, "loadDir") == 0) {
-        handle_d_loadDir<true>(message, endpoint);
+        handle_d_loadDir<realtime>(message, endpoint);
         return;
     }
 
@@ -3041,6 +3064,7 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
 
 } /* namespace */
 
+template <bool realtime>
 void sc_osc_handler::handle_message_sym_address(received_message const & message,
                                                 udp::endpoint const & endpoint)
 {
@@ -3053,27 +3077,27 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
     if (address[2] == '_')
     {
         if (address[1] == 'g') {
-            dispatch_group_commands(address, message, endpoint);
+            dispatch_group_commands<realtime>(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'n') {
-            dispatch_node_commands(address, message, endpoint);
+            dispatch_node_commands<realtime>(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'b') {
-            dispatch_buffer_commands(address, message, endpoint);
+            dispatch_buffer_commands<realtime>(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'c') {
-            dispatch_control_bus_commands(address, message, endpoint);
+            dispatch_control_bus_commands<realtime>(address, message, endpoint);
             return;
         }
 
         if (address[1] == 'd') {
-            dispatch_synthdef_commands(address, message, endpoint);
+            dispatch_synthdef_commands<realtime>(address, message, endpoint);
             return;
         }
     }
@@ -3094,22 +3118,22 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
     }
 
     if (strcmp(address+1, "status") == 0) {
-        handle_status<true>(endpoint);
+        handle_status<realtime>(endpoint);
         return;
     }
 
     if (strcmp(address+1, "sync") == 0) {
-        handle_sync<true>(message, endpoint);
+        handle_sync<realtime>(message, endpoint);
         return;
     }
 
     if (strcmp(address+1, "quit") == 0) {
-        handle_quit<true>(endpoint);
+        handle_quit<realtime>(endpoint);
         return;
     }
 
     if (strcmp(address+1, "notify") == 0) {
-        handle_notify<true>(message, endpoint);
+        handle_notify<realtime>(message, endpoint);
         return;
     }
 

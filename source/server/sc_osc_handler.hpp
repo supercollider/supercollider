@@ -247,10 +247,16 @@ private:
     /** packet handling */
 public:
     void handle_packet(const char * data_, std::size_t length, udp::endpoint const & endpoint);
+    void handle_packet_nrt(const char * data_, std::size_t length);
+
 private:
+    template <bool realtime>
     void handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint);
+    template <bool realtime>
     void handle_message(received_message const & message, udp::endpoint const & endpoint);
+    template <bool realtime>
     void handle_message_int_address(received_message const & message, udp::endpoint const & endpoint);
+    template <bool realtime>
     void handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint);
 
     friend class sc_scheduled_bundles::bundle_node;
