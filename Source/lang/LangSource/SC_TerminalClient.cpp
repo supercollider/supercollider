@@ -36,6 +36,11 @@
 # include <sys/param.h>
 # include <sys/poll.h>
 # include <unistd.h>
+# ifdef HAVE_READLINE
+#   include <readline/readline.h>
+#   include <readline/history.h>
+#   include <signal.h>
+# endif
 #endif
 
 #include <string.h>
@@ -294,9 +299,83 @@ void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmd
 	flush();
 }
 
+void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
+{
+	setCmdLine(cmdLine);
+	runLibrary(method);
+	flush();
+}
+
+#ifdef HAVE_READLINE
+// Function called by readline "up to ten times a second" while waiting for input
+int sc_rl_ticker();
+int sc_rl_ticker(){
+	SC_TerminalClient::instance()->tick();
+	return 0;
+}
+
+void sc_rl_signalhandler(int sig);
+void sc_rl_signalhandler(int sig){
+	// ensure ctrl-C clears line rather than quitting (ctrl-D will quit nicely)
+	rl_replace_line("", 0);
+	rl_reset_line_state();
+	rl_crlf();
+	rl_redisplay();
+}
+
+int sc_rl_mainstop(int i1, int i2);
+int sc_rl_mainstop(int i1, int i2){
+	SC_TerminalClient::instance()->stopMain();
+	// We also push a newline so that there's some UI feedback
+	rl_reset_line_state();
+	rl_crlf();
+	rl_redisplay();
+}
+
+/*
+// Completion from sclang dictionary TODO
+char ** sc_rl_completion (const char *text, int start, int end);
+char ** sc_rl_completion (const char *text, int start, int end){
+	char **matches = (char **)NULL;
+	printf("sc_rl_completion(%s, %i, %i)\n", text, start, end);
+	return matches;
+}
+*/
+#endif
+
 void SC_TerminalClient::commandLoop()
 {
 #ifndef SC_WIN32
+
+#ifdef HAVE_READLINE
+	if(strcmp(gIdeName, "none") == 0){ // Other clients (emacs, vim, ...) won't want to interact through rl
+		// Set up rl for sclang-specific nicenesses
+		rl_readline_name = "sclang";
+		rl_event_hook = &sc_rl_ticker;
+		rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
+		//rl_attempted_completion_function = sc_rl_completion;
+		rl_bind_key(0x02, &sc_rl_mainstop); // TODO 0x02 is ctrl-B; ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
+		
+		signal(SIGINT, &sc_rl_signalhandler);
+		const char *prompt = "sc3> ";
+		char *cmdLine;
+		while (shouldBeRunning()) {
+			tick();
+			while((cmdLine = readline(prompt)) != NULL){
+				if(*cmdLine!=0){
+					// If line wasn't empty, store it so that uparrow retrieves it
+					add_history(cmdLine);
+					interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
+					free(cmdLine);
+				}
+			}
+			if(cmdLine == NULL){
+				printf("\nExiting sclang (ctrl-D)\n");
+				quit(0);
+			}
+		}
+	}else{
+#else
 	const int fd = 0;
 	struct pollfd pfds[1] = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
@@ -324,6 +403,12 @@ void SC_TerminalClient::commandLoop()
 			return;
 		}
 	}
+#endif
+
+#ifdef HAVE_READLINE
+	} // end gIdeName!="none"
+#endif
+
 #else
   assert(0);
 #endif

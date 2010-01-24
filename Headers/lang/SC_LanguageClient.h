@@ -131,11 +131,11 @@ public:
 	static bool parseMemArg(const char* arg, int* res);
 	static bool parsePortArg(const char* arg, int* res);
 
-protected:
 	// AppClock driver
 	//    to be called from client mainloop.
 	void tick();
 
+protected:
 	// language notifications, subclasses can override
 
 	// called after language runtime has been initialized

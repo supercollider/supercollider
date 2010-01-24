@@ -24,6 +24,7 @@ Headlines:
 * 2009-12-15 sclang: 64bit safety - tb
 * 2009-12-15 sclang: performance improvement of math ops - tb
 * 2010-01-02 scsynth: use osc-compilant address patterns for server/lang communication - tb
+* 2010-01-24 add readline interface to sclang command-line. This is used by default when invoking "sclang" (to use the non-readline interface set the "-i" option to something other than "none") - ds
 
 
 Bugfixes:
