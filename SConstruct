@@ -1035,7 +1035,7 @@ if env['CURL']:
     langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
     merge_lib_info(langEnv, libraries['libcurl'])
 
-if env['READLINE'] and env['GPL3']:
+if env['READLINE'] and env['LANG'] and env['GPL3']:
     langEnv.Append(CPPDEFINES = ['HAVE_READLINE'])
     merge_lib_info(langEnv, libraries['readline'])
 
