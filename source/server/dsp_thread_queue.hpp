@@ -85,14 +85,15 @@ public:
         activation_count(0), job(job), successors(successors), activation_limit(activation_limit)
     {}
 
-    void run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index)
+    dsp_thread_queue_item * run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index)
     {
         assert(activation_count == 0);
 
         job(thread_index);
 
-        update_dependencies(interpreter);
+        dsp_thread_queue_item * next = update_dependencies(interpreter);
         reset_activation_count();
+        return next;
     }
 
     /** called from the run method or once, when dsp queue is initialized */
@@ -109,18 +110,44 @@ public:
 
 private:
     /** \brief update all successors and possibly mark them as runnable */
-    void update_dependencies(dsp_queue_interpreter & interpreter)
+    dsp_thread_queue_item * update_dependencies(dsp_queue_interpreter & interpreter)
     {
-        for (std::size_t i = 0; i != successors.size(); ++i)
-            successors[i]->dec_ref_count(interpreter);
+        std::auto_ptr<dsp_thread_queue_item> ptr;
+        std::size_t i = 0;
+        for (;;)
+        {
+            if (i == successors.size())
+                return NULL;
+
+            successors[i++]->dec_ref_count(interpreter, ptr);
+            if (ptr.get())
+                break; // no need to update the next item to run
+        }
+
+        while (i != successors.size())
+            successors[i++]->dec_ref_count(interpreter);
+        return ptr.release();
     }
 
+    /* @{ */
     /** \brief decrement reference count and possibly mark as runnable */
+    inline void dec_ref_count(dsp_queue_interpreter & interpreter, std::auto_ptr<dsp_thread_queue_item> & ptr)
+    {
+        if (activation_count-- == 1)
+        {
+            if (ptr.get() == NULL)
+                ptr.reset(this);
+            else
+                interpreter.mark_as_runnable(this);
+        }
+    }
+
     inline void dec_ref_count(dsp_queue_interpreter & interpreter)
     {
         if (activation_count-- == 1)
             interpreter.mark_as_runnable(this);
     }
+    /* @} */
 
     boost::atomic<activation_limit_t> activation_count; /**< current activation count */
 
@@ -339,11 +366,17 @@ private:
         if (!success)
             return fifo_empty;
 
-        item->run(*this, index);
+        node_count_t consumed = 0;
 
-        node_count_t remaining = node_count--;
+        do
+        {
+            item = item->run(*this, index);
+            consumed += 1;
+        } while (item != NULL);
 
-        if (remaining == 1)
+        node_count_t remaining = (node_count -= consumed);;
+
+        if (remaining == 0)
             return no_remaining_items;
         else
             return remaining_items;
