@@ -861,10 +861,10 @@ pluginEnv.Append(
 if PLATFORM == 'darwin':
     pluginEnv['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
 
-if PLATFORM == 'freebsd':
-    merge_lib_info(
-        pluginEnv,
-        libraries['sndfile'])
+# we merge this in even if no libsndfile (it'll pass in the NO_LIBSNDFILE flag)
+merge_lib_info(
+    pluginEnv,
+    libraries['sndfile'])
 
 
 plugins = []

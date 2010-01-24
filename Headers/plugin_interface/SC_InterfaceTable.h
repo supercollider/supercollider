@@ -26,10 +26,12 @@
 #include "SC_Unit.h"
 #include "SC_BufGen.h"
 #include "SC_FifoMsg.h"
-#ifdef SC_WIN32
-	#include <sndfile-win.h>
-#else
-	#include <sndfile.h>
+#ifndef NO_LIBSNDFILE
+	#ifdef SC_WIN32
+		#include <sndfile-win.h>
+	#else
+		#include <sndfile.h>
+	#endif
 #endif
 
 struct World;
