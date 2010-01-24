@@ -4055,7 +4055,7 @@ void Amplitude_Ctor(Amplitude* unit)
 	float relax = ZIN0(2);
 	unit->m_relaxcoef = relax == 0.0 ? 0.0 : exp(log1/(relax * SAMPLERATE));
 
-	ZOUT0(0) = unit->m_previn = ZIN0(0);
+	ZOUT0(0) = unit->m_previn = sc_abs(ZIN0(0));
 }
 
 void Amplitude_next(Amplitude* unit, int inNumSamples)
