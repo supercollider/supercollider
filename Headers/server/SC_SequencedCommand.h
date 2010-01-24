@@ -33,10 +33,12 @@
 #include "SC_World.h"
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
-#ifdef SC_WIN32
-	#include <sndfile-win.h>
-#else
-	#include <sndfile.h>
+#ifndef NO_LIBSNDFILE
+	#ifdef SC_WIN32
+		#include <sndfile-win.h>
+	#else
+		#include <sndfile.h>
+	#endif
 #endif
 #include <new>
 

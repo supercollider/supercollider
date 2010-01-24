@@ -22,10 +22,14 @@
 #define _SndBuf_
 
 #include <sys/types.h>
-#ifdef SC_WIN32
-	#include <sndfile-win.h>
+#ifndef NO_LIBSNDFILE
+	#ifdef SC_WIN32
+		#include <sndfile-win.h>
+	#else
+		#include <sndfile.h>
+	#endif
 #else
-	#include <sndfile.h>
+	#include "SC_sndfile_stub.h"
 #endif
 
 struct SndBuf

@@ -21,6 +21,7 @@
 
 #include "SC_PlugIn.h"
 #include <limits.h>
+#include <cstdio>
 
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"

@@ -19,6 +19,7 @@
 */
 
 #include "SC_PlugIn.h"
+#include <cstdio>
 
 #ifndef MAXFLOAT
 # include <float.h>

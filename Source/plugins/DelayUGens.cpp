@@ -20,6 +20,7 @@
 
 
 #include "SC_PlugIn.h"
+#include <cstdio>
 
 const int kMAXMEDIANSIZE = 32;
 
