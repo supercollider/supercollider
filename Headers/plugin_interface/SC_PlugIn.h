@@ -41,7 +41,7 @@
 #ifdef SC_WIN32
 
 // temporarily override __attribute__ for (unused), later we'll remove it
-#ifndef __GCC__
+#ifndef __GNUC__
 #define __attribute__(x)
 #endif
 

@@ -30,7 +30,11 @@
 
 inline bool sc_isnan(float x)
 {
+#if defined(__cplusplus) && defined(__GNUC__) && __GNUC__ >= 4
+	return std::isnan(x);
+#else
 	return (!(x >= 0.f || x <= 0.f));
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
