@@ -8,15 +8,12 @@ $Id$
 intro
 ------------------------------------------------------------------------
 
-this is a port of james mccartney's supercollider synthesis engine
-(scsynth) and programming language (sclang) to linux. supercollider's
-main homepage is at and the source code can be obtained via SVN from
+SuperCollider is a synthesis engine (scsynth) and programming language
+(sclang), originally Mac-based but now very widely used on Linux
+(since Stefan Kersten ported the code in 2003). SuperCollider is free 
+software under the GPL - its main homepage is at
 
    http://supercollider.sourceforge.net
-
-It all started at this homepage:
-
-   http://www.audiosynth.com
 
 to get further information on supercollider usage or development, you
 might consider subscribing to the mailing lists
@@ -29,40 +26,28 @@ build requirements
 ------------------------------------------------------------------------
 
  * gcc >= 3.0
-
    http://www.gnu.org/software/gcc/
-
    gcc versions < 3.0 are missing some required c++ features
 
  * jack and libjack
-
    http://jackit.sourceforge.net/
-
    jack audio connection kit
 
  * libsndfile >= 1.0
-
    http://www.mega-nerd.com/libsndfile/
-
    _the_ soundfile i/o library
 
  * pkg-config >= 0.14.0
-
    http://www.freedesktop.org/software/pkgconfig/
-
    facilitates checking for installed packages when compiling from
    source
 
  * scons >= 0.96
-
    http://www.scons.org/
-
    configuration and build tool based on python
 
  * fftw >= 3.0
-
    http://www.fftw.org/
-
    fast FFT transform library (for frequency-domain analysis,
                                         phase-vocoder effects)
 
@@ -71,38 +56,35 @@ build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
 ------------------------------------------------------------------------
 
- o alsa
-
+ * alsa
    http://www.alsa-project.org/
-
    advanced linux sound architecture drivers and library, for sclang's
    MIDI interface
 
- o libhowl (obsolete)
+ * libreadline >= 5
+   http://savannah.gnu.org/projects/readline
+   provides convenient CLI interface for sclang 
+   (if unavailable, set READLINE=0 as an argument to scons)
 
+ * libhowl (obsolete)
    http://www.porchdogsoft.com/products/howl/
-
    zeroconf service dicovery implementation
 
- o libavahi-client
-
+ * libavahi-client
    http://www.avahi.org/
-
    a more powerful zeroconf service discovery implementation
 
- o linux kernel >= 2.6
-
+ * linux kernel >= 2.6
    http://www.kernel.org/
-
    for sclang's linux input device (LID) interface
 
- o for scel: the Emacs interface see the README in the directory
+ * for scel: the Emacs interface see the README in the directory
    `editors/scel'
 
- o for sced: the gedit interface see the README in the directory
+ * for sced: the gedit interface see the README in the directory
    `editors/sced'
 
- o for scvim: the vim interface see the README in the directory
+ * for scvim: the vim interface see the README in the directory
    `editors/scvim'
 
 
@@ -118,6 +100,8 @@ for building supercollider:
    libsndfile1-dev
    libasound2-dev
    libavahi-client-dev
+   libreadline6-dev
+   libfftw3-dev
    pkg-config
    scons
 
@@ -215,13 +199,14 @@ when connecting to the default server.
 running sclang
 ------------------------------------------------------------------------
 
-it is recommended to use sclang in combination with the SCEL emacs
-interface in `scel'. see the README in `linux/scel' for installation
-and usage.
+it is recommended to use sclang in combination with your preferred text
+editor out of emacs/vim/gedit. see the README files in `linux/*' for
+installation and usage. as an alternative you can simply run the 
+`sclang' executable which will provide a readline-based interface.
 
 sclang executes the startup file `~/.sclang.sc' after class library
-initialization. this file can contain statements you don't want to put
-in a custom Main class, like setting default variables. an example can
+initialization. this file can contain statements to set up your 
+supercollider environment, like setting default variables. an example can
 be found in `linux/examples/sclang.sc'.
 
 you _have_ to have a directory `~/share/SuperCollider/'. This is where
@@ -281,15 +266,11 @@ apart from the sites listed above, some more documentation links ...
 
 a wiki for supercollider, set up by julian rohrhuber, is at
 
-    http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6
+    http://swiki.hfbk-hamburg.de/MusicTechnology/6
 
 linux specific information can be found at
 
-    http://swiki.hfbk-hamburg.de:8888/MusicTechnology/478
-
-if and when i get around to update the site, you'll find some more at
-
-   http://v00d00.k-hornz.de/sc.html
+    http://swiki.hfbk-hamburg.de/MusicTechnology/478
 
 ------------------------------------------------------------------------
 reporting bugs
@@ -298,7 +279,7 @@ reporting bugs
 please report bugs either to the sc-users or sc-dev mailing lists.
 
 ------------------------------------------------------------------------
-contributors
+contributors to this document
 ------------------------------------------------------------------------
 
 stefan kersten <sk AT k-hornz DOT de>
@@ -320,3 +301,4 @@ software publically and freely available.
 ------------------------------------------------------------------------
 eof
 ------------------------------------------------------------------------
+
