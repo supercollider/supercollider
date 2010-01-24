@@ -330,7 +330,7 @@ opts.AddOptions(
     BoolOption('READLINE',
                'Build with GNU readline for nice command-line sclang interface', PLATFORM == 'linux'),
     BoolOption('GPL3',
-               'Allow the inclusion of gpl-3 licensed code. Makes the license of the whole package gpl-3', 0),
+               'Allow the inclusion of gpl-3 licensed code. Makes the license of the whole package gpl-3', 1),
     PackageOption('X11',
                 'Build with X11 support', 1),
     BoolOption('SCLANG64',

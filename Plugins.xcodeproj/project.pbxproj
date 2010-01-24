@@ -1718,7 +1718,6 @@
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNOVA_SIMD",
-					"-DNO_GPL3_CODE",
 				);
 				OTHER_LDFLAGS = "-lm";
 				PREBINDING = NO;
@@ -1751,7 +1750,6 @@
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNOVA_SIMD",
-					"-DNO_GPL3_CODE",
 					"-DNDEBUG",
 				);
 				OTHER_LDFLAGS = "-lm";
