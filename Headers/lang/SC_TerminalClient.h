@@ -80,6 +80,7 @@ protected:
 	// fd is assumed to be non-blocking
 	bool readCmdLine(int fd, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
+	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
 
 	// subclasses should override
 	virtual void commandLoop();

@@ -327,6 +327,8 @@ opts.AddOptions(
                'Build with terminal client interface', 1),
     BoolOption('CURL',
                'Build with libcurl - allows server to load files from remote servers by URL', 0),
+    BoolOption('READLINE',
+               'Build with GNU readline for nice command-line sclang interface', PLATFORM == 'linux'),
     BoolOption('GPL3',
                'Allow the inclusion of gpl-3 licensed code. Makes the license of the whole package gpl-3', 0),
     PackageOption('X11',
@@ -364,6 +366,8 @@ env.Append(CPPDEFINES = ["NOVA_SIMD"])
 
 if not env['GPL3']:
     env.Append(CPPDEFINES = ["NO_GPL3_CODE"])
+    if env['READLINE']:
+        print 'WARNING: option READLINE is on and option GPL3 is off, yet readline is GPL3+ licensed, so it will NOT be activated.'
 
 # checks for DISTCC and CCACHE as used in modern linux-distros:
 
@@ -555,6 +559,16 @@ if env['LANG']:
         )
     else:
         print "libicu not found"
+        Exit(1)
+
+# readline
+if env['LANG'] and env['READLINE'] and env['GPL3']:
+    if conf.CheckCHeader('readline/readline.h'):
+        libraries['readline'] = Environment(
+             LINKFLAGS = '-lreadline',
+        )
+    else:
+        print "libreadline not found"
         Exit(1)
 
 # only _one_ Configure context can be alive at a time
@@ -1021,6 +1035,9 @@ if env['CURL']:
     langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
     merge_lib_info(langEnv, libraries['libcurl'])
 
+if env['READLINE'] and env['GPL3']:
+    langEnv.Append(CPPDEFINES = ['HAVE_READLINE'])
+    merge_lib_info(langEnv, libraries['readline'])
 
 
 libsclangEnv = langEnv.Clone(
