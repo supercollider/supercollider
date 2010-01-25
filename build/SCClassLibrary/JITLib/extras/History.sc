@@ -540,7 +540,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		};
 	}
 	
-	rewrite { |path, open = true| 
+	*rewrite { |path, open = true| 
 		var lines, time, repath, file2; 
 		lines = path.load;
 		
