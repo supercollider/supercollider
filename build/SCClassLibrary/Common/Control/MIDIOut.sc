@@ -324,7 +324,7 @@ MIDIOut {
 		if(thisProcess.platform.name != \linux) {
 			^super.newCopyArgs(port, uid ?? { MIDIClient.destinations[port].uid });
 		} {
-			^super.newCopyArgs(port, uid);
+			^super.newCopyArgs(port, uid ?? 0 );
 		}
 	}
 	*newByName { arg deviceName,portName,dieIfNotFound=true;
