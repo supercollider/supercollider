@@ -206,7 +206,7 @@ QuarkSVNRepository
  SuperCollider Quarks: accessing remote repository.
 
  If this is the first time, you may be asked to accept a
- security certificate. Please do so!
+ security certificate. If you can trust it, please do so!
 
  The command being run is:
 " ++ cmd.escapeChar($") ++ "
