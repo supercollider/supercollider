@@ -432,7 +432,7 @@
 		7751ABD90EB3732A0051CF38 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		7751ABDE0EB373490051CF38 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		7751B8120F435F6F0044CAC0 /* iPhone_Synth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = iPhone_Synth.xcodeproj; sourceTree = "<group>"; };
-		775384570FBDE41800DADEB2 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = xtralibs/mac/libsndfile.a; sourceTree = "<group>"; };
+		775384570FBDE41800DADEB2 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
 		775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
 		775D93940F509B7A00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		778214610EBCABF200A8A56F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -527,7 +527,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				775384570FBDE41800DADEB2 /* libsndfile.a */,
+				775384570FBDE41800DADEB2 /* scUBlibsndfile.a */,
 				778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
