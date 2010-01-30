@@ -443,7 +443,7 @@
 		778F12AD0F50A92100CB6629 /* patches */ = {isa = PBXFileReference; lastKnownFileType = folder; name = patches; path = "iPhone Resources/patches"; sourceTree = "<group>"; };
 		778F12BB0F50A92100CB6629 /* Extensions */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Extensions; path = "iPhone Resources/Extensions"; sourceTree = "<group>"; };
 		778F12C90F50A94600CB6629 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "iPhone Resources/icon.png"; sourceTree = "<group>"; };
-		778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = xtralibs/mac/libsndfile_iphone.a; sourceTree = "<group>"; };
+		778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = xtralibs/iphone/libsndfile_iphone.a; sourceTree = "<group>"; };
 		778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow.xib; path = "iPhone Resources/SuperCollider_MainWindow.xib"; sourceTree = "<group>"; };
 		778F17E50F50AE1100CB6629 /* SuperCollider.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SuperCollider.plist; path = "iPhone Resources/SuperCollider.plist"; sourceTree = "<group>"; };
 		778F18440F50B1D000CB6629 /* backwards_compatibility */ = {isa = PBXFileReference; lastKnownFileType = folder; name = backwards_compatibility; path = build/SCClassLibrary/backwards_compatibility; sourceTree = "<group>"; };
@@ -460,6 +460,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				77D86FF210E235680024A880 /* libsndfile_iphone.a in Frameworks */,
 				778F12D30F50A9C100CB6629 /* libscsynth.a in Frameworks */,
 				7713C69A0F422BE400B0055E /* Foundation.framework in Frameworks */,
 				7713C69B0F422BE400B0055E /* UIKit.framework in Frameworks */,
@@ -468,7 +469,6 @@
 				7713C69E0F422BE400B0055E /* QuartzCore.framework in Frameworks */,
 				7713C69F0F422BE400B0055E /* MediaPlayer.framework in Frameworks */,
 				77CF86040FC2212100C81F75 /* CFNetwork.framework in Frameworks */,
-				77D86FF210E235680024A880 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1189,6 +1189,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1222,6 +1223,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos2.2.1;
@@ -1269,6 +1271,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					xtralibs/mac,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos2.2.1;

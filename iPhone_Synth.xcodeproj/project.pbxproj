@@ -418,12 +418,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7714609B1054654500476976 /* libsndfile_iphone.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				77724C6B0EABF92400732A1C /* AudioToolbox.framework in Frameworks */,
 				77724C6D0EABF92400732A1C /* CoreAudio.framework in Frameworks */,
-				7714609B1054654500476976 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1092,6 +1092,7 @@
 					"$(inherited)",
 					build,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
@@ -1117,6 +1118,7 @@
 					"$(inherited)",
 					build,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
+					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
