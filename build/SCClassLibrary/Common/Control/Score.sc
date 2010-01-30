@@ -138,7 +138,7 @@ Score {
 		}{
 			f.close;
 		};
-		"done".postln;
+		//"done".postln;
 	}
 
 	write { arg oscFilePath, clock;
