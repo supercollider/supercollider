@@ -2,50 +2,55 @@
 
 + ArrayedCollection {
 
-	plot { arg name, bounds, discrete=false, numChannels = 1, minval, maxval, parent, labels=true;
+	plot { arg name, bounds, discrete=false, numChannels, minval, maxval, parent, labels=true;
 		var plotter, txt, chanArray, unlaced, val, window, thumbsize, zoom, width,
 			layout, write=false, msresize, gui;
+		var flattened;
 
 		gui = GUI.current;
 
-		bounds = bounds ?? { parent.notNil.if({
-				if(parent.respondsTo(\view)){
-					parent.view.bounds
-				}{
-					parent.bounds
-				}
-			}, {
+		bounds = bounds ?? { 
+				if(parent.notNil) {
+					if(parent.respondsTo(\view)) {
+						parent.view.bounds
+					} {
+						parent.bounds
+					}
+			} {
 				Rect(200 ,140, 705, 410);
- 			});
+ 			}
  		};
 
-		width = bounds.width-8;
+		width = bounds.width - 8;
 
 		name = name ? "plot";
 
-		unlaced = this.unlace(numChannels);
-		minval = if(minval.isArray, {
-			numChannels.collect{|index| minval.wrapAt(index) ?? { unlaced[index].minItem } }
-		}, {
-			{minval ?? { this.minItem }}.dup(numChannels);
-		});
-		maxval = if(maxval.isArray, {
+		numChannels = numChannels ? this.first.size.max(1);
+		flattened = if(numChannels > 1) { this.flat } { this };
+		unlaced = flattened.unlace(numChannels);
+		
+		minval = if(minval.isArray) {
+			numChannels.collect {|index| minval.wrapAt(index) ?? { unlaced[index].minItem } }
+		} {
+			{ minval ?? { flattened.minItem } }.dup(numChannels);
+		};
+		maxval = if(maxval.isArray) {
 			numChannels.collect{|index| maxval.wrapAt(index) ?? { unlaced[index].maxItem } }
-		}, {
-			{maxval ?? { this.maxItem }}.dup(numChannels);
-		});
+		} {
+			{maxval ?? { flattened.maxItem }}.dup(numChannels);
+		};
 
 		chanArray = Array.newClear(numChannels);
-		if( discrete, {
+		if(discrete) {
 			zoom = 1;
-			thumbsize = max(1.0, width / (this.size / numChannels));
-			unlaced.do({ |chan, j|
+			thumbsize = max(1.0, width / (flattened.size / numChannels));
+			unlaced.do { |chan, j|
 				chanArray[j] = chan.linlin( minval[j], maxval[j], 0.0, 1.0 );
-			});
-		}, {
-			zoom = (width / (this.size / numChannels));
+			};
+		} {
+			zoom = (width / (flattened.size / numChannels));
 			thumbsize = 1;
-			unlaced.do({ |chan, j|
+			unlaced.do { |chan, j|
 				val = Array.newClear(width);
 				width.do { arg i;
 					var x;
@@ -53,24 +58,29 @@
 					val[i] = x.linlin(minval[j], maxval[j], 0.0, 1.0);
 				};
 				chanArray[j] = val;
-			});
-		});
-		window = parent ?? { gui.window.new( name, bounds )};
-
-		layout = gui.vLayoutView.new( window, parent.notNil.if({
-			Rect(bounds.left+4, bounds.top+4, bounds.width-10, bounds.height-10);
-		}, {
-			Rect(4, 4, bounds.width - 10, bounds.height - 10);
-		})).resize_(5);
-
-		if(labels){
-			txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
-					.string_("index: 0, value: " ++ this[0].asString);
+			}
 		};
+		window = parent ?? { gui.window.new( name, bounds ) };
+	
+		layout = gui.vLayoutView.new(window, 
+			if(parent.notNil) {
+				Rect(bounds.left + 4, bounds.top + 4, bounds.width - 10, bounds.height - 10)
+			} {
+				Rect(4, 4, bounds.width - 10, bounds.height - 10)
+			}
+		).resize_(5);
 
-		numChannels.do({ |i|
-			plotter = gui.multiSliderView.new(layout, Rect(0, 0,
-					layout.bounds.width, layout.bounds.height - if(labels, {26}, {0}))) // compensate for the text
+		if(labels) {
+			txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
+					.string_("index: 0, value: " ++ flattened[0].asString);
+		};
+	
+		numChannels.do { |i|
+			plotter = gui.multiSliderView.new(layout, 
+				Rect(0, 0,
+					// compensate for the text
+					layout.bounds.width, layout.bounds.height - if(labels, {26}, {0})
+				))
 				.readOnly_(true)
 				.drawLines_(discrete.not)
 				.drawRects_(discrete)
@@ -86,17 +96,15 @@
 						txt.string_("index: " ++ (v.index / zoom).roundUp(0.01).asString ++
 						", value: " ++ curval);
 					};
-					if(write) { this[(v.index / zoom).asInteger * numChannels + i ]  = curval };
+					if(write) { flattened[(v.index / zoom).asInteger * numChannels + i ]  = curval };
 				})
 				.keyDownAction_({ |v, char|
 					if(char === $l) { write = write.not; v.readOnly = write.not;  };
 				})
 				.value_(chanArray[i])
 				.elasticMode_(1);
-			(numChannels > 1).if({ // check if there is more then 1 channel
-				plotter.resize_(5);
-			});
-		});
+			if(numChannels > 1) { plotter.resize_(5) };
+		};
 
 		^window.tryPerform(\front) ?? { window }
 
@@ -186,12 +194,19 @@
 		})
 	}
 
+	plotGraph { arg n, from = 0.0, to = 1.0, name, bounds, discrete = false, 
+				numChannels, minval, maxval, parent, labels = true;
+		var array = Array.interpolation(n, from, to);
+		var res = array.collect { |x| this.value(x) };
+		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
+	}
+
 
 }
 
 
-+ SoundFile{
-	plot{ arg bounds;
++ SoundFile {
+	plot { arg bounds;
 		var win, view, gui;
 		gui = GUI.current;
 		bounds = bounds ?? { Rect( 200, 140, 705, 410 )};
