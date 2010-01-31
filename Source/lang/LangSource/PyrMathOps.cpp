@@ -172,6 +172,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opNotNil : SetTrue(a); break;
 				default : /* SetSymbol(a, slotRawSymbol(a)); */ break;
 			}
+			break;
 		case tagObj :
 			if (isKindOf(slotRawObject(a), class_signal)) {
 				switch (opcode) {
