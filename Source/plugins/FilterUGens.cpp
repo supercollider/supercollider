@@ -1571,7 +1571,7 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 	float x0;
 	float x1 = unit->m_x1;
 
-	LOOP1(inNumSamples >> 2,
+	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
 		ZXP(out) = 0.5f * (x0 + x1);
 		x1 = ZXP(in);
@@ -1581,7 +1581,7 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 		x1 = ZXP(in);
 		ZXP(out) = 0.5f * (x1 + x0);
 	);
-	LOOP1(inNumSamples & 3,
+	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
 		ZXP(out) = 0.5f * (x0 + x1);
 		x1 = x0;
@@ -1613,7 +1613,7 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 	float x0;
 	float x1 = unit->m_x1;
 
-	LOOP1(inNumSamples >> 2,
+	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
 		ZXP(out) = 0.5f * (x0 - x1);
 		x1 = ZXP(in);
@@ -1623,7 +1623,7 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 		x1 = ZXP(in);
 		ZXP(out) = 0.5f * (x1 - x0);
 	);
-	LOOP1(inNumSamples & 3,
+	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
 		//printf("%d %d %g %g\n", this, inNumSamples, x0, x1);
 		ZXP(out) = 0.5f * (x0 - x1);
@@ -1687,7 +1687,7 @@ void Delay1_next(Delay1* unit, int inNumSamples)
 	float x0;
 	float x1 = unit->m_x1;
 
-	LOOP1(inNumSamples >> 2,
+	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
 		ZXP(out) = x1;
 		x1 = ZXP(in);
@@ -1697,7 +1697,7 @@ void Delay1_next(Delay1* unit, int inNumSamples)
 		x1 = ZXP(in);
 		ZXP(out) = x0;
 	);
-	LOOP1(inNumSamples & 3,
+	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
 		ZXP(out) = x1;
 		x1 = x0;
@@ -1725,7 +1725,7 @@ void Flip_next_even(Flip* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	LOOP1(inNumSamples >> 1,
+	LOOP(inNumSamples >> 1,
 		ZXP(out) = -ZXP(in);
 		ZXP(out) =  ZXP(in);
 	);
@@ -1738,12 +1738,12 @@ void Flip_next_odd(Flip* unit, int inNumSamples)
 
 	if (unit->mWorld->mBufCounter & 1) {
 		ZXP(out) = ZXP(in);
-		LOOP1(inNumSamples >> 1,
+		LOOP(inNumSamples >> 1,
 			ZXP(out) = -ZXP(in);
 			ZXP(out) =  ZXP(in);
 		);
 	} else {
-		LOOP1(inNumSamples >> 1,
+		LOOP(inNumSamples >> 1,
 			ZXP(out) = -ZXP(in);
 			ZXP(out) =  ZXP(in);
 		);
