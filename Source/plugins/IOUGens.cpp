@@ -1154,7 +1154,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 			float xfade = xfade0;
 			float *in = IN(i+2);
 			if (touched[i] == bufCounter) {
-				LOOP(inNumSamples,
+				LOOP1(inNumSamples,
 					float zin = *in;
 					float zout = *out;
 					*out = zout + xfade * (zin - zout);
@@ -1163,7 +1163,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 					++out; ++in;
 				);
 			} else {
-				LOOP(inNumSamples,
+				LOOP1(inNumSamples,
 					float zin = *in;
 					*out = xfade * zin;
 					xfade += slope;
@@ -1184,14 +1184,14 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 		for (int i=0; i<numChannels; ++i) {
 			float *in = IN(i+2);
 			if (touched[i] == bufCounter) {
-				LOOP(inNumSamples,
+				LOOP1(inNumSamples,
 					float zin = *in;
 					float zout = *out;
 					*out = zout + xfade0 * (zin - zout);
 					++out; ++in;
 				);
 			} else {
-				LOOP(inNumSamples,
+				LOOP1(inNumSamples,
 					float zin = *in;
 					*out = xfade0 * zin;
 					++out; ++in;

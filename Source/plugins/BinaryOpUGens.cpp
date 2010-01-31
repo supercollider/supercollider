@@ -1413,7 +1413,7 @@ void add_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) + ZXP(b);
 	);
 }
@@ -1431,13 +1431,13 @@ void add_ak(BinaryOpUGen *unit, int inNumSamples)
 		} else {
 			float *out = ZOUT(0);
 			float *a = ZIN(0);
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) + xb;
 			);
 		}
 	} else {
 		float slope =  CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = ZXP(a) + xb;
 			xb += slope;
 		);
@@ -1457,13 +1457,13 @@ void add_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZCopy(inNumSamples, out, b);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa + ZXP(b);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = xa + ZXP(b);
 			xa += slope;
 		);
@@ -1477,7 +1477,7 @@ void add_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = xa + ZXP(b);
 	);
 	unit->mPrevA = xa;
@@ -1489,7 +1489,7 @@ void add_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) + xb;
 	);
 	unit->mPrevB = xb;
@@ -1581,7 +1581,7 @@ void sub_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) - ZXP(b);
 	);
 }
@@ -1597,13 +1597,13 @@ void sub_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZCopy(inNumSamples, out, a);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) - xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = ZXP(a) - xb;
 			xb += slope;
 		);
@@ -1622,13 +1622,13 @@ void sub_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZCopy(inNumSamples, out, b);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa - ZXP(b);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = xa - ZXP(b);
 			xa += slope;
 		);
@@ -1643,7 +1643,7 @@ void sub_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = xa - ZXP(b);
 	);
 	unit->mPrevA = xa;
@@ -1655,7 +1655,7 @@ void sub_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) - xb;
 	);
 	unit->mPrevB = xb;
@@ -1742,7 +1742,7 @@ void mul_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) * ZXP(b);
 	);
 }
@@ -1760,13 +1760,13 @@ void mul_ak(BinaryOpUGen *unit, int inNumSamples)
 		} else if (xb == 1.f) {
 			ZCopy(inNumSamples, out, a);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) * xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = ZXP(a) * xb;
 			xb += slope;
 		);
@@ -1787,13 +1787,13 @@ void mul_ka(BinaryOpUGen *unit, int inNumSamples)
 		} else if (xa == 1.f) {
 			ZCopy(inNumSamples, out, b);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa * ZXP(b);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = xa * ZXP(b);
 			xa += slope;
 		);
@@ -1808,7 +1808,7 @@ void mul_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) * xb;
 	);
 	unit->mPrevB = xb;
@@ -1820,7 +1820,7 @@ void mul_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = xa * ZXP(b);
 	);
 	unit->mPrevA = xa;
@@ -1918,7 +1918,7 @@ void div_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) / ZXP(b);
 	);
 }
@@ -1937,13 +1937,13 @@ void div_ak(BinaryOpUGen *unit, int inNumSamples)
 			ZCopy(inNumSamples, out, a);
 		} else {
 			float recip = 1.f / xb;
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) * recip;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = ZXP(a) / xb;
 			xb += slope;
 		);
@@ -1962,13 +1962,13 @@ void div_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZClear(inNumSamples, out);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa / ZXP(b);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = xa / ZXP(b);
 			xa += slope;
 		);
@@ -1982,7 +1982,7 @@ void div_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = xa / ZXP(b);
 	);
 	unit->mPrevA = xa;
@@ -1996,7 +1996,7 @@ void div_ai(BinaryOpUGen *unit, int inNumSamples)
 	float xb = ZIN0(1);
 
 	float rxb = 1.f / xb;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) * rxb;
 	);
 	unit->mPrevB = xb;
@@ -2074,7 +2074,7 @@ void mod_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_mod(xa, xb);
@@ -2092,13 +2092,13 @@ void mod_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZCopy(inNumSamples, out, a);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = sc_mod(ZXP(a), xb);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = sc_mod(ZXP(a), xb);
 			xb += slope;
 		);
@@ -2117,13 +2117,13 @@ void mod_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZClear(inNumSamples, out);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = sc_mod(xa, ZXP(b));
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = sc_mod(xa, ZXP(b));
 			xa += slope;
 		);
@@ -2138,7 +2138,7 @@ void mod_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = sc_mod(xa, ZXP(b));
 	);
 	unit->mPrevA = xa;
@@ -2151,7 +2151,7 @@ void mod_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = sc_mod(ZXP(a), xb);
 	);
 	unit->mPrevB = xb;
@@ -2165,7 +2165,7 @@ void max_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_max(xa, xb);
@@ -2180,13 +2180,13 @@ void max_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_max(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_max(xa, xb);
 			xb += slope;
@@ -2203,13 +2203,13 @@ void max_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_max(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_max(xa, xb);
 			xa += slope;
@@ -2224,7 +2224,7 @@ void max_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_max(xa, xb);
 	);
@@ -2238,7 +2238,7 @@ void max_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_max(xa, xb);
 	);
@@ -2258,7 +2258,7 @@ void min_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_min(xa, xb);
@@ -2273,13 +2273,13 @@ void min_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_min(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_min(xa, xb);
 			xb += slope;
@@ -2296,13 +2296,13 @@ void min_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_min(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_min(xa, xb);
 			xa += slope;
@@ -2317,7 +2317,7 @@ void min_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_min(xa, xb);
 	);
@@ -2331,7 +2331,7 @@ void min_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_min(xa, xb);
 	);
@@ -2350,7 +2350,7 @@ void and_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_andt(xa, xb) ;
@@ -2365,13 +2365,13 @@ void and_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_andt(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_andt(xa, xb);
 			xb += slope;
@@ -2388,13 +2388,13 @@ void and_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_andt(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_andt(xa, xb);
 			xa += slope;
@@ -2409,7 +2409,7 @@ void and_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_andt(xa, xb);
 	);
@@ -2423,7 +2423,7 @@ void and_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_andt(xa, xb);
 	);
@@ -2442,7 +2442,7 @@ void or_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_ort(xa, xb) ;
@@ -2457,13 +2457,13 @@ void or_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_ort(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_ort(xa, xb);
 			xb += slope;
@@ -2480,13 +2480,13 @@ void or_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_ort(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_ort(xa, xb);
 			xa += slope;
@@ -2501,7 +2501,7 @@ void or_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_ort(xa, xb);
 	);
@@ -2515,7 +2515,7 @@ void or_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_ort(xa, xb);
 	);
@@ -2534,7 +2534,7 @@ void xor_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_xort(xa, xb) ;
@@ -2549,13 +2549,13 @@ void xor_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_xort(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_xort(xa, xb);
 			xb += slope;
@@ -2572,13 +2572,13 @@ void xor_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_ort(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_xort(xa, xb);
 			xa += slope;
@@ -2593,7 +2593,7 @@ void xor_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_xort(xa, xb);
 	);
@@ -2607,7 +2607,7 @@ void xor_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_xort(xa, xb);
 	);
@@ -2622,7 +2622,7 @@ void amclip_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_amclip(xa, xb);
@@ -2638,7 +2638,7 @@ void amclip_ak(BinaryOpUGen *unit, int inNumSamples)
 
 	if (xb == next_b) {
 		if (xb > 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) * xb;
 			);
 		} else {
@@ -2646,7 +2646,7 @@ void amclip_ak(BinaryOpUGen *unit, int inNumSamples)
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_amclip(xa, xb);
 			xb += slope;
@@ -2663,13 +2663,13 @@ void amclip_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_amclip(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_amclip(xa, xb);
 			xa += slope;
@@ -2684,7 +2684,7 @@ void amclip_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_amclip(xa, xb);
 	);
@@ -2698,7 +2698,7 @@ void amclip_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_amclip(xa, xb);
 	);
@@ -2713,7 +2713,7 @@ void scaleneg_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa >= 0.f ? xa : xa * xb;
@@ -2728,13 +2728,13 @@ void scaleneg_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= 0.f ? xa : xa * xb;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= 0.f ? xa : xa * xb;
 			xb += slope;
@@ -2752,17 +2752,17 @@ void scaleneg_ka(BinaryOpUGen *unit, int inNumSamples)
 
 	if (xa == next_a) {
 		if (xa >= 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = xa * ZXP(b);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa >= 0.f ? xa : xa * xb;
 			xa += slope;
@@ -2777,7 +2777,7 @@ void scaleneg_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa >= 0.f ? xa : xa * xb;
 	);
@@ -2791,7 +2791,7 @@ void scaleneg_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa >= 0.f ? xa : xa * xb;
 	);
@@ -2807,7 +2807,7 @@ void pow_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
@@ -2823,13 +2823,13 @@ void pow_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 			xb += slope;
@@ -2847,19 +2847,19 @@ void pow_ka(BinaryOpUGen *unit, int inNumSamples)
 
 	if (xa == next_a) {
 		if (xa >= 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = std::pow(xa, xb);
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = -std::pow(-xa, xb);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 			xa += slope;
@@ -2874,7 +2874,7 @@ void pow_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 	);
@@ -2888,7 +2888,7 @@ void pow_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 	);
@@ -2912,7 +2912,7 @@ void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 		nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 			xb += slope;
@@ -2936,7 +2936,7 @@ void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 			xa += slope;
@@ -2972,7 +2972,7 @@ void ring1_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xb + xa;
@@ -2990,19 +2990,19 @@ void ring1_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZCopy(inNumSamples, out, a);
 		} else if (xb == 1.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa + xa;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xb + xa;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xb + xa;
 			xb += slope;
@@ -3020,18 +3020,18 @@ void ring1_ka(BinaryOpUGen *unit, int inNumSamples)
 
 	if (xa == next_a) {
 		if (xa == 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				ZXP(out) = 0.f;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = xa * xb + xa;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xb + xa;
 			xa += slope;
@@ -3046,7 +3046,7 @@ void ring1_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xb + xa;
 	);
@@ -3060,7 +3060,7 @@ void ring1_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xb + xa;
 	);
@@ -3076,7 +3076,7 @@ void ring2_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xb + xa + xb;
@@ -3094,14 +3094,14 @@ void ring2_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZCopy(inNumSamples, out, a);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xb + xa + xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xb + xa + xb;
 			xb += slope;
@@ -3121,14 +3121,14 @@ void ring2_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZCopy(inNumSamples, out, b);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = xa * xb + xa + xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xb + xa + xb;
 			xa += slope;
@@ -3143,7 +3143,7 @@ void ring2_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xb + xa + xb;
 	);
@@ -3157,7 +3157,7 @@ void ring2_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xb + xa + xb;
 	);
@@ -3173,7 +3173,7 @@ void ring3_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa * xb;
@@ -3191,19 +3191,19 @@ void ring3_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZClear(inNumSamples, out);
 		} else if (xb == 1.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xa;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xa * xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa * xb;
 			xb += slope;
@@ -3225,14 +3225,14 @@ void ring3_ka(BinaryOpUGen *unit, int inNumSamples)
 		} else if (xa == 1.f) {
 			ZCopy(inNumSamples, out, b);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = xa * xa * xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa * xb;
 			xa += slope;
@@ -3247,7 +3247,7 @@ void ring3_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa * xb;
 	);
@@ -3261,7 +3261,7 @@ void ring3_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa * xb;
 	);
@@ -3276,7 +3276,7 @@ void ring4_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa * xb - xa * xb * xb;
@@ -3294,19 +3294,19 @@ void ring4_ak(BinaryOpUGen *unit, int inNumSamples)
 		if (xb == 0.f) {
 			ZClear(inNumSamples, out);
 		} else if (xb == 1.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xa - xa;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xa = ZXP(a);
 				ZXP(out) = xa * xa * xb - xa * xb * xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa * xb - xa * xb * xb;
 			xb += slope;
@@ -3326,19 +3326,19 @@ void ring4_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f) {
 			ZClear(inNumSamples, out);
 		} else if (xa == 1.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = xb - xb * xb;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float xb = ZXP(b);
 				ZXP(out) = xa * xa * xb - xa * xb * xb;
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa * xb - xa * xb * xb;
 			xa += slope;
@@ -3353,7 +3353,7 @@ void ring4_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa * xb - xa * xb * xb;
 	);
@@ -3367,7 +3367,7 @@ void ring4_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa * xb - xa * xb * xb;
 	);
@@ -3382,7 +3382,7 @@ void thresh_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa < xb ? 0.f : xa;
@@ -3397,13 +3397,13 @@ void thresh_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa < xb ? 0.f : xa;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa < xb ? 0.f : xa;
 			xb += slope;
@@ -3420,13 +3420,13 @@ void thresh_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa < xb ? 0.f : xa;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa < xb ? 0.f : xa;
 			xa += slope;
@@ -3441,7 +3441,7 @@ void thresh_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa < xb ? 0.f : xa;
 	);
@@ -3455,7 +3455,7 @@ void thresh_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa < xb ? 0.f : xa;
 	);
@@ -3470,7 +3470,7 @@ void clip2_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
@@ -3485,13 +3485,13 @@ void clip2_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 			xb += slope;
@@ -3508,13 +3508,13 @@ void clip2_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 			xa += slope;
@@ -3529,7 +3529,7 @@ void clip2_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 	);
@@ -3543,7 +3543,7 @@ void clip2_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa > xb ? xb : (xa < -xb ? -xb : xa);
 	);
@@ -3562,7 +3562,7 @@ void excess_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
@@ -3577,13 +3577,13 @@ void excess_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 			xb += slope;
@@ -3600,13 +3600,13 @@ void excess_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 			xa += slope;
@@ -3621,7 +3621,7 @@ void excess_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 	);
@@ -3635,7 +3635,7 @@ void excess_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa > xb ? xa-xb : (xa < -xb ? xa+xb : 0.f);
 	);
@@ -3650,7 +3650,7 @@ void lt_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa < xb ? 1.f : 0.f;
@@ -3670,13 +3670,13 @@ void lt_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa < xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa < xb ? 1.f : 0.f;
 			xb += slope;
@@ -3693,13 +3693,13 @@ void lt_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa < xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa < xb ? 1.f : 0.f;
 			xa += slope;
@@ -3714,7 +3714,7 @@ void lt_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa < xb ? 1.f : 0.f;
 	);
@@ -3728,7 +3728,7 @@ void lt_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa < xb ? 1.f : 0.f;
 	);
@@ -3743,7 +3743,7 @@ void le_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa <= xb ? 1.f : 0.f;
@@ -3762,13 +3762,13 @@ void le_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa <= xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa <= xb ? 1.f : 0.f;
 			xb += slope;
@@ -3785,13 +3785,13 @@ void le_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa <= xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa <= xb ? 1.f : 0.f;
 			xa += slope;
@@ -3806,7 +3806,7 @@ void le_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa <= xb ? 1.f : 0.f;
 	);
@@ -3820,7 +3820,7 @@ void le_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa <= xb ? 1.f : 0.f;
 	);
@@ -3835,7 +3835,7 @@ void gt_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? 1.f : 0.f;
@@ -3855,13 +3855,13 @@ void gt_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa > xb ? 1.f : 0.f;
 			xb += slope;
@@ -3878,13 +3878,13 @@ void gt_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa > xb ? 1.f : 0.f;
 			xa += slope;
@@ -3899,7 +3899,7 @@ void gt_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa > xb ? 1.f : 0.f;
 	);
@@ -3913,7 +3913,7 @@ void gt_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa > xb ? 1.f : 0.f;
 	);
@@ -3928,7 +3928,7 @@ void ge_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa >= xb ? 1.f : 0.f;
@@ -3948,13 +3948,13 @@ void ge_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa >= xb ? 1.f : 0.f;
 			xb += slope;
@@ -3971,13 +3971,13 @@ void ge_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa >= xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa >= xb ? 1.f : 0.f;
 			xa += slope;
@@ -3992,7 +3992,7 @@ void ge_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa >= xb ? 1.f : 0.f;
 	);
@@ -4006,7 +4006,7 @@ void ge_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa >= xb ? 1.f : 0.f;
 	);
@@ -4021,7 +4021,7 @@ void eq_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa == xb ? 1.f : 0.f;
@@ -4040,13 +4040,13 @@ void eq_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa == xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa == xb ? 1.f : 0.f;
 			xb += slope;
@@ -4063,13 +4063,13 @@ void eq_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa == xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa == xb ? 1.f : 0.f;
 			xa += slope;
@@ -4084,7 +4084,7 @@ void eq_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa == xb ? 1.f : 0.f;
 	);
@@ -4098,7 +4098,7 @@ void eq_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa == xb ? 1.f : 0.f;
 	);
@@ -4113,7 +4113,7 @@ void neq_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa != xb ? 1.f : 0.f;
@@ -4133,13 +4133,13 @@ void neq_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa != xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa != xb ? 1.f : 0.f;
 			xb += slope;
@@ -4156,13 +4156,13 @@ void neq_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa != xb ? 1.f : 0.f;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa != xb ? 1.f : 0.f;
 			xa += slope;
@@ -4177,7 +4177,7 @@ void neq_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa != xb ? 1.f : 0.f;
 	);
@@ -4191,7 +4191,7 @@ void neq_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa != xb ? 1.f : 0.f;
 	);
@@ -4205,7 +4205,7 @@ void sumsqr_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa + xb * xb;
@@ -4220,13 +4220,13 @@ void sumsqr_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa + xb * xb;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa + xb * xb;
 			xb += slope;
@@ -4243,13 +4243,13 @@ void sumsqr_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa + xb * xb;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa + xb * xb;
 			xa += slope;
@@ -4265,7 +4265,7 @@ void sumsqr_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa + xb * xb;
 	);
@@ -4279,7 +4279,7 @@ void sumsqr_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa + xb * xb;
 	);
@@ -4294,7 +4294,7 @@ void difsqr_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa - xb * xb;
@@ -4309,13 +4309,13 @@ void difsqr_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa - xb * xb;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = xa * xa - xb * xb;
 			xb += slope;
@@ -4332,13 +4332,13 @@ void difsqr_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa - xb * xb;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = xa * xa - xb * xb;
 			xa += slope;
@@ -4353,7 +4353,7 @@ void difsqr_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = xa * xa - xb * xb;
 	);
@@ -4367,7 +4367,7 @@ void difsqr_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = xa * xa - xb * xb;
 	);
@@ -4381,7 +4381,7 @@ void sqrsum_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float sum = ZXP(a) + ZXP(b);
 		ZXP(out) = sum * sum;
 	);
@@ -4395,14 +4395,14 @@ void sqrsum_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float sum = xa + xb;
 			ZXP(out) = sum * sum;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float sum = xa + xb;
 			ZXP(out) = sum * sum;
@@ -4420,14 +4420,14 @@ void sqrsum_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float sum = xa + xb;
 			ZXP(out) = sum * sum;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float sum = xa + xb;
 			ZXP(out) = sum * sum;
@@ -4443,7 +4443,7 @@ void sqrsum_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		float sum = xa + xb;
 		ZXP(out) = sum * sum;
@@ -4458,7 +4458,7 @@ void sqrsum_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float sum = xa + xb;
 		ZXP(out) = sum * sum;
@@ -4473,7 +4473,7 @@ void sqrdif_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float dif = ZXP(a) - ZXP(b);
 		ZXP(out) = dif * dif;
 	);
@@ -4487,14 +4487,14 @@ void sqrdif_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float dif = xa - xb;
 			ZXP(out) = dif * dif;
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float dif = xa - xb;
 			ZXP(out) = dif * dif;
@@ -4512,14 +4512,14 @@ void sqrdif_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float dif = xa - xb;
 			ZXP(out) = dif * dif;
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float dif = xa - xb;
 			ZXP(out) = dif * dif;
@@ -4536,7 +4536,7 @@ void sqrdif_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		float dif = xa - xb;
 		ZXP(out) = dif * dif;
@@ -4551,7 +4551,7 @@ void sqrdif_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float dif = xa - xb;
 		ZXP(out) = dif * dif;
@@ -4566,7 +4566,7 @@ void absdif_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float dif = ZXP(a) - ZXP(b);
 		ZXP(out) = fabs(dif);
 	);
@@ -4580,14 +4580,14 @@ void absdif_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float dif = xa - xb;
 			ZXP(out) = fabs(dif);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			float dif = xa - xb;
 			ZXP(out) = fabs(dif);
@@ -4605,14 +4605,14 @@ void absdif_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float dif = xa - xb;
 			ZXP(out) = fabs(dif);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			float dif = xa - xb;
 			ZXP(out) = fabs(dif);
@@ -4628,7 +4628,7 @@ void absdif_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		float dif = xa - xb;
 		ZXP(out) = fabs(dif);
@@ -4643,7 +4643,7 @@ void absdif_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float dif = xa - xb;
 		ZXP(out) = fabs(dif);
@@ -4658,7 +4658,7 @@ void round_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_round(xa, xb);
@@ -4673,13 +4673,13 @@ void round_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_round(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_round(xa, xb);
 			xb += slope;
@@ -4696,13 +4696,13 @@ void round_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_round(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_round(xa, xb);
 			xa += slope;
@@ -4718,7 +4718,7 @@ void round_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_round(xa, xb);
 	);
@@ -4732,7 +4732,7 @@ void round_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_round(xa, xb);
 	);
@@ -4748,7 +4748,7 @@ void roundUp_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_roundUp(xa, xb);
@@ -4763,13 +4763,13 @@ void roundUp_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_roundUp(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_roundUp(xa, xb);
 			xb += slope;
@@ -4786,13 +4786,13 @@ void roundUp_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_roundUp(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_roundUp(xa, xb);
 			xa += slope;
@@ -4808,7 +4808,7 @@ void roundUp_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_roundUp(xa, xb);
 	);
@@ -4822,7 +4822,7 @@ void roundUp_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_roundUp(xa, xb);
 	);
@@ -4837,7 +4837,7 @@ void trunc_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_trunc(xa, xb);
@@ -4852,13 +4852,13 @@ void trunc_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_trunc(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_trunc(xa, xb);
 			xb += slope;
@@ -4875,13 +4875,13 @@ void trunc_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_trunc(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_trunc(xa, xb);
 			xa += slope;
@@ -4896,7 +4896,7 @@ void trunc_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_trunc(xa, xb);
 	);
@@ -4910,7 +4910,7 @@ void trunc_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_trunc(xa, xb);
 	);
@@ -4925,7 +4925,7 @@ void fold2_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_fold(xa, -xb, xb);
@@ -4940,13 +4940,13 @@ void fold2_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_fold(xa, -xb, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_fold(xa, -xb, xb);
 			xb += slope;
@@ -4963,13 +4963,13 @@ void fold2_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_fold(xa, -xb, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_fold(xa, -xb, xb);
 			xa += slope;
@@ -4984,7 +4984,7 @@ void fold2_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_fold(xa, -xb, xb);
 	);
@@ -4998,7 +4998,7 @@ void fold2_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_fold(xa, -xb, xb);
 	);
@@ -5014,7 +5014,7 @@ void wrap2_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_wrap(xa, -xb, xb);
@@ -5029,13 +5029,13 @@ void wrap2_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_wrap(xa, -xb, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_wrap(xa, -xb, xb);
 			xb += slope;
@@ -5052,13 +5052,13 @@ void wrap2_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_wrap(xa, -xb, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_wrap(xa, -xb, xb);
 			xa += slope;
@@ -5073,7 +5073,7 @@ void wrap2_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_wrap(xa, -xb, xb);
 	);
@@ -5087,7 +5087,7 @@ void wrap2_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_wrap(xa, -xb, xb);
 	);
@@ -5102,7 +5102,7 @@ void atan2_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = std::atan2(xa, xb);
@@ -5117,13 +5117,13 @@ void atan2_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = std::atan2(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = std::atan2(xa, xb);
 			xb += slope;
@@ -5140,13 +5140,13 @@ void atan2_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = std::atan2(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = std::atan2(xa, xb);
 			xa += slope;
@@ -5161,7 +5161,7 @@ void atan2_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = std::atan2(xa, xb);
 	);
@@ -5175,7 +5175,7 @@ void atan2_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = std::atan2(xa, xb);
 	);
@@ -5189,7 +5189,7 @@ void hypot_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = hypotf(xa, xb);
@@ -5204,13 +5204,13 @@ void hypot_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = hypotf(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = hypotf(xa, xb);
 			xb += slope;
@@ -5227,13 +5227,13 @@ void hypot_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = hypotf(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = hypotf(xa, xb);
 			xa += slope;
@@ -5248,7 +5248,7 @@ void hypot_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = hypotf(xa, xb);
 	);
@@ -5262,7 +5262,7 @@ void hypot_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = hypotf(xa, xb);
 	);
@@ -5277,7 +5277,7 @@ void hypotx_aa(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		ZXP(out) = sc_hypotx(xa, xb);
@@ -5292,13 +5292,13 @@ void hypotx_ak(BinaryOpUGen *unit, int inNumSamples)
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_hypotx(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xa = ZXP(a);
 			ZXP(out) = sc_hypotx(xa, xb);
 			xb += slope;
@@ -5315,13 +5315,13 @@ void hypotx_ka(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_hypotx(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float xb = ZXP(b);
 			ZXP(out) = sc_hypotx(xa, xb);
 			xa += slope;
@@ -5336,7 +5336,7 @@ void hypotx_ia(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float *b = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		ZXP(out) = sc_hypotx(xa, xb);
 	);
@@ -5350,7 +5350,7 @@ void hypotx_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		ZXP(out) = sc_hypotx(xa, xb);
 	);

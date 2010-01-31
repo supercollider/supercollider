@@ -430,7 +430,7 @@ doAttack:
 	else
 	{
 doNormal:
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			if (phase < 1.f)
 			{
 				float z = phase;
@@ -502,7 +502,7 @@ void LFPulse_next_a(LFPulse *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase >= 1.f) {
 			phase -= 1.f;
@@ -527,7 +527,7 @@ void LFPulse_next_k(LFPulse *unit, int inNumSamples)
 	float duty = unit->mDuty;
 
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase >= 1.f) {
 			phase -= 1.f;
@@ -570,7 +570,7 @@ void LFSaw_next_a(LFSaw *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z = phase; // out must be written last for in place operation
 		phase += ZXP(freq) * freqmul;
 		if (phase >= 1.f) phase -= 2.f;
@@ -589,13 +589,13 @@ void LFSaw_next_k(LFSaw *unit, int inNumSamples)
 
 	double phase = unit->mPhase;
 	if (freq >= 0.f) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = phase;
 			phase += freq;
 			if (phase >= 1.f) phase -= 2.f;
 		);
 	} else {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = phase;
 			phase += freq;
 			if (phase <= -1.f) phase += 2.f;
@@ -631,7 +631,7 @@ void LFPar_next_a(LFPar *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		if (phase < 1.f) {
 			float z = phase;
 			ZXP(out) = 1.f - z*z;
@@ -656,7 +656,7 @@ void LFPar_next_k(LFPar *unit, int inNumSamples)
 	float freq = ZIN0(0) * unit->mFreqMul;
 
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		if (phase < 1.f) {
 			float z = phase;
 			ZXP(out) = 1.f - z*z;
@@ -700,7 +700,7 @@ void LFCub_next_a(LFCub *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase < 1.f) {
 			z = phase;
@@ -724,7 +724,7 @@ void LFCub_next_k(LFCub *unit, int inNumSamples)
 	float freq = ZIN0(0) * unit->mFreqMul;
 
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase < 1.f) {
 			z = phase;
@@ -767,7 +767,7 @@ void LFTri_next_a(LFTri *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z = phase > 1.f ? 2.f - phase : phase;
 		phase += ZXP(freq) * freqmul;
 		if (phase >= 3.f) phase -= 4.f;
@@ -784,7 +784,7 @@ void LFTri_next_k(LFTri *unit, int inNumSamples)
 	float freq = ZIN0(0) * unit->mFreqMul;
 
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z = phase > 1.f ? 2.f - phase : phase;
 		phase += freq;
 		if (phase >= 3.f) phase -= 4.f;
@@ -830,7 +830,7 @@ void LFGauss_next_k(LFGauss *unit, int inNumSamples)
 	// calculate exponent only once per loop
 	float factor = -1.f / (2.f * c * c);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 
 		if (x > 1.f) {
 			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
@@ -858,7 +858,7 @@ void LFGauss_next_a(LFGauss *unit, int inNumSamples)
 	double x = unit->mPhase - b;
 	float factor = -1.f / (2.f * c * c);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 
 		if (x > 1.f) {
 			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
@@ -892,7 +892,7 @@ void LFGauss_next_aa(LFGauss *unit, int inNumSamples)
 	// offset phase by b
 	double x = unit->mPhase - b;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 
 		if (x > 1.f) {
 			if(loop) { x -= 2.f; } else { DoneAction(ZIN0(4), unit); }
@@ -944,7 +944,7 @@ void Impulse_next_a(Impulse *unit, int inNumSamples)
 
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase >= 1.f) {
 			phase -= 1.f;
@@ -974,7 +974,7 @@ void Impulse_next_ak(Impulse *unit, int inNumSamples)
 	double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
 	phase += prev_phaseOffset;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		phase += phaseSlope;
 		if (phase >= 1.f) {
@@ -1002,7 +1002,7 @@ void Impulse_next_kk(Impulse *unit, int inNumSamples)
 	double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
 	phase += prev_phaseOffset;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		phase += phaseSlope;
 		if (phase >= 1.f) {
@@ -1026,7 +1026,7 @@ void Impulse_next_k(Impulse *unit, int inNumSamples)
 	float freq = ZIN0(0) * unit->mFreqMul;
 
 	double phase = unit->mPhase;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		if (phase >= 1.f) {
 			phase -= 1.f;
@@ -1085,7 +1085,7 @@ void VarSaw_next_a(VarSaw *unit, int inNumSamples)
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		if (phase >= 1.f) {
 			phase -= 1.f;
 			duty = unit->mDuty = sc_clip(nextDuty, 0.001, 0.999);
@@ -1112,7 +1112,7 @@ void VarSaw_next_k(VarSaw *unit, int inNumSamples)
 
 	double phase = unit->mPhase;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		if (phase >= 1.f) {
 			phase -= 1.f;
 			duty = unit->mDuty = sc_clip(nextDuty, 0.001, 0.999);
@@ -1157,7 +1157,7 @@ void SyncSaw_next_aa(SyncSaw *unit, int inNumSamples)
 	double phase1 = unit->mPhase1;
 	double phase2 = unit->mPhase2;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float freq1x = ZXP(freq1) * freqmul;
 		float freq2x = ZXP(freq2) * freqmul;
 		float z = phase2;
@@ -1185,7 +1185,7 @@ void SyncSaw_next_ak(SyncSaw *unit, int inNumSamples)
 	double phase1 = unit->mPhase1;
 	double phase2 = unit->mPhase2;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float freq1x = ZXP(freq1) * freqmul;
 		float z = phase2;
 		phase2 += freq2x;
@@ -1212,7 +1212,7 @@ void SyncSaw_next_ka(SyncSaw *unit, int inNumSamples)
 	double phase1 = unit->mPhase1;
 	double phase2 = unit->mPhase2;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float freq2x = ZXP(freq2) * freqmul;
 		float z = phase2;
 		phase2 += freq2x;
@@ -1237,7 +1237,7 @@ void SyncSaw_next_kk(SyncSaw *unit, int inNumSamples)
 	double phase1 = unit->mPhase1;
 	double phase2 = unit->mPhase2;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z = phase2;
 		phase2 += freq2x;
 		if (phase2 >= 1.f) phase2 -= 2.f;
@@ -1287,7 +1287,7 @@ void K2A_next(K2A *unit, int inNumSamples)
 	float level = unit->mLevel;
 	float slope = CALCSLOPE(in, level);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = level += slope;
 	);
 	unit->mLevel = level;
@@ -1399,7 +1399,7 @@ void T2A_next(T2A *unit, int inNumSamples)
 			}
 		}
 	} else {
-		LOOP(inNumSamples, ZXP(out) = 0.f;)
+		LOOP1(inNumSamples, ZXP(out) = 0.f;)
 	}
 
 	unit->mLevel = level;
@@ -1495,7 +1495,7 @@ void DC_next(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	float *out = ZOUT(0);
-	LOOP(inNumSamples, ZXP(out) = val;)
+	LOOP1(inNumSamples, ZXP(out) = val;)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1859,7 +1859,7 @@ void Wrap_next(Wrap* unit, int inNumSamples)
 	float hi = unit->m_hi;
 	float range = unit->m_range;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = sc_wrap(ZXP(in), lo, hi, range);
 	);
 }
@@ -1989,7 +1989,7 @@ void Fold_next(Fold* unit, int inNumSamples)
 	float range = unit->m_range;
 	float range2 = unit->m_range2;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = sc_fold(ZXP(in), lo, hi, range, range2);
 	);
 }
@@ -2122,7 +2122,7 @@ void Clip_next(Clip* unit, int inNumSamples)
 	float lo = unit->m_lo;
 	float hi = unit->m_hi;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zin = ZXP(in);
 		ZXP(out) = sc_clip(zin, lo, hi);
 	);
@@ -2257,7 +2257,7 @@ void Unwrap_next(Unwrap* unit, int inNumSamples)
 	float prev = unit->m_prev;
 	float offset = unit->m_offset;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zin = ZXP(in);
 		float diff = zin - prev;
 		if (fabs(diff) > half) {
@@ -2303,7 +2303,7 @@ void AmpComp_next(AmpComp *unit, int inNumSamples)
 	float rootmul = unit->m_rootmul;
 	float xb = unit->m_exponent;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(freq);
 		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) * rootmul : -std::pow(-xa, xb) * rootmul;
 	);
@@ -2317,7 +2317,7 @@ void AmpComp_next_kk(AmpComp *unit, int inNumSamples)
 	float root = ZIN0(1);
 	float xb = ZIN0(2);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = root / ZXP(freq);
 		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
 	);
@@ -2372,7 +2372,7 @@ void AmpCompA_next(AmpCompA *unit, int inNumSamples)
 	double scale = unit->m_scale;
 	double offset = unit->m_offset;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = AmpCompA_calcLevel(ZXP(freq)) * scale + offset;
 	);
 }
@@ -2399,7 +2399,7 @@ void InRange_next(InRange *unit, int inNumSamples)
 	float lo   = ZIN0(1);
 	float hi   = ZIN0(2);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zin = ZXP(in);
 		ZXP(out) = zin >= lo && zin <= hi ? 1.f : 0.f;
 	);
@@ -2423,7 +2423,7 @@ void InRect_next(InRect* unit, int inNumSamples)
 	float right  = ZIN0(4);
 	float bottom = ZIN0(5);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float x = ZXP(inx);
 		float y = ZXP(iny);
 		ZXP(out) = x >= left && x <= right && y >= top && y <= bottom ? 1.f : 0.f;
@@ -2448,7 +2448,7 @@ void LinExp_next(LinExp *unit, int inNumSamples)
 	float rsrcrange = unit->m_rsrcrange;
 	float rrminuslo = unit->m_rrminuslo;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = dstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
@@ -2465,7 +2465,7 @@ void LinExp_next_kk(LinExp *unit, int inNumSamples)
 	float rsrcrange = 1. / (srchi - srclo);
 	float rrminuslo = rsrcrange * -srclo;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = dstlo * std::pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
 }
@@ -2480,7 +2480,7 @@ void LinExp_next_aa(LinExp *unit, int inNumSamples)
 	float *dsthi = ZIN(4);
 
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zdsthi = ZXP(dsthi);
 		float zdstlo = ZXP(dstlo);
 		float zsrchi = ZXP(srchi);
@@ -2502,7 +2502,7 @@ void LinExp_next_ak(LinExp *unit, int inNumSamples)
 	float dsthi = ZIN0(4);
 	float dstratio = dsthi/dstlo;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zsrchi = ZXP(srchi);
 		float zsrclo = ZXP(srclo);
 
@@ -2523,7 +2523,7 @@ void LinExp_next_ka(LinExp *unit, int inNumSamples)
 	float rsrcrange = 1. / (srchi - srclo);
 	float rrminuslo = rsrcrange * -srclo;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zdsthi = ZXP(dsthi);
 		float zdstlo = ZXP(dstlo);
 		float dstratio = zdsthi/zdstlo;
@@ -2587,7 +2587,7 @@ void LinLin_next(LinLin *unit, int inNumSamples)
 	float scale = unit->m_scale;
 	float offset = unit->m_offset;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = scale * ZXP(in) + offset;
 	);
 }
@@ -2603,7 +2603,7 @@ void LinLin_next_kk(LinLin *unit, int inNumSamples)
 	float scale = (dsthi - dstlo) / (srchi - srclo);
 	float offset = dstlo - scale * srclo;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = scale * ZXP(in) + offset;
 	);
 }
@@ -2618,7 +2618,7 @@ void LinLin_next_aa(LinLin *unit, int inNumSamples)
 	float *dsthi = ZIN(4);
 
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zdsthi = ZXP(dsthi);
 		float zdstlo = ZXP(dstlo);
 		float zsrchi = ZXP(srchi);
@@ -2640,7 +2640,7 @@ void LinLin_next_ak(LinLin *unit, int inNumSamples)
 	float dstlo = ZIN0(3);
 	float dsthi = ZIN0(4);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zsrchi = ZXP(srchi);
 		float zsrclo = ZXP(srclo);
 
@@ -2659,7 +2659,7 @@ void LinLin_next_ka(LinLin *unit, int inNumSamples)
 	float *dstlo = ZIN(3);
 	float *dsthi = ZIN(4);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zdsthi = ZXP(dsthi);
 		float zdstlo = ZXP(dstlo);
 

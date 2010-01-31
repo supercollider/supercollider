@@ -459,7 +459,7 @@ void DegreeToKey_next_k(DegreeToKey *unit, int inNumSamples)
 		unit->mPrevIndex = index;
 		val = unit->mPrevKey = table[index];
 	}
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -482,7 +482,7 @@ void DegreeToKey_next_a(DegreeToKey *unit, int inNumSamples)
 
 	float octave = unit->mOctave;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 index = (int32)floor(ZXP(in));
 		if (index == previndex) {
 			ZXP(out) = prevkey;
@@ -604,7 +604,7 @@ void TWindex_next_k(TWindex *unit, int inNumSamples)
 		index = unit->m_prevIndex;
 	}
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 			ZXP(out) = index;
 	)
 	unit->m_trig = trig;
@@ -628,7 +628,7 @@ void TWindex_next_ak(TWindex *unit, int inNumSamples)
                 }
         RGen& rgen = *unit->mParent->mRGen;
 
-        LOOP(inNumSamples,
+        LOOP1(inNumSamples,
             curtrig = ZXP(trig);
             if (curtrig > 0.f && unit->m_trig <= 0.f) {
                float max = maxSum * rgen.frand();
@@ -691,7 +691,7 @@ void Index_next_k(Index *unit, int inNumSamples)
 
 	index = sc_clip(index, 0, maxindex);
 	float val = table[index];
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -708,7 +708,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 index = (int32)ZXP(in);
 		index = sc_clip(index, 0, maxindex);
 		ZXP(out) = table[index];
@@ -758,7 +758,7 @@ void FoldIndex_next_k(FoldIndex *unit, int inNumSamples)
 
 	index = sc_fold(index, 0, maxindex);
 	float val = table[index];
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -775,7 +775,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 index = (int32)ZXP(in);
 		index = sc_fold(index, 0, maxindex);
 		ZXP(out) = table[index];
@@ -824,7 +824,7 @@ void WrapIndex_next_k(WrapIndex *unit, int inNumSamples)
 	int32 index = (int32)ZIN0(1);
 	index = sc_wrap(index, 0, maxindex);
 	float val = table[index];
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -841,7 +841,7 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 index = (int32)ZXP(in);
 		index = sc_wrap(index, 0, maxindex);
 		ZXP(out) = table[index];
@@ -901,7 +901,7 @@ void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples)
 	float in = ZIN0(1);
 
 	float val = IndexInBetween_FindIndex(table, in, maxindex);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -918,7 +918,7 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = IndexInBetween_FindIndex(table, ZXP(in), maxindex);
 	);
 
@@ -991,7 +991,7 @@ void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
 		unit->mPrevIn = in;
 	};
 	val = (float)index;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
 
@@ -1011,7 +1011,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 	int32 prevIndex = (int32)unit->mPrev;
 	float inval;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inval = ZXP(in);
 		if(inval != prev) {
 			prevIndex = DetectIndex_FindIndex(table, inval, maxindex);
@@ -1083,7 +1083,7 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 	float phaseinc = (fin - unit->mPrevIn) * offset;
 	unit->mPrevIn = fin;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float findex = offset + fin * offset;
 		findex = sc_clip(findex, 0.f, fmaxindex);
 		int32 index = (int32)findex;
@@ -1111,7 +1111,7 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 	float *in = ZIN(1);
 	float val;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float fin = ZXP(in);
 		float findex = offset + fin * offset;
 		findex = sc_clip(findex, 0.f, fmaxindex);
@@ -1194,7 +1194,7 @@ void SigOsc_next_k(SigOsc *unit, int inNumSamples)
 
 	float freq = ZIN0(1) * unit->m_cpstoinc;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		while (phase < 0.f) phase += maxphase;
 		while (phase >= maxphase) phase -= maxphase;
 		int32 iphase = (int32)phase;
@@ -1229,7 +1229,7 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples)
 	float phase = unit->mPhase;
 	float cpstoinc = unit->m_cpstoinc;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		while (phase < 0.f) phase += maxphase;
 		while (phase >= maxphase) phase -= maxphase;
 		int32 iphase = (int32)phase;
@@ -1412,7 +1412,7 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = lookupi1(table0, table1, phase, lomask);
 		phase += phaseinc;
 	);
@@ -1533,7 +1533,7 @@ void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	float radtoinc = unit->m_radtoinc;
 	//Print("SinOsc_next_ika %d %g %d\n", inNumSamples, radtoinc, phase);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		ZXP(out) = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += freq;
@@ -1558,7 +1558,7 @@ void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
 	//Print("SinOsc_next_iaa %d %g %g %d\n", inNumSamples, cpstoinc, radtoinc, phase);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		float z = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += (int32)(cpstoinc * ZXP(freqin));
@@ -1586,7 +1586,7 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 	float phasemod = unit->m_phasein;
 	float phaseslope = CALCSLOPE(phasein, phasemod);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 pphase = phase + (int32)(radtoinc * phasemod);
 		phasemod += phaseslope;
 		float z = lookupi1(table0, table1, pphase, lomask);
@@ -1782,7 +1782,7 @@ void Osc_next_ikk(Osc *unit, int inNumSamples)
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = lookupi1(table0, table1, phase, lomask);
 		phase += phaseinc;
 	);
@@ -1816,7 +1816,7 @@ void Osc_next_ika(Osc *unit, int inNumSamples)
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	float radtoinc = unit->m_radtoinc;
 	//Print("Osc_next_ika %d %g %d\n", inNumSamples, radtoinc, phase);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		ZXP(out) = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += freq;
@@ -1851,7 +1851,7 @@ void Osc_next_iaa(Osc *unit, int inNumSamples)
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
 	//Print("Osc_next_iaa %d %g %g %d\n", inNumSamples, cpstoinc, radtoinc, phase);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		float z = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += (int32)(cpstoinc * ZXP(freqin));
@@ -1890,7 +1890,7 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 	float phasemod = unit->m_phasein;
 	float phaseslope = CALCSLOPE(phasein, phasemod);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 pphase = phase + (int32)(radtoinc * phasemod);
 		phasemod += phaseslope;
 		float z = lookupi1(table0, table1, pphase, lomask);
@@ -1977,7 +1977,7 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		ZXP(out) = *(float*)((char*)table + ((phase >> xlobits) & lomask));
 		phase += phaseinc;
 	);
@@ -2008,7 +2008,7 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	float radtoinc = unit->m_radtoinc;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 pphase = phase + (int32)(radtoinc * ZXP(phasein));
 		ZXP(out) = *(float*)((char*)table + ((pphase >> xlobits) & lomask));
 		phase += freq;
@@ -2038,7 +2038,7 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 pphase = phase + (int32)(radtoinc * ZXP(phasein));
 		float z = *(float*)((char*)table + ((pphase >> xlobits) & lomask));
 		phase += (int32)(cpstoinc * ZXP(freqin));
@@ -2073,7 +2073,7 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 	float phasemod = unit->m_phasein;
 	float phaseslope = CALCSLOPE(phasein, phasemod);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 pphase = phase + (int32)(radtoinc * phasemod);
 		phasemod += phaseslope;
 		float z = *(float*)((char*)table + ((pphase >> xlobits) & lomask));
@@ -2123,7 +2123,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 	int32 beatf = (int32)(unit->m_cpstoinc * beats);
 	int32 freq1 = cfreq + beatf;
 	int32 freq2 = cfreq - beatf;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float a = lookupi1(table0, table1, phase1, lomask);
 		float b = lookupi1(table0, table1, phase2, lomask);
 		ZXP(out) = a + b;
@@ -2216,7 +2216,7 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 		float *table1 = table0 + 1;
 		float *table3 = table2 + 1;
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float pfrac = PhaseFrac1(phase);
 			uint32 index = ((phase >> xlobits1) & lomask);
 			float val0 = *(float*)((char*)table0 + index);
@@ -2359,7 +2359,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		float *table1 = table0 + 1;
 		float *table3 = table2 + 1;
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 
 			float pfrac1 = PhaseFrac1(phase1);
 			float pfrac2 = PhaseFrac1(phase2);
@@ -2514,7 +2514,7 @@ void Formant_next(Formant *unit, int inNumSamples)
 	int32 freq3 = (int32)(cpstoinc * freq3in);
 	float* sine = ft->mSine;
 	int32 formfreq = sc_max(freq1, freq3);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		if (phase3 < onecyc13) {
 			ZXP(out) = (*(float*)((char*)sine + (((phase3 + tqcyc13) >> xlobits) & xlomask13)) + 1.f)
 			         *  *(float*)((char*)sine + ((phase2 >> xlobits) & xlomask13));
@@ -2607,7 +2607,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 		int32 prevN2 = 2 * prevN + 1;
 		float xfade_slope = unit->mRate->mSlopeFactor;
 		float xfade = 0.f;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
@@ -2658,7 +2658,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 	} else {
 		// hmm, if freq is above sr/4 then revert to sine table osc w/ no interpolation ?
 		// why bother, it isn't a common choice for a fundamental.
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
@@ -2755,7 +2755,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 		int32 prevN2 = 2 * prevN + 1;
 		float xfade_slope = unit->mRate->mSlopeFactor;
 		float xfade = 0.f;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
@@ -2807,7 +2807,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 	} else {
 		// hmm, if freq is above sr/4 then revert to sine table osc ?
 		// why bother, it isn't a common choice for a fundamental.
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
@@ -2913,7 +2913,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 		int32 prevN2 = 2 * prevN + 1;
 		float xfade_slope = unit->mRate->mSlopeFactor;
 		float xfade = 0.f;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
@@ -3011,7 +3011,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 			xfade += xfade_slope;
 		);
 	} else {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float* tbl = (float*)((char*)dentbl + ((phase >> xlobits) & xlomask13));
 			float t0 = tbl[0];
 			float t1 = tbl[1];
