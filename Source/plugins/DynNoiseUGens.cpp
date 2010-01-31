@@ -91,7 +91,7 @@ void LFDNoise0_next(LFDNoise0 *unit, int inNumSamples)
 	float smpdur = SAMPLEDUR;
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -116,7 +116,7 @@ void LFDNoise0_next_k(LFDNoise0 *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= dphase;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -157,7 +157,7 @@ void LFDNoise1_next(LFDNoise1 *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -184,7 +184,7 @@ void LFDNoise1_next_k(LFDNoise1 *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= dphase;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -242,7 +242,7 @@ void LFDNoise3_next(LFDNoise3 *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -274,7 +274,7 @@ void LFDNoise3_next_k(LFDNoise3 *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= dphase;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -322,7 +322,7 @@ void LFDClipNoise_next(LFDClipNoise *unit, int inNumSamples)
 	float smpdur = SAMPLEDUR;
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
@@ -348,7 +348,7 @@ void LFDClipNoise_next_k(LFDClipNoise *unit, int inNumSamples)
 
 	RGET
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		phase -= dphase;
 		if (phase <= 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);

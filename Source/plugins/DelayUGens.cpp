@@ -2211,7 +2211,7 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			++iwrphase;
@@ -2271,7 +2271,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -2320,7 +2320,7 @@ void BufDelayL_next(BufDelayL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			bufData[iwrphase & mask] = ZXP(in);
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
@@ -2334,7 +2334,7 @@ void BufDelayL_next(BufDelayL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -2369,7 +2369,7 @@ void BufDelayL_next_z(BufDelayL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -2391,7 +2391,7 @@ void BufDelayL_next_z(BufDelayL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -2446,7 +2446,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			bufData[iwrphase & mask] = ZXP(in);
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
@@ -2464,7 +2464,7 @@ void BufDelayC_next(BufDelayC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			bufData[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -2504,7 +2504,7 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -2541,7 +2541,7 @@ void BufDelayC_next_z(BufDelayC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -2666,7 +2666,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
@@ -2773,7 +2773,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -2828,7 +2828,7 @@ void BufCombL_next(BufCombL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = bufData[irdphase & mask];
@@ -2846,7 +2846,7 @@ void BufCombL_next(BufCombL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -2887,7 +2887,7 @@ void BufCombL_next_z(BufCombL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -2919,7 +2919,7 @@ void BufCombL_next_z(BufCombL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -2984,7 +2984,7 @@ void BufCombC_next(BufCombC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -3006,7 +3006,7 @@ void BufCombC_next(BufCombC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3052,7 +3052,7 @@ void BufCombC_next_z(BufCombC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -3094,7 +3094,7 @@ void BufCombC_next_z(BufCombC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3226,7 +3226,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
@@ -3340,7 +3340,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -3397,7 +3397,7 @@ void BufAllpassL_next(BufAllpassL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = bufData[irdphase & mask];
@@ -3418,7 +3418,7 @@ void BufAllpassL_next(BufAllpassL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3460,7 +3460,7 @@ void BufAllpassL_next_z(BufAllpassL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -3492,7 +3492,7 @@ void BufAllpassL_next_z(BufAllpassL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3560,7 +3560,7 @@ void BufAllpassC_next(BufAllpassC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -3583,7 +3583,7 @@ void BufAllpassC_next(BufAllpassC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3630,7 +3630,7 @@ void BufAllpassC_next_z(BufAllpassC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -3673,7 +3673,7 @@ void BufAllpassC_next_z(BufAllpassC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -3827,7 +3827,7 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			++iwrphase;
@@ -3886,7 +3886,7 @@ void DelayN_next_z(DelayN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -3934,7 +3934,7 @@ void DelayL_next(DelayL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dlybuf[iwrphase & mask] = ZXP(in);
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
@@ -3948,7 +3948,7 @@ void DelayL_next(DelayL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -3983,7 +3983,7 @@ void DelayL_next_z(DelayL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -4007,7 +4007,7 @@ void DelayL_next_z(DelayL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4062,7 +4062,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dlybuf[iwrphase & mask] = ZXP(in);
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
@@ -4080,7 +4080,7 @@ void DelayC_next(DelayC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dlybuf[iwrphase & mask] = ZXP(in);
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -4120,7 +4120,7 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -4157,7 +4157,7 @@ void DelayC_next_z(DelayC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4280,7 +4280,7 @@ void CombN_next(CombN *unit, int inNumSamples)
 
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
@@ -4385,7 +4385,7 @@ void CombN_next_z(CombN *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -4440,7 +4440,7 @@ void CombL_next(CombL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = dlybuf[irdphase & mask];
@@ -4458,7 +4458,7 @@ void CombL_next(CombL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4499,7 +4499,7 @@ void CombL_next_z(CombL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -4531,7 +4531,7 @@ void CombL_next_z(CombL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4596,7 +4596,7 @@ void CombC_next(CombC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -4618,7 +4618,7 @@ void CombC_next(CombC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4664,7 +4664,7 @@ void CombC_next_z(CombC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -4706,7 +4706,7 @@ void CombC_next_z(CombC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -4836,7 +4836,7 @@ void AllpassN_next(AllpassN *unit, int inNumSamples)
 
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			++iwrphase;
 			long irdphase = iwrphase - (long)dsamp;
@@ -4948,7 +4948,7 @@ void AllpassN_next_z(AllpassN *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long irdphase = iwrphase - (long)dsamp;
 
@@ -5005,7 +5005,7 @@ void AllpassL_next(AllpassL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 			float d1 = dlybuf[irdphase & mask];
@@ -5026,7 +5026,7 @@ void AllpassL_next(AllpassL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -5068,7 +5068,7 @@ void AllpassL_next_z(AllpassL *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase = iwrphase - idsamp;
 			long irdphaseb = irdphase - 1;
 
@@ -5100,7 +5100,7 @@ void AllpassL_next_z(AllpassL *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -5168,7 +5168,7 @@ void AllpassC_next(AllpassC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -5191,7 +5191,7 @@ void AllpassC_next(AllpassC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -5238,7 +5238,7 @@ void AllpassC_next_z(AllpassC *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
@@ -5281,7 +5281,7 @@ void AllpassC_next_z(AllpassC *unit, int inNumSamples)
 		float next_feedbk = CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -6089,7 +6089,7 @@ void GrainTap_next(GrainTap *unit, int inNumSamples)
 
 	// initialize buffer to zero
 	out = out0;
-	LOOP(inNumSamples, ZXP(out) = 0.f;);
+	LOOP1(inNumSamples, ZXP(out) = 0.f;);
 
 	// do all current grains
 	prevGrain = NULL;

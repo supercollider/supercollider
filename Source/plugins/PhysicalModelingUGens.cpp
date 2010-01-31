@@ -103,7 +103,7 @@ void Spring_next(Spring *unit, int inNumSamples)
 	float c = SAMPLEDUR;
 	float rc = SAMPLERATE;
 	spring = spring * c;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float force = ZXP(in) * c - pos * spring;
 		vel = (force + vel) * damping;
 		pos += vel;
@@ -147,7 +147,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		int32 index = (int32)ZXP(in);
 		index = sc_clip(index, 0, maxindex);
 		ZXP(out) = table[index];
@@ -163,7 +163,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 	float c = SAMPLEDUR;
 	float rc = SAMPLERATE;
 	spring *= c;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float inpos = ZXP(in) * c;
 		float force = inpos + pos * spring;
 		state = (vel > damping) ?  1 : 0; //  friction table here
@@ -242,7 +242,7 @@ void Ball_next(Ball *unit, int inNumSamples)
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
 #endif //#ifdef _MSC_VER
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 
 		float floor = ZXP(in);
 		float floorvel;
@@ -324,7 +324,7 @@ void TBall_next(TBall *unit, int inNumSamples)
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
 #endif //#ifdef _MSC_VER
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 
 		double floor = ZXP(in);
 		float floorvel;

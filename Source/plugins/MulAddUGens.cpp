@@ -78,7 +78,7 @@ void ampmix_aa(MulAdd *unit, int inNumSamples)
 	float *amp = MULIN - ZOFF;
 	float *mix = ADDIN - ZOFF;
 
-	LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + ZXP(mix); );
+	LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + ZXP(mix); );
 }
 
 void ampmix_ak(MulAdd *unit, int inNumSamples);
@@ -93,12 +93,12 @@ void ampmix_ak(MulAdd *unit, int inNumSamples)
 	float mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
-			LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in); );
+			LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in); );
 		} else {
-			LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
+			LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
 		}
 	} else {
-		LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; mix_cur += mix_slope; );
+		LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; mix_cur += mix_slope; );
 		unit->mPrevAdd = nextMix;
 	}
 }
@@ -111,7 +111,7 @@ void ampmix_ai(MulAdd *unit, int inNumSamples)
 	float *amp = MULIN - ZOFF;
 	float mix_cur = unit->mPrevAdd;
 
-	LOOP(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
+	LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
 }
 
 void ampmix_ka(MulAdd *unit, int inNumSamples);
@@ -128,12 +128,12 @@ void ampmix_ka(MulAdd *unit, int inNumSamples)
 		if (amp_cur == 0.f) {
 			ZCopy(inNumSamples, out, mix);
 		} else if (amp_cur == 1.f) {
-			LOOP(inNumSamples, ZXP(out) = ZXP(in) + ZXP(mix); );
+			LOOP1(inNumSamples, ZXP(out) = ZXP(in) + ZXP(mix); );
 		} else {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
+			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
 		}
 	} else {
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); amp_cur += amp_slope; );
+		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); amp_cur += amp_slope; );
 		unit->mPrevMul = nextAmp;
 	}
 }
@@ -159,36 +159,36 @@ void ampmix_kk(MulAdd *unit, int inNumSamples)
 				} else if (amp_cur == 0.f) {
 					ZClear(inNumSamples, out);
 				} else {
-					LOOP(inNumSamples, ZXP(out) = ZXP(in) * amp_cur;);
+					LOOP1(inNumSamples, ZXP(out) = ZXP(in) * amp_cur;);
 				}
 			} else {
 				if (amp_cur == 1.f) {
-					LOOP(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
+					LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
 				} else if (amp_cur == 0.f) {
-					LOOP(inNumSamples, ZXP(out) = mix_cur;);
+					LOOP1(inNumSamples, ZXP(out) = mix_cur;);
 				} else {
-					LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
+					LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
 				}
 			}
 		} else {
 			if (amp_cur == 1.f) {
-				LOOP(inNumSamples, ZXP(out) = ZXP(in) + mix_cur; mix_cur += mix_slope;);
+				LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur; mix_cur += mix_slope;);
 			} else if (amp_cur == 0.f) {
-				LOOP(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
+				LOOP1(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
 			} else {
-				LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
+				LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
 			}
 			unit->mPrevAdd = nextMix;
 		}
 	} else {
 		if (mix_slope == 0.f) {
 			if (mix_cur == 0.f) {
-				LOOP(inNumSamples, ZXP(out) = ZXP(in) * amp_cur; amp_cur += amp_slope; );
+				LOOP1(inNumSamples, ZXP(out) = ZXP(in) * amp_cur; amp_cur += amp_slope; );
 			} else {
-				LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
+				LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
 			}
 		} else {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; );
+			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; );
 			unit->mPrevAdd = nextMix;
 		}
 		unit->mPrevMul = nextAmp;
@@ -209,14 +209,14 @@ void ampmix_ki(MulAdd *unit, int inNumSamples)
 
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
-			LOOP(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
+			LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
 		} else if (amp_cur == 0.f) {
-			LOOP(inNumSamples, ZXP(out) = mix_cur;);
+			LOOP1(inNumSamples, ZXP(out) = mix_cur;);
 		} else {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
+			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
 		}
 	} else {
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
+		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
 		unit->mPrevMul = nextAmp;
 	}
 }
@@ -236,7 +236,7 @@ void ampmix_ia(MulAdd *unit, int inNumSamples)
 	vscalarmul(in, amp_cur, in, inNumSamples);
 	vadd(out, in, mix, inNumSamples);
 #else
-	LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
+	LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
 #endif
 }
 
@@ -254,12 +254,12 @@ void ampmix_ik(MulAdd *unit, int inNumSamples)
 
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in); );
+			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in); );
 		} else {
-			LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
+			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
 		}
 	} else {
-		LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
+		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
 		unit->mPrevAdd = nextMix;
 	}
 }
@@ -272,7 +272,7 @@ void ampmix_ii(MulAdd *unit, int inNumSamples)
 
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
-	LOOP(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
+	LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
 }
 
 #ifdef NOVA_SIMD
@@ -533,7 +533,7 @@ void v_ampmix_aa(MulAdd *unit, int inNumSamples)
 	vfloat32 *vin = (vfloat32*)in;
 	vfloat32 *vout = (vfloat32*)out;
 	vfloat32 *vamp = (vfloat32*)amp;
-	//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + ZXP(mix); ZP(out););
+	//LOOP1(inNumSamples, PZ(out); *out = ZXP(amp) * *out + ZXP(mix); ZP(out););
 	vfloat32 *vmix = (vfloat32*)mix;
 	for (i=0; i<len; i+=16) {
 		vec_st(vec_madd(vec_ld(i, vamp), vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
@@ -554,7 +554,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 	float mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
-			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = ZXP(amp) * *out; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 *vamp = (vfloat32*)amp;
@@ -563,7 +563,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 				vec_st(vec_mul(vec_ld(i, vamp), vec_ld(i, vin)), i, vout);
 			}
 		} else {
-			//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 *vamp = (vfloat32*)amp;
@@ -573,7 +573,7 @@ void v_ampmix_ak(MulAdd *unit, int inNumSamples)
 			}
 		}
 	} else {
-		//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; mix_cur += mix_slope; ZP(out););
+		//LOOP1(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; mix_cur += mix_slope; ZP(out););
 		vfloat32 *vin = (vfloat32*)in;
 		vfloat32 *vout = (vfloat32*)out;
 		vfloat32 *vamp = (vfloat32*)amp;
@@ -599,7 +599,7 @@ void v_ampmix_ai(MulAdd *unit, int inNumSamples)
 	float *amp = MULIN;
 
 	float mix_cur = unit->mPrevAdd;
-	//LOOP(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
+	//LOOP1(inNumSamples, PZ(out); *out = ZXP(amp) * *out + mix_cur; ZP(out););
 	vfloat32 *vin = (vfloat32*)in;
 	vfloat32 *vout = (vfloat32*)out;
 	vfloat32 *vamp = (vfloat32*)amp;
@@ -637,7 +637,7 @@ void v_ampmix_ka(MulAdd *unit, int inNumSamples)
 				vec_st(vec_add(vec_ld(i, vin), vec_ld(i, vmix)), i, vout);
 			}
 		} else {
-			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vamp = vload(amp_cur);
@@ -690,7 +690,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 						vec_st(vzero, i, vout);
 					}
 				} else {
-					//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
+					//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
 					vfloat32 *vin = (vfloat32*)in;
 					vfloat32 *vout = (vfloat32*)out;
 					vfloat32 vamp = vload(amp_cur);
@@ -700,7 +700,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 				}
 			} else {
 				if (amp_cur == 1.f) {
-					//LOOP(inNumSamples, ZXP(out) += mix_cur;);
+					//LOOP1(inNumSamples, ZXP(out) += mix_cur;);
 					vfloat32 *vin = (vfloat32*)in;
 					vfloat32 *vout = (vfloat32*)out;
 					vfloat32 vmix = vload(mix_cur);
@@ -708,14 +708,14 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 						vec_st(vec_add(vmix, vec_ld(i, vin)), i, vout);
 					}
 				} else if (amp_cur == 0.f) {
-					//LOOP(inNumSamples, ZXP(out) = mix_cur;);
+					//LOOP1(inNumSamples, ZXP(out) = mix_cur;);
 					vfloat32 *vout = (vfloat32*)out;
 					vfloat32 vmix = vload(mix_cur);
 					for (i=0; i<len; i+=16) {
 						vec_st(vmix, i, vout);
 					}
 				} else {
-					//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
+					//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
 					vfloat32 *vin = (vfloat32*)in;
 					vfloat32 *vout = (vfloat32*)out;
 					vfloat32 vamp = vload(amp_cur);
@@ -727,7 +727,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 			}
 		} else {
 			if (amp_cur == 1.f) {
-				//LOOP(inNumSamples, ZXP(out) += mix_cur; mix_cur += mix_slope;);
+				//LOOP1(inNumSamples, ZXP(out) += mix_cur; mix_cur += mix_slope;);
 				vfloat32 *vin = (vfloat32*)in;
 				vfloat32 *vout = (vfloat32*)out;
 				vfloat32 vmix_slope = vload(4.f * mix_slope);
@@ -737,7 +737,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 					vmix = vec_add(vmix, vmix_slope);
 				}
 			} else if (amp_cur == 0.f) {
-				//LOOP(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
+				//LOOP1(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
 				vfloat32 *vout = (vfloat32*)out;
 				vfloat32 vmix_slope = vload(4.f * mix_slope);
 				vfloat32 vmix = vstart(mix_cur, vmix_slope);
@@ -746,7 +746,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 					vmix = vec_add(vmix, vmix_slope);
 				}
 			} else {
-				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
+				//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
 				vfloat32 *vin = (vfloat32*)in;
 				vfloat32 *vout = (vfloat32*)out;
 				vfloat32 vamp = vload(amp_cur);
@@ -762,7 +762,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 	} else {
 		if (mix_slope == 0.f) {
 			if (mix_cur == 0.f) {
-				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; amp_cur += amp_slope; ZP(out););
+				//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out; amp_cur += amp_slope; ZP(out););
 				vfloat32 *vin = (vfloat32*)in;
 				vfloat32 *vout = (vfloat32*)out;
 				vfloat32 vamp_slope = vload(4.f * amp_slope);
@@ -772,7 +772,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 					vamp = vec_add(vamp, vamp_slope);
 				}
 			} else {
-				//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
+				//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
 				vfloat32 *vin = (vfloat32*)in;
 				vfloat32 *vout = (vfloat32*)out;
 				vfloat32 vamp_slope = vload(4.f * amp_slope);
@@ -784,7 +784,7 @@ void v_ampmix_kk(MulAdd *unit, int inNumSamples)
 				}
 			}
 		} else {
-			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vamp_slope = vload(4.f * amp_slope);
@@ -818,7 +818,7 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 	mix_cur = unit->mPrevAdd;
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
-			//LOOP(inNumSamples, ZXP(out) += mix_cur;);
+			//LOOP1(inNumSamples, ZXP(out) += mix_cur;);
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vmix = vload(mix_cur);
@@ -826,14 +826,14 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 				vec_st(vec_add(vmix, vec_ld(i, vin)), i, vout);
 			}
 		} else if (amp_cur == 0.f) {
-			//LOOP(inNumSamples, ZXP(out) = mix_cur;);
+			//LOOP1(inNumSamples, ZXP(out) = mix_cur;);
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vmix = vload(mix_cur);
 			for (i=0; i<len; i+=16) {
 				vec_st(vmix, i, vout);
 			}
 		} else {
-			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vamp = vload(amp_cur);
@@ -843,7 +843,7 @@ void v_ampmix_ki(MulAdd *unit, int inNumSamples)
 			}
 		}
 	} else {
-		//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
+		//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; amp_cur += amp_slope; ZP(out););
 		vfloat32 *vin = (vfloat32*)in;
 		vfloat32 *vout = (vfloat32*)out;
 		vfloat32 vamp_slope = vload(4.f * amp_slope);
@@ -868,7 +868,7 @@ void v_ampmix_ia(MulAdd *unit, int inNumSamples)
 
 	float *mix = ADDIN;
 	amp_cur = unit->mPrevMul;
-	//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
+	//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + ZXP(mix); ZP(out););
 	vfloat32 *vin = (vfloat32*)in;
 	vfloat32 *vout = (vfloat32*)out;
 	vfloat32 vamp = vload(amp_cur);
@@ -895,7 +895,7 @@ void v_ampmix_ik(MulAdd *unit, int inNumSamples)
 	mix_slope = CALCSLOPE(nextMix, mix_cur);
 	if (mix_slope == 0.f) {
 		if (mix_cur == 0.f) {
-			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vamp = vload(amp_cur);
@@ -903,7 +903,7 @@ void v_ampmix_ik(MulAdd *unit, int inNumSamples)
 				vec_st(vec_mul(vamp, vec_ld(i, vin)), i, vout);
 			}
 		} else {
-			//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
+			//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
 			vfloat32 *vin = (vfloat32*)in;
 			vfloat32 *vout = (vfloat32*)out;
 			vfloat32 vamp = vload(amp_cur);
@@ -913,7 +913,7 @@ void v_ampmix_ik(MulAdd *unit, int inNumSamples)
 			}
 		}
 	} else {
-		//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
+		//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; mix_cur += mix_slope; ZP(out););
 		vfloat32 *vin = (vfloat32*)in;
 		vfloat32 *vout = (vfloat32*)out;
 		vfloat32 vamp = vload(amp_cur);
@@ -940,7 +940,7 @@ void v_ampmix_ii(MulAdd *unit, int inNumSamples)
 	amp_cur = unit->mPrevMul;
 	mix_cur = unit->mPrevAdd;
 
-	//LOOP(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
+	//LOOP1(inNumSamples, PZ(out); *out = amp_cur * *out + mix_cur; ZP(out););
 	vfloat32 *vin = (vfloat32*)in;
 	vfloat32 *vout = (vfloat32*)out;
 	vfloat32 vamp = vload(amp_cur);

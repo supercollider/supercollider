@@ -231,7 +231,7 @@
 			RGen& rgen = *unit->mParent->mRGen;
 			//linear distribution 0.0 to 1.0 using rgen.frand()
 
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 			float z;
 
 			if (phase >= 1.f) {
@@ -400,7 +400,7 @@
 
 			RGen& rgen = *unit->mParent->mRGen;
 
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 			float z;
 
 			if (phase >= 1.f) {
@@ -553,7 +553,7 @@
 			float * amplist= unit->mAmpList;
 			double * phaselist= unit->mPhaseList;
 
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 			float z;
 
 			if (phase >= 1.f) { //calculate all targets for new period

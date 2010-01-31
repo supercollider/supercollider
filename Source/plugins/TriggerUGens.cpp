@@ -404,7 +404,7 @@ void Trig1_next(Trig1 *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	unsigned long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float zout;
 		if (counter > 0) {
@@ -434,7 +434,7 @@ void Trig1_next_k(Trig1 *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	unsigned long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zout;
 		if (counter > 0) {
 			zout = --counter ? 1.f : 0.f;
@@ -473,7 +473,7 @@ void Trig1_next_nova(Trig1 *unit, int inNumSamples)
 	}
 	else
 	{
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float curtrig = ZXP(trig);
 			float zout;
 			if (counter > 0) {
@@ -519,7 +519,7 @@ void Trig1_next_k_nova(Trig1 *unit, int inNumSamples)
 	}
 	else
 	{
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float zout;
 			if (counter > 0) {
 				zout = --counter ? 1.f : 0.f;
@@ -585,7 +585,7 @@ void Trig_next(Trig *unit, int inNumSamples)
 	float level = unit->mLevel;
 	unsigned long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float zout;
 		if (counter > 0) {
@@ -618,7 +618,7 @@ void Trig_next_k(Trig *unit, int inNumSamples)
 	float level = unit->mLevel;
 	unsigned long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zout;
 		if (counter > 0) {
 			zout = --counter ? level : 0.f;
@@ -660,7 +660,7 @@ void Trig_next_nova(Trig *unit, int inNumSamples)
 	}
 	else
 	{
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float curtrig = ZXP(trig);
 			float zout;
 			if (counter > 0) {
@@ -708,7 +708,7 @@ void Trig_next_k_nova(Trig *unit, int inNumSamples)
 	}
 	else
 	{
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float zout;
 			if (counter > 0) {
 				zout = --counter ? level : 0.f;
@@ -749,7 +749,7 @@ void SendTrig_next(SendTrig *unit, int inNumSamples)
 	float *trig = ZIN(0);
 	float prevtrig = unit->m_prevtrig;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			SendTrigger(&unit->mParent->mNode, (int)ZIN0(1), ZIN0(2));
@@ -765,7 +765,7 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
         float *value = ZIN(2);
 	float prevtrig = unit->m_prevtrig;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
                 float curval = ZXP(value);
 		if (curtrig > 0.f && prevtrig <= 0.f) {
@@ -962,7 +962,7 @@ void SetResetFF_next_a(SetResetFF *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float curreset = ZXP(reset);
 		if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
@@ -987,7 +987,7 @@ void SetResetFF_next_k(SetResetFF *unit, int inNumSamples)
 
 	if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f;
 		ZXP(out) = level;
@@ -1019,7 +1019,7 @@ void ToggleFF_next(ToggleFF *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f - level;
 		ZXP(out) = level;
@@ -1090,7 +1090,7 @@ void Latch_next_ak(Latch *unit, int inNumSamples)
 	float curtrig = ZIN0(1);
 	if (unit->m_prevtrig <= 0.f && curtrig > 0.f) level = ZIN0(0);
 
-	LOOP(inNumSamples, ZXP(out) = level; );
+	LOOP1(inNumSamples, ZXP(out) = level; );
 
 	unit->m_prevtrig = curtrig;
 	unit->mLevel = level;
@@ -1105,7 +1105,7 @@ void Latch_next_aa(Latch *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) level = ZXP(in);
 		else { PZ(in); }
@@ -1179,13 +1179,13 @@ void Gate_next_ak(Gate *unit, int inNumSamples)
 
 	float curtrig = ZXP(trig);
 	if (curtrig > 0.f) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			level = ZXP(in);
 			ZXP(out) = level;
 		);
 		unit->mLevel = level;
 	} else {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			ZXP(out) = level;
 		);
 	}
@@ -1198,7 +1198,7 @@ void Gate_next_aa(Gate *unit, int inNumSamples)
 	float *trig = ZIN(1);
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (curtrig > 0.f) level = ZXP(in);
 		else { PZ(in); }
@@ -1226,7 +1226,7 @@ void Schmidt_next(Schmidt *unit, int inNumSamples)
 	float lo = ZIN0(1);
 	float hi = ZIN0(2);
 	float level = unit->mLevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zin = ZXP(in);
 		if (level == 1.) {
 			if (zin < lo) level = 0.f;
@@ -1260,7 +1260,7 @@ void PulseDivider_next(PulseDivider *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float z;
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
@@ -1310,7 +1310,7 @@ void PulseCount_next_a(PulseCount *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float curreset = ZXP(reset);
 		if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
@@ -1335,7 +1335,7 @@ void PulseCount_next_k(PulseCount *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
 		else if (prevtrig <= 0.f && curtrig > 0.f) {
@@ -1357,7 +1357,7 @@ void PulseCount_next_0(PulseCount *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
 			level += 1.f;
@@ -1405,7 +1405,7 @@ void Stepper_next_aa(Stepper *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float curreset = ZXP(reset);
 		if (prevreset <= 0.f && curreset > 0.f) {
@@ -1435,7 +1435,7 @@ void Stepper_next_ak(Stepper *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevreset <= 0.f && curreset > 0.f) {
 			level = (float)sc_wrap(resetval, zmin, zmax);
@@ -1461,7 +1461,7 @@ void Stepper_next_a0(Stepper *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) {
 			level = (float)sc_wrap((int32)level + step, zmin, zmax);
@@ -1495,7 +1495,7 @@ void TDelay_next(TDelay *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float zout;
 		if (counter > 1) {
@@ -1541,7 +1541,7 @@ void ZeroCrossing_next_a(ZeroCrossing *unit, int inNumSamples)
 	float level = unit->mLevel;
 	long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		counter++;
 		float curin = ZXP(in);
 		if (counter > 4 && previn <= 0.f && curin > 0.f) {
@@ -1581,7 +1581,7 @@ void Timer_next_a(Timer *unit, int inNumSamples)
 	float level = unit->mLevel;
 	long counter = unit->mCounter;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		counter++;
 		float curin = ZXP(in);
 		if (previn <= 0.f && curin > 0.f) {
@@ -1638,7 +1638,7 @@ void Sweep_next_0k(Sweep *unit, int inNumSamples)
 	double rate = ZIN0(1) * SAMPLEDUR;
 	double level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		level += rate;
 		ZXP(out) = level;
 	);
@@ -1653,7 +1653,7 @@ void Sweep_next_0a(Sweep *unit, int inNumSamples)
 	double level = unit->mLevel;
 	float sampledur = SAMPLEDUR;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zrate = ZXP(rate) * sampledur;
 		level += zrate;
 		ZXP(out) = level;
@@ -1675,7 +1675,7 @@ void Sweep_next_kk(Sweep *unit, int inNumSamples)
 		level = frac * rate;
 	}
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		level += rate;
 		ZXP(out) = level;
 	);
@@ -1698,7 +1698,7 @@ void Sweep_next_ka(Sweep *unit, int inNumSamples)
 		level = frac * rate[ZOFF] * sampledur;
 	}
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float zrate = ZXP(rate) * sampledur;
 		level += zrate;
 		ZXP(out) = level;
@@ -1716,7 +1716,7 @@ void Sweep_next_ak(Sweep *unit, int inNumSamples)
 	float previn = unit->m_previn;
 	double level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curin = ZXP(in);
 		if (previn <= 0.f && curin > 0.f) {
 			float frac = -previn/(curin-previn);
@@ -1741,7 +1741,7 @@ void Sweep_next_aa(Sweep *unit, int inNumSamples)
 	double level = unit->mLevel;
 	float sampledur = SAMPLEDUR;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curin = ZXP(in);
 		float zrate = ZXP(rate) * sampledur;
 		if (previn <= 0.f && curin > 0.f) {
@@ -1796,7 +1796,7 @@ void Phasor_next_kk(Phasor *unit, int inNumSamples)
 	if (previn <= 0.f && in > 0.f) {
 		level = resetPos;
 	}
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		level = sc_wrap(level, start, end);
 		ZXP(out) = level;
 		level += rate;
@@ -1819,7 +1819,7 @@ void Phasor_next_ak(Phasor *unit, int inNumSamples)
 	float previn = unit->m_previn;
 	double level  = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curin = ZXP(in);
 		if (previn <= 0.f && curin > 0.f) {
 			float frac = 1.f - previn/(curin-previn);
@@ -1848,7 +1848,7 @@ void Phasor_next_aa(Phasor *unit, int inNumSamples)
 	float previn = unit->m_previn;
 	double level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curin = ZXP(in);
 		double zrate = ZXP(rate);
 		if (previn <= 0.f && curin > 0.f) {
@@ -1928,7 +1928,7 @@ void Peak_next_ak(Peak *unit, int inNumSamples)
 	float curtrig = ZIN0(1);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
 		ZXP(out) = level;
@@ -1944,7 +1944,7 @@ void Peak_next_ai(Peak *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
 		ZXP(out) = level;
@@ -1960,7 +1960,7 @@ void Peak_next_aa(Peak *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
@@ -2034,7 +2034,7 @@ void Peak_next_ak_k(Peak *unit, int inNumSamples)
 	}
 	else
 		level = unit->mLevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		level = std::max(std::abs(ZXP(in)), level);
 	);
 	ZXP(out) = level;
@@ -2048,7 +2048,7 @@ void Peak_next_ai_k(Peak *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float level = unit->mLevel;
 	inNumSamples = INBUFLENGTH(0);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		level = std::max(std::abs(ZXP(in)), level);
 	);
 	ZXP(out) = level;
@@ -2066,7 +2066,7 @@ void Peak_next_aa_k(Peak *unit, int inNumSamples)
 	bool triggered = false;
 
 	inNumSamples = INBUFLENGTH(0);
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = std::abs(ZXP(in));
 		level = std::max(inlevel, level);
@@ -2136,7 +2136,7 @@ void RunningMin_next_ak(RunningMin *unit, int inNumSamples)
 	float curtrig = ZIN0(1);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = ZXP(in);
 		if (inlevel < level) level = inlevel;
 		ZXP(out) = level;
@@ -2152,7 +2152,7 @@ void RunningMin_next_ai(RunningMin *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = ZXP(in);
 		if (inlevel < level) level = inlevel;
 		ZXP(out) = level;
@@ -2168,7 +2168,7 @@ void RunningMin_next_aa(RunningMin *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = ZXP(in);
 		if (inlevel < level) level = inlevel;
@@ -2202,7 +2202,7 @@ void RunningMax_next_ak(RunningMax *unit, int inNumSamples)
 	float curtrig = ZIN0(1);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = ZXP(in);
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
@@ -2218,7 +2218,7 @@ void RunningMax_next_ai(RunningMax *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float level = unit->mLevel;
 	float inlevel;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		inlevel = ZXP(in);
 		if (inlevel > level) level = inlevel;
 		ZXP(out) = level;
@@ -2234,7 +2234,7 @@ void RunningMax_next_aa(RunningMax *unit, int inNumSamples)
 	float prevtrig = unit->m_prevtrig;
 	float level = unit->mLevel;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
 		float inlevel = ZXP(in);
 		if (inlevel > level) level = inlevel;
@@ -2272,7 +2272,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 
 
 	if(decay == unit->mDecay) {
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float inlevel = std::abs(ZXP(in));
 			if (inlevel >= level) {
 				level = inlevel;
@@ -2286,7 +2286,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 
 		float decay_slope = CALCSLOPE(decay, unit->mDecay);
 		if (decay >= 0.f && unit->mDecay >= 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) {
 					level = inlevel;
@@ -2297,7 +2297,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 				ZXP(out) = level;
 			);
 		} else if (decay <= 0.f && unit->mDecay <= 0.f) {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) {
 					level = inlevel;
@@ -2308,7 +2308,7 @@ void PeakFollower_next(PeakFollower *unit, int inNumSamples)
 				ZXP(out) = level;
 			);
 		} else {
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				float inlevel = std::abs(ZXP(in));
 				if (inlevel >= level) {
 					level = inlevel;
@@ -2333,7 +2333,7 @@ void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples)
 	float decay = ZIN0(1);
 	float level = unit->mLevel;
 
-		LOOP(inNumSamples,
+		LOOP1(inNumSamples,
 			float inlevel = std::abs(ZXP(in));
 			if (inlevel >= level) {
 				level = inlevel;
@@ -2380,7 +2380,7 @@ void MostChange_next_ak(MostChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff > 0.f) {
@@ -2408,7 +2408,7 @@ void MostChange_next_aa(MostChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
@@ -2437,7 +2437,7 @@ void MostChange_next_ka(MostChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff > 0.f) {
@@ -2489,7 +2489,7 @@ void LeastChange_next_ak(LeastChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff < 0.f) {
@@ -2517,7 +2517,7 @@ void LeastChange_next_aa(LeastChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
@@ -2546,7 +2546,7 @@ void LeastChange_next_ka(LeastChange *unit, int inNumSamples)
 	float prevA = unit->mPrevA;
 	float prevB = unit->mPrevB;
 	int recent = unit->mRecent;
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float xb = ZXP(b);
 		float diff = std::abs(xa - prevA) - std::abs(xb - prevB);
 		if (diff < 0.f) {
@@ -2593,7 +2593,7 @@ void LastValue_next_kk(LastValue *unit, int inNumSamples)
 		unit->mCurr = inval;
 	}
 	float level = unit->mPrev;
-	LOOP(inNumSamples, ZXP(out) = level; );
+	LOOP1(inNumSamples, ZXP(out) = level; );
 
 }
 
@@ -2606,7 +2606,7 @@ void LastValue_next_ak(LastValue *unit, int inNumSamples)
 	float prev = unit->mPrev;
 	float curr = unit->mCurr;
 
-	LOOP(inNumSamples,
+	LOOP1(inNumSamples,
 		float inval = ZXP(in);
 		float diff = std::abs(inval - curr);
 		if(diff >= delta) {

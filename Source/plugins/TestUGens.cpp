@@ -115,7 +115,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 
 	switch(post) {
 		case 1:		// post a line on every bad value
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				 samp = ZXP(in);
 				 classification = sc_fpclassify(samp);
 				 switch (classification)
@@ -138,7 +138,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 			 );
 			 break;
 		case 2:
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				samp = ZXP(in);
 				classification = CheckBadValues_fold_fpclasses(sc_fpclassify(samp));
 				if(classification != unit->prevclass) {
@@ -172,7 +172,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 			);
 			break;
 		default:		// no post
-			LOOP(inNumSamples,
+			LOOP1(inNumSamples,
 				 samp = ZXP(in);
 				 classification = sc_fpclassify(samp);
 				 switch (classification)
