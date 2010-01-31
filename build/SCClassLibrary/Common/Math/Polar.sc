@@ -31,6 +31,10 @@ Polar : Number {
   	* { arg aNumber;  ^this.asComplex * aNumber  }
 	/ { arg aNumber;  ^this.asComplex / aNumber  }
 
+	== { arg aPolar;
+		^aPolar respondsTo: #[\rho, \theta] and: { rho == aPolar.rho and: { theta == aPolar.theta } }
+	}
+	
 	neg { ^Polar.new(rho, theta + pi) }
 
 	performBinaryOpOnUGen { arg aSelector, aUGen;
