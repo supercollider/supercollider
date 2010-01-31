@@ -26,6 +26,10 @@
 
 #include <cmath>
 
+#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
+#define HAVE_C99
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 inline bool sc_isnan(float x)
@@ -59,7 +63,11 @@ inline float32 zapgremlins(float32 x)
 
 inline float32 sc_log2(float32 x)
 {
+#ifdef HAVE_C99
+	return ::log2f(std::abs(x));
+#else
 	return static_cast<float32>(std::log(std::abs(x)) * (float32)rlog2);
+#endif
 }
 
 inline float32 sc_log10(float32 x)
@@ -279,7 +287,11 @@ inline float64 zapgremlins(float64 x)
 
 inline float64 sc_log2(float64 x)
 {
+#ifdef HAVE_C99
+	return ::log2(std::abs(x));
+#else
 	return std::log(std::abs(x)) * rlog2;
+#endif
 }
 
 inline float64 sc_log10(float64 x)
