@@ -175,9 +175,22 @@ inline float32 sc_ramp(float32 x)
 	return x;
 }
 
+inline float32 sc_sign(float32 x)
+{
+	return x < (float32)0. ? (float32)-1. : (x > (float32)0. ? (float32)1.f : (float32)0.f);
+}
+
 inline float32 sc_distort(float32 x)
 {
 	return x / ((float32)1. + std::abs(x));
+}
+
+inline float32 sc_distortneg(float32 x)
+{
+	if (x < (float32)0.)
+		return x/((float32)1. - x);
+	else
+		return x;
 }
 
 inline float32 sc_softclip(float32 x)
@@ -381,10 +394,24 @@ inline float64 sc_ramp(float64 x)
 	return x;
 }
 
+inline float64 sc_sign(float64 x)
+{
+	return x < (float64)0. ? (float64)-1. : (x > (float64)0. ? (float64)1.f : (float64)0.f);
+}
+
 inline float64 sc_distort(float64 x)
 {
 	return x / ((float64)1. + std::abs(x));
 }
+
+inline float64 sc_distortneg(float64 x)
+{
+	if (x < (float64)0.)
+		return x/((float64)1. - x);
+	else
+		return x;
+}
+
 
 inline float64 sc_softclip(float64 x)
 {

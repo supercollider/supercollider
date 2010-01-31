@@ -132,95 +132,6 @@ extern "C"
 	void load(InterfaceTable *inTable);
 
 	void UnaryOpUGen_Ctor(UnaryOpUGen *unit);
-
-	void invert_a(UnaryOpUGen *unit, int inNumSamples);
-	void not_a(UnaryOpUGen *unit, int inNumSamples);
-	void zero_a(UnaryOpUGen *unit, int inNumSamples);
-	void thru_a(UnaryOpUGen *unit, int inNumSamples);
-	void abs_a(UnaryOpUGen *unit, int inNumSamples);
-	void recip_a(UnaryOpUGen *unit, int inNumSamples);
-	void floor_a(UnaryOpUGen *unit, int inNumSamples);
-	void ceil_a(UnaryOpUGen *unit, int inNumSamples);
-	void sin_a(UnaryOpUGen *unit, int inNumSamples);
-	void cos_a(UnaryOpUGen *unit, int inNumSamples);
-	void tan_a(UnaryOpUGen *unit, int inNumSamples);
-	void asin_a(UnaryOpUGen *unit, int inNumSamples);
-	void acos_a(UnaryOpUGen *unit, int inNumSamples);
-	void atan_a(UnaryOpUGen *unit, int inNumSamples);
-	void sinh_a(UnaryOpUGen *unit, int inNumSamples);
-	void cosh_a(UnaryOpUGen *unit, int inNumSamples);
-	void tanh_a(UnaryOpUGen *unit, int inNumSamples);
-	void log_a(UnaryOpUGen *unit, int inNumSamples);
-	void log2_a(UnaryOpUGen *unit, int inNumSamples);
-	void log10_a(UnaryOpUGen *unit, int inNumSamples);
-	void exp_a(UnaryOpUGen *unit, int inNumSamples);
-	void sqrt_a(UnaryOpUGen *unit, int inNumSamples);
-	void ampdb_a(UnaryOpUGen *unit, int inNumSamples);
-	void dbamp_a(UnaryOpUGen *unit, int inNumSamples);
-	void midicps_a(UnaryOpUGen *unit, int inNumSamples);
-	void cpsmidi_a(UnaryOpUGen *unit, int inNumSamples);
-	void midiratio_a(UnaryOpUGen *unit, int inNumSamples);
-	void ratiomidi_a(UnaryOpUGen *unit, int inNumSamples);
-	void cpsoct_a(UnaryOpUGen *unit, int inNumSamples);
-	void octcps_a(UnaryOpUGen *unit, int inNumSamples);
-	void frac_a(UnaryOpUGen *unit, int inNumSamples);
-	void squared_a(UnaryOpUGen *unit, int inNumSamples);
-	void cubed_a(UnaryOpUGen *unit, int inNumSamples);
-	void sign_a(UnaryOpUGen *unit, int inNumSamples);
-	void distort_a(UnaryOpUGen *unit, int inNumSamples);
-	void distortneg_a(UnaryOpUGen *unit, int inNumSamples);
-	void softclip_a(UnaryOpUGen *unit, int inNumSamples);
-	void rectwindow_a(UnaryOpUGen *unit, int inNumSamples);
-	void hanwindow_a(UnaryOpUGen *unit, int inNumSamples);
-	void welwindow_a(UnaryOpUGen *unit, int inNumSamples);
-	void triwindow_a(UnaryOpUGen *unit, int inNumSamples);
-	void ramp_a(UnaryOpUGen *unit, int inNumSamples);
-	void scurve_a(UnaryOpUGen *unit, int inNumSamples);
-
-	void invert_d(UnaryOpUGen *unit, int inNumSamples);
-	void not_d(UnaryOpUGen *unit, int inNumSamples);
-	void zero_d(UnaryOpUGen *unit, int inNumSamples);
-	void thru_d(UnaryOpUGen *unit, int inNumSamples);
-	void abs_d(UnaryOpUGen *unit, int inNumSamples);
-	void recip_d(UnaryOpUGen *unit, int inNumSamples);
-	void floor_d(UnaryOpUGen *unit, int inNumSamples);
-	void ceil_d(UnaryOpUGen *unit, int inNumSamples);
-	void sin_d(UnaryOpUGen *unit, int inNumSamples);
-	void cos_d(UnaryOpUGen *unit, int inNumSamples);
-	void tan_d(UnaryOpUGen *unit, int inNumSamples);
-	void asin_d(UnaryOpUGen *unit, int inNumSamples);
-	void acos_d(UnaryOpUGen *unit, int inNumSamples);
-	void atan_d(UnaryOpUGen *unit, int inNumSamples);
-	void sinh_d(UnaryOpUGen *unit, int inNumSamples);
-	void cosh_d(UnaryOpUGen *unit, int inNumSamples);
-	void tanh_d(UnaryOpUGen *unit, int inNumSamples);
-	void log_d(UnaryOpUGen *unit, int inNumSamples);
-	void log2_d(UnaryOpUGen *unit, int inNumSamples);
-	void log10_d(UnaryOpUGen *unit, int inNumSamples);
-	void exp_d(UnaryOpUGen *unit, int inNumSamples);
-	void sqrt_d(UnaryOpUGen *unit, int inNumSamples);
-	void ampdb_d(UnaryOpUGen *unit, int inNumSamples);
-	void dbamp_d(UnaryOpUGen *unit, int inNumSamples);
-	void midicps_d(UnaryOpUGen *unit, int inNumSamples);
-	void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples);
-	void midiratio_d(UnaryOpUGen *unit, int inNumSamples);
-	void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples);
-	void cpsoct_d(UnaryOpUGen *unit, int inNumSamples);
-	void octcps_d(UnaryOpUGen *unit, int inNumSamples);
-	void frac_d(UnaryOpUGen *unit, int inNumSamples);
-	void squared_d(UnaryOpUGen *unit, int inNumSamples);
-	void cubed_d(UnaryOpUGen *unit, int inNumSamples);
-	void sign_d(UnaryOpUGen *unit, int inNumSamples);
-	void distort_d(UnaryOpUGen *unit, int inNumSamples);
-	void distortneg_d(UnaryOpUGen *unit, int inNumSamples);
-	void softclip_d(UnaryOpUGen *unit, int inNumSamples);
-	void rectwindow_d(UnaryOpUGen *unit, int inNumSamples);
-	void hanwindow_d(UnaryOpUGen *unit, int inNumSamples);
-	void welwindow_d(UnaryOpUGen *unit, int inNumSamples);
-	void triwindow_d(UnaryOpUGen *unit, int inNumSamples);
-	void ramp_d(UnaryOpUGen *unit, int inNumSamples);
-	void scurve_d(UnaryOpUGen *unit, int inNumSamples);
-
 }
 
 bool ChooseOperatorFunc(UnaryOpUGen *unit);
@@ -234,16 +145,39 @@ void UnaryOpUGen_Ctor(UnaryOpUGen *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void invert_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = -ZXP(a);
-	);
+#define DEFINE_UNARY_OP_FUNCS(name, function)		\
+extern "C" void name##_a(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	float *out = ZOUT(0);							\
+	float *a = ZIN(0);								\
+													\
+	LOOP1(inNumSamples,								\
+		ZXP(out) = function(ZXP(a));				\
+	);												\
+}													\
+													\
+extern "C" void name##_1(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	ZOUT0(0) = function(ZIN0(0));					\
+}													\
+													\
+extern "C" void name##_d(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	if (inNumSamples) {								\
+		float x = DEMANDINPUT_A(0, inNumSamples);	\
+		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsoct(x);	\
+	} else {										\
+		RESETINPUT(0);								\
+	}												\
 }
+
+template <typename F>
+inline F sc_invert(F x)
+{
+	return -x;
+}
+
+DEFINE_UNARY_OP_FUNCS(invert, sc_invert)
 
 #ifdef NOVA_SIMD
 void invert_nova(UnaryOpUGen *unit, int inNumSamples)
@@ -273,15 +207,13 @@ void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void not_a(UnaryOpUGen *unit, int inNumSamples)
+template <typename F>
+inline F sc_not(F x)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = ZXP(a) > 0.f ? 0.f : 1.f;
-	);
+	return x > 0.f ? 0.f : 1.f;
 }
+
+DEFINE_UNARY_OP_FUNCS(not, sc_not)
 
 void zero_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -298,15 +230,7 @@ void thru_a(UnaryOpUGen *unit, int inNumSamples)
 	ZCopy(inNumSamples, out, a);
 }
 
-void abs_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = fabs(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(abs, std::abs)
 
 #ifdef NOVA_SIMD
 void zero_nova(UnaryOpUGen *unit, int inNumSamples)
@@ -355,15 +279,13 @@ void vabs_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void recip_a(UnaryOpUGen *unit, int inNumSamples)
+template <typename F>
+inline F sc_recip(F x)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = 1.f / ZXP(a);
-	);
+	return (F)1. / x;
 }
+
+DEFINE_UNARY_OP_FUNCS(recip, sc_recip)
 
 #ifdef NOVA_SIMD
 void recip_nova(UnaryOpUGen *unit, int inNumSamples)
@@ -391,15 +313,7 @@ void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void floor_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = floor(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(floor, std::floor)
 
 #if __VEC__
 void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
@@ -414,15 +328,7 @@ void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void ceil_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = ceil(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(ceil, std::ceil)
 
 #if __VEC__
 void vceil_a(UnaryOpUGen *unit, int inNumSamples)
@@ -442,95 +348,18 @@ NOVA_WRAPPER_CT_UNROLL(floor, floor)
 NOVA_WRAPPER_CT_UNROLL(ceil, ceil)
 #endif
 
-void sin_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
+DEFINE_UNARY_OP_FUNCS(sin, std::sin)
+DEFINE_UNARY_OP_FUNCS(cos, std::cos)
+DEFINE_UNARY_OP_FUNCS(tan, std::tan)
 
-	LOOP1(inNumSamples,
-		ZXP(out) = std::sin(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(asin, std::asin)
+DEFINE_UNARY_OP_FUNCS(acos, std::acos)
+DEFINE_UNARY_OP_FUNCS(atan, std::atan)
 
-void cos_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
+DEFINE_UNARY_OP_FUNCS(sinh, std::sinh)
+DEFINE_UNARY_OP_FUNCS(cosh, std::cosh)
+DEFINE_UNARY_OP_FUNCS(tanh, std::tanh)
 
-	LOOP1(inNumSamples,
-		ZXP(out) = std::cos(ZXP(a));
-	);
-}
-
-void tan_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::tan(ZXP(a));
-	);
-}
-
-void asin_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::asin(ZXP(a));
-	);
-}
-
-void acos_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::acos(ZXP(a));
-	);
-}
-
-void atan_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::atan(ZXP(a));
-	);
-}
-
-void sinh_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::sinh(ZXP(a));
-	);
-}
-
-void cosh_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::cosh(ZXP(a));
-	);
-}
-
-void tanh_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::tanh(ZXP(a));
-	);
-}
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER(sin, sin)
@@ -543,47 +372,10 @@ NOVA_WRAPPER(tanh, tanh)
 #endif
 
 
-
-void log_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::log(ZXP(a));
-	);
-}
-
-void log2_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_log2(ZXP(a));
-	);
-}
-
-void log10_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_log10(ZXP(a));
-	);
-}
-
-void exp_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = std::exp(ZXP(a));
-	);
-}
-
+DEFINE_UNARY_OP_FUNCS(log, std::log)
+DEFINE_UNARY_OP_FUNCS(log2, sc_log2)
+DEFINE_UNARY_OP_FUNCS(log10, sc_log10)
+DEFINE_UNARY_OP_FUNCS(exp, std::exp)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER(log, log)
@@ -592,110 +384,21 @@ NOVA_WRAPPER(log10, log10)
 NOVA_WRAPPER(exp, exp)
 #endif
 
-void sqrt_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_sqrt(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(sqrt, sc_sqrt)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(sqrt, ssqrt)
 #endif
 
-void ampdb_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_ampdb(ZXP(a));
-	);
-}
-
-void dbamp_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_dbamp(ZXP(a));
-	);
-}
-
-void midicps_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_midicps(ZXP(a));
-	);
-}
-
-void cpsmidi_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_cpsmidi(ZXP(a));
-	);
-}
-
-void midiratio_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_midiratio(ZXP(a));
-	);
-}
-
-void ratiomidi_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_ratiomidi(ZXP(a));
-	);
-}
-
-void cpsoct_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_cpsoct(ZXP(a));
-	);
-}
-
-void octcps_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_octcps(ZXP(a));
-	);
-}
-
-void frac_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float xa = ZXP(a);
-		ZXP(out) = xa - std::floor(xa);
-	);
-}
+DEFINE_UNARY_OP_FUNCS(ampdb, sc_ampdb)
+DEFINE_UNARY_OP_FUNCS(dbamp, sc_dbamp)
+DEFINE_UNARY_OP_FUNCS(midicps, sc_midicps)
+DEFINE_UNARY_OP_FUNCS(cpsmidi, sc_cpsmidi)
+DEFINE_UNARY_OP_FUNCS(midiratio, sc_midiratio)
+DEFINE_UNARY_OP_FUNCS(ratiomidi, sc_ratiomidi)
+DEFINE_UNARY_OP_FUNCS(cpsoct, sc_cpsoct)
+DEFINE_UNARY_OP_FUNCS(octcps, sc_octcps)
+DEFINE_UNARY_OP_FUNCS(frac, sc_frac)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(frac, frac)
@@ -715,16 +418,7 @@ void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void squared_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float xa = ZXP(a);
-		ZXP(out) = xa * xa;
-	);
-}
+DEFINE_UNARY_OP_FUNCS(squared, sc_squared)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(squared, square)
@@ -745,16 +439,7 @@ void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void cubed_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float xa = ZXP(a);
-		ZXP(out) = xa * xa * xa;
-	);
-}
+DEFINE_UNARY_OP_FUNCS(cubed, sc_cubed)
 
 #if __VEC__
 void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
@@ -775,37 +460,13 @@ void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
 NOVA_WRAPPER_CT_UNROLL(cubed, cube)
 #endif
 
-void sign_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float xa = ZXP(a);
-		ZXP(out) = xa < 0.f ? -1.f : (xa > 0.f ? 1.f : 0.f);
-	);
-}
+DEFINE_UNARY_OP_FUNCS(sign, sc_sign)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(sign, sgn)
 #endif
 
-void distort_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	/*LOOP1(inNumSamples,
-		float z = ZXP(a);
-		if (z < 0.f) ZXP(out) = z/(1. - z);
-		else ZXP(out) = z/(1. + z);
-	);*/
-
-	LOOP1(inNumSamples,
-		float z = ZXP(a);
-		ZXP(out) = z/(1.f + std::abs(z));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(distort, sc_distort)
 
 #if __VEC__
 void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
@@ -824,107 +485,21 @@ void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-void distortneg_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float z = ZXP(a);
-		if (z < 0.f) ZXP(out) = z/(1.f - z);
-		else ZXP(out) = z;
-	);
-}
-
-void softclip_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	/*LOOP1(inNumSamples,
-		float z = ZXP(a);
-		if (z < -0.5) ZXP(out) = (-z - .25)/z;
-		else if (z > 0.5) ZXP(out) = (z - .25)/z;
-		else ZXP(out) = z;
-	);*/
-
-	LOOP1(inNumSamples,
-		float z = ZXP(a);
-		float az = fabs(z);
-		if (az > 0.5f) ZXP(out) = (az - .25f)/z;
-		else ZXP(out) = z;
-	);
-}
+DEFINE_UNARY_OP_FUNCS(distortneg, sc_distortneg)
+DEFINE_UNARY_OP_FUNCS(softclip, sc_softclip)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(softclip, softclip)
 #endif
 
-void rectwindow_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
+DEFINE_UNARY_OP_FUNCS(rectwindow, sc_rectwindow)
+DEFINE_UNARY_OP_FUNCS(hanwindow, sc_hanwindow)
+DEFINE_UNARY_OP_FUNCS(welwindow, sc_welwindow)
+DEFINE_UNARY_OP_FUNCS(triwindow, sc_triwindow)
 
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_rectwindow(ZXP(a));
-	);
-}
+DEFINE_UNARY_OP_FUNCS(scurve, sc_scurve)
+DEFINE_UNARY_OP_FUNCS(ramp, sc_ramp)
 
-void hanwindow_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_hanwindow(ZXP(a));
-	);
-}
-
-void welwindow_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_welwindow(ZXP(a));
-	);
-}
-
-void triwindow_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		float x = ZXP(a);
-		float z;
-		if (x < 0.f || x > 1.f) z = 0.f;
-		if (x < .5f) z = 2.f * x;
-		else z = 2.f - 2.f * x;
-		ZXP(out) = z;
-	);
-}
-
-
-void scurve_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_scurve(ZXP(a));
-	);
-}
-
-void ramp_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = sc_ramp(ZXP(a));
-	);
-}
 
 #ifdef NOVA_SIMD
 void ramp_nova(UnaryOpUGen *unit, int inNumSamples)
@@ -939,27 +514,6 @@ void ramp_nova_64(UnaryOpUGen *unit, int inNumSamples)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-void invert_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : -(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void not_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : (x > 0.f ? 0.f : 1.f);
-	} else {
-		RESETINPUT(0);
-	}
-}
 
 void zero_d(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -981,400 +535,7 @@ void thru_d(UnaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void abs_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::abs(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void recip_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : 1.f / x;
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void floor_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::floor(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void ceil_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::ceil(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void sin_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::sin(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void cos_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::cos(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void tan_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::tan(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void asin_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::asin(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void acos_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::acos(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void atan_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : atan(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void sinh_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::sinh(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void cosh_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::cosh(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void tanh_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::tanh(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void log_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::log(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void log2_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_log2(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void log10_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_log10(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void exp_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : std::exp(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void sqrt_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_sqrt(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void ampdb_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_ampdb(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void dbamp_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_dbamp(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void midicps_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_midicps(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void cpsmidi_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsmidi(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void midiratio_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_midiratio(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void ratiomidi_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_ratiomidi(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void cpsoct_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsoct(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void octcps_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_octcps(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void frac_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_frac(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void squared_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : x*x;
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void cubed_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : x*x*x;
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void sign_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? -1.f : (x > 0.f ? 1.f : 0.f));
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void distort_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_distort(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void distortneg_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : (x < 0.f ? x/(1.f-x) : x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void softclip_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_softclip(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void rectwindow_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_rectwindow(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void hanwindow_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_hanwindow(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void welwindow_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_welwindow(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void triwindow_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_triwindow(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void ramp_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_ramp(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void scurve_d(UnaryOpUGen *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		float x = DEMANDINPUT_A(0, inNumSamples);
-		OUT0(0) = sc_isnan(x) ? NAN : sc_scurve(x);
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 {
@@ -1427,6 +588,63 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_a; break;
 		case opRamp : func = &ramp_a; break;
+
+		default : func = &thru_a; break;
+	}
+	return func;
+}
+
+UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
+{
+	void (*func)(UnaryOpUGen *unit, int inNumSamples);
+
+	switch (unit->mSpecialIndex) {
+		case opSilence : func = &zero_a; break;
+		case opThru : func = &thru_a; break;
+		case opNeg : func = &invert_1; break;
+		case opNot : func = &not_1; break;
+		case opAbs : func = &abs_1; break;
+		case opCeil : func = &ceil_1; break;
+		case opFloor : func = &floor_1; break;
+		case opFrac : func = &frac_1; break;
+		case opSign : func = &sign_1; break;
+		case opSquared : func = &squared_1; break;
+		case opCubed : func = &cubed_1; break;
+		case opSqrt : 		func = &sqrt_1; break;
+		case opExp : func = &exp_1; break;
+		case opRecip : func = &recip_1; break;
+		case opMIDICPS : func = &midicps_1; break;
+		case opCPSMIDI : func = &cpsmidi_1; break;
+
+		case opMIDIRatio : func = &midiratio_1; break;
+		case opRatioMIDI : func = &ratiomidi_1; break;
+		case opDbAmp : func = &dbamp_1; break;
+		case opAmpDb : 	func = &ampdb_1; break;
+		case opOctCPS : func = &octcps_1; break;
+		case opCPSOct : func = &cpsoct_1; break;
+		case opLog : func = &log_1; break;
+		case opLog2 : func = &log2_1; break;
+		case opLog10 : func = &log10_1; break;
+		case opSin : func = &sin_1; break;
+		case opCos : func = &cos_1; break;
+		case opTan : func = &tan_1; break;
+		case opArcSin : func = &asin_1; break;
+		case opArcCos : func = &acos_1; break;
+		case opArcTan : func = &atan_1; break;
+		case opSinH : func = &sinh_1; break;
+		case opCosH : func = &cosh_1; break;
+		case opTanH : func = &tanh_1; break;
+
+		case opDistort : func = &distort_1; break;
+		case opSoftClip : func = &softclip_1; break;
+
+		case opRectWindow : func = &rectwindow_1; break;
+		case opHanWindow : func = &hanwindow_1; break;
+		case opWelchWindow : func = &welwindow_1; break;
+		case opTriWindow : func = &triwindow_1; break;
+
+		case opSCurve : func = &scurve_1; break;
+		case opRamp : func = &ramp_1; break;
 
 		default : func = &thru_a; break;
 	}
@@ -1670,7 +888,7 @@ bool ChooseOperatorFunc(UnaryOpUGen *unit)
 	if (unit->mCalcRate == calc_DemandRate) {
 		func = ChooseDemandFunc(unit);
 	} else if (BUFLENGTH == 1) {
-		func = ChooseNormalFunc(unit);
+		func = ChooseOneFunc(unit);
 #if __VEC__
 	} else if (USEVEC) {
 		func = ChooseVectorFunc(unit);
