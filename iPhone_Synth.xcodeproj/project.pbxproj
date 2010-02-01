@@ -408,7 +408,6 @@
 		778F5F4C0ECB9D9200822AF1 /* iPhoneUGens.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneUGens.mm; sourceTree = "<group>"; };
 		77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_Browser.xib; path = "iPhone Resources/SuperCollider_Browser.xib"; sourceTree = "<group>"; };
 		77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
-		77A489460FBFA95800E909E1 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
 		77A489500FBFA99700E909E1 /* DirBrowserView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DirBrowserView.mm; sourceTree = "<group>"; };
 		77AA93920EB3685400DC0BCB /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -480,7 +479,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				77A489460FBFA95800E909E1 /* scUBlibsndfile.a */,
 				778F126B0F50A87300CB6629 /* libsndfile_iphone.a */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -1093,6 +1091,7 @@
 					build,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
@@ -1119,6 +1118,7 @@
 					build,
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/iphone\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
@@ -1204,7 +1204,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos3.1.2;
 				SYMROOT = build_iphone;
 			};
 			name = Release;
