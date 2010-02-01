@@ -27,6 +27,7 @@
 
 #include "osc/OscReceivedElements.h"
 
+#include "dynamic_endpoint.hpp"
 #include "memory_pool.hpp"
 #include "server_scheduler.hpp"
 #include "../utilities/osc_server.hpp"
@@ -46,11 +47,10 @@ using namespace boost::asio::ip;
  * observer to receive osc notifications
  *
  * \todo shall we use a separate thread for observer notifications?
- * \todo for now we are ipv4 only
  * */
 class sc_notify_observers
 {
-    typedef std::vector<udp::endpoint> udp_observer_vector;
+    typedef std::vector<nova_endpoint> observer_vector;
 
 public:
     sc_notify_observers(void):
@@ -59,28 +59,38 @@ public:
         udp_socket.open(udp::v4());
     }
 
-    void add_observer(udp::endpoint const & ep)
+    void add_observer(nova_endpoint const & ep)
     {
-        udp_observers.push_back(ep);
+        observers.push_back(ep);
     }
 
-    void remove_observer(udp::endpoint const & ep)
+    void remove_observer(nova_endpoint const & ep)
     {
-        udp_observer_vector::iterator it = std::find(udp_observers.begin(),
-                                                     udp_observers.end(), ep);
-        assert (it != udp_observers.end());
+        observer_vector::iterator it = std::find(observers.begin(),
+                                                 observers.end(), ep);
+        assert (it != observers.end());
 
-        udp_observers.erase(it);
+        observers.erase(it);
     }
 
     void send_notification(const char * data, size_t length)
     {
-        for (size_t i = 0; i != udp_observers.size(); ++i)
-            udp_socket.send_to(boost::asio::buffer(data, length), udp_observers[i]);
+        for (size_t i = 0; i != observers.size(); ++i)
+            send_notification(data, length, observers[i]);
     }
 
 private:
-    udp_observer_vector udp_observers;
+    void send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
+    {
+        nova_protocol prot = endpoint.protocol();
+        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
+        {
+            udp::endpoint ep(endpoint.address(), endpoint.port());
+            udp_socket.send_to(boost::asio::buffer(data, length), ep);
+        }
+    }
+
+    observer_vector observers;
     boost::asio::io_service io_service; /* we have an io_service for our own */
     udp::socket udp_socket;
 };
@@ -152,6 +162,16 @@ public:
     typedef osc::ReceivedPacket osc_received_packet;
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
+
+    void send(const char * data, size_t size, nova_endpoint const & endpoint)
+    {
+        nova_protocol prot = endpoint.protocol();
+        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
+        {
+            udp::endpoint ep(endpoint.address(), endpoint.port());
+            send_udp(data, size, ep);
+        }
+    }
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
     {
