@@ -320,10 +320,13 @@ NodeProxy : BusPlug {
 
 	xFadePerform { | selector, args |
 		var bundle;
-		nodeMap.performList(selector, args);
 		if(this.isPlaying)
-		{ this.sendEach(nil, true) }
-		{ "not playing".inform }
+		{ 
+			nodeMap.performList(selector, args);
+			this.sendEach(nil, true) 
+		} { 
+			this.performList(selector, args)
+		}
 	}
 	
 	mapEnvir { | ... keys | // map to current environment
@@ -398,16 +401,19 @@ NodeProxy : BusPlug {
 	// map proxy to receiver input
 	// second argument is an adverb
 	<<> { | proxy, key = \in |
-		var ctl = proxy.controlNames.detect { |x| x.name == key };
-		var rate = ctl.rate ? this.rate ? \audio;
-		var numChannels = ctl !? { ctl.defaultValue.size } ?? { 
+		var ctl, rate, numChannels, canBeMapped;
+		if(proxy.isNil) { ^this.unmap(key) };
+		ctl = proxy.controlNames.detect { |x| x.name == key };
+		rate = ctl.rate ?? { if(this.isNeutral) { \audio } { this.rate } };
+		numChannels = ctl !? { ctl.defaultValue.size } ?? { 
 			if(rate == \audio) { this.class.defaultNumAudio } { this.class.defaultNumControl } 
 		};
-		var canBeMapped = proxy.initBus(rate, numChannels);
+		canBeMapped = proxy.initBus(rate, numChannels);
 		if(canBeMapped) {
+			if(this.isNeutral) { this.defineBus(rate, numChannels) };
 			this.xmap(key, proxy);
 		} { "Could not link node proxies, no matching input found.".warn };
-		^proxy; // returns argument for further chaining
+		^proxy; // returns first argument for further chaining
 	}
 
 
@@ -497,20 +503,6 @@ NodeProxy : BusPlug {
 	edit { | nSliders, parent, bounds |
 		^NodeProxyEditor(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
 	}
-	
-	findCode { | doc |
-		var str = this.source.asCompileString;
-		try {
-			doc = doc ? Document.current;
-			doc.selectRange(	
-				doc.text.find(str),
-				str.size
-			)
-		};
-		
-		
-	}
-
 
 
 
