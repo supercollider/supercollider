@@ -110,6 +110,7 @@ struct FFTAnalyser_Unit : Unit
 	// Not always used: multipliers which convert from bin indices to freq vals, and vice versa.
 	// See also the macros for deriving these.
 	float m_bintofreq /* , m_freqtobin */;
+	float m_halfnyq_over_numbinsp2;
 };
 
 struct FFTAnalyser_OutOfPlace : FFTAnalyser_Unit
@@ -120,6 +121,7 @@ struct FFTAnalyser_OutOfPlace : FFTAnalyser_Unit
 
 struct SpecFlatness : FFTAnalyser_Unit
 {
+	double m_oneovern;
 };
 
 struct SpecPcile : FFTAnalyser_OutOfPlace

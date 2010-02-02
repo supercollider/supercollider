@@ -70,10 +70,10 @@ struct SpecCentroid : FFTAnalyser_Unit
 	uint32 ibufnum = (uint32)fbufnum; \
 	World *world = unit->mWorld; \
 	SndBuf *buf; \
-	if (ibufnum >= world->mNumSndBufs) { \
+	if (!(ibufnum < world->mNumSndBufs)) { \
 		int localBufNum = ibufnum - world->mNumSndBufs; \
 		Graph *parent = unit->mParent; \
-		if(localBufNum <= parent->localBufNum) { \
+		if(!(localBufNum > parent->localBufNum)) { \
 			buf = parent->mLocalSndBufs + localBufNum; \
 		} else { \
 			buf = world->mSndBufs; \
@@ -84,12 +84,6 @@ struct SpecCentroid : FFTAnalyser_Unit
 	int numbins = buf->samples - 2 >> 1;
 
 // Copied from FFT_UGens.cpp
-#define MAKE_TEMP_BUF \
-	if (!unit->m_tempbuf) { \
-		unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float)); \
-		unit->m_numbins = numbins; \
-	} else if (numbins != unit->m_numbins) return;
-
 #define GET_BINTOFREQ \
 	if(unit->m_bintofreq==0.f){ \
 		unit->m_bintofreq = world->mFullRate.mSampleRate / buf->samples; \
@@ -159,11 +153,15 @@ void SpecFlatness_Ctor(SpecFlatness *unit)
 {
 	SETCALC(SpecFlatness_next);
 	ZOUT0(0) = unit->outval = 0.;
+	unit->m_oneovern = 0.;
 }
 
 void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 {
 	FFTAnalyser_GET_BUF
+	if(unit->m_oneovern == 0.){
+		unit->m_oneovern = 1./(numbins + 2);
+	}
 
 	SCComplexBuf *p = ToComplexApx(buf);
 
@@ -171,19 +169,20 @@ void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 	//
 	// In order to calculate geom mean without hitting the precision limit,
 	//  we use the trick of converting to log, taking the average, then converting back from log.
-	double geommean = log(sc_abs(p->dc)) + log(sc_abs(p->nyq));
+	double geommean = std::log(sc_abs(p->dc)) + std::log(sc_abs(p->nyq));
 	double mean     = sc_abs(p->dc)      + sc_abs(p->nyq);
 
 	for (int i=0; i<numbins; ++i) {
 		float rabs = (p->bin[i].real);
 		float iabs = (p->bin[i].imag);
-		float amp = sqrt((rabs*rabs) + (iabs*iabs));
-		if(amp==0.f) amp = 0.0000000000000000000000001f; // zeroes lead to NaNs
-		geommean += log(amp);
-		mean += amp;
+		float amp = std::sqrt((rabs*rabs) + (iabs*iabs));
+		if(amp != 0.f){ // zeroes lead to NaNs
+			geommean += std::log(amp);
+			mean += amp;
+		}
 	}
 
-	double oneovern = 1/(numbins + 2.);
+	double oneovern = unit->m_oneovern;
 	geommean = exp(geommean * oneovern); // Average and then convert back to linear
 	mean *= oneovern;
 
@@ -208,7 +207,13 @@ void SpecPcile_Ctor(SpecPcile *unit)
 void SpecPcile_next(SpecPcile *unit, int inNumSamples)
 {
 	FFTAnalyser_GET_BUF
-	MAKE_TEMP_BUF
+	
+	// Used to be MAKE_TEMP_BUF but we can handle it more cleanly in this specific case:
+	if (!unit->m_tempbuf) {
+		unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+		unit->m_numbins = numbins;
+		unit->m_halfnyq_over_numbinsp2 = ((float)unit->mWorld->mSampleRate) * 0.5f / (float)(numbins+2);
+	} else if (numbins != unit->m_numbins) return;
 
 	// Percentile value as a fraction. eg: 0.5 == 50-percentile (median).
 	float fraction = ZIN0(1);
@@ -216,36 +221,35 @@ void SpecPcile_next(SpecPcile *unit, int inNumSamples)
 
 	// The magnitudes in *p will be converted to cumulative sum values and stored in *q temporarily
 	SCComplexBuf *p = ToComplexApx(buf);
-	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
+	float *q = (float*)unit->m_tempbuf;
 
 	float cumul = sc_abs(p->dc);
 
 	for (int i=0; i<numbins; ++i) {
 		float real = p->bin[i].real;
 		float imag = p->bin[i].imag;
-		cumul += sqrt(real*real + imag*imag);
+		cumul += std::sqrt(real*real + imag*imag);
 
 		// A convenient place to store the mag values...
-		q->bin[i].real = cumul;
+		q[i] = cumul;
 	}
 
 	cumul += sc_abs(p->nyq);
 
-	float target = cumul * fraction; // The target cumul value, stored in the "real" slots
+	float target = cumul * fraction; // The target cumul value, stored somewhere in q
 
 	float bestposition = 0; // May be linear-interpolated between bins, but not implemented yet
 	           // NB If nothing beats the target (e.g. if fraction is -1) zero Hz is returned
-	float nyqfreq = ((float)unit->mWorld->mSampleRate) * 0.5f;
 	float binpos;
-	for(int i=0; i<numbins; i++) {
+	for(int i=0; i<numbins; ++i) {
 		//Print("Testing %g, at position %i", q->bin[i].real, i);
-		if(q->bin[i].real >= target){
+		if(!(q[i] < target)){ // this is a ">=" comparison, done more efficiently as "!(<)"
 			if(interpolate && i!=0) {
-				binpos = ((float)i) + 1.f - (q->bin[i].real - target) / (q->bin[i].real - q->bin[i-1].real);
+				binpos = ((float)i) + 1.f - (q[i] - target) / (q[i] - q[i-1]);
 			} else {
 				binpos = ((float)i) + 1.f;
 			}
-			bestposition = (nyqfreq * binpos) / (float)(numbins+2);
+			bestposition = binpos * unit->m_halfnyq_over_numbinsp2;
 			//Print("Target %g beaten by %g (at position %i), equating to freq %g\n",
 			//				target, p->bin[i].real, i, bestposition);
 			break;
@@ -261,7 +265,7 @@ void SpecPcile_next(SpecPcile *unit, int inNumSamples)
 
 void SpecPcile_Dtor(SpecPcile *unit)
 {
-	RTFree(unit->mWorld, unit->m_tempbuf);
+	if(unit->m_tempbuf) RTFree(unit->mWorld, unit->m_tempbuf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
