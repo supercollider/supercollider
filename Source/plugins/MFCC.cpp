@@ -207,7 +207,7 @@ void MFCC_dofft(MFCC *unit, uint32 ibufnum) {
 
 float MFCC_prepareMel(MFCC * unit, float * data) {
 
-int j,k;
+	int j,k;
 
 	float * pbands= unit->m_bands;
 
@@ -219,32 +219,32 @@ int j,k;
 	for (k=0; k<unit->m_numbands; ++k){
 
 		int bandstart=startbin[k];
-		int bandend= endbin[k];
+		int bandendp1 = endbin[k]+1;
 
-		float bsum=0.0;
+		float bsum=0.f;
 		float real, imag, power;
 		int index, index2;
 		//float lastpower=0.0;
 
 		index2= cumulindex[k];
 
-		for (j=bandstart; j<=bandend;++j) {
-			index = 2*j;
+		for (j=bandstart; j < bandendp1; ++j) {
+			index = j+j;
 			real= data[index];
 			imag= data[index+1];
 
 			if(j==0)
-			power= real*real; //sc_abs(real); //dc
+				power= real*real; //sc_abs(real); //dc
 			else
-			power = real*real + imag*imag; //sqrt((real*real) + (imag*imag));
+				power = real*real + imag*imag; //sqrt((real*real) + (imag*imag));
 
 			float multiplier = weights[index2 + (j-bandstart)];
 
-			bsum+= (power*multiplier);
+			bsum += (power*multiplier);
 
 		}
 
-		pbands[k] = 10*(log10((bsum< 2e-42? 2e-42: bsum)) + 5);
+		pbands[k] = 10.f * (sc_log10((bsum< 2e-42f? 2e-42f: bsum)) + 5.f);
 
 		//10*(log10((bsum< 2e-42? 2e-42: bsum)) + 4.8810017610244); //log(bsum< 2e-42? 2e-42: bsum); //10*(log10(bsum) + 4.8810017610244);
 
