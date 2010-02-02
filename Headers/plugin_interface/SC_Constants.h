@@ -37,6 +37,13 @@ const double rlog2  = 1./std::log(2.);
 const double sqrt2  = std::sqrt(2.);
 const double rsqrt2 = 1. / sqrt2;
 
+const float pi_f    = (float)pi;
+const float pi2_f   = (float)pi2;
+const float pi32_f  = (float)pi32;
+const float twopi_f = (float)twopi;
+const float sqrt2_f = (float)sqrt2_f;
+const float rsqrt2_f= (float)rsqrt2_f;
+
 // used to truncate precision
 const float truncFloat = (float)(3. * std::pow(2.0,22));
 const double truncDouble = 3. * std::pow(2.0,51);

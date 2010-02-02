@@ -6486,13 +6486,13 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 				float cpan = numOutputs * pan + 0.5;
 				float ipan = floor(cpan);
 				float panfrac = cpan - ipan;
-				panangle = panfrac * pi2;
+				panangle = panfrac * pi2_f;
 				grain->chan = (int)ipan;
 				if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs;
 			} else {
 				grain->chan = 0;
 				pan = sc_wrap(pan * 0.5f + 0.5f, 0.f, 1.f);
-				panangle = pan * pi2;
+				panangle = pan * pi2_f;
 			}
 			float pan1 = grain->pan1 = amp * cos(panangle);
 			float pan2 = grain->pan2 = amp * sin(panangle);

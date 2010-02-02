@@ -2358,7 +2358,7 @@ void LPF_next(LPF* unit, int inNumSamples)
 
 		float C = 1.f / std::tan(pfreq);
 		float C2 = C * C;
-		float sqrt2C = C * sqrt2;
+		float sqrt2C = C * sqrt2_f;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
 		float next_b1 = -2.f * (1.f - C2) * next_a0 ;
 		float next_b2 = -(1.f - sqrt2C + C2) * next_a0;
@@ -2435,7 +2435,7 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 
 		float C = 1.f / std::tan(pfreq);
 		float C2 = C * C;
-		float sqrt2C = C * sqrt2;
+		float sqrt2C = C * sqrt2_f;
 		a0 = 1.f / (1.f + sqrt2C + C2);
 		b1 = -2.f * (1.f - C2) * a0 ;
 		b2 = -(1.f - sqrt2C + C2) * a0;
@@ -2504,7 +2504,7 @@ void HPF_next(HPF* unit, int inNumSamples)
 
 		float C = std::tan(pfreq);
 		float C2 = C * C;
-		float sqrt2C = C * sqrt2;
+		float sqrt2C = C * sqrt2_f;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
 		float next_b1 = 2.f * (1.f - C2) * next_a0 ;
 		float next_b2 = -(1.f - sqrt2C + C2) * next_a0;
@@ -2582,7 +2582,7 @@ void HPF_next_1(HPF* unit, int inNumSamples)
 
 		float C = std::tan(pfreq);
 		float C2 = C * C;
-		float sqrt2C = C * sqrt2;
+		float sqrt2C = C * sqrt2_f;
 		a0 = 1.f / (1.f + sqrt2C + C2);
 		b1 = 2.f * (1.f - C2) * a0 ;
 		b2 = -(1.f - sqrt2C + C2) * a0;
