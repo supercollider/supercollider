@@ -1,5 +1,5 @@
 //  group
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -187,6 +187,16 @@ public:
     group(int node_id):
         abstract_group(node_id, false)
     {}
+
+    const server_node * head_node(void) const
+    {
+        return &*child_nodes.begin();
+    }
+
+    const server_node * tail_node(void) const
+    {
+        return &*child_nodes.rbegin();
+    }
 
 private:
     void add_child(server_node * node, node_position_constraint const & constraint);

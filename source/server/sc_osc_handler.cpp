@@ -31,6 +31,73 @@ namespace nova
 
 using namespace std;
 
+namespace
+{
+server_node * find_node(int target_id)
+{
+    server_node * node = instance->find_node(target_id);
+
+    if (node == NULL) {
+        cerr << "node not found" << endl;
+        return NULL;
+    }
+    return node;
+}
+
+
+void fill_notification(int32_t node_id, osc::OutboundPacketStream & p)
+{
+    p << node_id;
+
+    /* parent */
+    server_node * node = find_node(node_id);
+    abstract_group * parent_node = node->get_parent();
+    assert(parent_node);
+    p << parent_node->id();
+
+    /* previous/next */
+    if (parent_node->is_parallel())
+        p << -2 << -2; /* we are in a parallel group, so we have no notion of previous/next */
+    else
+    {
+        server_node * prev_node = parent_node->previous_node(node);
+        if (prev_node)
+            p << prev_node->id();
+        else
+            p << -1;
+
+        server_node * next_node = parent_node->next_node(node);
+        if (next_node)
+            p << next_node->id();
+        else
+            p << -1;
+    }
+
+    /* is_synth, head, tail */
+    if (node->is_synth())
+        p << 0;
+    else {
+        abstract_group * node_group = static_cast<abstract_group*>(node);
+        p << 1;
+
+        if (node_group->is_parallel())
+            p << -2 << -2;
+        else
+        {
+            group * node_real_group = static_cast<group*>(node_group);
+            if (node_real_group->empty())
+                p << -1 << -1;
+            else
+                p << node_real_group->head_node()->id()
+                  << node_real_group->tail_node()->id();
+        }
+    }
+
+    p << osc::EndMessage;
+}
+
+} /* namespace */
+
 namespace detail
 {
 
@@ -665,17 +732,6 @@ void handle_unhandled_message(received_message const & msg)
     cerr << "unhandled message " << msg.AddressPattern() << endl;
 }
 
-server_node * find_node(int target_id)
-{
-    server_node * node = instance->find_node(target_id);
-
-    if (node == NULL) {
-        cerr << "node not found" << endl;
-        return NULL;
-    }
-    return node;
-}
-
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
     if (!check_node_id(node_id))
@@ -1306,6 +1362,25 @@ void handle_n_after(received_message const & msg)
         /** \todo this can be optimized if a_parent == b_parent */
         a_parent->remove_child(a);
         b_parent->add_child(a, make_pair(b_parent, after));
+    }
+}
+
+void handle_n_query(received_message const & msg, nova_endpoint const & endpoint)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_id;
+        args >> node_id;
+
+        char buffer[128]; // 128 byte should be enough
+        osc::OutboundPacketStream p(buffer, 128);
+        p << osc::BeginMessage("/n_info");
+        fill_notification(node_id, p);
+
+        movable_array<char> message(p.Size(), p.Data());
+        cmd_dispatcher<true>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
     }
 }
 
@@ -2777,6 +2852,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_mapan(message);
         break;
 
+    case cmd_n_query:
+        handle_n_query(message, endpoint);
+        break;
+
     case cmd_n_order:
         handle_n_order(message);
         break;
@@ -3003,6 +3082,11 @@ void dispatch_node_commands(const char * address, received_message const & messa
 
     if (strcmp(address+3, "order") == 0) {
         handle_n_order(message);
+        return;
+    }
+
+    if (strcmp(address+3, "query") == 0) {
+        handle_n_query(message, endpoint);
         return;
     }
 }
