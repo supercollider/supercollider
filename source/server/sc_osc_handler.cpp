@@ -1,5 +1,5 @@
 //  osc handler for supercollider-style communication, implementation
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -79,6 +79,52 @@ void sc_scheduled_bundles::execute_bundles(time_tag const & now)
         else
             return;
     }
+}
+
+
+void sc_osc_handler::open_tcp_acceptor(tcp const & protocol, unsigned int port)
+{
+    tcp_acceptor_.open(protocol);
+    tcp_acceptor_.bind(tcp::endpoint(protocol, port));
+    tcp_acceptor_.listen();
+}
+
+void sc_osc_handler::open_udp_socket(udp const & protocol, unsigned int port)
+{
+    udp_socket_.open(protocol);
+    udp_socket_.bind(udp::endpoint(protocol, port));
+}
+
+bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned int port)
+{
+    if (protocol == IPPROTO_TCP)
+    {
+        if ( type != SOCK_STREAM )
+            return false;
+
+        if (family == AF_INET)
+            open_tcp_acceptor(tcp::v4(), port);
+        else if (family == AF_INET6)
+            open_tcp_acceptor(tcp::v6(), port);
+        else
+            return false;
+        return true;
+    }
+    else if (protocol == IPPROTO_UDP)
+    {
+        if ( type != SOCK_DGRAM )
+            return false;
+
+        if (family == AF_INET)
+            open_udp_socket(udp::v4(), port);
+        else if (family == AF_INET6)
+            open_udp_socket(udp::v6(), port);
+        else
+            return false;
+        start_receive_udp();
+        return true;
+    }
+    return false;
 }
 
 

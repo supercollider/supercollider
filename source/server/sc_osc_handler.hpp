@@ -1,5 +1,5 @@
 //  osc handler for supercollider-style communication
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -56,9 +56,10 @@ class sc_notify_observers
 
 public:
     sc_notify_observers(void):
-        udp_socket(io_service)
+        udp_socket(io_service), tcp_socket(io_service)
     {
         udp_socket.open(udp::v4());
+        tcp_socket.open(tcp::v4());
     }
 
     void add_observer(nova_endpoint const & ep)
@@ -90,11 +91,18 @@ private:
             udp::endpoint ep(endpoint.address(), endpoint.port());
             udp_socket.send_to(boost::asio::buffer(data, length), ep);
         }
+        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
+        {
+            tcp::endpoint ep(endpoint.address(), endpoint.port());
+            tcp_socket.connect(ep);
+            boost::asio::write(tcp_socket, boost::asio::buffer(data, length));
+        }
     }
 
     observer_vector observers;
     boost::asio::io_service io_service; /* we have an io_service for our own */
     udp::socket udp_socket;
+    tcp::socket tcp_socket;
 };
 
 class sc_scheduled_bundles
@@ -150,50 +158,12 @@ class sc_osc_handler:
     private detail::network_thread,
     public sc_notify_observers
 {
-    void open_tcp_acceptor(tcp const & protocol, unsigned int port)
-    {
-        tcp_acceptor_.open(protocol);
-        tcp_acceptor_.bind(tcp::endpoint(protocol, port));
-        tcp_acceptor_.listen();
-    }
-
-    void open_udp_socket(udp const & protocol, unsigned int port)
-    {
-        udp_socket_.open(protocol);
-        udp_socket_.bind(udp::endpoint(protocol, port));
-    }
-
-    bool open_socket(int family, int type, int protocol, unsigned int port)
-    {
-        if (protocol == IPPROTO_TCP)
-        {
-            if ( type != SOCK_STREAM )
-                return false;
-
-            if (family == AF_INET)
-                open_tcp_acceptor(tcp::v4(), port);
-            else if (family == AF_INET6)
-                open_tcp_acceptor(tcp::v6(), port);
-            else
-                return false;
-            return true;
-        }
-        else if (protocol == IPPROTO_UDP)
-        {
-            if ( type != SOCK_DGRAM )
-                return false;
-
-            if (family == AF_INET)
-                open_udp_socket(udp::v4(), port);
-            else if (family == AF_INET6)
-                open_udp_socket(udp::v6(), port);
-            else
-                return false;
-            start_receive_udp();
-            return true;
-        }
-        return false;
-    }
+    /* @{ */
+    /** constructor helpers */
+    void open_tcp_acceptor(tcp const & protocol, unsigned int port);
+    void open_udp_socket(udp const & protocol, unsigned int port);
+    bool open_socket(int family, int type, int protocol, unsigned int port);
+    /* @} */
 
 public:
     sc_osc_handler(server_arguments const & args):
@@ -228,7 +198,6 @@ public:
             tcp::endpoint ep(endpoint.address(), endpoint.port());
             send_tcp(data, size, ep);
         }
-
     }
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
