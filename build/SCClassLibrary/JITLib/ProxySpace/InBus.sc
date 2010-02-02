@@ -1,18 +1,19 @@
 InBus {
 
-	*ar { arg bus, numChannels=2, offset=0;
+	*ar { | bus, numChannels = 2, offset = 0 |
 		^this.getOutput(bus.asBus, 'audio', numChannels, offset);
 	}
 
-	*kr { arg bus, numChannels=1, offset=0;
+	*kr { | bus, numChannels=1, offset = 0 |
 		^this.getOutput(bus.asBus, 'control', numChannels, offset);
 	}
 
-	*getOutput { arg bus, argRate, numChannels, offset=0;
-		var rate, n, out, startIndex, index;
-		rate = bus.rate;
-		startIndex = bus.index + offset;
-		n = bus.numChannels;
+	*getOutput { | bus, argRate, numChannels, offset = 0 |
+		
+		var out, index;
+		var rate = bus.rate;
+		var startIndex = bus.index + offset;
+		var n = bus.numChannels;
 		if(n >= numChannels) {
 			index = startIndex.min(n + bus.index);
 		} {
@@ -29,6 +30,7 @@ InBus {
 						{ XInFeedback.ar(index, numChannels) }
 						{ XIn.kr(index, numChannels) }
 			};
+			
 		^if(argRate === rate) { out } { // if not the same rate, convert rates
 			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
@@ -38,31 +40,37 @@ InBus {
 }
 
 XIn {
-	*ar { arg which, n;
+
+	*ar { | which, n |
+	
 		^XFade2.ar( // use equal power crossfading for audio rate
 			In.ar(which.round(2), n),
 			In.ar(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
-		);
+		)
+		
 	}
-	*kr { arg which, n;
+	
+	*kr { | which, n |
 		^LinXFade2.kr( // use linear crossfading for control rate
 			In.kr(which.round(2), n),
 			In.kr(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
-		);
+		)
 	}
 
 }
 
 XInFeedback {
-	*ar { arg which, n;
+
+	*ar { | which, n |
 		^XFade2.ar(
 			InFeedback.ar(which.round(2), n),
 			InFeedback.ar(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
 		);
 	}
+	
 }
 
 
@@ -70,13 +78,13 @@ XInFeedback {
 // plays out to various other indices.
 
 Monitor {
-	var <ins, <outs, <amps = #[1.0], <vol=1;
-	var <group, synthIDs, synthAmps, <>fadeTime=0.02;
 
+	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
+	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
 
-
-	play { arg fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-			target, multi=false, volume, fadeTime=0.02, addAction;
+	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
+			target, multi=false, volume, fadeTime=0.02, addAction |
+			
 		var server, inGroup, numChannels, bundle, divider;
 
 		inGroup = target.asGroup;
@@ -91,7 +99,7 @@ Monitor {
 		server.listSendBundle(server.latency, bundle);
 	}
 
-	stop { arg argFadeTime;
+	stop { | argFadeTime |
 		var oldGroup = group;
 		fadeTime = argFadeTime ? fadeTime;
 		synthIDs = [];
@@ -111,7 +119,7 @@ Monitor {
 
 	// multichannel support
 
-	playN { arg out, amp, in, vol, fadeTime, target, addAction;
+	playN { | out, amp, in, vol, fadeTime, target, addAction |
 		var bundle = List.new;
 		var server, inGroup;
 		inGroup = target.asGroup;
@@ -125,15 +133,15 @@ Monitor {
 	// setting volume and output offset.
 	// lists are only flat lists for now.
 
-	vol_ { arg val;
-		if(val == vol) {^this };
+	vol_ { | val |
+		if(val == vol) { ^this };
 		vol = val;
 		this.amps = amps;
 	}
 
 	// first channel interface
 
-	out_ { arg index;
+	out_ { | index |
 		var offset = index - outs[0];
 		this.outs = outs + offset
 	}
@@ -144,7 +152,7 @@ Monitor {
 
 	// multi channel interface
 
-	outs_ { arg indices;
+	outs_ { | indices |
 		if (outs.isNil) {
 			"Monitor - initialising  outs: %\n".postf(indices);
 			outs = indices;
@@ -166,7 +174,7 @@ Monitor {
 		}
 	}
 
-	amps_ { arg values;
+	amps_ { | values |
 		if (amps.isNil) {
 			"Monitor - initialising  amps: %\n".postf(values);
 			amps = values;
@@ -191,8 +199,15 @@ Monitor {
 
 	// bundling
 
-	playNToBundle { arg bundle, argOuts=(outs ?? {(0..ins.size-1)}), argAmps=(amps), argIns=(ins),
-					argVol=(vol), argFadeTime=(fadeTime), inGroup, addAction, 					defName="system_link_audio_1";
+	playNToBundle { | 	bundle, 
+					argOuts = (outs ?? {(0..ins.size-1)}), 
+					argAmps = (amps), 
+					argIns = (ins), 
+					argVol = (vol), 
+					argFadeTime = (fadeTime), 
+					inGroup, 
+					addAction, 
+					defName = "system_link_audio_1" |
 
 		var triplets, server;
 
@@ -214,12 +229,12 @@ Monitor {
 
 		server = group.server;
 
-		triplets.do {|trip, i|
+		triplets.do { | trip, i |
 			var in, out, amp;
 			#in, out, amp = trip;
 			out = out.asArray;
 			amp = amp.asArray;
-			out.do { |item, j|
+			out.do { | item, j |
 				var id = server.nextNodeID;
 				synthIDs = synthIDs.add(id);
 				synthAmps = synthAmps.add(amp[j]);
@@ -228,16 +243,17 @@ Monitor {
 					"out", item,
 					"in", in,
 					"vol", amp.clipAt(j) * vol
-				]);
-			};
+				])
+			}
 		};
-		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
+		bundle.add([15, group.nodeID, "fadeTime", fadeTime])
 	}
 
 	// optimizes ranges of channels
 
-	playToBundle { arg bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-			inGroup, multi = false, volume, inFadeTime, addAction;
+	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
+			inGroup, multi = false, volume, inFadeTime, addAction |
+			
 		var server, numChannels, defname, chanRange, n;
 
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };
@@ -277,7 +293,7 @@ Monitor {
 	}
 
 
-	playNBusToBundle { arg bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction;
+	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction |
 		var size;
 		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
@@ -292,7 +308,7 @@ Monitor {
 	}
 
 
-	newGroupToBundle { arg bundle, target, addAction=(\addToTail);
+	newGroupToBundle { | bundle, target, addAction=(\addToTail) |
 				target = target.asGroup;
 				group = Group.basicNew(target.server);
 				group.isPlaying = true;
@@ -301,14 +317,14 @@ Monitor {
 	}
 
 
-	stopToBundle { arg bundle; // maybe with fade later.
+	stopToBundle { | bundle | // maybe with fade later.
 		bundle.add([15, group.nodeID, "gate", 0]);
 		synthIDs = [];
 		synthAmps = [];
 	}
 
 	hasSeriesOuts {
-		if (outs.isNil, { ^true });
+		if (outs.isNil) { ^true };
 		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
 	}
 }
