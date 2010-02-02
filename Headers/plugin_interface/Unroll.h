@@ -82,7 +82,7 @@ what loop constructs the compiler can best generate code.
 
 #endif
 
-/* faster loop macro, length is required to be larger than 1 */
+/* faster loop macro, length is required to be larger than 0 */
 #define LOOP1(length, stmt)			\
 	{	int xxn = (length);			\
 		assert(length);				\
