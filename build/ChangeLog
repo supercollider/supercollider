@@ -73,6 +73,7 @@ Other additions/improvements:
 * 2010-01-04 sclang: deprecated Proutine - switch back to the original Prout
 * 2010-01-06 UnitTest Quark improved, added script support - jr
 * 2010-01-23 Improved NodeProxy and ProxySpace helpfiles. Added proxy composition syntax to NodeProxy - jr
+* 2010-01-30 Make multichannel plotting easier. If no numChannels is given, find out automatically  - jr
 
 
 SuperCollider v3.3.1, released 2009-06-19
