@@ -223,6 +223,12 @@ public:
             udp::endpoint ep(endpoint.address(), endpoint.port());
             send_udp(data, size, ep);
         }
+        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
+        {
+            tcp::endpoint ep(endpoint.address(), endpoint.port());
+            send_tcp(data, size, ep);
+        }
+
     }
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
@@ -232,9 +238,9 @@ public:
 
     void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
     {
-/*        tcp::socket socket(detail::network_thread::io_service_);
+        tcp::socket socket(detail::network_thread::io_service_);
         socket.connect(receiver);
-        udp_socket_.send_to(boost::asio::buffer(data, size), receiver);*/
+        boost::asio::write(socket, boost::asio::buffer(data, size));
     }
 
     struct received_packet:
@@ -367,7 +373,7 @@ private:
             sized_array<char> recv_vector(msglen + sizeof(uint32_t));
 
             std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
-            size_t transfered = socket_.read_some(boost::asio::buffer((void*)recv_vector.data()+sizeof(uint32_t),
+            size_t transfered = socket_.read_some(boost::asio::buffer((void*)(recv_vector.data()+sizeof(uint32_t)),
                                                                       recv_vector.size()-sizeof(uint32_t)));
 
             if (transfered != size_t(msglen))
