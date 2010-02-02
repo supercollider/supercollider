@@ -403,7 +403,7 @@ NodeProxy : BusPlug {
 	<<> { | proxy, key = \in |
 		var ctl, rate, numChannels, canBeMapped;
 		if(proxy.isNil) { ^this.unmap(key) };
-		ctl = proxy.controlNames.detect { |x| x.name == key };
+		ctl = this.controlNames.detect { |x| x.name == key };
 		rate = ctl.rate ?? { if(this.isNeutral) { \audio } { this.rate } };
 		numChannels = ctl !? { ctl.defaultValue.size } ?? { 
 			if(rate == \audio) { this.class.defaultNumAudio } { this.class.defaultNumControl } 
@@ -412,7 +412,9 @@ NodeProxy : BusPlug {
 		if(canBeMapped) {
 			if(this.isNeutral) { this.defineBus(rate, numChannels) };
 			this.xmap(key, proxy);
-		} { "Could not link node proxies, no matching input found.".warn };
+		} { 
+			"Could not link node proxies, no matching input found.".warn 
+		};
 		^proxy; // returns first argument for further chaining
 	}
 
