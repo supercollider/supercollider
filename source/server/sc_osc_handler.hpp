@@ -364,10 +364,11 @@ private:
 
             msglen = ntohl(msglen);
 
-            sized_array<char> recv_vector(msglen);
+            sized_array<char> recv_vector(msglen + sizeof(uint32_t));
 
-            size_t transfered = socket_.read_some(boost::asio::buffer((void*)recv_vector.data(),
-                                                                      recv_vector.size()));
+            std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
+            size_t transfered = socket_.read_some(boost::asio::buffer((void*)recv_vector.data()+sizeof(uint32_t),
+                                                                      recv_vector.size()-sizeof(uint32_t)));
 
             if (transfered != size_t(msglen))
                 throw std::runtime_error("socket read sanity check failure");
