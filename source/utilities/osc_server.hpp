@@ -31,6 +31,7 @@
 
 #include "static_allocator.hpp"
 #include "nova-tt/semaphore.hpp"
+#include "nova-tt/thread_priority.hpp"
 
 namespace nova
 {
@@ -70,6 +71,7 @@ public:
 private:
     static void start(network_thread * self)
     {
+        thread_set_priority_rt(thread_priority_interval_rt().first);
         self->run();
     }
 
