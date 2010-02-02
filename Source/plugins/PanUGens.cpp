@@ -1095,7 +1095,7 @@ void PanB_Ctor(PanB *unit)
 	float cosa = ft->mSine[iazimuth];
 	float cosb = ft->mSine[ielevation];
 
-	unit->m_W_amp = rsqrt2 * level;
+	unit->m_W_amp = rsqrt2_f * level;
 	unit->m_X_amp = cosa * cosb * level;
 	unit->m_Y_amp = sina * cosb * level;
 	unit->m_Z_amp = sinb * level;
@@ -1137,7 +1137,7 @@ void PanB_next(PanB *unit, int inNumSamples)
 		float cosa = ft->mSine[iazimuth];
 		float cosb = ft->mSine[ielevation];
 
-		float next_W_amp = rsqrt2 * level;
+		float next_W_amp = rsqrt2_f * level;
 		float next_X_amp = cosa * cosb * level;
 		float next_Y_amp = sina * cosb * level;
 		float next_Z_amp = sinb * level;
@@ -1201,7 +1201,7 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
 
-		float next_W_amp = rsqrt2 * level;
+		float next_W_amp = rsqrt2_f * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
 
@@ -1261,7 +1261,7 @@ void vPanB2_next(PanB2 *unit, int inNumSamples)
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
 
-		float next_W_amp = rsqrt2 * level;
+		float next_W_amp = rsqrt2_f * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
 
@@ -1329,7 +1329,7 @@ void PanB2_Ctor(PanB2 *unit)
 	long icospos = kSineMask & (isinpos + (kSineSize>>2));
 	float cosa = ft->mSine[icospos];
 
-	unit->m_W_amp = rsqrt2 * level;
+	unit->m_W_amp = rsqrt2_f * level;
 	unit->m_X_amp = cosa * level;
 	unit->m_Y_amp = sina * level;
 
@@ -1365,7 +1365,7 @@ void BiPanB2_next(BiPanB2 *unit, int inNumSamples)
 		long icospos = kSineMask & (isinpos + (kSineSize>>2));
 		float cosa = ft->mSine[icospos];
 
-		float next_W_amp = rsqrt2 * level;
+		float next_W_amp = rsqrt2_f * level;
 		float next_X_amp = cosa * level;
 		float next_Y_amp = sina * level;
 
@@ -1428,7 +1428,7 @@ void BiPanB2_Ctor(BiPanB2 *unit)
 	iazimuth = kSineMask & (iazimuth + (kSineSize>>2));
 	float cosa = ft->mSine[iazimuth];
 
-	unit->m_W_amp = rsqrt2 * level;
+	unit->m_W_amp = rsqrt2_f * level;
 	unit->m_X_amp = cosa * level;
 	unit->m_Y_amp = sina * level;
 
@@ -1607,7 +1607,7 @@ void DecodeB2_Ctor(DecodeB2 *unit)
 	float orientation = ZIN0(3);
 
 	int numOutputs = unit->mNumOutputs;
-	float angle = (twopi / numOutputs);
+	float angle = twopi_f / numOutputs;
 	unit->m_cosa = cos(angle);
 	unit->m_sina = sin(angle);
 	unit->m_W_amp = 0.7071067811865476f;

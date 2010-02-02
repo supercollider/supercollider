@@ -417,7 +417,7 @@ inline double sc_gloop(double in, double hi)
 		float cpan = numOutputs * pan + 0.5; \
 		float ipan = floor(cpan); \
 		float panfrac = cpan - ipan; \
-		panangle = panfrac * pi2; \
+		panangle = panfrac * pi2_f; \
 		grain->chan = (int)ipan; \
 		if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs; \
 		pan1 = grain->pan1 = cos(panangle); \
