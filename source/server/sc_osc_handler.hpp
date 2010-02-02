@@ -31,6 +31,7 @@
 #include "memory_pool.hpp"
 #include "server_scheduler.hpp"
 #include "../utilities/osc_server.hpp"
+#include "../utilities/sized_array.hpp"
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
 
@@ -148,6 +149,13 @@ class sc_osc_handler:
     private detail::network_thread,
     public sc_notify_observers
 {
+    void open_tcp_acceptor(tcp const & protocol, unsigned int port)
+    {
+        tcp_acceptor_.open(protocol);
+        tcp_acceptor_.bind(tcp::endpoint(protocol, port));
+        tcp_acceptor_.listen();
+    }
+
     void open_udp_socket(udp const & protocol, unsigned int port)
     {
         udp_socket_.open(protocol);
@@ -158,7 +166,16 @@ class sc_osc_handler:
     {
         if (protocol == IPPROTO_TCP)
         {
-            return false;
+            if ( type != SOCK_STREAM )
+                return false;
+
+            if (family == AF_INET)
+                open_tcp_acceptor(tcp::v4(), port);
+            else if (family == AF_INET6)
+                open_tcp_acceptor(tcp::v6(), port);
+            else
+                return false;
+            return true;
         }
         else if (protocol == IPPROTO_UDP)
         {
@@ -178,10 +195,11 @@ class sc_osc_handler:
     }
 
 public:
-    sc_osc_handler(int family, int type, int protocol, unsigned int port):
+    sc_osc_handler(int family, int type, int protocol, unsigned int port, const char * tcp_password):
         dump_osc_packets(0), error_posting(1),
         udp_socket_(detail::network_thread::io_service_),
-        tcp_socket_(detail::network_thread::io_service_)
+        tcp_acceptor_(detail::network_thread::io_service_),
+        tcp_password_(NULL)
     {
         if (!open_socket(family, type, protocol, port))
             throw std::runtime_error("cannot open socket");
@@ -209,6 +227,13 @@ public:
         udp_socket_.send_to(boost::asio::buffer(data, size), receiver);
     }
 
+    void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
+    {
+/*        tcp::socket socket(detail::network_thread::io_service_);
+        socket.connect(receiver);
+        udp_socket_.send_to(boost::asio::buffer(data, size), receiver);*/
+    }
+
     struct received_packet:
         public audio_sync_callback
     {
@@ -233,7 +258,7 @@ public:
 
 private:
     /* @{ */
-    /** socket handling */
+    /** udp socket handling */
     void start_receive_udp(void)
     {
         udp_socket_.async_receive_from(
@@ -277,8 +302,105 @@ private:
         start_receive_udp();
         return;
     }
+    /* @} */
 
-    /* handle message, called from receiver thread */
+    /* @{ */
+    /** tcp connection handling */
+    class tcp_connection:
+        public boost::enable_shared_from_this<tcp_connection>
+    {
+    public:
+        typedef boost::shared_ptr<tcp_connection> pointer;
+
+        static pointer create(boost::asio::io_service& io_service)
+        {
+            return pointer(new tcp_connection(io_service));
+        }
+
+        tcp::socket& socket()
+        {
+            return socket_;
+        }
+
+        void start(sc_osc_handler * self)
+        {
+            bool check_password = true;
+
+            if (check_password)
+            {
+                boost::array<char, 32> password;
+                size_t size;
+                uint32_t msglen;
+                for (unsigned int i=0; i!=4; ++i)
+                {
+                    size = socket_.receive(boost::asio::buffer(&msglen, 4));
+                    if (size != 4)
+                        return;
+
+                    msglen = ntohl(msglen);
+                    if (msglen > password.size())
+                        return;
+
+                    size = socket_.receive(boost::asio::buffer(password.data(), msglen));
+
+                    bool verified = true;
+                    if (size != msglen ||
+                        strcmp(password.data(), self->tcp_password_) != 0)
+                        verified = false;
+
+                    if (!verified)
+                        throw std::runtime_error("cannot verify password");
+                }
+            }
+
+            size_t size;
+            uint32_t msglen;
+            size = socket_.receive(boost::asio::buffer(&msglen, 4));
+            if (size != sizeof(uint32_t))
+                throw std::runtime_error("read error");
+
+            msglen = ntohl(msglen);
+
+            sized_array<char> recv_vector(msglen);
+
+            size_t transfered = socket_.read_some(boost::asio::buffer((void*)recv_vector.data(),
+                                                                      recv_vector.size()));
+
+            if (transfered != size_t(msglen))
+                throw std::runtime_error("socket read sanity check failure");
+
+            self->handle_packet_async(recv_vector.data(), recv_vector.size(), socket_.remote_endpoint());
+        }
+
+    private:
+        tcp_connection(boost::asio::io_service& io_service)
+            : socket_(io_service)
+        {}
+
+        tcp::socket socket_;
+    };
+
+    void start_accept(void)
+    {
+        tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
+
+        tcp_acceptor_.async_accept(new_connection->socket(),
+            boost::bind(&sc_osc_handler::handle_accept, this, new_connection,
+            boost::asio::placeholders::error));
+    }
+
+    void handle_accept(tcp_connection::pointer new_connection,
+                       const boost::system::error_code& error)
+    {
+        if (!error)
+        {
+            new_connection->start(this);
+            start_accept();
+        }
+    }
+
+    /* @} */
+
 public:
     void dumpOSC(int i)
     {
@@ -287,7 +409,6 @@ public:
 
 private:
     int dump_osc_packets;
-    /* @} */
 
     /* @{ */
 public:
@@ -345,7 +466,8 @@ private:
     udp::socket udp_socket_;
     udp::endpoint udp_remote_endpoint_;
 
-    tcp::socket tcp_socket_;
+    tcp::acceptor tcp_acceptor_;
+    const char * tcp_password_; /* we are not owning this! */
 
     boost::array<char, 1<<15 > recv_buffer_;
 
