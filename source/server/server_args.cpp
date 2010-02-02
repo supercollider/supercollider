@@ -36,8 +36,8 @@ server_arguments::server_arguments(int argc, char * argv[])
     options_description options("general options");
     options.add_options()
         ("help,h", "show this help")
-        ("udp-port,u", value<uint32_t>(&udp_port)->default_value(59595), "udp port")
-        ("tcp-port,t", value<uint32_t>(&tcp_port)->default_value(59595), "tdp port")
+        ("udp-port,u", value<uint32_t>(&udp_port)->default_value(0), "udp port")
+        ("tcp-port,t", value<uint32_t>(&tcp_port)->default_value(0), "tdp port")
         ("control-busses,c", value<uint32_t>(&control_busses)->default_value(4096), "number of control busses")
         ("audio-busses,a", value<uint32_t>(&audio_busses)->default_value(128), "number of audio busses")
         ("block-size,z", value<uint32_t>(&blocksize)->default_value(64), "audio block size")
@@ -53,9 +53,10 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("load-synthdefs,D", value<uint16_t>(&load_synthdefs)->default_value(1), "load synthdefs? (1 or 0)")
         ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
         ("max-logins,l", value<uint32_t>()->default_value(64), "maximum number of named return addresses")
-        ("password,p", value<std::string>()->default_value(""), "When using TCP, the session password must be the first command sent.\n"
-                                                               "The default is no password.\n"
-                                                               "UDP ports never require passwords, so for security use TCP.")
+        ("password,p", value<std::string>(&server_password)->default_value(""),
+                                                            "When using TCP, the session password must be the first command sent.\n"
+                                                            "The default is no password.\n"
+                                                            "UDP ports never require passwords, so for security use TCP.")
         ("nrt,N", "non-realtime command string")
         ("memory-locking,L", "enable memory locking")
         ("hardware-device-name,H", value<std::string>(&hw_name)->default_value(""), "hardware device name")

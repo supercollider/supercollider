@@ -28,8 +28,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
 {
     rt_pool.init(1024 * 1024);
 
-    nova_server server;
-    server_arguments::initialize(0, 0);
+    nova_server server(server_arguments::initialize(0, 0));
     rt_pool.init(1024*1024);
     sc_factory.initialize();
 
@@ -44,7 +43,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
 
 BOOST_AUTO_TEST_CASE( server_test_2 )
 {
-    nova_server server;
+    nova_server server(server_arguments::initialize(0, 0));
     server.synth_factory::register_prototype(new test_synth_prototype());
 
     node_position_constraint to_root = std::make_pair(server.root_group(), insert);
@@ -58,7 +57,7 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
 
 BOOST_AUTO_TEST_CASE( server_test_3 )
 {
-    nova_server server;
+    nova_server server(server_arguments::initialize(0, 0));
     server.synth_factory::register_prototype(new test_synth_prototype());
 
     parallel_group * g = new parallel_group(1);

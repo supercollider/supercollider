@@ -29,6 +29,7 @@
 
 #include "dynamic_endpoint.hpp"
 #include "memory_pool.hpp"
+#include "server_args.hpp"
 #include "server_scheduler.hpp"
 #include "../utilities/osc_server.hpp"
 #include "../utilities/sized_array.hpp"
@@ -195,13 +196,15 @@ class sc_osc_handler:
     }
 
 public:
-    sc_osc_handler(int family, int type, int protocol, unsigned int port, const char * tcp_password):
+    sc_osc_handler(server_arguments const & args):
         dump_osc_packets(0), error_posting(1),
         udp_socket_(detail::network_thread::io_service_),
         tcp_acceptor_(detail::network_thread::io_service_),
-        tcp_password_(NULL)
+        tcp_password_(args.server_password.c_str())
     {
-        if (!open_socket(family, type, protocol, port))
+        if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
+            throw std::runtime_error("cannot open socket");
+        if (args.udp_port && !open_socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, args.udp_port))
             throw std::runtime_error("cannot open socket");
     }
 

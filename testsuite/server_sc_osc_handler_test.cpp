@@ -8,10 +8,12 @@ using namespace nova;
 
 BOOST_AUTO_TEST_CASE( sc_osc_handler_1 )
 {
-    sc_osc_handler handler(AF_INET, SOCK_DGRAM, IPPROTO_UDP, 43456);
+    const_cast<server_arguments&>(server_arguments::initialize(0, 0)).udp_port = 54321;
+    sc_osc_handler handler(server_arguments::instance());
 }
 
 BOOST_AUTO_TEST_CASE( sc_osc_handler_2 )
 {
-    sc_osc_handler handler(AF_INET, SOCK_STREAM, IPPROTO_TCP, 43457);
+    const_cast<server_arguments&>(server_arguments::initialize(0, 0)).tcp_port = 54321;
+    sc_osc_handler handler(server_arguments::instance());
 }

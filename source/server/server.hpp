@@ -25,6 +25,7 @@
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "sc_osc_handler.hpp"
+#include "server_args.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
 #include "../sc/sc_ugen_factory.hpp"
@@ -101,7 +102,7 @@ public:
     typedef jack_backend<&run_scheduler_tick, float, false> audio_backend;
 
     /* main nova_server function */
-    nova_server(unsigned int port = 59595, unsigned int threads = boost::thread::hardware_concurrency());
+    nova_server(server_arguments const & args);
 
     ~nova_server(void);
 

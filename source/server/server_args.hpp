@@ -32,9 +32,10 @@ class server_arguments
     server_arguments(int argc, char * argv[]);
 
 public:
-    static void initialize(int argc, char * argv[])
+    static server_arguments const &initialize(int argc, char * argv[])
     {
         instance_.reset(new server_arguments(argc, argv));
+        return instance();
     }
 
     static server_arguments const & instance(void)
@@ -65,6 +66,7 @@ public:
     std::vector<std::string> ugen_paths, restrict_paths;
 
     uint16_t input_channels, output_channels;
+    std::string server_password;
 
 private:
     static std::auto_ptr<server_arguments> instance_;

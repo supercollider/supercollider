@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
 #error "Don't know how to locate plugins on this platform"
 #endif
 
-    nova_server server(args.udp_port, threads);
+    nova_server server(args);
     register_handles();
 
 #if defined (JACK_BACKEND)
