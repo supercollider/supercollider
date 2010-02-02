@@ -30,7 +30,7 @@ namespace nova
 class nova_server * instance = 0;
 
 nova_server::nova_server(unsigned int port, unsigned int threads):
-    scheduler(threads), buffer_manager(1024), sc_osc_handler(port),
+    scheduler(threads), buffer_manager(1024), sc_osc_handler(AF_INET, SOCK_DGRAM, IPPROTO_UDP, port),
     io_interpreter(4, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);

@@ -101,7 +101,7 @@ public:
     struct bundle_node:
         public boost::intrusive::bs_set_base_hook<>
     {
-        bundle_node(time_tag const & timeout, const char * data, udp::endpoint const & endpoint):
+        bundle_node(time_tag const & timeout, const char * data, nova_endpoint const & endpoint):
             timeout_(timeout), data_(data), endpoint_(endpoint)
         {}
 
@@ -109,7 +109,7 @@ public:
 
         const time_tag timeout_;
         const char * const data_;
-        const udp::endpoint endpoint_;
+        const nova_endpoint endpoint_;
 
         friend bool operator< (const bundle_node & lhs, const bundle_node & rhs)
         {
@@ -125,7 +125,7 @@ public:
     typedef boost::intrusive::treap_multiset<bundle_node> bundle_queue_t;
 
     void insert_bundle(time_tag const & timeout, const char * data, size_t length,
-                       udp::endpoint const & endpoint);
+                       nova_endpoint const & endpoint);
 
     void execute_bundles(time_tag const & now);
 
@@ -148,12 +148,43 @@ class sc_osc_handler:
     private detail::network_thread,
     public sc_notify_observers
 {
-public:
-    sc_osc_handler(unsigned int port):
-        dump_osc_packets(0), error_posting(1),
-        socket_(detail::network_thread::io_service_, udp::endpoint(udp::v4(), port))
+    void open_udp_socket(udp const & protocol, unsigned int port)
     {
-        start_receive();
+        udp_socket_.open(protocol);
+        udp_socket_.bind(udp::endpoint(protocol, port));
+    }
+
+    bool open_socket(int family, int type, int protocol, unsigned int port)
+    {
+        if (protocol == IPPROTO_TCP)
+        {
+            return false;
+        }
+        else if (protocol == IPPROTO_UDP)
+        {
+            if ( type != SOCK_DGRAM )
+                return false;
+
+            if (family == AF_INET)
+                open_udp_socket(udp::v4(), port);
+            else if (family == AF_INET6)
+                open_udp_socket(udp::v6(), port);
+            else
+                return false;
+            start_receive_udp();
+            return true;
+        }
+        return false;
+    }
+
+public:
+    sc_osc_handler(int family, int type, int protocol, unsigned int port):
+        dump_osc_packets(0), error_posting(1),
+        udp_socket_(detail::network_thread::io_service_),
+        tcp_socket_(detail::network_thread::io_service_)
+    {
+        if (!open_socket(family, type, protocol, port))
+            throw std::runtime_error("cannot open socket");
     }
 
     ~sc_osc_handler(void)
@@ -175,13 +206,13 @@ public:
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
     {
-        socket_.send_to(boost::asio::buffer(data, size), receiver);
+        udp_socket_.send_to(boost::asio::buffer(data, size), receiver);
     }
 
     struct received_packet:
         public audio_sync_callback
     {
-        received_packet(const char * dat, size_t length, udp::endpoint const & endpoint):
+        received_packet(const char * dat, size_t length, nova_endpoint const & endpoint):
             data(dat), length(length), endpoint_(endpoint)
         {}
 
@@ -191,28 +222,28 @@ public:
         }
 
         static received_packet * alloc_packet(const char * data, size_t length,
-                                              udp::endpoint const & remote_endpoint);
+                                              nova_endpoint const & remote_endpoint);
 
         void run(void);
 
         const char * const data;
         const size_t length;
-        const udp::endpoint endpoint_;
+        const nova_endpoint endpoint_;
     };
 
 private:
     /* @{ */
     /** socket handling */
-    void start_receive(void)
+    void start_receive_udp(void)
     {
-        socket_.async_receive_from(
-            buffer(recv_buffer_), remote_endpoint_,
-            boost::bind(&sc_osc_handler::handle_receive, this,
+        udp_socket_.async_receive_from(
+            buffer(recv_buffer_), udp_remote_endpoint_,
+            boost::bind(&sc_osc_handler::handle_receive_udp, this,
                         placeholders::error, placeholders::bytes_transferred));
     }
 
-    void handle_receive(const boost::system::error_code& error,
-                        std::size_t bytes_transferred)
+    void handle_receive_udp(const boost::system::error_code& error,
+                            std::size_t bytes_transferred)
     {
         if (unlikely(error == error::operation_aborted))
             return;    /* we're done */
@@ -227,23 +258,23 @@ private:
         if (error)
         {
             std::cout << "sc_osc_handler received error code " << error << std::endl;
-            start_receive();
+            start_receive_udp();
             return;
         }
 
         if (overflow_vector.empty())
-            handle_packet(recv_buffer_.begin(), bytes_transferred);
+            handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
         else
         {
             overflow_vector.insert(overflow_vector.end(),
                                    recv_buffer_.begin(), recv_buffer_.end());
 
-            handle_packet(overflow_vector.data(), overflow_vector.size());
+            handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
 
             overflow_vector.clear();
         }
 
-        start_receive();
+        start_receive_udp();
         return;
     }
 
@@ -256,7 +287,6 @@ public:
 
 private:
     int dump_osc_packets;
-    void handle_packet(const char * data, size_t length);
     /* @} */
 
     /* @{ */
@@ -275,18 +305,19 @@ private:
     /* @{ */
     /** packet handling */
 public:
-    void handle_packet(const char * data_, std::size_t length, udp::endpoint const & endpoint);
+    void handle_packet_async(const char* data, size_t length, nova::nova_endpoint const & endpoint);
+    void handle_packet(const char* data, size_t length, nova::nova_endpoint const & endpoint);
     void handle_packet_nrt(const char * data_, std::size_t length);
 
 private:
     template <bool realtime>
-    void handle_bundle(received_bundle const & bundle, udp::endpoint const & endpoint);
+    void handle_bundle(received_bundle const & bundle, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message(received_message const & message, udp::endpoint const & endpoint);
+    void handle_message(received_message const & message, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message_int_address(received_message const & message, udp::endpoint const & endpoint);
+    void handle_message_int_address(received_message const & message, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message_sym_address(received_message const & message, udp::endpoint const & endpoint);
+    void handle_message_sym_address(received_message const & message, nova_endpoint const & endpoint);
 
     friend class sc_scheduled_bundles::bundle_node;
     /* @} */
@@ -311,8 +342,10 @@ public:
 private:
     /* @{ */
     /** socket handling */
-    udp::socket socket_;
-    udp::endpoint remote_endpoint_;
+    udp::socket udp_socket_;
+    udp::endpoint udp_remote_endpoint_;
+
+    tcp::socket tcp_socket_;
 
     boost::array<char, 1<<15 > recv_buffer_;
 
