@@ -1,19 +1,28 @@
 
 
 + AbstractPlayControl {
-	storeOn { arg stream; source.storeOn(stream) }
+
+	storeOn { | stream | 
+		source.storeOn(stream) 
+	}
 }
 
 +Symbol {
+
 	isBasicOperator {
-		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ].includes(this);
+		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ]
+			.includes(this);
 	}
 
 }
 
 +Object {
+
 	// might need correction for literals.
-	envirKey { arg envir; ^(envir ? currentEnvironment).findKeyForValue(this) }
+	envirKey { | envir |
+		^(envir ? currentEnvironment).findKeyForValue(this)
+	}
+	
 	envirCompileString {
 		var key = this.envirKey;
 		^if(key.notNil) { "~" ++ key } { this.asCompileString };
@@ -22,17 +31,18 @@
 
 
 +NodeProxy {
-	key { arg envir;
+
+	key { | envir |
 		^super.envirKey(envir);
-		//don't want to add a slot yet. not optimized
 	}
-		// not ideal, but usable for now.
-	storeOn { |stream|
+	
+	// not ideal, but usable for now.
+	storeOn { | stream |
 		var key = this.key ? '<unnamed nodeproxy>';
 		stream << ("~" ++ key);
 	}
 
-	playNDialog { |bounds|
+	playNDialog { | bounds |
 		var editstring, doc;
 		bounds = bounds ?? { Rect(0, 500, 320, 100) };
 		editstring = this.asCompileString ++ ".playN(\n"
@@ -44,10 +54,10 @@
 		try { doc.bounds_(bounds) };	// swingosc safe
 	}
 
-	findInOpenDocuments {
+	findInOpenDocuments { |index = 0|
 		var src, str, startSel, doc;
-		src = this.source;
-		src ?? { "no source yet.".postln; ^this };
+		src = this.at(index);
+		src ?? { "NodeProxy: no source at index %.\n".postf(index); ^this };
 
 		str = src.asCompileString;
 		doc = Document.allDocuments.detect { |doc|
@@ -57,40 +67,40 @@
 		doc !? { doc.front.selectRange(startSel, 0); }
 	}
 
-	document{ arg includeSettings=true;
-		var str,str2,multiline,key;
-		str2 = String.streamContents({ arg stream;
+	document{ | includeSettings = true |
+		var str, multiline, key;
+		var str2 = String.streamContents { arg stream;
 			if( this.objects.size == 1 and: { this.objects.indices.first == 0 }) {
 				str = this.source.envirCompileString ? "";
 				multiline = str.includes(Char.nl);
 				if(multiline){ stream << "(" << Char.nl };
-				if ( this.key.isNil ){
+				if ( this.key.isNil ) {
 					stream << "a = NodeProxy.new(s); \n a.source =";
-				}{
+				} {
 					stream << "~" << this.key << " = ";
 				};
 				str.printOn(stream);
 				stream << ";";
-				if(multiline){ stream << Char.nl << ");" << Char.nl };
+				if(multiline) { stream << Char.nl << ");" << Char.nl };
 			} {
-				this.objects.keysValuesDo({ arg index, item;
+				this.objects.keysValuesDo { arg index, item;
 					var multiline, str;
 					str = item.source.envirCompileString ? "";
 					multiline = str.includes(Char.nl);
-					if(multiline){ stream << "(" << Char.nl };
-					if ( this.key.isNil ){
-						if ( index == 0 ){
+					if(multiline) { stream << "(" << Char.nl };
+					if ( this.key.isNil ) {
+						if ( index == 0 ) {
 							stream << "a = NodeProxy.new(s)\n";
 						};
 						stream << "a[" << index << "] = ";
-					}{
+					} {
 						stream << "~" << this.key << "[" << index << "] = ";
 					};
 					str.printOn(stream);
 					stream << ";";
-					if(multiline){ stream << Char.nl << ");" << Char.nl };
+					if(multiline) { stream << Char.nl << ");" << Char.nl };
 					stream.nl;
-				});
+				};
 			};
 			stream.nl;
 			// add settings to compile string
@@ -102,21 +112,23 @@
 				}
 			};
 			stream.nl;
-		});
-	^Document.new(("nodeproxy:"++this.key).asString, str2)
+		};
+		
+		^Document.new(("nodeproxy:" + this.key).asString, str2)
 	}
 
 }
 
 
 +BinaryOpPlug {
+
 	envirCompileString {
 		var astr, bstr, opstr, str = "";
 		var basic = operator.isBasicOperator;
 		astr = a.envirCompileString;
 		bstr = b.envirCompileString;
 
-		if(b.isKindOf(AbstractOpPlug)){ bstr = "(%)".format(bstr) };
+		if(b.isKindOf(AbstractOpPlug)) { bstr = "(%)".format(bstr) };
 		opstr = if(basic.not) { ".%(" } { " % " }.format(operator);
 		str = str ++ astr ++ opstr ++ bstr;
 		if(basic.not) { str = str ++ ")" };
@@ -125,15 +137,17 @@
 }
 
 +UnaryOpPlug {
+
 	envirCompileString {
 		^(a.envirCompileString ? "") ++  " "  ++ operator
 	}
+	
 }
 
 
 + ProxySpace {
 
-	storeOn { arg stream, keys, includeSettings = true;
+	storeOn { | stream, keys, includeSettings = true |
 		var proxies, hasGlobalClock;
 		hasGlobalClock = clock.isKindOf(TempoBusClock);
 		if(hasGlobalClock) { stream << "p.makeTempoClock(" << clock.tempo << ");\n\n"; };
@@ -178,30 +192,32 @@
 			stream.nl;
 		}
 	}
+	
 	documentOutput {
 		^this.document(nil, true)
 	}
 
-	document { arg keys, onlyAudibleOutput=false, includeSettings=true;
+	document { | keys, onlyAudibleOutput = false, includeSettings = true |
 		var str;
 		if(onlyAudibleOutput) {
 			keys = this.monitors.collect { arg item; item.key(envir) };
 		};
-		str = String.streamContents({ arg stream;
+		str = String.streamContents { arg stream;
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
 			this.storeOn(stream, keys, includeSettings);
 			this.do { arg px; if(px.monitorGroup.isPlaying) {
 				stream << "~" << px.key << ".play; \n"
 				}
 			};
-		});
+		};
 		^Document.new((name ? "proxyspace").asString, str)
 	}
 
 }
 
 + ProxyNodeMap {
-	storeOn { arg stream, namestring="", dropOut=false, envir;
+
+	storeOn { | stream, namestring = "", dropOut = false, envir |
 			var strippedSetArgs, storedSetNArgs, rates, proxyMapKeys, proxyMapNKeys;
 			this.updateBundle;
 			if(dropOut) {

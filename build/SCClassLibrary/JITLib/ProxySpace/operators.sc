@@ -1,4 +1,4 @@
-// has no own bus.
+
 
 AbstractOpPlug : AbstractFunction {
 
