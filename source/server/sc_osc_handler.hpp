@@ -76,13 +76,44 @@ public:
         observers.erase(it);
     }
 
+
+    /* @{ */
+    /** notifications */
+    void notification_node_started(int32_t node_id)
+    {
+        notify("n_go", node_id);
+    }
+
+    void notification_node_ended(int32_t node_id)
+    {
+        notify("n_end", node_id);
+    }
+
+    void notification_node_turned_off(int32_t node_id)
+    {
+        notify("n_off", node_id);
+    }
+
+    void notification_node_turned_on(int32_t node_id)
+    {
+        notify("n_on", node_id);
+    }
+
+    void notification_node_moved(int32_t node_id)
+    {
+        notify("n_move", node_id);
+    }
+    /* @} */
+
+private:
+    void notify(const char * address_pattern, int32_t node_id);
+
     void send_notification(const char * data, size_t length)
     {
         for (size_t i = 0; i != observers.size(); ++i)
             send_notification(data, length, observers[i]);
     }
 
-private:
     void send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
     {
         nova_protocol prot = endpoint.protocol();

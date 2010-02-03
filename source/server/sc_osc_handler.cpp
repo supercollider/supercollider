@@ -101,6 +101,17 @@ void fill_notification(int32_t node_id, osc::OutboundPacketStream & p)
 namespace detail
 {
 
+void sc_notify_observers::notify(const char * address_pattern, int32_t node_id)
+{
+    char buffer[128]; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage(address_pattern);
+    fill_notification(node_id, p);
+
+    send_notification(p.Data(), p.Size());
+}
+
+
 void sc_scheduled_bundles::bundle_node::run(void)
 {
     typedef osc::ReceivedBundleElement bundle_element;
