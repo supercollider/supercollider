@@ -2283,7 +2283,7 @@ void handle_b_setn(received_message const & msg)
         for (int i = 0; i != samples; ++i) {
             float value;
             args >> value;
-            data[index] = value;
+            data[index+i] = value;
         }
     }
 }

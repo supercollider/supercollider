@@ -795,10 +795,10 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     if (!sf)
         return -1;
 
-    if (frames == 0)
+    if (frames == 0xffffffff)
         frames = buf->frames;
 
-    const uint32_t remain = uint32_t(buf->frames) < start ? buf->frames - start : 0;
+    const uint32_t remain = uint32_t(buf->frames) > start ? buf->frames - start : 0;
     const uint32_t frames_to_write = std::min(remain, frames);
 
     if (frames_to_write)
