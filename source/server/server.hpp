@@ -142,6 +142,22 @@ private:
         return success;
     }
 
+    static void free_all_notify(nova_server * server, server_node const & node)
+    {
+        server->notification_node_ended(&node);
+    }
+
+    static void free_deep_notify(nova_server * server, server_node & node)
+    {
+        if (node.is_synth())
+            server->notification_node_ended(&node);
+        else
+        {
+            abstract_group * group = static_cast<abstract_group*>(&node);
+            group->apply_on_children(boost::bind(nova_server::free_deep_notify, server, _1));
+        }
+    }
+
 public:
     /* @{ */
     /** node control */
@@ -153,13 +169,18 @@ public:
 
     void free_node(server_node * node);
 
-    bool group_free_all(abstract_group * node_id)
+    bool group_free_all(abstract_group * group)
     {
-        return group_free_implementation<&node_graph::group_free_all>(node_id);
+        /// todo: later we want to traverse the node graph only once
+        group->apply_on_children(boost::bind(free_all_notify, this, _1));
+        return group_free_implementation<&node_graph::group_free_all>(group);
     }
-    bool group_free_deep(abstract_group * node_id)
+
+    bool group_free_deep(abstract_group * group)
     {
-        return group_free_implementation<&node_graph::group_free_deep>(node_id);
+        /// todo: later we want to traverse the node graph only once
+        group->apply_on_children(boost::bind(nova_server::free_deep_notify, this, _1));
+        return group_free_implementation<&node_graph::group_free_deep>(group);
     }
 
     void node_pause(server_node * node)

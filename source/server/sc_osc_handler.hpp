@@ -79,12 +79,12 @@ public:
 
     /* @{ */
     /** notifications, should be called from the real-time thread */
-    void notification_node_started(server_node * node)
+    void notification_node_started(const server_node * node)
     {
         notify("n_go", node);
     }
 
-    void notification_node_ended(server_node * node)
+    void notification_node_ended(const server_node * node)
     {
         notify("n_end", node);
     }
