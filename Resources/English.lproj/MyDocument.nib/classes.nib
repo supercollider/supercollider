@@ -1,26 +1,122 @@
-{
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {
-                balanceParens = id; 
-                commentCode = id; 
-                compileLibrary = id; 
-                executeSelection = id; 
-                methodTemplates = id; 
-                openCode = id; 
-                runMain = id; 
-                shiftLeft = id; 
-                shiftRight = id; 
-                stopMain = id; 
-                uncommentCode = id; 
-            }; 
-            CLASS = MyDocument; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {initTextView = id; scrollView = id; textView = id; }; 
-            SUPERCLASS = NSDocument; 
-        }, 
-        {CLASS = MySound; LANGUAGE = ObjC; SUPERCLASS = Sound; }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>CLASS</key>
+			<string>NSApplication</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSResponder</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>advancedFindReplaceAction</key>
+				<string>id</string>
+				<key>balanceParens</key>
+				<string>id</string>
+				<key>becomePostWindow</key>
+				<string>id</string>
+				<key>commentCode</key>
+				<string>id</string>
+				<key>compileLibrary</key>
+				<string>id</string>
+				<key>convertHelpLinksToHyperlinks</key>
+				<string>id</string>
+				<key>createLink</key>
+				<string>id</string>
+				<key>executeSelection</key>
+				<string>id</string>
+				<key>methodReferences</key>
+				<string>id</string>
+				<key>methodTemplates</key>
+				<string>id</string>
+				<key>openCode</key>
+				<string>id</string>
+				<key>runMain</key>
+				<string>id</string>
+				<key>selectLineWindow</key>
+				<string>id</string>
+				<key>shiftLeft</key>
+				<string>id</string>
+				<key>shiftRight</key>
+				<string>id</string>
+				<key>showClassBrowser</key>
+				<string>id</string>
+				<key>showHelp</key>
+				<string>id</string>
+				<key>stopMain</key>
+				<string>id</string>
+				<key>syntaxColorize</key>
+				<string>id</string>
+				<key>toggleRich</key>
+				<string>id</string>
+				<key>toggleSplitWindow</key>
+				<string>id</string>
+				<key>uncommentCode</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>MyDocument</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>initTextView</key>
+				<string>SCTextView</string>
+				<key>mySplitView</key>
+				<string>NSSplitView</string>
+				<key>scrollView</key>
+				<string>NSScrollView</string>
+				<key>scrollView2</key>
+				<string>NSScrollView</string>
+				<key>splitMenuItem</key>
+				<string>NSMenuItem</string>
+				<key>textView</key>
+				<string>SCTextView</string>
+				<key>textView2</key>
+				<string>SCTextView</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSDocument</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>balanceParens</key>
+				<string>id</string>
+				<key>executeSelection</key>
+				<string>id</string>
+				<key>methodReferences</key>
+				<string>id</string>
+				<key>methodTemplates</key>
+				<string>id</string>
+				<key>openCode</key>
+				<string>id</string>
+				<key>showHelp</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>SCTextView</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSTextView</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

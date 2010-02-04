@@ -60,6 +60,10 @@ SCTextView : SCView{
 	setFont{|	font, rangestart = -1, rangesize=0|
 		this.setProperty(\setFont, [font, rangestart, rangesize]);
 	}
+	
+	usesAutoInOutdent_{|bool|
+		this.setProperty(\setUsesAutoInOutdent, bool);
+	}
 
 	setString{|string, rangestart=0, rangesize=0|
 		this.setProperty(\insertStringInRange, [string, rangestart, rangesize]);

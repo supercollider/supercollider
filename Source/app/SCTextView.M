@@ -26,6 +26,12 @@
 extern bool compiledOK;
 //*)acceptableDragTypes
 @implementation SCTextView
+
+- (id)initWithFrame:(NSRect)frameRect {
+	useAutoInOutdent = false;
+	return [super initWithFrame:frameRect];
+}
+			
 - (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex 
 {
 	langClassToCall = stringin;
@@ -50,6 +56,23 @@ extern bool compiledOK;
 	 mAcceptsFirstResponder = flag;
 }
 
+- (BOOL)becomeFirstResponder
+{
+	BOOL accept = [super becomeFirstResponder];
+	if(accept) [[self delegate] setActiveTextView: self];
+	return accept;
+}
+
+- (void) setUsesAutoInOutdent: (bool) flag
+{
+	useAutoInOutdent = flag;
+}
+
+- (bool) usesAutoInOutdent
+{
+	return useAutoInOutdent;
+}
+
 - (void) autoIndent: (NSEvent*) event
 {
 	unichar c;
@@ -72,6 +95,12 @@ extern bool compiledOK;
 	pos = range.location;
 	string = [self string];
 	c = [string characterAtIndex: pos-1]; // did a newline actually get inserted? (maybe not if using foreign language input mode)
+	
+	// autoindent
+	if([string characterAtIndex: pos-2] == '{' && useAutoInOutdent) {
+		spaces[nspaces++] = '\t';
+		spaces[nspaces] = 0;
+	}
 	
 	if (nspaces && (c == '\r' || c == '\n')) {
 		spaces[nspaces] = 0;
@@ -194,12 +223,72 @@ extern bool compiledOK;
         [[self delegate] executeSelection: self];
     } else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
         [self autoIndent: event];
-    } else {
+	} else { 
         //call lang
 		if([[self delegate] handleKeyDown: event]) return;
 		if(ignoreControlKeys && ([event modifierFlags] & NSCommandKeyMask)) return;
 		[super keyDown: event];
+		
+		if ([characters isEqual: @"}"] && useAutoInOutdent) {
+			[self outdentBrack];
+		}
     }
+}
+
+- (void)outdentBrack
+{
+	NSString *string = [self string];
+	NSRange range = [self selectedRange];
+	int pos = range.location - 1;
+	int nspaces = 0;
+	unichar c;
+	
+	// make sure I have only whitespace before me
+	for (; pos > 0;) {
+		c = [string characterAtIndex: --pos];
+		if (c == '\r' || c == '\n') break;
+		if ((c == '\t' || c == ' ') && nspaces < 126) nspaces++;
+		else return;
+	}
+	if(nspaces == 0) return; // bail
+	
+	// okay now see if I have a matching bracket
+	unsigned int start, end;
+	start = end = range.location - 1;
+	int length = [string length];
+	unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
+	[string getCharacters: buffer];
+	bool res = matchBraks(&start, &end, buffer, length, '}', false);
+	
+	if(!res) return; // bail
+	unichar spaces[128];
+	nspaces = 0;
+	
+	for (; start > 0;) {
+		c = [string characterAtIndex: --start];
+		if (c == '\r' || c == '\n') break;
+		if ((c == '\t' || c == ' ') && nspaces < 126) spaces[nspaces++] = c;
+		else nspaces = 0;
+	}
+	
+	c = [string characterAtIndex: pos-1]; 
+	range = NSMakeRange(pos + 1, range.location - (pos + 2));
+	
+//	if (nspaces && (c == '\r' || c == '\n')) {
+		spaces[nspaces] = 0;
+		
+        // reverse the string
+        for (int i=0; i<nspaces/2; ++i) {
+			c = spaces[i];
+			spaces[i] = spaces[nspaces-1-i];
+			spaces[nspaces-1-i] = c;
+        }
+        NSString *newString = [NSString stringWithCharacters: spaces length: nspaces];
+        if ([self shouldChangeTextInRange: range replacementString: newString]) {
+            [self replaceCharactersInRange: range withString: newString];
+            [self didChangeText];
+        }
+//	}
 }
 
 - (IBAction) executeSelection: (id) sender {
@@ -259,7 +348,7 @@ extern PyrSymbol * s_mouseUp;
 {
 	if(!compiledOK) {
 		return;
-	}	
+	}
 	NSPoint mouseLoc;	
 	unsigned int modifiers = [theEvent modifierFlags];
 	mouseLoc = [self convertPoint:[theEvent locationInWindow] fromView:nil];

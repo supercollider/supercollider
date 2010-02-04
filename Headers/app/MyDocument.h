@@ -34,15 +34,21 @@ extern PyrSymbol *s_closed;
     IBOutlet SCTextView* initTextView;
     IBOutlet SCTextView* textView;
     IBOutlet NSScrollView* scrollView;
+	IBOutlet NSSplitView *mySplitView;
+	IBOutlet SCTextView *textView2;
+	IBOutlet NSScrollView *scrollView2; 
+	SCTextView *activeTextView;
     Boolean isRichText;
     struct PyrObject *mWindowObj;
 	Boolean promptToSave;
 	NSString *pathToSaveAttachments;
+	BOOL split;
 }
 
 
 - (SCTextView*)makeTextView;
 - (SCTextView*) textView;
+- (SCTextView*) textView2;
 
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController;
 
@@ -103,7 +109,9 @@ extern PyrSymbol *s_closed;
 - (void)setBackgroundColor:(NSColor *)color;
 - (void)setSelectedBackgroundColor:(NSColor *)color;
 - (NSScrollView*) scrollView;
-- (NSTextView*) initTextView;
+- (SCTextView*) initTextView;
+- (SCTextView*) activeTextView;
+- (void)initialiseTextViewParams: (SCTextView*)aTextView;
 - (void)selectLine:(int)linenum;
 - (IBAction)selectLineWindow: (id) sender;
 - (IBAction)advancedFindReplaceAction:(id)sender;
@@ -122,6 +130,10 @@ extern PyrSymbol *s_closed;
 - (void)convertFileLinksToRelative:(NSTextStorage *)textStorage;
 
 - (void) loadHTML:(NSURL *)url;
+
+- (IBAction)toggleSplitWindow: (id)sender;
+- (void)setActiveTextView:(SCTextView*)aTextView;
+- (void) setUsesAutoInOutdent: (bool)flag;
 @end
 
 NSString* pathOfHelpFileFor(NSString* selection);

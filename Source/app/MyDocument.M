@@ -52,6 +52,7 @@ extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
 
 bool docCreatedFromLang = false; //if this is true addDocument is not called
+bool defaultDocumentUseAutoInOutDent = true;
 
 NSFont *defaultFont = NULL;
 
@@ -67,28 +68,35 @@ NSFont *defaultFont = NULL;
     isRichText = YES;
 	promptToSave = YES;
 	pathToSaveAttachments = nil;
+	split = NO;
 	return [super init];
 }
 
+// the first one, not the split
 - (SCTextView*)makeTextView
 {
-    SCTextView* aTextView = [[SCTextView alloc] initWithFrame: 
-                    NSMakeRect(0,0,612,512)];
+    SCTextView* aTextView = [[SCTextView alloc] initWithFrame: NSMakeRect(0,0,612,512)];
+	isRichText = YES;
+	[self initialiseTextViewParams: aTextView];
+	[aTextView setFont: defaultFont];
+	activeTextView = aTextView;
+	return aTextView;
+}
+	
+- (void)initialiseTextViewParams: (SCTextView*)aTextView
+{
     [aTextView setAutoresizingMask: 63];
     [[aTextView textContainer] setWidthTracksTextView: YES];
     [aTextView setDelegate: self];
     [aTextView setAllowsUndo: YES];
-    [aTextView setRichText: YES];
+    [aTextView setRichText: isRichText];
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
-    [aTextView setFont: defaultFont];
 	[aTextView setLangClassToCall:@"CocoaDocument" 
 			withKeyDownActionIndex:4 withKeyUpActionIndex:5];
 	[aTextView setObjectKeyDownActionIndex:2 setObjectKeyUpActionIndex:1];
-	[aTextView setAcceptsFirstResponder:YES];
-
-    isRichText = YES;   
-    return aTextView;
+	[aTextView setAcceptsFirstResponder:YES]; 
+	[aTextView setUsesAutoInOutdent:defaultDocumentUseAutoInOutDent];
 }
 
 - (void)addDocument
@@ -96,10 +104,11 @@ NSFont *defaultFont = NULL;
     [self sendSelection: "addDocument"];
 }
 
+
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController
 {
     [super windowControllerDidLoadNib:aController];
-
+	
     NSSize contentSize;
     contentSize = [scrollView contentSize];
     if (initTextView) {
@@ -107,10 +116,19 @@ NSFont *defaultFont = NULL;
     } else {
         textView = [self makeTextView];
     }
+	NSWindow *window = [scrollView window];
+	
+	
+	mySplitView = [[NSSplitView alloc] initWithFrame:[scrollView frame]];
+	[window setContentView: mySplitView];
+	
+	[mySplitView addSubview:scrollView];
+	
     [scrollView setDocumentView: textView];
     [textView release];
+	
     [textView setSelectedRange: NSMakeRange(0,0)];
-
+	
     if (firstWindow) {
         if (initTextView) {
             if (needBlankWindow) {
@@ -125,13 +143,12 @@ NSFont *defaultFont = NULL;
             [[SCVirtualMachine sharedInstance] start];
         }
     }
-    NSWindow *window = [textView window];
+    
     [window makeKeyWindow];
     [window makeFirstResponder: textView];
 	//jt: call lang..
 	if(!docCreatedFromLang)[self addDocument];
 }
-
 
 - (void)openCode:(id)sender
 {
@@ -150,7 +167,7 @@ NSFont *defaultFont = NULL;
 
 - (void)balanceParens: (id)sender
 {
-    [textView balanceParens];
+    [activeTextView balanceParens: nil];
 }
 
 - (BOOL)textView:(NSTextView *)theTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
@@ -158,7 +175,7 @@ NSFont *defaultFont = NULL;
 	if (replacementString && [replacementString length] > 0) {
 		unichar c = [replacementString characterAtIndex: 0];
 		if (strchr(")]}", c)) {
-			NSString *string = [textView string];
+			NSString *string = [theTextView string];
 
 			int length = [string length];
 			unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
@@ -182,7 +199,7 @@ NSFont *defaultFont = NULL;
 
 - (void)flashHighlight: (BOOL)onoff atIndex: (int)index wait: (NSTimeInterval)interval timesLeft: (int)timesLeft
 {
-    NSLayoutManager *layoutManager = [textView layoutManager];
+    NSLayoutManager *layoutManager = [activeTextView layoutManager];
 	NSRange highlightRange = NSMakeRange(index, 1);
 
 	if (onoff) {
@@ -215,17 +232,17 @@ void SyntaxColorize(NSTextView* textView);
 
 - (void)syntaxColorize: (id)sender
 {
-    SyntaxColorize(textView);
-    [textView didChangeText];
+    SyntaxColorize(activeTextView);
+    [activeTextView didChangeText];
 }
 
 - (void) insertText: (char*) text length: (int)length
 {
-    NSRange selectedRange = [textView selectedRange];
+    NSRange selectedRange = [activeTextView selectedRange];
     NSString *string = [[NSString alloc] initWithCString: text length: length];
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: string]) {
-        [textView replaceCharactersInRange: selectedRange withString: string];
-        [textView didChangeText];
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: string]) {
+        [activeTextView replaceCharactersInRange: selectedRange withString: string];
+        [activeTextView didChangeText];
     }
     [string release];
 }
@@ -233,8 +250,8 @@ void SyntaxColorize(NSTextView* textView);
 
 - (void)wrapParensBegin:(NSString*)begStr end:(NSString*)endStr
 {
-	NSTextStorage *textStorage = [textView textStorage];
-    NSRange selectedRange = [textView selectedRange];
+	NSTextStorage *textStorage = [activeTextView textStorage];
+    NSRange selectedRange = [activeTextView selectedRange];
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
 	[newString autorelease];
@@ -242,7 +259,7 @@ void SyntaxColorize(NSTextView* textView);
 	[newString replaceCharactersInRange: NSMakeRange([newString length],0) withString: endStr];
 	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: begStr];
     
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
 		NSRange newSelectedRange = selectedRange;		
 		if(selectedRange.length > 0) newSelectedRange.length += [begStr length] + [endStr length];
@@ -251,9 +268,9 @@ void SyntaxColorize(NSTextView* textView);
 			newSelectedRange.length = 0;
 			newSelectedRange.location = newSelectedRange.location + [begStr length];
 		}	
-        [textView setSelectedRange: newSelectedRange];
-		SyntaxColorize(textView);
-        [textView didChangeText];
+        [activeTextView setSelectedRange: newSelectedRange];
+		SyntaxColorize(activeTextView);
+        [activeTextView didChangeText];
     }
 }
 
@@ -280,8 +297,8 @@ void SyntaxColorize(NSTextView* textView);
 
 - (void)shiftLeft: (id)sender
 {
-   NSTextStorage *textStorage = [textView textStorage];
-    NSRange selectedRange = [textView selectedRange];
+   NSTextStorage *textStorage = [activeTextView textStorage];
+    NSRange selectedRange = [activeTextView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
@@ -311,17 +328,17 @@ void SyntaxColorize(NSTextView* textView);
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j);
     
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-        [textView setSelectedRange: newSelectedRange];
-        [textView didChangeText];
+        [activeTextView setSelectedRange: newSelectedRange];
+        [activeTextView didChangeText];
     }
 }
 
 - (void)shiftRight: (id)sender
 {
-   NSTextStorage *textStorage = [textView textStorage];
-    NSRange selectedRange = [textView selectedRange];
+   NSTextStorage *textStorage = [activeTextView textStorage];
+    NSRange selectedRange = [activeTextView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
@@ -349,17 +366,17 @@ void SyntaxColorize(NSTextView* textView);
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+1);
     
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-        [textView setSelectedRange: newSelectedRange];
-        [textView didChangeText];
+        [activeTextView setSelectedRange: newSelectedRange];
+        [activeTextView didChangeText];
     }
 }
 
 - (void)commentCode: (id)sender
 {
-    NSTextStorage *textStorage = [textView textStorage];
-    NSRange selectedRange = [textView selectedRange];
+    NSTextStorage *textStorage = [activeTextView textStorage];
+    NSRange selectedRange = [activeTextView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
@@ -387,19 +404,19 @@ void SyntaxColorize(NSTextView* textView);
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+1);
    
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-        [textView didChangeText];
-        [textView setSelectedRange: newSelectedRange];
-        SyntaxColorize(textView);
-		[textView didChangeText];
+        [activeTextView didChangeText];
+        [activeTextView setSelectedRange: newSelectedRange];
+        SyntaxColorize(activeTextView);
+		[activeTextView didChangeText];
     }
 }
 
 - (void)uncommentCode:(id)sender
 {
-   NSTextStorage *textStorage = [textView textStorage];
-    NSRange selectedRange = [textView selectedRange];
+   NSTextStorage *textStorage = [activeTextView textStorage];
+    NSRange selectedRange = [activeTextView selectedRange];
     if (selectedRange.length <= 0) return;
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
 
@@ -433,12 +450,12 @@ void SyntaxColorize(NSTextView* textView);
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+2);
     
-    if ([textView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
+    if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-        [textView didChangeText];
-        [textView setSelectedRange: newSelectedRange];
-        SyntaxColorize(textView);
-		[textView didChangeText];
+        [activeTextView didChangeText];
+        [activeTextView setSelectedRange: newSelectedRange];
+        SyntaxColorize(activeTextView);
+		[activeTextView didChangeText];
     }
     
 }
@@ -580,10 +597,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize
 {
-    NSTextView *localTextView = [self textView];
-    
+
     NSRange range = NSMakeRange(rangeStart, rangeSize);
-    NSString *nsstring = [localTextView string];
+    NSString *nsstring = [activeTextView string];
 	if (!nsstring) {
 		post("text view has no string\n");
 		return;
@@ -603,17 +619,16 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			range.length = maxlength - range.location;
 		}
 	}
-    [localTextView setSelectedRange: range];
-    [localTextView scrollRangeToVisible: range];
+    [activeTextView setSelectedRange: range];
+    [activeTextView scrollRangeToVisible: range];
 }
 
 -(void)selectLine:(int)linenum
 {
-    NSTextView *localTextView = [self textView];
-	NSString *nsstring = [localTextView string];
+	NSString *nsstring = [activeTextView string];
 	int length = [nsstring length];
 	if(length < 1) return;
-    NSLayoutManager *layoutManager = [localTextView layoutManager];
+    NSLayoutManager *layoutManager = [activeTextView layoutManager];
     unsigned numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
     NSRange lineRange;
 	if(linenum <= 0) linenum = 1;
@@ -623,8 +638,8 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
             index = NSMaxRange(lineRange);
     }
 
-    [localTextView setSelectedRange: lineRange];
-    [localTextView scrollRangeToVisible: lineRange];
+    [activeTextView setSelectedRange: lineRange];
+    [activeTextView scrollRangeToVisible: lineRange];
 }
 
 
@@ -643,7 +658,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelp: (id) sender;
 {
-	showHelpFor([textView currentlySelectedText: NULL]);
+	showHelpFor([activeTextView currentlySelectedText: NULL]);
 }
 
 - (IBAction)showClassBrowser:(id)sender {
@@ -746,7 +761,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSString			*link;
     NSMutableDictionary		*linkAttributes;
 
-    selection = [textView selectedRange];
+    selection = [activeTextView selectedRange];
 	// check to see if we can make a link
     if (selection.length == 0)
     {
@@ -759,9 +774,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
     //	Get the text which will go into the link. 
 	
-	link = pathOfHelpFileFor([textView currentlySelectedTextOrLine: NULL]);
+	link = pathOfHelpFileFor([activeTextView currentlySelectedTextOrLine: NULL]);
 	if(!link) {
-		NSRunAlertPanel (@"Link to Help file", [NSString stringWithFormat: @"No help named %@ exists.", [textView currentlySelectedTextOrLine: NULL]], nil, nil, nil);
+		NSRunAlertPanel (@"Link to Help file", [NSString stringWithFormat: @"No help named %@ exists.", [activeTextView currentlySelectedTextOrLine: NULL]], nil, nil, nil);
 		return;
 	}
 	BOOL targetInMainHelp = [[[self fileURL] path] rangeOfString: [NSString stringWithFormat: @"%@/Help/", [[NSFileManager defaultManager] currentDirectoryPath]]].location != NSNotFound;
@@ -769,7 +784,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	// if both are in main help, or both are not, produce a relative link, otherwise an SC:// URL, which will call the search system.
 	if((targetInMainHelp && linkInMainHelp) || (!targetInMainHelp && !linkInMainHelp)) {
 		link = pathOfFileRelativeToBaseDir(link, [[[self fileURL] path] stringByDeletingLastPathComponent]);
-	} else link = [NSURL URLWithString: [@"SC://" stringByAppendingString: [textView currentlySelectedTextOrLine: NULL]]];
+	} else link = [NSURL URLWithString: [@"SC://" stringByAppendingString: [activeTextView currentlySelectedTextOrLine: NULL]]];
 	
     //	Start to build attributes
     linkAttributes = [NSMutableDictionary dictionaryWithObject: link forKey: NSLinkAttributeName];
@@ -778,7 +793,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [linkAttributes setObject: [NSColor blueColor]  forKey: NSForegroundColorAttributeName];
 
     //	Add the attributes. This adds the link attributes to the selected range.
-    [[textView textStorage] addAttributes: linkAttributes  range: selection];
+    [[activeTextView textStorage] addAttributes: linkAttributes  range: selection];
     
     // Make sure it saves as HTML as default
     [self setFileType: @"HTML"]; // need to change name to html
@@ -793,14 +808,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     }
 
 	NSRange selectedRange;
-	NSString* selection = [textView currentlySelectedTextOrLine: &selectedRange];
+	NSString* selection = [activeTextView currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];
 	int textlength = strlen(text);
 
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
     
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
-    [textView setSelectedRange: newSelectedRange];
+    [activeTextView setSelectedRange: newSelectedRange];
     
     pthread_mutex_lock(&gLangMutex);
     runLibrary(getsym(methodName));
@@ -1084,6 +1099,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     return textView;
 }
 
+- (SCTextView*) textView2;
+{
+    return textView2;
+}
+
 - (BOOL)windowShouldClose:(id)sender
 {
     return (textView != gPostView);
@@ -1091,7 +1111,6 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 extern PyrSymbol * s_didBecomeKey;
 - (void) windowDidBecomeKey:(NSNotification *)aNotification
 {
-	
 	if(!docCreatedFromLang){
 		[self callSCLangWithMethod: s_didBecomeKey];
 	}
@@ -1234,11 +1253,13 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
     if (action == @selector(toggleRich:)) {
 	validateToggleItem(aCell, isRichText, NSLocalizedString(@"&Make Plain Text", @"Menu item to make the current document plain text"), NSLocalizedString(@"&Make Rich Text", @"Menu item to make the current document rich text"));
         //if (![textView isEditable] || [self hasSheet]) return NO;
-    } else {
+    } else if (action == @selector(toggleSplitWindow:))
+	{
+		[aCell setState:(split ? NSOnState : NSOffState)];
+		return YES;
+	} else {
 		return [super validateMenuItem: aCell];
 	}
-	
-	return YES;
 }
 
 - (void)setSCObject: (struct PyrObject*)inObject
@@ -1260,25 +1281,38 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 {
     return scrollView;
 }
-- (NSTextView*) initTextView;
+- (SCTextView*) initTextView;
 {
     return initTextView;
 }
 
+- (SCTextView*) activeTextView
+{
+	return activeTextView;
+}
+
 - (void)setBackgroundColor:(NSColor *)color
 {
-	if ([color brightnessComponent] < 0.5) [[self textView] setInsertionPointColor: [NSColor whiteColor]];
-	else [[self textView] setInsertionPointColor: [NSColor blackColor]];
+	if ([color brightnessComponent] < 0.5) {
+		[textView setInsertionPointColor: [NSColor whiteColor]];
+		[textView2 setInsertionPointColor: [NSColor whiteColor]];
+	} else {
+		[textView setInsertionPointColor: [NSColor blackColor]];
+		[textView2 setInsertionPointColor: [NSColor blackColor]];
+	}
 	
-	[[self textView] setBackgroundColor: color];
+	[textView setBackgroundColor: color];
 	[[self initTextView] setBackgroundColor: color];
+	[textView2 setBackgroundColor: color];
 	[[self scrollView] setBackgroundColor: color];
-	[[[self textView] window] setAlphaValue: [color alphaComponent]];
+	[scrollView2 setBackgroundColor: color];
+	[[textView window] setAlphaValue: [color alphaComponent]];
 }
 
 - (void)setSelectedBackgroundColor:(NSColor *)color
 {
-	[[self textView] setSelectedTextAttributes: [NSDictionary dictionaryWithObject: color forKey: NSBackgroundColorAttributeName]];
+	[textView setSelectedTextAttributes: [NSDictionary dictionaryWithObject: color forKey: NSBackgroundColorAttributeName]];
+	[textView2 setSelectedTextAttributes: [NSDictionary dictionaryWithObject: color forKey: NSBackgroundColorAttributeName]];
 }
 
 - (BOOL)promptToSave
@@ -1304,6 +1338,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 }
 - (void) mouseDown: (NSEvent*) event
 {
+	
 }
 
 - (IBAction)convertHelpLinksToHyperlinks:(id)sender
@@ -1384,6 +1419,55 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 		limitRange = NSMakeRange(NSMaxRange(linkRange), NSMaxRange(limitRange) - NSMaxRange(linkRange));
 	}
 	
+}
+
+- (IBAction)toggleSplitWindow: (id)sender
+{
+	if(!split){
+		textView2 = [[SCTextView alloc] initWithFrame: [scrollView frame]];
+		[self initialiseTextViewParams: textView2];
+		NSLog(@"delegate: %@", [textView2 delegate]);
+		[textView2 setBackgroundColor: [textView backgroundColor]];
+		[textView2 setSelectedTextAttributes: [textView selectedTextAttributes]];
+		[textView2 setUsesAutoInOutdent:[textView usesAutoInOutdent]];
+		scrollView2 = [[NSScrollView alloc] initWithFrame:[scrollView frame]];
+		[scrollView2 setHasVerticalScroller:YES];
+		
+		// a bit easier to see
+		[scrollView setBorderType:NSBezelBorder];
+		[scrollView2 setBorderType:NSBezelBorder];
+		
+		[mySplitView addSubview:scrollView2];
+		[scrollView2 setDocumentView: textView2];
+		
+		[[textView2 layoutManager] replaceTextStorage:[textView textStorage]];
+		
+		[textView2 release];
+		[scrollView2 release];
+		
+		[mySplitView adjustSubviews];
+		split = YES;
+		[(NSMenuItem*)sender setState:NSOnState];
+	} else {
+		[scrollView2 removeFromSuperview];
+		[scrollView setBorderType:NSNoBorder];
+		scrollView2 = nil;
+		textView2 = nil;
+		split = NO;
+		[(NSMenuItem*)sender setState:NSOffState];
+	}
+}
+
+
+- (void)setActiveTextView:(SCTextView*)aTextView
+{
+	activeTextView = aTextView;
+}
+
+- (void) setUsesAutoInOutdent: (bool) flag;
+{
+	[textView setUsesAutoInOutdent:flag];
+	[textView2 setUsesAutoInOutdent:flag];
 }
 @end
 
