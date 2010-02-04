@@ -87,34 +87,32 @@ public:
     {
         node_set_type::iterator it = node_set.find(node_id, compare_node());
         if (it == node_set.end())
-            return 0;
+            return NULL;
         return &(*it);
     }
 
-private:
-    boost::tuple<abstract_group *, size_t, size_t> group_free_prepare(int32_t node_id)
+    abstract_group * find_group(int32_t node_id)
     {
         server_node * node = find_node(node_id);
-        if (node)
-        {
-            abstract_group * group = static_cast<abstract_group*>(node);
-            size_t synths, groups;
-            boost::tie(synths, groups) = group->child_count_deep();
-            return boost::make_tuple(group, synths, groups);
-        }
+        if (!node || node->is_synth())
+            return NULL;
         else
-            return boost::make_tuple((abstract_group*)NULL, 0, 0);
+            return static_cast<abstract_group*>(node);
     }
 
-public:
-    bool group_free_all(int32_t node_id)
+    synth * find_synth(int32_t node_id)
     {
-        abstract_group * group;
-        size_t synths, groups;
-        boost::tie(group, synths, groups) = group_free_prepare(node_id);
+        server_node * node = find_node(node_id);
+        if (node && node->is_synth())
+            return static_cast<synth*>(node);
+        else
+            return NULL;
+    }
 
-        if (group == NULL)
-            return false;
+    bool group_free_all(abstract_group * group)
+    {
+        size_t synths, groups;
+        boost::tie(synths, groups) = group->child_count_deep();
 
         group->free_children();
         synth_count_ -= synths;
@@ -122,14 +120,10 @@ public:
         return true;
     }
 
-    bool group_free_deep(int32_t node_id)
+    bool group_free_deep(abstract_group * group)
     {
-        abstract_group * group;
         size_t synths, groups;
-        boost::tie(group, synths, groups) = group_free_prepare(node_id);
-
-        if (group == NULL)
-            return false;
+        boost::tie(synths, groups) = group->child_count_deep();
 
         group->free_synths_deep();
         synth_count_ -= synths;

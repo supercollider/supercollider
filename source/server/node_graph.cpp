@@ -76,7 +76,7 @@ void node_graph::add_node(server_node * n)
 void node_graph::remove_node(server_node * n)
 {
     if (!n->is_synth())
-        group_free_all(n->id());
+        group_free_all(static_cast<abstract_group*>(n));
 
     node_set.erase(*n);
     /** \todo recursively remove nodes from node_set

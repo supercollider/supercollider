@@ -18,6 +18,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_1 )
         synth * s = new synth(1000, 0);
         n.add_node(s, to_root);
         BOOST_REQUIRE_EQUAL(n.synth_count(), 1u);
+        BOOST_REQUIRE_EQUAL(n.find_synth(1000), s);
         n.remove_node(s);
         BOOST_REQUIRE_EQUAL(n.synth_count(), 0u);
     }
@@ -41,6 +42,7 @@ BOOST_AUTO_TEST_CASE( simple_synth_test_2 )
 
     group * g = new group(1);
     n.add_node(g);
+    BOOST_REQUIRE_EQUAL(n.find_group(1), g);
     n.remove_node(g);
 }
 
@@ -158,7 +160,7 @@ BOOST_AUTO_TEST_CASE( free_all_test )
     BOOST_REQUIRE(n.find_node(s2->id()));
     BOOST_REQUIRE(n.find_node(g2->id()));
 
-    BOOST_REQUIRE(n.group_free_all(1));
+    BOOST_REQUIRE(n.group_free_all(g));
 
     BOOST_REQUIRE(!n.find_node(s->id()));
     BOOST_REQUIRE(!n.find_node(s2->id()));
@@ -200,7 +202,7 @@ BOOST_AUTO_TEST_CASE( free_deep_test )
     BOOST_REQUIRE(n.find_node(s2->id()));
     BOOST_REQUIRE(n.find_node(g2->id()));
 
-    BOOST_REQUIRE(n.group_free_deep(1));
+    BOOST_REQUIRE(n.group_free_deep(g));
 
     BOOST_REQUIRE(!n.find_node(s->id()));
     BOOST_REQUIRE(!n.find_node(s2->id()));
@@ -276,6 +278,8 @@ BOOST_AUTO_TEST_CASE( pgroup_test_1 )
 
     parallel_group * g = new parallel_group(1);
     n.add_node(g);
+    BOOST_REQUIRE_EQUAL(n.find_group(1), g);
+
     auto_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
     BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 0u);
     n.remove_node(g);
