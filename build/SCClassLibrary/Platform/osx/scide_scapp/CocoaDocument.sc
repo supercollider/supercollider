@@ -99,6 +99,15 @@ CocoaDocument : Document {
 
 
 //private-----------------------------------
+
+	*prDefaultUsesAutoInOutdent_{|bool|
+		_TextWindow_DefaultUsesAutoInOutdent
+	}
+	
+	prUsesAutoInOutdent_{|bool|
+		_TextWindow_UsesAutoInOutdent
+	}
+	
 	prIsEditable_{arg editable=true;
 		_TextWindow_SetEditable
 	}

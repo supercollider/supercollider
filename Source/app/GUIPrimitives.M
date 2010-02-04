@@ -45,6 +45,7 @@ PyrSymbol *s_didBecomeKey;
 PyrSymbol *s_didResignKey;
 
 extern bool docCreatedFromLang;
+extern bool defaultDocumentUseAutoInOutDent;
 int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 
 int prNumberOfOpenTextWindows(struct VMGlobals *g, int numArgsPushed);
@@ -88,8 +89,13 @@ int prTextWindow_SetEditable(struct VMGlobals *g, int numArgsPushed)
 
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
-	if(IsFalse(b))[[doc textView] setEditable: NO];
-	else [[doc textView] setEditable: YES];
+	if(IsFalse(b)){
+		[[doc textView] setEditable: NO];
+		[[doc textView2] setEditable: NO];
+	} else {
+		[[doc textView] setEditable: YES];
+		[[doc textView2] setEditable: YES];
+	}
 	return errNone;
 }
 
@@ -357,18 +363,18 @@ int prTextWindow_SetTextColor(struct VMGlobals *g, int numArgsPushed)
 		//[[doc textView] setBackgroundColor: color];
 
 		if(rangeStart < 0){
-			[[doc textView] setTextColor: color];
-			[[doc textView] didChangeText];
+			[[doc activeTextView] setTextColor: color];
+			[[doc activeTextView] didChangeText];
 			return errNone;
 		}
-		int length = [[[doc textView] string] length];
+		int length = [[[doc activeTextView] string] length];
 		if(rangeStart >= length) rangeStart = length - 1 ;
 		if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 		NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 
 
-		[[doc textView] setTextColor: color range: selectedRange];
-		[[doc textView] didChangeText];
+		[[doc activeTextView] setTextColor: color range: selectedRange];
+		[[doc activeTextView] didChangeText];
 
 
 
@@ -409,17 +415,17 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 	if(rangeStart < 0){
-		[[doc textView] setFont: font];
+		[[doc activeTextView] setFont: font];
 		return errNone;
 	}
-	NSString* string = [[doc textView] string];
+	NSString* string = [[doc activeTextView] string];
 	int length = [string length];
 	if(length < 1) return errFailed;
 	if(rangeStart >= length) rangeStart = length - 1 ;
 	if(rangeStart + rangeSize >= length) rangeSize = length - rangeStart;
 	NSRange selectedRange =	NSMakeRange(rangeStart, rangeSize);
 
-	[[doc textView] setFont: font range: selectedRange];
+	[[doc activeTextView] setFont: font range: selectedRange];
 	return errNone;
 }
 int prTextWindow_UnderlineSelection(struct VMGlobals *g, int numArgsPushed);
@@ -431,7 +437,7 @@ int prTextWindow_UnderlineSelection(struct VMGlobals *g, int numArgsPushed)
 
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
-	[[doc textView] underline: NULL];
+	[[doc activeTextView] underline: NULL];
 	return errNone;
 
 }
@@ -604,7 +610,7 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 	if (!doc) return errFailed;
 	PyrString* pstring = slotRawString(b);
 	NSRange selectedRange;
-	int length = [[[doc textView] string] length];
+	int length = [[[doc activeTextView] string] length];
 
 	if(rangeSize < 0) rangeSize = length - 1;
 	if(rangeStart >= length) rangeStart = length - 1 ;
@@ -615,9 +621,9 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 
 
 	NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
-	if ([[doc textView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
-		[[doc textView]  replaceCharactersInRange: selectedRange withString: string];
-		[[doc textView]  didChangeText];
+	if ([[doc activeTextView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
+		[[doc activeTextView]  replaceCharactersInRange: selectedRange withString: string];
+		[[doc activeTextView]  didChangeText];
 	}
 	[string release];
 
@@ -692,7 +698,7 @@ int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed
 		PyrSlot *a = g->sp;
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		NSRange range = [[doc textView] selectedRange];
+		NSRange range = [[doc activeTextView] selectedRange];
 		SetInt(a, range.location);
         return errNone;
 }
@@ -707,8 +713,8 @@ int prTextWindow_SelectToken(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 
-		NSString* string = [[doc textView] string];
-		NSRange range = [[doc textView] selectedRange];
+		NSString* string = [[doc activeTextView] string];
+		NSRange range = [[doc activeTextView] selectedRange];
 		int clickLoc = range.location;
 		range.location = range.location < 64 ? 0 : range.location - 64;
 		range.length = 64;
@@ -744,7 +750,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
-	NSTextView *textView = [doc textView];
+	NSTextView *textView = [doc activeTextView];
 
 	int clickLoc;
 	int err = slotIntVal(b, &clickLoc);
@@ -765,7 +771,7 @@ int prTextWindow_SelectUnderlinedText(struct VMGlobals *g, int numArgsPushed)
 
 		if (isUnderlined) {
 
-			NSString* string = [[doc textView] string];
+			NSString* string = [[doc activeTextView] string];
 
 		   // underlined range should not cross newlines.
 			for (int i=clickLoc; i>=(int)underlineRange.location; --i) {
@@ -843,7 +849,7 @@ int prTextWindow_LinkAtClickPos(struct VMGlobals *g, int numArgsPushed)
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
 
-	NSTextView *textView = [doc textView];
+	NSTextView *textView = [doc activeTextView];
 
 	int clickLoc;
 	int err = slotIntVal(b, &clickLoc);
@@ -874,7 +880,7 @@ int prTextWindow_GetSelectedRangeLength(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp;
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		NSRange range = [[doc textView] selectedRange];
+		NSRange range = [[doc activeTextView] selectedRange];
 		SetInt(a, range.length);
 		return errNone;
 }
@@ -889,7 +895,7 @@ int prTextWindow_SelectedText(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 
-        NSString* str = [[doc textView] currentlySelectedTextOrLine:NULL];
+        NSString* str = [[doc activeTextView] currentlySelectedTextOrLine:NULL];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
@@ -912,7 +918,7 @@ int prTextWindow_TextWithRange(struct VMGlobals *g, int numArgsPushed)
         if (err) return err;
 		MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		NSString* string = [[doc textView] string];
+		NSString* string = [[doc activeTextView] string];
 		int length = [string length];
 		if(length < 1)
 		{
@@ -940,7 +946,7 @@ int prTextWindow_Text(struct VMGlobals *g, int numArgsPushed)
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
 
-        NSString* str = [[doc textView] string];
+        NSString* str = [[doc activeTextView] string];
         const char * cstr = [str UTF8String];
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(a, string);
@@ -1047,6 +1053,32 @@ int prTextWindow_GetIndexOfListener(struct VMGlobals *g, int numArgsPushed)
 		int index = [[docctl documents] indexOfObject: doc];
 		SetInt(a, index);
         return errNone;
+}
+
+int prTextWindow_UsesAutoInOutdent(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_UsesAutoInOutdent(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp; //bool
+	
+	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
+	if (!doc) return errFailed;
+	[doc setUsesAutoInOutdent:IsTrue(b)];
+	return errNone;
+}
+
+int prTextWindow_DefaultUsesAutoInOutdent(struct VMGlobals *g, int numArgsPushed);
+int prTextWindow_DefaultUsesAutoInOutdent(struct VMGlobals *g, int numArgsPushed)
+{
+	if (!g->canCallOS) return errCantCallOS;
+	
+	//PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp; //bool
+	
+	defaultDocumentUseAutoInOutDent = IsTrue(b);
+	return errNone;
 }
 
 
@@ -1235,7 +1267,7 @@ int prBalanceParens(struct VMGlobals *g, int numArgsPushed)
 
 	MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
 	if (!doc) return errFailed;
-	[[doc textView] balanceParens: nil];
+	[[doc activeTextView] balanceParens: nil];
 
 	return errNone;
 }
@@ -4215,7 +4247,8 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 6, 0);
 	definePrimitive(base, index++, "_TextWindow_BalanceParens", prBalanceParens, 1, 0);
-
+	definePrimitive(base, index++, "_TextWindow_UsesAutoInOutdent", prTextWindow_UsesAutoInOutdent, 2, 0);
+	definePrimitive(base, index++, "_TextWindow_DefaultUsesAutoInOutdent", prTextWindow_DefaultUsesAutoInOutdent, 2, 0);
 
 
 ///

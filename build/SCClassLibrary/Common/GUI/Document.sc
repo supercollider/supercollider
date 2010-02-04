@@ -230,23 +230,23 @@ Document {
 	}
 
 	front {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	unfocusedFront {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	alwaysOnTop_ { |boolean=true|
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	alwaysOnTop {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	syntaxColorize {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	selectLine { | line |
@@ -254,7 +254,7 @@ Document {
 	}
 
 	selectRange { | start=0, length=0 |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	editable_ { | abool=true |
@@ -262,19 +262,19 @@ Document {
 		this.prIsEditable_(abool);
 	}
 	removeUndo {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	promptToSave_ { | bool |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	promptToSave {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	underlineSelection {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	*setTheme { | themeName |
@@ -291,7 +291,7 @@ Document {
 
 // state info
 	isEdited {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	isFront {
 		^Document.current === this
@@ -484,67 +484,82 @@ Document {
 			this.path == doc.path
 		}
 	}
-
+	
+	*defaultUsesAutoInOutdent_ {|bool|
+		Document.implementationClass.prDefaultUsesAutoInOutdent_(bool)
+	}
+	
+	usesAutoInOutdent_ {|bool|
+		this.prUsesAutoInOutdent_(bool)
+	}
+	
+	*prDefaultUsesAutoInOutdent_{|bool|
+		this.subclassResponsibility(thisMethod);
+	}
+	
+	prUsesAutoInOutdent_{|bool|
+		^this.subclassResponsibility(thisMethod);
+	}
 
 
 // private implementation
 
 	prIsEditable_{ | editable=true |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prSetTitle { | argName |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prGetTitle {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prGetFileName {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prSetFileName { | apath |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prGetBounds { | argBounds |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	prSetBounds { | argBounds |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC|
-		^this.subclassResponsibility;
+		^this.subclassResponsibility(thisMethod);
 	}
 
 	// if range is -1 apply to whole doc
 	setFont { | font, rangeStart= -1, rangeSize=100 |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	setTextColor { | color,  rangeStart = -1, rangeSize = 0 |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	text {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	selectedText {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	selectUnderlinedText { | clickPos |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	linkAtClickPos { | clickPos |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	rangeText { | rangestart=0, rangesize=1 |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	prclose {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	closed {
@@ -555,10 +570,10 @@ Document {
 	}
 
 	prinsertText { | dataPtr, txt |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	insertTextRange { | string, rangestart, rangesize |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	prAdd {
@@ -577,7 +592,7 @@ Document {
 
 	//this is called after recompiling the lib
 	*prnumberOfOpen {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	*numberOfOpen {
 		thisProcess.platform.when(\_NumberOfOpenTextWindows) {
@@ -597,7 +612,7 @@ Document {
 		this.prAdd;
 	}
 	prinitByIndex { | idx |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	//this is called from the menu: open, new
@@ -606,11 +621,11 @@ Document {
 	}
 
 	initLast {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	prGetLastIndex {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	// private open
@@ -631,7 +646,7 @@ Document {
 		^this.prAdd;
 	}
 	propen { | path, selectionStart=0, selectionLength=0 |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	// private newTextWindow
@@ -645,37 +660,37 @@ Document {
 
 	}
 	prinitByString { | title, str, makeListener |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	// other private
 	// if -1 whole doc
 
 	prSetBackgroundColor { | color |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prGetBackgroundColor { | color |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	prSetSelectedBackgroundColor { | color |
-		^this.subclassResponsibility;
+		^this.subclassResponsibility(thisMethod);
 	}
 	prGetSelectedBackgroundColor { | color |
-		^this.subclassResponsibility;
+		^this.subclassResponsibility(thisMethod);
 	}
 	selectedRangeLocation {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 	selectedRangeSize {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	prSelectLine { | line |
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 	*prGetIndexOfListener {
-		^this.subclassResponsibility
+		^this.subclassResponsibility(thisMethod)
 	}
 
 

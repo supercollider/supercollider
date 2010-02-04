@@ -34,6 +34,7 @@ typedef unsigned int NSUInteger;
 	int keyDownActionIndex, keyUpActionIndex;
 	int objectKeyDownActionIndex, objectKeyUpActionIndex;
 	BOOL mAcceptsFirstResponder;
+	BOOL useAutoInOutdent; // defaults false for SCTextViews, true for docs
 	NSMutableArray *completionDict;
 }
 - (void) setAcceptsFirstResponder: (BOOL) flag;
@@ -41,8 +42,12 @@ typedef unsigned int NSUInteger;
 - (void) mouseDown: (NSEvent*) event;
 - (void) mouseUpAction: (NSEvent*) theEvent index: (int) index;
 
+- (void) setUsesAutoInOutdent: (bool)flag;
+- (bool) usesAutoInOutdent;
+
 - (IBAction) executeSelection: (id) sender;
 - (void) autoIndent: (NSEvent*) event;
+- (void)outdentBrack;
 - (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
 - (NSString*)currentlySelectedText: (NSRange*) outRange;
 - (void) setLangClassToCall: (NSString*) stringin withKeyDownActionIndex:(int) downIndex withKeyUpActionIndex:(int) upIndex ;

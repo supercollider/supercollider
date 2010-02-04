@@ -297,6 +297,10 @@ extern PyrSymbol *s_scview;
 	[url release];
 }
 
+// for compatibility with Document
+- (void)setActiveTextView:(SCTextView*)aTextView
+{
+}
 @end
 
 
@@ -1439,6 +1443,12 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "setSyntaxColors")==0) {
 		SyntaxColorize(mTextView);
 		return errNone; 
+	}
+	
+	if (strcmp(name, "setUsesAutoInOutdent")==0) {
+		bool uses = IsTrue(slot);
+		[mTextView setUsesAutoInOutdent: uses];
+		return errNone;
 	}
 	
 	return SCView::setProperty(symbol, slot);
