@@ -120,7 +120,7 @@ namespace detail
 {
 
 template <typename float_type>
-float_type log2(float_type arg)
+inline float_type log2(float_type arg)
 {
 #if defined(__GXX_EXPERIMENTAL_CXX0X__)
     return std::log2(arg);
@@ -129,6 +129,24 @@ float_type log2(float_type arg)
     return std::log(arg) * rlog2;
 #endif
 }
+
+#if !defined(__GXX_EXPERIMENTAL_CXX0X__)
+
+#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
+template <>
+inline float log2(float arg)
+{
+    return ::log2f(arg);
+}
+
+template <>
+inline double log2(double arg)
+{
+    return ::log2(arg);
+}
+#endif
+
+#endif /* __GXX_EXPERIMENTAL_CXX0X__ */
 
 /** signed sqrt */
 template <typename F>

@@ -29,6 +29,7 @@
 #include "simd_memory.hpp"
 #include "simd_round.hpp"
 #include "softclip.hpp"
+#include "simd_unit_conversion.hpp"
 
 #define NOVA_WRAPPER(NAME, NOVANAME)                        \
 	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
@@ -398,6 +399,19 @@ DEFINE_UNARY_OP_FUNCS(midiratio, sc_midiratio)
 DEFINE_UNARY_OP_FUNCS(ratiomidi, sc_ratiomidi)
 DEFINE_UNARY_OP_FUNCS(cpsoct, sc_cpsoct)
 DEFINE_UNARY_OP_FUNCS(octcps, sc_octcps)
+
+#ifdef NOVA_SIMD
+NOVA_WRAPPER(ampdb, amp2db)
+NOVA_WRAPPER(dbamp, db2amp)
+NOVA_WRAPPER(midicps, midi2freq)
+NOVA_WRAPPER(cpsmidi, freq2midi)
+NOVA_WRAPPER(midiratio, midi2ratio)
+NOVA_WRAPPER(ratiomidi, ratio2midi)
+NOVA_WRAPPER(cpsoct, freq2oct)
+NOVA_WRAPPER(octcps, oct2freq)
+#endif
+
+
 DEFINE_UNARY_OP_FUNCS(frac, sc_frac)
 
 #ifdef NOVA_SIMD
@@ -790,15 +804,14 @@ UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opSqrt : func = &sqrt_nova_64; break;
 		case opExp : func = &exp_nova; break;
 		case opRecip : return &recip_nova_64;
-		case opMIDICPS : func = &midicps_a; break;
-		case opCPSMIDI : func = &cpsmidi_a; break;
-
-		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;
-		case opDbAmp : func = &dbamp_a; break;
-		case opAmpDb : 	func = &ampdb_a; break;
-		case opOctCPS : func = &octcps_a; break;
-		case opCPSOct : func = &cpsoct_a; break;
+		case opMIDICPS : func = &midicps_nova; break;
+		case opCPSMIDI : func = &cpsmidi_nova; break;
+		case opMIDIRatio : func = &midiratio_nova; break;
+		case opRatioMIDI : func = &ratiomidi_nova; break;
+		case opDbAmp : func = &dbamp_nova; break;
+		case opAmpDb : 	func = &ampdb_nova; break;
+		case opOctCPS : func = &octcps_nova; break;
+		case opCPSOct : func = &cpsoct_nova; break;
 		case opLog : func = &log_nova; break;
 		case opLog2 : func = &log2_nova; break;
 		case opLog10 : func = &log10_nova; break;
@@ -841,15 +854,14 @@ UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opSqrt : func = &sqrt_nova; break;
 		case opExp : func = &exp_nova; break;
 		case opRecip : func = &recip_nova; break;
-		case opMIDICPS : func = &midicps_a; break;
-		case opCPSMIDI : func = &cpsmidi_a; break;
-
-		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;
-		case opDbAmp : func = &dbamp_a; break;
-		case opAmpDb : 	func = &ampdb_a; break;
-		case opOctCPS : func = &octcps_a; break;
-		case opCPSOct : func = &cpsoct_a; break;
+		case opMIDICPS : func = &midicps_nova; break;
+		case opCPSMIDI : func = &cpsmidi_nova; break;
+		case opMIDIRatio : func = &midiratio_nova; break;
+		case opRatioMIDI : func = &ratiomidi_nova; break;
+		case opDbAmp : func = &dbamp_nova; break;
+		case opAmpDb :  func = &ampdb_nova; break;
+		case opOctCPS : func = &octcps_nova; break;
+		case opCPSOct : func = &cpsoct_nova; break;
 		case opLog : func = &log_nova; break;
 		case opLog2 : func = &log2_nova; break;
 		case opLog10 : func = &log10_nova; break;
