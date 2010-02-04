@@ -375,7 +375,7 @@ void SC_TerminalClient::commandLoop()
 			}
 		}
 	}else{
-#else
+#endif
 	const int fd = 0;
 	struct pollfd pfds[1] = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
@@ -403,7 +403,6 @@ void SC_TerminalClient::commandLoop()
 			return;
 		}
 	}
-#endif
 
 #ifdef HAVE_READLINE
 	} // end gIdeName!="none"
