@@ -144,7 +144,7 @@ private:
 
 public:
     /* @{ */
-    /** graph handling */
+    /** node control */
     abstract_synth * add_synth(std::string const & name, int id, node_position_constraint const & constraints);
     abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
 
@@ -161,10 +161,22 @@ public:
     {
         return group_free_implementation<&node_graph::group_free_deep>(node_id);
     }
-    /* @} */
+
+    void node_pause(server_node * node)
+    {
+        node->pause();
+        notification_node_turned_off(node);
+    }
+
+    void node_resume(server_node * node)
+    {
+        node->resume();
+        notification_node_turned_on(node);
+    }
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
     void set_node_slot(int node_id, const char * slot, float value);
+    /* @} */
 
     void register_prototype(synth_prototype_ptr const & prototype);
 

@@ -70,6 +70,7 @@ abstract_synth * nova_server::add_synth(std::string const & name, int id, node_p
 
     node_graph::add_node(ret, constraints);
     update_dsp_queue();
+    notification_node_started(ret);
     return ret;
 }
 
@@ -82,6 +83,7 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
 
     node_graph::add_node(ret, constraints);
     update_dsp_queue();
+    notification_node_started(ret);
     return ret;
 }
 
@@ -93,6 +95,7 @@ group * nova_server::add_group(int id, node_position_constraint const & constrai
 
     instance->add_node(g, constraints);
     /* no need to update the dsp queue */
+    notification_node_started(g);
     return g;
 }
 
@@ -103,6 +106,7 @@ parallel_group * nova_server::add_parallel_group(int id, node_position_constrain
         return 0;
     instance->add_node(g, constraints);
     /* no need to update the dsp queue */
+    notification_node_started(g);
     return g;
 }
 
@@ -123,6 +127,7 @@ void nova_server::set_node_slot(int node_id, const char * slot, float value)
 
 void nova_server::free_node(server_node * node)
 {
+    notification_node_ended(node);
     node_graph::remove_node(node);
     update_dsp_queue();
 }

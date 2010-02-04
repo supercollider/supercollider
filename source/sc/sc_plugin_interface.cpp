@@ -539,17 +539,16 @@ void sc_plugin_interface::initialize(void)
 
 void sc_done_action_handler::update_nodegraph(void)
 {
-    for (size_t i = 0; i != done_nodes.size(); ++i)
-        instance->free_node(done_nodes[i]);
+    std::for_each(done_nodes.begin(), done_nodes.end(), boost::bind(&nova_server::free_node, instance, _1));
     done_nodes.clear();
 
-    std::for_each(pause_nodes.begin(), pause_nodes.end(), boost::mem_fn(&server_node::pause));
+    std::for_each(pause_nodes.begin(), pause_nodes.end(), boost::bind(&nova_server::node_pause, instance, _1));
     pause_nodes.clear();
 
-    std::for_each(freeDeep_nodes.begin(), freeDeep_nodes.end(), boost::mem_fn(&abstract_group::free_synths_deep));
+    std::for_each(freeDeep_nodes.begin(), freeDeep_nodes.end(), boost::bind(&nova_server::group_free_deep, instance, _1));
     freeDeep_nodes.clear();
 
-    std::for_each(freeAll_nodes.begin(), freeAll_nodes.end(), boost::mem_fn(&abstract_group::free_children));
+    std::for_each(freeAll_nodes.begin(), freeAll_nodes.end(), boost::bind(&nova_server::group_free_all, instance, _1));
     freeAll_nodes.clear();
 }
 
