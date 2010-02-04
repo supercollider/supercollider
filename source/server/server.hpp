@@ -138,7 +138,6 @@ public:
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
 
-    void free_node(int id);
     void free_node(server_node * node);
 
     bool group_free_all(abstract_group * node_id)
