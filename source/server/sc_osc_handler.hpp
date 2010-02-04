@@ -78,7 +78,7 @@ public:
 
 
     /* @{ */
-    /** notifications */
+    /** notifications, should be called from the real-time thread */
     void notification_node_started(int32_t node_id)
     {
         notify("n_go", node_id);
@@ -105,30 +105,12 @@ public:
     }
     /* @} */
 
+    /** send notifications, should not be called from the real-time thread */
+    void send_notification(const char * data, size_t length);
+
 private:
     void notify(const char * address_pattern, int32_t node_id);
-
-    void send_notification(const char * data, size_t length)
-    {
-        for (size_t i = 0; i != observers.size(); ++i)
-            send_notification(data, length, observers[i]);
-    }
-
-    void send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
-    {
-        nova_protocol prot = endpoint.protocol();
-        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
-        {
-            udp::endpoint ep(endpoint.address(), endpoint.port());
-            udp_socket.send_to(boost::asio::buffer(data, length), ep);
-        }
-        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
-        {
-            tcp::endpoint ep(endpoint.address(), endpoint.port());
-            tcp_socket.connect(ep);
-            boost::asio::write(tcp_socket, boost::asio::buffer(data, length));
-        }
-    }
+    void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
 
     observer_vector observers;
     boost::asio::io_service io_service; /* we have an io_service for our own */

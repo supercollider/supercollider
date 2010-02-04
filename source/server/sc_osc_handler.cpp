@@ -44,6 +44,14 @@ server_node * find_node(int target_id)
     return node;
 }
 
+bool check_node_id(int node_id)
+{
+    if (!instance->node_id_available(node_id)) {
+        cerr << "node id " << node_id << " already in use" << endl;
+        return false;
+    }
+    return true;
+}
 
 void fill_notification(int32_t node_id, osc::OutboundPacketStream & p)
 {
@@ -96,10 +104,235 @@ void fill_notification(int32_t node_id, osc::OutboundPacketStream & p)
     p << osc::EndMessage;
 }
 
+struct movable_string
+{
+    /** allocate new string, only allowed to be called from the rt thread */
+    explicit movable_string(const char * str)
+    {
+        size_t length = strlen(str);
+        char * data = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        strcpy(data, str);
+        data_ = data;
+    }
+
+    /** copy constructor has move semantics!!! */
+    movable_string(movable_string const & rhs)
+    {
+        data_ = rhs.data_;
+        const_cast<movable_string&>(rhs).data_ = NULL;
+    }
+
+    ~movable_string(void)
+    {
+        if (data_)
+            system_callback::deallocate((char*)data_);
+    }
+
+    const char * c_str(void) const
+    {
+        return data_;
+    }
+
+private:
+    const char * data_;
+};
+
+template <typename T>
+struct movable_array
+{
+    /** allocate new array, only allowed to be called from the rt thread */
+    movable_array(size_t length, const T * data):
+        length_(length)
+    {
+        data_ = (T*)system_callback::allocate(length * sizeof(T));
+        for (size_t i = 0; i != length; ++i)
+            data_[i] = data[i];
+    }
+
+    /** copy constructor has move semantics!!! */
+    movable_array(movable_array const & rhs)
+    {
+        length_ = rhs.length_;
+        data_ = rhs.data_;
+        const_cast<movable_array&>(rhs).data_ = NULL;
+    }
+
+    ~movable_array(void)
+    {
+        if (data_)
+            system_callback::deallocate((char*)data_);
+    }
+
+    const T * data(void) const
+    {
+        return data_;
+    }
+
+    const size_t length(void) const
+    {
+        return length_;
+    }
+
+private:
+    size_t length_;
+    T * data_;
+};
+
+void send_done_message(nova_endpoint const & endpoint)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+      << osc::EndMessage;
+
+    instance->send(p.Data(), p.Size(), endpoint);
+}
+
+void send_done_message(nova_endpoint const & endpoint, const char * cmd)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+      << cmd
+      << osc::EndMessage;
+
+    instance->send(p.Data(), p.Size(), endpoint);
+}
+
+void send_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+{
+    char buffer[128];
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/done")
+      << cmd
+      << index
+      << osc::EndMessage;
+
+    instance->send(p.Data(), p.Size(), endpoint);
+}
+
+template <typename Functor>
+struct fn_system_callback:
+    public system_callback
+{
+    fn_system_callback (Functor const & fn):
+        fn_(fn)
+    {}
+
+    void run(void)
+    {
+        fn_();
+    }
+
+    Functor fn_;
+};
+
+template <typename Functor>
+struct fn_sync_callback:
+    public audio_sync_callback
+{
+    fn_sync_callback (Functor const & fn):
+        fn_(fn)
+    {}
+
+    void run(void)
+    {
+        fn_();
+    }
+
+    Functor fn_;
+};
+
+/** helper class for dispatching real-time and non real-time osc command callbacks
+ *
+ *  uses template specialization to avoid unnecessary callback rescheduling
+ */
+template <bool realtime>
+struct cmd_dispatcher
+{
+    template <typename Functor>
+    static void fire_system_callback(Functor const & f)
+    {
+        instance->add_system_callback(new fn_system_callback<Functor>(f));
+    }
+
+    template <typename Functor>
+    static void fire_io_callback(Functor const & f)
+    {
+        instance->add_io_callback(new fn_system_callback<Functor>(f));
+    }
+
+    template <typename Functor>
+    static void fire_rt_callback(Functor const & f)
+    {
+        instance->add_sync_callback(new fn_sync_callback<Functor>(f));
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint)
+    {
+        fire_system_callback(boost::bind(send_done_message, endpoint));
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
+    {
+        fire_system_callback(boost::bind(send_done_message, endpoint, cmd));
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+    {
+        fire_system_callback(boost::bind(send_done_message, endpoint, cmd, index));
+    }
+};
+
+template <>
+struct cmd_dispatcher<false>
+{
+    template <typename Functor>
+    static void fire_system_callback(Functor f)
+    {
+        f();
+    }
+
+    template <typename Functor>
+    static void fire_io_callback(Functor f)
+    {
+        f();
+    }
+
+    template <typename Functor>
+    static void fire_rt_callback(Functor f)
+    {
+        f();
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint)
+    {
+        send_done_message (endpoint);
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
+    {
+        send_done_message (endpoint, cmd);
+    }
+
+    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+    {
+        send_done_message (endpoint, cmd, index);
+    }
+};
+
+
+
+
 } /* namespace */
 
 namespace detail
 {
+
+void fire_notification(movable_array<char> & msg)
+{
+    instance->send_notification(msg.data(), msg.length());
+}
 
 void sc_notify_observers::notify(const char * address_pattern, int32_t node_id)
 {
@@ -108,8 +341,32 @@ void sc_notify_observers::notify(const char * address_pattern, int32_t node_id)
     p << osc::BeginMessage(address_pattern);
     fill_notification(node_id, p);
 
-    send_notification(p.Data(), p.Size());
+    movable_array<char> message(p.Size(), p.Data());
+    cmd_dispatcher<true>::fire_system_callback(boost::bind(fire_notification, message));
 }
+
+void sc_notify_observers::send_notification(const char * data, size_t length)
+{
+    for (size_t i = 0; i != observers.size(); ++i)
+        send_notification(data, length, observers[i]);
+}
+
+void sc_notify_observers::send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
+{
+    nova_protocol prot = endpoint.protocol();
+    if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
+    {
+        udp::endpoint ep(endpoint.address(), endpoint.port());
+        udp_socket.send_to(boost::asio::buffer(data, length), ep);
+    }
+    else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
+    {
+        tcp::endpoint ep(endpoint.address(), endpoint.port());
+        tcp_socket.connect(ep);
+        boost::asio::write(tcp_socket, boost::asio::buffer(data, length));
+    }
+}
+
 
 
 void sc_scheduled_bundles::bundle_node::run(void)
@@ -402,79 +659,6 @@ enum {
     NUMBER_OF_COMMANDS = 64
 };
 
-struct movable_string
-{
-    /** allocate new string, only allowed to be called from the rt thread */
-    explicit movable_string(const char * str)
-    {
-        size_t length = strlen(str);
-        char * data = (char*)system_callback::allocate(length + 1); /* terminating \0 */
-        strcpy(data, str);
-        data_ = data;
-    }
-
-    /** copy constructor has move semantics!!! */
-    movable_string(movable_string const & rhs)
-    {
-        data_ = rhs.data_;
-        const_cast<movable_string&>(rhs).data_ = NULL;
-    }
-
-    ~movable_string(void)
-    {
-        if (data_)
-            system_callback::deallocate((char*)data_);
-    }
-
-    const char * c_str(void) const
-    {
-        return data_;
-    }
-
-private:
-    const char * data_;
-};
-
-template <typename T>
-struct movable_array
-{
-    /** allocate new array, only allowed to be called from the rt thread */
-    movable_array(size_t length, const T * data):
-        length_(length)
-    {
-        data_ = (T*)system_callback::allocate(length * sizeof(T));
-        for (size_t i = 0; i != length; ++i)
-            data_[i] = data[i];
-    }
-
-    /** copy constructor has move semantics!!! */
-    movable_array(movable_array const & rhs)
-    {
-        length_ = rhs.length_;
-        data_ = rhs.data_;
-        const_cast<movable_array&>(rhs).data_ = NULL;
-    }
-
-    ~movable_array(void)
-    {
-        if (data_)
-            system_callback::deallocate((char*)data_);
-    }
-
-    const T * data(void) const
-    {
-        return data_;
-    }
-
-    const size_t length(void) const
-    {
-        return length_;
-    }
-
-private:
-    size_t length_;
-    T * data_;
-};
 
 void send_udp_message(movable_array<char> data, nova_endpoint const & endpoint)
 {
@@ -491,159 +675,6 @@ int first_arg_as_int(received_message const & message)
 
     return val;
 }
-
-bool check_node_id(int node_id)
-{
-    if (!instance->node_id_available(node_id)) {
-        cerr << "node id " << node_id << " already in use" << endl;
-        return false;
-    }
-    return true;
-}
-
-template <typename Functor>
-struct fn_system_callback:
-    public system_callback
-{
-    fn_system_callback (Functor const & fn):
-        fn_(fn)
-    {}
-
-    void run(void)
-    {
-        fn_();
-    }
-
-    Functor fn_;
-};
-
-template <typename Functor>
-struct fn_sync_callback:
-    public audio_sync_callback
-{
-    fn_sync_callback (Functor const & fn):
-        fn_(fn)
-    {}
-
-    void run(void)
-    {
-        fn_();
-    }
-
-    Functor fn_;
-};
-
-void send_done_message(nova_endpoint const & endpoint)
-{
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
-    p << osc::BeginMessage("/done")
-      << osc::EndMessage;
-
-    instance->send(p.Data(), p.Size(), endpoint);
-}
-
-void send_done_message(nova_endpoint const & endpoint, const char * cmd)
-{
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
-    p << osc::BeginMessage("/done")
-      << cmd
-      << osc::EndMessage;
-
-    instance->send(p.Data(), p.Size(), endpoint);
-}
-
-void send_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
-{
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
-    p << osc::BeginMessage("/done")
-      << cmd
-      << index
-      << osc::EndMessage;
-
-    instance->send(p.Data(), p.Size(), endpoint);
-}
-
-/** helper class for dispatching real-time and non real-time osc command callbacks
- *
- *  uses template specialization to avoid unnecessary callback rescheduling
- */
-template <bool realtime>
-struct cmd_dispatcher
-{
-    template <typename Functor>
-    static void fire_system_callback(Functor const & f)
-    {
-        instance->add_system_callback(new fn_system_callback<Functor>(f));
-    }
-
-    template <typename Functor>
-    static void fire_io_callback(Functor const & f)
-    {
-        instance->add_io_callback(new fn_system_callback<Functor>(f));
-    }
-
-    template <typename Functor>
-    static void fire_rt_callback(Functor const & f)
-    {
-        instance->add_sync_callback(new fn_sync_callback<Functor>(f));
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        fire_system_callback(boost::bind(send_done_message, endpoint));
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        fire_system_callback(boost::bind(send_done_message, endpoint, cmd));
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
-    {
-        fire_system_callback(boost::bind(send_done_message, endpoint, cmd, index));
-    }
-};
-
-template <>
-struct cmd_dispatcher<false>
-{
-    template <typename Functor>
-    static void fire_system_callback(Functor f)
-    {
-        f();
-    }
-
-    template <typename Functor>
-    static void fire_io_callback(Functor f)
-    {
-        f();
-    }
-
-    template <typename Functor>
-    static void fire_rt_callback(Functor f)
-    {
-        f();
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        send_done_message (endpoint);
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        send_done_message (endpoint, cmd);
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
-    {
-        send_done_message (endpoint, cmd, index);
-    }
-};
-
 
 void quit_perform(nova_endpoint const & endpoint)
 {
