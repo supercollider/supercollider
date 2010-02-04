@@ -81,27 +81,27 @@ public:
     /** notifications, should be called from the real-time thread */
     void notification_node_started(const server_node * node)
     {
-        notify("n_go", node);
+        notify("/n_go", node);
     }
 
     void notification_node_ended(const server_node * node)
     {
-        notify("n_end", node);
+        notify("/n_end", node);
     }
 
     void notification_node_turned_off(const server_node * node)
     {
-        notify("n_off", node);
+        notify("/n_off", node);
     }
 
     void notification_node_turned_on(const server_node * node)
     {
-        notify("n_on", node);
+        notify("/n_on", node);
     }
 
     void notification_node_moved(const server_node * node)
     {
-        notify("n_move", node);
+        notify("/n_move", node);
     }
     /* @} */
 
