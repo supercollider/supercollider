@@ -89,17 +89,17 @@ public:
         notify("n_end", node);
     }
 
-    void notification_node_turned_off(server_node * node)
+    void notification_node_turned_off(const server_node * node)
     {
         notify("n_off", node);
     }
 
-    void notification_node_turned_on(server_node * node)
+    void notification_node_turned_on(const server_node * node)
     {
         notify("n_on", node);
     }
 
-    void notification_node_moved(server_node * node)
+    void notification_node_moved(const server_node * node)
     {
         notify("n_move", node);
     }
@@ -109,7 +109,7 @@ public:
     void send_notification(const char * data, size_t length);
 
 private:
-    void notify(const char * address_pattern, server_node * node);
+    void notify(const char * address_pattern, const server_node * node);
     void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
 
     observer_vector observers;

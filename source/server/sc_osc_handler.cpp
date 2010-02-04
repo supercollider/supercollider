@@ -53,12 +53,12 @@ bool check_node_id(int node_id)
     return true;
 }
 
-void fill_notification(server_node * node, osc::OutboundPacketStream & p)
+void fill_notification(const server_node * node, osc::OutboundPacketStream & p)
 {
     p << node->id();
 
     /* parent */
-    abstract_group * parent_node = node->get_parent();
+    const abstract_group * parent_node = node->get_parent();
     assert(parent_node);
     p << parent_node->id();
 
@@ -67,13 +67,13 @@ void fill_notification(server_node * node, osc::OutboundPacketStream & p)
         p << -2 << -2; /* we are in a parallel group, so we have no notion of previous/next */
     else
     {
-        server_node * prev_node = parent_node->previous_node(node);
+        const server_node * prev_node = node->previous_node();
         if (prev_node)
             p << prev_node->id();
         else
             p << -1;
 
-        server_node * next_node = parent_node->next_node(node);
+        const server_node * next_node = node->next_node();
         if (next_node)
             p << next_node->id();
         else
@@ -84,14 +84,14 @@ void fill_notification(server_node * node, osc::OutboundPacketStream & p)
     if (node->is_synth())
         p << 0;
     else {
-        abstract_group * node_group = static_cast<abstract_group*>(node);
+        const abstract_group * node_group = static_cast<const abstract_group*>(node);
         p << 1;
 
         if (node_group->is_parallel())
             p << -2 << -2;
         else
         {
-            group * node_real_group = static_cast<group*>(node_group);
+            const group * node_real_group = static_cast<const group*>(node_group);
             if (node_real_group->empty())
                 p << -1 << -1;
             else
@@ -333,7 +333,7 @@ void fire_notification(movable_array<char> & msg)
     instance->send_notification(msg.data(), msg.length());
 }
 
-void sc_notify_observers::notify(const char * address_pattern, server_node * node)
+void sc_notify_observers::notify(const char * address_pattern, const server_node * node)
 {
     char buffer[128]; // 128 byte should be enough
     osc::OutboundPacketStream p(buffer, 128);
