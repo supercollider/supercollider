@@ -53,12 +53,11 @@ bool check_node_id(int node_id)
     return true;
 }
 
-void fill_notification(int32_t node_id, osc::OutboundPacketStream & p)
+void fill_notification(server_node * node, osc::OutboundPacketStream & p)
 {
-    p << node_id;
+    p << node->id();
 
     /* parent */
-    server_node * node = find_node(node_id);
     abstract_group * parent_node = node->get_parent();
     assert(parent_node);
     p << parent_node->id();
@@ -334,12 +333,12 @@ void fire_notification(movable_array<char> & msg)
     instance->send_notification(msg.data(), msg.length());
 }
 
-void sc_notify_observers::notify(const char * address_pattern, int32_t node_id)
+void sc_notify_observers::notify(const char * address_pattern, server_node * node)
 {
     char buffer[128]; // 128 byte should be enough
     osc::OutboundPacketStream p(buffer, 128);
     p << osc::BeginMessage(address_pattern);
-    fill_notification(node_id, p);
+    fill_notification(node, p);
 
     movable_array<char> message(p.Size(), p.Data());
     cmd_dispatcher<true>::fire_system_callback(boost::bind(fire_notification, message));
@@ -1416,10 +1415,14 @@ void handle_n_query(received_message const & msg, nova_endpoint const & endpoint
         osc::int32 node_id;
         args >> node_id;
 
+        server_node * node = find_node(node_id);
+        if (!node)
+            continue;
+
         char buffer[128]; // 128 byte should be enough
         osc::OutboundPacketStream p(buffer, 128);
         p << osc::BeginMessage("/n_info");
-        fill_notification(node_id, p);
+        fill_notification(node, p);
 
         movable_array<char> message(p.Size(), p.Data());
         cmd_dispatcher<true>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));

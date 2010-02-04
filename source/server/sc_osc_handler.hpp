@@ -79,29 +79,29 @@ public:
 
     /* @{ */
     /** notifications, should be called from the real-time thread */
-    void notification_node_started(int32_t node_id)
+    void notification_node_started(server_node * node)
     {
-        notify("n_go", node_id);
+        notify("n_go", node);
     }
 
-    void notification_node_ended(int32_t node_id)
+    void notification_node_ended(server_node * node)
     {
-        notify("n_end", node_id);
+        notify("n_end", node);
     }
 
-    void notification_node_turned_off(int32_t node_id)
+    void notification_node_turned_off(server_node * node)
     {
-        notify("n_off", node_id);
+        notify("n_off", node);
     }
 
-    void notification_node_turned_on(int32_t node_id)
+    void notification_node_turned_on(server_node * node)
     {
-        notify("n_on", node_id);
+        notify("n_on", node);
     }
 
-    void notification_node_moved(int32_t node_id)
+    void notification_node_moved(server_node * node)
     {
-        notify("n_move", node_id);
+        notify("n_move", node);
     }
     /* @} */
 
@@ -109,7 +109,7 @@ public:
     void send_notification(const char * data, size_t length);
 
 private:
-    void notify(const char * address_pattern, int32_t node_id);
+    void notify(const char * address_pattern, server_node * node);
     void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
 
     observer_vector observers;
