@@ -862,6 +862,7 @@ void handle_s_new(received_message const & msg)
         }
     }
     synth->prepare();
+    instance->notification_node_started(synth);
 }
 
 
@@ -877,7 +878,8 @@ void insert_group(int node_id, int action, int target_id)
 
     node_position_constraint pos = make_pair(target, node_position(action));
 
-    instance->add_group(node_id, pos);
+    group * g = instance->add_group(node_id, pos);
+    instance->notification_node_started(g);
 }
 
 void handle_g_new(received_message const & msg)
@@ -1109,7 +1111,12 @@ void handle_n_free(received_message const & msg)
             osc::int32 id;
             args >> id;
 
-            instance->free_node(id);
+            server_node * node = find_node(id);
+            if (!node)
+                continue;
+
+            instance->free_node(node);
+            instance->notification_node_ended(node);
         }
         catch (std::exception & e) {
             cerr << e.what() << endl;
@@ -1481,9 +1488,15 @@ void handle_n_run(received_message const & msg)
             continue;
 
         if (run_flag)
+        {
             node->resume();
+            instance->notification_node_turned_on(node);
+        }
         else
+        {
             node->pause();
+            instance->notification_node_turned_off(node);
+        }
     }
 }
 
@@ -2765,7 +2778,8 @@ void insert_parallel_group(int node_id, int action, int target_id)
 
     node_position_constraint pos = make_pair(target, node_position(action));
 
-    instance->add_parallel_group(node_id, pos);
+    parallel_group * p = instance->add_parallel_group(node_id, pos);
+    instance->notification_node_started(p);
 }
 
 void handle_p_new(received_message const & msg)
