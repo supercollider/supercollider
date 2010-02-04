@@ -33,16 +33,25 @@ using namespace std;
 
 namespace
 {
-server_node * find_node(int target_id)
+
+server_node * find_node(int32_t target_id)
 {
     server_node * node = instance->find_node(target_id);
 
-    if (node == NULL) {
+    if (node == NULL)
         cerr << "node not found" << endl;
-        return NULL;
-    }
     return node;
 }
+
+abstract_group * find_group(int32_t target_id)
+{
+    abstract_group * node = instance->find_group(target_id);
+
+    if (node == NULL)
+        cerr << "node not found or not a group" << endl;
+    return node;
+}
+
 
 bool check_node_id(int node_id)
 {
@@ -930,11 +939,14 @@ void handle_g_freeall(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        bool success = instance->group_free_all(id);
+        abstract_group * group = find_group(id);
+        if (!group)
+            continue;
+
+        bool success = instance->group_free_all(group);
 
         if (!success)
             cerr << "/g_freeAll failue" << endl;
-        instance->update_dsp_queue();
     }
 }
 
@@ -947,11 +959,14 @@ void handle_g_deepFree(received_message const & msg)
         osc::int32 id;
         args >> id;
 
-        bool success = instance->group_free_deep(id);
+        abstract_group * group = find_group(id);
+        if (!group)
+            continue;
+
+        bool success = instance->group_free_deep(group);
 
         if (!success)
             cerr << "/g_freeDeep failue" << endl;
-        instance->update_dsp_queue();
     }
 }
 

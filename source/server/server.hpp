@@ -113,8 +113,8 @@ public:
         system_interpreter.add_callback(cb);
     }
 
-    /* system interpreter */
     /* @{ */
+    /** system interpreter */
     void add_system_callback(system_callback * cb)
     {
         system_interpreter.add_callback(cb);
@@ -131,14 +131,37 @@ public:
     }
     /* @} */
 
+
+private:
+    template <bool (node_graph::*fn)(abstract_group*)>
+    bool group_free_implementation(abstract_group * group)
+    {
+        bool success = (this->*fn)(group);
+        if (success)
+            update_dsp_queue();
+        return success;
+    }
+
+public:
+    /* @{ */
+    /** graph handling */
     abstract_synth * add_synth(std::string const & name, int id, node_position_constraint const & constraints);
     abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
 
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
 
-    void free_node(int id);
     void free_node(server_node * node);
+
+    bool group_free_all(abstract_group * node_id)
+    {
+        return group_free_implementation<&node_graph::group_free_all>(node_id);
+    }
+    bool group_free_deep(abstract_group * node_id)
+    {
+        return group_free_implementation<&node_graph::group_free_deep>(node_id);
+    }
+    /* @} */
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
     void set_node_slot(int node_id, const char * slot, float value);

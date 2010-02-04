@@ -121,15 +121,6 @@ void nova_server::set_node_slot(int node_id, const char * slot, float value)
         node->set(slot, value);
 }
 
-void nova_server::free_node(int node_id)
-{
-    server_node * node = find_node(node_id);
-    if (node == NULL)
-        throw std::runtime_error("cannot find server node");
-
-    free_node(node);
-}
-
 void nova_server::free_node(server_node * node)
 {
     node_graph::remove_node(node);
