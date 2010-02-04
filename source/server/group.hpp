@@ -78,7 +78,7 @@ public:
     virtual void add_child(server_node * node, node_position_constraint const &) = 0;
     virtual void add_child(server_node * node, node_position) = 0;
 
-    bool has_child(server_node * node);
+    bool has_child(const server_node * node) const;
 
     bool empty(void) const
     {
@@ -177,6 +177,16 @@ inline server_node * server_node::previous_node(void)
 inline server_node * server_node::next_node(void)
 {
     return parent_->next_node(this);
+}
+
+inline const server_node * server_node::previous_node(void) const
+{
+    return const_cast<server_node*>(this)->previous_node();
+}
+
+inline const server_node * server_node::next_node(void) const
+{
+    return const_cast<server_node*>(this)->next_node();
 }
 
 

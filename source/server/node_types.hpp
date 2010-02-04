@@ -101,8 +101,10 @@ public:
 
 
     /* @{ */
-    /* group traversing */
+    /** group traversing */
+    inline const server_node * previous_node(void) const;
     inline server_node * previous_node(void);
+    inline const server_node * next_node(void) const;
     inline server_node * next_node(void);
     /* @} */
 

@@ -157,13 +157,13 @@ void abstract_group::add_child(server_node * node)
     node->set_parent(this);
 }
 
-bool abstract_group::has_child(server_node * node)
+bool abstract_group::has_child(const server_node * node) const
 {
     if (!node->server_node::parent_hook::is_linked())
         return false;
 
     /* find node in container */
-    for (server_node_list::iterator it = child_nodes.begin();
+    for (server_node_list::const_iterator it = child_nodes.begin();
          it != child_nodes.end(); ++it) {
         if (&*it == node)
             return true;
