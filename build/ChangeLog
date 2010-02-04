@@ -52,7 +52,6 @@ Bugfixes:
 * 2009-12-14 fix uninitialised variable in Pulse (could sometimes cause small glitch on init), thanks to rhian lloyd - ds
 * 2010-01-10 Demand ugens can now handle more than 32 channels, thanks Patrick Borgeat for the patch - ds
 
-
 Other additions/improvements:
 -----------------------------
 
@@ -74,6 +73,8 @@ Other additions/improvements:
 * 2010-01-06 UnitTest Quark improved, added script support - jr
 * 2010-01-23 Improved NodeProxy and ProxySpace helpfiles. Added proxy composition syntax to NodeProxy - jr
 * 2010-01-30 Make multichannel plotting easier. If no numChannels is given, find out automatically  - jr
+* 2010-01-31 add new LOOP1 macro - tb
+* 2010-01-31 use c99 log2 functions for sc_log2 - tb
 
 
 SuperCollider v3.3.1, released 2009-06-19
