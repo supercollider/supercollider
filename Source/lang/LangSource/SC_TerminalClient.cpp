@@ -330,6 +330,7 @@ int sc_rl_mainstop(int i1, int i2){
 	rl_reset_line_state();
 	rl_crlf();
 	rl_redisplay();
+	return 0;
 }
 
 /*
@@ -355,7 +356,7 @@ void SC_TerminalClient::commandLoop()
 		rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
 		//rl_attempted_completion_function = sc_rl_completion;
 		rl_bind_key(0x02, &sc_rl_mainstop); // TODO 0x02 is ctrl-B; ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
-		
+
 		signal(SIGINT, &sc_rl_signalhandler);
 		const char *prompt = "sc3> ";
 		char *cmdLine;
@@ -377,7 +378,7 @@ void SC_TerminalClient::commandLoop()
 	}else{
 #endif
 	const int fd = 0;
-	struct pollfd pfds[1] = { fd, POLLIN, 0 };
+	struct pollfd pfds = { fd, POLLIN, 0 };
 	SC_StringBuffer cmdLine;
 
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
@@ -388,11 +389,11 @@ void SC_TerminalClient::commandLoop()
 
 	while (shouldBeRunning()) {
 		tick();
-		int nfds = poll(pfds, POLLIN, 50);
+		int nfds = poll(&pfds, POLLIN, 50);
 		if (nfds > 0) {
 			while (readCmdLine(fd, cmdLine));
 			#ifdef SC_DARWIN
-			if(pfds[0].revents == POLLNVAL){
+			if(pfds.revents == POLLNVAL){
 				// we reach here when reading directly from CLI, but not if being piped data! (osx 10.4.11 and 10.5.7 at least)
 				usleep(20011);
 			}
