@@ -108,11 +108,42 @@ public:
     /** send notifications, should not be called from the real-time thread */
     void send_notification(const char * data, size_t length);
 
+    /* @{ */
+    /** sending functions */
+    void send(const char * data, size_t size, nova_endpoint const & endpoint)
+    {
+        nova_protocol prot = endpoint.protocol();
+        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
+        {
+            udp::endpoint ep(endpoint.address(), endpoint.port());
+            send_udp(data, size, ep);
+        }
+        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
+        {
+            tcp::endpoint ep(endpoint.address(), endpoint.port());
+            send_tcp(data, size, ep);
+        }
+    }
+
+    void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
+    {
+        sc_notify_observers::udp_socket.send_to(boost::asio::buffer(data, size), receiver);
+    }
+
+    void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
+    {
+        tcp_socket.connect(receiver);
+        boost::asio::write(tcp_socket, boost::asio::buffer(data, size));
+    }
+    /* @} */
+
 private:
     void notify(const char * address_pattern, const server_node * node);
     void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
 
     observer_vector observers;
+
+protected:
     boost::asio::io_service io_service; /* we have an io_service for our own */
     udp::socket udp_socket;
     tcp::socket tcp_socket;
@@ -197,33 +228,6 @@ public:
     typedef osc::ReceivedPacket osc_received_packet;
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
-
-    void send(const char * data, size_t size, nova_endpoint const & endpoint)
-    {
-        nova_protocol prot = endpoint.protocol();
-        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
-        {
-            udp::endpoint ep(endpoint.address(), endpoint.port());
-            send_udp(data, size, ep);
-        }
-        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
-        {
-            tcp::endpoint ep(endpoint.address(), endpoint.port());
-            send_tcp(data, size, ep);
-        }
-    }
-
-    void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
-    {
-        udp_socket_.send_to(boost::asio::buffer(data, size), receiver);
-    }
-
-    void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
-    {
-        tcp::socket socket(detail::network_thread::io_service_);
-        socket.connect(receiver);
-        boost::asio::write(socket, boost::asio::buffer(data, size));
-    }
 
     struct received_packet:
         public audio_sync_callback
@@ -390,7 +394,6 @@ private:
             start_accept();
         }
     }
-
     /* @} */
 
 public:
@@ -454,7 +457,7 @@ public:
 
 private:
     /* @{ */
-    /** socket handling */
+    /** sockets for receiving */
     udp::socket udp_socket_;
     udp::endpoint udp_remote_endpoint_;
 

@@ -361,17 +361,16 @@ void sc_notify_observers::send_notification(const char * data, size_t length)
 
 void sc_notify_observers::send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
 {
-    nova_protocol prot = endpoint.protocol();
+    nova_protocol const & prot = endpoint.protocol();
     if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
     {
         udp::endpoint ep(endpoint.address(), endpoint.port());
-        udp_socket.send_to(boost::asio::buffer(data, length), ep);
+        send_udp(data, length, ep);
     }
     else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
     {
         tcp::endpoint ep(endpoint.address(), endpoint.port());
-        tcp_socket.connect(ep);
-        boost::asio::write(tcp_socket, boost::asio::buffer(data, length));
+        send_tcp(data, length, ep);
     }
 }
 

@@ -37,17 +37,17 @@ struct nova_protocol
 {
     typedef struct nova_endpoint endpoint;
 
-    int family(void)
+    int family(void) const
     {
         return family_;
     }
 
-    int type(void)
+    int type(void) const
     {
         return type_;
     }
 
-    int protocol(void)
+    int protocol(void) const
     {
         return protocol_;
     }
@@ -101,7 +101,7 @@ public:
         return &data_.base;
     }
 
-    const data_type* data() const
+    const data_type * data() const
     {
         return &data_.base;
     }
