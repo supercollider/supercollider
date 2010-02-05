@@ -58,7 +58,20 @@ public:
     void run(void)
     {
         running.store(true, boost::memory_order_relaxed);
+        perform();
+    }
 
+protected:
+    void run(semaphore & sync_sem)
+    {
+        running.store(true, boost::memory_order_relaxed);
+        sync_sem.post();
+        perform();
+    }
+
+private:
+    void perform(void)
+    {
         do
         {
             sem.wait();
@@ -86,11 +99,6 @@ public:
     callback_interpreter(void)
     {}
 
-    void run(void)
-    {
-        super::run();
-    }
-
     void terminate(void)
     {
         super::running.store(false, boost::memory_order_relaxed);
@@ -101,14 +109,8 @@ public:
     {
         semaphore sync_sem;
         semaphore_sync sync(sync_sem);
-        return boost::thread (boost::bind(&callback_interpreter::run, this, boost::ref(sync_sem)));
-    }
 
-private:
-    void run(semaphore & sync_sem)
-    {
-        sync_sem.post();
-        run();
+        return boost::thread (boost::bind(&super::run, this, boost::ref(sync_sem)));
     }
 };
 
@@ -133,7 +135,7 @@ public:
 
     ~callback_interpreter_threadpool(void)
     {
-        super::running.store(false, boost::memory_order_relaxed);
+        super::running.store(false);
 
         for (uint16_t i = 0; i != worker_thread_count_; ++i)
             super::sem.post();
@@ -143,14 +145,12 @@ public:
 private:
     void run(semaphore & sync_sem)
     {
-        sync_sem.post();
-
         if (rt)
             thread_set_priority_rt(priority);
         else
             thread_set_priority(priority);
 
-        super::run();
+        super::run(sync_sem);
     }
 
     boost::thread_group threads;
