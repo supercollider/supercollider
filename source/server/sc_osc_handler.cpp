@@ -542,7 +542,7 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint
     typedef osc::ReceivedBundleElementIterator bundle_iterator;
     typedef osc::ReceivedBundleElement bundle_element;
 
-    if ( bundle_time <= now) {
+    if (bundle_time <= now) {
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 
@@ -1137,7 +1137,7 @@ void handle_n_free(received_message const & msg)
 
 /** macro to define an os command handler with a starting node id
  *
- 8  it is mainly intended as decorator to avoid duplicate error handling code
+ *  it is mainly intended as decorator to avoid duplicate error handling code
  */
 #define HANDLE_N_DECORATOR(cmd, function)                               \
 void handle_n_##cmd(received_message const & msg)                       \
