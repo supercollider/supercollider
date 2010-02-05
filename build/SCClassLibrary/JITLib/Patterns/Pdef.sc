@@ -313,7 +313,7 @@ TaskProxy : PatternProxy {
 
 	isEventPattern { ^true }
 
-	*default { ^Pn(this.defaultValue,1) }
+	*default { ^Pn(this.defaultValue, 1) }
 
 	constrainStream { arg str;
 		^if(this.quant.notNil and: { str.notNil }) {
