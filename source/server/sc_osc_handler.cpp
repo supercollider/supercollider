@@ -433,8 +433,8 @@ void sc_osc_handler::open_tcp_acceptor(tcp const & protocol, unsigned int port)
 
 void sc_osc_handler::open_udp_socket(udp const & protocol, unsigned int port)
 {
-    udp_socket_.open(protocol);
-    udp_socket_.bind(udp::endpoint(protocol, port));
+    sc_notify_observers::udp_socket.open(protocol);
+    sc_notify_observers::udp_socket.bind(udp::endpoint(protocol, port));
 }
 
 bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned int port)

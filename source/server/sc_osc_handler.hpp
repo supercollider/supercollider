@@ -55,12 +55,9 @@ class sc_notify_observers
     typedef std::vector<nova_endpoint> observer_vector;
 
 public:
-    sc_notify_observers(void):
+    sc_notify_observers(boost::asio::io_service & io_service):
         udp_socket(io_service), tcp_socket(io_service)
-    {
-        udp_socket.open(udp::v4());
-        tcp_socket.open(tcp::v4());
-    }
+    {}
 
     void add_observer(nova_endpoint const & ep)
     {
@@ -144,7 +141,6 @@ private:
     observer_vector observers;
 
 protected:
-    boost::asio::io_service io_service; /* we have an io_service for our own */
     udp::socket udp_socket;
     tcp::socket tcp_socket;
 };
@@ -211,8 +207,8 @@ class sc_osc_handler:
 
 public:
     sc_osc_handler(server_arguments const & args):
+        sc_notify_observers(detail::network_thread::io_service_),
         dump_osc_packets(0), error_posting(1),
-        udp_socket_(detail::network_thread::io_service_),
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.c_str())
     {
@@ -256,7 +252,7 @@ private:
     /** udp socket handling */
     void start_receive_udp(void)
     {
-        udp_socket_.async_receive_from(
+        sc_notify_observers::udp_socket.async_receive_from(
             buffer(recv_buffer_), udp_remote_endpoint_,
             boost::bind(&sc_osc_handler::handle_receive_udp, this,
                         placeholders::error, placeholders::bytes_transferred));
@@ -457,8 +453,7 @@ public:
 
 private:
     /* @{ */
-    /** sockets for receiving */
-    udp::socket udp_socket_;
+/*    udp::socket udp_socket_;*/
     udp::endpoint udp_remote_endpoint_;
 
     tcp::acceptor tcp_acceptor_;
