@@ -522,7 +522,9 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 #ifndef NO_LIBSNDFILE
 void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
-	World_LoadGraphDefs(world);
+	if (inOptions->mLoadGraphDefs) {
+		World_LoadGraphDefs(world);
+	}
 	int bufLength = world->mBufLength;
 	int fileBufFrames = inOptions->mPreferredHardwareBufferFrameSize;
 	if (fileBufFrames <= 0) fileBufFrames = 8192;

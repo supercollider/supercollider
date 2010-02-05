@@ -51,6 +51,7 @@ Bugfixes:
 * 2009-11-04 fix signalRange for MouseX, MouseY and KeyState, so that the range message works now - jr
 * 2009-12-14 fix uninitialised variable in Pulse (could sometimes cause small glitch on init), thanks to rhian lloyd - ds
 * 2010-01-10 Demand ugens can now handle more than 32 channels, thanks Patrick Borgeat for the patch - ds
+* 2010-02-05 scsynth now respects the -D commandline option when running in NRT mode - ds
 
 Other additions/improvements:
 -----------------------------
