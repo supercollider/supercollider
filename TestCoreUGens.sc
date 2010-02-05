@@ -196,7 +196,7 @@ test_demand {
 	this.bootServer;
 	nodestofree = [];
 	
-	o = OSCresponderNode(s.addr, '/n_end', {arg time, resp, msg;
+	o = OSCresponderNode(nil, '/n_end', {arg time, resp, msg;
 		if(nodestofree.indexOf(msg[1]).notNil){
 			nodestofree.removeAt(nodestofree.indexOf(msg[1]))
 		};
