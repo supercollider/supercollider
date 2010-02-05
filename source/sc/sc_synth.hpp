@@ -1,5 +1,5 @@
 //  synth based on supercollider-style synthdef
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -77,7 +77,14 @@ public:
     void map_control_buses_audio(const char * slot_name, int audio_bus_index, int count);
     /* @} */
 
+    void enable_tracing(void)
+    {
+        trace = 1;
+    }
+
 private:
+    void run_traced(void);
+
     sample get_constant(size_t index)
     {
         return static_cast<sc_synth_prototype*>(class_ptr.get())->synthdef.constants[index];
@@ -85,12 +92,15 @@ private:
 
     friend class sc_ugen_def;
 
-    unit_vector units, calc_units;
+    int_fast8_t trace;
+    unit_vector calc_units;
     sample * unit_buffers;
 
     Rate full_rate;
     Rate control_rate;
     RGen rgen;
+
+    unit_vector units;
 };
 
 } /* namespace nova */

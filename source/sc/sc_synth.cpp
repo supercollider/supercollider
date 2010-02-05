@@ -1,5 +1,5 @@
 //  synth based on supercollider-style synthdef
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include <cstdio>
+
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 
@@ -25,7 +27,7 @@ namespace nova
 {
 
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
-    abstract_synth(node_id, prototype), unit_buffers(0)
+    abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory.world;
     Rate_Init(&full_rate, world.mSampleRate, world.mBufLength);
@@ -207,10 +209,43 @@ void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_in
 
 void sc_synth::run(dsp_context const & context)
 {
-    for (size_t i = 0; i != calc_units.size(); ++i) {
-        Unit * unit = calc_units[i];
-        (unit->mCalcFunc)(unit, unit->mBufLength);
+    if (likely(trace == 0))
+    {
+        for (size_t i = 0; i != calc_units.size(); ++i)
+        {
+            Unit * unit = calc_units[i];
+            (unit->mCalcFunc)(unit, unit->mBufLength);
+        }
     }
+    else
+        run_traced();
+}
+
+void sc_synth::run_traced(void)
+{
+    using namespace std;
+
+    printf("\nTRACE %d  %s    #units: %zd\n", id(), this->prototype_name().c_str(), calc_units.size());
+
+    for (size_t i = 0; i != calc_units.size(); ++i)
+    {
+        Unit * unit = calc_units[i];
+
+        sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+        printf("  unit %zd %s\n    in ", i, def->name().c_str());
+        for (uint16_t j=0; j!=unit->mNumInputs; ++j)
+            printf(" %g", unit->mInBuf[j][0]);
+        putchar('\n');
+
+        (unit->mCalcFunc)(unit, unit->mBufLength);
+
+        fputs("    out", stdout);
+        for (int j=0; j<unit->mNumOutputs; ++j)
+            printf(" %g", unit->mOutBuf[j][0]);
+        putchar('\n');
+    }
+
+    trace = 0;
 }
 
 } /* namespace nova */

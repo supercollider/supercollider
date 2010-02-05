@@ -1505,6 +1505,35 @@ void handle_n_run(received_message const & msg)
     }
 }
 
+void enable_tracing(server_node & node)
+{
+    if (node.is_synth()) {
+        sc_synth & synth = static_cast<sc_synth&>(node);
+        synth.enable_tracing();
+    } else {
+        abstract_group & group = static_cast<abstract_group&>(node);
+        group.apply_on_children(enable_tracing);
+    }
+}
+
+void handle_n_trace(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos())
+    {
+        osc::int32 node_id;
+        args >> node_id;
+
+        server_node * node = find_node(node_id);
+        if (!node)
+            continue;
+
+        enable_tracing(*node);
+    }
+}
+
+
 void handle_s_noid(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2935,6 +2964,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_n_after(message);
         break;
 
+    case cmd_n_trace:
+        handle_n_trace(message);
+        break;
+
     case cmd_b_alloc:
         handle_b_alloc<realtime>(message, endpoint);
         break;
@@ -3150,6 +3183,11 @@ void dispatch_node_commands(const char * address, received_message const & messa
 
     if (strcmp(address+3, "query") == 0) {
         handle_n_query(message, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "trace") == 0) {
+        handle_n_trace(message);
         return;
     }
 }
