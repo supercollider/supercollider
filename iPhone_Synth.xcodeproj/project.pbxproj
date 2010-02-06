@@ -10,6 +10,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		68872A4F111CF4200093AC1B /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68872A4E111CF4200093AC1B /* scUBlibsndfile.a */; };
 		770903C60F50A468005C05DC /* iscsynthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C20F50A468005C05DC /* iscsynthAppDelegate.m */; };
 		770903C70F50A468005C05DC /* iSCSynthController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903C40F50A468005C05DC /* iSCSynthController.mm */; };
 		770903C80F50A468005C05DC /* iscsynthmain.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C50F50A468005C05DC /* iscsynthmain.m */; };
@@ -150,6 +151,7 @@
 		1D6058910D05DD3D006BFB54 /* iscsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iscsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		68872A4E111CF4200093AC1B /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
 		770903C10F50A468005C05DC /* iscsynthAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iscsynthAppDelegate.h; sourceTree = "<group>"; };
 		770903C20F50A468005C05DC /* iscsynthAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iscsynthAppDelegate.m; sourceTree = "<group>"; };
 		770903C30F50A468005C05DC /* iSCSynthController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iSCSynthController.h; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7714609B1054654500476976 /* libsndfile_iphone.a in Frameworks */,
+				68872A4F111CF4200093AC1B /* scUBlibsndfile.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -480,6 +483,7 @@
 			isa = PBXGroup;
 			children = (
 				778F126B0F50A87300CB6629 /* libsndfile_iphone.a */,
+				68872A4E111CF4200093AC1B /* scUBlibsndfile.a */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
@@ -1092,6 +1096,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 					"\"$(SRCROOT)/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/mac\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
@@ -1119,6 +1124,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 					"\"$(SRCROOT)/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/mac\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SDKROOT = iphoneos2.2;
