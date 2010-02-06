@@ -761,7 +761,7 @@ void pow_d(BinaryOpUGen *unit, int inNumSamples)
 	if (inNumSamples) {
 		float a = DEMANDINPUT_A(0, inNumSamples);
 		float b = DEMANDINPUT_A(1, inNumSamples);
-		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < 0.f ? -std::pow(-a, b) : std::pow(a, b));
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (a < 0.f ? -pow(-a, b) : pow(a, b));
 	} else {
 		RESETINPUT(0);
 		RESETINPUT(1);
@@ -1179,7 +1179,7 @@ void pow_1(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 	float xb = ZIN0(1);
-	ZOUT0(0) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+	ZOUT0(0) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 }
 
 
@@ -2810,7 +2810,7 @@ void pow_aa(BinaryOpUGen *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
-		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+		ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 	);
 }
 
@@ -2825,13 +2825,13 @@ void pow_ak(BinaryOpUGen *unit, int inNumSamples)
 	if (xb == next_b) {
 		LOOP1(inNumSamples,
 			float xa = ZXP(a);
-			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
 		LOOP1(inNumSamples,
 			float xa = ZXP(a);
-			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 			xb += slope;
 		);
 		unit->mPrevB = xb;
@@ -2849,19 +2849,19 @@ void pow_ka(BinaryOpUGen *unit, int inNumSamples)
 		if (xa >= 0.f) {
 			LOOP1(inNumSamples,
 				float xb = ZXP(b);
-				ZXP(out) = std::pow(xa, xb);
+				ZXP(out) = pow(xa, xb);
 			);
 		} else {
 			LOOP1(inNumSamples,
 				float xb = ZXP(b);
-				ZXP(out) = -std::pow(-xa, xb);
+				ZXP(out) = -pow(-xa, xb);
 			);
 		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		LOOP1(inNumSamples,
 			float xb = ZXP(b);
-			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 			xa += slope;
 		);
 		unit->mPrevA = xa;
@@ -2876,7 +2876,7 @@ void pow_ia(BinaryOpUGen *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		float xb = ZXP(b);
-		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+		ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 	);
 	unit->mPrevA = xa;
 }
@@ -2890,7 +2890,7 @@ void pow_ai(BinaryOpUGen *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		float xa = ZXP(a);
-		ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+		ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 	);
 	unit->mPrevB = xb;
 }
@@ -2914,7 +2914,7 @@ void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_b, xb);
 		LOOP1(inNumSamples,
 			float xa = ZXP(a);
-			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 			xb += slope;
 		);
 		unit->mPrevB = xb;
@@ -2938,7 +2938,7 @@ void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_a, xa);
 		LOOP1(inNumSamples,
 			float xb = ZXP(b);
-			ZXP(out) = xa >= 0.f ? std::pow(xa, xb) : -std::pow(-xa, xb);
+			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
 			xa += slope;
 		);
 		unit->mPrevA = xa;
@@ -5105,7 +5105,7 @@ void atan2_aa(BinaryOpUGen *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		float xa = ZXP(a);
 		float xb = ZXP(b);
-		ZXP(out) = std::atan2(xa, xb);
+		ZXP(out) = atan2(xa, xb);
 	);
 }
 
@@ -5119,13 +5119,13 @@ void atan2_ak(BinaryOpUGen *unit, int inNumSamples)
 	if (xb == next_b) {
 		LOOP1(inNumSamples,
 			float xa = ZXP(a);
-			ZXP(out) = std::atan2(xa, xb);
+			ZXP(out) = atan2(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
 		LOOP1(inNumSamples,
 			float xa = ZXP(a);
-			ZXP(out) = std::atan2(xa, xb);
+			ZXP(out) = atan2(xa, xb);
 			xb += slope;
 		);
 		unit->mPrevB = xb;
@@ -5142,13 +5142,13 @@ void atan2_ka(BinaryOpUGen *unit, int inNumSamples)
 	if (xa == next_a) {
 		LOOP1(inNumSamples,
 			float xb = ZXP(b);
-			ZXP(out) = std::atan2(xa, xb);
+			ZXP(out) = atan2(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		LOOP1(inNumSamples,
 			float xb = ZXP(b);
-			ZXP(out) = std::atan2(xa, xb);
+			ZXP(out) = atan2(xa, xb);
 			xa += slope;
 		);
 		unit->mPrevA = xa;
@@ -5163,7 +5163,7 @@ void atan2_ia(BinaryOpUGen *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		float xb = ZXP(b);
-		ZXP(out) = std::atan2(xa, xb);
+		ZXP(out) = atan2(xa, xb);
 	);
 	unit->mPrevA = xa;
 }
@@ -5177,7 +5177,7 @@ void atan2_ai(BinaryOpUGen *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		float xa = ZXP(a);
-		ZXP(out) = std::atan2(xa, xb);
+		ZXP(out) = atan2(xa, xb);
 	);
 	unit->mPrevB = xb;
 }
