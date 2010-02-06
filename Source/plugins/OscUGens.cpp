@@ -2617,7 +2617,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					ZXP(out) = 1.f;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2668,7 +2668,7 @@ void Blip_next(Blip *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					ZXP(out) = 1.f;
 				} else {
 					int32 rphase = phase * N2;
@@ -2765,7 +2765,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					ZXP(out) = y1 = 1.f + 0.999f * y1;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2817,7 +2817,7 @@ void Saw_next(Saw *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					ZXP(out) = y1 = 1.f + 0.999f * y1;
 				} else {
 					int32 rphase = phase * N2;
@@ -2923,7 +2923,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					pul1 = 1.f;
 				} else {
 					int32 rphase = phase * prevN2;
@@ -2969,7 +2969,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase2);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					pul2 = 1.f;
 				} else {
 					int32 rphase = phase2 * prevN2;
@@ -3021,7 +3021,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					pul1 = rscale;
 				} else {
 					int32 rphase = phase * N2;
@@ -3050,7 +3050,7 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 				t1 = tbl[1];
 				float pfrac = PhaseFrac(phase2);
 				float denom = t0 + (t1 - t0) * pfrac;
-				if (std::abs(denom) < 0.0005) {
+				if (std::abs(denom) < 0.0005f) {
 					pul2 = rscale;
 				} else {
 					int32 rphase = phase2 * N2;
