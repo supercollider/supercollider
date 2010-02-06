@@ -1334,7 +1334,7 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = -(reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -1408,7 +1408,7 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = -2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = -2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = (reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -1495,7 +1495,7 @@ void APF_next(APF* unit, int inNumSamples)
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * std::cos(freq * unit->mRate->mRadiansPerSample);
+		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
 		float b2_next = -(reson * reson);
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
 		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
@@ -2049,9 +2049,9 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = std::tan(pfreq * qres * 0.5);
+		float D = tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = std::cos(pfreq);
+		float cosf = cos(pfreq);
 
 		float next_b1 = (1.f + C) * cosf;
 		float next_b2 = -C;
@@ -2131,9 +2131,9 @@ void RLPF_next_1(RLPF* unit, int inNumSamples)
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = std::tan(pfreq * qres * 0.5);
+		float D = tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = std::cos(pfreq);
+		float cosf = cos(pfreq);
 
 		b1 = (1.f + C) * cosf;
 		b2 = -C;
@@ -2203,9 +2203,9 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = std::tan(pfreq * qres * 0.5);
+		float D = tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = std::cos(pfreq);
+		float cosf = cos(pfreq);
 
 		float next_b1 = (1.f + C) * cosf;
 		float next_b2 = -C;
@@ -2285,9 +2285,9 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 		float qres = sc_max(0.001, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = std::tan(pfreq * qres * 0.5);
+		float D = tan(pfreq * qres * 0.5);
 		float C = ((1.f-D)/(1.f+D));
-		float cosf = std::cos(pfreq);
+		float cosf = cos(pfreq);
 
 		b1 = (1.f + C) * cosf;
 		b2 = -C;
@@ -2356,7 +2356,7 @@ void LPF_next(LPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = 1.f / std::tan(pfreq);
+		float C = 1.f / tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2_f;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2433,7 +2433,7 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = 1.f / std::tan(pfreq);
+		float C = 1.f / tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2_f;
 		a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2502,7 +2502,7 @@ void HPF_next(HPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = std::tan(pfreq);
+		float C = tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2_f;
 		float next_a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2580,7 +2580,7 @@ void HPF_next_1(HPF* unit, int inNumSamples)
 
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = std::tan(pfreq);
+		float C = tan(pfreq);
 		float C2 = C * C;
 		float sqrt2C = C * sqrt2_f;
 		a0 = 1.f / (1.f + sqrt2C + C2);
@@ -2650,8 +2650,8 @@ void BPF_next(BPF* unit, int inNumSamples)
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
 
-		float C = 1.f / std::tan(pbw);
-		float D = 2.f * std::cos(pfreq);
+		float C = 1.f / tan(pbw);
+		float D = 2.f * cos(pfreq);
 
 		float next_a0 = 1.f / (1.f + C);
 		float next_b1 = C * D * next_a0 ;
@@ -2729,8 +2729,8 @@ void BPF_next_1(BPF* unit, int inNumSamples)
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
 
-		float C = 1.f / std::tan(pbw);
-		float D = 2.f * std::cos(pfreq);
+		float C = 1.f / tan(pbw);
+		float D = 2.f * cos(pfreq);
 
 		float a0 = 1.f / (1.f + C);
 		float b1 = C * D * a0 ;
@@ -2800,8 +2800,8 @@ void BRF_next(BRF* unit, int inNumSamples)
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
 
-		float C = std::tan(pbw);
-		float D = 2.f * std::cos(pfreq);
+		float C = tan(pbw);
+		float D = 2.f * cos(pfreq);
 
 		float next_a0 = 1.f / (1.f + C);
 		float next_a1 = -D * next_a0;
@@ -2889,8 +2889,8 @@ void BRF_next_1(BRF* unit, int inNumSamples)
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
 
-		float C = std::tan(pbw);
-		float D = 2.f * std::cos(pfreq);
+		float C = tan(pbw);
+		float D = 2.f * cos(pfreq);
 
 		float a0 = 1.f / (1.f + C);
 		float a1 = -D * a0;
@@ -2962,8 +2962,8 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 		float pbw   = bw   * pfreq * 0.5;
 
-		float C = 1.f / std::tan(pbw);
-		float D = 2.f * std::cos(pfreq);
+		float C = 1.f / tan(pbw);
+		float D = 2.f * cos(pfreq);
 
 		float next_a0 = 1.f / (1.f + C);
 		float next_b1 = C * D * next_a0 ;
@@ -3148,7 +3148,7 @@ void Resonz_next(Resonz* unit, int inNumSamples)
 		float R = 1.f - B * 0.5f;
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * cos(ffreq)) / (1.f + R2);
 		float b1_next = twoR * cost;
 		float b2_next = -R2;
 		float a0_next = (1.f - R2) * 0.5f;
@@ -3244,7 +3244,7 @@ void Ringz_next(Ringz* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * cos(ffreq)) / (1.f + R2);
 		float b1_next = twoR * cost;
 		float b2_next = -R2;
 		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
@@ -3349,7 +3349,7 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * cos(ffreq)) / (1.f + R2);
 		float b01_next = twoR * cost;
 		float b02_next = -R2;
 		float b01_slope = (b01_next - b01) * unit->mRate->mFilterSlope;
@@ -3466,14 +3466,14 @@ void Formlet_next_1(Formlet* unit, int inNumSamples)
 		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * std::cos(ffreq)) / (1.f + R2);
+		float cost = (twoR * cos(ffreq)) / (1.f + R2);
 		b01 = twoR * cost;
 		b02 = -R2;
 
 		R = attackTime == 0.f ? 0.f : exp(log001/(attackTime * SAMPLERATE));
 		twoR = 2.f * R;
 		R2 = R * R;
-		cost = (twoR * std::cos(ffreq)) / (1.f + R2);
+		cost = (twoR * cos(ffreq)) / (1.f + R2);
 		b11 = twoR * cost;
 		b12 = -R2;
 
@@ -4757,7 +4757,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 		if(freq != IN0(1)){
 			freq = IN0(1);
 			//Print("Updated freq to %g\n", freq);
-			wcD = 2.0 * std::tan(T * PI * freq) * SAMPLERATE;
+			wcD = 2.0 * tan(T * PI * freq) * SAMPLERATE;
 			if(wcD<0)
 				wcD = 0; // Protect against negative cutoff freq
 			double TwcD = T*wcD;

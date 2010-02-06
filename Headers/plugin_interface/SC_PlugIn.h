@@ -58,4 +58,28 @@
 #undef max
 #undef min
 
+// we pull some standard math functions to the scope
+using std::floor;
+using std::ceil;
+using std::fabs;
+using std::pow;
+using std::exp;
+using std::log;
+
+using std::sin;
+using std::cos;
+using std::tan;
+using std::asin;
+using std::acos;
+using std::atan;
+using std::atan2;
+
+using std::sinh;
+using std::cosh;
+using std::tanh;
+using std::asinh;
+using std::acosh;
+using std::atanh;
+
+
 #endif

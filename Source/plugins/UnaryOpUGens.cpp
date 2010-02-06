@@ -314,7 +314,7 @@ void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-DEFINE_UNARY_OP_FUNCS(floor, std::floor)
+DEFINE_UNARY_OP_FUNCS(floor, floor)
 
 #if __VEC__
 void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
@@ -329,7 +329,7 @@ void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif // __VEC__
 
-DEFINE_UNARY_OP_FUNCS(ceil, std::ceil)
+DEFINE_UNARY_OP_FUNCS(ceil, ceil)
 
 #if __VEC__
 void vceil_a(UnaryOpUGen *unit, int inNumSamples)
@@ -349,17 +349,17 @@ NOVA_WRAPPER_CT_UNROLL(floor, floor)
 NOVA_WRAPPER_CT_UNROLL(ceil, ceil)
 #endif
 
-DEFINE_UNARY_OP_FUNCS(sin, std::sin)
-DEFINE_UNARY_OP_FUNCS(cos, std::cos)
-DEFINE_UNARY_OP_FUNCS(tan, std::tan)
+DEFINE_UNARY_OP_FUNCS(sin, sin)
+DEFINE_UNARY_OP_FUNCS(cos, cos)
+DEFINE_UNARY_OP_FUNCS(tan, tan)
 
-DEFINE_UNARY_OP_FUNCS(asin, std::asin)
-DEFINE_UNARY_OP_FUNCS(acos, std::acos)
-DEFINE_UNARY_OP_FUNCS(atan, std::atan)
+DEFINE_UNARY_OP_FUNCS(asin, asin)
+DEFINE_UNARY_OP_FUNCS(acos, acos)
+DEFINE_UNARY_OP_FUNCS(atan, atan)
 
-DEFINE_UNARY_OP_FUNCS(sinh, std::sinh)
-DEFINE_UNARY_OP_FUNCS(cosh, std::cosh)
-DEFINE_UNARY_OP_FUNCS(tanh, std::tanh)
+DEFINE_UNARY_OP_FUNCS(sinh, sinh)
+DEFINE_UNARY_OP_FUNCS(cosh, cosh)
+DEFINE_UNARY_OP_FUNCS(tanh, tanh)
 
 
 #ifdef NOVA_SIMD
@@ -376,7 +376,7 @@ NOVA_WRAPPER(tanh, tanh)
 DEFINE_UNARY_OP_FUNCS(log, std::log)
 DEFINE_UNARY_OP_FUNCS(log2, sc_log2)
 DEFINE_UNARY_OP_FUNCS(log10, sc_log10)
-DEFINE_UNARY_OP_FUNCS(exp, std::exp)
+DEFINE_UNARY_OP_FUNCS(exp, exp)
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER(log, log)

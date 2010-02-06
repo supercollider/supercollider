@@ -1255,9 +1255,9 @@ void FSinOsc_Ctor(FSinOsc *unit)
 	unit->m_freq = ZIN0(0);
 	float iphase = ZIN0(1);
 	float w = unit->m_freq * unit->mRate->mRadiansPerSample;
-	unit->m_b1 = 2. * std::cos(w);
-	unit->m_y1 = std::sin(iphase);
-	unit->m_y2 = std::sin(iphase - w);
+	unit->m_b1 = 2. * cos(w);
+	unit->m_y1 = sin(iphase);
+	unit->m_y2 = sin(iphase - w);
 
 	ZOUT0(0) = unit->m_y1;
 }
@@ -1317,9 +1317,9 @@ void PSinGrain_Ctor(PSinGrain *unit)
 	unit->mCounter = (int32)(sdur + .5);
 
 	/* calc feedback param and initial conditions */
-	unit->m_b1 = 2. * std::cos(w);
+	unit->m_b1 = 2. * cos(w);
 	unit->m_y1 = 0.f;
-	unit->m_y2 = -std::sin(w) * amp;
+	unit->m_y2 = -sin(w) * amp;
 	ZOUT0(0) = 0.f;
 }
 
@@ -3114,13 +3114,13 @@ float Klang_SetCoefs(Klang *unit)
 		float phase = ZIN0(j+2);
 
 		if (phase != 0.f) {
-			outf += *++coefs = level * std::sin(phase);		// y1
-			        *++coefs = level * std::sin(phase - w);	// y2
+			outf += *++coefs = level * sin(phase);		// y1
+			        *++coefs = level * sin(phase - w);	// y2
 		} else {
 			outf += *++coefs = 0.f;						// y1
-			        *++coefs = level * -std::sin(w);	// y2
+			        *++coefs = level * -sin(w);	// y2
 		}
-		*++coefs = 2. * std::cos(w);		// b1
+		*++coefs = 2. * cos(w);		// b1
 	}
 	return outf;
 }
@@ -3321,7 +3321,7 @@ void Klank_SetCoefs(Klank *unit)
 		float R = time == 0.f ? 0.f : exp(log001/(time * sampleRate));
 		float twoR = 2.f * R;
 		float R2 = R * R;
-		float cost = (twoR * std::cos(w)) / (1.f + R2);
+		float cost = (twoR * cos(w)) / (1.f + R2);
 
 		int k = 20 * (i>>2) + (i & 3);
 		coefs[k+0] = 0.f;					// y1
