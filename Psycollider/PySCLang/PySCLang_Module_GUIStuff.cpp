@@ -60,7 +60,7 @@ int prOpenWinTextFile(struct VMGlobals *g, int numArgsPushed)
   // retrieve path
   if (!(isKindOfSlot(a, class_string)))
     return errWrongType;
-	PyrString* string = a->uos;
+  PyrString* string = slotRawString(a);
   if(string->size == 0)
     return errFailed;
 

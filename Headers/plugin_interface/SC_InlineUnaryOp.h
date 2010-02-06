@@ -30,6 +30,18 @@
 #define HAVE_C99
 #endif
 
+#ifndef HAVE_C99
+/* needed for msvc compiler at least */
+template <typename float_type>
+inline float_type trunc(float_type arg)
+{
+	if(arg > float_type(0))
+		return std::floor(arg);
+	else
+		return std::ceil(arg);
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 inline bool sc_isnan(float x)
@@ -224,7 +236,11 @@ inline float32 taylorsin(float32 x)
 
 inline float32 sc_trunc(float32 x)
 {
+#ifdef HAVE_C99
 	return truncf(x);
+#else
+	return trunc(x);
+#endif
 }
 
 inline float32 sc_frac(float32 x)

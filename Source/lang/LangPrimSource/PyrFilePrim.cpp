@@ -1454,7 +1454,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	filename[slotRawString(b)->size] = 0;
 
 #ifdef SC_WIN32
-	char* headerFormat = (char *)malloc(slotRawObject(headerSlot)s->size);
+	char* headerFormat = (char *)malloc(slotRawObject(headerSlot)->size);
 #else
 	char headerFormat[slotRawString(headerSlot)->size];
 #endif
