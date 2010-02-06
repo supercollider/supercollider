@@ -181,8 +181,8 @@ Py::Object PySCLang_Module::setCmdLine(const Py::Tuple &a)
 		PyrString* strobj = newPyrStringN(g->gc, textlen, 0, true);
 		memcpy(strobj->s, (char*)text, textlen);
 
-		SetObject(&g->process->interpreter.uoi->cmdLine, strobj);
-		g->gc->GCWrite(g->process->interpreter.uo, strobj);
+		SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
+		g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 	}
 	pthread_mutex_unlock(&gLangMutex);
   return Py::Nothing();
