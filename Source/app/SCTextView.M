@@ -75,7 +75,7 @@ extern bool compiledOK;
 
 - (void) autoIndent: (NSEvent*) event
 {
-	unichar c;
+	unichar c, d;
 	unichar spaces[128];
 	int nspaces = 0;
 	NSRange range = [self selectedRange];
@@ -94,14 +94,22 @@ extern bool compiledOK;
 	range = [self selectedRange];
 	pos = range.location;
 	string = [self string];
-	c = [string characterAtIndex: pos-1]; // did a newline actually get inserted? (maybe not if using foreign language input mode)
+	d = [string characterAtIndex: --pos]; // did a newline actually get inserted? (maybe not if using foreign language input mode)
+	c = d;
 	
 	// autoindent
-	if([string characterAtIndex: pos-2] == '{' && useAutoInOutdent) {
-		spaces[nspaces++] = '\t';
-		spaces[nspaces] = 0;
+	if(useAutoInOutdent) {
+		for (; pos > 0;) {
+			d = [string characterAtIndex: --pos];
+			if(d == '{') {
+				spaces[nspaces++] = '\t';
+				spaces[nspaces] = 0;
+				break;
+			}
+			if (d == '\r' || d == '\n' || d == '}') break;
+		}
 	}
-	
+			
 	if (nspaces && (c == '\r' || c == '\n')) {
 		spaces[nspaces] = 0;
 	
