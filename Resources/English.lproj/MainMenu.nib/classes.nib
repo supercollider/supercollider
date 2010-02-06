@@ -85,6 +85,45 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
+				<key>clearPostWindow</key>
+				<string>id</string>
+				<key>compileLibrary</key>
+				<string>id</string>
+				<key>escape</key>
+				<string>id</string>
+				<key>evaluateSelection</key>
+				<string>id</string>
+				<key>hardStopMain</key>
+				<string>id</string>
+				<key>newSCWindow</key>
+				<string>id</string>
+				<key>postWindowToFront</key>
+				<string>id</string>
+				<key>preferences</key>
+				<string>id</string>
+				<key>runMain</key>
+				<string>id</string>
+				<key>showClassBrowser</key>
+				<string>id</string>
+				<key>showHelp</key>
+				<string>id</string>
+				<key>showHelpBrowser</key>
+				<string>id</string>
+				<key>showHelpSearch</key>
+				<string>id</string>
+				<key>stopMain</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>SCVirtualMachine</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
 				<key>findNext</key>
 				<string>id</string>
 				<key>findNextAndOrderFindPanelOut</key>
@@ -125,45 +164,6 @@
 				<key>statusField</key>
 				<string>id</string>
 			</dict>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>clearPostWindow</key>
-				<string>id</string>
-				<key>compileLibrary</key>
-				<string>id</string>
-				<key>escape</key>
-				<string>id</string>
-				<key>evaluateSelection</key>
-				<string>id</string>
-				<key>hardStopMain</key>
-				<string>id</string>
-				<key>newSCWindow</key>
-				<string>id</string>
-				<key>postWindowToFront</key>
-				<string>id</string>
-				<key>preferences</key>
-				<string>id</string>
-				<key>runMain</key>
-				<string>id</string>
-				<key>showClassBrowser</key>
-				<string>id</string>
-				<key>showHelp</key>
-				<string>id</string>
-				<key>showHelpBrowser</key>
-				<string>id</string>
-				<key>showHelpSearch</key>
-				<string>id</string>
-				<key>stopMain</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>SCVirtualMachine</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
 			<key>SUPERCLASS</key>
 			<string>NSObject</string>
 		</dict>
