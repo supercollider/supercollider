@@ -22,6 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		68872C11111CF46B0093AC1B /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 68872C10111CF46B0093AC1B /* scUBlibsndfile.a */; };
 		7708A0AD0FBF9B7A00A151DD /* SuperCollider_Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */; };
 		7709038C0F509FAA005C05DC /* iPhoneGUIPrimitives.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */; };
 		7709038D0F509FAA005C05DC /* iPhoneSCGraphView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */; };
@@ -166,6 +167,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		68872C10111CF46B0093AC1B /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
 		7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_Browser.xib; path = "iPhone Resources/SuperCollider_Browser.xib"; sourceTree = "<group>"; };
 		7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneGUIPrimitives.mm; sourceTree = "<group>"; };
 		7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneSCGraphView.mm; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77D86FF210E235680024A880 /* libsndfile_iphone.a in Frameworks */,
+				68872C11111CF46B0093AC1B /* scUBlibsndfile.a in Frameworks */,
 				778F12D30F50A9C100CB6629 /* libscsynth.a in Frameworks */,
 				7713C69A0F422BE400B0055E /* Foundation.framework in Frameworks */,
 				7713C69B0F422BE400B0055E /* UIKit.framework in Frameworks */,
@@ -527,6 +530,7 @@
 			isa = PBXGroup;
 			children = (
 				778F15180F50AB6B00CB6629 /* libsndfile_iphone.a */,
+				68872C10111CF46B0093AC1B /* scUBlibsndfile.a */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
@@ -1189,6 +1193,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 					"\"$(SRCROOT)/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/mac\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1224,6 +1229,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 					"\"$(SRCROOT)/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/mac\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos2.2.1;
@@ -1273,6 +1279,7 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/libsndfile\"",
 					"\"$(SYSTEM_APPS_DIR)/SuperCollider3/xtralibs/iphone\"",
 					"\"$(SRCROOT)/xtralibs/iphone\"",
+					"\"$(SRCROOT)/xtralibs/mac\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos2.2.1;
