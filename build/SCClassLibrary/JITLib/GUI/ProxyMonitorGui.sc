@@ -45,6 +45,7 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 		};
 
 				zone = GUI.compositeView.new(win, viewBounds); 		zone.background_(skin.foreground);		flow = FlowLayout(zone.bounds, 0@0, 0@0);		zone.decorator = flow;
+		zone.resize_(2); 
 
 		if (viewBounds.isKindOf(Rect)) { viewBounds = viewBounds.extent };
 
@@ -66,9 +67,10 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 			labelWidth: showLevel.binaryValue * 20,
 			numberWidth: showLevel.binaryValue * 40);
 		ampSl.labelView.font_(font).align_(0);
-
+		ampSl.view.resize_(2);
+		
 							// should have four states: ...
-				playBut = Button(zone, Rect(0,0,playWid, height))			.font_(font)			.states_([				[ if (usesPlayN, \playN, \play), skin.fontColor, skin.offColor],
+				playBut = Button(zone, Rect(0,0,playWid, height))			.font_(font).resize_(3)			.states_([				[ if (usesPlayN, \playN, \play), skin.fontColor, skin.offColor],
 				[ \stop, skin.fontColor, skin.onColor ]
 			]);
 
@@ -84,29 +86,30 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 					};
 				};			}, 0);
 
+		setOutBox.view.resize_(3);
 		setOutBox.numberView.font_(font).align_(0);
 
 		if (usesPlayN) { 			playNDialogBut = GUI.button.new(zone, Rect(0,0, playNWid, height))
-				.font_(font)				.states_([					["-=", skin.fontColor, skin.offColor],
+				.font_(font).resize_(3)				.states_([					["-=", skin.fontColor, skin.offColor],
 					["-<", skin.fontColor, skin.onColor]				])
 				.action_({ |box, mod|					if (proxy.notNil) { proxy.playNDialog };
 					box.value_(1 - box.value);				});		};
 		
 		if (usesName) {
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height));
-			nameView.font_(font).align_(0)
+			nameView.font_(font).align_(0).resize_(3)
 				.setBoth_(false)
 				.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
 		};
 
 		if (usesPausSend) {			pauseBut = GUI.button.new(zone, Rect(0,0,34,height))
-				.font_(font)				.states_([					["paus", skin.fontColor, skin.onColor], 					["rsum", skin.fontColor, skin.offColor]				])
+				.font_(font).resize_(3)				.states_([					["paus", skin.fontColor, skin.onColor], 					["rsum", skin.fontColor, skin.offColor]				])
 				.action_({ arg btn; 				if(proxy.notNil, {						[ 	{ proxy.resume; }, { proxy.pause; }  ].at(btn.value).value;					})				});						sendBut = Button(zone, Rect(0,0,34,height))
-				.font_(font)				.states_([ 					["send", skin.fontColor, skin.offColor], 					["send", skin.fontColor, skin.onColor] 				])				.action_({ arg btn, mod;
+				.font_(font).resize_(3)				.states_([ 					["send", skin.fontColor, skin.offColor], 					["send", skin.fontColor, skin.onColor] 				])				.action_({ arg btn, mod;
 					if(proxy.notNil and: (btn.value == 0)) {
 						if (mod.isAlt) { proxy.rebuild } { proxy.send }					};
 					btn.value_(1 - btn.value)				})
-		};			if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
+		};						if (makeWatcher) { this.makeWatcher };	}	makeWatcher { 		skipjack.stop;		skipjack = SkipJack({ this.updateAll }, 			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
 		 		var currState;
 		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0;
 		var type = "-";
