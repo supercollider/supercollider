@@ -7,14 +7,15 @@ NodeProxyEditor {
 	var 	<proxy;
 	var <skin, <font;
 
-	var <>w, <zone, <nameView, <typeChanView, <monitor,
-		<>nSliders, <edits, <sinks, <scrolly, skipjack;
+	var <parent, <zone, <nameView, <typeChanView, <monitor;
+	var <nSliders, <edits, <sinks, <scrolly, skipjack;
 	var buttonFuncs, pauseBut, sendBut;
 
 	var 	<currentSettings=#[], 	<prevSettings=#[], <editKeys=#[], <>ignoreKeys=#[];
 	var <>replaceKeys;		// a dict for slider names to be replaced
 	var 	<tooManyKeys = false, <keysRotation = 0;
-	var oldType = "-";
+	var oldType = "_";
+	var ownWindow; 
 
 	*initClass {
 		StartUp.add{
@@ -23,34 +24,41 @@ NodeProxyEditor {
 		};
 	}
 	
-	*new { arg proxy, nSliders=16, win, comp, 
+	*new { arg proxy, nSliders=16, parent,
 		extras=[\CLR, \reset, \scope, \doc, \end, \fade],
 		monitor=true, sinks=true, morph=false;
 		
-		^super.new.nSliders_(nSliders)
-			.init(win, comp, extras, monitor, sinks, morph)
+		^super.new
+			.init(parent, nSliders, extras, monitor, sinks, morph)
 			.proxy_(proxy);
 	}
 
 	proxy_ { arg px;
+		var name, type; 
 		if (px.isNil) {
 			proxy = nil;
-			nameView.object_(px).string_('-');
-			typeChanView.string_('-');
-			this.fullUpdate;
+			name = type = '-';
 		} { 
 			if (px.isKindOf(NodeProxy)) { 
 				proxy = px;
-				nameView.object_(px).string_(px.key ? 'anon proxy');
-				typeChanView.string_(proxy.typeStr);
+				name = px.key ? 'anon proxy'; 
+				type = proxy.typeStr; 
 				if (monitor.notNil) { monitor.proxy_(proxy) };
-				this.fullUpdate;
 			}
-		}
+		};
+		
+		nameView.object_(proxy); 
+		this.name_(name);
+		typeChanView.string_(type);
+		this.fullUpdate;
 	}
 
 	name { ^nameView.string.asSymbol }
-	name_ { |key| nameView.string_(key.asString); }
+	name_ { |key| 
+		nameView.string_(key.asString); 
+			// if I have my own window, put proxy name there too
+		if (ownWindow) { parent.name = "edit" + key };
+	}
 
 		// backwards compatibility
 	pxKey { ^this.name }
@@ -62,25 +70,29 @@ NodeProxyEditor {
 		this.fullUpdate;
 	}
 		
-	init { arg win, comp, extras, monitor, sinks, morph;
-				
-		var bounds;				
+	init { arg inParent, numSliders, extras, monitor, sinks, morph;
+		
+		var bounds; 
+		ownWindow = inParent.isNil; 				
 		skin = GUI.skins.jit; 		
-		font = Font.new(*skin.fontSpecs);		
+		font = Font.new(*skin.fontSpecs);
+		nSliders = numSliders;
+		
 		bounds = Rect(0, 0, 340, nSliders + 2 * skin.buttonHeight + 16);		
-		win = win ?? {
+				// if building inside an existing window, w is nil. 
+				// w only is notNil if it belongs to the editor.
+		parent = inParent ?? {
 			// "NodeProxyEditor: making internal win.".postln;
-			Window(this.class.name, bounds.resizeBy(4, 4))
+			parent = Window(this.class.name, bounds.resizeBy(4, 4));
+			parent.view.background_(skin.background);
+			parent.front;
 		};
-		w = win; 	
-		zone = comp ?? {
-			// "NodeProxyEditor: making internal zone.".postln;
-			CompositeView(w, bounds);
-		};
+
+		zone = CompositeView(parent, bounds); 
+		
 		zone.decorator = zone.decorator ??  { FlowLayout(zone.bounds).gap_(0@0) };
-		w.view.background = skin.background;
 		zone.background = skin.foreground;
-		w.front;
+		
 		replaceKeys = replaceKeys ?? { () };
 
 		this.makeButtonFuncs;
@@ -90,7 +102,14 @@ NodeProxyEditor {
 		if (morph, { this.makeMorph; zone.decorator.nextLine.shift(0, 4); });
 
 		this.makeSinksSliders(sinks);
-		
+
+			// if my own window, sliders should resize
+			// - not working yet! 
+		if (ownWindow) { 
+			zone.resize_(2);
+			edits.do { |ez| ez.view.resize_(2) }
+		}; 
+	
 		this.makeSkipJack; 
 	}
 	
@@ -176,6 +195,7 @@ NodeProxyEditor {
 			nSliders, nSliders,
 			{ |sc| keysRotation = sc.value.asInteger; }
 		).visible_(false);
+		scrolly.slider.resize_(3);
 		[\scrolly, scrolly.slider.bounds];
 	}
 
@@ -289,7 +309,7 @@ NodeProxyEditor {
 		skipjack = SkipJack(
 			{ this.checkUpdate }, 
 			0.2, 
-			{ w.isClosed }, 
+			{ zone.isClosed }, 
 			this.class.name
 		); 
 		// w.onClose_({ skipjack.stop; });
