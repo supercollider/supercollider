@@ -39,7 +39,7 @@ static float g_weight[4]= {1.0,0.5,0.9,0.6};
 static float g_weight2[9]= {0.05, 0.1, 0.3,0.7,1.0,0.7,0.3, 0.1, 0.05};
 
 //void BeatTrack2_dofft(BeatTrack2 *unit, uint32);
-static void calculatetemplate(BeatTrack2 *unit, int which);
+static void calculatetemplate(BeatTrack2 *unit, int which, int j);
 static void finaldecision(BeatTrack2 *unit);
 
 void BeatTrack2_Ctor(BeatTrack2* unit)
