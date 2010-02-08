@@ -67,54 +67,51 @@ extern "C"
 
 void* gstate_update_func(void* arg)
 {
-    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
+	MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
 
-    CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
-    CGRect bounds = CGDisplayBounds(display);
-    float rscreenWidth = 1. / bounds.size.width;
-    float rscreenHeight = 1. / bounds.size.height;
-    for (;;) {
-	HIPoint point;
-	HICoordinateSpace space = 2;
-	HIGetMousePosition(space, NULL, &point);
+	CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
+	CGRect bounds = CGDisplayBounds(display);
+	float rscreenWidth = 1. / bounds.size.width;
+	float rscreenHeight = 1. / bounds.size.height;
+	for (;;) {
+		HIPoint point;
+		HICoordinateSpace space = 2;
+		HIGetMousePosition(space, NULL, &point);
 
-	gstate->mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
-	gstate->mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
-	gstate->mouseButton = Button();
-	usleep(17000);
-    }
+		gstate->mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
+		gstate->mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
+		gstate->mouseButton = Button();
+		usleep(17000);
+	}
 
-    return 0;
+	return 0;
 }
 
 # else
 
-
 void* gstate_update_func(void* arg)
 {
-    MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
-    RgnHandle rgn = GetGrayRgn();
-    Rect screenBounds;
-    GetRegionBounds(rgn, &screenBounds);
-    float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
-    float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
-    for (;;) {
-	Point p;
-	GetGlobalMouse(&p);
-	gstate->mouseX = (float)p.h * rscreenWidth;
-	gstate->mouseY = (float)p.v * rscreenHeight;
-	gstate->mouseButton = Button();
-	usleep(17000);
-    }
+	MouseUGenGlobalState* gstate = &gMouseUGenGlobals;
+	RgnHandle rgn = GetGrayRgn();
+	Rect screenBounds;
+	GetRegionBounds(rgn, &screenBounds);
+	float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
+	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
+	for (;;) {
+		Point p;
+		GetGlobalMouse(&p);
+		gstate->mouseX = (float)p.h * rscreenWidth;
+		gstate->mouseY = (float)p.v * rscreenHeight;
+		gstate->mouseButton = Button();
+		usleep(17000);
+	}
 
-    return 0;
+	return 0;
 }
 
 # endif
 
-#else
-
-# ifdef SC_WIN32
+#elif defined (SC_WIN32)
 
 void* gstate_update_func(void* arg)
 {
@@ -122,16 +119,15 @@ void* gstate_update_func(void* arg)
 	int mButton;
 	MouseUGenGlobalState* gstate;
 
-	if(GetSystemMetrics(SM_SWAPBUTTON)){
+	if(GetSystemMetrics(SM_SWAPBUTTON))
 		mButton = VK_RBUTTON; // if  swapped
-	}else {
+	else
 		mButton = VK_LBUTTON; // not swapped (normal)
-	}
 
 	int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
 	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
-		// default: SM_CX/CYSCREEN gets the size of a primary screen.
-		// lines uncommented below are just for a specially need on multi-display.
+	// default: SM_CX/CYSCREEN gets the size of a primary screen.
+	// lines uncommented below are just for a specially need on multi-display.
 	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
 	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
 	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
@@ -139,7 +135,7 @@ void* gstate_update_func(void* arg)
 
 	gstate = &gMouseUGenGlobals;
 
-	for(;;)	{
+	for(;;) {
 		GetCursorPos(&p);
 		gstate->mouseX = (float)p.x * r_screenWidth;
 		gstate->mouseY = 1.f - (float)p.y * r_screenHeight;
@@ -153,49 +149,47 @@ void* gstate_update_func(void* arg)
 static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
-  MouseUGenGlobalState* gstate ;
-  Window r ;
-  Window rep_root , rep_child ;
-  XWindowAttributes attributes ;
-  int rep_rootx , rep_rooty ;
-  unsigned int rep_mask ;
-  int dx , dy ;
-  float r_width ;
-  float r_height ;
-  struct timespec requested_time , remaining_time ;
+	MouseUGenGlobalState* gstate;
+	Window r;
+	Window rep_root, rep_child;
+	XWindowAttributes attributes;
+	int rep_rootx, rep_rooty ;
+	unsigned int rep_mask;
+	int dx, dy;
+	float r_width;
+	float r_height;
+	struct timespec requested_time, remaining_time;
 
-  requested_time.tv_sec = 0 ;
-  requested_time.tv_nsec = 17000 * 1000 ;
+	requested_time.tv_sec = 0;
+	requested_time.tv_nsec = 17000 * 1000;
 
-  d = XOpenDisplay ( NULL ) ;
-  if (!d) return 0;
+	d = XOpenDisplay ( NULL );
+	if (!d) return 0;
 
-  r = DefaultRootWindow ( d ) ;
-  XGetWindowAttributes ( d , r , &attributes ) ;
-  r_width = 1.0 / (float)attributes.width ;
-  r_height = 1.0 / (float)attributes.height ;
+	r = DefaultRootWindow ( d );
+	XGetWindowAttributes ( d, r, &attributes );
+	r_width = 1.0 / (float)attributes.width;
+	r_height = 1.0 / (float)attributes.height;
 
-  gstate = &gMouseUGenGlobals ;
+	gstate = &gMouseUGenGlobals;
 
-  for (;;) {
+	for (;;) {
+		XQueryPointer ( d, r,
+				&rep_root, &rep_child,
+				&rep_rootx, &rep_rooty,
+				&dx, &dy,
+				&rep_mask);
 
-    XQueryPointer ( d , r ,
-		    &rep_root , &rep_child ,
-		    &rep_rootx , &rep_rooty ,
-		    &dx , &dy ,
-		    &rep_mask ) ;
+		gstate->mouseX = (float)dx * r_width;
+		gstate->mouseY = 1.f - ( (float)dy * r_height );
 
-    gstate->mouseX = (float)dx * r_width ;
-    gstate->mouseY = 1.0 - ( (float)dy * r_height ) ;
+		gstate->mouseButton = (bool) ( rep_mask & Button1Mask );
 
-    gstate->mouseButton = (bool) ( rep_mask & Button1Mask ) ;
+		nanosleep ( &requested_time , &remaining_time );
+	}
 
-    nanosleep ( &requested_time , &remaining_time ) ;
-  }
-
-  return 0;
+	return 0;
 }
-# endif
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +266,6 @@ void MouseY_Ctor(MouseInputUGen *unit)
 }
 
 
-
 void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 {
 	// minval, maxval, warp, lag
@@ -324,7 +317,6 @@ MyPluginData gMyPlugin; // global
 
 bool cmdStage2(World* world, void* inUserData)
 {
-
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -339,7 +331,6 @@ bool cmdStage2(World* world, void* inUserData)
 
 bool cmdStage3(World* world, void* inUserData)
 {
-
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -355,7 +346,6 @@ bool cmdStage3(World* world, void* inUserData)
 
 bool cmdStage4(World* world, void* inUserData)
 {
-
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
@@ -371,7 +361,6 @@ bool cmdStage4(World* world, void* inUserData)
 
 void cmdCleanup(World* world, void* inUserData)
 {
-
 	// user data is the command.
 	MyCmdData* myCmdData = (MyCmdData*)inUserData;
 
