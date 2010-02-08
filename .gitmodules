@@ -16,3 +16,6 @@
 [submodule "libs/nova-simd"]
 	path = libs/nova-simd
 	url = git://tim.klingt.org/nova-simd.git
+[submodule "libs/nova-dsp"]
+	path = libs/nova-dsp
+	url = git://klingt.org/nova-dsp.git
