@@ -231,137 +231,137 @@ extern "C"
 {
 	void load(InterfaceTable *inTable);
 
-void Trig1_Ctor(Trig1 *unit);
-void Trig1_next(Trig1 *unit, int inNumSamples);
-void Trig1_next_k(Trig1 *unit, int inNumSamples);
+	void Trig1_Ctor(Trig1 *unit);
+	void Trig1_next(Trig1 *unit, int inNumSamples);
+	void Trig1_next_k(Trig1 *unit, int inNumSamples);
 
-void Trig_Ctor(Trig *unit);
-void Trig_next(Trig *unit, int inNumSamples);
-void Trig_next_k(Trig *unit, int inNumSamples);
+	void Trig_Ctor(Trig *unit);
+	void Trig_next(Trig *unit, int inNumSamples);
+	void Trig_next_k(Trig *unit, int inNumSamples);
 
-void SendTrig_Ctor(SendTrig *unit);
-void SendTrig_next(SendTrig *unit, int inNumSamples);
-void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
+	void SendTrig_Ctor(SendTrig *unit);
+	void SendTrig_next(SendTrig *unit, int inNumSamples);
+	void SendTrig_next_aka(SendTrig *unit, int inNumSamples);
 
-void SendReply_Ctor(SendReply *unit);
-void SendReply_next(SendReply *unit, int inNumSamples);
-void SendReply_next_aka(SendReply *unit, int inNumSamples);
+	void SendReply_Ctor(SendReply *unit);
+	void SendReply_next(SendReply *unit, int inNumSamples);
+	void SendReply_next_aka(SendReply *unit, int inNumSamples);
 
-void Poll_Ctor(Poll* unit);
-void Poll_next_aa(Poll *unit, int inNumSamples);
-void Poll_next_ak(Poll *unit, int inNumSamples);
-void Poll_next_kk(Poll *unit, int inNumSamples);
+	void Poll_Ctor(Poll* unit);
+	void Poll_next_aa(Poll *unit, int inNumSamples);
+	void Poll_next_ak(Poll *unit, int inNumSamples);
+	void Poll_next_kk(Poll *unit, int inNumSamples);
 
-void SetResetFF_Ctor(SetResetFF *unit);
-void SetResetFF_next_a(SetResetFF *unit, int inNumSamples);
-void SetResetFF_next_k(SetResetFF *unit, int inNumSamples);
+	void SetResetFF_Ctor(SetResetFF *unit);
+	void SetResetFF_next_a(SetResetFF *unit, int inNumSamples);
+	void SetResetFF_next_k(SetResetFF *unit, int inNumSamples);
 
-void ToggleFF_Ctor(ToggleFF *unit);
-void ToggleFF_next(ToggleFF *unit, int inNumSamples);
+	void ToggleFF_Ctor(ToggleFF *unit);
+	void ToggleFF_next(ToggleFF *unit, int inNumSamples);
 
-void Latch_Ctor(Latch *unit);
-void Latch_next_ak(Latch *unit, int inNumSamples);
-void Latch_next_aa(Latch *unit, int inNumSamples);
+	void Latch_Ctor(Latch *unit);
+	void Latch_next_ak(Latch *unit, int inNumSamples);
+	void Latch_next_aa(Latch *unit, int inNumSamples);
 
-void Gate_Ctor(Gate *unit);
-void Gate_next_ak(Gate *unit, int inNumSamples);
-void Gate_next_aa(Gate *unit, int inNumSamples);
+	void Gate_Ctor(Gate *unit);
+	void Gate_next_ak(Gate *unit, int inNumSamples);
+	void Gate_next_aa(Gate *unit, int inNumSamples);
 
-void Schmidt_Ctor(Schmidt *unit);
-void Schmidt_next(Schmidt *unit, int inNumSamples);
+	void Schmidt_Ctor(Schmidt *unit);
+	void Schmidt_next(Schmidt *unit, int inNumSamples);
 
-void PulseDivider_Ctor(PulseDivider *unit);
-void PulseDivider_next(PulseDivider *unit, int inNumSamples);
+	void PulseDivider_Ctor(PulseDivider *unit);
+	void PulseDivider_next(PulseDivider *unit, int inNumSamples);
 
-void PulseCount_Ctor(PulseCount *unit);
-void PulseCount_next_a(PulseCount *unit, int inNumSamples);
-void PulseCount_next_k(PulseCount *unit, int inNumSamples);
-void PulseCount_next_0(PulseCount *unit, int inNumSamples);
+	void PulseCount_Ctor(PulseCount *unit);
+	void PulseCount_next_a(PulseCount *unit, int inNumSamples);
+	void PulseCount_next_k(PulseCount *unit, int inNumSamples);
+	void PulseCount_next_0(PulseCount *unit, int inNumSamples);
 
-void Stepper_Ctor(Stepper *unit);
-void Stepper_next_aa(Stepper *unit, int inNumSamples);
-void Stepper_next_ak(Stepper *unit, int inNumSamples);
-void Stepper_next_a0(Stepper *unit, int inNumSamples);
+	void Stepper_Ctor(Stepper *unit);
+	void Stepper_next_aa(Stepper *unit, int inNumSamples);
+	void Stepper_next_ak(Stepper *unit, int inNumSamples);
+	void Stepper_next_a0(Stepper *unit, int inNumSamples);
 
-void TDelay_Ctor(TDelay *unit);
-void TDelay_next(TDelay *unit, int inNumSamples);
+	void TDelay_Ctor(TDelay *unit);
+	void TDelay_next(TDelay *unit, int inNumSamples);
 
-void ZeroCrossing_Ctor(ZeroCrossing *unit);
-void ZeroCrossing_next_a(ZeroCrossing *unit, int inNumSamples);
+	void ZeroCrossing_Ctor(ZeroCrossing *unit);
+	void ZeroCrossing_next_a(ZeroCrossing *unit, int inNumSamples);
 
-void Timer_Ctor(Timer *unit);
-void Timer_next_a(Timer *unit, int inNumSamples);
+	void Timer_Ctor(Timer *unit);
+	void Timer_next_a(Timer *unit, int inNumSamples);
 
-void Sweep_Ctor(Sweep *unit);
-void Sweep_next_0k(Sweep *unit, int inNumSamples);
-void Sweep_next_0a(Sweep *unit, int inNumSamples);
-void Sweep_next_kk(Sweep *unit, int inNumSamples);
-void Sweep_next_ka(Sweep *unit, int inNumSamples);
-void Sweep_next_ak(Sweep *unit, int inNumSamples);
-void Sweep_next_aa(Sweep *unit, int inNumSamples);
+	void Sweep_Ctor(Sweep *unit);
+	void Sweep_next_0k(Sweep *unit, int inNumSamples);
+	void Sweep_next_0a(Sweep *unit, int inNumSamples);
+	void Sweep_next_kk(Sweep *unit, int inNumSamples);
+	void Sweep_next_ka(Sweep *unit, int inNumSamples);
+	void Sweep_next_ak(Sweep *unit, int inNumSamples);
+	void Sweep_next_aa(Sweep *unit, int inNumSamples);
 
-void Phasor_Ctor(Phasor *unit);
-void Phasor_next_kk(Phasor *unit, int inNumSamples);
-void Phasor_next_ak(Phasor *unit, int inNumSamples);
-void Phasor_next_aa(Phasor *unit, int inNumSamples);
+	void Phasor_Ctor(Phasor *unit);
+	void Phasor_next_kk(Phasor *unit, int inNumSamples);
+	void Phasor_next_ak(Phasor *unit, int inNumSamples);
+	void Phasor_next_aa(Phasor *unit, int inNumSamples);
 
-void Peak_Ctor(Peak *unit);
-void Peak_next_ak(Peak *unit, int inNumSamples);
-void Peak_next_ai(Peak *unit, int inNumSamples);
-void Peak_next_aa(Peak *unit, int inNumSamples);
-void Peak_next_ak_k(Peak *unit, int inNumSamples);
-void Peak_next_ai_k(Peak *unit, int inNumSamples);
-void Peak_next_aa_k(Peak *unit, int inNumSamples);
+	void Peak_Ctor(Peak *unit);
+	void Peak_next_ak(Peak *unit, int inNumSamples);
+	void Peak_next_ai(Peak *unit, int inNumSamples);
+	void Peak_next_aa(Peak *unit, int inNumSamples);
+	void Peak_next_ak_k(Peak *unit, int inNumSamples);
+	void Peak_next_ai_k(Peak *unit, int inNumSamples);
+	void Peak_next_aa_k(Peak *unit, int inNumSamples);
 
-void RunningMin_Ctor(RunningMin *unit);
-void RunningMin_next_ak(RunningMin *unit, int inNumSamples);
-void RunningMin_next_ai(RunningMin *unit, int inNumSamples);
-void RunningMin_next_aa(RunningMin *unit, int inNumSamples);
+	void RunningMin_Ctor(RunningMin *unit);
+	void RunningMin_next_ak(RunningMin *unit, int inNumSamples);
+	void RunningMin_next_ai(RunningMin *unit, int inNumSamples);
+	void RunningMin_next_aa(RunningMin *unit, int inNumSamples);
 
-void RunningMax_Ctor(RunningMax *unit);
-void RunningMax_next_ak(RunningMax *unit, int inNumSamples);
-void RunningMax_next_ai(RunningMax *unit, int inNumSamples);
-void RunningMax_next_aa(RunningMax *unit, int inNumSamples);
+	void RunningMax_Ctor(RunningMax *unit);
+	void RunningMax_next_ak(RunningMax *unit, int inNumSamples);
+	void RunningMax_next_ai(RunningMax *unit, int inNumSamples);
+	void RunningMax_next_aa(RunningMax *unit, int inNumSamples);
 
 
-void PeakFollower_Ctor(PeakFollower *unit);
-void PeakFollower_next(PeakFollower *unit, int inNumSamples);
-void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples);
+	void PeakFollower_Ctor(PeakFollower *unit);
+	void PeakFollower_next(PeakFollower *unit, int inNumSamples);
+	void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples);
 
-void MostChange_Ctor(MostChange *unit);
-void MostChange_next_ak(MostChange *unit, int inNumSamples);
-void MostChange_next_ka(MostChange *unit, int inNumSamples);
-void MostChange_next_aa(MostChange *unit, int inNumSamples);
+	void MostChange_Ctor(MostChange *unit);
+	void MostChange_next_ak(MostChange *unit, int inNumSamples);
+	void MostChange_next_ka(MostChange *unit, int inNumSamples);
+	void MostChange_next_aa(MostChange *unit, int inNumSamples);
 
-void LeastChange_Ctor(LeastChange *unit);
-void LeastChange_next_ak(LeastChange *unit, int inNumSamples);
-void LeastChange_next_ka(LeastChange *unit, int inNumSamples);
-void LeastChange_next_aa(LeastChange *unit, int inNumSamples);
+	void LeastChange_Ctor(LeastChange *unit);
+	void LeastChange_next_ak(LeastChange *unit, int inNumSamples);
+	void LeastChange_next_ka(LeastChange *unit, int inNumSamples);
+	void LeastChange_next_aa(LeastChange *unit, int inNumSamples);
 
-void LastValue_Ctor(LastValue *unit);
-void LastValue_next_ak(LastValue *unit, int inNumSamples);
-void LastValue_next_kk(LastValue *unit, int inNumSamples);
+	void LastValue_Ctor(LastValue *unit);
+	void LastValue_next_ak(LastValue *unit, int inNumSamples);
+	void LastValue_next_kk(LastValue *unit, int inNumSamples);
 
-void Done_Ctor(Done *unit);
-void Done_next(Done *unit, int inNumSamples);
+	void Done_Ctor(Done *unit);
+	void Done_next(Done *unit, int inNumSamples);
 
-void FreeSelf_Ctor(FreeSelf *unit);
-void FreeSelf_next(FreeSelf *unit, int inNumSamples);
+	void FreeSelf_Ctor(FreeSelf *unit);
+	void FreeSelf_next(FreeSelf *unit, int inNumSamples);
 
-void FreeSelfWhenDone_Ctor(FreeSelfWhenDone *unit);
-void FreeSelfWhenDone_next(FreeSelfWhenDone *unit, int inNumSamples);
+	void FreeSelfWhenDone_Ctor(FreeSelfWhenDone *unit);
+	void FreeSelfWhenDone_next(FreeSelfWhenDone *unit, int inNumSamples);
 
-void PauseSelf_Ctor(PauseSelf *unit);
-void PauseSelf_next(PauseSelf *unit, int inNumSamples);
+	void PauseSelf_Ctor(PauseSelf *unit);
+	void PauseSelf_next(PauseSelf *unit, int inNumSamples);
 
-void Pause_Ctor(Pause *unit);
-void Pause_next(Pause *unit, int inNumSamples);
+	void Pause_Ctor(Pause *unit);
+	void Pause_next(Pause *unit, int inNumSamples);
 
-void Free_Ctor(Free *unit);
-void Free_next(Free *unit, int inNumSamples);
+	void Free_Ctor(Free *unit);
+	void Free_next(Free *unit, int inNumSamples);
 
-void PauseSelfWhenDone_Ctor(PauseSelfWhenDone *unit);
-void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples);
+	void PauseSelfWhenDone_Ctor(PauseSelfWhenDone *unit);
+	void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples);
 
 }
 
@@ -724,7 +724,7 @@ void Trig_next_k_nova(Trig *unit, int inNumSamples)
 			}
 			prevtrig = curtrig;
 			ZXP(out) = zout;
-			);
+		);
 	}
 	unit->m_prevtrig = prevtrig;
 	unit->mCounter = counter;
@@ -803,7 +803,6 @@ void SendReply_Ctor(SendReply *unit)
 	} else {
 		SETCALC(SendReply_next);
 	}
-
 }
 
 void SendReply_Dtor(SendReply* unit)
@@ -880,7 +879,6 @@ void Poll_Ctor(Poll* unit)
 	unit->m_mayprint = unit->mWorld->mVerbosity >= 0;
 
 	Poll_next_kk(unit, 1);
-
 }
 
 void Poll_Dtor(Poll* unit)
@@ -900,7 +898,7 @@ void Poll_next_aa(Poll *unit, int inNumSamples){
 			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in[i]);
 			}
 		lasttrig = trig[i];
-		}
+	}
 	unit->m_trig = lasttrig;
 }
 
@@ -912,7 +910,7 @@ void Poll_next_kk(Poll *unit, int inNumSamples){
 			Print("%s: %g\n", unit->m_id_string, in);
 		}
 		if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
-		}
+	}
 	unit->m_trig = trig;
 }
 
@@ -929,7 +927,7 @@ void Poll_next_ak(Poll *unit, int inNumSamples){
 			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
 			}
 		lasttrig = trig[i];
-		}
+	}
 	unit->m_trig = lasttrig;
 }
 
@@ -1629,9 +1627,6 @@ void Sweep_Ctor(Sweep *unit)
 	ZOUT0(0) = unit->mLevel = 0.f;
 }
 
-// this is a test
-// this is another test
-
 void Sweep_next_0k(Sweep *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -2078,7 +2073,7 @@ void Peak_next_aa_k(Peak *unit, int inNumSamples)
 		prevtrig = curtrig;
 	);
 	if (triggered)
-	ZXP(out) = out_level;
+		ZXP(out) = out_level;
 	else
 		ZXP(out) = level;
 	unit->m_prevtrig = prevtrig;
@@ -2347,7 +2342,6 @@ void PeakFollower_next_ai(PeakFollower *unit, int inNumSamples)
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2594,7 +2588,6 @@ void LastValue_next_kk(LastValue *unit, int inNumSamples)
 	}
 	float level = unit->mPrev;
 	LOOP1(inNumSamples, ZXP(out) = level; );
-
 }
 
 
@@ -2617,7 +2610,6 @@ void LastValue_next_ak(LastValue *unit, int inNumSamples)
 	);
 	unit->mPrev = prev;
 	unit->mCurr = curr;
-
 }
 
 
@@ -2739,7 +2731,6 @@ void Free_next(Free *unit, int inNumSamples)
 
 void FreeSelfWhenDone_Ctor(FreeSelfWhenDone *unit)
 {
-
 	unit->m_src = unit->mInput[0]->mFromUnit;
 
 	if (unit->m_src) {
@@ -2768,7 +2759,6 @@ void FreeSelfWhenDone_next(FreeSelfWhenDone *unit, int inNumSamples)
 
 void PauseSelfWhenDone_Ctor(PauseSelfWhenDone *unit)
 {
-
 	unit->m_src = unit->mInput[0]->mFromUnit;
 
 	if (unit->m_src) {
