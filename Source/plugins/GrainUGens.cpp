@@ -226,13 +226,23 @@ inline double sc_gloop(double in, double hi)
 		return;									\
 	}
 
-#define GET_GRAIN_WIN(WINTYPE)							\
+#define GET_GRAIN_WIN_RELAXED(WINTYPE)					\
 	do {												\
+		assert(WINTYPE < unit->mWorld->mNumSndBufs);	\
 		window = unit->mWorld->mSndBufs + (int)WINTYPE;	\
 		windowData = window->data;						\
 		windowSamples = window->samples;				\
 		windowFrames = window->frames;					\
 		windowGuardFrame = windowFrames - 1;			\
+	} while (0);
+
+#define GET_GRAIN_WIN(WINTYPE)							\
+	do {												\
+		if (WINTYPE >= unit->mWorld->mNumSndBufs) {		\
+			Print("Envelope buffer out of range!\n");	\
+			return;										\
+		}												\
+		GET_GRAIN_WIN_RELAXED(WINTYPE)					\
 	} while (0);
 
 #define GRAIN_LOOP_BODY_4										\
@@ -428,7 +438,7 @@ inline double sc_gloop(double in, double hi)
 		y2 = grain->y2;							\
 		amp = grain->curamp;					\
 	} else {									\
-		GET_GRAIN_WIN(grain->winType);			\
+		GET_GRAIN_WIN_RELAXED(grain->winType);	\
 		if (!windowData) break;					\
 		winPos = grain->winPos;					\
 		winInc = grain->winInc;					\
