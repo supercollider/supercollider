@@ -229,330 +229,330 @@ inline double sc_gloop(double in, double hi)
 		return;									\
 	}
 
-#define GET_GRAIN_WIN(WINTYPE)                          \
-	do {                                                \
-		window = unit->mWorld->mSndBufs + (int)WINTYPE; \
-		windowData = window->data;                      \
-		windowSamples = window->samples;                \
-		windowFrames = window->frames;                  \
-		windowGuardFrame = windowFrames - 1;            \
+#define GET_GRAIN_WIN(WINTYPE)							\
+	do {												\
+		window = unit->mWorld->mSndBufs + (int)WINTYPE;	\
+		windowData = window->data;						\
+		windowSamples = window->samples;				\
+		windowFrames = window->frames;					\
+		windowGuardFrame = windowFrames - 1;			\
 	} while (0);
 
-#define GRAIN_LOOP_BODY_4 \
-		float amp = y1 * y1; \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table0 = table1 - 1; \
-		float* table2 = table1 + 1; \
-		float* table3 = table1 + 2; \
-		if (iphase == 0) { \
-			table0 += bufSamples; \
-		} else if (iphase >= guardFrame) { \
-			if (iphase == guardFrame) { \
-				table3 -= bufSamples; \
-			} else { \
-				table2 -= bufSamples; \
-				table3 -= bufSamples; \
-			} \
-		} \
-		float fracphase = phase - (double)iphase; \
-		float a = table0[0]; \
-		float b = table1[0]; \
-		float c = table2[0]; \
-		float d = table3[0]; \
-		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
-		ZXP(out1) += outval; \
-		double y0 = b1 * y1 - y2; \
-		y2 = y1; \
-		y1 = y0; \
+#define GRAIN_LOOP_BODY_4										\
+		float amp = y1 * y1;									\
+		phase = sc_gloop(phase, loopMax);						\
+		int32 iphase = (int32)phase;							\
+		float* table1 = bufData + iphase;						\
+		float* table0 = table1 - 1;								\
+		float* table2 = table1 + 1;								\
+		float* table3 = table1 + 2;								\
+		if (iphase == 0) {										\
+			table0 += bufSamples;								\
+		} else if (iphase >= guardFrame) {						\
+			if (iphase == guardFrame) {							\
+				table3 -= bufSamples;							\
+			} else {											\
+				table2 -= bufSamples;							\
+				table3 -= bufSamples;							\
+			}													\
+		}														\
+		float fracphase = phase - (double)iphase;				\
+		float a = table0[0];									\
+		float b = table1[0];									\
+		float c = table2[0];									\
+		float d = table3[0];									\
+		float outval = amp * cubicinterp(fracphase, a, b, c, d)	\
+		ZXP(out1) += outval;									\
+		double y0 = b1 * y1 - y2;								\
+		y2 = y1;												\
+		y1 = y0;
 
-#define GRAIN_LOOP_BODY_2 \
-		float amp = y1 * y1; \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table2 = table1 + 1; \
-		if (iphase > guardFrame) { \
-			table2 -= bufSamples; \
-		} \
-		double fracphase = phase - (double)iphase; \
-		float b = table1[0]; \
-		float c = table2[0]; \
-		float outval = amp * (b + fracphase * (c - b)); \
-		ZXP(out1) += outval; \
-		double y0 = b1 * y1 - y2; \
-		y2 = y1; \
-		y1 = y0; \
+#define GRAIN_LOOP_BODY_2								\
+		float amp = y1 * y1;							\
+		phase = sc_gloop(phase, loopMax);				\
+		int32 iphase = (int32)phase;					\
+		float* table1 = bufData + iphase;				\
+		float* table2 = table1 + 1;						\
+		if (iphase > guardFrame) {						\
+			table2 -= bufSamples;						\
+		}												\
+		double fracphase = phase - (double)iphase;		\
+		float b = table1[0];							\
+		float c = table2[0];							\
+		float outval = amp * (b + fracphase * (c - b));	\
+		ZXP(out1) += outval;							\
+		double y0 = b1 * y1 - y2;						\
+		y2 = y1;										\
+		y1 = y0;
 
 
-#define GRAIN_LOOP_BODY_1 \
-		float amp = y1 * y1; \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float outval = amp * bufData[iphase]; \
-		ZXP(out1) += outval; \
-		double y0 = b1 * y1 - y2; \
-		y2 = y1; \
-		y1 = y0; \
+#define GRAIN_LOOP_BODY_1						\
+		float amp = y1 * y1;					\
+		phase = sc_gloop(phase, loopMax);		\
+		int32 iphase = (int32)phase;			\
+		float outval = amp * bufData[iphase];	\
+		ZXP(out1) += outval;					\
+		double y0 = b1 * y1 - y2;				\
+		y2 = y1;								\
+		y1 = y0;
 
-#define BUF_GRAIN_AMP \
-		winPos += winInc; \
-		int iWinPos = (int)winPos; \
-		double winFrac = winPos - (double)iWinPos;\
-		float* winTable1 = windowData + iWinPos;\
-		float* winTable2 = winTable1 + 1;\
-		if (winPos > windowGuardFrame) {\
-		    winTable2 -= windowSamples; \
-		    } \
-		amp = lininterp(winFrac, winTable1[0], winTable2[0]); \
+#define BUF_GRAIN_AMP											\
+		winPos += winInc;										\
+		int iWinPos = (int)winPos;								\
+		double winFrac = winPos - (double)iWinPos;				\
+		float* winTable1 = windowData + iWinPos;				\
+		float* winTable2 = winTable1 + 1;						\
+		if (winPos > windowGuardFrame) {						\
+			winTable2 -= windowSamples;							\
+		}														\
+		amp = lininterp(winFrac, winTable1[0], winTable2[0]);
 
-#define GET_INTERP_GRAIN_WIN \
+#define GET_INTERP_GRAIN_WIN											\
 		SndBuf *windowA = unit->mWorld->mSndBufs + (int)grain->mWindowA; \
-		float *windowDataA __attribute__((__unused__)) = windowA->data; \
+		float *windowDataA __attribute__((__unused__)) = windowA->data;	\
 		uint32 windowSamplesA __attribute__((__unused__)) = windowA->samples; \
-		uint32 windowFramesA = windowA->frames; \
+		uint32 windowFramesA = windowA->frames;							\
 		int windowGuardFrameA __attribute__((__unused__)) = windowFramesA - 1; \
 		SndBuf *windowB = unit->mWorld->mSndBufs + (int)grain->mWindowB; \
-		float *windowDataB __attribute__((__unused__)) = windowB->data; \
+		float *windowDataB __attribute__((__unused__)) = windowB->data;	\
 		uint32 windowSamplesB __attribute__((__unused__)) = windowB->samples; \
-		uint32 windowFramesB = windowB->frames; \
-		int windowGuardFrameB __attribute__((__unused__)) = windowFramesB - 1; \
+		uint32 windowFramesB = windowB->frames;							\
+		int windowGuardFrameB __attribute__((__unused__)) = windowFramesB - 1;
 
-#define BUF_INTERP_GRAIN_AMP \
-		winPosA += winIncA; \
-		int iWinPosA = (int)winPosA; \
-		double winFracA = winPosA - (double)iWinPosA;\
-		float* winTableA1 = windowDataA + iWinPosA;\
-		float* winTableA2 = winTableA1 + 1;\
-		if (winPosA > windowGuardFrameA) {\
-		    winTableA2 -= windowSamplesA; \
-		    } \
-		float ampA = lininterp(winFracA, winTableA1[0], winTableA2[0]); \
-		winPosB += winIncB; \
-		int iWinPosB = (int)winPosB; \
-		double winFracB = winPosB - (double)iWinPosB;\
-		float* winTableB1 = windowDataB + iWinPosB;\
-		float* winTableB2 = winTableB1 + 1;\
-		if (winPosB > windowGuardFrameB) {\
-		    winTableB2 -= windowSamplesB; \
-		    } \
-		float ampB = lininterp(winFracB, winTableB1[0], winTableB2[0]); \
-		amp = lininterp(grain->ifac, ampA, ampB);\
+#define BUF_INTERP_GRAIN_AMP											\
+		winPosA += winIncA;												\
+		int iWinPosA = (int)winPosA;									\
+		double winFracA = winPosA - (double)iWinPosA;					\
+		float* winTableA1 = windowDataA + iWinPosA;						\
+		float* winTableA2 = winTableA1 + 1;								\
+		if (winPosA > windowGuardFrameA) {								\
+			winTableA2 -= windowSamplesA;								\
+		}																\
+		float ampA = lininterp(winFracA, winTableA1[0], winTableA2[0]);	\
+		winPosB += winIncB;												\
+		int iWinPosB = (int)winPosB;									\
+		double winFracB = winPosB - (double)iWinPosB;					\
+		float* winTableB1 = windowDataB + iWinPosB;						\
+		float* winTableB2 = winTableB1 + 1;								\
+		if (winPosB > windowGuardFrameB) {								\
+			winTableB2 -= windowSamplesB;								\
+		}																\
+		float ampB = lininterp(winFracB, winTableB1[0], winTableB2[0]);	\
+		amp = lininterp(grain->ifac, ampA, ampB);
 
-#define BUF_GRAIN_LOOP_BODY_4 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table0 = table1 - 1; \
-		float* table2 = table1 + 1; \
-		float* table3 = table1 + 2; \
-		if (iphase == 0) { \
-			table0 += bufSamples; \
-		} else if (iphase >= guardFrame) { \
-			if (iphase == guardFrame) { \
-				table3 -= bufSamples; \
-			} else { \
-				table2 -= bufSamples; \
-				table3 -= bufSamples; \
-			} \
-		} \
-		float fracphase = phase - (double)iphase; \
-		float a = table0[0]; \
-		float b = table1[0]; \
-		float c = table2[0]; \
-		float d = table3[0]; \
-		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
-		ZXP(out1) += outval; \
+#define BUF_GRAIN_LOOP_BODY_4										\
+		phase = sc_gloop(phase, loopMax);							\
+		int32 iphase = (int32)phase;								\
+		float* table1 = bufData + iphase;							\
+		float* table0 = table1 - 1;									\
+		float* table2 = table1 + 1;									\
+		float* table3 = table1 + 2;									\
+		if (iphase == 0) {											\
+			table0 += bufSamples;									\
+		} else if (iphase >= guardFrame) {							\
+			if (iphase == guardFrame) {								\
+				table3 -= bufSamples;								\
+			} else {												\
+				table2 -= bufSamples;								\
+				table3 -= bufSamples;								\
+			}														\
+		}															\
+		float fracphase = phase - (double)iphase;					\
+		float a = table0[0];										\
+		float b = table1[0];										\
+		float c = table2[0];										\
+		float d = table3[0];										\
+		float outval = amp * cubicinterp(fracphase, a, b, c, d);	\
+		ZXP(out1) += outval;
 
-#define BUF_GRAIN_LOOP_BODY_2 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table2 = table1 + 1; \
-		if (iphase > guardFrame) { \
-			table2 -= bufSamples; \
-		} \
-		float fracphase = phase - (double)iphase; \
-		float b = table1[0]; \
-		float c = table2[0]; \
+#define BUF_GRAIN_LOOP_BODY_2							\
+		phase = sc_gloop(phase, loopMax);				\
+		int32 iphase = (int32)phase;					\
+		float* table1 = bufData + iphase;				\
+		float* table2 = table1 + 1;						\
+		if (iphase > guardFrame) {						\
+			table2 -= bufSamples;						\
+		}												\
+		float fracphase = phase - (double)iphase;		\
+		float b = table1[0];							\
+		float c = table2[0];							\
 		float outval = amp * (b + fracphase * (c - b)); \
-		ZXP(out1) += outval; \
+		ZXP(out1) += outval;
 
 // amp needs to be calculated by looking up values in window
 
-#define BUF_GRAIN_LOOP_BODY_1 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float outval = amp * bufData[iphase]; \
-		ZXP(out1) += outval; \
+#define BUF_GRAIN_LOOP_BODY_1					\
+		phase = sc_gloop(phase, loopMax);		\
+		int32 iphase = (int32)phase;			\
+		float outval = amp * bufData[iphase];	\
+		ZXP(out1) += outval;
 
 
-#define SETUP_OUT \
-	uint32 numOutputs = unit->mNumOutputs; \
-	if (numOutputs > bufChannels) { \
-                unit->mDone = true; \
-		ClearUnitOutputs(unit, inNumSamples); \
-		return; \
-	} \
-	float *out[16]; \
+#define SETUP_OUT											\
+	uint32 numOutputs = unit->mNumOutputs;					\
+	if (numOutputs > bufChannels) {							\
+		unit->mDone = true;									\
+		ClearUnitOutputs(unit, inNumSamples);				\
+		return;												\
+	}														\
+	float *out[16];											\
 	for (uint32 i=0; i<numOutputs; ++i) out[i] = ZOUT(i);
 
 // for standard SC dist ///
-#define SETUP_GRAIN_OUTS \
-	uint32 numOutputs = unit->mNumOutputs;\
-	float *out[16]; \
-	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i); \
+#define SETUP_GRAIN_OUTS									\
+	uint32 numOutputs = unit->mNumOutputs;					\
+	float *out[16];											\
+	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i);
 
-#define CALC_GRAIN_PAN \
-	float panangle, pan1, pan2; \
-	float *out1, *out2; \
-	if (numOutputs > 1) { \
-		if (numOutputs == 2) pan = pan * 0.5; \
-		pan = sc_wrap(pan * 0.5f, 0.f, 1.f); \
-		float cpan = numOutputs * pan + 0.5; \
-		float ipan = floor(cpan); \
-		float panfrac = cpan - ipan; \
-		panangle = panfrac * pi2_f; \
-		grain->chan = (int)ipan; \
-		if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs; \
-		pan1 = grain->pan1 = cos(panangle); \
-		pan2 = grain->pan2 = sin(panangle); \
-	} else { \
-		grain->chan = 0; \
-		pan1 = grain->pan1 = 1.; \
-		pan2 = grain->pan2 = 0.; \
+#define CALC_GRAIN_PAN													\
+	float panangle, pan1, pan2;											\
+	float *out1, *out2;													\
+	if (numOutputs > 1) {												\
+		if (numOutputs == 2) pan = pan * 0.5;							\
+		pan = sc_wrap(pan * 0.5f, 0.f, 1.f);							\
+		float cpan = numOutputs * pan + 0.5;							\
+		float ipan = floor(cpan);										\
+		float panfrac = cpan - ipan;									\
+		panangle = panfrac * pi2_f;										\
+		grain->chan = (int)ipan;										\
+		if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs;	\
+		pan1 = grain->pan1 = cos(panangle);								\
+		pan2 = grain->pan2 = sin(panangle);								\
+	} else {															\
+		grain->chan = 0;												\
+		pan1 = grain->pan1 = 1.;										\
+		pan2 = grain->pan2 = 0.;										\
 	}
 
-#define GET_GRAIN_INIT_AMP \
-	if(grain->winType < 0.){ \
-	    w = pi / counter; \
-	    b1 = grain->b1 = 2. * cos(w); \
-	    y1 = sin(w); \
-	    y2 = 0.; \
-	    amp = y1 * y1; \
-	    } else { \
-	    amp = windowData[0]; \
-	    winPos = grain->winPos = 0.f; \
-	    winInc = grain->winInc = (double)windowSamples / counter; \
-	    } \
-
-#define CALC_NEXT_GRAIN_AMP \
-	if(grain->winType < 0.){ \
-	    y0 = b1 * y1 - y2; \
-	    y2 = y1; \
-	    y1 = y0; \
-	    amp = y1 * y1; \
-	    } else { \
-	    winPos += winInc; \
-	    int iWinPos = (int)winPos; \
-	    double winFrac = winPos - (double)iWinPos; \
-	    float* winTable1 = windowData + iWinPos; \
-	    float* winTable2 = winTable1 + 1; \
-	    if (!windowData) break; \
-	    if (winPos > windowGuardFrame) { \
-		winTable2 -= windowSamples; \
-		} \
-	    amp = lininterp(winFrac, winTable1[0], winTable2[0]); \
-	    } \
-
-#define GET_GRAIN_AMP_PARAMS \
-	if(grain->winType < 0.){ \
-		b1 = grain->b1; \
-		y1 = grain->y1; \
-		y2 = grain->y2; \
-		amp = grain->curamp; \
-	} else { \
-		GET_GRAIN_WIN(grain->winType);\
-		if (!windowData) break; \
-		winPos = grain->winPos; \
-		winInc = grain->winInc; \
-		amp = grain->curamp; \
+#define GET_GRAIN_INIT_AMP											\
+	if(grain->winType < 0.){										\
+		w = pi / counter;											\
+		b1 = grain->b1 = 2. * cos(w);								\
+		y1 = sin(w);												\
+		y2 = 0.;													\
+		amp = y1 * y1;												\
+	} else {														\
+		amp = windowData[0];										\
+		winPos = grain->winPos = 0.f;								\
+		winInc = grain->winInc = (double)windowSamples / counter;	\
 	}
 
-#define SAVE_GRAIN_AMP_PARAMS \
-	grain->y1 = y1; \
-	grain->y2 = y2; \
-	grain->winPos = winPos; \
-	grain->winInc = winInc; \
-	grain->curamp = amp; \
-	grain->counter -= nsmps; \
+#define CALC_NEXT_GRAIN_AMP										\
+	if(grain->winType < 0.){									\
+		y0 = b1 * y1 - y2;										\
+		y2 = y1;												\
+		y1 = y0;												\
+		amp = y1 * y1;											\
+	} else {													\
+		winPos += winInc;										\
+		int iWinPos = (int)winPos;								\
+		double winFrac = winPos - (double)iWinPos;				\
+		float* winTable1 = windowData + iWinPos;				\
+		float* winTable2 = winTable1 + 1;						\
+		if (!windowData) break;									\
+		if (winPos > windowGuardFrame) {						\
+			winTable2 -= windowSamples;							\
+		}														\
+		amp = lininterp(winFrac, winTable1[0], winTable2[0]);	\
+	}
 
-#define WRAP_CHAN \
-	out1 = out[grain->chan] + i; \
-	if(numOutputs > 1) { \
-	    if((grain->chan + 1) >= (int)numOutputs) \
-		out2 = out[0] + i; \
-		else \
-		out2 = out[grain->chan + 1] + i; \
-	    } \
+#define GET_GRAIN_AMP_PARAMS					\
+	if(grain->winType < 0.){					\
+		b1 = grain->b1;							\
+		y1 = grain->y1;							\
+		y2 = grain->y2;							\
+		amp = grain->curamp;					\
+	} else {									\
+		GET_GRAIN_WIN(grain->winType);			\
+		if (!windowData) break;					\
+		winPos = grain->winPos;					\
+		winInc = grain->winInc;					\
+		amp = grain->curamp;					\
+	}
 
-#define WRAP_CHAN_K \
-	out1 = out[grain->chan]; \
-	if(numOutputs > 1) { \
-	    if((grain->chan + 1) >= (int)numOutputs) \
-		out2 = out[0]; \
-		else \
-		out2 = out[grain->chan + 1]; \
-	    } \
+#define SAVE_GRAIN_AMP_PARAMS					\
+	grain->y1 = y1;								\
+	grain->y2 = y2;								\
+	grain->winPos = winPos;						\
+	grain->winInc = winInc;						\
+	grain->curamp = amp;						\
+	grain->counter -= nsmps;
 
-#define GET_PAN_PARAMS \
-	float pan1 = grain->pan1; \
-	uint32 chan1 = grain->chan; \
-	float *out1 = out[chan1]; \
-	if(numOutputs > 1){ \
-	    pan2 = grain->pan2; \
-	    uint32 chan2 = chan1 + 1; \
-	    if (chan2 >= numOutputs) chan2 = 0; \
-	    out2 = out[chan2]; \
-	    } \
+#define WRAP_CHAN									\
+	out1 = out[grain->chan] + i;					\
+	if(numOutputs > 1) {							\
+		if((grain->chan + 1) >= (int)numOutputs)	\
+			out2 = out[0] + i;						\
+		else										\
+			out2 = out[grain->chan + 1] + i;		\
+	}
 
-#define WARP_GRAIN_LOOP_BODY_4 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
-		float* table0 = table1 - bufChannels; \
-		float* table2 = table1 + bufChannels; \
-		float* table3 = table2 + bufChannels; \
-		if (iphase == 0) { \
-			table0 += bufSamples; \
-		} else if (iphase >= guardFrame) { \
-			if (iphase == guardFrame) { \
-				table3 -= bufSamples; \
-			} else { \
-				table2 -= bufSamples; \
-				table3 -= bufSamples; \
-			} \
-		} \
-		float fracphase = phase - (double)iphase; \
-		float a = table0[n]; \
-		float b = table1[n]; \
-		float c = table2[n]; \
-		float d = table3[n]; \
-		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
-		ZXP(out1) += outval; \
+#define WRAP_CHAN_K									\
+	out1 = out[grain->chan];						\
+	if(numOutputs > 1) {							\
+		if((grain->chan + 1) >= (int)numOutputs)	\
+			out2 = out[0];							\
+		else										\
+			out2 = out[grain->chan + 1];			\
+	}
 
-#define WARP_GRAIN_LOOP_BODY_2 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
-		float* table2 = table1 + bufChannels; \
-		if (iphase > guardFrame) { \
-			table2 -= bufSamples; \
-		} \
-		float fracphase = phase - (double)iphase; \
-		float b = table1[n]; \
-		float c = table2[n]; \
-		float outval = amp * (b + fracphase * (c - b)); \
-		ZXP(out1) += outval; \
+#define GET_PAN_PARAMS							\
+	float pan1 = grain->pan1;					\
+	uint32 chan1 = grain->chan;					\
+	float *out1 = out[chan1];					\
+	if(numOutputs > 1){							\
+		pan2 = grain->pan2;						\
+		uint32 chan2 = chan1 + 1;				\
+		if (chan2 >= numOutputs) chan2 = 0;		\
+		out2 = out[chan2];						\
+	}
+
+#define WARP_GRAIN_LOOP_BODY_4										\
+	phase = sc_gloop(phase, loopMax);								\
+	int32 iphase = (int32)phase;									\
+	float* table1 = bufData + iphase * bufChannels;					\
+	float* table0 = table1 - bufChannels;							\
+	float* table2 = table1 + bufChannels;							\
+	float* table3 = table2 + bufChannels;							\
+	if (iphase == 0) {												\
+		table0 += bufSamples;										\
+	} else if (iphase >= guardFrame) {								\
+		if (iphase == guardFrame) {									\
+			table3 -= bufSamples;									\
+		} else {													\
+			table2 -= bufSamples;									\
+			table3 -= bufSamples;									\
+		}															\
+	}																\
+	float fracphase = phase - (double)iphase;						\
+	float a = table0[n];											\
+	float b = table1[n];											\
+	float c = table2[n];											\
+	float d = table3[n];											\
+	float outval = amp * cubicinterp(fracphase, a, b, c, d);		\
+	ZXP(out1) += outval;
+
+#define WARP_GRAIN_LOOP_BODY_2							\
+	phase = sc_gloop(phase, loopMax);					\
+	int32 iphase = (int32)phase;						\
+	float* table1 = bufData + iphase * bufChannels;		\
+	float* table2 = table1 + bufChannels;				\
+	if (iphase > guardFrame) {							\
+		table2 -= bufSamples;							\
+	}													\
+	float fracphase = phase - (double)iphase;			\
+	float b = table1[n];								\
+	float c = table2[n];								\
+	float outval = amp * (b + fracphase * (c - b));		\
+	ZXP(out1) += outval;
 
 // amp needs to be calculated by looking up values in window
 
-#define WARP_GRAIN_LOOP_BODY_1 \
-		phase = sc_gloop(phase, loopMax); \
-		int32 iphase = (int32)phase; \
-		float outval = amp * bufData[iphase + n]; \
-		ZXP(out1) += outval; \
+#define WARP_GRAIN_LOOP_BODY_1						\
+	phase = sc_gloop(phase, loopMax);				\
+	int32 iphase = (int32)phase;					\
+	float outval = amp * bufData[iphase + n];		\
+	ZXP(out1) += outval;
 
 //////////////////// InGrain ////////////////////
 
