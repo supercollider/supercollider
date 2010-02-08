@@ -56,7 +56,6 @@ struct Lag3 : public Unit
 	float m_lag, m_b1, m_y1a, m_y1b, m_y1c;
 };
 
-/// added by nescivi - 15 may 2007
 struct LagUD : public Unit
 {
 	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1;
@@ -71,7 +70,6 @@ struct Lag3UD : public Unit
 {
 	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
 };
-///---------------------------
 
 struct OnePole : public Unit
 {
@@ -320,7 +318,6 @@ extern "C"
 	void Lag3_next(Lag3 *unit, int inNumSamples);
 	void Lag3_Ctor(Lag3* unit);
 
-/// added by nescivi - 15 may 2007
 	void LagUD_next(LagUD *unit, int inNumSamples);
 	void LagUD_Ctor(LagUD* unit);
 
@@ -329,7 +326,6 @@ extern "C"
 
 	void Lag3UD_next(Lag3UD *unit, int inNumSamples);
 	void Lag3UD_Ctor(Lag3UD* unit);
-///-----------------------------------
 
 	void OnePole_next_a(OnePole *unit, int inNumSamples);
 	void OnePole_next_k(OnePole *unit, int inNumSamples);
@@ -616,7 +612,6 @@ void Lag_Ctor(Lag* unit)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/// added by nescivi - 15 may 2007
 void LagUD_next(LagUD *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
