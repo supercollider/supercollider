@@ -21,8 +21,6 @@
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 
-void Rate_Init(Rate *inRate, double inSampleRate, int inBufLength);
-
 namespace nova
 {
 
@@ -30,8 +28,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory.world;
-    Rate_Init(&full_rate, world.mSampleRate, world.mBufLength);
-    Rate_Init(&control_rate, world.mSampleRate/world.mBufLength, 1);
+    initialize_rate(full_rate, world.mSampleRate, world.mBufLength);
+    initialize_rate(control_rate, world.mSampleRate/world.mBufLength, 1);
     rgen.init((uint32_t)(uint64_t)this);
 
     /* initialize sc wrapper class */

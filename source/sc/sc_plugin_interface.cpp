@@ -528,8 +528,8 @@ void sc_plugin_interface::initialize(void)
     world.mBufLength = args.blocksize;
     world.mSampleRate = args.samplerate;
 
-    Rate_Init(&world.mFullRate, args.samplerate, args.blocksize);
-    Rate_Init(&world.mBufRate, float(args.samplerate)/args.blocksize, 1);
+    initialize_rate(world.mFullRate, args.samplerate, args.blocksize);
+    initialize_rate(world.mBufRate, double(args.samplerate)/args.blocksize, 1);
 
     world.mNumInputs = args.input_channels;
     world.mNumOutputs = args.output_channels;

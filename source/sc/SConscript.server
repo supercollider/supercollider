@@ -20,7 +20,7 @@
 
 Import("env")
 
-server_sources = Split("""SC_Rate.cpp Samp.cpp""")
+server_sources = Split("""Samp.cpp""")
 server_sources = [File(x, "supercollider/Source/server") for x in server_sources]
 
 
