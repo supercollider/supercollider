@@ -551,7 +551,7 @@ void thru_d(UnaryOpUGen *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
+static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 
@@ -608,7 +608,7 @@ UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 	return func;
 }
 
-UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
+static UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 
@@ -666,7 +666,7 @@ UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 }
 
 
-UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
+static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 
@@ -724,7 +724,7 @@ UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 }
 
 #if __VEC__
-UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
+static UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 
@@ -784,7 +784,7 @@ UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
 
 #ifdef NOVA_SIMD
 
-UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
+static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 {
 	void (*func)(UnaryOpUGen *unit, int inNumSamples);
 

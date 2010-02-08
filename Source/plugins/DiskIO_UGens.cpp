@@ -100,6 +100,9 @@ enum {
 	kDiskCmd_ReadLoop,
 };
 
+namespace
+{
+
 struct DiskIOMsg
 {
 	World *mWorld;
@@ -112,10 +115,46 @@ struct DiskIOMsg
 	void Perform();
 };
 
+void DiskIOMsg::Perform()
+{
+	NRTLock(mWorld);
+
+	SndBuf *buf = World_GetNRTBuf(mWorld, mBufNum);
+	if (mPos > buf->frames || mPos + mFrames > buf->frames || buf->channels != mChannels) goto leave;
+
+	sf_count_t count;
+	switch (mCommand) {
+		case kDiskCmd_Read :
+			count = buf->sndfile ? sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames) : 0;
+			if (count < mFrames) {
+				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels * sizeof(float));
+			}
+		break;
+		case kDiskCmd_ReadLoop :
+			if (!buf->sndfile) {
+				memset(buf->data + mPos * buf->channels, 0, mFrames * buf->channels * sizeof(float));
+				goto leave;
+			}
+			count = sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
+			while (mFrames -= count) {
+				sf_seek(buf->sndfile, 0, SEEK_SET);
+				count = sf_readf_float(buf->sndfile, buf->data + (mPos + count) * buf->channels, mFrames);
+			}
+		break;
+		case kDiskCmd_Write :
+			//printf("kDiskCmd_Write %d %08X\n", mBufNum, buf->sndfile);
+			if (!buf->sndfile) goto leave;
+			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
+		break;
+	}
+
+leave:
+	NRTUnlock(mWorld);
+}
+
 MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
 SC_SyncCondition gDiskFifoHasData;
 
-void* disk_io_thread_func(void* arg);
 void* disk_io_thread_func(void* arg)
 {
 	while (true) {
@@ -123,6 +162,8 @@ void* disk_io_thread_func(void* arg)
 		gDiskFifo.Perform();
 	}
 	return 0;
+}
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -313,43 +354,6 @@ sendMessage:
 		gDiskFifoHasData.Signal();
 	}
 
-}
-
-void DiskIOMsg::Perform()
-{
-	NRTLock(mWorld);
-
-	SndBuf *buf = World_GetNRTBuf(mWorld, mBufNum);
-	if (mPos > buf->frames || mPos + mFrames > buf->frames || buf->channels != mChannels) goto leave;
-
-	sf_count_t count;
-	switch (mCommand) {
-		case kDiskCmd_Read :
-			count = buf->sndfile ? sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames) : 0;
-			if (count < mFrames) {
-				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels * sizeof(float));
-			}
-		break;
-		case kDiskCmd_ReadLoop :
-			if (!buf->sndfile) {
-				memset(buf->data + mPos * buf->channels, 0, mFrames * buf->channels * sizeof(float));
-				goto leave;
-			}
-			count = sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
-			while (mFrames -= count) {
-				sf_seek(buf->sndfile, 0, SEEK_SET);
-				count = sf_readf_float(buf->sndfile, buf->data + (mPos + count) * buf->channels, mFrames);
-			}
-		break;
-		case kDiskCmd_Write :
-			//printf("kDiskCmd_Write %d %08X\n", mBufNum, buf->sndfile);
-			if (!buf->sndfile) goto leave;
-			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
-		break;
-	}
-
-leave:
-	NRTUnlock(mWorld);
 }
 
 
