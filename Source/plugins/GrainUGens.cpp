@@ -29,18 +29,6 @@
 
 #include "SC_PlugIn.h"
 
-// macros to put rgen state in registers
-#define RGET \
-	RGen& rgen = *unit->mParent->mRGen; \
-	uint32 s1 = rgen.s1; \
-	uint32 s2 = rgen.s2; \
-	uint32 s3 = rgen.s3;
-
-#define RPUT \
-	rgen.s1 = s1; \
-	rgen.s2 = s2; \
-	rgen.s3 = s3;
-
 static InterfaceTable *ft;
 
 const int kMaxGrains = 64;
@@ -1706,11 +1694,9 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 				WarpWinGrain *grain = unit->mGrains[n] + unit->mNumActive[n]++;
 	//			grain->bufnum = bufnum;
 
-				RGET
-
 				float overlaps = GRAIN_IN_AT(unit, 5, i);
 				float counter = GRAIN_IN_AT(unit, 3, i) * SAMPLERATE;
-				double winrandamt = frand2(s1, s2, s3) * (double)GRAIN_IN_AT(unit, 6, i);
+				double winrandamt = unit->mParent->mRGen->frand2() * (double)GRAIN_IN_AT(unit, 6, i);
 				counter = sc_max(4., floor(counter + (counter * winrandamt)));
 				grain->counter = (int)counter;
 
@@ -1752,8 +1738,6 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 
 					grain->phase = phase;
 					SAVE_GRAIN_AMP_PARAMS
-					// store random values
-					RPUT
 					// end change
 					if (grain->counter <= 0) {
 						// remove grain
