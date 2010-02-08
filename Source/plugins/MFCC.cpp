@@ -49,15 +49,14 @@ float dct[1764]=  {0.9993007047884, 0.99371220989324, 0.98256647323329, 0.965925
 
 
 //other functions
-void MFCC_dofft(MFCC *, uint32);
+static void MFCC_dofft(MFCC *, uint32);
 
-float MFCC_prepareMel(MFCC *, float *);
+static float MFCC_prepareMel(MFCC *, float *);
 //float MFCC_prepareERB(MFCC *, float *);
 
 
-void MFCC_Ctor(MFCC* unit) {
-	int j;
-
+void MFCC_Ctor(MFCC* unit)
+{
 	//may want to check sampling rate here!
 
 	unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
@@ -67,17 +66,17 @@ void MFCC_Ctor(MFCC* unit) {
 
 	if(((int)(unit->m_srate+0.01))==44100)
 	{
-	unit->m_startbin= g_startbin44100;
-	unit->m_endbin= g_endbin44100;
-	unit->m_cumulindex= g_cumulindex44100;
-	unit->m_bandweights= g_melbandweights44100;
+		unit->m_startbin= g_startbin44100;
+		unit->m_endbin= g_endbin44100;
+		unit->m_cumulindex= g_cumulindex44100;
+		unit->m_bandweights= g_melbandweights44100;
 	}
 	else  //else 48000; potentially dangerous if it isn't! Fortunately, shouldn't write any data to unknown memory
 	{
-	unit->m_startbin= g_startbin48000;
-	unit->m_endbin= g_endbin48000;
-	unit->m_cumulindex= g_cumulindex48000;
-	unit->m_bandweights= g_melbandweights48000;
+		unit->m_startbin= g_startbin48000;
+		unit->m_endbin= g_endbin48000;
+		unit->m_cumulindex= g_cumulindex48000;
+		unit->m_bandweights= g_melbandweights48000;
 	}
 
 	//fixed for now
@@ -85,9 +84,7 @@ void MFCC_Ctor(MFCC* unit) {
 
 	unit->m_bands = (float*)RTAlloc(unit->mWorld, unit->m_numbands * sizeof(float));
 
-	for (j=0; j<unit->m_numbands; ++j) {
-	unit->m_bands[j]= 0.0;
-	}
+	Clear(unit->m_numbands, unit->m_bands);
 
 	unit->m_numcoefficients= (int)ZIN0(1);
 
@@ -97,14 +94,12 @@ void MFCC_Ctor(MFCC* unit) {
 
 	unit->m_mfcc = (float*)RTAlloc(unit->mWorld, unit->m_numcoefficients * sizeof(float));
 
-	for (j=0; j<unit->m_numcoefficients; ++j) {
-		unit->m_mfcc[j]= 0.f;
+	Clear(unit->m_numcoefficients, unit->m_mfcc);
+	for (int j=0; j<unit->m_numcoefficients; ++j)
 		ZOUT0(j) = 0.f;
-	}
 
 	unit->mCalcFunc = (UnitCalcFunc)&MFCC_next;
 }
-
 
 
 void MFCC_Dtor(MFCC *unit)
@@ -118,14 +113,12 @@ void MFCC_Dtor(MFCC *unit)
 
 void MFCC_next(MFCC *unit, int wrongNumSamples)
 {
-
 	float fbufnum = ZIN0(0);
 
 	//next FFT bufffer ready, update
 	//assuming at this point that buffer precalculated for any resampling
-	if (fbufnum>(-0.01)) {
+	if (fbufnum> -0.01f)
 		MFCC_dofft(unit, (uint32)fbufnum);
-	}
 
 	//always output sones
 	//float outval= unit->m_sones;
@@ -136,22 +129,14 @@ void MFCC_next(MFCC *unit, int wrongNumSamples)
 	//control rate output
 	//ZOUT0(0)=unit->m_sones;
 
-
-	for (int k=0; k<unit->m_numcoefficients; ++k) {
+	for (int k=0; k<unit->m_numcoefficients; ++k)
 		ZOUT0(k)= unit->m_mfcc[k];
-	}
-
 }
 
 
-
-
-
 //calculation function once FFT data ready
-void MFCC_dofft(MFCC *unit, uint32 ibufnum) {
-
-	int j,k;
-
+void MFCC_dofft(MFCC *unit, uint32 ibufnum)
+{
 	World *world = unit->mWorld;
 
 	SndBuf *buf;
@@ -183,32 +168,25 @@ void MFCC_dofft(MFCC *unit, uint32 ibufnum) {
 	//FFT is actually more expensive here, easiest just to calculate the basis decomposition straight off
 
 	//hard coded 42 = max num bands because this is how the indexing in the dct source is set up
-	for (k=0; k<unit->m_numcoefficients; ++k){
+	for (int k=0; k<unit->m_numcoefficients; ++k){
+		float sum=0.0;
 
-			float sum=0.0;
+		int base= k*42;
 
-			int base= k*42;
-
-			for (j=0; j<unit->m_numbands; ++j) {
+		for (int j=0; j<unit->m_numbands; ++j) {
 			int index= base+j;
 			//sum+= (0.5*dct[index]+0.5)*pbands[j];
 			sum+= (dct[index])*pbands[j];
-			}
+		}
 
-			//also divide by numcoefficients
-			unit->m_mfcc[k]= 0.5*(0.5*(sum*mult)+0.5);
+		//also divide by numcoefficients
+		unit->m_mfcc[k]= 0.5*(0.5*(sum*mult)+0.5);
 	}
 }
 
 
-
-
-
-
-float MFCC_prepareMel(MFCC * unit, float * data) {
-
-	int j,k;
-
+float MFCC_prepareMel(MFCC * unit, float * data)
+{
 	float * pbands= unit->m_bands;
 
 	int * startbin= unit->m_startbin;
@@ -216,8 +194,7 @@ float MFCC_prepareMel(MFCC * unit, float * data) {
 	int * cumulindex= unit->m_cumulindex;
 	float * weights= unit->m_bandweights;
 
-	for (k=0; k<unit->m_numbands; ++k){
-
+	for (int k=0; k<unit->m_numbands; ++k){
 		int bandstart=startbin[k];
 		int bandendp1 = endbin[k]+1;
 
@@ -228,7 +205,7 @@ float MFCC_prepareMel(MFCC * unit, float * data) {
 
 		index2= cumulindex[k];
 
-		for (j=bandstart; j < bandendp1; ++j) {
+		for (int j=bandstart; j < bandendp1; ++j) {
 			index = j+j;
 			real= data[index];
 			imag= data[index+1];
@@ -247,7 +224,6 @@ float MFCC_prepareMel(MFCC * unit, float * data) {
 		pbands[k] = 10.f * (sc_log10((bsum< 2e-42f? 2e-42f: bsum)) + 5.f);
 
 		//10*(log10((bsum< 2e-42? 2e-42: bsum)) + 4.8810017610244); //log(bsum< 2e-42? 2e-42: bsum); //10*(log10(bsum) + 4.8810017610244);
-
 	}
 
 	//
@@ -255,17 +231,7 @@ float MFCC_prepareMel(MFCC * unit, float * data) {
 	float mult= 0.01; //(1.0/((float)unit->m_numcoefficients));
 
 	return mult;
-
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -348,6 +314,3 @@ float MFCC_prepareMel(MFCC * unit, float * data) {
 //	return mult;
 //}
 //
-
-
-
