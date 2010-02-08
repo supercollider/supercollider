@@ -60,6 +60,7 @@ pluginenv.Append(CPPDEFINES=['SUPERNOVA', 'NOVA_SIMD'],
                           "#libs/boost_lockfree",
                           "#libs/nova-tt",
                           ],
+                 CXXFLAGS=Split("-fno-finite-math-only")
                  )
 
 if not env['debug']:
