@@ -5517,7 +5517,6 @@ void ScopeOut_Dtor(ScopeOut *unit)
 
 struct PitchShift : public Unit
 {
-	SndBuf *m_buf;
 	float *dlybuf;
 	float dsamp1, dsamp1_slope, ramp1, ramp1_slope;
 	float dsamp2, dsamp2_slope, ramp2, ramp2_slope;
