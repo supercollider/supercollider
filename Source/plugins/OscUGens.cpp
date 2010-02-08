@@ -54,7 +54,6 @@ struct TWindex : public Unit
 {
 	int32 m_prevIndex;
 	float m_trig;
-
 };
 
 struct Index : public BufUnit
@@ -318,12 +317,10 @@ void Pulse_next(Pulse *unit, int inNumSamples);
 
 void Klang_Dtor(Klang *unit);
 void Klang_Ctor(Klang *unit);
-float Klang_SetCoefs(Klang *unit);
 void Klang_next(Klang *unit, int inNumSamples);
 
 void Klank_Dtor(Klank *unit);
 void Klank_Ctor(Klank *unit);
-void Klank_SetCoefs(Klank *unit);
 void Klank_next(Klank *unit, int inNumSamples);
 
 }
@@ -426,7 +423,6 @@ void DegreeToKey_next_1(DegreeToKey *unit, int inNumSamples)
 		val = unit->mPrevKey = table[index];
 	}
 	ZOUT0(0) = val;
-
 }
 
 void DegreeToKey_next_k(DegreeToKey *unit, int inNumSamples)
@@ -462,7 +458,6 @@ void DegreeToKey_next_k(DegreeToKey *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -472,7 +467,6 @@ void DegreeToKey_next_a(DegreeToKey *unit, int inNumSamples)
 	GET_TABLE
 		float *table = bufData;
 		int32 maxindex = tableSize - 1;
-
 
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
@@ -503,7 +497,6 @@ void DegreeToKey_next_a(DegreeToKey *unit, int inNumSamples)
 	);
 	unit->mPrevIndex = previndex;
 	unit->mPrevKey = prevkey;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -526,7 +519,6 @@ void Select_next_1(Select *unit, int inNumSamples)
 	int32 index = (int32)ZIN0(0) + 1;
 	index = sc_clip(index, 1, maxindex);
 	ZOUT0(0) = ZIN0(index);
-
 }
 
 void Select_next_k(Select *unit, int inNumSamples)
@@ -539,7 +531,6 @@ void Select_next_k(Select *unit, int inNumSamples)
 	float *in = IN(index);
 
 	Copy(inNumSamples, out, in);
-
 }
 
 void Select_next_a(Select *unit, int inNumSamples)
@@ -555,7 +546,6 @@ void Select_next_a(Select *unit, int inNumSamples)
 		index = sc_clip(index, 1, maxindex);
 		ZXP(out) = in[index][i];
 	}
-
 }
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -621,32 +611,30 @@ void TWindex_next_ak(TWindex *unit, int inNumSamples)
 	float *trig = ZIN(0);
 	float *out = ZOUT(0);
 	float curtrig;
-        if(normalize == 1) {
-                    for (int32 k=2; k<maxindex; ++k) { maxSum += ZIN0(k); }
-                } else {
-                    maxSum = 1.f;
-                }
-        RGen& rgen = *unit->mParent->mRGen;
+	if(normalize == 1) {
+		for (int32 k=2; k<maxindex; ++k) { maxSum += ZIN0(k); }
+	} else
+		maxSum = 1.f;
+	RGen& rgen = *unit->mParent->mRGen;
 
-        LOOP1(inNumSamples,
-            curtrig = ZXP(trig);
-            if (curtrig > 0.f && unit->m_trig <= 0.f) {
-               float max = maxSum * rgen.frand();
-                for (int32 k=2; k<maxindex; ++k) {
-			sum += ZIN0(k);
-                        if(sum >= max) {
-                            index = k - 2;
-                            break;
-                        }
-		}
+	LOOP1(inNumSamples,
+		curtrig = ZXP(trig);
+		if (curtrig > 0.f && unit->m_trig <= 0.f) {
+			float max = maxSum * rgen.frand();
+			for (int32 k=2; k<maxindex; ++k) {
+				sum += ZIN0(k);
+							if(sum >= max) {
+								index = k - 2;
+								break;
+							}
+			}
 
-		unit->m_prevIndex = index;
-	} else {
-		index = unit->m_prevIndex;
-	}
+			unit->m_prevIndex = index;
+		} else
+			index = unit->m_prevIndex;
 
-	ZXP(out) = index;
-        unit->m_trig = curtrig;
+		ZXP(out) = index;
+		unit->m_trig = curtrig;
 	)
 }
 
@@ -675,7 +663,6 @@ void Index_next_1(Index *unit, int inNumSamples)
 	int32 index = (int32)ZIN0(1);
 	index = sc_clip(index, 0, maxindex);
 	ZOUT0(0) = table[index];
-
 }
 
 void Index_next_k(Index *unit, int inNumSamples)
@@ -694,7 +681,6 @@ void Index_next_k(Index *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -713,7 +699,6 @@ void Index_next_a(Index *unit, int inNumSamples)
 		index = sc_clip(index, 0, maxindex);
 		ZXP(out) = table[index];
 	);
-
 }
 
 
@@ -743,7 +728,6 @@ void FoldIndex_next_1(FoldIndex *unit, int inNumSamples)
 	int32 index = (int32)ZIN0(1);
 	index = sc_fold(index, 0, maxindex);
 	ZOUT0(0) = table[index];
-
 }
 
 void FoldIndex_next_k(FoldIndex *unit, int inNumSamples)
@@ -761,7 +745,6 @@ void FoldIndex_next_k(FoldIndex *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -780,7 +763,6 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 		index = sc_fold(index, 0, maxindex);
 		ZXP(out) = table[index];
 	);
-
 }
 
 
@@ -809,7 +791,6 @@ void WrapIndex_next_1(WrapIndex *unit, int inNumSamples)
 	int32 index = (int32)floor(ZIN0(1));
 	index = sc_wrap(index, 0, maxindex);
 	ZOUT0(0) = table[index];
-
 }
 
 void WrapIndex_next_k(WrapIndex *unit, int inNumSamples)
@@ -827,7 +808,6 @@ void WrapIndex_next_k(WrapIndex *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -846,12 +826,11 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 		index = sc_wrap(index, 0, maxindex);
 		ZXP(out) = table[index];
 	);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-float IndexInBetween_FindIndex(float* table, float in, int32 maxindex)
+static float IndexInBetween_FindIndex(float* table, float in, int32 maxindex)
 {
 	for(int32 i = 0; i <= maxindex; i++) {
 		if(table[i] > in) {
@@ -887,7 +866,6 @@ void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples)
 
 	float in = ZIN0(1);
 	ZOUT0(0) = IndexInBetween_FindIndex(table, in, maxindex);
-
 }
 
 void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples)
@@ -904,7 +882,6 @@ void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -921,13 +898,12 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = IndexInBetween_FindIndex(table, ZXP(in), maxindex);
 	);
-
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex)
+static int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex)
 {
 	int32 index;
 	for(index = 0; index <= maxindex; index+=1) {
@@ -969,7 +945,6 @@ void DetectIndex_next_1(DetectIndex *unit, int inNumSamples)
 		unit->mPrevIn = in;
 	}
 	ZOUT0(0) = (float)index;
-
 }
 
 void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
@@ -994,7 +969,6 @@ void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -1022,7 +996,6 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 
 	unit->mPrev = prevIndex;
 	unit->mPrevIn = inval;
-
 }
 
 
@@ -1063,7 +1036,6 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 	float val2 = *(float*)((char*)table1 + index);
 	val = val1 + val2 * pfrac;
 	ZOUT0(0) = val;
-
 }
 
 void Shaper_next_k(Shaper *unit, int inNumSamples)
@@ -1095,7 +1067,6 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 		ZXP(out) = val;
 		fin += phaseinc;
 	);
-
 }
 
 void Shaper_next_a(Shaper *unit, int inNumSamples)
@@ -1123,7 +1094,6 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 		val = val1 + val2 * pfrac;
 		ZXP(out) = val;
 	);
-
 }
 
 
@@ -1172,7 +1142,6 @@ void SigOsc_next_1(SigOsc *unit, int inNumSamples)
 	ZOUT0(0) = val;
 
 	unit->mPhase = phase;
-
 }
 
 void SigOsc_next_k(SigOsc *unit, int inNumSamples)
@@ -1208,7 +1177,6 @@ void SigOsc_next_k(SigOsc *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void SigOsc_next_a(SigOsc *unit, int inNumSamples)
@@ -1243,7 +1211,6 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 
@@ -1293,7 +1260,6 @@ void FSinOsc_next(FSinOsc *unit, int inNumSamples)
 	unit->m_y1 = y1;
 	unit->m_y2 = y2;
 	unit->m_b1 = b1;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1790,7 +1756,6 @@ void Osc_next_ikk(Osc *unit, int inNumSamples)
 		phase += phaseinc;
 	);
 	unit->m_phase = phase;
-
 }
 
 
@@ -1826,7 +1791,6 @@ void Osc_next_ika(Osc *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	//unit->m_phasein = phasein;
-
 }
 
 void Osc_next_iaa(Osc *unit, int inNumSamples)
@@ -1862,7 +1826,6 @@ void Osc_next_iaa(Osc *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	//unit->m_phasein = ZX(phasein);
-
 }
 
 
@@ -1985,7 +1948,6 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 		phase += phaseinc;
 	);
 	unit->m_phase = phase;
-
 }
 
 
@@ -2017,7 +1979,6 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 		phase += freq;
 	);
 	unit->m_phase = phase;
-
 }
 
 void OscN_next_naa(OscN *unit, int inNumSamples)
@@ -2048,7 +2009,6 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 		ZXP(out) = z;
 	);
 	unit->m_phase = phase;
-
 }
 
 
@@ -2085,7 +2045,6 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 	);
 	unit->m_phase = phase;
 	unit->m_phasein = phasein;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2135,7 +2094,6 @@ void COsc_next(COsc *unit, int inNumSamples)
 	);
 	unit->m_phase1 = phase1;
 	unit->m_phase2 = phase2;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2537,7 +2495,6 @@ void Formant_next(Formant *unit, int inNumSamples)
 	unit->m_phase1 = phase1;
 	unit->m_phase2 = phase2;
 	unit->m_phase3 = phase3;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2696,7 +2653,6 @@ void Blip_next(Blip *unit, int inNumSamples)
 	unit->m_phase = phase;
 	unit->m_freqin = freqin;
 	unit->m_numharm = numharm;
-
 }
 
 
@@ -2845,7 +2801,6 @@ void Saw_next(Saw *unit, int inNumSamples)
 	unit->m_y1 = y1;
 	unit->m_phase = phase;
 	unit->m_freqin = freqin;
-
 }
 
 
@@ -3082,7 +3037,6 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 	unit->m_y1 = y1;
 	unit->m_phase = phase;
 	unit->m_freqin = freqin;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3091,6 +3045,8 @@ void Klang_Dtor(Klang *unit)
 {
 	RTFree(unit->mWorld, unit->m_coefs);
 }
+
+static float Klang_SetCoefs(Klang *unit);
 
 void Klang_Ctor(Klang *unit)
 {
@@ -3279,7 +3235,6 @@ void Klang_next(Klang *unit, int inNumSamples)
 		*++coefs = y1_2;	*++coefs = y2_2;	++coefs;
 		*++coefs = y1_3;	*++coefs = y2_3;	++coefs;
 	}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3290,6 +3245,8 @@ void Klank_Dtor(Klank *unit)
 {
 	RTFree(unit->mWorld, unit->m_coefs);
 }
+
+static void Klank_SetCoefs(Klank *unit);
 
 void Klank_Ctor(Klank *unit)
 {
@@ -3544,7 +3501,7 @@ void Klank_next(Klank *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void normalize_samples(int size, float* data, float peak)
+static void normalize_samples(int size, float* data, float peak)
 {
 	float maxamp = 0.f;
 	for (int i=0; i<size; ++i) {
@@ -3559,7 +3516,7 @@ void normalize_samples(int size, float* data, float peak)
 	}
 }
 
-void normalize_wsamples(int size, float* data, float peak)
+static void normalize_wsamples(int size, float* data, float peak)
 {
 	float maxamp = 0.f;
 	for (int i=0; i<size; i+=2) {
@@ -3574,7 +3531,7 @@ void normalize_wsamples(int size, float* data, float peak)
 	}
 }
 
-void add_partial(int size, float *data, double partial, double amp, double phase)
+static void add_partial(int size, float *data, double partial, double amp, double phase)
 {
 	if (amp == 0.0) return;
 	double w = (partial * 2.0 * 3.1415926535897932384626433832795) / (double)size;
@@ -3584,7 +3541,7 @@ void add_partial(int size, float *data, double partial, double amp, double phase
 	}
 }
 
-void add_wpartial(int size, float *data, double partial, double amp, double phase)
+static void add_wpartial(int size, float *data, double partial, double amp, double phase)
 {
 	if (amp == 0.0) return;
 	int size2 = size >> 1;
@@ -3600,7 +3557,7 @@ void add_wpartial(int size, float *data, double partial, double amp, double phas
 	}
 }
 
-void add_chebyshev(int size, float *data, double partial, double amp)
+static void add_chebyshev(int size, float *data, double partial, double amp)
 {
 	if (amp == 0.0) return;
 	double w = 2.0 / (double)size;
@@ -3612,7 +3569,7 @@ void add_chebyshev(int size, float *data, double partial, double amp)
 	}
 }
 
-void add_wchebyshev(int size, float *data, double partial, double amp)
+static void add_wchebyshev(int size, float *data, double partial, double amp)
 {
 	if (amp == 0.0) return;
 	int size2 = size >> 1;
@@ -3630,7 +3587,7 @@ void add_wchebyshev(int size, float *data, double partial, double amp)
 	}
 }
 
-void cantorFill(int size, float *data) // long offset, double amp)
+static void cantorFill(int size, float *data) // long offset, double amp)
 {
 //	if (amp == 0.0) return;
 	for (int i=0; i<(size); ++i) {
