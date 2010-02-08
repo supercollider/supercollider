@@ -175,16 +175,6 @@ extern "C"
 //////////////////////////////// Granular UGens ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static float cubicinterp(float x, float y0, float y1, float y2, float y3)
-{
-	// 4-point, 3rd-order Hermite (x-form)
-	float c0 = y1;
-	float c1 = 0.5f * (y2 - y0);
-	float c2 = y0 - 2.5f * y1 + 2.f * y2 - 0.5f * y3;
-	float c3 = 0.5f * (y3 - y0) + 1.5f * (y1 - y2);
-
-	return ((c3 * x + c2) * x + c1) * x + c0;
-}
 inline float GRAIN_IN_AT(Unit* unit, int index, int offset)
 {
 	if (INRATE(index) == calc_FullRate) return IN(index)[offset];
@@ -1165,14 +1155,14 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
-    
+
     	if(unit->mFirst){
 		    unit->mFirst = false;
 		    float maxGrains = IN0(7);
 		    unit->mMaxGrains = (int)maxGrains;
 	    	    unit->mGrains = (GrainFMG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainFMG));
 		}
-    
+
 	// begin add //
 	SETUP_GRAIN_OUTS
 	// end add
