@@ -59,9 +59,8 @@ int g_major[7] = {0,2,4,5,7,9,11};
 void KeyTrack_calculatekey(KeyTrack *, uint32);
 
 
-void KeyTrack_Ctor(KeyTrack* unit) {
-	int j;
-
+void KeyTrack_Ctor(KeyTrack* unit)
+{
 	unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
 
 	//if sample rate is 88200 or 96000, assume taking double size FFT to start with
@@ -69,30 +68,24 @@ void KeyTrack_Ctor(KeyTrack* unit) {
 
 	if(((int)(unit->m_srate+0.01))==44100)
 	{
-	unit->m_weights = g_weights44100;
-	unit->m_bins = g_bins44100;
-	unit->m_frameperiod = 0.046439909297052;
+		unit->m_weights = g_weights44100;
+		unit->m_bins = g_bins44100;
+		unit->m_frameperiod = 0.046439909297052;
 	}
 	else  //else 48000; potentially dangerous if it isn't! Fortunately, shouldn't write any data to unknown memory
 	{
-	unit->m_weights = g_weights48000;
-	unit->m_bins = g_bins48000;
-	unit->m_frameperiod = 0.042666666666667;
+		unit->m_weights = g_weights48000;
+		unit->m_bins = g_bins48000;
+		unit->m_frameperiod = 0.042666666666667;
 	}
 
 	//only need space for half!
 	unit->m_FFTBuf = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
 
 	//zero chroma
-	for(j=0;j<12;++j) {
-		unit->m_chroma[j]=0.0;
-	}
-
-	for(j=0;j<24;++j) {
-		unit->m_key[j]=0.0;
-		unit->m_histogram[j]=0.0;
-	}
-
+	Clear(12, unit->m_chroma);
+	Clear(24, unit->m_key);
+	Clear(24, unit->m_histogram);
 
 	//for(j=0;j<60;++j) {
 //		unit->m_leaknote[j]=0.0;
@@ -113,17 +106,14 @@ void KeyTrack_Ctor(KeyTrack* unit) {
 }
 
 
-
 void KeyTrack_Dtor(KeyTrack *unit)
 {
-
 	RTFree(unit->mWorld, unit->m_FFTBuf);
 }
 
 
 void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 {
-
 	//int numSamples = unit->mWorld->mFullRate.mBufLength;
 
 	//float *output = ZOUT(0);
@@ -132,11 +122,10 @@ void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 
 	//next FFT bufffer ready, update
 	//assuming at this point that buffer precalculated for any resampling
-	if (fbufnum>(-0.01)) {  // && ( ZIN0(3)<0.5)
+	if (fbufnum > -0.01f) {  // && ( ZIN0(3)<0.5)
 
 		//unit->m_frame= unit->m_frame+1;
 		KeyTrack_calculatekey(unit, (uint32)fbufnum);
-
 	}
 
 	//always output current best key
@@ -144,19 +133,12 @@ void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 
 	//control rate output
 	ZOUT0(0)=outval;
-
 }
 
 
-
-
-
-
 //calculation function once FFT data ready
-void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
-
-	int i,j;
-
+void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
+{
 	World *world = unit->mWorld;
 	if (ibufnum >= world->mNumSndBufs) ibufnum = 0;
 	SndBuf *buf = world->mSndBufs + ibufnum;
@@ -174,7 +156,7 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 
 	//get powers for bins
 	//don't need to calculate past half Nyquist, because no indices involved of harmonics above 10000 Hz or so (see index data at top of file)
-	for (i=0; i<NOVER2; i+=2) {
+	for (int i=0; i<NOVER2; i+=2) {
 		//i>>1 is i/2
 		fftbuf[i>>1] = ((data[i] * data[i]) + (data[i+1] * data[i+1]));
 	}
@@ -193,11 +175,11 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 	float chromaleak= ZIN0(2);
 
 	//zero for new round (should add leaky integrator here!
-	for (i=0;i<12;++i)
-	chroma[i] *= chromaleak;
+	for (int i=0;i<12;++i)
+		chroma[i] *= chromaleak;
 
-	for (i=0;i<60;++i) {
-	int chromaindex = (i+9)%12; //starts at A1 up to G#6
+	for (int i=0;i<60;++i) {
+		int chromaindex = (i+9)%12; //starts at A1 up to G#6
 
 		sum=0.0;
 
@@ -207,7 +189,7 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 
 		float phasesum=0.0;
 
-		for(j=0;j<12;++j) { //12 if 144 data points
+		for(int j=0;j<12;++j) { //12 if 144 data points
 
 			index=indexbase+j;
 
@@ -248,16 +230,15 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 		//unit->m_leaknote[i] = (0.8*unit->m_leaknote[i]) + sum;
 
 		chroma[chromaindex]+= sum; //unit->m_leaknote[i]; //sum;
-
 	}
 
 	float* key = unit->m_key;
 
 	//major
-	for (i=0;i<12;++i) {
+	for (int i=0;i<12;++i) {
 
 		sum=0.0;
-		for (j=0;j<7;++j) {
+		for (int j=0;j<7;++j) {
 			indexbase=g_major[j];
 
 			index=(i+indexbase)%12;
@@ -271,10 +252,10 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 	}
 
 	//minor
-	for (i=0;i<12;++i) {
+	for (int i=0;i<12;++i) {
 
 		sum=0.0;
-		for (j=0;j<7;++j) {
+		for (int j=0;j<7;++j) {
 			indexbase=g_minor[j];
 
 			index=(i+indexbase)%12;
@@ -290,18 +271,18 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 	float keyleak= ZIN0(1); //fade parameter to 0.01 for histogram in seconds, convert to FFT frames
 
 	//keyleak in seconds, convert to drop time in FFT hop frames (FRAMEPERIOD)
-	keyleak= sc_max(0.001,keyleak/unit->m_frameperiod); //FRAMEPERIOD;
+	keyleak= sc_max(0.001f,keyleak/unit->m_frameperiod); //FRAMEPERIOD;
 
 	//now number of frames, actual leak param is decay exponent to reach 0.01 in x seconds, ie 0.01 = leakparam ** (x/ffthopsize)
 	//0.01 is -40dB
-	keyleak= pow(0.01,(1.0/keyleak));
+	keyleak= pow(0.01f,(1.f/keyleak));
 
 	float * histogram= unit->m_histogram;
 
 	int bestkey=0;
 	float bestscore=0.0;
 
-	for (i=0;i<24;++i) {
+	for (int i=0;i<24;++i) {
 		histogram[i]= (keyleak*histogram[i])+key[i];
 
 		if(histogram[i]>bestscore) {
@@ -310,7 +291,6 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 		}
 
 	//printf("%f ",histogram[i]);
-
 	}
 
 	//should find secondbest and only swap if win by a margin
@@ -321,11 +301,4 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum) {
 
 	//about 5 times per second
 	//if((unit->m_triggerid) && ((unit->m_frame%2==0))) SendTrigger(&unit->mParent->mNode, unit->m_triggerid, bestkey);
-
 }
-
-
-
-
-
-
