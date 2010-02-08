@@ -727,9 +727,6 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 
 	SETUP_GRAIN_OUTS
 
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
-
 	float *trig = IN(0);
 	for (int i=0; i<inNumSamples; ++i) {
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0))
@@ -1007,8 +1004,6 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 {
 	SETUP_GRAIN_OUTS
 	World *world = unit->mWorld;
-	SndBuf *bufs = world->mSndBufs;
-	uint32 numBufs = world->mNumSndBufs;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainBufG *grain = unit->mGrains + i;
@@ -1069,8 +1064,6 @@ template <bool full_rate>
 inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int position)
 {
 	World *world = unit->mWorld;
-	SndBuf *bufs = world->mSndBufs;
-	uint32 numBufs = world->mNumSndBufs;
 
 	if (unit->mNumActive+1 >= unit->mMaxGrains) {
 		Print("Too many grains!\n");
@@ -1252,9 +1245,6 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 	GET_BUF
 	SETUP_OUT
 	CHECK_BUF
-
-	World *world = unit->mWorld;
-	uint32 numBufs = world->mNumSndBufs;
 
 	for (uint32 n=0; n < numOutputs; n++) {
 		int nextGrain = unit->mNextGrain[n];
