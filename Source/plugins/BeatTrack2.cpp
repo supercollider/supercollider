@@ -42,9 +42,8 @@ float g_weight2[9]= {0.05, 0.1, 0.3,0.7,1.0,0.7,0.3, 0.1, 0.05};
 void calculatetemplate(BeatTrack2 *unit, int which);
 void finaldecision(BeatTrack2 *unit);
 
-void BeatTrack2_Ctor(BeatTrack2* unit) {
-	int i,j;
-
+void BeatTrack2_Ctor(BeatTrack2* unit)
+{
 	//unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
 	float kblocklength=  unit->mWorld->mFullRate.mBufDuration; //seconds per control block
 	unit->m_krlength= kblocklength;
@@ -55,7 +54,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 	unit->m_numphases = (int*)RTAlloc(unit->mWorld, g_numtempi * sizeof(int));
 	//unit->m_phases = (float**)RTAlloc(unit->mWorld, g_numtempi * sizeof(float*));
 
-	for (j=0; j<g_numtempi; ++j) {
+	for (int j=0; j<g_numtempi; ++j) {
 
 		float period= g_periods[j];
 
@@ -96,7 +95,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 	//float ** m_pastfeatures;  //for each feature, a trail of last m_workingmemorysize values
 	unit->m_pastfeatures = (float**)RTAlloc(unit->mWorld, unit->m_numfeatures * sizeof(float*));
 
-	for (j=0; j<unit->m_numfeatures; ++j) {
+	for (int j=0; j<unit->m_numfeatures; ++j) {
 
 		unit->m_pastfeatures[j]= (float*)RTAlloc(unit->mWorld, unit->m_buffersize * sizeof(float));
 
@@ -117,12 +116,12 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 	unit->besttempo= (int*)RTAlloc(unit->mWorld, 4 * unit->m_numfeatures * sizeof(int));
 	unit->bestgroove= (int*)RTAlloc(unit->mWorld, 4 * unit->m_numfeatures * sizeof(int));
 
-	for (i=0; i<4; ++i) {
+	for (int i=0; i<4; ++i) {
 
 		int basepos= i*unit->m_numfeatures;
 
 		for (j=0; j<unit->m_numfeatures; ++j) {
-			unit->bestscore[basepos+j]= (-9999.0);
+			unit->bestscore[basepos+j]= -9999.0;
 			unit->bestphase[basepos+j]= 0;
 			unit->besttempo[basepos+j]= 60;
 			unit->bestgroove[basepos+j]= 0;
@@ -135,8 +134,8 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 	unit->m_currtempo=2;
 	unit->m_phaseperblock= unit->m_krlength/unit->m_period;
 
-	unit->m_predictphase= 0.4;
-	unit->m_predictperiod = 0.3;
+	unit->m_predictphase= 0.4f;
+	unit->m_predictperiod = 0.3f;
 
 
 	unit->m_outputphase= unit->m_phase;
@@ -166,7 +165,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 
 
 	unit->halftrig=0;
-    unit->q1trig=0;
+	unit->q1trig=0;
 	unit->q2trig=0;
 
 
@@ -178,8 +177,6 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 
 void BeatTrack2_Dtor(BeatTrack2 *unit)
 {
-	int j;
-
 	RTFree(unit->mWorld, unit->m_numphases);
 
 	RTFree(unit->mWorld, unit->m_scores);
@@ -188,23 +185,17 @@ void BeatTrack2_Dtor(BeatTrack2 *unit)
 	RTFree(unit->mWorld, unit->bestphase);
 	RTFree(unit->mWorld, unit->besttempo);
 
-	for (j=0; j<unit->m_numfeatures; ++j) {
+	for (int j=0; j<unit->m_numfeatures; ++j)
 		RTFree(unit->mWorld, unit->m_pastfeatures[j]);
-	}
 
 	RTFree(unit->mWorld, unit->m_pastfeatures);
-
-
 }
 
 
 
 //over phases and for each groove
-void calculatetemplate(BeatTrack2 *unit, int which, int j) {
-
-	//int j
-	int i, k, h, l;
-
+void calculatetemplate(BeatTrack2 *unit, int which, int j)
+{
 	int tmpindex;
 
 	int startcounter= unit->m_startcounter;
@@ -231,7 +222,7 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 			weight = 1.0;	//flat
 			break;
 		case 1:
-			weight= 1.0/(beatsfit*4); //compensate for number of time points tested
+			weight= 1.0f/(beatsfit*4); //compensate for number of time points tested
 			break;
 		case 2:
 			weight = unit->m_tempoweights[which]; //user defined temmpo biases (usually a mask on allowed tempi)
@@ -249,11 +240,11 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 	int * besttempo = unit->besttempo;
 	int * bestgroove = unit->bestgroove;
 
-	for (i=0; i<numphases; ++i) {
+	for (int i=0; i<numphases; ++i) {
 
 		//initialise scores
 		//for (j=0; j<2; ++j)
-		for (k=0; k<numfeatures; ++k)
+		for (int k=0; k<numfeatures; ++k)
 			scores[2*k+j]=0.0;
 
 		float phaseadd = i*unit->m_phaseaccuracy;
@@ -261,9 +252,9 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 		//calculation for a particular phase of template
 		//for (j=0; j<2; ++j) {
 
-		for(h=0; h<beatsfit; ++h) {
+		for(int h=0; h<beatsfit; ++h) {
 
-			for(l=0; l<4; ++l) {
+			for(int l=0; l<4; ++l) {
 
 				float sep= phaseadd+ (h*period)+ ((g_sep[j*4+l]) * period);
 				float weight= g_weight[l];
@@ -279,7 +270,7 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 
 					int actualindex= (index+buffersize+m)%(buffersize);
 
-					for (k=0; k<numfeatures; ++k) {
+					for (int k=0; k<numfeatures; ++k) {
 
 						int scoreindexnow = 2*k+j;
 
@@ -301,7 +292,7 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 		//update any winners from scores
 		//for (j=0; j<2; ++j) {
 
-		for (k=0; k<numfeatures; ++k) {
+		for (int k=0; k<numfeatures; ++k) {
 
 			float scorenow= (scores[2*k+j]) * weight;
 
@@ -337,9 +328,8 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j) {
 
 //a winner must appear at least twice, across features, and be superior to the secondbest in those features too by some margins
 //a consistency check could also run to look at change from last time to this
-void finaldecision(BeatTrack2 *unit) {
-
-	int i, j;
+void finaldecision(BeatTrack2 *unit)
+{
 	int foundgood= 0;
 	int bestcandidate =0;
 	int bestpreviousmatchsum=0; //(-1);  //should be 0, but allowing different for now
@@ -347,7 +337,7 @@ void finaldecision(BeatTrack2 *unit) {
 				  //int exactmatches, closematches;  //can be out by a few indices on period; could match on tempo but not phase etc
 				  //combine these four factors in one master score?
 
-	for (i=0; i<unit->m_numfeatures; ++i) {
+	for (int i=0; i<unit->m_numfeatures; ++i) {
 
 		int matchsum=0;
 
@@ -357,7 +347,7 @@ void finaldecision(BeatTrack2 *unit) {
 
 		//could check consistency too by looking at phase update from last prediction in same feature
 
-		for (j=0; j<unit->m_numfeatures; ++j) {
+		for (int j=0; j<unit->m_numfeatures; ++j) {
 
 			if(j!=i) {
 
@@ -393,36 +383,36 @@ void finaldecision(BeatTrack2 *unit) {
 		unit->m_period = unit->m_predictperiod;
 		//time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
 		unit->m_phase= bestphase;
-		unit->m_currtempo = 1.0/unit->m_period;
+		unit->m_currtempo = 1.f/unit->m_period;
 		unit->m_phaseperblock = unit->m_krlength/unit->m_period;
 
 	}
 
 	//}
 
-//unit->m_prediction=false;
+	//unit->m_prediction=false;
 
 
-//if(foundgood) {
-//if clear winner
+	//if(foundgood) {
+	//if clear winner
 
-unit->m_predictperiod = g_periods[unit->besttempo[bestcandidate]];
+	unit->m_predictperiod = g_periods[unit->besttempo[bestcandidate]];
 
-//time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
-unit->m_predictphase= fmod( ( (unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)) + unit->m_calculationperiod)/(unit->m_period),(float)1.0);
+	//time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
+	unit->m_predictphase= fmod( ( (unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * (unit->m_amortlength)) + unit->m_calculationperiod)/(unit->m_period),(float)1.0);
 
 
 
-//if(foundgood) {
-////if clear winner
-//
-//unit->m_period = g_periods[unit->besttempo[bestcandidate]];
-////time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
-//unit->m_phase= fmod( ((unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * 120))/(unit->m_period), 1.0);
-//
-//unit->m_currtempo = 1.0/unit->m_period;
-//unit->m_phaseperblock = unit->m_krlength/unit->m_period;
-//}
+	//if(foundgood) {
+	////if clear winner
+	//
+	//unit->m_period = g_periods[unit->besttempo[bestcandidate]];
+	////time elapsed since a known beat is phase of winner in seconds, to calculation start point, plus time for calculation (120 control blocks) divided by period, modulo 1.0
+	//unit->m_phase= fmod( ((unit->bestphase[bestcandidate] * unit->m_phaseaccuracy)  + (unit->m_krlength * 120))/(unit->m_period), 1.0);
+	//
+	//unit->m_currtempo = 1.0/unit->m_period;
+	//unit->m_phaseperblock = unit->m_krlength/unit->m_period;
+	//}
 
 
 
@@ -431,19 +421,17 @@ unit->m_predictphase= fmod( ( (unit->bestphase[bestcandidate] * unit->m_phaseacc
 
 void BeatTrack2_next(BeatTrack2 *unit, int wrongNumSamples)
 {
-	int i,j;
-
 	//keep updating feature memories
 	unit->m_counter= (unit->m_counter+1)%(unit->m_buffersize);
 
-	int busnum = (int)(ZIN0(0)+0.001);
+	int busnum = (int)(ZIN0(0)+0.001f);
 
 	//unit->m_features = unit->mWorld->mControlBus + busnum;
 
 	float * features= unit->mWorld->mControlBus + busnum;
 
 	//hmm, is this pointer guaranteed to stay the same? may have to update each time...
-	for (j=0; j<unit->m_numfeatures; ++j) {
+	for (int j=0; j<unit->m_numfeatures; ++j) {
 		unit->m_pastfeatures[j][unit->m_counter]= features[j]; //unit->m_features[j];
 	}
 
@@ -455,14 +443,14 @@ void BeatTrack2_next(BeatTrack2 *unit, int wrongNumSamples)
 		unit->m_calculationschedule -= unit->m_calculationperiod;
 
 		//reset best scores and move old to previous slots
-		for (i=0; i<2; ++i) {
+		for (int i=0; i<2; ++i) {
 
 			int pos1= (2+i)*unit->m_numfeatures;
 			int pos2= i*unit->m_numfeatures;
 
-			for (j=0; j<unit->m_numfeatures; ++j) {
+			for (int j=0; j<unit->m_numfeatures; ++j) {
 				unit->bestscore[pos1+j]= unit->bestscore[pos2+j];
-				unit->bestscore[pos2+j]= (-9999.0);
+				unit->bestscore[pos2+j]= -9999.0;
 				unit->bestphase[pos1+j]= unit->bestphase[pos2+j];
 				unit->bestphase[pos2+j]= 0;
 				unit->besttempo[pos1+j]= unit->besttempo[pos2+j];
@@ -524,7 +512,7 @@ void BeatTrack2_next(BeatTrack2 *unit, int wrongNumSamples)
 	float lock= ZIN0(4);
 	//printf("lock %f \n",lock);
 
-	if(lock<0.5) {
+	if(lock<0.5f) {
 
 		unit->m_outputphase= unit->m_phase;
 		unit->m_outputtempo= unit->m_currtempo;
@@ -567,7 +555,7 @@ void BeatTrack2_next(BeatTrack2 *unit, int wrongNumSamples)
 		unit->halftrig=1;
 	}
 
-	float groove= (unit->m_outputgroove)*0.07;
+	float groove= unit->m_outputgroove *0.07;
 
 	if (unit->m_outputphase>=(0.25+groove) && unit->q1trig==0) {
 		ZOUT0(2)=1.0;
@@ -580,10 +568,3 @@ void BeatTrack2_next(BeatTrack2 *unit, int wrongNumSamples)
 	}
 
 }
-
-
-
-
-
-
-
