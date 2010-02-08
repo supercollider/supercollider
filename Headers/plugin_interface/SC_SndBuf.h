@@ -84,7 +84,7 @@ inline float lookup(const float *table, int32 phase, int32 mask)
 inline float lookupi(const float *table, uint32 phase, uint32 mask)
 {
 	float frac = PhaseFrac(phase);
-	float *tbl = table + ((phase >> 16) & mask);
+	const float *tbl = table + ((phase >> 16) & mask);
 	float a = tbl[0];
 	float b = tbl[1];
 	return a + frac * (b - a);
@@ -93,7 +93,7 @@ inline float lookupi(const float *table, uint32 phase, uint32 mask)
 inline float lookupi2(const float *table, uint32 phase, uint32 mask)
 {
 	float frac = PhaseFrac1(phase);
-	float *tbl = table + ((phase >> 16) & mask);
+	const float *tbl = table + ((phase >> 16) & mask);
 	float a = tbl[0];
 	float b = tbl[1];
 	return a + frac * b;
