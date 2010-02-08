@@ -210,17 +210,17 @@ void Convolution_next(Convolution *unit, int numSamples)
 	if (unit->m_pos & insize) {
 
         //have collected enough samples to transform next frame
-        unit->m_pos = 0; //reset collection counter
+		unit->m_pos = 0; //reset collection counter
 
 		int memsize= insize*sizeof(float);
 
         // copy to fftbuf
-        memcpy(unit->m_fftbuf1, unit->m_inbuf1, memsize);
-        memcpy(unit->m_fftbuf2, unit->m_inbuf2, memsize);
+		memcpy(unit->m_fftbuf1, unit->m_inbuf1, memsize);
+		memcpy(unit->m_fftbuf2, unit->m_inbuf2, memsize);
 
-        //zero pad second part of buffer to allow for convolution
-        memset(unit->m_fftbuf1+unit->m_insize, 0, memsize);
-        memset(unit->m_fftbuf2+unit->m_insize, 0, memsize);
+		//zero pad second part of buffer to allow for convolution
+		memset(unit->m_fftbuf1+unit->m_insize, 0, memsize);
+		memset(unit->m_fftbuf2+unit->m_insize, 0, memsize);
 
 		// do fft
 
@@ -234,29 +234,29 @@ void Convolution_next(Convolution *unit, int numSamples)
 		scfft_dofft(unit->m_scfft2);
 
 		//complex multiply time
-        float * p1= unit->m_fftbuf1;
-        float * p2= unit->m_fftbuf2;
+		float * p1= unit->m_fftbuf1;
+		float * p2= unit->m_fftbuf2;
 
-        p1[0] *= p2[0];
-        p1[1] *= p2[1];
+		p1[0] *= p2[0];
+		p1[1] *= p2[1];
 
-        //complex multiply
-        for (int i=1; i<insize; ++i) {
-            float real,imag;
-            int realind,imagind;
-            realind= 2*i; imagind= realind+1;
-            real= p1[realind]*p2[realind]- p1[imagind]*p2[imagind];
-            imag= p1[realind]*p2[imagind]+ p1[imagind]*p2[realind];
+		//complex multiply
+		for (int i=1; i<insize; ++i) {
+			float real,imag;
+			int realind,imagind;
+			realind= 2*i; imagind= realind+1;
+			real= p1[realind]*p2[realind]- p1[imagind]*p2[imagind];
+			imag= p1[realind]*p2[imagind]+ p1[imagind]*p2[realind];
 
 			p1[realind] = real;
 			p1[imagind]= imag;
 		}
 
-        //copy second part from before to overlap
-        memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_insize, memsize);
+		//copy second part from before to overlap
+		memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_insize, memsize);
 
-        //inverse fft into outbuf
-        memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
+		//inverse fft into outbuf
+		memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
 
 		//in place
         //riffts(unit->m_outbuf, log2n, 1, cosTable[log2n]);
@@ -269,16 +269,15 @@ void Convolution_next(Convolution *unit, int numSamples)
 	float *out= unit->m_outbuf+unit->m_pos;
 	float *overlap= unit->m_overlapbuf+unit->m_pos;
 
-	for (int i=0; i<numSamples; ++i) {
+	for (int i=0; i<numSamples; ++i)
 		*++output = *++out + *++overlap;
-	}
 }
 
 
 
 //include local buffer test in one place
-SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum) {
-
+SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum)
+{
 	SndBuf *buf;
 	World *world = unit->mWorld;
 
@@ -323,9 +322,7 @@ void Convolution2_Ctor(Convolution2 *unit)
 	if(buf) {
 
 		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
-		{
 			unit->m_insize=buf->frames;	//could be input parameter
-		}
 
 		unit->m_fftsize=2*(unit->m_insize);
 		//printf("hello %i, %i\n", unit->m_insize, unit->m_fftsize);
@@ -525,10 +522,8 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	float *overlap= unit->m_overlapbuf+unit->m_pos;
 	unit->m_prevtrig = curtrig;
 
-	for (int i=0; i<numSamples; ++i) {
+	for (int i=0; i<numSamples; ++i)
 		*++output = *++out + *++overlap;
-	}
-
 }
 
 
@@ -812,7 +807,7 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 	{
 
         //have collected enough samples to transform next frame
-        unit->m_pos = 0; //reset collection counter
+		unit->m_pos = 0; //reset collection counter
 
         // copy to fftbuf
 		//int log2n = unit->m_log2n;
@@ -891,8 +886,8 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 			scfft_doifft(unit->m_scfftR2);
 
 			// now crossfade between outbuf and tempbuf
-			float fact1 = (float) unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
-			float rc = (float) 1./(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
+			float fact1 = (float) unit->m_cfpos/unit->m_cflength; // crossfade amount startpoint
+			float rc = 1.f/(unit->m_cflength*unit->m_insize);     //crossfade amount increase per sample
 			float * p4 = unit->m_outbuf;
 			float * p5 = unit->m_tempbuf;
 			for ( int i=0; i < unit->m_insize; i++ )
@@ -903,15 +898,12 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 				p4[i] = res;
 			}
 			if ( unit->m_cflength == 1 )
-			{
 				memcpy(unit->m_outbuf+unit->m_insize, unit->m_tempbuf+unit->m_insize,insize);
-			}
 			else
 			{
 				for ( int i=unit->m_insize+1; i < unit->m_fftsize; i++ )
 				{
-					float res;
-					res = (1-fact1)*p4[i] + fact1*p5[i];
+					float res = (1-fact1)*p4[i] + fact1*p5[i];
 					fact1 += rc;
 					p4[i] = res;
 				}
@@ -935,9 +927,8 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 	float *overlap= unit->m_overlapbuf+unit->m_pos;
 	unit->m_prevtrig = curtrig;
 
-	for (int i=0; i<numSamples; ++i) {
+	for (int i=0; i<numSamples; ++i)
 		*++output = *++out + *++overlap;
-	}
 }
 
 /** basically the same as Convolution2L, but takes a stereo buffer to convolve with and outputs a stereo signal */
@@ -1140,7 +1131,6 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 		//printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
 
-
 		SndBuf *bufL = ConvGetBuffer(unit,bufnumL);
 		SndBuf *bufR = ConvGetBuffer(unit,bufnumR);
 
@@ -1278,8 +1268,8 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 			//riffts(unit->m_tempbuf[1], log2n, 1, cosTable[log2n]);
 
 			// now crossfade between outbuf and tempbuf
-			float fact1 = (float) unit->m_cfpos/unit->m_cflength;     // crossfade amount startpoint
-			float rc = (float) 1./(unit->m_cflength*unit->m_insize); //crossfade amount increase per sample
+			float fact1 = (float) unit->m_cfpos/unit->m_cflength;  // crossfade amount startpoint
+			float rc = 1.f/(unit->m_cflength*unit->m_insize);      //crossfade amount increase per sample
 			float * p4L = unit->m_outbuf[0];
 			float * p5L = unit->m_tempbuf[0];
 			float * p4R = unit->m_outbuf[1];
@@ -1565,4 +1555,3 @@ void initConvolution(InterfaceTable *it)
 	DefineDtorUnit(StereoConvolution2L);
 	DefineDtorUnit(Convolution3);
 }
-
