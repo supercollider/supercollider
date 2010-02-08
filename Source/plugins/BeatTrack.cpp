@@ -71,9 +71,8 @@ void findmeter(BeatTrack *unit);
 void setupphaseexpectation(BeatTrack *unit); //create Gaussian focussed matrix for phase
 
 
-void BeatTrack_Ctor(BeatTrack* unit) {
-	int j;
-
+void BeatTrack_Ctor(BeatTrack* unit)
+{
 	///////
 	//check sampling rate and establish multipliers on estimates and FFT window size
 	//down sampling by factor of two automatic
@@ -103,15 +102,13 @@ void BeatTrack_Ctor(BeatTrack* unit) {
 	//RGen& rgen = *unit->mParent->mRGen;
 
 	//don't want this noise, want consistent starting point!
-	for(j=0;j<DFSTORE;++j) {
+	for(int j=0;j<DFSTORE;++j) {
 		unit->m_df[j]=0.0; //(2*rgen.frand() - 1.0);
 	}
 
 	unit->m_dfmemorycounter=14;
 
-	for(j=0;j<15;++j) {
-		unit->m_dfmemory[j]=0.0;
-	}
+	Clear(15, unit->m_dfmemory);
 
 	/////////tempo assess///////////
 	unit->m_currtempo=2;
@@ -183,7 +180,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 				unit->m_amortcount=0;
 
 				unit->m_bestcolumn=0;
-				unit->m_besttorsum=(-1000.0);
+				unit->m_besttorsum= -1000.0;
 
 			}
 
@@ -203,7 +200,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 					unit->m_amortcount=0;
 
 					unit->m_bestcolumn=0;
-					unit->m_besttorsum=(-1000.0);
+					unit->m_besttorsum= -1000.0;
 
 				} else {
 					unit->m_periodg= -1000; //will always trigger initially
@@ -233,7 +230,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 				unit->m_amortcount=0;
 
 				unit->m_bestcolumn=0;
-				unit->m_besttorsum=(-1000.0);
+				unit->m_besttorsum= -1000.0;
 
 				unit->m_stateflag=1;
 				findmeter(unit);
@@ -272,7 +269,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 				unit->m_periodg=findtor(unit);
 
 				unit->m_tor= unit->m_periodg;
-				unit->m_torround= int(unit->m_tor+0.5);
+				unit->m_torround= int(unit->m_tor+0.5f);
 
 				unit->m_amortisationstate=6;
 				unit->m_amortlength=unit->m_torround;
@@ -297,7 +294,7 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 
 		case 7: //phase calc with possible gaussian narrowing of the allowed phases
 
-			findphase(unit,unit->m_amortcount,unit->m_stateflag,(int)(unit->m_currphase*unit->m_torround+0.5));
+			findphase(unit,unit->m_amortcount,unit->m_stateflag,(int)(unit->m_currphase*unit->m_torround+0.5f));
 			unit->m_amortcount=unit->m_amortcount+1;
 
 			if(unit->m_amortcount==unit->m_amortlength) {
@@ -339,18 +336,14 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 	float lock= ZIN0(1);
 	//printf("lock %f \n",lock);
 
-	if(lock<0.5) {
+	if (lock<0.5f) {
+		unit->m_outputphase= unit->m_phase;
+		unit->m_outputtempo= unit->m_currtempo;
+		unit->m_outputphaseperblock= unit->m_phaseperblock;
+	} else
+		unit->m_outputphase+=unit->m_outputphaseperblock;
 
-	unit->m_outputphase= unit->m_phase;
-	unit->m_outputtempo= unit->m_currtempo;
-	unit->m_outputphaseperblock= unit->m_phaseperblock;
-	} else {
-
-	unit->m_outputphase+=unit->m_outputphaseperblock;
-
-	}
-
-	if (unit->m_phase >= 1.f) {unit->m_phase-= 1.f;}
+	if (unit->m_phase >= 1.f) unit->m_phase-= 1.f;
 
 	//0 is beat, 1 is quaver, 2 is semiquaver, 3 is actual current tempo in bps
 	//so no audio accuracy with beats, just asap, may as well be control rate
@@ -373,18 +366,18 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 		unit->q2trig=0;
 	}
 
-	if (unit->m_outputphase>=0.5 && unit->halftrig==0) {
+	if (unit->m_outputphase>=0.5f && unit->halftrig==0) {
 		ZOUT0(1)=1.0;
 		ZOUT0(2)=1.0;
 		unit->halftrig=1;
 	}
 
-	if (unit->m_outputphase>=0.25 && unit->q1trig==0) {
+	if (unit->m_outputphase>=0.25f && unit->q1trig==0) {
 		ZOUT0(2)=1.0;
 		unit->q1trig=1;
 	}
 
-	if (unit->m_outputphase>=0.75 && unit->q2trig==0) {
+	if (unit->m_outputphase>=0.75f && unit->q2trig==0) {
 		ZOUT0(2)=1.0;
 		unit->q2trig=1;
 	}
@@ -396,10 +389,8 @@ void BeatTrack_next(BeatTrack *unit, int wrongNumSamples)
 //
 
 //calculation function once FFT data ready
-void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum) {
-
-	//int i;
-
+void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum)
+{
 	World *world = unit->mWorld;
 	SndBuf *buf;
 	if (ibufnum >= world->mNumSndBufs) {
@@ -433,7 +424,7 @@ void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum) {
 		//have 2000 calcs to do, split over 100 control periods = 6400 samples, ie one tempo per control period
 
 		unit->m_bestcolumn=0;
-		unit->m_besttorsum=(-1000.0);
+		unit->m_besttorsum= -1000.0;
 
 		unit->m_bestphasescore = -1000.0;
 		unit->m_bestphase = 0;
@@ -459,15 +450,14 @@ void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum) {
 }
 
 
-void autocorr(BeatTrack *unit,int j) {
-	int i,k, baseframe;
-
-	baseframe=unit->m_storedfcounter+DFSTORE;
+void autocorr(BeatTrack *unit,int j)
+{
+	int baseframe=unit->m_storedfcounter+DFSTORE;
 	float * df= unit->m_df;
 	float * acf= unit->m_acf;
 
 	//work out four lags each time
-	for (k=0;k<4;++k) {
+	for (int k=0;k<4;++k) {
 
 		int lag=4*j+k;
 
@@ -475,7 +465,7 @@ void autocorr(BeatTrack *unit,int j) {
 
 		float sum=0.0;
 
-		for (i=lag;i<DFFRAMELENGTH; ++i) {
+		for (int i=lag;i<DFFRAMELENGTH; ++i) {
 
 			float val1= df[(i+baseframe)%DFSTORE];
 			float val2= df[(i+baseframe-lag)%DFSTORE];
@@ -493,9 +483,8 @@ void autocorr(BeatTrack *unit,int j) {
 
 //timesig 4 has one more sum term
 //indices as MATLAB but need to correct maxinds to be in range of tested, not in global range
-float findtor(BeatTrack *unit) {
-
-	int i;
+float findtor(BeatTrack *unit)
+{
 	float maxval, val;
 	int ind2,ind3,ind4;
 
@@ -507,7 +496,7 @@ float findtor(BeatTrack *unit) {
 	ind2=0;
 	maxval=-1000;
 
-	for(i=2*ind-1;i<=(2*ind+1);++i){
+	for(int i=2*ind-1;i<=(2*ind+1);++i){
 
 		val=acf[i];
 
@@ -525,7 +514,7 @@ float findtor(BeatTrack *unit) {
 	ind3=0;
 	maxval=-1000;
 
-	for(i=3*ind-2;i<=(3*ind+2);++i){
+	for(int i=3*ind-2;i<=(3*ind+2);++i){
 
 		val=acf[i];
 
@@ -547,7 +536,7 @@ float findtor(BeatTrack *unit) {
 		ind4=0;
 		maxval=-1000;
 
-		for(i=4*ind-3;i<=4*ind+3;++i){
+		for(int i=4*ind-3;i<=4*ind+3;++i){
 
 			val=acf[i];
 
@@ -582,11 +571,10 @@ float findtor(BeatTrack *unit) {
 
 
 //128 calculation calls for multiplying M and acf, calculates M as it goes apart from precalculated Gaussian or Raleigh distribution
-void beatperiod(BeatTrack *unit,int j, int whichm) {
-	int i,k, baseframe;
-
-	baseframe=unit->m_storedfcounter+DFSTORE;
-	float * acf= unit->m_acf;
+void beatperiod(BeatTrack *unit,int j, int whichm)
+{
+	int baseframe = unit->m_storedfcounter+DFSTORE;
+	float * acf = unit->m_acf;
 
 	//int startindex= 512*j;
 	//int endindex=startindex+512;
@@ -594,12 +582,12 @@ void beatperiod(BeatTrack *unit,int j, int whichm) {
 	float sum=0.0;
 
 	//unit->m_timesig harmonics
-	for (i=1;i<=(unit->m_timesig); ++i) {
+	for (int i=1;i<=(unit->m_timesig); ++i) {
 
 		int num = 2*i-1;
 		float wt= 1.0/(float)num;
 
-		for (k=0;k<num; ++k) {
+		for (int k=0;k<num; ++k) {
 
 			int pos= k+(i*j);
 
@@ -629,10 +617,8 @@ void beatperiod(BeatTrack *unit,int j, int whichm) {
 
 //j out of unit->m_torround
 //differs to Davies original in that weight the most recent events more- want minimum reaction time
-void findphase(BeatTrack *unit,int j,int gaussflag, int predicted) {
-
-	int k;
-
+void findphase(BeatTrack *unit,int j,int gaussflag, int predicted)
+{
 	float * df= unit->m_df;
 
 	int period= unit->m_torround;
@@ -647,7 +633,7 @@ void findphase(BeatTrack *unit,int j,int gaussflag, int predicted) {
 	//testing backwards from the baseframe, weighting goes down as 1/k
 	float sum=0.0;
 
-	for (k=0;k<numfit;++k) {
+	for (int k=0;k<numfit;++k) {
 
 		//j is phase to test
 		int location= (baseframe-(period*k)-j)%DFSTORE;
@@ -676,11 +662,11 @@ void findphase(BeatTrack *unit,int j,int gaussflag, int predicted) {
 }
 
 //, int predicted
-void setupphaseexpectation(BeatTrack *unit) { //create Gaussian focussed matrix for phase
-
+void setupphaseexpectation(BeatTrack *unit)  //create Gaussian focussed matrix for phase
+{
 	float * wts= unit->m_phaseweights;
 
-	float sigma=(unit->m_torround)*0.25;
+	float sigma= unit->m_torround * 0.25f;
 	//float mu=period;
 
 	float mult= 1.0/(2.5066283*sigma);
@@ -695,13 +681,13 @@ void setupphaseexpectation(BeatTrack *unit) { //create Gaussian focussed matrix 
 
 
 //why force a countdown each time? Why not keep a continuous buffer of previous periodp, periodg?
-int detectperiodchange(BeatTrack *unit) {
-
+int detectperiodchange(BeatTrack *unit)
+{
 	//stepthresh = 3.9017;
 
 	if(unit->m_flagstep==0) {
 
-		if(fabs(unit->m_periodg-unit->m_periodp) > 3.9017) {
+		if(fabs(unit->m_periodg-unit->m_periodp) > 3.9017f) {
 			unit->m_flagstep= 3;
 		}
 
@@ -718,7 +704,7 @@ int detectperiodchange(BeatTrack *unit) {
 
 		unit->m_flagstep= 0;
 
-		if(fabs(2*unit->m_prevperiodp[0] - unit->m_prevperiodp[1] -unit->m_prevperiodp[2]) < 7.8034) //(2*3.9017)
+		if(fabs(2*unit->m_prevperiodp[0] - unit->m_prevperiodp[1] - unit->m_prevperiodp[2]) < 7.8034f) //(2*3.9017)
 			return 1;
 
 	}
@@ -728,7 +714,8 @@ int detectperiodchange(BeatTrack *unit) {
 }
 
 //add test
-void findmeter(BeatTrack *unit) {
+void findmeter(BeatTrack *unit)
+{
 
 	//int i;
 
@@ -771,7 +758,8 @@ void findmeter(BeatTrack *unit) {
 
 //period is unit->m_tor, phase is unit->m_bestphase
 //	float m_tor; int m_torround;
-void finaldecision(BeatTrack *unit) {
+void finaldecision(BeatTrack *unit)
+{
 	//int i,j;
 
 	unit->m_currtempo= 1.0/(unit->m_tor*unit->m_frameperiod);
@@ -801,10 +789,8 @@ void finaldecision(BeatTrack *unit) {
 //Now the format is standardised for the SC FFT UGen as
 //dc, nyquist and then real/imag pairs for each bin going up successively in frequency
 
-void complexdf(BeatTrack *unit) {
-
-	int k;
-
+void complexdf(BeatTrack *unit)
+{
 	float * fftbuf= unit->m_FFTBuf;
 
 	float * prevmag= unit->m_prevmag;
@@ -816,7 +802,7 @@ void complexdf(BeatTrack *unit) {
 	//printf("complex df time \n");
 
 	//sum bins 2 to 256
-	for (k=1; k<NOVER2; ++k){
+	for (int k=1; k<NOVER2; ++k){
 
 			//Change to fftw
 			int index= 2*k; //k; //2*k;
@@ -855,42 +841,36 @@ void complexdf(BeatTrack *unit) {
 	}
 
 
-//smoothing and peak picking operation, delay of 8 frames, must be taken account of in final phase correction
+	//smoothing and peak picking operation, delay of 8 frames, must be taken account of in final phase correction
 
-unit->m_dfmemorycounter=(unit->m_dfmemorycounter+1)%15;
-unit->m_dfmemory[unit->m_dfmemorycounter]=sum; //divide by num of bands to get a dB answer
+	unit->m_dfmemorycounter=(unit->m_dfmemorycounter+1)%15;
+	unit->m_dfmemory[unit->m_dfmemorycounter]=sum; //divide by num of bands to get a dB answer
 
-float rating=0.0;
+	float rating=0.0;
 
-float * dfmemory=unit->m_dfmemory;
+	float * dfmemory=unit->m_dfmemory;
 
-int refpos=unit->m_dfmemorycounter+15;
-int centrepos=(refpos-7)%15;
-float centreval=dfmemory[centrepos];
+	int refpos=unit->m_dfmemorycounter+15;
+	int centrepos=(refpos-7)%15;
+	float centreval=dfmemory[centrepos];
 
-for (k=0;k<15; ++k) {
+	for (int k=0;k<15; ++k) {
 
-int pos=(refpos-k)%15;
+		int pos=(refpos-k)%15;
 
-float nextval= centreval-dfmemory[pos];
+		float nextval= centreval-dfmemory[pos];
 
-        if (nextval<0.0)
-            nextval=nextval*10;
+		if (nextval<0.0)
+			nextval=nextval*10;
 
-        rating+=nextval;
+		rating+=nextval;
+	}
+
+	if(rating<0.0) rating=0.0;
+
+	//increment first so this frame is unit->m_loudnesscounterdfcounter
+	unit->m_dfcounter=(unit->m_dfcounter+1)%DFSTORE;
+
+	unit->m_df[unit->m_dfcounter]=rating*0.1f; //sum //divide by num of bands to get a dB answer
+
 }
-
-if(rating<0.0) rating=0.0;
-
-//increment first so this frame is unit->m_loudnesscounterdfcounter
-unit->m_dfcounter=(unit->m_dfcounter+1)%DFSTORE;
-
-unit->m_df[unit->m_dfcounter]=rating*0.1; //sum //divide by num of bands to get a dB answer
-
-}
-
-
-
-
-
-
