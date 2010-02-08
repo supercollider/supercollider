@@ -1327,7 +1327,13 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 				grain->interp = (int)GRAIN_IN_AT(unit, 7, i);
 				float winType = grain->winType = (int)GRAIN_IN_AT(unit, 4, i); // the buffer that holds the grain shape
 				DECLARE_WINDOW
-				GET_GRAIN_WIN(winType)
+
+				if (winType >= unit->mWorld->mNumSndBufs) {
+					Print("Envelope buffer out of range!\n");
+					break;
+				}
+
+				GET_GRAIN_WIN_RELAXED(winType)
 				if (windowData || (winType < 0.)) {
 					GET_GRAIN_INIT_AMP
 
