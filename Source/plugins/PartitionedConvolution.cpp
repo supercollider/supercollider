@@ -70,7 +70,8 @@ extern "C" {
 
 }
 
-void PartConv_Ctor( PartConv* unit ) {
+void PartConv_Ctor( PartConv* unit )
+{
 
 	unit->m_fftsize= (int) ZIN0(1);
 	unit->m_nover2= unit->m_fftsize>>1;
@@ -173,8 +174,7 @@ void PartConv_Ctor( PartConv* unit ) {
 		SETCALC(*ClearUnitOutputs);
 		unit->mDone = true;
 		return;
-	}
-	else {
+	} else {
 
 	//must be exact divisor
 	int blocksperpartition = unit->m_nover2/unit->m_blocksize;
@@ -182,10 +182,10 @@ void PartConv_Ctor( PartConv* unit ) {
 	unit->m_spareblocks = blocksperpartition-1;
 
 	if(unit->m_spareblocks<1) {
-	printf("PartConv Error: no spareblocks, amortisation not possible! \n");
-	SETCALC(*ClearUnitOutputs);
-	unit->mDone = true;
-	return;
+		printf("PartConv Error: no spareblocks, amortisation not possible! \n");
+		SETCALC(*ClearUnitOutputs);
+		unit->mDone = true;
+		return;
 	}
 
 	//won't be exact
@@ -219,10 +219,10 @@ void PartConv_Ctor( PartConv* unit ) {
 
 	SETCALC(PartConv_next);
 	}
-
 }
 
-void PartConv_Dtor(PartConv *unit) {
+void PartConv_Dtor(PartConv *unit)
+{
 	RTFree(unit->mWorld, unit->m_inputbuf);
 	RTFree(unit->mWorld, unit->m_inputbuf2);
 	RTFree(unit->mWorld, unit->m_spectrum);
@@ -242,9 +242,8 @@ void PartConv_Dtor(PartConv *unit) {
 	}
 }
 
-void PartConv_next( PartConv *unit, int inNumSamples ) {
-
-	int i,j;
+void PartConv_next( PartConv *unit, int inNumSamples )
+{
 	float *in = IN(0);
 	float *out = OUT(0);
 	int pos = unit->m_pos;
@@ -301,7 +300,7 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 
 		//JUST DO FIRST ONE FOR NOW, AMORTISED FOR OTHERS
 		//frames
-		for (i=0; i<1; ++i) {
+		for (int i=0; i<1; ++i) {
 
 			int irpos= (i*fftsize);
 			int posnow= (accumpos+irpos)%fullsize;
@@ -313,7 +312,7 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 			target[1] += ir[1]*spectrum[1];
 
 			//complex multiply for frequency bins
-			for (j=1; j<nover2; ++j) {
+			for (int j=1; j<nover2; ++j) {
 
 				int binposr= 2*j;
 				int binposi= binposr+1;
@@ -362,7 +361,7 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 		//(fftsize-1)
 
 		//sum into output
-		for (j=0; j<fftsize; ++j)
+		for (int j=0; j<fftsize; ++j)
 			output[j] += spectrum2[j];
 
 		//int testindex2= rgen.irand(fftsize-1);
@@ -421,7 +420,7 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 
 		//JUST DO FIRST ONE FOR NOW
 		//frames
-		for (i=starti; i<=stopi; ++i) {
+		for (int i=starti; i<=stopi; ++i) {
 
 			int posnow= (accumpos+(i*fftsize))%fullsize;
 			float * target= accumbuffer+posnow;
@@ -433,7 +432,7 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 			target[1]+=	 ir[1]*spectrum[1];
 
 			//complex multiply for frequency bins
-			for (j=1; j<nover2; ++j) {
+			for (int j=1; j<nover2; ++j) {
 
 				int binposr= 2*j;
 				int binposi= binposr+1;
@@ -477,8 +476,6 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 	unit->m_outputpos= outputpos;
 
 	unit->m_pos= pos;
-
-
 }
 
 
@@ -489,8 +486,6 @@ void PartConv_next( PartConv *unit, int inNumSamples ) {
 //buffer preparation
 void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
-	int i,j;
-
 	int frames1 = buf->frames;
 	//int channels1 = buf->channels;
 	float *data1 = buf->data;
@@ -536,25 +531,24 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	memset(inputbuf, 0, sizeof(float)*fftsize);
 
 	//run through input data buffer, taking nover2 chunks, zero padding each
-	for (i=0; i<numpartitions; ++i) {
+	for (int i=0; i<numpartitions; ++i) {
 		int indexnow= nover2*i;
 		int indexout= fftsize*i;
 
 		if(i<(numpartitions-1))
 		//memset(inputbuf, 0, sizeof(float)*fftsize);
-		memcpy(inputbuf, data2+indexnow, nover2 * sizeof(float));
+			memcpy(inputbuf, data2+indexnow, nover2 * sizeof(float));
 		else
 		{
-		int takenow= frames2%nover2;
+			int takenow= frames2%nover2;
 
-		if(frames2==nover2)
-		takenow= nover2;
+			if(frames2==nover2)
+				takenow= nover2;
 
-		memcpy(inputbuf, data2+indexnow, takenow * sizeof(float));
+			memcpy(inputbuf, data2+indexnow, takenow * sizeof(float));
 
-		if(takenow<nover2)
-		memset(inputbuf+takenow, 0, (nover2-takenow)*sizeof(float));
-
+			if(takenow<nover2)
+				memset(inputbuf+takenow, 0, (nover2-takenow)*sizeof(float));
 		}
 
 		scfft_dofft(m_scfft);
@@ -572,19 +566,15 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		scfft_destroy(m_scfft);
 		RTFree(world, m_scfft);
 	}
-
-
 }
 
 
 
-void initPartConv(InterfaceTable *inTable) {
-
+void initPartConv(InterfaceTable *inTable)
+{
 	ft = inTable;
 
 	DefineDtorCantAliasUnit(PartConv);
 
 	DefineBufGen("PreparePartConv", PreparePartConv);
 }
-
-
