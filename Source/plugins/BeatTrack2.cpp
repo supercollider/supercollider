@@ -151,13 +151,15 @@ void BeatTrack2_Ctor(BeatTrack2* unit)
 	//printf("srate %f conversion factor %f frame period %f \n", unit->m_srate, unit->m_srateconversion, unit->m_frameperiod);
 
 
-	int bufnum = (int)(ZIN0(5)+0.001);
-	if (bufnum >= unit->mWorld->mNumSndBufs) bufnum = 0;
+	int bufnum = (int)(ZIN0(5)+0.001f);
+	if (bufnum >= unit->mWorld->mNumSndBufs)
+		bufnum = 0;
 
-	if(bufnum<0) {unit->m_weightingscheme = bufnum<2? 0 : 1; }
+	if (bufnum<0)
+		unit->m_weightingscheme = bufnum<2 ? 0 : 1;
 	else {
 		SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
-		unit->m_tempoweights= buf->data;
+		unit->m_tempoweights= buf;
 		unit->m_weightingscheme=2;
 	}
 
@@ -170,7 +172,6 @@ void BeatTrack2_Ctor(BeatTrack2* unit)
 
 
 	unit->mCalcFunc = (UnitCalcFunc)&BeatTrack2_next;
-
 }
 
 
@@ -217,19 +218,22 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j)
 
 	float weight;  //compensation for number of events matched; may alter equation later
 
-	switch (unit->m_weightingscheme) {
-		case 0:
-			weight = 1.0;	//flat
-			break;
-		case 1:
-			weight= 1.0f/(beatsfit*4); //compensate for number of time points tested
-			break;
-		case 2:
-			weight = unit->m_tempoweights[which]; //user defined temmpo biases (usually a mask on allowed tempi)
-			//printf("sanity check %f, %d \n", unit->m_tempoweights[which], which);
-			break;
+	switch (unit->m_weightingscheme)
+	{
+	case 0:
+		weight = 1.0f;	//flat
+		break;
+	case 1:
+		weight= 1.0f/(beatsfit*4); //compensate for number of time points tested
+		break;
+	case 2:
+		SndBuf * buf = unit->m_tempoweights;
+		if (buf->data)
+			weight = buf->data[which]; //user defined temmpo biases (usually a mask on allowed tempi)
+		else
+			weight = 1.f;
+		break;
 	}
-
 
 	int numfeatures= unit->m_numfeatures;
 
