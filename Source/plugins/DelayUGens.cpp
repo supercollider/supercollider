@@ -336,9 +336,6 @@ extern "C"
 	void ClearBuf_Ctor(ClearBuf *unit);
 	void ClearBuf_next(ClearBuf *unit, int inNumSamples);
 
-	void BufDelayUnit_Reset(BufDelayUnit *unit);
-	void BufFeedbackDelay_Reset(BufFeedbackDelay *unit);
-
 	void BufDelayN_Ctor(BufDelayN *unit);
 	void BufDelayN_next(BufDelayN *unit, int inNumSamples);
 	void BufDelayN_next_z(BufDelayN *unit, int inNumSamples);
@@ -2105,7 +2102,7 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 
 #define BufCalcDelay(delaytime) (sc_clip(delaytime * SAMPLERATE, 1.f, (float)bufSamples))
 
-void BufDelayUnit_Reset(BufDelayUnit *unit)
+static void BufDelayUnit_Reset(BufDelayUnit *unit)
 {
 	//Print("->DelayUnit_Reset\n");
 	//unit->m_maxdelaytime = ZIN0(1);
@@ -2125,7 +2122,7 @@ void BufDelayUnit_Reset(BufDelayUnit *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BufFeedbackDelay_Reset(BufFeedbackDelay *unit)
+static void BufFeedbackDelay_Reset(BufFeedbackDelay *unit)
 {
 	BufDelayUnit_Reset(unit);
 

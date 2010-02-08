@@ -559,7 +559,7 @@ extern "C"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool ChooseOperatorFunc(BinaryOpUGen *unit);
+static bool ChooseOperatorFunc(BinaryOpUGen *unit);
 
 void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 {
@@ -6527,8 +6527,7 @@ void vthresh_ka(BinaryOpUGen *unit, int inNumSamples)
 
 
 
-BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit);
-BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 {
 	BinaryOpFunc func = &zero_1;
 
@@ -6581,8 +6580,7 @@ BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 }
 
 
-BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit);
-BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
 {
 	BinaryOpFunc func = &zero_1;
 
@@ -6636,7 +6634,7 @@ BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
 
 #if __VEC__
 
-BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 {
 	BinaryOpFunc func = &zero_1;
 
@@ -6901,7 +6899,7 @@ BinaryOpFunc ChooseVectorFunc(BinaryOpUGen *unit)
 
 #endif
 
-BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 {
 	BinaryOpFunc func = &zero_1;
 
@@ -7163,7 +7161,7 @@ BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 }
 
 #ifdef NOVA_SIMD
-BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 {
 	BinaryOpFunc func = &zero_1;
 
@@ -7425,7 +7423,7 @@ BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 }
 
 
-BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
+static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 {
 	if (BUFLENGTH == 64)
 		return ChooseNovaSimdFunc_64(unit);

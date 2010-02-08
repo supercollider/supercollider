@@ -232,7 +232,6 @@ void Dseq_next(Dseq *unit, int inNumSamples);
 void Dshuf_Ctor(Dshuf *unit);
 void Dshuf_Dtor(Dshuf *unit);
 void Dshuf_next(Dshuf *unit, int inNumSamples);
-void Dshuf_scramble(Dshuf *unit);
 
 
 void Dbufrd_Ctor(Dbufrd *unit);
@@ -1761,6 +1760,8 @@ void Dxrand_Ctor(Dxrand *unit)
 	Dxrand_next(unit, 0);
 	OUT0(0) = 0.f;
 }
+
+static void Dshuf_scramble(Dshuf *unit);
 
 void Dshuf_next(Dshuf *unit, int inNumSamples)
 {
