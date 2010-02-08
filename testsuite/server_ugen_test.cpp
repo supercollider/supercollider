@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "../source/server/ugen.hpp"
-#include "dsp/sine_oscillator.hpp"
+#include "../libs/nova-dsp/nova-dsp/sine_oscillator.hpp"
 
 using namespace nova;
 using namespace boost;

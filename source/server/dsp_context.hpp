@@ -23,7 +23,6 @@
 #include <boost/array.hpp>
 #include <boost/lockfree/detail/prefix.hpp>
 
-#include "dsp/noise_engines.hpp"
 #include "sample_types.hpp"
 
 namespace nova
@@ -37,8 +36,6 @@ namespace nova
  * */
 struct BOOST_LOCKFREE_CACHELINE_ALIGNMENT thread_local_resource
 {
-    detail::cheap_noise_engine cheap_noise_engine;
-    detail::taus88_engine noise_engine;
 };
 
 static const int max_threads = 2;

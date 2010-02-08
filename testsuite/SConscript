@@ -22,22 +22,6 @@ import SCons.Node.FS
 
 Import("env")
 
-rbtest = env.Program("ringbuffer_test",
-                     [File("ringbuffer_test.cpp"), File("../libs/guid/libs/guid/src/guid.cpp"),
-                      File("../libs/guid/libs/guid/src/sha1/sha1.cpp")],
-                     CCFLAGS="-O3",
-                     CPPDEFINES="",
-                     OBJSUFFIX='.rbtest.o',
-                     LIBS='boost_thread-mt')
-
-rbtest_fixed = env.Program("ringbuffer_fixed_test",
-                           [File("ringbuffer_test.cpp"), File("../libs/guid/libs/guid/src/guid.cpp"),
-                            File("../libs/guid/libs/guid/src/sha1/sha1.cpp")],
-                           CCFLAGS="-O3",
-                           OBJSUFFIX='.rbtest_fixed.o',
-                           CPPDEFINES="CONST_SIZE",
-                           LIBS='boost_thread-mt')
-
 libboost_thread = Environment().StaticLibrary("boost_thread", Glob("../libs/boost/libs/thread/src/*cpp") +
                                               Glob("../libs/boost/libs/thread/src/pthread/*cpp")+
                                               ["../libs/boost/libs/system/src/error_code.cpp"],
@@ -75,19 +59,7 @@ unit_test_common = ["boost_test.cpp",
 
 # simple standalone tests
 unit_test_sources = ["mutex_test.cpp",
-                     "interpolation.cpp",
-                     "parameter.cpp",
-                     "dsp_ringbuffer_test.cpp",
-                     "map1d_test.cpp",
-                     "env_follower_test.cpp",
-                     "fast_sinosc_test.cpp",
-                     "lag_test.cpp",
-                     "noise_test.cpp",
-                     "muladd_helpers_test.cpp",
-                     "xfade_test.cpp",
                      "approximation_test.cpp",
-                     "interpolated_value_test.cpp",
-                     "filter.cpp",
                      "callback_interpreter_system.cpp",
                      "timetag_test.cpp",
                      "timer_system_test.cpp",
@@ -99,22 +71,11 @@ unit_test_sources = ["mutex_test.cpp",
                      "tl_allocator_test.cpp",
                      "osc_dispatcher_test.cpp",
                      "osc_server_test.cpp",
-                     "median_noise_tests.cpp",
                      "perf_counter_test.cpp",
                      "buffer_manager_test.cpp",
                      "sized_array_test.cpp",
                      "memory-pool_test.cpp"
                      ]
-
-
-
-simd_benchmark = unit_test_env.Program("simd_benchmark", ["dsp_simd_benchmarks.cpp"],
-                                       LIBS=["stdc++"],
-                                       CPPPATH=["#source"],
-                                       CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftemplate-depth-4096')
-
-median_benchmark = unit_test_env.Program("median_filter_benchmarks", ["median_filter_benchmarks.cpp"],
-                                         CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftree-vectorize')
 
 unit_tests = [unit_test_env.Program(test[:-4],
                                     [test] + unit_test_common,
