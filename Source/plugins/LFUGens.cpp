@@ -508,7 +508,7 @@ void LFPulse_next_a(LFPulse *unit, int inNumSamples)
 			phase -= 1.f;
 			duty = unit->mDuty = nextDuty;
 			// output at least one sample from the opposite polarity
-			z = duty < 0.5 ? 1.f : 0.f;
+			z = duty < 0.5f ? 1.f : 0.f;
 		} else {
 			z = phase < duty ? 1.f : 0.f;
 		}
@@ -533,7 +533,7 @@ void LFPulse_next_k(LFPulse *unit, int inNumSamples)
 			phase -= 1.f;
 			duty = unit->mDuty = nextDuty;
 			// output at least one sample from the opposite polarity
-			z = duty < 0.5 ? 1.f : 0.f;
+			z = duty < 0.5f ? 1.f : 0.f;
 		} else {
 			z = phase < duty ? 1.f : 0.f;
 		}
@@ -557,7 +557,6 @@ void LFPulse_Ctor(LFPulse* unit)
 	unit->mDuty = ZIN0(2);
 
 	LFPulse_next_k(unit, 1);
-
 }
 
 
@@ -579,7 +578,6 @@ void LFSaw_next_a(LFSaw *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void LFSaw_next_k(LFSaw *unit, int inNumSamples)
@@ -607,19 +605,16 @@ void LFSaw_next_k(LFSaw *unit, int inNumSamples)
 
 void LFSaw_Ctor(LFSaw* unit)
 {
-	if (INRATE(0) == calc_FullRate) {
+	if (INRATE(0) == calc_FullRate)
 		SETCALC(LFSaw_next_a);
-	} else {
+	else
 		SETCALC(LFSaw_next_k);
-	}
 
 	unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1);
 
 	LFSaw_next_k(unit, 1);
-
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -647,7 +642,6 @@ void LFPar_next_a(LFPar *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void LFPar_next_k(LFPar *unit, int inNumSamples)
@@ -676,17 +670,15 @@ void LFPar_next_k(LFPar *unit, int inNumSamples)
 
 void LFPar_Ctor(LFPar* unit)
 {
-	if (INRATE(0) == calc_FullRate) {
+	if (INRATE(0) == calc_FullRate)
 		SETCALC(LFPar_next_a);
-	} else {
+	else
 		SETCALC(LFPar_next_k);
-	}
 
 	unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1);
 
 	LFPar_next_k(unit, 1);
-
 }
 
 
@@ -715,7 +707,6 @@ void LFCub_next_a(LFCub *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void LFCub_next_k(LFCub *unit, int inNumSamples)
@@ -743,17 +734,15 @@ void LFCub_next_k(LFCub *unit, int inNumSamples)
 
 void LFCub_Ctor(LFCub* unit)
 {
-	if (INRATE(0) == calc_FullRate) {
+	if (INRATE(0) == calc_FullRate)
 		SETCALC(LFCub_next_a);
-	} else {
+	else
 		SETCALC(LFCub_next_k);
-	}
 
 	unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1) + 0.5;
 
 	LFCub_next_k(unit, 1);
-
 }
 
 
@@ -775,7 +764,6 @@ void LFTri_next_a(LFTri *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void LFTri_next_k(LFTri *unit, int inNumSamples)
@@ -806,7 +794,6 @@ void LFTri_Ctor(LFTri* unit)
 	unit->mPhase = ZIN0(1);
 
 	LFTri_next_k(unit, 1);
-
 }
 
 
@@ -840,7 +827,6 @@ void LFGauss_next_k(LFGauss *unit, int inNumSamples)
 	);
 
 	unit->mPhase = x + b;
-
 }
 
 void LFGauss_next_a(LFGauss *unit, int inNumSamples)
@@ -873,7 +859,6 @@ void LFGauss_next_a(LFGauss *unit, int inNumSamples)
 	);
 
 	unit->mPhase = x + b;
-
 }
 
 
@@ -910,9 +895,7 @@ void LFGauss_next_aa(LFGauss *unit, int inNumSamples)
 	);
 
 	unit->mPhase = x + b;
-
 }
-
 
 
 void LFGauss_Ctor(LFGauss* unit)
@@ -931,7 +914,6 @@ void LFGauss_Ctor(LFGauss* unit)
 	unit->mPhase = -1.0;
 
 	//LFGauss_next_k(unit, 1);
-
 }
 
 
@@ -957,7 +939,6 @@ void Impulse_next_a(Impulse *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 /* phase mod - jrh 03 */
@@ -1068,7 +1049,6 @@ void Impulse_Ctor(Impulse* unit)
 	if (unit->mPhase == 0.f) unit->mPhase = 1.f;
 
 	ZOUT0(0) = 0.f;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1098,7 +1078,6 @@ void VarSaw_next_a(VarSaw *unit, int inNumSamples)
 	);
 
 	unit->mPhase = phase;
-
 }
 
 void VarSaw_next_k(VarSaw *unit, int inNumSamples)
@@ -1251,7 +1230,6 @@ void SyncSaw_next_kk(SyncSaw *unit, int inNumSamples)
 
 	unit->mPhase1 = phase1;
 	unit->mPhase2 = phase2;
-
 }
 
 void SyncSaw_Ctor(SyncSaw* unit)
@@ -1274,7 +1252,6 @@ void SyncSaw_Ctor(SyncSaw* unit)
 	unit->mPhase2 = 0.;
 
 	SyncSaw_next_kk(unit, 1);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1341,7 +1318,6 @@ void K2A_Ctor(K2A* unit)
 	unit->mLevel = ZIN0(0);
 
 	ZOUT0(0) = unit->mLevel;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1355,7 +1331,6 @@ void A2K_Ctor(A2K* unit)
 {
 	SETCALC(A2K_next);
 	A2K_next(unit, 1);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1403,7 +1378,6 @@ void T2A_next(T2A *unit, int inNumSamples)
 	}
 
 	unit->mLevel = level;
-
 }
 
 #ifdef NOVA_SIMD
@@ -1542,7 +1516,6 @@ void Line_next(Line *unit, int inNumSamples)
 	} while (remain);
 	unit->mCounter = counter;
 	unit->mLevel = level;
-
 }
 
 #ifdef NOVA_SIMD
@@ -1594,7 +1567,6 @@ void Line_next_nova(Line *unit, int inNumSamples)
 	} while (remain);
 	unit->mCounter = counter;
 	unit->mLevel = level;
-
 }
 
 void Line_next_nova_64(Line *unit, int inNumSamples)
@@ -1645,7 +1617,6 @@ void Line_next_nova_64(Line *unit, int inNumSamples)
 	} while (remain);
 	unit->mCounter = counter;
 	unit->mLevel = level;
-
 }
 
 #endif
@@ -1676,7 +1647,6 @@ void Line_Ctor(Line* unit)
 	unit->mEndLevel = end;
 	ZOUT0(0) = unit->mLevel;
 	unit->mLevel += unit->mSlope;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1846,7 +1816,6 @@ void XLine_Ctor(XLine* unit)
 
 	ZOUT0(0) = unit->mLevel;
 	unit->mLevel *= unit->mGrowth;
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1885,96 +1854,89 @@ void Wrap_Ctor(Wrap* unit)
 
 void Wrap_next_kk(Wrap* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float next_hi = IN0(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
-    float range;
-    for(int i = 0; i < inNumSamples; i++){
-	range = hi - lo;
-	out[i] = sc_wrap(in[i], lo, hi, range);
-	lo += lo_slope;
-	hi += hi_slope;
-    };
-    unit->m_lo = lo;
-    unit->m_hi = hi;
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float next_lo = ZIN0(1);
+	float next_hi = ZIN0(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
+	LOOP1(inNumSamples,
+		float range = hi - lo;
+		ZXP(out) = sc_wrap(ZXP(in), lo, hi, range);
+		lo += lo_slope;
+		hi += hi_slope;
+	);
+	unit->m_lo = lo;
+	unit->m_hi = hi;
 }
 
 void Wrap_next_ka(Wrap* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float *hi = IN(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
-    float curhi;
-    for(int i = 0; i < inNumSamples; i++){
-	curhi = hi[i];
-	out[i] = sc_wrap(in[i], lo, curhi, curhi - lo);
-	lo += lo_slope;
-    };
-    unit->m_lo = lo;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_lo = ZIN0(1);
+	float *hi = ZIN(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	LOOP1(inNumSamples,
+		float curhi = ZXP(hi);
+		ZXP(out) = sc_wrap(ZXP(in), lo, curhi, curhi - lo);
+		lo += lo_slope;
+	);
+	unit->m_lo = lo;
 }
 
 void Wrap_next_ak(Wrap* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float next_hi = IN0(2);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
-    float curlo;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float next_hi = ZIN0(2);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
 
-    for(int i = 0; i < inNumSamples; i++){
-	curlo = lo[i];
-	out[i] = sc_wrap(in[i], curlo, hi, hi - curlo);
-	hi += hi_slope;
-    };
-    unit->m_hi = hi;
+	LOOP1(inNumSamples,
+		float curlo = ZXP(lo);
+		ZXP(out) = sc_wrap(ZXP(in), curlo, hi, hi - curlo);
+		hi += hi_slope;
+	);
+	unit->m_hi = hi;
 }
 
 void Wrap_next_aa(Wrap* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float *hi = IN(2);
-    float curlo, curhi;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float *hi = ZIN(2);
 
-    for(int i = 0; i < inNumSamples; i++){
-	curhi = hi[i];
-	curlo = lo[i];
-	out[i] = sc_wrap(in[i], curlo, curhi, curhi - curlo);
-    };
+	LOOP1(inNumSamples,
+		float curhi = ZXP(hi);
+		float curlo = ZXP(lo);
+		ZXP(out) = sc_wrap(ZXP(in), curlo, curhi, curhi - curlo);
+	);
 }
 
 void Wrap_Ctor(Wrap* unit)
 {
-
-    if(INRATE(1) == calc_FullRate){
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Wrap_next_aa);
-	} else {
-	    SETCALC(Wrap_next_ak);
-	}
+	if(INRATE(1) == calc_FullRate) {
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Wrap_next_aa);
+		else
+			SETCALC(Wrap_next_ak);
     } else {
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Wrap_next_ka);
-	} else {
-	    SETCALC(Wrap_next_kk);
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Wrap_next_ka);
+		else
+			SETCALC(Wrap_next_kk);
 	}
-    }
 
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
+	unit->m_lo = ZIN0(1);
+	unit->m_hi = ZIN0(2);
 
-    Wrap_next_kk(unit, 1);
+	Wrap_next_kk(unit, 1);
 }
 
 
@@ -2014,103 +1976,99 @@ void Fold_Ctor(Fold* unit)
 */
 void Fold_next_kk(Fold* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float next_hi = IN0(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
-    float range, range2;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_lo = ZIN0(1);
+	float next_hi = ZIN0(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
 
-    for(int i = 0; i < inNumSamples; i++){
-	range = hi - lo;
-	range2 = range * 2.0;
-	out[i] = sc_fold(in[i], lo, hi, range, range2);
+	LOOP1(inNumSamples,
+		float range = hi - lo;
+		float range2 = range * 2.f;
+		ZXP(out) = sc_fold(ZXP(in), lo, hi, range, range2);
 
-	lo += lo_slope;
-	hi += hi_slope;
-    };
-    unit->m_lo = lo;
-    unit->m_hi = hi;
+		lo += lo_slope;
+		hi += hi_slope;
+	);
+	unit->m_lo = lo;
+	unit->m_hi = hi;
 }
 
 void Fold_next_ka(Fold* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float *hi = IN(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
-    float curhi, range, range2;
-    for(int i = 0; i < inNumSamples; i++){
-	curhi = hi[i];
-	range = curhi - lo;
-	range2 = range * 2.0;
-	out[i] = sc_fold(in[i], lo, curhi, range, range2);
-	lo += lo_slope;
-    };
-    unit->m_lo = lo;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_lo = ZIN0(1);
+	float *hi = ZIN(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
+
+	LOOP1(inNumSamples,
+		float curhi = ZXP(hi);
+		float range = curhi - lo;
+		float range2 = range * 2.f;
+		ZXP(out) = sc_fold(ZXP(in), lo, curhi, range, range2);
+		lo += lo_slope;
+	);
+	unit->m_lo = lo;
 }
 
 void Fold_next_ak(Fold* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float next_hi = IN0(2);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
-    float range, range2, curlo;
-    for(int i = 0; i < inNumSamples; i++){
-	curlo = lo[i];
-	range = hi - curlo;
-	range2 = range * 2.0;
-	out[i] = sc_fold(in[i], curlo, hi, range, range2);
-	hi += hi_slope;
-    };
-    unit->m_hi = hi;
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float next_hi = ZIN0(2);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
+
+	LOOP1(inNumSamples,
+		float curlo = ZXP(lo);
+		float range = hi - curlo;
+		float range2 = range * 2.f;
+		ZXP(out) = sc_fold(ZXP(in), curlo, hi, range, range2);
+		hi += hi_slope;
+	);
+	unit->m_hi = hi;
 }
 
 void Fold_next_aa(Fold* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float *hi = IN(2);
-    float curhi, curlo, range, range2;
-    for(int i = 0; i < inNumSamples; i++){
-	curhi = hi[i];
-	curlo = lo[i];
-	range = curhi - curlo;
-	range2 = range * 2.0;
-	out[i] = sc_fold(in[i], curlo, curhi, range, range2);
-    };
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float *hi = ZIN(2);
+
+	LOOP1(inNumSamples,
+		float curhi = ZXP(hi);
+		float curlo = ZXP(lo);
+		float range = curhi - curlo;
+		float range2 = range * 2.0;
+		ZXP(out) = sc_fold(ZXP(in), curlo, curhi, range, range2);
+	);
 }
 
 void Fold_Ctor(Fold* unit)
 {
-
-    if(INRATE(1) == calc_FullRate){
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Fold_next_aa);
+	if(INRATE(1) == calc_FullRate) {
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Fold_next_aa);
+		else
+			SETCALC(Fold_next_ak);
 	} else {
-	    SETCALC(Fold_next_ak);
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Fold_next_ka);
+		else
+			SETCALC(Fold_next_kk);
 	}
-    } else {
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Fold_next_ka);
-	} else {
-	    SETCALC(Fold_next_kk);
-	}
-    }
 
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
+	unit->m_lo = ZIN0(1);
+	unit->m_hi = ZIN0(2);
 
-    Fold_next_kk(unit, 1);
+	Fold_next_kk(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2161,89 +2119,86 @@ void Clip_Ctor(Clip* unit)
 
 void Clip_next_kk(Clip* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float next_hi = IN0(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float next_lo = ZIN0(1);
+	float next_hi = ZIN0(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
 
-    for(int i = 0; i < inNumSamples; i++){
-	out[i] = sc_clip(in[i], lo, hi);
-	lo += lo_slope;
-	hi += hi_slope;
-    };
-    unit->m_lo = lo;
-    unit->m_hi = hi;
+	LOOP1(inNumSamples,
+		ZXP(out) = sc_clip(ZXP(in), lo, hi);
+		lo += lo_slope;
+		hi += hi_slope;
+	);
+	unit->m_lo = lo;
+	unit->m_hi = hi;
 }
 
 void Clip_next_ka(Clip* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float next_lo = IN0(1);
-    float *hi = IN(2);
-    float lo = unit->m_lo;
-    float lo_slope = CALCSLOPE(next_lo, lo);
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_lo = ZIN0(1);
+	float *hi = ZIN(2);
+	float lo = unit->m_lo;
+	float lo_slope = CALCSLOPE(next_lo, lo);
 
-    for(int i = 0; i < inNumSamples; i++){
-	out[i] = sc_clip(in[i], lo, hi[i]);
-	lo += lo_slope;
-    };
-    unit->m_lo = lo;
+	LOOP1(inNumSamples,
+		ZXP(out) = sc_clip(ZXP(in), lo, ZXP(hi));
+		lo += lo_slope;
+	);
+	unit->m_lo = lo;
 }
 
 void Clip_next_ak(Clip* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float next_hi = IN0(2);
-    float hi = unit->m_hi;
-    float hi_slope = CALCSLOPE(next_hi, hi);
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float next_hi = ZIN0(2);
+	float hi = unit->m_hi;
+	float hi_slope = CALCSLOPE(next_hi, hi);
 
-    for(int i = 0; i < inNumSamples; i++){
-	out[i] = sc_clip(in[i], lo[i], hi);
-	hi += hi_slope;
-    };
-    unit->m_hi = hi;
+	LOOP1(inNumSamples,
+		ZXP(out) = sc_clip(ZXP(in), ZXP(lo), hi);
+		hi += hi_slope;
+	);
+	unit->m_hi = hi;
 }
 
 void Clip_next_aa(Clip* unit, int inNumSamples)
 {
-    float *out = OUT(0);
-    float *in   = IN(0);
-    float *lo = IN(1);
-    float *hi = IN(2);
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *lo = ZIN(1);
+	float *hi = ZIN(2);
 
-    for(int i = 0; i < inNumSamples; i++){
-	 out[i] = sc_clip(in[i], lo[i], hi[i]);
-    };
+	LOOP1(inNumSamples,
+		ZXP(out) = sc_clip(ZXP(in), ZXP(lo), ZXP(hi));
+	);
 }
 
 void Clip_Ctor(Clip* unit)
 {
-
-    if(INRATE(1) == calc_FullRate){
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Clip_next_aa);
+	if(INRATE(1) == calc_FullRate) {
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Clip_next_aa);
+		else
+			SETCALC(Clip_next_ak);
 	} else {
-	    SETCALC(Clip_next_ak);
+		if(INRATE(2) == calc_FullRate)
+			SETCALC(Clip_next_ka);
+		else
+			SETCALC(Clip_next_kk);
 	}
-    } else {
-	if(INRATE(2) == calc_FullRate) {
-	    SETCALC(Clip_next_ka);
-	    } else {
-	    SETCALC(Clip_next_kk);
-	}
-    }
 
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
+	unit->m_lo = ZIN0(1);
+	unit->m_hi = ZIN0(2);
 
-    Clip_next_kk(unit, 1);
+	Clip_next_kk(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2261,8 +2216,10 @@ void Unwrap_next(Unwrap* unit, int inNumSamples)
 		float zin = ZXP(in);
 		float diff = zin - prev;
 		if (fabs(diff) > half) {
-			if (zin < prev) offset += range;
-			else offset -= range;
+			if (zin < prev)
+				offset += range;
+			else
+				offset -= range;
 		}
 		ZXP(out) = zin + offset;
 		prev = zin;
@@ -2273,7 +2230,6 @@ void Unwrap_next(Unwrap* unit, int inNumSamples)
 
 void Unwrap_Ctor(Unwrap* unit)
 {
-
 	SETCALC(Unwrap_next);
 	float in   = ZIN0(0);
 	float lo = ZIN0(1);
@@ -2297,7 +2253,6 @@ void Unwrap_Ctor(Unwrap* unit)
 
 void AmpComp_next(AmpComp *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
 	float rootmul = unit->m_rootmul;
@@ -2311,7 +2266,6 @@ void AmpComp_next(AmpComp *unit, int inNumSamples)
 
 void AmpComp_next_kk(AmpComp *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
 	float root = ZIN0(1);
@@ -2334,7 +2288,6 @@ void AmpComp_Ctor(AmpComp* unit)
 		SETCALC(AmpComp_next);
 	}
 	AmpComp_next(unit, 1);
-
 }
 
 
@@ -2349,23 +2302,22 @@ const double AMPCOMP_MINLEVEL = -0.1575371167435;
 
 double AmpCompA_calcLevel(double freq)
 {
-		double r = freq * freq;
-		double level = (AMPCOMP_K * r * r * r * r);
-		double n1 = AMPCOMP_C1 + r;
-		double n2 = AMPCOMP_C4 + r;
-		level = level / (
-							n1 * n1 *
-							(AMPCOMP_C2 + r) *
-							(AMPCOMP_C3 + r) *
-							n2 * n2
-						);
-		level = 1. - sqrt(level);
-		return level;
+	double r = freq * freq;
+	double level = (AMPCOMP_K * r * r * r * r);
+	double n1 = AMPCOMP_C1 + r;
+	double n2 = AMPCOMP_C4 + r;
+	level = level / (
+						n1 * n1 *
+						(AMPCOMP_C2 + r) *
+						(AMPCOMP_C3 + r) *
+						n2 * n2
+					);
+	level = 1. - sqrt(level);
+	return level;
 }
 
 void AmpCompA_next(AmpCompA *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
 
@@ -2387,7 +2339,6 @@ void AmpCompA_Ctor(AmpCompA* unit)
 
 	SETCALC(AmpCompA_next);
 	AmpCompA_next(unit, 1);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2534,7 +2485,6 @@ void LinExp_next_ka(LinExp *unit, int inNumSamples)
 
 void LinExp_SetCalc(LinExp* unit)
 {
-
 	if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
 		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
 			SETCALC(LinExp_next_aa); return;
@@ -2560,7 +2510,6 @@ void LinExp_SetCalc(LinExp* unit)
 	unit->m_dstratio = dsthi/dstlo;
 	unit->m_rsrcrange = 1. / (srchi - srclo);
 	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
-
 }
 
 void LinExp_Ctor(LinExp* unit)
@@ -2616,7 +2565,6 @@ void LinLin_next_aa(LinLin *unit, int inNumSamples)
 	float *srchi = ZIN(2);
 	float *dstlo = ZIN(3);
 	float *dsthi = ZIN(4);
-
 
 	LOOP1(inNumSamples,
 		float zdsthi = ZXP(dsthi);
@@ -5057,114 +5005,112 @@ void IEnvGen_Dtor(IEnvGen *unit)
 
 void IEnvGen_next_a(IEnvGen *unit, int inNumSamples)
 {
-    float* out = OUT(0);
-    float level = unit->m_level;
-    float* pointin = IN(0);
-    float offset = unit->m_offset;
-    int numStages = (int)IN0(3);
-    float point; // = unit->m_pointin;
+	float* out = OUT(0);
+	float level = unit->m_level;
+	float* pointin = IN(0);
+	float offset = unit->m_offset;
+	int numStages = (int)IN0(3);
+	float point; // = unit->m_pointin;
 
-    float totalDur = IN0(4);
+	float totalDur = IN0(4);
 
-    int stagemul;
-    // pointer, offset
-    // level0, numstages, totaldur,
-    // [initval, [dur, shape, curve, level] * N ]
+	int stagemul;
+	// pointer, offset
+	// level0, numstages, totaldur,
+	// [initval, [dur, shape, curve, level] * N ]
 
-    for( int i = 0; i < inNumSamples; i++) {
-	    if (pointin[i] == unit->m_pointin){
-		out[i] = level;
+	for( int i = 0; i < inNumSamples; i++) {
+		if (pointin[i] == unit->m_pointin){
+			out[i] = level;
 		} else {
-		unit->m_pointin = point = sc_max(pointin[i] - offset, 0.0);
-		float newtime = 0.f;
-		int stage = 0;
-		float seglen = 0.f;
-		if (point >= totalDur) {
-		    unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
-		    } else {
-		    if (point <= 0.0) {
-			unit->m_level = level = unit->m_envvals[0];
+			unit->m_pointin = point = sc_max(pointin[i] - offset, 0.0);
+			float newtime = 0.f;
+			int stage = 0;
+			float seglen = 0.f;
+			if (point >= totalDur) {
+				unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
 			} else {
-			float segpos = point;
-			// determine which segment the current time pointer needs
-			for(int j = 0; point >= newtime; j++) {
-				seglen = unit->m_envvals[(j * 4) + 1];
-				newtime += seglen;
-				segpos -= seglen;
-				stage = j;
-			    }
-			stagemul = stage * 4;
-			segpos = segpos + seglen;
-			float begLevel = unit->m_envvals[stagemul];
-			int shape = (int)unit->m_envvals[stagemul + 2];
-			int curve = (int)unit->m_envvals[stagemul + 3];
-			float endLevel = unit->m_envvals[stagemul + 4];
-			float pos = (segpos / seglen);
+				if (point <= 0.0) {
+					unit->m_level = level = unit->m_envvals[0];
+				} else {
+					float segpos = point;
+					// determine which segment the current time pointer needs
+					for(int j = 0; point >= newtime; j++) {
+						seglen = unit->m_envvals[(j * 4) + 1];
+						newtime += seglen;
+						segpos -= seglen;
+						stage = j;
+						}
+					stagemul = stage * 4;
+					segpos = segpos + seglen;
+					float begLevel = unit->m_envvals[stagemul];
+					int shape = (int)unit->m_envvals[stagemul + 2];
+					int curve = (int)unit->m_envvals[stagemul + 3];
+					float endLevel = unit->m_envvals[stagemul + 4];
+					float pos = (segpos / seglen);
 
-			GET_ENV_VAL
-		    }
+					GET_ENV_VAL
+				}
+			}
+			out[i] = level;
 		}
-	    }
-	out[i] = level;
 	}
 }
 
 
 void IEnvGen_next_k(IEnvGen *unit, int inNumSamples)
 {
-    float* out = OUT(0);
-    float level = unit->m_level;
-    float pointin = sc_max(IN0(0) - unit->m_offset, 0);
-    int numStages = (int)IN0(3);
+	float* out = OUT(0);
+	float level = unit->m_level;
+	float pointin = sc_max(IN0(0) - unit->m_offset, 0);
+	int numStages = (int)IN0(3);
 
-    float totalDur = IN0(4);
-    // pointer, offset
-    // level0, numstages, totaldur,
-    float point = unit->m_pointin;
+	float totalDur = IN0(4);
+	// pointer, offset
+	// level0, numstages, totaldur,
+	float point = unit->m_pointin;
 
-    // [initval, [dur, shape, curve, level] * N ]
+	// [initval, [dur, shape, curve, level] * N ]
 
-    if (pointin == unit->m_pointin) {
-	for(int i = 0; i < inNumSamples; i++){
-	    out[i] = level;
-	    }
+	if (pointin == unit->m_pointin) {
+		Fill(inNumSamples, out, level);
 	} else {
-	float pointslope = CALCSLOPE(pointin, point);
-	for( int i = 0; i < inNumSamples; i++) {
-		float newtime = 0.f;
-		int stage = 0;
-		float seglen = 0.f;
-		if (point >= totalDur) {
-		    unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
-		    } else {
-		    if (point <= 0.0) {
-			unit->m_level = level = unit->m_envvals[0];
+		float pointslope = CALCSLOPE(pointin, point);
+		for( int i = 0; i < inNumSamples; i++) {
+			float newtime = 0.f;
+			int stage = 0;
+			float seglen = 0.f;
+			if (point >= totalDur) {
+				unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
 			} else {
-			float segpos = point;
-			// determine which segment the current time pointer needs calculated
-			for(int j = 0; point >= newtime; j++) {
-				seglen = unit->m_envvals[(j * 4) + 1];
-				newtime += seglen;
-				segpos -= seglen;
-				stage = j;
-			    }
+				if (point <= 0.0) {
+					unit->m_level = level = unit->m_envvals[0];
+				} else {
+					float segpos = point;
+					// determine which segment the current time pointer needs calculated
+					for(int j = 0; point >= newtime; j++) {
+						seglen = unit->m_envvals[(j * 4) + 1];
+						newtime += seglen;
+						segpos -= seglen;
+						stage = j;
+						}
 
-			segpos = segpos + seglen;
-			float begLevel = unit->m_envvals[(stage * 4)];
-			int shape = (int)unit->m_envvals[(stage * 4) + 2];
-			float curve = unit->m_envvals[(stage * 4) + 3];
-			float endLevel = unit->m_envvals[(stage * 4) + 4];
-			float pos = (segpos / seglen);
+					segpos = segpos + seglen;
+					float begLevel = unit->m_envvals[(stage * 4)];
+					int shape = (int)unit->m_envvals[(stage * 4) + 2];
+					float curve = unit->m_envvals[(stage * 4) + 3];
+					float endLevel = unit->m_envvals[(stage * 4) + 4];
+					float pos = (segpos / seglen);
 
-			GET_ENV_VAL
-		    }
+					GET_ENV_VAL
+				}
+			}
+			out[i] = level;
+			point += pointslope;
 		}
-	    out[i] = level;
-	    point += pointslope;
-	    }
 
-   	unit->m_pointin = pointin;
-    }
+		unit->m_pointin = pointin;
+	}
 }
 
 
