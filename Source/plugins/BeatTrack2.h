@@ -26,6 +26,7 @@
 //assume 4 features * 120 tempi * 2 groove * 20 phase = 19200 per calculation time; say you calculate each 0.5 sec, amortise over (44100/64*0.5 >344.5) control blocks;
 //calculate over 240 blocks
 
+#include "SC_PlugIn.h"
 
 struct BeatTrack2 : Unit {
 
@@ -93,10 +94,8 @@ struct BeatTrack2 : Unit {
     int q1trig;
 	int q2trig;
 
-	float * m_tempoweights;
+	SndBuf * m_tempoweights;
 	int m_weightingscheme;
-
-
 };
 
 
@@ -108,4 +107,3 @@ extern "C"
 	void BeatTrack2_Ctor(BeatTrack2 *unit);
 	void BeatTrack2_Dtor(BeatTrack2 *unit);
 }
-

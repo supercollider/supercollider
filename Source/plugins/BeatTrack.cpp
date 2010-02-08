@@ -137,18 +137,15 @@ void BeatTrack_Ctor(BeatTrack* unit)
 	unit->m_flagstep=0;
 
 	unit->mCalcFunc = (UnitCalcFunc)&BeatTrack_next;
-
 }
 
 
 
 void BeatTrack_Dtor(BeatTrack *unit)
 {
-
 	RTFree(unit->mWorld, unit->m_prevmag);
 	RTFree(unit->mWorld, unit->m_prevphase);
 	RTFree(unit->mWorld, unit->m_predict);
-
 }
 
 
