@@ -307,39 +307,6 @@ inline double sc_gloop(double in, double hi)
 		}														\
 		amp = lininterp(winFrac, winTable1[0], winTable2[0]);
 
-#define GET_INTERP_GRAIN_WIN											\
-		SndBuf *windowA = unit->mWorld->mSndBufs + (int)grain->mWindowA; \
-		float *windowDataA __attribute__((__unused__)) = windowA->data;	\
-		uint32 windowSamplesA __attribute__((__unused__)) = windowA->samples; \
-		uint32 windowFramesA = windowA->frames;							\
-		int windowGuardFrameA __attribute__((__unused__)) = windowFramesA - 1; \
-		SndBuf *windowB = unit->mWorld->mSndBufs + (int)grain->mWindowB; \
-		float *windowDataB __attribute__((__unused__)) = windowB->data;	\
-		uint32 windowSamplesB __attribute__((__unused__)) = windowB->samples; \
-		uint32 windowFramesB = windowB->frames;							\
-		int windowGuardFrameB __attribute__((__unused__)) = windowFramesB - 1;
-
-#define BUF_INTERP_GRAIN_AMP											\
-		winPosA += winIncA;												\
-		int iWinPosA = (int)winPosA;									\
-		double winFracA = winPosA - (double)iWinPosA;					\
-		float* winTableA1 = windowDataA + iWinPosA;						\
-		float* winTableA2 = winTableA1 + 1;								\
-		if (winPosA > windowGuardFrameA) {								\
-			winTableA2 -= windowSamplesA;								\
-		}																\
-		float ampA = lininterp(winFracA, winTableA1[0], winTableA2[0]);	\
-		winPosB += winIncB;												\
-		int iWinPosB = (int)winPosB;									\
-		double winFracB = winPosB - (double)iWinPosB;					\
-		float* winTableB1 = windowDataB + iWinPosB;						\
-		float* winTableB2 = winTableB1 + 1;								\
-		if (winPosB > windowGuardFrameB) {								\
-			winTableB2 -= windowSamplesB;								\
-		}																\
-		float ampB = lininterp(winFracB, winTableB1[0], winTableB2[0]);	\
-		amp = lininterp(grain->ifac, ampA, ampB);
-
 #define BUF_GRAIN_LOOP_BODY_4										\
 		phase = sc_gloop(phase, loopMax);							\
 		int32 iphase = (int32)phase;								\
