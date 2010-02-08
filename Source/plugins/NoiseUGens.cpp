@@ -268,7 +268,6 @@ void GrayNoise_next(GrayNoise *unit, int inNumSamples)
 	);
 	unit->mCounter = counter;
 	RPUT
-
 }
 
 void GrayNoise_Ctor(GrayNoise* unit)
@@ -290,7 +289,6 @@ void WhiteNoise_next(WhiteNoise *unit, int inNumSamples)
 		ZXP(out) = frand2(s1, s2, s3);
 	);
 	RPUT
-
 }
 
 void WhiteNoise_Ctor(WhiteNoise* unit)
@@ -298,7 +296,6 @@ void WhiteNoise_Ctor(WhiteNoise* unit)
 	SETCALC(WhiteNoise_next);
 
 	WhiteNoise_next(unit, 1);
-
 }
 
 
@@ -327,7 +324,6 @@ void PinkNoise_next(PinkNoise *unit, int inNumSamples)
 	);
 	unit->mTotal = total;
 	RPUT
-
 }
 
 void PinkNoise_Ctor(PinkNoise* unit)
@@ -365,7 +361,6 @@ void BrownNoise_next(BrownNoise *unit, int inNumSamples)
 	);
 	unit->mLevel = z;
 	RPUT
-
 }
 
 void BrownNoise_Ctor(BrownNoise* unit)
@@ -413,7 +408,6 @@ void Dust_next(Dust *unit, int inNumSamples)
 	);
 
 	RPUT
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,7 +446,6 @@ void Dust2_next(Dust2 *unit, int inNumSamples)
 	);
 
 	RPUT
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -471,7 +464,6 @@ void Crackle_next(Crackle *unit, int inNumSamples)
 	);
 	unit->m_y1 = y1;
 	unit->m_y2 = y2;
-
 }
 
 void Crackle_Ctor(Crackle* unit)
@@ -496,7 +488,6 @@ void Logistic_next_1(Logistic *unit, int inNumSamples)
 		ZXP(out) = y1 = paramf * y1 * (1.0 - y1);	// chaotic equation
 	);
 	unit->m_y1 = y1;
-
 }
 
 void Logistic_next_k(Logistic *unit, int inNumSamples)
@@ -521,16 +512,14 @@ void Logistic_next_k(Logistic *unit, int inNumSamples)
 	} while (remain);
 	unit->m_y1 = y1;
 	unit->mCounter = counter;
-
 }
 
 void Logistic_Ctor(Logistic* unit)
 {
-	if (INRATE(0) == calc_ScalarRate && ZIN0(1) >= unit->mRate->mSampleRate) {
+	if (INRATE(0) == calc_ScalarRate && ZIN0(1) >= unit->mRate->mSampleRate)
 		SETCALC(Logistic_next_1);
-	} else {
+	else
 		SETCALC(Logistic_next_k);
-	}
 
 	unit->m_y1 = ZIN0(2);
 	unit->mCounter = 0;
@@ -751,7 +740,6 @@ void CoinGate_next_k(CoinGate* unit, int inNumSamples)
 
 	ZOUT0(0) = level;
 	unit->m_trig = trig;
-
 }
 
 void CoinGate_next(CoinGate* unit, int inNumSamples)
@@ -776,7 +764,6 @@ void CoinGate_next(CoinGate* unit, int inNumSamples)
 	)
 
 	unit->m_trig = prevtrig;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -805,7 +792,7 @@ void RandSeed_next(RandSeed* unit, int inNumSamples)
 
 void RandID_Ctor(RandID* unit)
 {
-	 unit->m_id = -1.;
+	unit->m_id = -1.;
 	SETCALC(RandID_next);
 	RandID_next(unit, 1);
 }
@@ -885,7 +872,6 @@ void Hasher_next(Hasher *unit, int inNumSamples)
 		u.i = 0x40000000 | ((uint32)Hash(z) >> 9);
 		ZXP(out) = u.f - 3.f;
 	);
-
 }
 
 void Hasher_Ctor(Hasher* unit)
@@ -906,7 +892,6 @@ void MantissaMask_next(MantissaMask *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		ZXP(out) = mask & ZXP(in);
 	);
-
 }
 
 void MantissaMask_Ctor(MantissaMask* unit)
@@ -941,7 +926,6 @@ void LFClipNoise_next(LFClipNoise *unit, int inNumSamples)
 	unit->mLevel = level;
 	unit->mCounter = counter;
 	RPUT
-
 }
 
 void LFClipNoise_Ctor(LFClipNoise* unit)
@@ -979,7 +963,6 @@ void LFNoise0_next(LFNoise0 *unit, int inNumSamples)
 	unit->mLevel = level;
 	unit->mCounter = counter;
 	RPUT
-
 }
 
 void LFNoise0_Ctor(LFNoise0* unit)
@@ -1020,7 +1003,6 @@ void LFNoise1_next(LFNoise1 *unit, int inNumSamples)
 	unit->mSlope = slope;
 	unit->mCounter = counter;
 	RPUT
-
 }
 
 void LFNoise1_Ctor(LFNoise1* unit)
@@ -1073,7 +1055,6 @@ void LFNoise2_next(LFNoise2 *unit, int inNumSamples)
 	unit->mCurve = curve;
 	unit->mCounter = counter;
 	RPUT
-
 }
 
 void LFNoise2_Ctor(LFNoise2* unit)
@@ -1152,7 +1133,6 @@ void ClipBufRd_next0(Unit *unit, int inNumSamples)
 			index++;
 		}
 	);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
