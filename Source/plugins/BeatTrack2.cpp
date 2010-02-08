@@ -120,7 +120,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit)
 
 		int basepos= i*unit->m_numfeatures;
 
-		for (j=0; j<unit->m_numfeatures; ++j) {
+		for (int j=0; j<unit->m_numfeatures; ++j) {
 			unit->bestscore[basepos+j]= -9999.0;
 			unit->bestphase[basepos+j]= 0;
 			unit->besttempo[basepos+j]= 60;
@@ -154,7 +154,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit)
 	int bufnum = (int)(ZIN0(5)+0.001);
 	if (bufnum >= unit->mWorld->mNumSndBufs) bufnum = 0;
 
-	if(bufnum<0) {unit->m_weightingscheme = bufnum<1.5? 0 : 1; }
+	if(bufnum<0) {unit->m_weightingscheme = bufnum<2? 0 : 1; }
 	else {
 		SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
 		unit->m_tempoweights= buf->data;
