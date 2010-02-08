@@ -86,7 +86,6 @@ void init_SCComplex(InterfaceTable *inTable);
 
 void Unpack1FFT_Ctor(Unpack1FFT* unit)
 {
-
 	unit->bufsize = (int)ZIN0(1);
 	unit->latestMomentProcessed = -1;
 	//unit->numOldSkipped = 0;
@@ -162,7 +161,6 @@ void Unpack1FFT_next_mag(Unpack1FFT *unit, int inNumSamples)
 	}
 
 	ZOUT0(0) = unit->outval;
-
 }
 
 void Unpack1FFT_next_phase(Unpack1FFT *unit, int inNumSamples)
@@ -180,7 +178,6 @@ void Unpack1FFT_next_phase(Unpack1FFT *unit, int inNumSamples)
 	}
 
 	ZOUT0(0) = unit->outval;
-
 }
 
 void Unpack1FFT_next_dc(Unpack1FFT *unit, int inNumSamples)
@@ -198,7 +195,6 @@ void Unpack1FFT_next_dc(Unpack1FFT *unit, int inNumSamples)
 	}
 
 	ZOUT0(0) = unit->outval;
-
 }
 
 void Unpack1FFT_next_nyq(Unpack1FFT *unit, int inNumSamples)
@@ -216,7 +212,6 @@ void Unpack1FFT_next_nyq(Unpack1FFT *unit, int inNumSamples)
 	}
 
 	ZOUT0(0) = unit->outval;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
