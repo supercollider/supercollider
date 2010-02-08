@@ -2098,6 +2098,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define VOSC_GET_BUF \
+const SndBuf *bufs;\
 if (bufnum+1 >= world->mNumSndBufs) { \
 			int localBufNum = bufnum - world->mNumSndBufs; \
 			Graph *parent = unit->mParent; \
@@ -2120,7 +2121,6 @@ void VOsc_Ctor(VOsc *unit)
 	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
-	SndBuf *bufs;
 
 	VOSC_GET_BUF
 
@@ -2163,19 +2163,18 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 		float level = cur - floor(cur);
 
 		uint32 bufnum = (int)floor(cur);
-		SndBuf *bufs;
 
 		VOSC_GET_BUF
 
-		float *table0  = bufs[0].data;
-		float *table2  = bufs[1].data;
+		const float *table0  = bufs[0].data;
+		const float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
 			ClearUnitOutputs(unit, inNumSamples);
 			return;
 		}
 
-		float *table1 = table0 + 1;
-		float *table3 = table2 + 1;
+		const float *table1 = table0 + 1;
+		const float *table3 = table2 + 1;
 
 		LOOP1(inNumSamples,
 			float pfrac = PhaseFrac1(phase);
@@ -2215,19 +2214,17 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 
 			uint32 bufnum = (int)floor(cur);
 
-			SndBuf *bufs;
-
 			VOSC_GET_BUF
 
-			float *table0  = bufs[0].data;
-			float *table2  = bufs[1].data;
+			const float *table0  = bufs[0].data;
+			const float *table2  = bufs[1].data;
 			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
 				ClearUnitOutputs(unit, inNumSamples);
 				return;
 			}
 
-			float *table1 = table0 + 1;
-			float *table3 = table2 + 1;
+			const float *table1 = table0 + 1;
+			const float *table3 = table2 + 1;
 
 			LOOP(nsmps,
 				float pfrac = PhaseFrac1(phase);
@@ -2261,7 +2258,6 @@ void VOsc3_Ctor(VOsc3 *unit)
 	unit->m_bufpos = nextbufpos;
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
-	SndBuf *bufs;
 
 	VOSC_GET_BUF
 	int tableSize = bufs[0].samples;
@@ -2306,19 +2302,18 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		float level = cur - floor(cur);
 
 		uint32 bufnum = (int)floor(cur);
-		SndBuf *bufs;
 
 		VOSC_GET_BUF
 
-		float *table0  = bufs[0].data;
-		float *table2  = bufs[1].data;
+		const float *table0  = bufs[0].data;
+		const float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
 			ClearUnitOutputs(unit, inNumSamples);
 			return;
 		}
 
-		float *table1 = table0 + 1;
-		float *table3 = table2 + 1;
+		const float *table1 = table0 + 1;
+		const float *table3 = table2 + 1;
 
 		LOOP1(inNumSamples,
 
@@ -2382,19 +2377,18 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 			float slope = sweepdiff / (float)nsmps;
 
 			uint32 bufnum = (int)floor(cur);
-			SndBuf *bufs;
 
 			VOSC_GET_BUF
 
-			float *table0  = bufs[0].data;
-			float *table2  = bufs[1].data;
+			const float *table0  = bufs[0].data;
+			const float *table2  = bufs[1].data;
 			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
 				ClearUnitOutputs(unit, inNumSamples);
 				return;
 			}
 
-			float *table1 = table0 + 1;
-			float *table3 = table2 + 1;
+			const float *table1 = table0 + 1;
+			const float *table3 = table2 + 1;
 
 			LOOP(nsmps,
 
