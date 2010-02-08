@@ -31,6 +31,8 @@
 	#include <sndfile.h>
 #endif
 
+#include <new>
+
 static InterfaceTable *ft;
 
 const int kMAXDISKCHANNELS = 32;
@@ -110,25 +112,15 @@ struct DiskIOMsg
 	void Perform();
 };
 
-#ifndef SC_WIN32
 MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
 SC_SyncCondition gDiskFifoHasData;
-#else // #ifndef SC_WIN32
-MsgFifoNoFree<DiskIOMsg, 256>* pgDiskFifo;
-SC_SyncCondition* pgDiskFifoHasData;
-#endif // #ifndef SC_WIN32
 
 void* disk_io_thread_func(void* arg);
 void* disk_io_thread_func(void* arg)
 {
 	while (true) {
-#ifndef SC_WIN32
 		gDiskFifoHasData.WaitEach();
 		gDiskFifo.Perform();
-#else //#ifndef SC_WIN32
-		pgDiskFifoHasData->WaitEach();
-		pgDiskFifo->Perform();
-#endif //#ifndef SC_WIN32
 	}
 	return 0;
 }
@@ -214,13 +206,8 @@ sendMessage:
 			msg.mPos = bufFrames2 - unit->m_framepos;
 			msg.mFrames = bufFrames2;
 			msg.mChannels = bufChannels;
-#ifndef SC_WIN32
 			gDiskFifo.Write(msg);
 			gDiskFifoHasData.Signal();
-#else //#ifndef SC_WIN32
-			pgDiskFifo->Write(msg);
-			pgDiskFifoHasData->Signal();
-#endif //#ifndef SC_WIN32
 		} else {
 			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
 			uint32 mPos = bufFrames2 - unit->m_framepos;
@@ -322,13 +309,8 @@ sendMessage:
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
 		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-#ifndef SC_WIN32
 		gDiskFifo.Write(msg);
 		gDiskFifoHasData.Signal();
-#else //#ifndef SC_WIN32
-		pgDiskFifo->Write(msg);
-		pgDiskFifoHasData->Signal();
-#endif //#ifndef SC_WIN32
 	}
 
 }
@@ -479,13 +461,8 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 			msg.mPos = thisPos;
 			msg.mFrames = bufFrames2;
 			msg.mChannels = bufChannels;
-#ifndef SC_WIN32
 			gDiskFifo.Write(msg);
 			gDiskFifoHasData.Signal();
-#else //#ifndef SC_WIN32
-			pgDiskFifo->Write(msg);
-			pgDiskFifoHasData->Signal();
-#endif //#ifndef SC_WIN32
 
 
 			if((int)ZIN0(3)) {
@@ -597,13 +574,8 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 				msg.mPos = thisPos;
 				msg.mFrames = bufFrames2;
 				msg.mChannels = bufChannels;
-			#ifndef SC_WIN32
 				gDiskFifo.Write(msg);
 				gDiskFifoHasData.Signal();
-			#else //#ifndef SC_WIN32
-				pgDiskFifo->Write(msg);
-				pgDiskFifoHasData->Signal();
-			#endif //#ifndef SC_WIN32
 
 				if((int)ZIN0(3)) {
 
@@ -652,10 +624,9 @@ PluginLoad(DiskIO)
 	ft = inTable;
 
 #ifdef SC_WIN32
-	pgDiskFifo = new MsgFifoNoFree<DiskIOMsg, 256>;
-	pgDiskFifoHasData = new SC_SyncCondition;
-	//$$$todo FIXME free those objects . (use a global std::auto_ptr)
-#endif //SC_WIN32
+	new(&gDiskFifo) MsgFifoNoFree<DiskIOMsg, 256>();
+	new(&gDiskFifoHasData)  SC_SyncCondition();
+#endif
 
 	pthread_t diskioThread;
 	pthread_create (&diskioThread, NULL, disk_io_thread_func, (void*)0);
