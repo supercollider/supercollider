@@ -872,8 +872,8 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_2 \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
-		float* table2 = table1 + bufChannels; \
+		const float* table1 = bufData + iphase * bufChannels; \
+		const float* table2 = table1 + bufChannels; \
 		if (iphase > guardFrame) { \
 			if (loop) { \
 				table2 -= bufSamples; \
@@ -893,7 +893,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_1 \
         phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
+		const float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
 		for (uint32 i=0; i<numOutputs; ++i) { \
 			*++(out[i]) = table1[index++]; \
@@ -990,8 +990,8 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 		unit->m_fbufnum = fbufnum;
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
-	SndBuf *buf = unit->m_buf;
-	float *bufData __attribute__((__unused__)) = buf->data;
+	const SndBuf *buf = unit->m_buf;
+	const float *bufData __attribute__((__unused__)) = buf->data;
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
 	uint32 bufFrames = buf->frames;
@@ -6248,8 +6248,8 @@ void GrainTap_Ctor(GrainTap *unit)
 
 
 #define GRAIN_BUF \
-	SndBuf *buf = bufs + bufnum; \
-	float *bufData __attribute__((__unused__)) = buf->data; \
+	const SndBuf *buf = bufs + bufnum; \
+	const float *bufData __attribute__((__unused__)) = buf->data; \
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
 	uint32 bufFrames = buf->frames; \
@@ -6281,10 +6281,10 @@ inline double sc_gloop(double in, double hi)
 		float amp = y1 * y1; \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table0 = table1 - 1; \
-		float* table2 = table1 + 1; \
-		float* table3 = table1 + 2; \
+		const float* table1 = bufData + iphase; \
+		const float* table0 = table1 - 1; \
+		const float* table2 = table1 + 1; \
+		const float* table3 = table1 + 2; \
 		if (iphase == 0) { \
 			table0 += bufSamples; \
 		} else if (iphase >= guardFrame) { \
@@ -6312,8 +6312,8 @@ inline double sc_gloop(double in, double hi)
 		float amp = y1 * y1; \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table2 = table1 + 1; \
+		const float* table1 = bufData + iphase; \
+		const float* table2 = table1 + 1; \
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
@@ -6536,18 +6536,18 @@ void Pluck_Ctor(Pluck *unit)
 	unit->m_feedbk = sc_CalcFeedback(unit->m_delaytime, unit->m_decaytime);
 
 	if (INRATE(1) == calc_FullRate) {
-	    if(INRATE(5) == calc_FullRate){
-		SETCALC(Pluck_next_aa_z);
+		if(INRATE(5) == calc_FullRate){
+			SETCALC(Pluck_next_aa_z);
 		} else {
-		SETCALC(Pluck_next_ak_z); //ak
+			SETCALC(Pluck_next_ak_z); //ak
 		}
-	    } else {
+	} else {
 	    if(INRATE(5) == calc_FullRate){
-		SETCALC(Pluck_next_ka_z); //ka
+			SETCALC(Pluck_next_ka_z); //ka
 		} else {
-		SETCALC(Pluck_next_kk_z); //kk
+			SETCALC(Pluck_next_kk_z); //kk
 		}
-	    }
+	}
 	OUT0(0) = unit->m_lastsamp = 0.f;
 	unit->m_prevtrig = 0.f;
 	unit->m_inputsamps = 0;
