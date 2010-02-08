@@ -74,9 +74,7 @@ void* gstate_update_func(void* arg)
 	return 0;
 }
 
-#else
-
-# ifdef SC_WIN32
+#elif defined(SC_WIN32)
 
 void* gstate_update_func(void* arg)
 {
@@ -99,28 +97,25 @@ void* gstate_update_func(void* arg)
 static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
-  KeyboardUGenGlobalState* gstate ;
-  Window r ;
-  struct timespec requested_time , remaining_time ;
+	KeyboardUGenGlobalState* gstate;
+	Window r;
+	struct timespec requested_time , remaining_time;
 
-  requested_time.tv_sec = 0 ;
-  requested_time.tv_nsec = 17000 * 1000 ;
+	requested_time.tv_sec = 0;
+	requested_time.tv_nsec = 17000 * 1000;
 
-  d = XOpenDisplay ( NULL ) ;
-  if (!d) return 0;
+	d = XOpenDisplay ( NULL );
+	if (!d) return 0;
 
-  gstate = &gKeyStateGlobals ;
+	gstate = &gKeyStateGlobals;
 
-  for (;;) {
+	for (;;) {
+		XQueryKeymap ( d , (char *) (gstate->keys) );
+		nanosleep ( &requested_time , &remaining_time );
+	}
 
-    XQueryKeymap ( d , (char *) (gstate->keys) ) ;
-
-    nanosleep ( &requested_time , &remaining_time ) ;
-  }
-
-  return 0;
+	return 0;
 }
-# endif
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
