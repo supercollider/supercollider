@@ -81,7 +81,7 @@ void PV_ConformalMap_next(PV_Unit *unit, int inNumSamples)
 		//apply conformal map z-> z-a/(1-za*) where z is the existing complex number in the bin and a is defined by inputs 1 and 2
 		float numr= real1-real2;
 		float numi= imag1-imag2;
-		float denomr= 1- (real1*real2+imag1*imag2);
+		float denomr= 1.f - (real1*real2+imag1*imag2);
 		float denomi= (real1*imag2- real2*imag1);
 
 		numr= numr*denomr+numi*denomi;
@@ -91,8 +91,8 @@ void PV_ConformalMap_next(PV_Unit *unit, int inNumSamples)
 		denomr= denomr*denomr+denomi*denomi;
 
 		//avoid possible divide by zero
-		if(denomr<0.001) denomr=0.001;
-		denomr=1.0/denomr;
+		if(denomr<0.001f) denomr=0.001f;
+		denomr=1.f/denomr;
 
 		p->bin[i].real = numr*denomr;
 		p->bin[i].imag = numi*denomr;

@@ -81,8 +81,6 @@ struct PV_Conj : PV_Unit {};
 
 extern "C"
 {
-	void FFT_MaxSize(sc_msg_iter *msg);
-
 	void PV_PhaseShift_Ctor(PV_Unit *unit);
 	void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples);
 
@@ -201,11 +199,6 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void FFT_MaxSize(sc_msg_iter *msg)
-{
-}
-
-
 //SCPolarBuf* ToPolarApx(SndBuf *buf);
 /*
 SCPolarBuf* ToPolarApx(SndBuf *buf)
@@ -313,7 +306,7 @@ void PV_LocalMax_next(PV_Unit *unit, int inNumSamples)
 
 	float thresh = ZIN0(1);
 	float dc, nyq, mag;
-	
+
 	// DC is only compared with the one above it
 	dc = std::abs(p->dc);
 	mag = p->bin[0].mag;
@@ -351,7 +344,7 @@ void PV_MagSmear_next(PV_MagSmear *unit, int inNumSamples)
 
 	int width = (int)ZIN0(1);
 	width = sc_clip(width, 0, numbins-1);
-	float scale = 1. / (2*width+1);
+	float scale = 1.f / (2*width+1);
 
 	q->dc = p->dc;
 	q->nyq = p->nyq;
@@ -399,7 +392,7 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 	}
 
 	float fpos;
-        int i;
+	int i;
 	q->dc = p->dc;
 	q->nyq = p->nyq;
 	for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
@@ -443,7 +436,7 @@ void PV_MagShift_next(PV_MagShift *unit, int inNumSamples)
 	}
 
 	float fpos;
-        int i;
+	int i;
 	q->dc = p->dc;
 	q->nyq = p->nyq;
 	for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
@@ -719,7 +712,6 @@ void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 	// copy to buf2
 	buf2->coord = buf1->coord;
 	memcpy(buf2->data, buf1->data, buf1->samples * sizeof(float));
-
 }
 
 void PV_Copy_Ctor(PV_Unit *unit)
@@ -893,7 +885,6 @@ void PV_RectComb_next(PV_Unit *unit, int inNumSamples)
 	}
 
 	if (phase > width) p->nyq = 0.f;
-
 }
 
 void PV_RectComb_Ctor(PV_Unit *unit)
@@ -927,7 +918,6 @@ void PV_RectComb2_next(PV_Unit *unit, int inNumSamples)
 	}
 
 	if (phase > width) p->nyq = q->nyq;
-
 }
 
 void PV_RectComb2_Ctor(PV_Unit *unit)
@@ -937,8 +927,7 @@ void PV_RectComb2_Ctor(PV_Unit *unit)
 }
 
 
-void PV_RandComb_choose(PV_RandComb* unit);
-void PV_RandComb_choose(PV_RandComb* unit)
+static void PV_RandComb_choose(PV_RandComb* unit)
 {
 	int numbins = unit->m_numbins;
 	for (int i=0; i<numbins; ++i) {
@@ -988,7 +977,6 @@ void PV_RandComb_next(PV_RandComb *unit, int inNumSamples)
 		p->dc  = 0.f;
 		p->nyq = 0.f;
 	}
-
 }
 
 
@@ -1008,8 +996,7 @@ void PV_RandComb_Dtor(PV_RandComb* unit)
 
 //////////////////////
 
-void PV_RandWipe_choose(PV_RandWipe* unit);
-void PV_RandWipe_choose(PV_RandWipe* unit)
+static void PV_RandWipe_choose(PV_RandWipe* unit)
 {
 	int numbins = unit->m_numbins;
 	for (int i=0; i<numbins; ++i) {
@@ -1055,7 +1042,6 @@ void PV_RandWipe_next(PV_RandWipe *unit, int inNumSamples)
 	for (int i=0; i<n; ++i) {
 		p->bin[ordering[i]] = q->bin[ordering[i]];
 	}
-
 }
 
 
@@ -1075,8 +1061,7 @@ void PV_RandWipe_Dtor(PV_RandWipe* unit)
 
 //////////////////////
 
-void PV_Diffuser_choose(PV_Diffuser* unit);
-void PV_Diffuser_choose(PV_Diffuser* unit)
+static void PV_Diffuser_choose(PV_Diffuser* unit)
 {
 	RGET
 	for (int i=0; i<unit->m_numbins; ++i) {
@@ -1114,7 +1099,6 @@ void PV_Diffuser_next(PV_Diffuser *unit, int inNumSamples)
 	for (int i=0; i<n; ++i) {
 		p->bin[i].phase += shift[i];
 	}
-
 }
 
 
@@ -1182,10 +1166,8 @@ void PV_MagFreeze_Dtor(PV_MagFreeze* unit)
 
 //////////////////////
 
-void PV_BinScramble_choose(PV_BinScramble* unit);
-void PV_BinScramble_choose(PV_BinScramble* unit)
+static void PV_BinScramble_choose(PV_BinScramble* unit)
 {
-
 	int numbins = unit->m_numbins;
 	int *to = unit->m_to;
 	int *from = unit->m_from;
