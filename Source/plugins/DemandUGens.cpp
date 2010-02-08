@@ -2112,7 +2112,7 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 
 			phase = sc_loop((Unit*)unit, phase, loopMax, loop);
 			int32 iphase = (int32)phase;
-			float* table1 = bufData + iphase * bufChannels;
+			const float* table1 = bufData + iphase * bufChannels;
 			OUT0(0) = table1[0];
 		}
 		else
@@ -2123,20 +2123,18 @@ void Dbufrd_next(Dbufrd *unit, int inNumSamples)
 
 void Dbufrd_Ctor(Dbufrd *unit)
 {
+	SETCALC(Dbufrd_next);
 
-  SETCALC(Dbufrd_next);
+	unit->m_fbufnum = -1e9f;
 
-  unit->m_fbufnum = -1e9f;
-
-  Dbufrd_next(unit, 0);
-  OUT0(0) = 0.f;
+	Dbufrd_next(unit, 0);
+	OUT0(0) = 0.f;
 }
 
 ////////////////////////////////////
 
 void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 {
-
 	int32 loop     = (int32)DEMANDINPUT_A(3, inNumSamples);
 
 	D_GET_BUF
@@ -2147,41 +2145,40 @@ void Dbufwr_next(Dbufwr *unit, int inNumSamples)
 	double phase;
 	float val;
 	if (inNumSamples)
-		{
-			float x = DEMANDINPUT_A(1, inNumSamples);
-			if (sc_isnan(x)) {
-					OUT0(0) = NAN;
-					return;
-			}
-			phase = x;
-			val = DEMANDINPUT_A(2, inNumSamples);
-			if (sc_isnan(val)) {
-					OUT0(0) = NAN;
-					return;
-			}
+	{
+		float x = DEMANDINPUT_A(1, inNumSamples);
+		if (sc_isnan(x)) {
+			OUT0(0) = NAN;
+			return;
+		}
+		phase = x;
+		val = DEMANDINPUT_A(2, inNumSamples);
+		if (sc_isnan(val)) {
+			OUT0(0) = NAN;
+			return;
+		}
 
-			phase = sc_loop((Unit*)unit, phase, loopMax, loop);
-			int32 iphase = (int32)phase;
-			float* table0 = bufData + iphase * bufChannels;
-			table0[0] = val;
-			OUT0(0) = val;
-		}
-		else
-		{
-			RESETINPUT(1);
-			RESETINPUT(2);
-		}
+		phase = sc_loop((Unit*)unit, phase, loopMax, loop);
+		int32 iphase = (int32)phase;
+		float* table0 = bufData + iphase * bufChannels;
+		table0[0] = val;
+		OUT0(0) = val;
+	}
+	else
+	{
+		RESETINPUT(1);
+		RESETINPUT(2);
+	}
 }
 
 void Dbufwr_Ctor(Dbufwr *unit)
 {
+	SETCALC(Dbufwr_next);
 
-  SETCALC(Dbufwr_next);
+	unit->m_fbufnum = -1e9f;
 
-  unit->m_fbufnum = -1e9f;
-
-  Dbufwr_next(unit, 0);
-  OUT0(0) = 0.f;
+	Dbufwr_next(unit, 0);
+	OUT0(0) = 0.f;
 }
 
 
