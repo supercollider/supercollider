@@ -674,7 +674,6 @@ void PV_MagDiv_Ctor(PV_Unit *unit)
 
 void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 {
-
 	float fbufnum1 = ZIN0(0);
 	float fbufnum2 = ZIN0(1);
 	if (fbufnum1 < 0.f || fbufnum2 < 0.f) { ZOUT0(0) = -1.f; return; }
@@ -774,8 +773,6 @@ void PV_Div_next(PV_Unit *unit, int inNumSamples)
 	SCComplexBuf *p = ToComplexApx(buf1);
 	SCComplexBuf *q = ToComplexApx(buf2);
 
-	float hypot, preal;
-
 	p->dc  /= q->dc;
 	p->nyq /= q->nyq;
 	for (int i=0; i<numbins; ++i) {
@@ -783,8 +780,8 @@ void PV_Div_next(PV_Unit *unit, int inNumSamples)
 		// Note that hypot has danger of overflow (see URL above),
 		// however FFT values typically stay within a small range,
 		// so I'm considering this OK for now.
-		hypot = q->bin[i].real * q->bin[i].real + q->bin[i].imag * q->bin[i].imag;
-		preal = p->bin[i].real;
+		float hypot = q->bin[i].real * q->bin[i].real + q->bin[i].imag * q->bin[i].imag;
+		float preal = p->bin[i].real;
 		p->bin[i].real = (preal          * q->bin[i].real + p->bin[i].imag * q->bin[i].imag) / hypot;
 		p->bin[i].imag = (p->bin[i].imag * q->bin[i].real - preal          * q->bin[i].imag) / hypot;
 	}
