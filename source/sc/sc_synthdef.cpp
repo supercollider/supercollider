@@ -331,8 +331,10 @@ std::string sc_synthdef::dump(void) const
         stream << "\t" << it->first << " " << it->second << endl;
 
     stream << "ugens: " << endl;
-    for (uint i = 0; i != graph.size(); ++i)
-        stream << "\t" << graph[i].name << endl;
+    for (uint i = 0; i != graph.size(); ++i) {
+        stream << "\t" << graph[i].name << ": rate " << graph[i].rate
+               << endl;
+    }
 
     return stream.str();
 }
