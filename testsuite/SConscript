@@ -96,13 +96,6 @@ unit_test_sources = ["mutex_test.cpp",
                      "memory-pool_test.cpp"
                      ]
 
-
-
-simd_benchmark = unit_test_env.Program("simd_benchmark", ["dsp_simd_benchmarks.cpp"],
-                                       LIBS=["stdc++"],
-                                       CPPPATH=["#source"],
-                                       CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftemplate-depth-4096')
-
 unit_tests = [unit_test_env.Program(test[:-4],
                                     [test] + unit_test_common,
                                     )
