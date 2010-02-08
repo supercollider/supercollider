@@ -831,10 +831,10 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 #define LOOP_BODY_4 \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase * bufChannels; \
-		float* table0 = table1 - bufChannels; \
-		float* table2 = table1 + bufChannels; \
-		float* table3 = table2 + bufChannels; \
+		const float* table1 = bufData + iphase * bufChannels; \
+		const float* table0 = table1 - bufChannels; \
+		const float* table2 = table1 + bufChannels; \
+		const float* table3 = table2 + bufChannels; \
 		if (iphase == 0) { \
 			if (loop) { \
 				table0 += bufSamples; \
@@ -943,8 +943,8 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 		unit->m_fbufnum = fbufnum;
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
-	SndBuf *buf = unit->m_buf;
-	float *bufData __attribute__((__unused__)) = buf->data;
+	const SndBuf *buf = unit->m_buf;
+	const float *bufData __attribute__((__unused__)) = buf->data;
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
 	uint32 bufFrames = buf->frames;

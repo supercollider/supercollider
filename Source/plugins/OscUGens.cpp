@@ -397,7 +397,7 @@ void DegreeToKey_next_1(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 key, oct;
@@ -429,7 +429,7 @@ void DegreeToKey_next_k(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -465,7 +465,7 @@ void DegreeToKey_next_a(DegreeToKey *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -657,7 +657,7 @@ void Index_next_1(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)ZIN0(1);
@@ -669,7 +669,7 @@ void Index_next_k(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -688,7 +688,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -722,7 +722,7 @@ void FoldIndex_next_1(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)ZIN0(1);
@@ -734,7 +734,7 @@ void FoldIndex_next_k(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)ZIN0(1);
@@ -752,7 +752,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -785,7 +785,7 @@ void WrapIndex_next_1(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	int32 index = (int32)floor(ZIN0(1));
@@ -797,7 +797,7 @@ void WrapIndex_next_k(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -815,7 +815,7 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -830,7 +830,7 @@ void WrapIndex_next_a(WrapIndex *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-static float IndexInBetween_FindIndex(float* table, float in, int32 maxindex)
+static float IndexInBetween_FindIndex(const float* table, float in, int32 maxindex)
 {
 	for(int32 i = 0; i <= maxindex; i++) {
 		if(table[i] > in) {
@@ -861,7 +861,7 @@ void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float in = ZIN0(1);
@@ -872,7 +872,7 @@ void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -889,7 +889,7 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -903,7 +903,7 @@ void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-static int32 DetectIndex_FindIndex(float* table, float in, int32 maxindex)
+static int32 DetectIndex_FindIndex(const float* table, float in, int32 maxindex)
 {
 	int32 index;
 	for(index = 0; index <= maxindex; index+=1) {
@@ -932,7 +932,7 @@ void DetectIndex_next_1(DetectIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float in = ZIN0(1);
@@ -951,7 +951,7 @@ void DetectIndex_next_k(DetectIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -976,7 +976,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		int32 maxindex = tableSize - 1;
 
 	float *out = ZOUT(0);
@@ -1019,8 +1019,8 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
@@ -1042,8 +1042,8 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
@@ -1073,8 +1073,8 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
@@ -1119,8 +1119,8 @@ void SigOsc_next_1(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
 		if (tableSize != unit->mTableSize) {
@@ -1148,8 +1148,8 @@ void SigOsc_next_k(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
 		if (tableSize != unit->mTableSize) {
@@ -1183,8 +1183,8 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		int32 maxindex = tableSize - 1;
 		float maxphase = (float)maxindex;
 		if (tableSize != unit->mTableSize) {
@@ -1728,9 +1728,8 @@ void Osc_next_ikk(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
@@ -1763,8 +1762,8 @@ void Osc_next_ika(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
@@ -1797,8 +1796,8 @@ void Osc_next_iaa(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
@@ -1833,8 +1832,8 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
@@ -1924,7 +1923,7 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1956,7 +1955,7 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -1985,7 +1984,7 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -2016,7 +2015,7 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table = bufData;
+		const float *table = bufData;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			unit->m_lomask = (tableSize - 1) << 2;
@@ -2063,8 +2062,8 @@ void COsc_next(COsc *unit, int inNumSamples)
 {
 	// get table
 	GET_TABLE
-		float *table0 = bufData;
-		float *table1 = table0 + 1;
+		const float *table0 = bufData;
+		const float *table1 = table0 + 1;
 		if (tableSize != unit->mTableSize) {
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
