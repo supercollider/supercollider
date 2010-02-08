@@ -187,7 +187,7 @@ inline double sc_gloop(double in, double hi)
 }
 
 #define GRAIN_BUF													\
-	SndBuf *buf;													\
+	const SndBuf *buf;												\
 	if (bufnum >= world->mNumSndBufs) {								\
 		int localBufNum = bufnum - world->mNumSndBufs;				\
 		Graph *parent = unit->mParent;								\
@@ -202,7 +202,7 @@ inline double sc_gloop(double in, double hi)
 		buf = world->mSndBufs + bufnum;								\
 	}																\
 																	\
-	float *bufData __attribute__((__unused__)) = buf->data;			\
+	const float *bufData __attribute__((__unused__)) = buf->data;	\
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels;	\
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples;	\
 	uint32 bufFrames = buf->frames;									\
@@ -213,7 +213,7 @@ inline double sc_gloop(double in, double hi)
 	double winPos, winInc, w, b1, y1, y2, y0, amp;          \
 	winPos = winInc = w = b1 = y1 = y2 = y0 = amp = 0.;		\
 	SndBuf *window;											\
-	float *windowData __attribute__((__unused__));			\
+	const float *windowData __attribute__((__unused__)) = 0;\
 	uint32 windowSamples __attribute__((__unused__)) = 0;	\
 	uint32 windowFrames __attribute__((__unused__)) = 0;	\
 	int windowGuardFrame = 0;
@@ -422,8 +422,8 @@ inline double sc_gloop(double in, double hi)
 		winPos += winInc;										\
 		int iWinPos = (int)winPos;								\
 		double winFrac = winPos - (double)iWinPos;				\
-		float* winTable1 = windowData + iWinPos;				\
-		float* winTable2 = winTable1 + 1;						\
+		const float* winTable1 = windowData + iWinPos;			\
+		const float* winTable2 = winTable1 + 1;					\
 		if (!windowData)										\
 			break;												\
 		if (winPos > windowGuardFrame)							\
@@ -953,10 +953,10 @@ void GrainFM_Dtor(GrainFM *unit)
 #define GRAIN_BUF_LOOP_BODY_4 \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table0 = table1 - 1; \
-		float* table2 = table1 + 1; \
-		float* table3 = table1 + 2; \
+		const float* table1 = bufData + iphase; \
+		const float* table0 = table1 - 1; \
+		const float* table2 = table1 + 1; \
+		const float* table3 = table1 + 2; \
 		if (iphase == 0) { \
 			table0 += bufSamples; \
 		} else if (iphase >= guardFrame) { \
@@ -979,8 +979,8 @@ void GrainFM_Dtor(GrainFM *unit)
 #define GRAIN_BUF_LOOP_BODY_2 \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
-		float* table1 = bufData + iphase; \
-		float* table2 = table1 + 1; \
+		const float* table1 = bufData + iphase; \
+		const float* table2 = table1 + 1; \
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
