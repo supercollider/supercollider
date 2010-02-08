@@ -59,9 +59,7 @@ struct GrainIn : public Unit
 	int mNumActive, m_channels, mMaxGrains;
 	float curtrig;
 	bool mFirst;
-//	GrainInG mGrains[kMaxSynthGrains];
 	GrainInG *mGrains;
-
 };
 
 struct GrainSinG
@@ -80,7 +78,6 @@ struct GrainSin : public Unit
 	float curtrig;
 	bool mFirst;
 	double m_cpstoinc, m_radtoinc;
-//	GrainSinG mGrains[kMaxSynthGrains];
 	GrainSinG *mGrains;
 };
 
@@ -101,7 +98,6 @@ struct GrainFM : public Unit
 	float curtrig;
 	bool mFirst;
 	double m_cpstoinc, m_radtoinc;
-//	GrainFMG mGrains[kMaxSynthGrains];
 	GrainFMG *mGrains;
 };
 
@@ -118,7 +114,6 @@ struct GrainBuf : public Unit
 	int mNumActive, m_channels, mMaxGrains;
 	float curtrig;
 	bool mFirst;
-//	GrainBufG mGrains[kMaxSynthGrains];
 	GrainBufG *mGrains;
 };
 
@@ -609,7 +604,7 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 			if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GrainInG *grain = unit->mGrains + unit->mNumActive++;
 				winSize = GRAIN_IN_AT(unit, 1, i);
 				double counter = winSize * SAMPLERATE;
@@ -712,7 +707,7 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 		else {
 			float winType = IN0(4);
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GrainInG *grain = unit->mGrains + unit->mNumActive++;
 				winSize = IN0(1);
 				double counter = winSize * SAMPLERATE;
@@ -828,11 +823,13 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; ++i) {
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) {
 			// start a grain
-//			if (unit->mNumActive+1 >= kMaxSynthGrains) {Print("Too many grains!\n"); break;}
-			if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
+			if (unit->mNumActive+1 >= unit->mMaxGrains) {
+				Print("Too many grains!\n");
+				break;
+			}
 			float winType = GRAIN_IN_AT(unit, 4, i);
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GrainSinG *grain = unit->mGrains + unit->mNumActive++;
 				// INRATE(1) == calcFullRate
 				freq = GRAIN_IN_AT(unit, 2, i);
@@ -951,7 +948,7 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 		} else {
 			float winType = IN0(4);
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GrainSinG *grain = unit->mGrains + unit->mNumActive++;
 				freq = IN0(2);
 				winSize = IN0(1);
@@ -1089,7 +1086,7 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 		if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 		float winType = GRAIN_IN_AT(unit, 6, i);
 		GET_GRAIN_WIN
-		if((windowData) || (winType < 0.)) {
+		if (windowData || (winType < 0.)) {
 
 			GrainFMG *grain = unit->mGrains + unit->mNumActive++;
 			winSize = GRAIN_IN_AT(unit, 1, i);
@@ -1222,7 +1219,7 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 		else {
 			float winType = IN0(6);
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GrainFMG *grain = unit->mGrains + unit->mNumActive++;
 				winSize = IN0(1);
 				carfreq = IN0(2);
@@ -1433,7 +1430,7 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 					GET_GRAIN_WIN
 				}
 
-				if((windowData) || (winType < 0.)) {
+				if (windowData || (winType < 0.)) {
 					uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 2, i);
 					grain->bufnum = bufnum;
 //					if (bufnum >= numBufs) continue;
@@ -1595,7 +1592,7 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 				GET_GRAIN_WIN
 			}
 
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				uint32 bufnum = (uint32)IN0( 2 );
 				grain->bufnum = bufnum;
 
@@ -1816,7 +1813,7 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 			grain->interp = (int)GRAIN_IN_AT(unit, 7, i);
 			float winType = grain->winType = (int)GRAIN_IN_AT(unit, 4, i); // the buffer that holds the grain shape
 			GET_GRAIN_WIN
-			if((windowData) || (winType < 0.)) {
+			if (windowData || (winType < 0.)) {
 				GET_GRAIN_INIT_AMP
 
 				float *out1 = out[n] + i;
