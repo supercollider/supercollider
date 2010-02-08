@@ -81,24 +81,23 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-int FFTBase_Ctor(FFTBase *unit, int frmsizinput);
-int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
+static int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 {
 	World *world = unit->mWorld;
 
 	uint32 bufnum = (uint32)ZIN0(0);
 	SndBuf *buf;
 	if (bufnum >= world->mNumSndBufs) {
-			int localBufNum = bufnum - world->mNumSndBufs;
-			Graph *parent = unit->mParent;
-			if(localBufNum <= parent->localMaxBufNum) {
-				buf = parent->mLocalSndBufs + localBufNum;
-			} else {
-				if(unit->mWorld->mVerbosity > -1){ Print("FFTBase_Ctor error: invalid buffer number: %i.\n", bufnum); }
-				return 0;
-			}
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localMaxBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			if(unit->mWorld->mVerbosity > -1){ Print("FFTBase_Ctor error: invalid buffer number: %i.\n", bufnum); }
+			return 0;
+		}
 	} else {
-			buf = world->mSndBufs + bufnum;
+		buf = world->mSndBufs + bufnum;
 	}
 
 
@@ -202,7 +201,8 @@ void FFT_Dtor(FFT *unit)
 }
 
 // Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's skip that:
-void FFT_ClearUnitOutputs(FFT *unit, int wrongNumSamples){
+void FFT_ClearUnitOutputs(FFT *unit, int wrongNumSamples)
+{
 	ZOUT0(0) = -1;
 }
 
@@ -222,9 +222,8 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	bool gate = ZIN0(4) > 0.f; // Buffer shunting continues, but no FFTing
 
 	if (unit->m_pos != unit->m_hopsize || !unit->m_fftsndbuf->data || unit->m_fftsndbuf->samples != unit->m_fullbufsize) {
-		if(unit->m_pos == unit->m_hopsize){
+		if(unit->m_pos == unit->m_hopsize)
 			unit->m_pos = 0;
-		}
 		ZOUT0(0) = -1.f;
 	} else {
 
@@ -275,7 +274,8 @@ void IFFT_Ctor(IFFT* unit){
 
 }
 
-void IFFT_Dtor(IFFT* unit){
+void IFFT_Dtor(IFFT* unit)
+{
 	if(unit->m_olabuf)
 		RTFree(unit->mWorld, unit->m_olabuf);
 	if(unit->m_scfft){
@@ -286,8 +286,8 @@ void IFFT_Dtor(IFFT* unit){
 		RTFree(unit->mWorld, unit->m_transformbuf);
 }
 
-void IFFT_next(IFFT *unit, int wrongNumSamples){
-
+void IFFT_next(IFFT *unit, int wrongNumSamples)
+{
 	float *out = OUT(0); // NB not ZOUT0
 
 	// Load state from struct into local scope
@@ -312,9 +312,8 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 		// Then shunt the "old" time-domain output down by one hop
 		int hopsamps = pos;
 		int shuntsamps = audiosize - hopsamps;
-		if(hopsamps != audiosize){  // There's only copying to be done if the position isn't all the way to the end of the buffer
+		if(hopsamps != audiosize)  // There's only copying to be done if the position isn't all the way to the end of the buffer
 			memcpy(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
-		}
 
 		// Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to be zero.
 		#if SC_DARWIN
@@ -335,9 +334,9 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 	// Now we can output some stuff, as long as there is still data waiting to be output.
 	// If there is NOT data waiting to be output, we output zero. (Either irregular/negative-overlap
 	//     FFT firing, or FFT has given up, or at very start of execution.)
-	if(pos >= audiosize){
+	if(pos >= audiosize)
 		ClearUnitOutputs(unit, numSamples);
-	}else{
+	else {
 		memcpy(out, olabuf + pos, numSamples * sizeof(float));
 		pos += numSamples;
 	}
@@ -349,7 +348,6 @@ void IFFT_next(IFFT *unit, int wrongNumSamples){
 
 void FFTTrigger_Ctor(FFTTrigger *unit)
 {
-
 	World *world = unit->mWorld;
 
 /*
@@ -364,16 +362,16 @@ void FFTTrigger_Ctor(FFTTrigger *unit)
 	//Print("FFTTrigger_Ctor: bufnum is %i\n", bufnum);
 	SndBuf *buf;
 	if (bufnum >= world->mNumSndBufs) {
-			int localBufNum = bufnum - world->mNumSndBufs;
-			Graph *parent = unit->mParent;
-			if(localBufNum <= parent->localMaxBufNum) {
-				buf = parent->mLocalSndBufs + localBufNum;
-			} else {
-				bufnum = 0;
-				buf = world->mSndBufs + bufnum;
-			}
-	} else {
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localMaxBufNum) {
+			buf = parent->mLocalSndBufs + localBufNum;
+		} else {
+			bufnum = 0;
 			buf = world->mSndBufs + bufnum;
+		}
+	} else {
+		buf = world->mSndBufs + bufnum;
 	}
 
 

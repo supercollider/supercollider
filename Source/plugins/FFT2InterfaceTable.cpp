@@ -25,7 +25,7 @@
 
 extern "C"
 {
-		void load(InterfaceTable *inTable);
+	void load(InterfaceTable *inTable);
 }
 
 InterfaceTable *ft;
@@ -39,7 +39,6 @@ extern void initFeatureDetectors(InterfaceTable *it);
 
 void load(InterfaceTable *inTable)
 {
-
 	ft= inTable;
 	init_SCComplex(inTable);
 
