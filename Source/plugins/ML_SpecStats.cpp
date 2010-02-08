@@ -159,9 +159,8 @@ void SpecFlatness_Ctor(SpecFlatness *unit)
 void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 {
 	FFTAnalyser_GET_BUF
-	if(unit->m_oneovern == 0.){
+	if(unit->m_oneovern == 0.)
 		unit->m_oneovern = 1./(numbins + 2);
-	}
 
 	SCComplexBuf *p = ToComplexApx(buf);
 
@@ -176,7 +175,7 @@ void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 		float rabs = (p->bin[i].real);
 		float iabs = (p->bin[i].imag);
 		float amp = std::sqrt((rabs*rabs) + (iabs*iabs));
-		if(amp != 0.f){ // zeroes lead to NaNs
+		if(amp != 0.f) { // zeroes lead to NaNs
 			geommean += std::log(amp);
 			mean += amp;
 		}
@@ -207,7 +206,7 @@ void SpecPcile_Ctor(SpecPcile *unit)
 void SpecPcile_next(SpecPcile *unit, int inNumSamples)
 {
 	FFTAnalyser_GET_BUF
-	
+
 	// Used to be MAKE_TEMP_BUF but we can handle it more cleanly in this specific case:
 	if (!unit->m_tempbuf) {
 		unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
