@@ -473,52 +473,6 @@ inline double sc_gloop(double in, double hi)
 		out2 = out[chan2];						\
 	}
 
-#define WARP_GRAIN_LOOP_BODY_4										\
-	phase = sc_gloop(phase, loopMax);								\
-	int32 iphase = (int32)phase;									\
-	float* table1 = bufData + iphase * bufChannels;					\
-	float* table0 = table1 - bufChannels;							\
-	float* table2 = table1 + bufChannels;							\
-	float* table3 = table2 + bufChannels;							\
-	if (iphase == 0) {												\
-		table0 += bufSamples;										\
-	} else if (iphase >= guardFrame) {								\
-		if (iphase == guardFrame) {									\
-			table3 -= bufSamples;									\
-		} else {													\
-			table2 -= bufSamples;									\
-			table3 -= bufSamples;									\
-		}															\
-	}																\
-	float fracphase = phase - (double)iphase;						\
-	float a = table0[n];											\
-	float b = table1[n];											\
-	float c = table2[n];											\
-	float d = table3[n];											\
-	float outval = amp * cubicinterp(fracphase, a, b, c, d);		\
-	ZXP(out1) += outval;
-
-#define WARP_GRAIN_LOOP_BODY_2							\
-	phase = sc_gloop(phase, loopMax);					\
-	int32 iphase = (int32)phase;						\
-	float* table1 = bufData + iphase * bufChannels;		\
-	float* table2 = table1 + bufChannels;				\
-	if (iphase > guardFrame) {							\
-		table2 -= bufSamples;							\
-	}													\
-	float fracphase = phase - (double)iphase;			\
-	float b = table1[n];								\
-	float c = table2[n];								\
-	float outval = amp * (b + fracphase * (c - b));		\
-	ZXP(out1) += outval;
-
-// amp needs to be calculated by looking up values in window
-
-#define WARP_GRAIN_LOOP_BODY_1						\
-	phase = sc_gloop(phase, loopMax);				\
-	int32 iphase = (int32)phase;					\
-	float outval = amp * bufData[iphase + n];		\
-	ZXP(out1) += outval;
 
 //////////////////// InGrain ////////////////////
 
