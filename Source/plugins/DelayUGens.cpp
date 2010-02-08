@@ -223,7 +223,8 @@ struct BufInfoUnit : public Unit
 };
 
 struct Pluck : public FeedbackDelay
-{	float m_lastsamp, m_prevtrig, m_coef;
+{
+	float m_lastsamp, m_prevtrig, m_coef;
 	long m_inputsamps;
 };
 
@@ -235,7 +236,6 @@ struct LocalBuf : public Unit
 
 struct MaxLocalBufs : public Unit
 {
-
 };
 
 struct SetBuf : public Unit
@@ -694,8 +694,8 @@ void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void SetBuf_next(SetBuf *unit, int inNumSamples) {
-
+void SetBuf_next(SetBuf *unit, int inNumSamples)
+{
 	GET_BUF
 	if (!bufData) {
 		if(unit->mWorld->mVerbosity > -2){
@@ -727,8 +727,8 @@ void SetBuf_Ctor(SetBuf *unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void ClearBuf_next(ClearBuf *unit, int inNumSamples) {
-
+void ClearBuf_next(ClearBuf *unit, int inNumSamples)
+{
 	GET_BUF
 	if (!bufData) {
 		if(unit->mWorld->mVerbosity > -2){
@@ -768,21 +768,6 @@ static float cubicinterp(float x, float y0, float y1, float y2, float y3)
 	return ((c3 * x + c2) * x + c1) * x + c0;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-inline float CalcFeedback(float delaytime, float decaytime)
-{
-	if (delaytime == 0.f) {
-		return 0.f;
-	} else if (decaytime > 0.f) {
-		return exp(log001 * delaytime / decaytime);
-	} else if (decaytime < 0.f) {
-		return -exp(log001 * delaytime / -decaytime);
-	} else {
-		return 0.f;
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1004,7 +989,8 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 
 		phase += ZXP(ratein);
 	}
-	if(unit->mDone) { DoneAction((int)ZIN0(5), unit); }
+	if(unit->mDone)
+		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
 	unit->m_prevtrig = prevtrig;
 }
@@ -1048,7 +1034,8 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 
 		phase += ZXP(ratein);
 	}
-	if(unit->mDone) { DoneAction((int)ZIN0(5), unit); }
+	if(unit->mDone)
+		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
 }
 
@@ -1075,7 +1062,8 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 
 		phase += rate;
 	}
-	if(unit->mDone) { DoneAction((int)ZIN0(5), unit); }
+	if(unit->mDone)
+		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
 }
 
@@ -1105,7 +1093,8 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 
 		phase += rate;
 	}
-	if(unit->mDone) { DoneAction((int)ZIN0(5), unit); }
+	if(unit->mDone)
+		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
 	unit->m_prevtrig = prevtrig;
 }
@@ -1599,10 +1588,9 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 
 
 
-float insertMedian(float* values, int* ages, int size, float value);
-float insertMedian(float* values, int* ages, int size, float value)
+static float insertMedian(float* values, int* ages, int size, float value)
 {
-	int i, last, pos=-1;
+	int pos=-1;
 
 	// keeps a sorted list of the previous n=size values
 	// the oldest is removed and the newest is inserted.
@@ -1611,9 +1599,9 @@ float insertMedian(float* values, int* ages, int size, float value)
 	// values and ages are both arrays that are 'size' int.
 	// the median value is always values[size>>1]
 
-	last = size - 1;
+	int last = size - 1;
 	// find oldest bin and age the other bins.
-	for (i=0; i<size; ++i) {
+	for (int i=0; i<size; ++i) {
 		if (ages[i] == last) { // is it the oldest bin ?
 			pos = i;
 		} else {
@@ -1638,13 +1626,10 @@ float insertMedian(float* values, int* ages, int size, float value)
 	return values[size>>1];
 }
 
-void initMedian(float* values, int* ages, int size, float value);
-void initMedian(float* values, int* ages, int size, float value)
+static void initMedian(float* values, int* ages, int size, float value)
 {
-	int i;
-
 	// initialize the arrays with the first value
-	for (i=0; i<size; ++i) {
+	for (int i=0; i<size; ++i) {
 		values[i] = value;
 		ages[i] = i;
 	}
@@ -1686,16 +1671,16 @@ void Pitch_Ctor(Pitch *unit)
 
 	if (INRATE(kPitchIn) == calc_FullRate) {
 		SETCALC(Pitch_next_a);
-	 	unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
-    	unit->m_srate = FULLRATE / (float)unit->m_downsamp;
+		unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
+		unit->m_srate = FULLRATE / (float)unit->m_downsamp;
 	} else {
- 		SETCALC(Pitch_next_k);
+		SETCALC(Pitch_next_k);
 	 	unit->m_downsamp = sc_max(downsamp, 1);
 		unit->m_srate = FULLRATE / (float) (unit->mWorld->mFullRate.mBufLength*unit->m_downsamp);
 	}
 
-    unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
-    unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
+	unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
+	unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
 	unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
@@ -1866,8 +1851,8 @@ void Pitch_next_a(Pitch *unit, int inNumSamples)
 					}
 
 					// make a fractional period
-					float beta = 0.5 * (nextampsum - prevampsum);
-					float gamma = 2.0  * maxsum - nextampsum - prevampsum;
+					float beta = 0.5f * (nextampsum - prevampsum);
+					float gamma = 2.f  * maxsum - nextampsum - prevampsum;
 					float fperiod = (float)period + (beta/gamma);
 
 					// calculate frequency
@@ -2161,7 +2146,7 @@ void BufFeedbackDelay_Reset(BufFeedbackDelay *unit)
 	BufDelayUnit_Reset(unit);
 
 	unit->m_decaytime = ZIN0(3);
-	unit->m_feedbk = CalcFeedback(unit->m_delaytime, unit->m_decaytime);
+	unit->m_feedbk = sc_CalcFeedback(unit->m_delaytime, unit->m_decaytime);
 }
 
 
@@ -2636,7 +2621,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 				if (dlywr == dlyN) dlywr = dlybuf1;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -2664,7 +2649,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
@@ -2731,7 +2716,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 				irdphase += nsmps;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -2770,7 +2755,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -2843,7 +2828,7 @@ void BufCombL_next(BufCombL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -2916,7 +2901,7 @@ void BufCombL_next_z(BufCombL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3003,7 +2988,7 @@ void BufCombC_next(BufCombC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3091,7 +3076,7 @@ void BufCombC_next_z(BufCombC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3195,7 +3180,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 				if (dlywr == dlyN) dlywr = dlybuf1;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -3224,7 +3209,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
@@ -3296,7 +3281,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 				irdphase += nsmps;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -3337,7 +3322,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3415,7 +3400,7 @@ void BufAllpassL_next(BufAllpassL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3489,7 +3474,7 @@ void BufAllpassL_next_z(BufAllpassL *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3580,7 +3565,7 @@ void BufAllpassC_next(BufAllpassC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3670,7 +3655,7 @@ void BufAllpassC_next_z(BufAllpassC *unit, int inNumSamples)
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -3778,7 +3763,7 @@ void FeedbackDelay_Reset(FeedbackDelay *unit)
 
 	DelayUnit_Reset(unit);
 
-	unit->m_feedbk = CalcFeedback(unit->m_delaytime, unit->m_decaytime);
+	unit->m_feedbk = sc_CalcFeedback(unit->m_delaytime, unit->m_decaytime);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4251,7 +4236,7 @@ void CombN_next(CombN *unit, int inNumSamples)
 				if (dlywr == dlyN) dlywr = dlybuf1;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -4278,7 +4263,7 @@ void CombN_next(CombN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
@@ -4344,7 +4329,7 @@ void CombN_next_z(CombN *unit, int inNumSamples)
 				irdphase += nsmps;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -4382,7 +4367,7 @@ void CombN_next_z(CombN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -4455,7 +4440,7 @@ void CombL_next(CombL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -4528,7 +4513,7 @@ void CombL_next_z(CombL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -4615,7 +4600,7 @@ void CombC_next(CombC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -4703,7 +4688,7 @@ void CombC_next_z(CombC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -4806,7 +4791,7 @@ void AllpassN_next(AllpassN *unit, int inNumSamples)
 				if (dlywr == dlyN) dlywr = dlybuf1;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -4834,7 +4819,7 @@ void AllpassN_next(AllpassN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 		LOOP1(inNumSamples,
 			dsamp += dsamp_slope;
@@ -4905,7 +4890,7 @@ void AllpassN_next_z(AllpassN *unit, int inNumSamples)
 				irdphase += nsmps;
 			}
 		} else {
-			float next_feedbk = CalcFeedback(delaytime, decaytime);
+			float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 			float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 			long remain = inNumSamples;
 			while (remain) {
@@ -4945,7 +4930,7 @@ void AllpassN_next_z(AllpassN *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -5023,7 +5008,7 @@ void AllpassL_next(AllpassL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -5097,7 +5082,7 @@ void AllpassL_next_z(AllpassL *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -5188,7 +5173,7 @@ void AllpassC_next(AllpassC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -5278,7 +5263,7 @@ void AllpassC_next_z(AllpassC *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		LOOP1(inNumSamples,
@@ -6568,7 +6553,7 @@ void Pluck_Ctor(Pluck *unit)
 
 	unit->m_numoutput = 0;
 	unit->m_iwrphase = 0;
-	unit->m_feedbk = CalcFeedback(unit->m_delaytime, unit->m_decaytime);
+	unit->m_feedbk = sc_CalcFeedback(unit->m_delaytime, unit->m_decaytime);
 
 	if (INRATE(1) == calc_FullRate) {
 	    if(INRATE(5) == calc_FullRate){
@@ -6643,7 +6628,7 @@ void Pluck_next_aa(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 	    for(int i = 0; i < inNumSamples; i++){
@@ -6765,7 +6750,7 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		for(int i = 0; i < inNumSamples; i++) {
@@ -6888,7 +6873,7 @@ void Pluck_next_kk(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		float curcoef = unit->m_coef;
@@ -7007,7 +6992,7 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		float curcoef = unit->m_coef;
@@ -7128,7 +7113,7 @@ void Pluck_next_ak(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		float curcoef = unit->m_coef;
@@ -7253,7 +7238,7 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		float curcoef = unit->m_coef;
@@ -7381,7 +7366,7 @@ void Pluck_next_ka(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 	    for(int i = 0; i < inNumSamples; i++){
@@ -7497,7 +7482,7 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
-		float next_feedbk = CalcFeedback(delaytime, decaytime);
+		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
 		for(int i = 0; i < inNumSamples; i++) {
