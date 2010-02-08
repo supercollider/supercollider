@@ -222,7 +222,7 @@ void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		float pan = pos * 0.5 + 0.5;
+		float pan = pos * 0.5f + 0.5f;
 		float nextrightamp = level * pan;
 		float nextleftamp  = level - nextrightamp;
 
@@ -248,7 +248,7 @@ void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		float pan = pos * 0.5 + 0.5;
+		float pan = pos * 0.5f + 0.5f;
 		float nextrightamp = level * pan;
 		float nextleftamp  = level - nextrightamp;
 
@@ -639,7 +639,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 	}
 	unit->m_pos = ZIN0(2);
 	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
-	unit->m_amp = unit->m_pos * 0.5 + 0.5;
+	unit->m_amp = unit->m_pos * 0.5f + 0.5f;
 
 	LinXFade2_next_a(unit, 1);
 }
@@ -655,7 +655,7 @@ void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
 	if (pos != unit->m_pos) {
 		pos = sc_clip(pos, -1.f, 1.f);
 
-		float nextamp  = (pos * 0.5 + 0.5);
+		float nextamp  = pos * 0.5f + 0.5f;
 		float amp_slope  = (nextamp - amp) * unit->mRate->mSlopeFactor;
 
 		LOOP1(inNumSamples,
@@ -685,7 +685,7 @@ void LinXFade2_next_a(LinXFade2 *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		float pos = ZXP(posp);
 		pos = sc_clip(pos, -1.f, 1.f);
-		float amp = pos * 0.5 + 0.5;
+		float amp = pos * 0.5f + 0.5f;
 		float l = ZXP(leftin);
 		float r = ZXP(rightin);
 		ZXP(out) = l + amp * (r - l);
@@ -1488,7 +1488,7 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	float range = numOutputs * rwidth;
 	float rrange = 1.f / range;
 
-	pos = pos * 0.5 * numOutputs + width * 0.5 + orientation;
+	pos = pos * 0.5f * numOutputs + width * 0.5f + orientation;
 
 	float *zin0 = ZIN(0);
 
