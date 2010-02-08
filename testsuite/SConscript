@@ -47,8 +47,7 @@ unit_test_common = ["boost_test.cpp",
                     ]
 
 # simple standalone tests
-unit_test_sources = ["mutex_test.cpp",
-                     "approximation_test.cpp",
+unit_test_sources = ["approximation_test.cpp",
                      "callback_interpreter_system.cpp",
                      "timetag_test.cpp",
                      "timer_system_test.cpp",
