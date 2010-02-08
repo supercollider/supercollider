@@ -61,21 +61,20 @@ struct TBall : public Unit
 
 extern "C"
 {
-void load(InterfaceTable *inTable);
+	void load(InterfaceTable *inTable);
 
 
-void Spring_Ctor(Spring *unit);
-void Spring_next(Spring *unit, int inNumSamples);
+	void Spring_Ctor(Spring *unit);
+	void Spring_next(Spring *unit, int inNumSamples);
 
-//void Friction_Ctor(Friction *unit);
-//void Friction_next(Friction *unit, int inNumSamples);
+	//void Friction_Ctor(Friction *unit);
+	//void Friction_next(Friction *unit, int inNumSamples);
 
-void Ball_Ctor(Ball *unit);
-void Ball_next(Ball *unit, int inNumSamples);
+	void Ball_Ctor(Ball *unit);
+	void Ball_next(Ball *unit, int inNumSamples);
 
-void TBall_Ctor(TBall *unit);
-void TBall_next(TBall *unit, int inNumSamples);
-
+	void TBall_Ctor(TBall *unit);
+	void TBall_next(TBall *unit, int inNumSamples);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +111,6 @@ void Spring_next(Spring *unit, int inNumSamples)
 
 	unit->m_pos = pos;
 	unit->m_vel = vel;
-
 }
 
 
@@ -214,13 +212,11 @@ void Ball_Ctor(Ball *unit)
 	unit->m_pos = ZIN0(0);
 	unit->m_prev = ZIN0(0);
 	Ball_next(unit, 1);
-
 }
 
 
 void Ball_next(Ball *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float *in = ZIN(0); 			// floor position
 	float g_in = ZIN0(1); 			// gravity
@@ -243,7 +239,6 @@ void Ball_next(Ball *unit, int inNumSamples)
 #endif //#ifdef _MSC_VER
 
 	LOOP1(inNumSamples,
-
 		float floor = ZXP(in);
 		float floorvel;
 		float dither;
@@ -255,23 +250,23 @@ void Ball_next(Ball *unit, int inNumSamples)
 		float vel_diff = floorvel - vel;
 		if(sc_abs(dist) < k) { // sticky friction: maybe vel dependant?
 
-				if(sc_abs(dist) < (k*0.005)) {
-					vel = 0.f;
-					pos = floor + g;
-				} else {
-					vel = vel_diff * inter + vel;
-					pos = (floor - pos) * inter + pos;
-				}
+			if(sc_abs(dist) < (k*0.005)) {
+				vel = 0.f;
+				pos = floor + g;
+			} else {
+				vel = vel_diff * inter + vel;
+				pos = (floor - pos) * inter + pos;
+			}
 
 		} else if(dist <= 0.f) {
 
-					pos = floor - dist;
-					vel = vel_diff;
-					vel *= damping;
+			pos = floor - dist;
+			vel = vel_diff;
+			vel *= damping;
 
-					dither = rgen.frand() * 0.00005f * g_in; // dither to reduce jitter
-					//if(sc_abs(dist) < 0.000001) { vel += dither; }
-					vel += dither;
+			dither = rgen.frand() * 0.00005f * g_in; // dither to reduce jitter
+			//if(sc_abs(dist) < 0.000001) { vel += dither; }
+			vel += dither;
 		}
 		prev_floor = floor;
 		ZXP(out) = pos;
@@ -280,15 +275,10 @@ void Ball_next(Ball *unit, int inNumSamples)
 	unit->m_pos = pos;
 	unit->m_vel = vel;
 	unit->m_prev = prev_floor;
-
 }
 
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
-
 
 void TBall_Ctor(TBall *unit)
 {
@@ -297,12 +287,10 @@ void TBall_Ctor(TBall *unit)
 	unit->m_pos = ZIN0(0);
 	unit->m_prev = ZIN0(0);
 	TBall_next(unit, 1);
-
 }
 
 void TBall_next(TBall *unit, int inNumSamples)
 {
-
 	float *out = ZOUT(0);
 	float *in = ZIN(0); 		// floor position
 	float g_in = ZIN0(1); 		// gravity
@@ -325,7 +313,6 @@ void TBall_next(TBall *unit, int inNumSamples)
 #endif //#ifdef _MSC_VER
 
 	LOOP1(inNumSamples,
-
 		double floor = ZXP(in);
 		float floorvel;
 		float outval = 0.f;
@@ -361,7 +348,6 @@ void TBall_next(TBall *unit, int inNumSamples)
 	unit->m_pos = pos;
 	unit->m_vel = vel;
 	unit->m_prev = prev_floor;
-
 }
 
 
@@ -372,7 +358,6 @@ void TBall_next(TBall *unit, int inNumSamples)
 PluginLoad(PhysicalModeling)
 {
 	ft = inTable;
-
 
 	DefineSimpleUnit(Spring);
 //	DefineSimpleUnit(Friction);
