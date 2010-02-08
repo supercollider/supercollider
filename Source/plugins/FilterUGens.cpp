@@ -4253,9 +4253,9 @@ void Hilbert_Ctor(Hilbert *unit)
 
 void Hilbert_next(Hilbert *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *outcos = OUT(0);
-	float *outsin = OUT(1);
+	float *in = ZIN(0);
+	float *outcos = ZOUT(0);
+	float *outsin = ZOUT(1);
 	float y1[12];
 	float coefs[12];
 
@@ -4271,53 +4271,13 @@ void Hilbert_next(Hilbert *unit, int inNumSamples)
 	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
 	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
-	for (int i = 0; i < inNumSamples; ++i) {
-
-		float thisin = in[i];
+	LOOP1(inNumSamples,
+		float thisin = ZXP(in);
 
 		HILBERT_FILTER
-		/*
-		y0_1 = thisin - (coefs[0]) * y1[0];
-		ay1 = coefs[0] * y0_1 + 1 * y1[0];
-		y1[0] = y0_1;
-		y0_2 = ay1 - (coefs[1]) * y1[1];
-		ay2 = coefs[1] * y0_2 + 1 * y1[1];
-		y1[1] = y0_2;
-		y0_3 = ay2 - (coefs[2]) * y1[2];
-		ay3 = coefs[2] * y0_3 + 1 * y1[2];
-		y1[2] = y0_3;
-		y0_4 = ay3 - (coefs[3]) * y1[3];
-		ay4 =coefs[3] *  y0_4 + 1 * y1[3];
-		y1[3] = y0_4;
-		y0_5 = ay4 - (coefs[4]) * y1[4];
-		ay5 = coefs[4] * y0_5 + 1 * y1[4];
-		y1[4] = y0_5;
-		y0_6 = ay5 - (coefs[5]) * y1[5];
-		outcos[i] = ay6 = coefs[5] * y0_6 + 1 * y1[5];
-		y1[5] = y0_6;
-
-		y0_7 = thisin - (coefs[6]) * y1[6];
-		ay7 = coefs[6] * y0_7 + 1 * y1[6];
-		y1[6] = y0_7;
-		y0_8 = ay7 - (coefs[7]) * y1[7];
-		ay8 = coefs[7] * y0_8 + 1 * y1[7];
-		y1[7] = y0_8;
-		y0_9 = ay8 - (coefs[8]) * y1[8];
-		ay9 = coefs[8] * y0_9 + 1 * y1[8];
-		y1[8] = y0_9;
-		y0_10 = ay9 - (coefs[9]) * y1[9];
-		ay10 = coefs[9] * y0_10 + 1 * y1[9];
-		y1[9] = y0_10;
-		y0_11 = ay10 - (coefs[10]) * y1[10];
-		ay11 = coefs[10] * y0_11  + 1 * y1[10];
-		y1[10] = y0_11;
-		y0_12 = ay11 - (coefs[11]) * y1[11];
-		outsin[i] = ay12 = coefs[11] * y0_12 + 1 * y1[11];
-		y1[11] = y0_12;
-		*/
-		outcos[i] = ay6;
-		outsin[i] = ay12;
-	}
+		ZXP(outcos) = ay6;
+		ZXP(outsin) = ay12;
+	)
 
 	for(int i = 0; i < 12; ++i)
 		unit->m_y1[i] = zapgremlins(y1[i]);
@@ -4384,10 +4344,10 @@ void FreqShift_Ctor(FreqShift *unit)
 
 void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *out = OUT(0);
-	float phasein = IN0(2);
-	float freqin = IN0(1);
+	float *in = ZIN(0);
+	float *out = ZOUT(0);
+	float phasein = ZIN0(2);
+	float freqin = ZIN0(1);
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
@@ -4397,12 +4357,9 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 	int32 lomask = unit->m_lomask;
+	int32 phase = unit->m_phase;
 
-	int32 freq, phase;
-
-	phase = unit->m_phase;
-
-	freq = (int32)(unit->m_cpstoinc * freqin);
+	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
@@ -4418,9 +4375,8 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
 	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
-	for (int i = 0; i < inNumSamples; ++i) {
-
-		float thisin = in[i];
+	LOOP1(inNumSamples,
+		float thisin = ZXP(in);
 
 		HILBERT_FILTER
 
@@ -4430,10 +4386,10 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 		outsinosc = lookupi1(table0, table1, phase, lomask);
 		outsinoscHalfPi = lookupi1(table0, table1, phase + halfPi, lomask);
 
-		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+		ZXP(out) = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
 
 		phase += phaseinc;
-	}
+	)
 
 	unit->m_phase = phase;
 
@@ -4443,10 +4399,10 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 
 void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *out = OUT(0);
-	float *phasein = IN(2);
-	float *freqin = IN(1);
+	float *in = ZIN(0);
+	float *out = ZOUT(0);
+	float *phasein = ZIN(2);
+	float *freqin = ZIN(1);
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
@@ -4456,10 +4412,7 @@ void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 	int32 lomask = unit->m_lomask;
-
-	int32 phase;
-
-	phase = unit->m_phase;
+	int32 phase = unit->m_phase;
 
 	// each filter's last sample
 	for(int i = 0; i < 12; ++i){
@@ -4473,36 +4426,34 @@ void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
 	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
 	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
-	for (int i = 0; i < inNumSamples; ++i) {
-
-		float thisin = in[i];
+	LOOP1(inNumSamples,
+		float thisin = ZXP(in);
 
 		HILBERT_FILTER
 
 		outcos = ay6;
 		outsin = ay12;
 
-		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * phasein[i]);
+		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * ZXP(phasein));
 		outsinosc = lookupi1(table0, table1, phaseoffset, lomask);
 		outsinoscHalfPi = lookupi1(table0, table1, phaseoffset + halfPi, lomask);
-		phase += (int32)(unit->m_cpstoinc * freqin[i]);
+		phase += (int32)(unit->m_cpstoinc * ZXP(freqin));
 
-		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
-	}
+		ZXP(out) = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	)
 
 	unit->m_phase = phase;
 
-	for(int i = 0; i < 12; ++i) {
+	for(int i = 0; i < 12; ++i)
 		unit->m_y1[i] = zapgremlins(y1[i]);
-	}
 }
 
 void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *out = OUT(0);
-	float phasein = IN0(2);
-	float *freqin = IN(1);
+	float *in = ZIN(0);
+	float *out = ZOUT(0);
+	float phasein = ZIN0(2);
+	float *freqin = ZIN(1);
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
@@ -4512,10 +4463,7 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 	int32 lomask = unit->m_lomask;
-
-	int32 phase;
-
-	phase = unit->m_phase;
+	int32 phase = unit->m_phase;
 	float phasemod = unit->m_phasein;
 	float phaseslope = CALCSLOPE(phasein, phasemod);
 
@@ -4531,9 +4479,8 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
 	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
-	for (int i = 0; i < inNumSamples; ++i) {
-
-		float thisin = in[i];
+	LOOP1(inNumSamples,
+		float thisin = ZXP(in);
 
 		HILBERT_FILTER
 
@@ -4544,10 +4491,10 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 		phasemod += phaseslope;
 		outsinosc = lookupi1(table0, table1, pphase, lomask);
 		outsinoscHalfPi = lookupi1(table0, table1, pphase + halfPi, lomask);
-		phase += (int32)(unit->m_cpstoinc * freqin[i]);
+		phase += (int32)(unit->m_cpstoinc * ZXP(freqin));
 
-		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
-	}
+		ZXP(out) = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	)
 
 	unit->m_phase = phase;
 	unit->m_phasein = phasein;
@@ -4558,10 +4505,10 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 
 void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 {
-	float *in = IN(0);
-	float *out = OUT(0);
-	float *phasein = IN(2);
-	float freqin = IN0(1);
+	float *in = ZIN(0);
+	float *out = ZOUT(0);
+	float *phasein = ZIN(2);
+	float freqin = ZIN0(1);
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
@@ -4571,10 +4518,7 @@ void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 	int32 lomask = unit->m_lomask;
-
-	int32 phase;
-
-	phase = unit->m_phase;
+	int32 phase = unit->m_phase;
 	float phasemod = unit->m_phasein;
 
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
@@ -4591,22 +4535,21 @@ void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
 	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
-	for (int i = 0; i < inNumSamples; ++i) {
-
-		float thisin = in[i];
+	LOOP1(inNumSamples,
+		float thisin = ZXP(in);
 
 		HILBERT_FILTER
 
 		outcos = ay6;
 		outsin = ay12;
 
-		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * phasein[i]);
+		int32 phaseoffset = phase + (int32)(unit->m_radtoinc * ZXP(phasein));
 		outsinosc = lookupi1(table0, table1, phaseoffset, lomask);
 		outsinoscHalfPi = lookupi1(table0, table1, phaseoffset + halfPi, lomask);
 		phase += freq;
 
-		out[i] = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
-	}
+		ZXP(out) = (outcos * outsinoscHalfPi) + (outsinosc * outsin);
+	)
 
 	unit->m_phase = phase;
 
@@ -5310,7 +5253,6 @@ void BBandStop_Ctor(BBandStop* unit)
 		SETCALC(BBandStop_next_aa);
 	else
 		SETCALC(BBandStop_next_kk);
-	}
 	float freq = unit->m_freq = ZIN0(1);
 	float bw = unit->m_bw = ZIN0(2);
 
