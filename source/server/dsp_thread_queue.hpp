@@ -1,5 +1,5 @@
 //  dsp thread queue
-//  Copyright (C) 2007, 2008 Tim Blechmann
+//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -317,12 +317,8 @@ private:
                 /* we still have some nodes to process */
                 int state = run_next_item(index);
 
-                if (state == no_remaining_items ||
-                    ((state == fifo_empty) && (node_count.load(boost::memory_order_acquire) == 0)) )
-                {
-                    assert(node_count == 0);
+                if (state == no_remaining_items)
                     return;
-                }
             }
             else
                 return;
@@ -346,12 +342,8 @@ private:
                 int state = run_next_item(0);
 
                 /* wake other threads on end */
-                if (state == no_remaining_items ||
-                    ((state == fifo_empty) && (node_count.load(boost::memory_order_acquire) == 0)) )
-                {
-                    assert(node_count == 0);
+                if (state == no_remaining_items)
                     return;
-                }
             }
             else
                 return;
@@ -393,9 +385,9 @@ private:
 
 private:
     enum {
+        no_remaining_items,
         fifo_empty,
-        remaining_items,
-        no_remaining_items
+        remaining_items
     };
 
     dsp_thread_queue_ptr queue;
