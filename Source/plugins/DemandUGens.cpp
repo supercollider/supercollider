@@ -274,14 +274,14 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
 	float *reset = ZIN(1);
-	
+
 	float** out = unit->m_out;
 	float* prevout = unit->m_prevout;
-	
+
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		out[i] = OUT(i);
 	}
-	
+
 	float prevtrig = unit->m_prevtrig;
 	float prevreset = unit->m_prevreset;
 
@@ -318,10 +318,10 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
 	float zreset = IN0(1);
-	
+
 	float** out = unit->m_out;
 	float *prevout = unit->m_prevout;
-	
+
 	for (int i=0; i<unit->mNumOutputs; ++i) {
 		out[i] = OUT(i);
 	}
@@ -364,7 +364,7 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 {
 	float ztrig = IN0(0);
 	float *reset = ZIN(1);
-	
+
 	float** out = unit->m_out;
 	float *prevout = unit->m_prevout;
 
@@ -416,10 +416,10 @@ void Demand_Ctor(Demand *unit)
 			SETCALC(Demand_next_aa);
 		}
 	}
-		
+
 	unit->m_prevout = (float*) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
 	unit->m_out = (float**) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float*));
-	
+
 	//Print("Demand_Ctor calc %08X\n", unit->mCalcFunc);
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
@@ -1071,12 +1071,10 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				}
 
 			}
-			}
+		}
 
 
-
-			if(running) {
-
+		if(running) {
 			switch (shape) {
 				case shape_Step : {
 				} break;
@@ -1141,30 +1139,27 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 
 			phase--;
 
-			}
+		}
 
+		ZXP(out) = level;
+		float zgate = ZXP(gate);
 
-			ZXP(out) = level;
-			float zgate = ZXP(gate);
-
-			if(zgate >= 1.f) {
-				unit->m_running = true;
-			} else if (zgate > 0.f) {
-				unit->m_running = true;
-				release = true;  // release next time.
-			} else {
-				unit->m_running = false; // sample and hold
-			}
-
-
-
+		if(zgate >= 1.f) {
+			unit->m_running = true;
+		} else if (zgate > 0.f) {
+			unit->m_running = true;
+			release = true;  // release next time.
+		} else {
+			unit->m_running = false; // sample and hold
+		}
 	}
-			unit->m_level = level;
-			unit->m_curve = curve;
-			unit->m_shape = shape;
-			unit->m_prevreset = prevreset;
-			unit->m_release = release;
-			unit->m_phase = phase;
+
+	unit->m_level = level;
+	unit->m_curve = curve;
+	unit->m_shape = shape;
+	unit->m_prevreset = prevreset;
+	unit->m_release = release;
+	unit->m_phase = phase;
 
 }
 
