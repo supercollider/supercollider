@@ -590,10 +590,8 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
 		unit->curtrig = trig[i];
@@ -638,10 +636,10 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 
 		SAVE_GRAIN_AMP_PARAMS
 
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[--unit->mNumActive];
-		} else ++i;
+		if (grain->counter <= 0)
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		else
+			++i;
 	}
 
 	float trig = IN0(0);
@@ -682,10 +680,8 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 		    }
 		}
 	}
@@ -751,10 +747,10 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 		SAVE_GRAIN_AMP_PARAMS
 
 		grain->oscphase = oscphase;
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[--unit->mNumActive];
-		} else ++i;
+		if (grain->counter <= 0)
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		else
+			++i;
 	}
 
 	float *trig = IN(0);
@@ -806,10 +802,8 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
 		unit->curtrig = trig[i];
@@ -862,10 +856,10 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 		SAVE_GRAIN_AMP_PARAMS
 
 		grain->oscphase = oscphase;
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[--unit->mNumActive];
-		} else ++i;
+		if (grain->counter <= 0)
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		else
+			++i;
 	}
 
 	float trig = IN0(0);
@@ -914,10 +908,8 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
 	}
@@ -993,10 +985,10 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 
 		SAVE_GRAIN_AMP_PARAMS
 
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[--unit->mNumActive];
-		} else ++i;
+		if (grain->counter <= 0)
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		else
+			++i;
 	}
 
 	float *trig = IN(0);
@@ -1056,13 +1048,11 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
-	unit->curtrig = trig[i];
+		unit->curtrig = trig[i];
 	}
 }
 
@@ -1121,10 +1111,10 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 		grain->moscphase = moscphase;
 		SAVE_GRAIN_AMP_PARAMS
 
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[--unit->mNumActive];
-		} else ++i;
+		if (grain->counter <= 0)
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		else
+			++i;
 	}
 
 	float trig = IN0(0);
@@ -1179,10 +1169,8 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 				grain->moscphase = moscphase;
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
 	}
@@ -1400,10 +1388,8 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 
 					SAVE_GRAIN_AMP_PARAMS
 
-					if (grain->counter <= 0) {
-						// remove grain
-						*grain = unit->mGrains[--unit->mNumActive];
-					}
+					if (grain->counter <= 0)
+						*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 				}
 			}
 		}
@@ -1552,10 +1538,8 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 
 				SAVE_GRAIN_AMP_PARAMS
 
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[--unit->mNumActive];
-				}
+				if (grain->counter <= 0)
+					*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 			}
 		}
 	}
@@ -1673,10 +1657,10 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 
 			grain->phase = phase;
 			SAVE_GRAIN_AMP_PARAMS
-			if (grain->counter <= 0) {
-				// remove grain
-				*grain = unit->mGrains[n][--unit->mNumActive[n]];
-			} else ++i;
+			if (grain->counter <= 0)
+				*grain = unit->mGrains[n][--unit->mNumActive[n]]; // remove grain
+			else
+				++i;
 		}
 
 		for (int i=0; i<inNumSamples; ++i) {
@@ -1739,15 +1723,13 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 					grain->phase = phase;
 					SAVE_GRAIN_AMP_PARAMS
 					// end change
-					if (grain->counter <= 0) {
-						// remove grain
-						*grain = unit->mGrains[n][--unit->mNumActive[n]];
-					}
+					if (grain->counter <= 0)
+						*grain = unit->mGrains[n][--unit->mNumActive[n]]; // remove grain
 				}
 			}
 		}
 
-	unit->mNextGrain[n] = nextGrain;
+		unit->mNextGrain[n] = nextGrain;
 	}
 }
 
