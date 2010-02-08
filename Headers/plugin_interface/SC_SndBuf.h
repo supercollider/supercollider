@@ -59,20 +59,20 @@ enum { coord_None, coord_Complex, coord_Polar };
 
 
 inline float PhaseFrac(uint32 inPhase)
-		{
-			union { uint32 itemp; float ftemp; } u;
-			u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
-			return u.ftemp - 1.f;
-		}
+{
+	union { uint32 itemp; float ftemp; } u;
+	u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
+	return u.ftemp - 1.f;
+}
 
 inline float PhaseFrac1(uint32 inPhase)
-		{
-			union { uint32 itemp; float ftemp; } u;
-			u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
-			return u.ftemp;
-		}
+{
+	union { uint32 itemp; float ftemp; } u;
+	u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
+	return u.ftemp;
+}
 
-inline float lookup(float *table, int32 phase, int32 mask)
+inline float lookup(const float *table, int32 phase, int32 mask)
 {
 	return table[(phase >> 16) & mask];
 }
@@ -81,7 +81,7 @@ inline float lookup(float *table, int32 phase, int32 mask)
 #define xlobits 14
 #define xlobits1 13
 
-inline float lookupi(float *table, uint32 phase, uint32 mask)
+inline float lookupi(const float *table, uint32 phase, uint32 mask)
 {
 	float frac = PhaseFrac(phase);
 	float *tbl = table + ((phase >> 16) & mask);
@@ -90,7 +90,7 @@ inline float lookupi(float *table, uint32 phase, uint32 mask)
 	return a + frac * (b - a);
 }
 
-inline float lookupi2(float *table, uint32 phase, uint32 mask)
+inline float lookupi2(const float *table, uint32 phase, uint32 mask)
 {
 	float frac = PhaseFrac1(phase);
 	float *tbl = table + ((phase >> 16) & mask);
@@ -99,12 +99,12 @@ inline float lookupi2(float *table, uint32 phase, uint32 mask)
 	return a + frac * b;
 }
 
-inline float lookupi1(float* table0, float* table1, uint32 pphase, int32 lomask)
+inline float lookupi1(const float* table0, const float* table1, uint32 pphase, int32 lomask)
 {
 	float pfrac = PhaseFrac1(pphase);
 	uint32 index = ((pphase >> xlobits1) & lomask);
-	float val1 = *(float*)((char*)table0 + index);
-	float val2 = *(float*)((char*)table1 + index);
+	float val1 = *(const float*)((const char*)table0 + index);
+	float val2 = *(const float*)((const char*)table1 + index);
 	return val1 + val2 * pfrac;
 }
 
