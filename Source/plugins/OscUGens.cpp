@@ -1419,6 +1419,9 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 	unit->m_phase = phase;
 }
 
+/* we disable the vectorized code for the iphone for now, since the regular implementation seems 
+   to be faster (see 43137F3E-3B77-4D7C-9CA2-1E3A13D9FE2B@gmail.com)
+ */
 #undef IPHONE_VEC
 #ifdef IPHONE_VEC
 
