@@ -33,23 +33,17 @@ double phons[11]={2,10,20,30,40,50,60,70,80,90,100};
 
 
 //other functions
-void Loudness_dofft(Loudness *, uint32);
+static void Loudness_dofft(Loudness *, uint32);
 
-
-void Loudness_Ctor(Loudness* unit) {
-	int j;
-
+void Loudness_Ctor(Loudness* unit)
+{
 	//may want to check sampling rate here!
 
 	unit->m_numbands= 42;
 
 	unit->m_ERBbands = (float*)RTAlloc(unit->mWorld, unit->m_numbands * sizeof(float));
 
-
-	for (j=0; j<unit->m_numbands; ++j) {
-	unit->m_ERBbands[j]= 0.0;
-	}
-
+	Clear(unit->m_numbands, unit->m_ERBbands);
 
 	unit->m_sones=0;
 	//unit->m_phontotal=0;
@@ -58,24 +52,19 @@ void Loudness_Ctor(Loudness* unit) {
 	Loudness_next(unit, 1);
 }
 
-
-
-void Loudness_Dtor(Loudness *unit) {
-
+void Loudness_Dtor(Loudness *unit)
+{
 	RTFree(unit->mWorld, unit->m_ERBbands);
 }
 
-
 void Loudness_next(Loudness *unit, int wrongNumSamples)
 {
-
 	float fbufnum = ZIN0(0);
 
 	//next FFT bufffer ready, update
 	//assuming at this point that buffer precalculated for any resampling
-	if (fbufnum>(-0.01)) {
+	if (fbufnum > -0.01f)
 		Loudness_dofft(unit, (uint32)fbufnum);
-	}
 
 	//always output sones
 	//float outval= unit->m_sones;
@@ -84,11 +73,7 @@ void Loudness_next(Loudness *unit, int wrongNumSamples)
 
 	//control rate output
 	ZOUT0(0)=unit->m_sones;
-
 }
-
-
-
 
 //temporal masking over ERB bands: peaks take a while to decay
 //spectral masking over which bins summed as contributors for ERB bands; spreading activation function actually implies that the overall power is greater from spread?
@@ -100,10 +85,8 @@ void Loudness_next(Loudness *unit, int wrongNumSamples)
 //thus can calculate squared powers as you go? cheapest if only have effect of spectral masking above, covering a fixed number of bins? but then, frequency biased loudness based on ERB band centre frequency!
 
 //calculation function once FFT data ready
-void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
-
-	int j,k;
-
+void Loudness_dofft(Loudness *unit, uint32 ibufnum)
+{
 	World *world = unit->mWorld;
 	//if (ibufnum >= world->mNumSndBufs) ibufnum = 0;
 	SndBuf *buf; // = world->mSndBufs + ibufnum;
@@ -122,7 +105,6 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 		buf = world->mSndBufs + ibufnum;
 	}
 
-
 	float * data= buf->data;
 
 	float loudsum=0.0;
@@ -130,7 +112,7 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 	float smask= ZIN0(1);
 	float tmask= ZIN0(2);
 
-	for (k=0; k<unit->m_numbands; ++k){
+	for (int k=0; k<unit->m_numbands; ++k){
 
 		int bandstart=eqlbandbins[k];
 		//int bandend=eqlbandbins[k+1];
@@ -176,7 +158,7 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 		//float db= 10*log10((bsum*32382)+0.001);
 		//empricially derived 32382*2.348
 
-		float db= 10*log10((bsum*76032.936)+0.001); //correct multipler until you get loudness output of 1!
+		float db= 10*log10((bsum*76032.936f)+0.001f); //correct multipler until you get loudness output of 1!
 
 		//correcting for power of three combination
 		//bsum=bsum+0.001;
@@ -188,24 +170,23 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 
 		//convert via contour
 		if(db<contours[k][0]) db=0;
-        else if (db>contours[k][10]) db=phons[10];
-        else {
+		else if (db>contours[k][10]) db=phons[10];
+		else {
 
-            float prop=0.0;
-
-            for (j=1; j<11; ++j) {
-                if(db<contours[k][j]) {
-                    prop= (db-contours[k][j-1])/(contours[k][j]-contours[k][j-1]);
-                    break;
+			float prop=0.0;
+			int j;
+			for (j=1; j<11; ++j) {
+				if(db<contours[k][j]) {
+					prop= (db-contours[k][j-1])/(contours[k][j]-contours[k][j-1]);
+					break;
 				}
 
 				if(j==10)
 					prop=1.0;
-            }
+			}
 
-            db= (1.0-prop)*phons[j-1]+ prop*phons[j];
+			db= (1.f-prop)*phons[j-1]+ prop*phons[j];
 			//printf("prop %f db %f j %d\n",prop,db,j);
-
 		}
 
 		//spectralmasking, 6dB drop per frame?
@@ -218,7 +199,6 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 		//loudsum+= ((pow(10, 0.1*unit->m_ERBbands[k])-0.001)*0.0000308813538386); //
 
 		loudsum+= ((pow(10, 0.1*unit->m_ERBbands[k])-0.001)); //multiplier not needed since invert below; can trust no overflow?
-
 	}
 
 	//total excitation, correct back to dB scale in phons
@@ -228,17 +208,10 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum) {
 	//unit->m_phontotal= phontotal;
 	//now to sones:
 	/* from Praat: Excitation.c  Sones = 2 ** ((Phones - 40) / 10)  */
-	unit->m_sones= pow ((float)2.0, (phontotal - 40) / 10);
+	unit->m_sones= pow (2.f, (phontotal - 40) / 10);
 
 	//printf("phontotal %f sones %f \n",phontotal, unit->m_sones);
 
 	//about 5 times per second
 	//if((unit->m_triggerid) && ((unit->m_frame%2==0))) SendTrigger(&unit->mParent->mNode, unit->m_triggerid, bestkey);
-
 }
-
-
-
-
-
-
