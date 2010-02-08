@@ -103,9 +103,6 @@ simd_benchmark = unit_test_env.Program("simd_benchmark", ["dsp_simd_benchmarks.c
                                        CPPPATH=["#source"],
                                        CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftemplate-depth-4096')
 
-median_benchmark = unit_test_env.Program("median_filter_benchmarks", ["median_filter_benchmarks.cpp"],
-                                         CCFLAGS='-O3 -march=nocona -mfpmath=sse -ftree-vectorize')
-
 unit_tests = [unit_test_env.Program(test[:-4],
                                     [test] + unit_test_common,
                                     )
