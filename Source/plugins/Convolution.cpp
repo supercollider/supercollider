@@ -87,7 +87,6 @@ struct StereoConvolution2L : Unit
 
 	scfft *m_scfft1, *m_scfft2[2], *m_scfft3[2], *m_scfftR[2], *m_scfftR2[2];
 	float *m_trbuf;	//shared temporary buffer for fft code
-
 };
 
 struct Convolution3 : Unit
@@ -190,7 +189,6 @@ void Convolution_Dtor(Convolution *unit)
 
 void Convolution_next(Convolution *unit, int numSamples)
 {
-
 	float *in1 = IN(0);
 	float *in2 = IN(1);
 
@@ -208,7 +206,6 @@ void Convolution_next(Convolution *unit, int numSamples)
 	int insize= unit->m_insize;
 
 	if (unit->m_pos & insize) {
-
         //have collected enough samples to transform next frame
 		unit->m_pos = 0; //reset collection counter
 
@@ -276,7 +273,7 @@ void Convolution_next(Convolution *unit, int numSamples)
 
 
 //include local buffer test in one place
-SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum)
+static SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum)
 {
 	SndBuf *buf;
 	World *world = unit->mWorld;
@@ -401,7 +398,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 			unit->mDone = true;
 			//SETCALC(Convolution2_next2);
 		}
-
 	}
 }
 
@@ -422,7 +418,6 @@ void Convolution2_Dtor(Convolution2 *unit)
 	RTFree(unit->mWorld, unit->m_scfft1);
 	RTFree(unit->mWorld, unit->m_scfft2);
 	RTFree(unit->mWorld, unit->m_scfftR);
-
 }
 
 
@@ -744,13 +739,11 @@ void Convolution2L_Dtor(Convolution2L *unit)
 	RTFree(unit->mWorld, unit->m_tempbuf);
 	RTFree(unit->mWorld, unit->m_outbuf);
 	RTFree(unit->mWorld, unit->m_overlapbuf);
-
 }
 
 
 void Convolution2L_next(Convolution2L *unit, int numSamples)
 {
-
 	float *in1 = IN(0);
 	//float *in2 = IN(1);
 	float curtrig = ZIN0(2);
@@ -1021,47 +1014,44 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 		//in place transform for now
 		//rffts(unit->m_fftbuf2[0], log2n, 1, cosTable[log2n]);
 		scfft_dofft(unit->m_scfft2[0]);
+	}
 
-		buf = ConvGetBuffer(unit,bufnumR);
+	buf = ConvGetBuffer(unit,bufnumR);
+	if (buf) {
 
-		if (buf) {
+		//if (bufnumR >= world->mNumSndBufs) bufnumR = 0;
+		//buf = world->mSndBufs + bufnumR;
 
-			//if (bufnumR >= world->mNumSndBufs) bufnumR = 0;
-			//buf = world->mSndBufs + bufnumR;
+		//calculate fft for kernel straight away
+		memcpy(unit->m_fftbuf2[1], buf->data, insize);
+		//zero pad second part of buffer to allow for convolution
+		memset(unit->m_fftbuf2[1]+unit->m_insize, 0, insize);
+		//in place transform for now
+		//rffts(unit->m_fftbuf2[1], log2n, 1, cosTable[log2n]);
+		scfft_dofft(unit->m_scfft2[1]);
 
-			//calculate fft for kernel straight away
-			memcpy(unit->m_fftbuf2[1], buf->data, insize);
-			//zero pad second part of buffer to allow for convolution
-			memset(unit->m_fftbuf2[1]+unit->m_insize, 0, insize);
-			//in place transform for now
-			//rffts(unit->m_fftbuf2[1], log2n, 1, cosTable[log2n]);
-			scfft_dofft(unit->m_scfft2[1]);
+		//test for full input buffer
+		//unit->m_mask = unit->m_insize;
+		unit->m_pos = 0;
+		//
+		//        unit->m_outbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
+		//        unit->m_overlapbuf[0] = (float*)RTAlloc(unit->mWorld, insize);
+		//        unit->m_outbuf[1] = (float*)RTAlloc(unit->mWorld, fftsize);
+		//        unit->m_overlapbuf[1] = (float*)RTAlloc(unit->mWorld, insize);
+		//
+		//        memset(unit->m_outbuf[0], 0, fftsize);
+		//        memset(unit->m_overlapbuf[0], 0, insize);
+		//        memset(unit->m_outbuf[1], 0, fftsize);
+		//        memset(unit->m_overlapbuf[1], 0, insize);
 
-			//test for full input buffer
-			//unit->m_mask = unit->m_insize;
-			unit->m_pos = 0;
-			//
-			//        unit->m_outbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
-			//        unit->m_overlapbuf[0] = (float*)RTAlloc(unit->mWorld, insize);
-			//        unit->m_outbuf[1] = (float*)RTAlloc(unit->mWorld, fftsize);
-			//        unit->m_overlapbuf[1] = (float*)RTAlloc(unit->mWorld, insize);
-			//
-			//        memset(unit->m_outbuf[0], 0, fftsize);
-			//        memset(unit->m_overlapbuf[0], 0, insize);
-			//        memset(unit->m_outbuf[1], 0, fftsize);
-			//        memset(unit->m_overlapbuf[1], 0, insize);
+		unit->m_prevtrig = 0.f;
 
-			unit->m_prevtrig = 0.f;
-
-			SETCALC(StereoConvolution2L_next);
-
-		}
+		SETCALC(StereoConvolution2L_next);
 	}
 }
 
 void StereoConvolution2L_Dtor(StereoConvolution2L *unit)
 {
-
 	scfft_destroy(unit->m_scfft1);
 	scfft_destroy(unit->m_scfft2[0]);
 	scfft_destroy(unit->m_scfft3[0]);
@@ -1105,7 +1095,6 @@ void StereoConvolution2L_Dtor(StereoConvolution2L *unit)
 
 void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 {
-
 	float *in1 = IN(0);
 	//float *in2 = IN(1);
 	float curtrig = ZIN0(3);
@@ -1366,7 +1355,6 @@ void Convolution3_Ctor(Convolution3 *unit)
 			SETCALC(Convolution3_next_a);
 		else
 			SETCALC(Convolution3_next_k);
-
 	}
 }
 
@@ -1379,7 +1367,6 @@ void Convolution3_Dtor(Convolution3 *unit)
 
 void Convolution3_next_a(Convolution3 *unit)
 {
-
 	float *in = IN(0);
 	float curtrig = ZIN0(2);
 
@@ -1443,7 +1430,6 @@ void Convolution3_next_a(Convolution3 *unit)
 
 void Convolution3_next_k(Convolution3 *unit)
 {
-
 	float input = ZIN0(0);
 	//	float *in2 = IN(1);
 	float curtrig = ZIN0(2);
