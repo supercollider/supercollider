@@ -133,7 +133,6 @@ struct Warp1 : public Unit
 	int mNextGrain[16];
 	WarpWinGrain mGrains[16][kMaxGrains];
 };
-//////////// end add //////////////////////
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -163,7 +162,6 @@ extern "C"
 
 	void Warp1_next(Warp1 *unit, int inNumSamples);
 	void Warp1_Ctor(Warp1* unit);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,41 +189,54 @@ inline double sc_gloop(double in, double hi)
 	return in - hi * floor(in/hi);
 }
 
-#define GRAIN_BUF \
-	SndBuf *buf; \
-	if (bufnum >= world->mNumSndBufs) { \
-		int localBufNum = bufnum - world->mNumSndBufs; \
-		Graph *parent = unit->mParent; \
-		if(localBufNum <= parent->localBufNum) { \
-			buf = parent->mLocalSndBufs + localBufNum; \
-		} else { \
-			bufnum = 0; \
-			buf = world->mSndBufs + bufnum; \
-		} \
-	} else { \
-		if (bufnum < 0) { bufnum = 0; } \
-		buf = world->mSndBufs + bufnum; \
-	} \
-	\
-	float *bufData __attribute__((__unused__)) = buf->data; \
-	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
-	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \
-	uint32 bufFrames = buf->frames; \
-	int guardFrame __attribute__((__unused__)) = bufFrames - 2; \
+#define GRAIN_BUF													\
+	SndBuf *buf;													\
+	if (bufnum >= world->mNumSndBufs) {								\
+		int localBufNum = bufnum - world->mNumSndBufs;				\
+		Graph *parent = unit->mParent;								\
+		if(localBufNum <= parent->localBufNum) {					\
+			buf = parent->mLocalSndBufs + localBufNum;				\
+		} else {													\
+			bufnum = 0;												\
+			buf = world->mSndBufs + bufnum;							\
+		}															\
+	} else {														\
+		if (bufnum < 0) { bufnum = 0; }								\
+		buf = world->mSndBufs + bufnum;								\
+	}																\
+																	\
+	float *bufData __attribute__((__unused__)) = buf->data;			\
+	uint32 bufChannels __attribute__((__unused__)) = buf->channels;	\
+	uint32 bufSamples __attribute__((__unused__)) = buf->samples;	\
+	uint32 bufFrames = buf->frames;									\
+	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
-#define CHECK_BUF \
-	if (!bufData) { \
-                unit->mDone = true; \
-		ClearUnitOutputs(unit, inNumSamples); \
-		return; \
+
+#define DECLARE_WINDOW                                      \
+	double winPos, winInc, w, b1, y1, y2, y0, amp;          \
+	winPos = winInc = w = b1 = y1 = y2 = y0 = amp = 0.;		\
+	SndBuf *window;											\
+	float *windowData __attribute__((__unused__));			\
+	uint32 windowSamples __attribute__((__unused__)) = 0;	\
+	uint32 windowFrames __attribute__((__unused__)) = 0;	\
+	int windowGuardFrame = 0;
+
+
+#define CHECK_BUF								\
+	if (!bufData) {								\
+		unit->mDone = true;						\
+		ClearUnitOutputs(unit, inNumSamples);	\
+		return;									\
 	}
 
-#define GET_GRAIN_WIN \
-		window = unit->mWorld->mSndBufs + (int)winType; \
-		windowData = window->data; \
-		windowSamples = window->samples; \
-		windowFrames = window->frames; \
-		windowGuardFrame = windowFrames - 1; \
+#define GET_GRAIN_WIN(WINTYPE)                          \
+	do {                                                \
+		window = unit->mWorld->mSndBufs + (int)WINTYPE; \
+		windowData = window->data;                      \
+		windowSamples = window->samples;                \
+		windowFrames = window->frames;                  \
+		windowGuardFrame = windowFrames - 1;            \
+	} while (0);
 
 #define GRAIN_LOOP_BODY_4 \
 		float amp = y1 * y1; \
@@ -447,21 +458,17 @@ inline double sc_gloop(double in, double hi)
 
 #define GET_GRAIN_AMP_PARAMS \
 	if(grain->winType < 0.){ \
-	    b1 = grain->b1; \
-	    y1 = grain->y1; \
-	    y2 = grain->y2; \
-	    amp = grain->curamp; \
-	    } else { \
-	    window = unit->mWorld->mSndBufs + (int)grain->winType; \
-	    windowData = window->data; \
-	    windowSamples = window->samples; \
-	    windowFrames = window->frames; \
-	    windowGuardFrame = windowFrames - 1; \
-	    if (!windowData) break; \
-	    winPos = grain->winPos; \
-	    winInc = grain->winInc; \
-	    amp = grain->curamp; \
-	    } \
+		b1 = grain->b1; \
+		y1 = grain->y1; \
+		y2 = grain->y2; \
+		amp = grain->curamp; \
+	} else { \
+		GET_GRAIN_WIN(grain->winType);\
+		if (!windowData) break; \
+		winPos = grain->winPos; \
+		winInc = grain->winInc; \
+		amp = grain->curamp; \
+	}
 
 #define SAVE_GRAIN_AMP_PARAMS \
 	grain->y1 = y1; \
@@ -557,19 +564,10 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 	// end add
 	float *trig = IN(0);
 	float *in = IN(2);
-	float winSize;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
-
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainInG *grain = unit->mGrains + i;
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 		// begin add //
 
@@ -587,7 +585,6 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 			// end change //
 
 			CALC_NEXT_GRAIN_AMP
-
 		}
 
 		SAVE_GRAIN_AMP_PARAMS
@@ -603,10 +600,11 @@ void GrainIn_next_a(GrainIn *unit, int inNumSamples)
 			// start a grain
 			if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
 			float winType = GRAIN_IN_AT(unit, 4, i);
-			GET_GRAIN_WIN
+			DECLARE_WINDOW
+			GET_GRAIN_WIN(winType)
 			if (windowData || (winType < 0.)) {
 				GrainInG *grain = unit->mGrains + unit->mNumActive++;
-				winSize = GRAIN_IN_AT(unit, 1, i);
+				float winSize = GRAIN_IN_AT(unit, 1, i);
 				double counter = winSize * SAMPLERATE;
 				counter = sc_max(4., counter);
 				grain->counter = (int)counter;
@@ -661,18 +659,10 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 	float trig = IN0(0);
 	float *in = IN(2);
 	float winSize;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainInG *grain = unit->mGrains + i;
-
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		// begin add //
@@ -706,7 +696,8 @@ void GrainIn_next_k(GrainIn *unit, int inNumSamples)
 			Print("Too many grains!\n");
 		else {
 			float winType = IN0(4);
-			GET_GRAIN_WIN
+			DECLARE_WINDOW
+			GET_GRAIN_WIN(winType)
 			if (windowData || (winType < 0.)) {
 				GrainInG *grain = unit->mGrains + unit->mNumActive++;
 				winSize = IN0(1);
@@ -774,17 +765,10 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 	float winSize, freq;
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainSinG *grain = unit->mGrains + i;
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		// begin add //
@@ -828,7 +812,8 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 				break;
 			}
 			float winType = GRAIN_IN_AT(unit, 4, i);
-			GET_GRAIN_WIN
+			DECLARE_WINDOW
+			GET_GRAIN_WIN(winType)
 			if (windowData || (winType < 0.)) {
 				GrainSinG *grain = unit->mGrains + unit->mNumActive++;
 				// INRATE(1) == calcFullRate
@@ -893,19 +878,10 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 	float winSize, freq;
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
-
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainSinG *grain = unit->mGrains + i;
-
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		// begin add //
@@ -944,10 +920,11 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 		// start a grain
 		if (unit->mNumActive+1 >= unit->mMaxGrains)
 		{
-		Print("Too many grains!\n");
+			Print("Too many grains!\n");
 		} else {
 			float winType = IN0(4);
-			GET_GRAIN_WIN
+			DECLARE_WINDOW
+			GET_GRAIN_WIN(winType)
 			if (windowData || (winType < 0.)) {
 				GrainSinG *grain = unit->mGrains + unit->mNumActive++;
 				freq = IN0(2);
@@ -997,7 +974,6 @@ void GrainSin_next_k(GrainSin *unit, int inNumSamples)
 
 void GrainSin_Ctor(GrainSin *unit)
 {
-
 	if (INRATE(0) == calc_FullRate)
 		SETCALC(GrainSin_next_a);
 	else
@@ -1028,18 +1004,10 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainFMG *grain = unit->mGrains + i;
-
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		int32 mfreq = grain->mfreq;
@@ -1083,11 +1051,15 @@ void GrainFM_next_a(GrainFM *unit, int inNumSamples)
 	for (int i=0; i<inNumSamples; ++i) {
 		if ((unit->curtrig <= 0) && (trig[i] > 0.0)) {
 		// start a grain
-		if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); break;}
+		if (unit->mNumActive+1 >= unit->mMaxGrains) {
+			Print("Too many grains!\n");
+			break;
+		}
 		float winType = GRAIN_IN_AT(unit, 6, i);
-		GET_GRAIN_WIN
-		if (windowData || (winType < 0.)) {
+		DECLARE_WINDOW
+		GET_GRAIN_WIN(winType)
 
+		if (windowData || (winType < 0.)) {
 			GrainFMG *grain = unit->mGrains + unit->mNumActive++;
 			winSize = GRAIN_IN_AT(unit, 1, i);
 			carfreq = GRAIN_IN_AT(unit, 2, i);
@@ -1146,12 +1118,12 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
 
-    	if(unit->mFirst){
-		    unit->mFirst = false;
-		    float maxGrains = IN0(7);
-		    unit->mMaxGrains = (int)maxGrains;
-	    	    unit->mGrains = (GrainFMG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainFMG));
-		}
+	if (unit->mFirst) {
+		unit->mFirst = false;
+		float maxGrains = IN0(7);
+		unit->mMaxGrains = (int)maxGrains;
+		unit->mGrains = (GrainFMG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainFMG));
+	}
 
 	// begin add //
 	SETUP_GRAIN_OUTS
@@ -1161,18 +1133,10 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainFMG *grain = unit->mGrains + i;
-
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		int32 mfreq = grain->mfreq;
@@ -1215,10 +1179,12 @@ void GrainFM_next_k(GrainFM *unit, int inNumSamples)
 
 	if ((unit->curtrig <= 0) && (trig > 0.0)) {
 		// start a grain
-		if (unit->mNumActive+1 >= unit->mMaxGrains) {Print("Too many grains!\n"); }
+		if (unit->mNumActive+1 >= unit->mMaxGrains)
+			Print("Too many grains!\n");
 		else {
 			float winType = IN0(6);
-			GET_GRAIN_WIN
+			DECLARE_WINDOW
+			GET_GRAIN_WIN(winType)
 			if (windowData || (winType < 0.)) {
 				GrainFMG *grain = unit->mGrains + unit->mNumActive++;
 				winSize = IN0(1);
@@ -1351,14 +1317,6 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 	SETUP_GRAIN_OUTS
 	// end add
 	float *trig = IN(0);
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 	World *world = unit->mWorld;
 	SndBuf *bufs = world->mSndBufs;
 	uint32 numBufs = world->mNumSndBufs;
@@ -1378,6 +1336,7 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 		double rate = grain->rate;
 		double phase = grain->phase;
 
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		// begin add //
@@ -1426,9 +1385,10 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 				GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 
 				float winType = GRAIN_IN_AT(unit, 7, i);
-				if(winType >= 0.) {
-					GET_GRAIN_WIN
-				}
+
+				DECLARE_WINDOW
+				if(winType >= 0.)
+					GET_GRAIN_WIN(winType)
 
 				if (windowData || (winType < 0.)) {
 					uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 2, i);
@@ -1517,14 +1477,6 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 	World *world = unit->mWorld;
 	SndBuf *bufs = world->mSndBufs;
 	//uint32 numBufs = world->mNumSndBufs;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainBufG *grain = unit->mGrains + i;
@@ -1543,6 +1495,7 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 		double rate = grain->rate;
 		double phase = grain->phase;
 
+		DECLARE_WINDOW
 		GET_GRAIN_AMP_PARAMS
 
 		// begin add //
@@ -1588,8 +1541,10 @@ void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
 		} else {
 			GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 			float winType = IN0(7);
+			DECLARE_WINDOW
+
 			if(winType >= 0.) {
-				GET_GRAIN_WIN
+				GET_GRAIN_WIN(winType)
 			}
 
 			if (windowData || (winType < 0.)) {
@@ -1732,125 +1687,119 @@ void Warp1_next(Warp1 *unit, int inNumSamples)
 
 	World *world = unit->mWorld;
 	uint32 numBufs = world->mNumSndBufs;
-	double amp = 0.;
-	double winPos, winInc, w, b1, y1, y2, y0;
-	winPos = winInc = w = b1 = y1 = y2 = y0 = 0.;
-	SndBuf *window;
-	float *windowData __attribute__((__unused__));
-	uint32 windowSamples __attribute__((__unused__)) = 0;
-	uint32 windowFrames __attribute__((__unused__)) = 0;
-	int windowGuardFrame = 0;
 
-	for (uint32 n=0; n < numOutputs; n++){
-	int nextGrain = unit->mNextGrain[n];
-	for (int i=0; i < unit->mNumActive[n]; ) {
-		WarpWinGrain *grain = unit->mGrains[n] + i;
+	for (uint32 n=0; n < numOutputs; n++) {
+		int nextGrain = unit->mNextGrain[n];
+		for (int i=0; i < unit->mNumActive[n]; ) {
+			WarpWinGrain *grain = unit->mGrains[n] + i;
 
-		double loopMax = (double)bufFrames;
-
-		double rate = grain->rate;
-		double phase = grain->phase;
-		GET_GRAIN_AMP_PARAMS
-		float *out1 = out[n];
-		int nsmps = sc_min(grain->counter, inNumSamples);
-		if (grain->interp >= 4) {
-			for (int j=0; j<nsmps; ++j) {
-				BUF_GRAIN_LOOP_BODY_4_N
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
-		} else if (grain->interp >= 2) {
-			for (int j=0; j<nsmps; ++j) {
-				BUF_GRAIN_LOOP_BODY_2_N
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
-		} else {
-			for (int j=0; j<nsmps; ++j) {
-				BUF_GRAIN_LOOP_BODY_1_N
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
-		}
-
-		grain->phase = phase;
-		SAVE_GRAIN_AMP_PARAMS
-		if (grain->counter <= 0) {
-			// remove grain
-			*grain = unit->mGrains[n][--unit->mNumActive[n]];
-		} else ++i;
-	}
-
-	for (int i=0; i<inNumSamples; ++i) {
-		--nextGrain;
-		if (nextGrain == 0) {
-			// start a grain
-			if (unit->mNumActive[n]+1 >= kMaxGrains) break;
-//			uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 0, i);
-//			if (bufnum >= numBufs) break;
-
-			float bufSampleRate = buf->samplerate;
-			float bufRateScale = bufSampleRate * SAMPLEDUR;
 			double loopMax = (double)bufFrames;
 
-			WarpWinGrain *grain = unit->mGrains[n] + unit->mNumActive[n]++;
-//			grain->bufnum = bufnum;
-
-			RGET
-
-			float overlaps = GRAIN_IN_AT(unit, 5, i);
-			float counter = GRAIN_IN_AT(unit, 3, i) * SAMPLERATE;
-			double winrandamt = frand2(s1, s2, s3) * (double)GRAIN_IN_AT(unit, 6, i);
-			counter = sc_max(4., floor(counter + (counter * winrandamt)));
-			grain->counter = (int)counter;
-
-			nextGrain = (int)(counter / overlaps);
-
-			unit->mNextGrain[n] = nextGrain;
-
-			float rate = grain->rate = GRAIN_IN_AT(unit, 2, i) * bufRateScale;
-			float phase = GRAIN_IN_AT(unit, 1, i) * (float)bufFrames;
-			grain->interp = (int)GRAIN_IN_AT(unit, 7, i);
-			float winType = grain->winType = (int)GRAIN_IN_AT(unit, 4, i); // the buffer that holds the grain shape
-			GET_GRAIN_WIN
-			if (windowData || (winType < 0.)) {
-				GET_GRAIN_INIT_AMP
-
-				float *out1 = out[n] + i;
-
-				int nsmps = sc_min(grain->counter, inNumSamples - i);
-				if (grain->interp >= 4) {
-					for (int j=0; j<nsmps; ++j) {
-						BUF_GRAIN_LOOP_BODY_4_N
-						CALC_NEXT_GRAIN_AMP
-						phase += rate;
-					}
-				} else if (grain->interp >= 2) {
-					for (int j=0; j<nsmps; ++j) {
-						BUF_GRAIN_LOOP_BODY_2_N
-						CALC_NEXT_GRAIN_AMP
-						phase += rate;
-					}
-				} else {
-					for (int j=0; j<nsmps; ++j) {
-						BUF_GRAIN_LOOP_BODY_1_N
-						CALC_NEXT_GRAIN_AMP
-						phase += rate;
-					}
+			double rate = grain->rate;
+			double phase = grain->phase;
+			DECLARE_WINDOW
+			GET_GRAIN_AMP_PARAMS
+			float *out1 = out[n];
+			int nsmps = sc_min(grain->counter, inNumSamples);
+			if (grain->interp >= 4) {
+				for (int j=0; j<nsmps; ++j) {
+					BUF_GRAIN_LOOP_BODY_4_N
+					CALC_NEXT_GRAIN_AMP
+					phase += rate;
 				}
+			} else if (grain->interp >= 2) {
+				for (int j=0; j<nsmps; ++j) {
+					BUF_GRAIN_LOOP_BODY_2_N
+					CALC_NEXT_GRAIN_AMP
+					phase += rate;
+				}
+			} else {
+				for (int j=0; j<nsmps; ++j) {
+					BUF_GRAIN_LOOP_BODY_1_N
+					CALC_NEXT_GRAIN_AMP
+					phase += rate;
+				}
+			}
 
-				grain->phase = phase;
-				SAVE_GRAIN_AMP_PARAMS
-				// store random values
-				RPUT
-				// end change
-				if (grain->counter <= 0) {
-					// remove grain
-					*grain = unit->mGrains[n][--unit->mNumActive[n]];
+			grain->phase = phase;
+			SAVE_GRAIN_AMP_PARAMS
+			if (grain->counter <= 0) {
+				// remove grain
+				*grain = unit->mGrains[n][--unit->mNumActive[n]];
+			} else ++i;
+		}
+
+		for (int i=0; i<inNumSamples; ++i) {
+			--nextGrain;
+			if (nextGrain == 0) {
+				// start a grain
+				if (unit->mNumActive[n]+1 >= kMaxGrains) break;
+	//			uint32 bufnum = (uint32)GRAIN_IN_AT(unit, 0, i);
+	//			if (bufnum >= numBufs) break;
+
+				float bufSampleRate = buf->samplerate;
+				float bufRateScale = bufSampleRate * SAMPLEDUR;
+				double loopMax = (double)bufFrames;
+
+				WarpWinGrain *grain = unit->mGrains[n] + unit->mNumActive[n]++;
+	//			grain->bufnum = bufnum;
+
+				RGET
+
+				float overlaps = GRAIN_IN_AT(unit, 5, i);
+				float counter = GRAIN_IN_AT(unit, 3, i) * SAMPLERATE;
+				double winrandamt = frand2(s1, s2, s3) * (double)GRAIN_IN_AT(unit, 6, i);
+				counter = sc_max(4., floor(counter + (counter * winrandamt)));
+				grain->counter = (int)counter;
+
+				nextGrain = (int)(counter / overlaps);
+
+				unit->mNextGrain[n] = nextGrain;
+
+				float rate = grain->rate = GRAIN_IN_AT(unit, 2, i) * bufRateScale;
+				float phase = GRAIN_IN_AT(unit, 1, i) * (float)bufFrames;
+				grain->interp = (int)GRAIN_IN_AT(unit, 7, i);
+				float winType = grain->winType = (int)GRAIN_IN_AT(unit, 4, i); // the buffer that holds the grain shape
+				DECLARE_WINDOW
+				GET_GRAIN_WIN(winType)
+				if (windowData || (winType < 0.)) {
+					GET_GRAIN_INIT_AMP
+
+					float *out1 = out[n] + i;
+
+					int nsmps = sc_min(grain->counter, inNumSamples - i);
+					if (grain->interp >= 4) {
+						for (int j=0; j<nsmps; ++j) {
+							BUF_GRAIN_LOOP_BODY_4_N
+							CALC_NEXT_GRAIN_AMP
+							phase += rate;
+						}
+					} else if (grain->interp >= 2) {
+						for (int j=0; j<nsmps; ++j) {
+							BUF_GRAIN_LOOP_BODY_2_N
+							CALC_NEXT_GRAIN_AMP
+							phase += rate;
+						}
+					} else {
+						for (int j=0; j<nsmps; ++j) {
+							BUF_GRAIN_LOOP_BODY_1_N
+							CALC_NEXT_GRAIN_AMP
+							phase += rate;
+						}
+					}
+
+					grain->phase = phase;
+					SAVE_GRAIN_AMP_PARAMS
+					// store random values
+					RPUT
+					// end change
+					if (grain->counter <= 0) {
+						// remove grain
+						*grain = unit->mGrains[n][--unit->mNumActive[n]];
+					}
 				}
 			}
 		}
-	}
 
 	unit->mNextGrain[n] = nextGrain;
 	}
@@ -1877,13 +1826,8 @@ PluginLoad(Grain)
 	ft = inTable;
 
 	DefineDtorCantAliasUnit(GrainIn);
-//	DefineSimpleCantAliasUnit(GrainIn);
 	DefineDtorCantAliasUnit(GrainSin);
-//	DefineSimpleCantAliasUnit(GrainSin);
 	DefineDtorCantAliasUnit(GrainFM);
-//	DefineSimpleCantAliasUnit(GrainFM);
 	DefineDtorCantAliasUnit(GrainBuf);
-//	DefineSimpleCantAliasUnit(GrainBuf);
 	DefineSimpleCantAliasUnit(Warp1);
-
 }
