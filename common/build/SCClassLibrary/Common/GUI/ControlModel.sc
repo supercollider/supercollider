@@ -47,7 +47,14 @@ ControlSpec : Spec {
 				default ? minval, units ? ""
 			).init
 	}
-	storeArgs { ^[minval,maxval,warp.asSpecifier,step,default,units] }
+	
+	*newFrom { arg similar;
+		^this.new(similar.minval, similar.maxval, similar.warp.asSpecifier, 
+			similar.step, similar.default, similar.units)
+	}
+	
+	storeArgs { ^[minval, maxval, warp.asSpecifier, step, default, units] }
+	
 	init {
 		warp = warp.asWarp(this);
 		if(minval < maxval,{
@@ -94,6 +101,44 @@ ControlSpec : Spec {
 		^numStep
 	}
 
+	calcRange { |data|
+		var newMin, newMax;
+		data = data.flat;
+		newMin = data.minItem;
+		newMax = data.maxItem;
+		^this.copy.minval_(newMin).maxval_(newMax);
+	}
+	
+	roundRange {
+		var extent = absdif(minval, maxval);
+		var r = 10 ** (log10(extent).trunc - 1);
+		var newMin = minval.round(r);
+		var newMax = maxval.roundUp(r);
+		^this.copy.minval_(newMin).maxval_(newMax)
+	}
+	
+	gridValues { |n = 20, base = 10|
+		var val, exp;
+		if(n < 1) { ^[] };
+		val = this.map((0..n-1).normalize);
+		exp = log10(this.map(0.5).abs) * log10(base);
+		val = val.round(base ** (exp.trunc - 1));
+		^val.as(Set).as(Array).sort
+	}
+	
+	zoom { |ratio = 1|
+		^this.copy.minval_(minval * ratio).maxval_(maxval * ratio)
+	}
+	
+	shift { |amount = 1|
+		^this.copy.minval_(minval + amount).maxval_(maxval + amount)
+	}
+	
+	hasZeroCrossing {
+		^minval.sign != maxval.sign
+	}
+	
+	
 	*initClass {
 		Class.initClassTree(Warp);
 		specs = specs.addAll([
@@ -129,9 +174,7 @@ ControlSpec : Spec {
 			\delay -> ControlSpec(0.0001, 1, \exp, 0, 0.3, units: " secs")
 		]);
 	}
-	*newFrom { arg similar;
-		^this.new(similar.minval, similar.maxval, similar.warp.asSpecifier, similar.step, similar.default, similar.units)
-	}
+	
 	copy {
 		^this.class.newFrom(this)
 	}
