@@ -137,12 +137,6 @@ for env in environments:
 
 ######################################################################
 #
-# build benchmarks
-#
-SConscript ("benchmarks/SConscript", exports={'env': release_env})
-
-######################################################################
-#
 # build nova
 #
 BuildDir('release_server', 'source', duplicate=0)
