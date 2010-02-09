@@ -28,7 +28,7 @@ import os, glob, uuid, re, sys, shutil, zipfile
 
 ########################################
 # Check for SwingOSC, because we definitely want it included :)
-for detectpath in ('../build/SwingOSC.jar', '../build/SCClassLibrary/SwingOSC', '../build/Help/SwingOSC'):
+for detectpath in ('../common/build/SwingOSC.jar', '../common/build/SCClassLibrary/SwingOSC', '../common/build/Help/SwingOSC'):
         if not os.path.exists(detectpath):
                 print("ERROR:\n  Path %s not detected.\n  It's required for bundling SwingOSC into the distro." % detectpath)
                 sys.exit(1)
@@ -36,15 +36,15 @@ for detectpath in ('../build/SwingOSC.jar', '../build/SCClassLibrary/SwingOSC', 
 ########################################
 # Run the "py2exe" procedure to build an exe file
 
-os.system('cd ../Psycollider/Psycollider && python setup.py py2exe')
-for detectpath in ('../Psycollider/Psycollider/dist/Psycollider.exe', '../Psycollider/Psycollider/dist/w9xpopen.exe'):
+os.system('cd ../common/Psycollider/Psycollider && python setup.py py2exe')
+for detectpath in ('../common/Psycollider/Psycollider/dist/Psycollider.exe', '../common/Psycollider/Psycollider/dist/w9xpopen.exe'):
         if not os.path.exists(detectpath):
                 print("ERROR:\n  Path %s not detected.\n  Generating executable (using py2exe) probably failed." % detectpath)
                 sys.exit(1)
 # Also copy PySCLang.pyd out of its "site-packages" location
-shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/PySCLang.pyd', '../Psycollider/Psycollider/dist/')
+shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/PySCLang.pyd', '../common/Psycollider/Psycollider/dist/')
 # and a dll we need
-shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/wx-2.8-msw-unicode/wx/gdiplus.dll', '../Psycollider/Psycollider/dist/')
+shutil.copy(os.getenv('PYTHONPATH', sys.exec_prefix) + '/Lib/site-packages/wx-2.8-msw-unicode/wx/gdiplus.dll', '../common/Psycollider/Psycollider/dist/')
 
 
 ########################################
@@ -55,7 +55,7 @@ xmlstr2 = ""  # "feature" contents
 regex1 = re.compile('[^a-zA-Z0-9.]')
 def pathToId(path):
 	global regex1
-	id = regex1.sub('_', path.replace('../build/', ''))
+	id = regex1.sub('_', path.replace('../common/build/', ''))
 	return 's'+id[max(len(id)-64, 0):]  # Prepending 's' a bit of a hack to ensure never begins with '3', '_' etc
 def pathToGuid(path):
 	return str(uuid.uuid3(uuid.NAMESPACE_DNS, 'supercollider.sourceforge.net/' + path))
@@ -90,13 +90,13 @@ def scanDirForWix(path, fileexts, nestlev):
 
 xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCpluginsFolder">\n'
 xmlstr2 = xmlstr2 + '<Feature Id="CorePluginsFeature" Title="Server plugins" Description="Core set of SC3 plugins" Level="1">\n'
-scanDirForWix('../build/plugins', ('.scx'), 0)
+scanDirForWix('../common/build/plugins', ('.scx'), 0)
 xmlstr2 = xmlstr2 + '</Feature>\n'
 xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 
 xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCHelpFolder">\n'
 xmlstr2 = xmlstr2 + '<Feature Id="HelpFilesFeature" Title="Help files" Description="SC3 help documentation" Level="1">\n'
-scanDirForWix('../build/Help', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd'), 0)
+scanDirForWix('../common/build/Help', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd'), 0)
 xmlstr2 = xmlstr2 + '</Feature>\n'
 xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 
@@ -108,7 +108,7 @@ if includeExtras:
 	xmlstr1 = xmlstr1 + '	</Component>\n'
 	xmlstr1 = xmlstr1 + '<Directory Id="sc3plugins" Name="sc3-plugins">\n'
 	xmlstr2 = xmlstr2 + '<Feature Id="Sc3PluginsFeature" Title="Community sc3-plugins pack" Description="Third-party plugins pack sc3-plugins" Level="1">\n'
-	scanDirForWix('../build/sc3-plugins', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd', '.scx', '.sc'), 0)
+	scanDirForWix('../common/build/sc3-plugins', ('.html', '.htm', '.rtf', '.rtfd', '.jpg', '.png', '.gif', '.scd', '.scx', '.sc'), 0)
 	xmlstr2 = xmlstr2 + '</Feature>\n'
 	xmlstr1 = xmlstr1 + '</Directory>\n\n'
 else:
@@ -119,13 +119,13 @@ xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 
 xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCsoundsFolder">\n'
 xmlstr2 = xmlstr2 + '<Feature Id="SoundFilesFeature" Title="Sound files" Description="Some audio files" Level="1">\n'
-scanDirForWix("../build/sounds", (".aiff", ".wav", ".aif"), 0)
+scanDirForWix("../common/build/sounds", (".aiff", ".wav", ".aif"), 0)
 xmlstr2 = xmlstr2 + '</Feature>\n'
 xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 
 xmlstr1 = xmlstr1 + '<DirectoryRef Id="SCClassLibrary">\n'
 xmlstr2 = xmlstr2 + '<Feature Id="SCClassLibraryFeature" Title="SC3 class files" Description="The classes which define the SuperCollider language" Level="1">\n'
-scanDirForWix("../build/SCClassLibrary", (".sc"), 0)
+scanDirForWix("../common/build/SCClassLibrary", (".sc"), 0)
 xmlstr2 = xmlstr2 + '</Feature>\n'
 xmlstr1 = xmlstr1 + '</DirectoryRef>\n\n'
 

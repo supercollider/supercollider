@@ -38,21 +38,21 @@
 	
 	<Component Id="ProductComponent" Guid="CF69B856-C79D-11DD-84EF-AD7E56D89593">
 		<!-- Note: python scripts build Psycollider.exe but here we rename it to SuperCollider.exe -->
-		<File Id="sclangExecutable" Name="SuperCollider.exe" Source="../Psycollider/Psycollider/dist/Psycollider.exe" DiskId="1"></File>
-		<File Id="scsynthExecutable" Name="scsynth.exe" Source="../build/scsynth.exe" DiskId="1"></File>
-		<File Id="w9xpopen" Name="w9xpopen.exe" Source="../Psycollider/Psycollider/dist/w9xpopen.exe" DiskId="1"></File>
-		<File Id="PySCLang.pyd" Name="PySCLang.pyd" Source="../Psycollider/Psycollider/dist/PySCLang.pyd" DiskId="1"></File>
-		<File Id="gdiplus.dll" Name="gdiplus.dll" Source="../Psycollider/Psycollider/dist/gdiplus.dll" DiskId="1"></File>
-		<File Id="libfftw3f" Name="libfftw3f-3.dll" Source="../build/libfftw3f-3.dll" DiskId="1"></File>
+		<File Id="sclangExecutable" Name="SuperCollider.exe" Source="../common/Psycollider/Psycollider/dist/Psycollider.exe" DiskId="1"></File>
+		<File Id="scsynthExecutable" Name="scsynth.exe" Source="../common/build/scsynth.exe" DiskId="1"></File>
+		<File Id="w9xpopen" Name="w9xpopen.exe" Source="../common/Psycollider/Psycollider/dist/w9xpopen.exe" DiskId="1"></File>
+		<File Id="PySCLang.pyd" Name="PySCLang.pyd" Source="../common/Psycollider/Psycollider/dist/PySCLang.pyd" DiskId="1"></File>
+		<File Id="gdiplus.dll" Name="gdiplus.dll" Source="../common/Psycollider/Psycollider/dist/gdiplus.dll" DiskId="1"></File>
+		<File Id="libfftw3f" Name="libfftw3f-3.dll" Source="../common/build/libfftw3f-3.dll" DiskId="1"></File>
 <!-- These extra DLLs are needed when bundling scons-built rather than MS-built version, so uncomment.
-		<File Id="scsynthDll" Name="scsynth.dll" Source="../build/scsynth.dll" DiskId="1"></File>
-		<File Id="portaudioDll" Name="portaudio_x86.dll" Source="../build/portaudio_x86.dll" DiskId="1"></File>
+		<File Id="scsynthDll" Name="scsynth.dll" Source="../common/build/scsynth.dll" DiskId="1"></File>
+		<File Id="portaudioDll" Name="portaudio_x86.dll" Source="../common/build/portaudio_x86.dll" DiskId="1"></File>
 -->
-		<File Id="libsndfile" Name="libsndfile-1.dll" Source="../build/libsndfile-1.dll" DiskId="1"></File>
+		<File Id="libsndfile" Name="libsndfile-1.dll" Source="../common/build/libsndfile-1.dll" DiskId="1"></File>
 		<File Id="keywordslist" Name="keywords.list" Source="keywords.list" DiskId="1"></File>
-		<File Id="psycolliderscript" Name="Psycollider.py" Source="../Psycollider/Psycollider/Psycollider.py" DiskId="1"></File>
+		<File Id="psycolliderscript" Name="Psycollider.py" Source="../common/Psycollider/Psycollider/Psycollider.py" DiskId="1"></File>
 		<File Id="scstartupfile" Name="startup.sc" Source="startup.sc" DiskId="1"></File>
-		<File Id="SwingOSC.jar" Name="SwingOSC.jar" Source="../build/SwingOSC.jar" DiskId="1"></File>
+		<File Id="SwingOSC.jar" Name="SwingOSC.jar" Source="../common/build/SwingOSC.jar" DiskId="1"></File>
 		
 		<!-- env vars -->
 		<Environment Id='PsycolliderHome' Name='PSYCOLLIDER_HOME' Action='set' System='yes' Part='all'
