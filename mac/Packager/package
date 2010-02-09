@@ -32,7 +32,7 @@ do
 done
 shift $(($OPTIND - 1))
 
-revision=`svnversion -n ../`
+revision=`svnversion -n ../../`
 if ( echo $revision | grep "M" > /dev/null 2>&1 ); then
     echo "WARNING: The working copy has uncommitted changes which will be included in the package."
 fi
@@ -44,7 +44,7 @@ revision=`echo $revision | sed -e 's/^[^:]*://;s/[A-Za-z]//'`
 
 if [ $package_type == "source" ]; then
     mkdir SuperCollider-Source
-    svn export -q --force ../ SuperCollider-Source
+    svn export -q --force ../../ SuperCollider-Source
     
     if $include_optionals; then
         cp -Rp optional SuperCollider-Source/optional_installs
@@ -60,18 +60,13 @@ if [ $package_type == "source" ]; then
     find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -name "iPhone*" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/Psycollider
-SuperCollider-Source/Resources
-SuperCollider-Source/Intermediate Build Files
 SuperCollider-Source/README OS X
 SuperCollider-Source/README WINDOWS
 SuperCollider-Source/README IPHONE
-SuperCollider-Source/xtralibs/include/libsndfile
-SuperCollider-Source/xtralibs/include/curl
-SuperCollider-Source/xtralibs/include/icu
-SuperCollider-Source/xtralibs/mac
-SuperCollider-Source/Standalone Resources
-SuperCollider-Source/clean-compile.sh
-SuperCollider-Source/compile.sh
+SuperCollider-Source/common/include/libsndfile
+SuperCollider-Source/common/include/curl
+SuperCollider-Source/common/include/icu
+SuperCollider-Source/mac
 SuperCollider-Source/Headers/app
 SuperCollider-Source/Source/app' >> LinuxExclusions.txt
     
@@ -91,10 +86,10 @@ else
     about_version="$version (Revision $revision)"
     echo "About box version string:" $about_version
 
-    svn export -q --force ../build SuperCollider
-    cp -R ../build/SuperCollider.app ../build/scsynth ../build/sclang SuperCollider
-    cp ../build/plugins/* SuperCollider/plugins/
-    cp ../COPYING SuperCollider/COPYING
+    svn export -q --force ../../build SuperCollider
+    cp -R ../../build/SuperCollider.app ../../build/scsynth ../../build/sclang SuperCollider
+    cp ../../build/plugins/* SuperCollider/plugins/
+    cp ../../COPYING SuperCollider/COPYING
     find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"

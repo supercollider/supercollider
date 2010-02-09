@@ -312,7 +312,7 @@
 		379E00FB0CACF09E00D633C7 /* PV_UGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PV_UGens.cpp; path = ../../Source/plugins/PV_UGens.cpp; sourceTree = "<group>"; };
 		379E010B0CACF29700D633C7 /* FFTInterfaceTable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FFTInterfaceTable.cpp; path = ../../Source/plugins/FFTInterfaceTable.cpp; sourceTree = "<group>"; };
 		37E291990E2CEBE400CB854E /* KeyboardUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = KeyboardUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		37E2919A0E2CEC0D00CB854E /* KeyboardUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = KeyboardUGens.cpp; path = Source/plugins/KeyboardUGens.cpp; sourceTree = SOURCE_ROOT; };
+		37E2919A0E2CEC0D00CB854E /* KeyboardUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardUGens.cpp; sourceTree = "<group>"; };
 		464348BF0EAA7C2F008F1E42 /* PartitionedConvolution.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PartitionedConvolution.cpp; path = ../../Source/plugins/PartitionedConvolution.cpp; sourceTree = "<group>"; };
 		46781BC805C8505F002B7D2B /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
 		46781BD005C854B9002B7D2B /* PV_ThirdParty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PV_ThirdParty.cpp; sourceTree = "<group>"; };
@@ -336,7 +336,7 @@
 		92CCC51E045B451100CA2167 /* MouseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MouseUGens.cpp; path = ../../Source/plugins/MouseUGens.cpp; sourceTree = "<group>"; };
 		92CCC51F045B4BDE00CA2167 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		92F246630628AB3E0063D98D /* DemandUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DemandUGens.cpp; sourceTree = "<group>"; };
-		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		942C38EA0C1B40BB00360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = ../common/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		9451F5E20C1CAC250037197F /* OSCUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = OSCUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5E30C1CAC250037197F /* BinaryOpUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = BinaryOpUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5E40C1CAC250037197F /* NoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = NoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -357,17 +357,17 @@
 		9451F5F30C1CAC250037197F /* MouseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = MouseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F40C1CAC250037197F /* TriggerUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TriggerUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		9451F5F50C1CAC250037197F /* DynNoiseUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = DynNoiseUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		945D14B80CD9A74B00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
-		949318790C192DCC0018AB50 /* PhysicalModelingUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicalModelingUGens.cpp; path = Source/plugins/PhysicalModelingUGens.cpp; sourceTree = SOURCE_ROOT; };
+		945D14B80CD9A74B00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = ../common/build/ChangeLog; sourceTree = "<group>"; };
+		949318790C192DCC0018AB50 /* PhysicalModelingUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicalModelingUGens.cpp; sourceTree = "<group>"; };
 		9493187D0C192E160018AB50 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
-		949318870C192E350018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fftlib.h; path = Headers/common/fftlib.h; sourceTree = SOURCE_ROOT; };
+		949318870C192E350018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fftlib.h; path = common/fftlib.h; sourceTree = "<group>"; };
 		AAE924420481416E00A8010B /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Endian.h; path = common/SC_Endian.h; sourceTree = "<group>"; };
 		B969DA0C0691887B0096E93F /* DynNoiseUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = DynNoiseUGens.cpp; sourceTree = "<group>"; };
-		DC29B0A00E925FD8009D97C0 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_fftlib.h; path = Headers/common/SC_fftlib.h; sourceTree = SOURCE_ROOT; };
+		DC29B0A00E925FD8009D97C0 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_fftlib.h; path = common/SC_fftlib.h; sourceTree = "<group>"; };
 		DC29B0A40E925FE3009D97C0 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
 		DC43F08F0CB26A670020E8B7 /* UnpackFFTUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = UnpackFFTUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
-		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UnpackFFTUGens.cpp; path = Source/plugins/UnpackFFTUGens.cpp; sourceTree = SOURCE_ROOT; };
-		F3B003521051D10800929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
+		DC43F0930CB26B450020E8B7 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = UnpackFFTUGens.cpp; sourceTree = "<group>"; };
+		F3B003521051D10800929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = lib/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F3F479180D03BCB0001A470F /* GrainUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = GrainUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479230D03BCDB001A470F /* ReverbUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = ReverbUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3F479260D03BD1A001A470F /* GrainUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GrainUGens.cpp; path = ../../Source/plugins/GrainUGens.cpp; sourceTree = "<group>"; };
@@ -413,7 +413,7 @@
 		F5959CF80339983301A80099 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
 		F5959CF90339983301A80099 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
 		F5959CFD03399CED01A80099 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
-		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SC_SyncCondition.cpp; path = Source/server/SC_SyncCondition.cpp; sourceTree = SOURCE_ROOT; };
+		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_SyncCondition.cpp; sourceTree = "<group>"; };
 		F5D127DA03355EE10164B34C /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Sem.h; path = common/SC_Sem.h; sourceTree = "<group>"; };
 		FE2582CB0C2C096A00307453 /* TestUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TestUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE25830C0C2C13E400307453 /* TestUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TestUGens.cpp; path = ../../Source/plugins/TestUGens.cpp; sourceTree = "<group>"; };
@@ -634,9 +634,8 @@
 				DC29B0A40E925FE3009D97C0 /* SC_fftlib.cpp */,
 				9493187D0C192E160018AB50 /* fftlib.c */,
 			);
-			name = common;
-			path = Source/common;
-			sourceTree = SOURCE_ROOT;
+			path = common;
+			sourceTree = "<group>";
 		};
 		F50D04F802E68E8201CA2799 = {
 			isa = PBXGroup;
@@ -644,7 +643,7 @@
 				945D14B80CD9A74B00464EBF /* ChangeLog */,
 				F50D04FB02E69B6B01CA2799 /* Headers */,
 				F50D057E02E69B6B01CA2799 /* Source */,
-				F50D060302E69C2101CA2799 /* Products */,
+				F50D060302E69C2101CA2799 /* plugins */,
 				F50D069402E6A1C601CA2799 /* Frameworks */,
 				F50D069D02E6A1C601CA2799 /* Resources */,
 			);
@@ -658,7 +657,8 @@
 				F50D054502E69B6B01CA2799 /* plugin_interface */,
 				F5959CFC0339983D01A80099 /* server */,
 			);
-			path = Headers;
+			name = Headers;
+			path = ../common/Headers;
 			sourceTree = "<group>";
 		};
 		F50D054502E69B6B01CA2799 /* plugin_interface */ = {
@@ -699,7 +699,8 @@
 				F50D05D302E69B6B01CA2799 /* plugins */,
 				F5959D010339A71301A80099 /* server */,
 			);
-			path = Source;
+			name = Source;
+			path = ../common/Source;
 			sourceTree = "<group>";
 		};
 		F50D05D302E69B6B01CA2799 /* plugins */ = {
@@ -756,7 +757,7 @@
 			path = plugins;
 			sourceTree = "<group>";
 		};
-		F50D060302E69C2101CA2799 /* Products */ = {
+		F50D060302E69C2101CA2799 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
 				9451F5E20C1CAC250037197F /* OSCUGens.scx */,
@@ -786,7 +787,8 @@
 				F3F479230D03BCDB001A470F /* ReverbUGens.scx */,
 				37E291990E2CEBE400CB854E /* KeyboardUGens.scx */,
 			);
-			name = Products;
+			name = plugins;
+			path = ../common/build/plugins;
 			sourceTree = "<group>";
 		};
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
@@ -821,8 +823,7 @@
 			children = (
 				F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */,
 			);
-			name = server;
-			path = plugins;
+			path = server;
 			sourceTree = "<group>";
 		};
 		F5D127DC03355EEC0164B34C /* Headers */ = {
@@ -1266,7 +1267,7 @@
 			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
-			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
+			productRefGroup = F50D060302E69C2101CA2799 /* plugins */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1723,7 +1724,7 @@
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
-				USER_HEADER_SEARCH_PATHS = "./xtralibs/include/nova-simd";
+				USER_HEADER_SEARCH_PATHS = "../common/include/nova-simd";
 				ZERO_LINK = NO;
 			};
 			name = Development;
@@ -1756,7 +1757,7 @@
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SYMROOT = build/plugins;
-				USER_HEADER_SEARCH_PATHS = "./xtralibs/include/nova-simd";
+				USER_HEADER_SEARCH_PATHS = "../common/include/nova-simd";
 			};
 			name = Deployment;
 		};
@@ -1866,8 +1867,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				PRODUCT_NAME = DiskIOUGens;
 			};
 			name = Development;
@@ -1883,8 +1884,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				PRODUCT_NAME = DiskIOUGens;
 				SDKROOT = "";
 			};
