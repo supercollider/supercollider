@@ -1,6 +1,21 @@
 	// Maybe rewrite as SoftSet(what, key, val, within, mapped, oldVal);
 
 + NodeProxy {
+	
+	nudgeSet { |param, incr = 0.02| 
+		var spec = param.asSpec;
+		var oldval = this.nodeMap.get(param).value ?? { this.getDefaultVal(param) ? 0 };
+		var oldnorm = spec.unmap(oldval);
+		var newnorm = (oldnorm + incr).clip(0, 1);
+		this.set(param, spec.map(newnorm));
+	}
+	
+	nudgeVol { |incr = 0.02| 
+		var spec = \amp.asSpec; 
+		var oldval = spec.unmap(this.vol); 
+		var newVol = spec.map((oldval + incr).clip(0, 1));
+		this.vol_(newVol)
+	}
 
 	softSet { |param, val, within = 0.025, mapped=false, lastVal|
 		var spec, newNormVal, oldVal, oldNormVal, maxDiff;
