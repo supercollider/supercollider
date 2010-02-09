@@ -38,7 +38,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\Source\plugins&quot;;&quot;$(ProjectDir)..\compat_stuff&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\xtralibs\include\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)..\..\..\fftw-3.2\api&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\Source\plugins&quot;;&quot;$(ProjectDir)..\compat_stuff&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\common\include\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)..\..\..\fftw-3.2\api&quot;"
 				PreprocessorDefinitions="WIN32;SC_WIN32;_DEBUG;_WINDOWS;_USRDLL;DISKIOUGENS_EXPORTS"
 			/>
 			<Tool
@@ -101,7 +101,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\Source\plugins&quot;;&quot;$(ProjectDir)..\compat_stuff&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\xtralibs\include\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)..\..\..\fftw-3.2\api&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\Source\plugins&quot;;&quot;$(ProjectDir)..\compat_stuff&quot;;&quot;$(ProjectDir)..\..\headers\plugin_interface&quot;;&quot;$(ProjectDir)..\..\common\include\libsndfile&quot;;&quot;$(ProjectDir)..\..\headers\common&quot;;&quot;$(ProjectDir)..\..\headers\server&quot;;&quot;$(ProjectDir)..\..\..\pthread-win32&quot;;&quot;$(ProjectDir)..\..\..\fftw-3.2\api&quot;"
 				PreprocessorDefinitions="WIN32;SC_WIN32;NDEBUG;_WINDOWS;_USRDLL;DELAYUGENS_EXPORTS"
 			/>
 			<Tool

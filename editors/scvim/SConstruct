@@ -20,8 +20,8 @@ DEFAULT_PREFIX = '/usr/local/'
 
 if os.path.isdir(os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')):
 	DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
-elif os.path.isdir('../../build/Help/'):
-	DEFAULT_SC_HELP = '../../build/Help/'
+elif os.path.isdir('../../common/build/Help/'):
+	DEFAULT_SC_HELP = '../../common/build/Help/'
 else:
 	DEFAULT_SC_HELP = os.path.join(DEFAULT_PREFIX, 'share/SuperCollider/Help/')
 

@@ -38,7 +38,7 @@ PACKAGE = 'SuperCollider'
 
 
 
-f = open('VERSION')
+f = open('../VERSION')
 VERSION = f.readline()
 f.close()
 
@@ -361,7 +361,7 @@ env = Environment(options = opts,
 env.Append(PATH = ['/usr/local/bin', '/usr/bin', '/bin'])
 
 # for nova-simd
-env.Append(CPPPATH = ["xtralibs/include/nova-simd"])
+env.Append(CPPPATH = ["include/nova-simd"])
 env.Append(CPPDEFINES = ["NOVA_SIMD"])
 
 if not env['GPL3']:
@@ -436,8 +436,8 @@ if isDefaultBuild():
         libraries['sndfile'] = Environment(CPPDEFINES = ['NO_LIBSNDFILE'])
     else:
         if PLATFORM == 'darwin' and env['INTERNAL_LIBSNDFILE']:
-            libraries['sndfile'] = Environment(LINKFLAGS = ['xtralibs/mac/scUBlibsndfile.a'],
-                                               CPPPATH = ['#xtralibs/include/libsndfile'])
+            libraries['sndfile'] = Environment(LINKFLAGS = ['../mac/lib/scUBlibsndfile.a'],
+                                               CPPPATH = ['#include/libsndfile'])
         else:
             success, libraries['sndfile'] = conf.CheckPKG('sndfile >= 1.0.16')
             if not success: Exit(1)
@@ -1018,7 +1018,7 @@ if PLATFORM == 'darwin':
     langEnv.Append(
                 LIBS = ['icucore'],
                 LINKFLAGS = ['-framework', 'CoreServices'], #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'],
-                CPPPATH = ['#xtralibs/include/icu/unicode'])
+                CPPPATH = ['#include/icu/unicode'])
 elif PLATFORM == 'linux':
     langEnv.Append(
         LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
@@ -1232,29 +1232,29 @@ if is_installing():
 
 if env['SCVIM']:
     print '----------------------------------------------------'
-#   SConscript('editors/scvim/SConstruct', exports=['env'])
-    print 'To install SCVIM, please use scons in the directory editors/scvim/'
+#   SConscript('../editors/scvim/SConstruct', exports=['env'])
+    print 'To install SCVIM, please use scons in the directory ../editors/scvim/'
 
 if env['SCED']:
-#   SConscript('editors/sced/SConstruct', 'env')
+#   SConscript('../editors/sced/SConstruct', 'env')
     print '----------------------------------------------------'
-    print 'To install SCED, please use the scons in the directory editors/sced/'
+    print 'To install SCED, please use the scons in the directory ../editors/sced/'
 
 # scel
 if env['SCEL']:
-    env.Command('editors/scel/el/sclang-vars.el', 'editors/scel/el/sclang-vars.el.in',
+    env.Command('../editors/scel/el/sclang-vars.el', '../editors/scel/el/sclang-vars.el.in',
                 'sed \'s,@PKG_DATA_DIR@,%s,g\' < $SOURCE > $TARGET' %
                 pkg_data_dir(FINAL_PREFIX))
-    el_files = glob.glob('editors/scel/el/*.el') + ['editors/scel/el/sclang-vars.el']
+    el_files = glob.glob('../editors/scel/el/*.el') + ['../editors/scel/el/sclang-vars.el']
     elc_files = map(lambda f: os.path.splitext(f)[0] + '.elc', el_files)
     elisp_dir = os.path.join(INSTALL_PREFIX, 'share', 'emacs', 'site-lisp')
     env.Command(elc_files, el_files,
-                'emacs -batch --eval "(add-to-list \'load-path (expand-file-name \\"editors/scel/el/\\"))" -f batch-byte-compile $SOURCES')
+                'emacs -batch --eval "(add-to-list \'load-path (expand-file-name \\"../editors/scel/el/\\"))" -f batch-byte-compile $SOURCES')
     env.Alias('install-elisp', env.Install(elisp_dir, el_files + elc_files))
     installEnv.Append(DATA = 'install-elisp')
 
 # example library configuration file
-env.Command('linux/examples/sclang.cfg', 'linux/examples/sclang.cfg.in',
+env.Command('../linux/examples/sclang.cfg', '../linux/examples/sclang.cfg.in',
             'sed \'s,@PKG_DATA_DIR@,%s,g\' < $SOURCE > $TARGET' %
             pkg_data_dir(FINAL_PREFIX))
 
@@ -1273,11 +1273,11 @@ if env['DEVELOPMENT']:
     env.Alias('install-dev',
               env.Install(pkg_include_dir(INSTALL_PREFIX, 'plugin_interface'), 'Source/plugins/FFT_UGens.h'))
     pkgconfig_files = [
-        libscsynthEnv.Command('linux/libscsynth.pc', 'SConstruct',
+        libscsynthEnv.Command('../linux/libscsynth.pc', 'SConstruct',
                               build_pkgconfig_file),
-        libsclangEnv.Command('linux/libsclang.pc', 'SConstruct',
+        libsclangEnv.Command('../linux/libsclang.pc', 'SConstruct',
                              build_pkgconfig_file),
-        pluginEnv.Command('linux/libscplugin.pc', 'SConstruct',
+        pluginEnv.Command('../linux/libscplugin.pc', 'SConstruct',
                              build_pkgconfig_file)]
     pkgconfig_dir = os.path.join(lib_dir(INSTALL_PREFIX), 'pkgconfig')
     env.Alias('install-dev', env.Install(pkgconfig_dir, pkgconfig_files))
@@ -1301,26 +1301,26 @@ env.Alias('install', installEnv['ALL'])
 # ======================================================================
 
 DIST_FILES = Split('''
-COPYING
+../COPYING
 SConstruct
-clean-compile.sh
-compile.sh
+../mac/clean-compile.sh
+../mac/compile.sh
 distro
-linux/examples/onetwoonetwo.sc
-linux/examples/sclang.cfg.in
-linux/examples/sclang.sc
-editors/scel/README
-editors/scvim/README
-editors/sced/README
+../linux/examples/onetwoonetwo.sc
+../linux/examples/sclang.cfg.in
+../linux/examples/sclang.sc
+../editors/scel/README
+../editors/scvim/README
+../editors/sced/README
 scsynthlib_exp
 ''')
 
 DIST_SPECS = [
     ('build', HELP_FILE_RE),
     ('Headers', SRC_FILE_RE),
-    ('editors/scel/sc', SC_FILE_RE),
-    ('editors/scel/el', re.compile('.*\.el$')),
-    ('editors/scvim/scclasses', SC_FILE_RE),
+    ('../editors/scel/sc', SC_FILE_RE),
+    ('../editors/scel/el', re.compile('.*\.el$')),
+    ('../editors/scvim/scclasses', SC_FILE_RE),
     ('Source', SRC_FILE_RE)
     ]
 

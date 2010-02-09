@@ -169,7 +169,6 @@
 		D53110C80EF9AB24004BAF31 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D55DEBD70EF32CE300968B95 /* InfoPlist.strings */; };
 		D53110D00EF9AB2C004BAF31 /* serverConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = D55DEBDC0EF32CE300968B95 /* serverConfig.plist */; };
 		D55DEB730EF32C9D00968B95 /* HashTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BEE0C190FB80018AB50 /* HashTable.h */; };
-		D55DEB740EF32C9D00968B95 /* IntFifo.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BEF0C190FB80018AB50 /* IntFifo.h */; };
 		D55DEB750EF32C9D00968B95 /* MsgFifo.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BF00C190FB80018AB50 /* MsgFifo.h */; };
 		D55DEB760EF32C9D00968B95 /* OSC_Packet.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BF10C190FB80018AB50 /* OSC_Packet.h */; };
 		D55DEB770EF32C9D00968B95 /* PriorityQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BF20C190FB80018AB50 /* PriorityQueue.h */; };
@@ -333,17 +332,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		37044CA00DE71893005F25E1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = xtralibs/include/curl/types.h; sourceTree = SOURCE_ROOT; };
-		37044CA10DE71893005F25E1 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "typecheck-gcc.h"; path = "xtralibs/include/curl/typecheck-gcc.h"; sourceTree = SOURCE_ROOT; };
-		37044CA20DE71893005F25E1 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdcheaders.h; path = xtralibs/include/curl/stdcheaders.h; sourceTree = SOURCE_ROOT; };
-		37044CA30DE71893005F25E1 /* multi.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = multi.h; path = xtralibs/include/curl/multi.h; sourceTree = SOURCE_ROOT; };
-		37044CA40DE71893005F25E1 /* mprintf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = mprintf.h; path = xtralibs/include/curl/mprintf.h; sourceTree = SOURCE_ROOT; };
-		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = easy.h; path = xtralibs/include/curl/easy.h; sourceTree = SOURCE_ROOT; };
-		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curlver.h; path = xtralibs/include/curl/curlver.h; sourceTree = SOURCE_ROOT; };
-		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = curl.h; path = xtralibs/include/curl/curl.h; sourceTree = SOURCE_ROOT; };
-		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
-		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
-		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = build/ChangeLog; sourceTree = "<group>"; };
+		37044CA00DE71893005F25E1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		37044CA10DE71893005F25E1 /* typecheck-gcc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "typecheck-gcc.h"; sourceTree = "<group>"; };
+		37044CA20DE71893005F25E1 /* stdcheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = stdcheaders.h; sourceTree = "<group>"; };
+		37044CA30DE71893005F25E1 /* multi.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = multi.h; sourceTree = "<group>"; };
+		37044CA40DE71893005F25E1 /* mprintf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mprintf.h; sourceTree = "<group>"; };
+		37044CA50DE71893005F25E1 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = easy.h; sourceTree = "<group>"; };
+		37044CA60DE71893005F25E1 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = curlver.h; sourceTree = "<group>"; };
+		37044CA70DE71893005F25E1 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
+		942C379C0C1B3FB600360A35 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = ../common/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		942F96540B0337D600E00399 /* scsynth */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = scsynth; sourceTree = BUILT_PRODUCTS_DIR; };
+		945D14870CD9A72A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = ../common/build/ChangeLog; sourceTree = "<group>"; };
 		949309CD0C190FB10018AB50 /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		949309CE0C190FB10018AB50 /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
 		949309CF0C190FB10018AB50 /* SC_Sem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Sem.cpp; sourceTree = "<group>"; };
@@ -415,7 +414,6 @@
 		94930BEB0C190FB80018AB50 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
 		94930BEC0C190FB80018AB50 /* Unroll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Unroll.h; sourceTree = "<group>"; };
 		94930BEE0C190FB80018AB50 /* HashTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HashTable.h; sourceTree = "<group>"; };
-		94930BEF0C190FB80018AB50 /* IntFifo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IntFifo.h; sourceTree = "<group>"; };
 		94930BF00C190FB80018AB50 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
 		94930BF10C190FB80018AB50 /* OSC_Packet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = OSC_Packet.h; sourceTree = "<group>"; };
 		94930BF20C190FB80018AB50 /* PriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
@@ -478,7 +476,7 @@
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
-		F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = xtralibs/mac/scUBlibsndfile.a; sourceTree = "<group>"; };
+		F3B0031D1051CF9B00929F44 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = lib/scUBlibsndfile.a; sourceTree = "<group>"; };
 		F53F78F503B2842D011C068F /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F5EB7BE503184B8C01CA2799 /* libscsynth_exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libscsynth_exp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -531,7 +529,7 @@
 				37044CA70DE71893005F25E1 /* curl.h */,
 			);
 			name = curl;
-			path = ../xtralibs/include/curl;
+			path = ../include/curl;
 			sourceTree = "<group>";
 		};
 		9456F7F60C1A1FBC00634E4D /* Resources */ = {
@@ -547,7 +545,8 @@
 				949309C90C190FB10018AB50 /* common */,
 				94930A3B0C190FB10018AB50 /* server */,
 			);
-			path = Source;
+			name = Source;
+			path = ../common/Source;
 			sourceTree = "<group>";
 		};
 		949309C90C190FB10018AB50 /* common */ = {
@@ -606,7 +605,8 @@
 				94930BD40C190FB80018AB50 /* plugin_interface */,
 				94930BED0C190FB80018AB50 /* server */,
 			);
-			path = Headers;
+			name = Headers;
+			path = ../common/Headers;
 			sourceTree = "<group>";
 		};
 		94930B8D0C190FB80018AB50 /* common */ = {
@@ -666,7 +666,6 @@
 			children = (
 				D55DEE430EF3314200968B95 /* SC_AU.h */,
 				94930BEE0C190FB80018AB50 /* HashTable.h */,
-				94930BEF0C190FB80018AB50 /* IntFifo.h */,
 				94930BF00C190FB80018AB50 /* MsgFifo.h */,
 				94930BF10C190FB80018AB50 /* OSC_Packet.h */,
 				94930BF20C190FB80018AB50 /* PriorityQueue.h */,
@@ -782,20 +781,21 @@
 				9456F7F60C1A1FBC00634E4D /* Resources */,
 				94930B770C190FB80018AB50 /* Headers */,
 				949309AF0C190FB10018AB50 /* Source */,
-				F50D060302E69C2101CA2799 /* Products */,
+				F50D060302E69C2101CA2799 /* common */,
 				F50D069402E6A1C601CA2799 /* Frameworks */,
 				D55DEBD10EF32CE300968B95 /* SuperColliderAU */,
 			);
 			sourceTree = "<group>";
 		};
-		F50D060302E69C2101CA2799 /* Products */ = {
+		F50D060302E69C2101CA2799 /* common */ = {
 			isa = PBXGroup;
 			children = (
 				942F96540B0337D600E00399 /* scsynth */,
 				94F5FAD10C1E6B95005CDF9F /* libscsynth.a */,
 				D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */,
 			);
-			name = Products;
+			name = common;
+			path = ../common;
 			sourceTree = "<group>";
 		};
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
@@ -856,7 +856,6 @@
 				94F5FB1C0C1E6BFB005CDF9F /* scsynthsend.h in Headers */,
 				94F5FB1D0C1E6BFB005CDF9F /* sndfile.h in Headers */,
 				D55DEB730EF32C9D00968B95 /* HashTable.h in Headers */,
-				D55DEB740EF32C9D00968B95 /* IntFifo.h in Headers */,
 				D55DEB750EF32C9D00968B95 /* MsgFifo.h in Headers */,
 				D55DEB760EF32C9D00968B95 /* OSC_Packet.h in Headers */,
 				D55DEB770EF32C9D00968B95 /* PriorityQueue.h in Headers */,
@@ -1028,7 +1027,7 @@
 			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = F50D04F802E68E8201CA2799;
-			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
+			productRefGroup = F50D060302E69C2101CA2799 /* common */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1341,8 +1340,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-faltivec",
@@ -1364,8 +1363,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
@@ -1389,8 +1388,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
@@ -1414,8 +1413,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
@@ -1447,8 +1446,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";
@@ -1491,8 +1490,8 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/xtralibs/mac\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/xtralibs/mac\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";

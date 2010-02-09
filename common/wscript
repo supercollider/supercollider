@@ -9,7 +9,7 @@
 import os
 import sys
 
-VERSION='3.3.1'
+VERSION='3.3.1'   # TODO: grab the version from the VERSION file, as in the SConstruct
 APPNAME='supercollider'
 srcdir = '.'
 blddir = 'build/waf' # FIXME

@@ -76,7 +76,7 @@ Other additions/improvements:
 * 2010-01-30 Make multichannel plotting easier. If no numChannels is given, find out automatically  - jr
 * 2010-01-31 add new LOOP1 macro - tb
 * 2010-01-31 use c99 log2 functions for sc_log2 - tb
-
+* 2010-02-09 rearrangement of supercollider source code tree - ds
 
 SuperCollider v3.3.1, released 2009-06-19
 =========================================
