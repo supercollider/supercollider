@@ -24,7 +24,7 @@
 
 #include "utilities/utils.hpp"
 #include "server/sample_types.hpp"
-#include "simd/simd_memory.hpp"
+#include "simd_memory.hpp"
 
 namespace nova
 {
