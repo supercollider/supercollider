@@ -489,7 +489,7 @@ Plotter {
 }
 
 
-PlotWindow : SCWindow {
+PlotWindow : Window {
 	var <plotter;
 	
 	*new { arg name, bounds;
@@ -539,6 +539,9 @@ PlotWindow : SCWindow {
 	
 	
 }
+
+
+// for now, use plot2.
 
 
 + ArrayedCollection {
