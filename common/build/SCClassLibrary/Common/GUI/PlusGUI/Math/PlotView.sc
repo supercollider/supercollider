@@ -499,7 +499,7 @@ PlotWindow : Window {
 	
 	init {
 		view.background = Color.grey(0.7);
-		plotter = Plotter.new(this, view.bounds.insetBy(10, 10));
+		plotter = Plotter.new(this, this.view.bounds.insetBy(10, 10));
 		this.refresh;
 	}
 		
