@@ -1,0 +1,13 @@
+_World_New
+_World_Cleanup
+_World_NonRealTimeSynthesis
+_World_OpenUDP
+_World_OpenTCP
+_World_OpenMachPorts
+_World_SendPacket
+_World_SendPacketWithContext
+_World_WaitForQuit
+_World_CopySndBuf
+_SetPrintFunc
+_scprintf
+_oscTimeNow
