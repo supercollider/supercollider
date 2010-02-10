@@ -51,7 +51,7 @@ Plot {
 		// reshapeLike
 		value = array;
 		if(plotter.findSpecs or: domainSpec.isNil) { 
-			domainSpec = [0, value.size, \lin, 1].asSpec 
+			domainSpec = [0, value.size, \lin, 1].asSpec
 		};
 		valueCache = nil;
 	}
@@ -155,11 +155,7 @@ Plot {
 			this.perform(mode, ycoord, step);
 			Pen.stroke;
 		};
-		
-		
-		
 	
-		
 	}
 	
 	// modes
@@ -238,32 +234,29 @@ Plot {
 
 Plotter {
 	
-	var <parent, <bounds, <value;
+	var <parent, <>bounds, <value;
 	var <plots, <interactionView, <plotSpecs, <plotDomainSpecs;
-	var <>gapY = 2;
-	var <>cursorPos, <>plotMode = \lines, editMode = false;
-	var <>resolution = 1, <>findSpecs = true;
+	var <data, <>cursorPos, <plotMode = \lines, <>editMode = false;
+	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes;
 	
-	*new { |parent, bounds|
-		^super.newCopyArgs(parent, bounds).init
+	*new { |name, bounds, parent|
+		^super.newCopyArgs(parent, bounds ? Rect(100, 200, 500, 300)).init(name)
 	}
 	
-	init {
-		bounds = bounds ? Rect(100, 200, 500, 300);
-		modes = [\points, \levels, \lines].iter.loop;
-		interactionView = UserView(parent.tryPerform(\parent) ? parent, bounds);
-
-		if(parent.respondsTo('drawFunc_')) {
-			parent.drawFunc = { this.draw };
+	init { |name|
+		
+		if(parent.isNil) {
+			parent = Window.new(name ? "Plot", bounds);
+			interactionView = UserView(parent, parent.view.bounds);
+			parent.drawHook = { this.draw };
+			parent.front;
 		} {
-			if(parent.respondsTo('drawHook_')) {
-				parent.drawHook = { this.draw }; // this should be fixed in the classes 
-										// (but needs to be done also in swingosc)
-			} {
-				interactionView.drawFunc = { this.draw };
-			}
+			interactionView = UserView(parent, bounds);
+			interactionView.drawFunc = { this.draw }
 		};
+		
+		modes = [\points, \levels, \lines].iter.loop;
 		
 		interactionView
 			.background_(Color.clear)
@@ -271,9 +264,9 @@ Plotter {
 			.resize_(5)
 			.focus(true)
 			.mouseDownAction_({ |v, x, y, modifiers|
-				if(editMode) {
+				if(editMode && superpose.not) {
 					this.editData(x, y);
-					if(this.numFrames < 100) { parent.refresh };
+					if(this.numFrames < 100) { this.refresh };
 				} {
 					if(modifiers.isAlt) { 
 						this.postCurrentValue(x, y) 
@@ -281,64 +274,66 @@ Plotter {
 				}
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
-				if(editMode) {
+				if(editMode && superpose.not) {
 					this.editData(x, y);
-					if(this.numFrames < 100) { parent.refresh };
+					if(this.numFrames < 100) { this.refresh };
 				} {
 					if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 				}
 			})
 			.mouseUpAction_({
-				if(editMode) { parent.refresh };
+				if(editMode && superpose.not) { this.refresh };
 			})
 			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
 				if(modifiers.isCmd.not) {
 				switch(char,
 					// zoom out
 					$-, {
-						this.setSpecs(*plotSpecs.collect(_.zoom(3/2)));
+						this.setSpecs(*plotSpecs.collect(_.zoom(3/2)))
 					},
 					// zoom in
 					$+, {
-						this.setSpecs(*plotSpecs.collect(_.zoom(2/3)));
+						this.setSpecs(*plotSpecs.collect(_.zoom(2/3)))
 					},
 					// toggle grid
 					$g, {
-						plots.do { |x| x.gridOnY = x.gridOnY.not };
+						plots.do { |x| x.gridOnY = x.gridOnY.not }
 					},
 					// toggle domain grid
 					$G, {
-						plots.do { |x| x.gridOnX = x.gridOnX.not };
+						plots.do { |x| x.gridOnX = x.gridOnX.not }
 					},
 					// toggle plot mode
 					$m, {
-						plotMode = modes.next;
+						this.setPlotMode(modes.next)
 					},
 					// toggle editing
 					$e, {
-						this.toggleEditMode;
+						editMode = editMode.not;
+						"plot edit mode %\n".postf(if(editMode) { "on" } { "off" });
+					},
+					// toggle superposition
+					$s, {
+						this.superpose = this.superpose.not
 					}
 				);
 				parent.refresh;
 				};
 			});
 	}
-	
-	
+		
 	value_ { |arrays|
-		value = this.reshape(arrays);
+		data = arrays;
+		value = this.prReshape(arrays);
 		if(findSpecs) { this.calcSpecs };
 		this.updatePlotSpecs;
 		this.updatePlots;
-		this.draw;
+		this.refresh;
 	}
 	
-	reshape { |item|
-		var array = item.asArray;
-		if(item.first.isSequenceableCollection.not) {
-			array = array.bubble;
-		};
-		^array
+	superpose_ { |flag|
+		superpose = flag;
+		this.value = data;
 	}
 	
 	numChannels {
@@ -349,25 +344,27 @@ Plotter {
 		if(value.isNil) { ^0 };
 		^value.first.size
 	}
-
-	
-	bounds_ { |rect|
-		bounds = rect;
-		this.updatePlotBounds;
-	}
-	
 	
 	draw {
-		try { this.bounds = parent.view.bounds.insetBy(11, 10) };
+		bounds = this.drawBounds;
+		this.updatePlotBounds;
 		Pen.use {
 			plots.do { |plot| plot.draw };
-		}
+		};
+	}
+	
+	drawBounds { // needs to be unified in UserView and Window
+		^if(parent.respondsTo(\view)) {
+				parent.view.bounds
+			} {
+				parent.bounds
+			}.insetBy(11, 10)
 	}
 	
 	// subviews
 	
 	updatePlotBounds {
-		var deltaY = if(this.numChannels > 1 ) { gapY } { 0.0 };
+		var deltaY = if(this.numChannels > 1 ) { 3.0 } { 0.0 };
 		var distY = bounds.height / this.numChannels;
 		var height = max(20, distY - deltaY);
 		
@@ -411,25 +408,29 @@ Plotter {
 	
 	setSpecs { |... specs|
 		plotSpecs = specs.collect(_.asSpec).clipExtend(this.numChannels);
+		this.updatePlotSpecs;
 		this.refresh;
 	}
 	
 	setDomainSpecs { |... specs|
 		plotDomainSpecs = specs.collect(_.asSpec).clipExtend(this.numChannels).postln;
 		plots.do { |plot, i| plot.domainSpec = plotDomainSpecs.at(i) };
-		this.updatePlotSpecs; this.draw;
+		this.updatePlotSpecs;
+		this.refresh;
 	}
 	
 	minval_ { |val|
 		val = val.asArray;
 		plotSpecs.do { |x, i| x.minval = val.wrapAt(i) };
-		this.updatePlotSpecs; this.draw;
+		this.updatePlotSpecs; 
+		this.refresh;
 	}
 	
 	maxval_ { |val|
 		val = val.asArray;
 		plotSpecs.do { |x, i| x.minval = val.wrapAt(i) };
-		this.updatePlotSpecs; this.draw;
+		this.updatePlotSpecs; 
+		this.refresh;
 	}
 	
 	
@@ -447,6 +448,11 @@ Plotter {
 	
 	
 	// interaction
+	
+	setPlotMode { |mode|
+		plotMode = mode;
+		this.refresh;
+	}
 	
 	pointIsInWhichPlot { |point|
 		^plots.detectIndex { |plot|
@@ -476,69 +482,27 @@ Plotter {
 		};
 	}
 	
-	toggleEditMode {
-		editMode = editMode.not;
-		"editMode: %\n".postf(editMode);
-	}
-	
 	refresh {
-		this.updatePlotSpecs;
-		this.draw;
+		parent.refresh;
+	}
+	
+	// private implementation
+	
+	prReshape { |item|
+		var size, array = item.asArray;
+		if(item.first.isSequenceableCollection.not) {
+			^array.bubble;
+		};
+		if(superpose) {
+			if(array.first.first.isSequenceableCollection) { ^array };
+			size = array.maxItem { |x| x.size }.size;
+			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble // for now, just extend data
+		};
+		^array
 	}
 	
 }
 
-
-PlotWindow : Window {
-	var <plotter;
-	
-	*new { arg name, bounds;
-		bounds = bounds ? Rect(20, 30, 500, 300);
-		^super.new(name ? "plot", bounds).init
-	}
-	
-	init {
-		this.view.background = Color.grey(0.7);
-		plotter = Plotter.new(this, this.view.bounds.insetBy(10, 10));
-		this.refresh;
-	}
-		
-	value_ { |arrays|
-		plotter.value_(arrays);
-		this.refresh;
-	}
-	
-	value {
-		^plotter.value
-	}
-	
-	plotMode_ { |mode|
-		plotter.plotMode = mode;
-		this.refresh;
-	}
-	
-	setSpecs { |... specs|
-		plotter.setSpecs(*specs);
-		this.refresh;
-	}
-	
-	setDomainSpecs { |... specs|
-		plotter.setDomainSpecs(*specs);
-		this.refresh;
-	}
-
-	minval_ { |val|
-		plotter.minval_(val);
-		this.refresh;
-	}
-	
-	maxval_ { |val|
-		plotter.maxval_(val);
-		this.refresh;
-	}
-	
-	
-}
 
 
 // for now, use plot2.
@@ -547,16 +511,16 @@ PlotWindow : Window {
 + ArrayedCollection {
 
 	plot2 { arg name, bounds, discrete=false, numChannels, minval, maxval;
-		var array = this.as(Array), plotWindow = PlotWindow(name, bounds);
-		if(discrete) { plotWindow.plotMode = \points };
+		var array = this.as(Array), plotter = Plotter(name, bounds);
+		if(discrete) { plotter.plotMode = \points };
 		
 		numChannels !? { array = array.unlace(numChannels) };
-		plotWindow.value = array;
+		plotter.value = array;
 		
-		minval !? { plotWindow.minval = minval; };
-		maxval !? { plotWindow.maxval = maxval };
+		minval !? { plotter.minval = minval; };
+		maxval !? { plotter.maxval = maxval };
 		
-		^plotWindow.front
+		^plotter
 	}
 		
 }
@@ -565,23 +529,23 @@ PlotWindow : Window {
 + Function {
 
 	plot2 { arg duration = 0.01, server, bounds, minval, maxval;
-		var name = this.asCompileString, plotWindow;
+		var name = this.asCompileString, plotter;
 		if(name.size > 50) { name = "function plot" };
-		plotWindow = [0].plot2(name, bounds);
+		plotter = [0].plot2(name, bounds);
 		server = server ? Server.default;
 		server.waitForBoot {
 			this.loadToFloatArray(duration, server, { |array, buf|
 				var numChan = buf.numChannels;
 				{
-					plotWindow.value = array.unlace(buf.numChannels);
-					plotWindow.plotter.setDomainSpecs(ControlSpec(0, duration, units: "s"));
-					minval !? { plotWindow.minval = minval; };
-					maxval !? { plotWindow.maxval = maxval };
+					plotter.value = array.unlace(buf.numChannels);
+					plotter.plotter.setDomainSpecs(ControlSpec(0, duration, units: "s"));
+					minval !? { plotter.minval = minval; };
+					maxval !? { plotter.maxval = maxval };
 					
 				}.defer;
 			})
 		};
-		^plotWindow
+		^plotter
 	}
 
 }
@@ -596,24 +560,24 @@ PlotWindow : Window {
 + Buffer {
 
 	plot2 { arg name, bounds, minval = -1, maxval = 1;
-		var plotWindow = [0].plot2(
-			name ? "Buffer plot (num: %)".format(this.bufnum), 
+		var plotter = [0].plot2(
+			name ? "Buffer plot (bufnum: %)".format(this.bufnum), 
 			bounds, minval: minval, maxval: maxval
 		);
 		this.loadToFloatArray(action: { |array, buf| 
-			{ plotWindow.value = array.unlace(buf.numChannels) }.defer 
+			{ plotter.value = array.unlace(buf.numChannels) }.defer 
 		});
-		^plotWindow
+		^plotter
 	}
 }
 
 + Env {
 
 	plot2 { arg size = 400, bounds, minval, maxval;
-		var plotWindow = this.asSignal(size)
+		var plotter = this.asSignal(size)
 			.plot2("envelope plot", bounds, minval: minval, maxval: maxval);
-		plotWindow.setDomainSpecs(ControlSpec(0, this.times.sum, units: "s"));
-		^plotWindow
+		plotter.setDomainSpecs(ControlSpec(0, this.times.sum, units: "s"));
+		^plotter
 	}
 	
 }
