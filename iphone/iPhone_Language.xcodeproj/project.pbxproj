@@ -103,7 +103,7 @@
 		778F12CA0F50A94600CB6629 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 778F12C90F50A94600CB6629 /* icon.png */; };
 		778F12D30F50A9C100CB6629 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7751B8240F435F700044CAC0 /* libscsynth.a */; };
 		778F17E60F50AE1100CB6629 /* SuperCollider_MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */; };
-		778F18480F50B1D000CB6629 /* SCClassLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18440F50B1D000CB6629 /* SCClassLibrary */; };
+		778F18480F50B1D000CB6629 /* backwards_compatibility in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18440F50B1D000CB6629 /* backwards_compatibility */; };
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
@@ -128,7 +128,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 7751B8120F435F6F0044CAC0 /* iPhone_Synth.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 77AA93910EB3685300DC0BCB /* libscsynth */;
+			remoteGlobalIDString = 77AA93910EB3685300DC0BCB;
 			remoteInfo = libscsynth;
 		};
 		77C6D7D610D6D58E00D8E4E9 /* PBXContainerItemProxy */ = {
@@ -147,7 +147,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				778F18480F50B1D000CB6629 /* SCClassLibrary in CopyFiles */,
+				778F18480F50B1D000CB6629 /* backwards_compatibility in CopyFiles */,
 				778F18490F50B1D000CB6629 /* Common in CopyFiles */,
 				778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */,
 				778F184B0F50B1D000CB6629 /* Platform in CopyFiles */,
@@ -427,7 +427,7 @@
 		778F12C90F50A94600CB6629 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "iPhone Resources/icon.png"; sourceTree = "<group>"; };
 		778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow.xib; path = "iPhone Resources/SuperCollider_MainWindow.xib"; sourceTree = "<group>"; };
 		778F17E50F50AE1100CB6629 /* SuperCollider.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SuperCollider.plist; path = "iPhone Resources/SuperCollider.plist"; sourceTree = "<group>"; };
-		778F18440F50B1D000CB6629 /* SCClassLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SCClassLibrary; path = ../common/build/SCClassLibrary; sourceTree = "<group>"; };
+		778F18440F50B1D000CB6629 /* backwards_compatibility */ = {isa = PBXFileReference; lastKnownFileType = folder; name = backwards_compatibility; path = ../common/build/SCClassLibrary/backwards_compatibility; sourceTree = "<group>"; };
 		778F18450F50B1D000CB6629 /* Common */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Common; path = ../common/build/SCClassLibrary/Common; sourceTree = "<group>"; };
 		778F18460F50B1D000CB6629 /* DefaultLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DefaultLibrary; path = ../common/build/SCClassLibrary/DefaultLibrary; sourceTree = "<group>"; };
 		778F18470F50B1D000CB6629 /* Platform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Platform; path = ../common/build/SCClassLibrary/Platform; sourceTree = "<group>"; };
@@ -485,7 +485,7 @@
 				778F12BB0F50A92100CB6629 /* Extensions */,
 				778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */,
 				778F17E50F50AE1100CB6629 /* SuperCollider.plist */,
-				778F18440F50B1D000CB6629 /* SCClassLibrary */,
+				778F18440F50B1D000CB6629 /* backwards_compatibility */,
 				778F18450F50B1D000CB6629 /* Common */,
 				778F18460F50B1D000CB6629 /* DefaultLibrary */,
 				778F18470F50B1D000CB6629 /* Platform */,
