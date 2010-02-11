@@ -2948,6 +2948,12 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
 	slotCopy(&thread->environment,currentEnvironmentSlot);
 	gc->GCWrite(thread, currentEnvironmentSlot);
+	
+	if(g->process) { // check we're not just starting up
+		PyrSlot* executingPath = &g->process->nowExecutingPath;
+		slotCopy(&thread->executingPath,&g->process->nowExecutingPath);
+		gc->GCWrite(thread, &g->process->nowExecutingPath);
+	}
 }
 
 extern PyrSymbol *s_prstart;
@@ -2955,7 +2961,7 @@ extern PyrSymbol *s_prstart;
 int prThreadInit(struct VMGlobals *g, int numArgsPushed);
 int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b, *c;
+	PyrSlot *a, *b, *c, *d;
 	int stacksize, err;
 	PyrThread *thread;
 
@@ -2964,7 +2970,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	//CallStackSanity(g, "prThreadInit");
 	a = g->sp - 2;	// thread
 	b = g->sp - 1;	// function
-	c = g->sp;		// stacksize
+	c = g->sp;	// stacksize
 
 	thread = slotRawThread(a);
 
@@ -3108,6 +3114,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 
 	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
+	slotCopy(&g->process->nowExecutingPath, &g->thread->oldExecutingPath);
 	//debugf("yield from thread %08X to parent %08X\n", g->thread, slotRawThread(&g->thread->parent));
 	switchToThread(g, parent, tSuspended, &numArgsPushed);
 
@@ -3140,6 +3147,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 
 	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
+	slotCopy(&g->process->nowExecutingPath, &g->thread->oldExecutingPath);
 	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, parent);
 	switchToThread(g, parent, tDone, &numArgsPushed);
 
@@ -3167,6 +3175,9 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	thread = slotRawThread(a);
 	state = slotRawInt(&thread->state);
 	//postfl("->prRoutineResume %d\n", state);
+	
+	slotCopy(&thread->oldExecutingPath,&g->process->nowExecutingPath);
+	slotCopy(&g->process->nowExecutingPath, &thread->executingPath);
 	if (state == tInit) {
 		slotCopy(&threadSlot,a);
 		slotCopy(&value,b);
@@ -3286,6 +3297,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 
 
 	if (state == tSuspended || state == tInit) {
+		slotCopy(&g->process->nowExecutingPath, &thread->oldExecutingPath);
 		SetNil(&g->thread->terminalValue);
 		SetRaw(&thread->state, tDone);
 		slotRawObject(&thread->stack)->size = 0;
@@ -3335,6 +3347,8 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	switchToThread(g, parent, state, &numArgsPushed);
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	slotCopy((g->sp - numArgsPushed + 1),&value);
+	
+	//slotCopy(&g->process->nowExecutingPath, &g->thread->oldExecutingPath);
 
 	//post("<-prRoutineYieldAndReset\n");
 	//assert(g->gc->SanityCheck());

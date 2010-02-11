@@ -187,6 +187,8 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		classobj = slotRawClass(&classobj->nextclass);
 	}
 
+	SetNil(&proc->nowExecutingPath);
+
 	class_thread = getsym("Thread")->u.classobj;
 	if (class_thread) {
 		SetNil(&proc->curThread);
@@ -208,7 +210,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	} else {
 		error("Class Thread not found.\n");
 	}
-
+	
 	PyrSymbol *contextsym;
 	int index;
 	PyrMethod *meth;

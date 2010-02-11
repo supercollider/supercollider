@@ -1437,12 +1437,13 @@ void initClasses()
 		//addIntrinsicVar(class_frame, "homeContext", &o_nil);
 		//addIntrinsicVar(class_frame, "ip", &o_nil);
 
-	class_process = makeIntrinsicClass(s_process, s_object, 5, 0);
+	class_process = makeIntrinsicClass(s_process, s_object, 6, 0);
 		addIntrinsicVar(class_process, "classVars", &o_nil);
 		addIntrinsicVar(class_process, "interpreter", &o_nil);
 		addIntrinsicVar(class_process, "curThread", &o_nil);
 		addIntrinsicVar(class_process, "mainThread", &o_nil);
 		addIntrinsicVar(class_process, "schedulerQueue", &o_nil);
+		addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
 
 	class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 29, 0);
 		addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
@@ -1459,7 +1460,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0);
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0);
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 24, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 26, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1486,6 +1487,9 @@ void initClasses()
 
 		addIntrinsicVar(class_thread, "environment", &o_nil);
 		addIntrinsicVar(class_thread, "exceptionHandler", &o_nil);
+	
+		addIntrinsicVar(class_thread, "executingPath", &o_nil);
+		addIntrinsicVar(class_thread, "oldExecutingPath", &o_nil);
 
 	class_finalizer = makeIntrinsicClass(s_finalizer, s_object, 2, 0);
 		addIntrinsicVar(class_finalizer, "cFunction", &o_nil);

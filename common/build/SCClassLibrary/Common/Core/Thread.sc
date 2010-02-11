@@ -15,6 +15,7 @@ Thread : Stream {
 	var <beats=0.0, <seconds=0.0, <clock, <nextBeat, <>endBeat, <>endValue;
 	var environment;
 	var <>exceptionHandler;
+	var <executingPath, <oldExecutingPath;
 
 	*new { arg func, stackSize=64;
 		^super.new.init(func, stackSize)

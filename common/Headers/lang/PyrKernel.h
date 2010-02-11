@@ -98,6 +98,7 @@ struct PyrProcess : public PyrObjectHdr
 	PyrSlot interpreter;
 	PyrSlot curThread, mainThread;
 	PyrSlot sysSchedulerQueue;
+	PyrSlot nowExecutingPath;
 };
 
 
@@ -115,6 +116,8 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot beats, seconds, clock, nextBeat, endBeat, endValue;
 	PyrSlot environment;
 	PyrSlot exceptionHandler;
+	PyrSlot executingPath;
+	PyrSlot oldExecutingPath;
 };
 
 #define EVALSTACKDEPTH 512

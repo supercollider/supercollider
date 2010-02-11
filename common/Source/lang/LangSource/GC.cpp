@@ -258,7 +258,7 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	for (int i=0; i<kNumGCSets; ++i) {
 		mSets[i].Init(i);
 	}
-
+	g->process = NULL; // initPyrThread checks to see if process has been started
 	mProcess = newPyrProcess(g, mainProcessClass);
 
 	mStack = slotRawObject(&slotRawThread(&mProcess->mainThread)->stack);
