@@ -23,10 +23,16 @@
 
 #include <cstdlib>              /* std::abs */
 #include <cmath>                /* std::abs */
+#include <algorithm>
 
 #define sc_abs(a) std::abs(a)
 #define sc_max(a,b) (((a) > (b)) ? (a) : (b))
 #define sc_min(a,b) (((a) < (b)) ? (a) : (b))
-#define sc_clip(x, lo, hi) ((x) > (hi) ? (hi) : ((x) < (lo) ? (lo) : (x)))
+
+template <typename T, typename U, typename V>
+inline T sc_clip(T x, U lo, V hi)
+{
+    return std::max(std::min(x, (T)hi), (T)lo);
+}
 
 #endif
