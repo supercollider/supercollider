@@ -86,9 +86,9 @@ else
     about_version="$version (Revision $revision)"
     echo "About box version string:" $about_version
 
-    svn export -q --force ../../build SuperCollider
-    cp -R ../../build/SuperCollider.app ../../build/scsynth ../../build/sclang SuperCollider
-    cp ../../build/plugins/* SuperCollider/plugins/
+    svn export -q --force ../../common/build SuperCollider
+    cp -R ../../common/build/SuperCollider.app ../../common/build/scsynth ../../common/build/sclang SuperCollider
+    cp ../../common/build/plugins/* SuperCollider/plugins/
     cp ../../COPYING SuperCollider/COPYING
     find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
