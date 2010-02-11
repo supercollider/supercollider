@@ -70,7 +70,7 @@
 		makeDefault.canFocus = false;
 		makeDefault.states = [["-> default", Color.black, Color.clear], ["-> default", Color.black, Color.green.alpha_(0.2)]];
 		makeDefault.value_((this == Server.default).binaryValue);
-		makeDefault.action = { Server.default_(this, true) };
+		makeDefault.action = { Server.default_(this) };
 
 		//w.view.decorator.nextLine;
 
