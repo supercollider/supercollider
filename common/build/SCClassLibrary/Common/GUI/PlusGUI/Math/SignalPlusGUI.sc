@@ -162,11 +162,11 @@
 		});
 
 		Routine.run({
-			var c;
+			var c, numFrames;
 			c = Condition.new;
-			buffer = Buffer.new(server, duration
-				* server.sampleRate * if(rate==\control, 1/server.options.blockSize, 1),
-				numChannels);
+			numFrames = duration * server.sampleRate;
+			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
+			buffer = Buffer.new(server, numFrames, numChannels);
 			server.sendMsgSync(c, *buffer.allocMsg);
 			server.sendMsgSync(c, "/d_recv", def.asBytes);
 			synth = Synth(name, [\bufnum, buffer], server);
@@ -174,6 +174,7 @@
 				buffer.loadToFloatArray(action: { |array, buf|
 					action.value(array, buf);
 					buffer.free;
+					server.sendMsg("/d_free", name);
 				});
 			}).add.removeWhenDone;
 		});
