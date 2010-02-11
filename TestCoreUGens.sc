@@ -83,8 +83,11 @@ test_ugen_generator_equivalences {
 	 
 	 //////////////////////////////////////////
 	 // Clipping and distortion:
-	 ".clip(2) doesn't affect signals that lie within +-1" -> {n=WhiteNoise.ar;   n.clip2(1) - n},
-	 ".clip(2) on a loud LFPulse is same as scaling" -> {n=LFPulse.ar(LFNoise0.kr(50), mul:100);   n.clip2(1) - (n/100)},
+	 ".clip2() doesn't affect signals that lie within +-1" -> {n=WhiteNoise.ar;   n.clip2(1) - n},
+	 ".clip2() on a loud LFPulse is same as scaling" -> {n=LFPulse.ar(LFNoise0.kr(50), mul:100);   n.clip2(1) - (n/100)},
+	 ".clip2(_) == .clip(-_,_)" -> {n=WhiteNoise.ar;   n.clip2(0.4) - n.clip(-0.4, 0.4)},
+	 "_.clip2().abs never greater than _.abs" -> {n=WhiteNoise.ar;   n.clip2(0.3).abs > n.abs },
+	 "_.clip( ).abs never greater than _.abs" -> {n=WhiteNoise.ar;   n.clip(-0.7,0.6).abs > n.abs },
 	 
 	 //////////////////////////////////////////
 	 // FFT:
