@@ -11,11 +11,11 @@ Plot {
 	
 	*initClass {
 		GUI.skin.put(\plot, (
-			gridColorX: Color.grey(0.5),
-			gridColorY: Color.grey(0.5),
+			gridColorX: Color.grey(0.6),
+			gridColorY: Color.grey(0.6),
 			plotColor: Color.black,
 			background: Color.new255(240, 240, 240),
-			gridLinePattern: FloatArray[1, 4],
+			gridLinePattern: FloatArray[1, 5],
 			gridLineSmoothing: false
 		));
 	}
@@ -48,7 +48,6 @@ Plot {
 	}
 	
 	value_ { |array|
-		// reshapeLike
 		value = array;
 		if(plotter.findSpecs or: domainSpec.isNil) { 
 			domainSpec = [0, value.size, \lin, 1].asSpec
@@ -201,8 +200,7 @@ Plot {
 		valueCache = nil;
 	}
 	
-	// private implementation
-	
+	// private implementation	
 	
 	prResampValues {
 		^if(value.size <= (plotBounds.width / plotter.resolution)) { 
@@ -234,23 +232,25 @@ Plot {
 
 Plotter {
 	
-	var <parent, <>bounds, <value;
-	var <plots, <interactionView, <plotSpecs, <plotDomainSpecs;
-	var <data, <>cursorPos, <plotMode = \lines, <>editMode = false;
+	var <>name, <>bounds, <>parent;
+	var <value, <data;
+	var <plots, <plotSpecs, <plotDomainSpecs;
+	var <cursorPos, <>plotMode = \lines, <>editMode = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
-	var modes;
+	var modes, <interactionView;
 	
 	*new { |name, bounds, parent|
-		^super.newCopyArgs(parent, bounds ? Rect(100, 200, 500, 300)).init(name)
+		^super.newCopyArgs(name, bounds ? Rect(100, 200, 500, 300)).makeWindow(parent)
 	}
 	
-	init { |name|
-		
+	makeWindow { |argParent|
+		parent = argParent ? parent;
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds);
 			interactionView = UserView(parent, parent.view.bounds);
 			parent.drawHook = { this.draw };
 			parent.front;
+			parent.onClose = { parent = nil };
 		} {
 			interactionView = UserView(parent, bounds);
 			interactionView.drawFunc = { this.draw }
@@ -264,6 +264,7 @@ Plotter {
 			.resize_(5)
 			.focus(true)
 			.mouseDownAction_({ |v, x, y, modifiers|
+				cursorPos = x @ y;
 				if(editMode && superpose.not) {
 					this.editData(x, y);
 					if(this.numFrames < 100) { this.refresh };
@@ -274,6 +275,7 @@ Plotter {
 				}
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
+				cursorPos = x @ y;
 				if(editMode && superpose.not) {
 					this.editData(x, y);
 					if(this.numFrames < 100) { this.refresh };
@@ -282,18 +284,33 @@ Plotter {
 				}
 			})
 			.mouseUpAction_({
+				cursorPos = nil;
 				if(editMode && superpose.not) { this.refresh };
 			})
 			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
 				if(modifiers.isCmd.not) {
 				switch(char,
-					// zoom out
+					// y zoom out
 					$-, {
 						this.setSpecs(*plotSpecs.collect(_.zoom(3/2)))
 					},
-					// zoom in
+					// y zoom in
 					$+, {
 						this.setSpecs(*plotSpecs.collect(_.zoom(2/3)))
+					},
+					// x zoom out (doesn't work yet)
+					$*, {
+						this.setDomainSpecs(*plotDomainSpecs.collect(_.zoom(3/2)))
+					},
+					// x zoom in (doesn't work yet)
+					$_, {
+						this.setDomainSpecs(*plotDomainSpecs.collect(_.zoom(2/3)))
+					},
+					// neutral zoom
+					$=, {
+						this.calcSpecs;
+						this.updatePlotSpecs;
+						this.refresh;
 					},
 					// toggle grid
 					$g, {
@@ -314,7 +331,7 @@ Plotter {
 					},
 					// toggle superposition
 					$s, {
-						this.superpose = this.superpose.not
+						this.superpose = this.superpose.not;
 					}
 				);
 				parent.refresh;
@@ -323,17 +340,21 @@ Plotter {
 	}
 		
 	value_ { |arrays|
+		this.setValue(arrays, findSpecs, true)
+	}
+	
+	setValue { |arrays, findSpecs = true, refresh = true|
 		data = arrays;
 		value = this.prReshape(arrays);
 		if(findSpecs) { this.calcSpecs };
 		this.updatePlotSpecs;
 		this.updatePlots;
-		this.refresh;
+		if(refresh) { this.refresh };
 	}
 	
 	superpose_ { |flag|
 		superpose = flag;
-		this.value = data;
+		this.setValue(data, false, true);
 	}
 	
 	numChannels {
@@ -399,7 +420,12 @@ Plotter {
 	updatePlotSpecs {
 		plotSpecs !? {
 			plots.do { |plot, i|
-				plot.spec = plotSpecs.at(i)
+				plot.spec = plotSpecs.clipAt(i)
+			}
+		};
+		plotDomainSpecs !? {
+			plots.do { |plot, i|
+				plot.domainSpec = plotDomainSpecs.clipAt(i)
 			}
 		}
 	}
@@ -407,14 +433,13 @@ Plotter {
 	// specs
 	
 	setSpecs { |... specs|
-		plotSpecs = specs.collect(_.asSpec).clipExtend(this.numChannels);
+		plotSpecs = specs.collect(_.asSpec);
 		this.updatePlotSpecs;
 		this.refresh;
 	}
 	
 	setDomainSpecs { |... specs|
-		plotDomainSpecs = specs.collect(_.asSpec).clipExtend(this.numChannels).postln;
-		plots.do { |plot, i| plot.domainSpec = plotDomainSpecs.at(i) };
+		plotDomainSpecs = specs.collect(_.asSpec);
 		this.updatePlotSpecs;
 		this.refresh;
 	}
@@ -445,8 +470,7 @@ Plotter {
 		plotSpecs = spec.asSpec.calcRange(value.flat).roundRange.dup(this.numChannels);
 	}
 	
-	
-	
+		
 	// interaction
 	
 	setPlotMode { |mode|
@@ -483,7 +507,7 @@ Plotter {
 	}
 	
 	refresh {
-		parent.refresh;
+		parent !? { parent.refresh }
 	}
 	
 	// private implementation
@@ -496,10 +520,12 @@ Plotter {
 		if(superpose) {
 			if(array.first.first.isSequenceableCollection) { ^array };
 			size = array.maxItem { |x| x.size }.size;
-			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble // for now, just extend data
-		};
+			// for now, just extend data:
+			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble		};
 		^array
 	}
+	
+	
 	
 }
 
@@ -538,7 +564,7 @@ Plotter {
 				var numChan = buf.numChannels;
 				{
 					plotter.value = array.unlace(buf.numChannels);
-					plotter.plotter.setDomainSpecs(ControlSpec(0, duration, units: "s"));
+					plotter.setDomainSpecs(ControlSpec(0, duration, units: "s"));
 					minval !? { plotter.minval = minval; };
 					maxval !? { plotter.maxval = maxval };
 					
