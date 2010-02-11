@@ -9,7 +9,6 @@ classvar scVersionMajor=3, scVersionMinor=3, scVersionPostfix=1;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
-	var	<>nowExecutingPath;
 
 	startup {
 		// setup the platform first so that class initializers can call platform methods.

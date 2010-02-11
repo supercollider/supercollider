@@ -166,6 +166,7 @@ Process {
 	var classVars, <interpreter;
 	var curThread, mainThread;
 	var schedulerQueue;
+	var <>nowExecutingPath;
 
 	startup {
 		var time;
