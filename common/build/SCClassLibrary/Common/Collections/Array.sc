@@ -135,9 +135,9 @@ Array[slot] : ArrayedCollection {
 	//************** inconsistent argnames, see SequenceableColllection unlace!
 	unlace { arg clumpSize=2, numChan=1, clip=false;
 		^if(clip) {
-			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
+			super.unlace(clumpSize, numChan) 
 		} {
-			super.unlace(clumpSize, numChan)
+			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
 		}
 	}
 	prUnlace { arg clumpSize=2, numChan=1;
