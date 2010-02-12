@@ -2187,6 +2187,342 @@
 			};
 			name = Deployment;
 		};
+		F36C2D481125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					ppc,
+				);
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				EXECUTABLE_EXTENSION = scx;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_MODEL_TUNING = G4;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
+				KEEP_PRIVATE_EXTERNS = NO;
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACH_O_TYPE = mh_bundle;
+				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DNOVA_SIMD",
+					"-DNDEBUG",
+				);
+				OTHER_LDFLAGS = "-lm";
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SYMROOT = build/plugins;
+				USER_HEADER_SEARCH_PATHS = "../common/include/nova-simd";
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D491125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					ppc,
+					x86_64,
+				);
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				OPTIMIZATION_CFLAGS = "-O3 -faltivec";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "SC_Synth PlugIns";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4A1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = BinaryOpUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4B1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = DelayUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4C1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				PRODUCT_NAME = DiskIOUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4D1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = FFT_UGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4E1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = FilterUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D4F1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = IOUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D501125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = LFUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D511125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = MulAddUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D521125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = NoiseUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D531125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = OSCUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D541125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				GCC_VERSION = "";
+				PRODUCT_NAME = PanUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D551125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = TriggerUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D561125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = UnaryOpUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D571125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = MouseUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D581125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = GendynUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D591125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = PhysicalModellingUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5A1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = FFT2_UGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5B1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = DemandUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5C1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = DynNoiseUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5D1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = ChaosUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5E1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = TestUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D5F1125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = UnpackFFTUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D601125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = MachineListening;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D611125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = GrainUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D621125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = ReverbUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
+		F36C2D631125D9DB0099DB2B /* Deployment32-64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				PRODUCT_NAME = KeyboardUGens;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+			};
+			name = "Deployment32-64";
+		};
 		F3F479160D03BCB0001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2246,6 +2582,7 @@
 			buildConfigurations = (
 				37E291970E2CEBE400CB854E /* Development */,
 				37E291980E2CEBE400CB854E /* Deployment */,
+				F36C2D631125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2255,6 +2592,7 @@
 			buildConfigurations = (
 				468DABE30CF1FE1800FA8C88 /* Development */,
 				468DABE40CF1FE1800FA8C88 /* Deployment */,
+				F36C2D601125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2264,6 +2602,7 @@
 			buildConfigurations = (
 				88332413090ABD1F00A4A7E4 /* Development */,
 				88332414090ABD1F00A4A7E4 /* Deployment */,
+				F36C2D481125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2273,6 +2612,7 @@
 			buildConfigurations = (
 				940E42770B45B6D0002DADC8 /* Development */,
 				940E42780B45B6D0002DADC8 /* Deployment */,
+				F36C2D491125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2282,6 +2622,7 @@
 			buildConfigurations = (
 				949318AB0C192F540018AB50 /* Development */,
 				949318AC0C192F540018AB50 /* Deployment */,
+				F36C2D4D1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2291,6 +2632,7 @@
 			buildConfigurations = (
 				949318C20C1931070018AB50 /* Development */,
 				949318C30C1931070018AB50 /* Deployment */,
+				F36C2D4A1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2300,6 +2642,7 @@
 			buildConfigurations = (
 				949318D80C19310F0018AB50 /* Development */,
 				949318D90C19310F0018AB50 /* Deployment */,
+				F36C2D4B1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2309,6 +2652,7 @@
 			buildConfigurations = (
 				949318E30C1931110018AB50 /* Development */,
 				949318E40C1931110018AB50 /* Deployment */,
+				F36C2D4C1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2318,6 +2662,7 @@
 			buildConfigurations = (
 				949318EE0C1931120018AB50 /* Development */,
 				949318EF0C1931120018AB50 /* Deployment */,
+				F36C2D4E1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2327,6 +2672,7 @@
 			buildConfigurations = (
 				949318F90C1931130018AB50 /* Development */,
 				949318FA0C1931130018AB50 /* Deployment */,
+				F36C2D4F1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2336,6 +2682,7 @@
 			buildConfigurations = (
 				949319040C1931150018AB50 /* Development */,
 				949319050C1931150018AB50 /* Deployment */,
+				F36C2D501125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2345,6 +2692,7 @@
 			buildConfigurations = (
 				9493190F0C1931160018AB50 /* Development */,
 				949319100C1931160018AB50 /* Deployment */,
+				F36C2D511125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2354,6 +2702,7 @@
 			buildConfigurations = (
 				9493191A0C1931180018AB50 /* Development */,
 				9493191B0C1931180018AB50 /* Deployment */,
+				F36C2D521125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2363,6 +2712,7 @@
 			buildConfigurations = (
 				949319250C19311A0018AB50 /* Development */,
 				949319260C19311A0018AB50 /* Deployment */,
+				F36C2D531125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2372,6 +2722,7 @@
 			buildConfigurations = (
 				949319300C19311C0018AB50 /* Development */,
 				949319310C19311C0018AB50 /* Deployment */,
+				F36C2D541125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2381,6 +2732,7 @@
 			buildConfigurations = (
 				9493193B0C19311E0018AB50 /* Development */,
 				9493193C0C19311E0018AB50 /* Deployment */,
+				F36C2D551125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2390,6 +2742,7 @@
 			buildConfigurations = (
 				949319460C1931260018AB50 /* Development */,
 				949319470C1931260018AB50 /* Deployment */,
+				F36C2D561125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2399,6 +2752,7 @@
 			buildConfigurations = (
 				949319510C1931280018AB50 /* Development */,
 				949319520C1931280018AB50 /* Deployment */,
+				F36C2D571125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2408,6 +2762,7 @@
 			buildConfigurations = (
 				9493197C0C1931A30018AB50 /* Development */,
 				9493197D0C1931A30018AB50 /* Deployment */,
+				F36C2D581125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2417,6 +2772,7 @@
 			buildConfigurations = (
 				949319870C1931A40018AB50 /* Development */,
 				949319880C1931A40018AB50 /* Deployment */,
+				F36C2D591125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2426,6 +2782,7 @@
 			buildConfigurations = (
 				949319920C1931A50018AB50 /* Development */,
 				949319930C1931A50018AB50 /* Deployment */,
+				F36C2D5A1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2435,6 +2792,7 @@
 			buildConfigurations = (
 				9493199D0C1931A60018AB50 /* Development */,
 				9493199E0C1931A60018AB50 /* Deployment */,
+				F36C2D5B1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2444,6 +2802,7 @@
 			buildConfigurations = (
 				949319A80C1931A70018AB50 /* Development */,
 				949319A90C1931A70018AB50 /* Deployment */,
+				F36C2D5C1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2453,6 +2812,7 @@
 			buildConfigurations = (
 				949319B30C1931A80018AB50 /* Development */,
 				949319B40C1931A80018AB50 /* Deployment */,
+				F36C2D5D1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2462,6 +2822,7 @@
 			buildConfigurations = (
 				DC43F08D0CB26A670020E8B7 /* Development */,
 				DC43F08E0CB26A670020E8B7 /* Deployment */,
+				F36C2D5F1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2471,6 +2832,7 @@
 			buildConfigurations = (
 				F3F479160D03BCB0001A470F /* Development */,
 				F3F479170D03BCB0001A470F /* Deployment */,
+				F36C2D611125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2480,6 +2842,7 @@
 			buildConfigurations = (
 				F3F479210D03BCDB001A470F /* Development */,
 				F3F479220D03BCDB001A470F /* Deployment */,
+				F36C2D621125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2489,6 +2852,7 @@
 			buildConfigurations = (
 				FE2582C90C2C096A00307453 /* Development */,
 				FE2582CA0C2C096A00307453 /* Deployment */,
+				F36C2D5E1125D9DB0099DB2B /* Deployment32-64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
