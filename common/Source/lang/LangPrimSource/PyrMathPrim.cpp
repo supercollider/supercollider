@@ -590,7 +590,7 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 		err = slotDoubleVal(c, &hi);
 		if (err) return err;
-		SetFloat(a, sc_clip(slotRawInt(a), lo, hi));
+		SetFloat(a, sc_clip((double)slotRawInt(a), lo, hi));
 	}
 	return errNone;
 }
