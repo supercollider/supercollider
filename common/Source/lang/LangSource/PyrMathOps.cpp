@@ -41,6 +41,8 @@ double log2(double x);
 #include "MiscInlineMath.h"
 #include "PyrKernelProto.h"
 
+#include <limits>
+
 double hypotx(double x, double y);
 
 #define IS_BINARY_BOOL_OP(op)  ((op)>=opEQ && (op)<=opGE)
@@ -215,7 +217,15 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opBitNot : SetRaw(a, ~(int)slotRawFloat(a)); break;
 				case opAbs : SetRaw(a, sc_abs(slotRawFloat(a))); break;
 				case opAsFloat : SetRaw(a, (double)slotRawFloat(a)); break;
-				case opAsInt : SetInt(a, (int)slotRawFloat(a)); break;
+				case opAsInt :
+				{
+					double val = slotRawFloat(a);
+					if (val == std::numeric_limits<double>::infinity())
+						SetInt(a, std::numeric_limits<int>::max());
+					else
+						SetInt(a, (int)val);
+					break;
+				}
 				case opCeil : SetRaw(a, ceil(slotRawFloat(a))); break;
 				case opFloor : SetRaw(a, floor(slotRawFloat(a))); break;
 				case opFrac : SetRaw(a, sc_frac(slotRawFloat(a))); break;
