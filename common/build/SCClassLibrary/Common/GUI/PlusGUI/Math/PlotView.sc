@@ -100,19 +100,19 @@ Plot {
 		var base = plotBounds.bottom;
 		var width = plotBounds.width;
 		var left = plotBounds.left;
-		var gridValues, n;
+		var gridValues, n, xspec = this.resampledDomainSpec;
 		n = (plotBounds.width / 64).round(2);
-		if(domainSpec.hasZeroCrossing) { n = n + 1 };
+		if(xspec.hasZeroCrossing) { n = n + 1 };
 		
-		gridValues = domainSpec.gridValues(n);
+		gridValues = xspec.gridValues(n);
 		if(gridOnY) { gridValues = gridValues.drop(1) };
 		gridValues = gridValues.drop(-1);
 
 		Pen.beginPath;
 		
 		gridValues.do { |x, i|
-			var hpos = left + (domainSpec.unmap(x) * width);
-			var string = x.asStringPrec(5) ++ domainSpec.units;
+			var hpos = left + (xspec.unmap(x) * width);
+			var string = x.asStringPrec(5) ++ xspec.units;
 			Pen.moveTo(hpos @ base);
 			Pen.lineTo(hpos @ top);
 			string.drawAtPoint(hpos @ base, font, gridColorX);
@@ -122,18 +122,35 @@ Plot {
 		this.prStrokeGrid;
 	}
 	
+	resampledDomainSpec {
+		^domainSpec.copy.maxval_(this.resampledSize)
+	}
+	
+	resampledSize {
+		^min(value.size, plotBounds.width / plotter.resolution)
+	}
+	
+	domainCoordinates { |size|
+		var val = this.resampledDomainSpec.unmap((0..size-1));
+		^plotBounds.left + (val * plotBounds.width);
+	}
+	
+	dataCoordinates {
+		 var val = spec.unmap(this.prResampValues);
+		 ^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
+	}
+	
+	compressionRatio {
+		^if(valueCache.isNil) { 1.0 } {
+			valueCache.size / value.size	
+		}
+	}
 	
 	drawData {
 		
 		var mode = plotter.plotMode;
-		
-		var left = plotBounds.left;
-		var base = plotBounds.bottom;
-		var top = plotBounds.top;
-		var yarray = spec.unmap(this.prResampValues);
-		var xarray = domainSpec.copy.maxval_(yarray.size-1).unmap((0..yarray.size-1));
-		var ycoord = base - (yarray * plotBounds.height); // measures from top left (may be arrays)
-		var xcoord = xarray.normalize(left, plotBounds.width + left);
+		var ycoord = this.dataCoordinates;
+		var xcoord = this.domainCoordinates(ycoord.size);
 		
 		Pen.width = 1.0;
 		plotColor = plotColor.as(Array);
@@ -458,7 +475,7 @@ Plotter {
 	
 	calcDomainSpecs { 
 		// for now, a simple version
-		plotDomainSpecs = [[0, value[0].size - 1, \lin, 1].asSpec];
+		plotDomainSpecs = [[0, value[0].size, \lin, 1].asSpec];
 	}
 	
 	calcCommonSpec { |spec = \unipolar|
