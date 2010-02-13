@@ -49,9 +49,6 @@ Plot {
 	
 	value_ { |array|
 		value = array;
-		if(plotter.findSpecs or: domainSpec.isNil) { 
-			domainSpec = [0, value.size, \lin, 1].asSpec
-		};
 		valueCache = nil;
 	}
 	
@@ -85,7 +82,7 @@ Plot {
 		
 		gridValues.do { |val, i|
 			var vpos = base - (spec.unmap(val) * height); // measures from top left
-			var string = val.round(0.001).asStringPrec(5).asString ++ spec.units;
+			var string = val.asStringPrec(5).asString ++ spec.units;
 			Pen.moveTo(left @ vpos);
 			Pen.lineTo(right @ vpos);
 			if(gridOnX.not or: { i > 0 }) {
@@ -115,7 +112,7 @@ Plot {
 		
 		gridValues.do { |x, i|
 			var hpos = left + (domainSpec.unmap(x) * width);
-			var string = x.round(0.001).asStringPrec(5) ++ domainSpec.units;
+			var string = x.asStringPrec(5) ++ domainSpec.units;
 			Pen.moveTo(hpos @ base);
 			Pen.lineTo(hpos @ top);
 			string.drawAtPoint(hpos @ base, font, gridColorX);
@@ -127,16 +124,16 @@ Plot {
 	
 	
 	drawData {
-	
+		
 		var mode = plotter.plotMode;
 		
 		var left = plotBounds.left;
 		var base = plotBounds.bottom;
 		var top = plotBounds.top;
-		var array = this.prResampValues;
-		var step = plotBounds.width / array.size;
-		var ycoord = base - (spec.unmap(array) * plotBounds.height); // measures from top left
-		
+		var yarray = spec.unmap(this.prResampValues);
+		var xarray = domainSpec.copy.maxval_(yarray.size-1).unmap((0..yarray.size-1));
+		var ycoord = base - (yarray * plotBounds.height); // measures from top left (may be arrays)
+		var xcoord = xarray.normalize(left, plotBounds.width + left);
 		
 		Pen.width = 1.0;
 		plotColor = plotColor.as(Array);
@@ -144,14 +141,14 @@ Plot {
 		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
 			ycoord.flop.do { |y, i| 
 				Pen.beginPath;
-				this.perform(mode, y, step);
+				this.perform(mode, xcoord, y);
 				plotColor.wrapAt(i).set;
 				Pen.stroke;
-			} 
+			}
 		} {
 			Pen.beginPath;
 			plotColor.at(0).set;
-			this.perform(mode, ycoord, step);
+			this.perform(mode, xcoord, ycoord);
 			Pen.stroke;
 		};
 	
@@ -159,43 +156,33 @@ Plot {
 	
 	// modes
 	
-	lines { |y, step|
-		var x = plotBounds.left;
-		Pen.moveTo(x @ y.first);
-		y.do { |y, i|
-			Pen.lineTo(x @ y);
-			x = x + step
+	lines { |x, y|
+		Pen.moveTo(x.first @ y.first);
+		y.size.do { |i|
+			Pen.lineTo(x[i] @ y[i]);
 		}
 	}
 	
-	points { |y, step|
-		var x = plotBounds.left;
-		Pen.moveTo(x @ y.first);
-		y.do { |y, i|
-			Pen.addArc(x @ y, 0.5, 0, 2pi);
-			x = x + step
+	points { |x, y|
+		y.size.do { |i|
+			Pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
 		}
 	}
 	
-	levels { |y, step|
-		var x = plotBounds.left;
-		Pen.moveTo(x @ y.first);
+	levels { |x, y|
 		Pen.setSmoothing(false);
-		y.do { |y, i|
-			Pen.moveTo(x @ y);
-			x = x + step;
-			Pen.lineTo(x @ y);
+		y.size.do { |i|
+			Pen.moveTo(x[i] @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { x[i] - x[i - 2] + x[i - 1] } @ y[i]);
 		}
 	}
-
 	
 	// editing
 	
 	editData { |x, y|
-		var index = ((x - plotBounds.left) / plotBounds.width * value.size).round.asInteger;
-		var curval = value.clipAt(index);
-		var val = (plotBounds.bottom - y - (font.size * 1)) / plotBounds.height;
-		val = spec.map(val);
+		var xpos = domainSpec.map((x - plotBounds.left) / plotBounds.width);
+		var index = xpos.round.asInteger;
+		var val = spec.map((plotBounds.bottom - y - (font.size * 1)) / plotBounds.height);
 		value.clipPut(index, val);
 		valueCache = nil;
 	}
@@ -240,7 +227,7 @@ Plotter {
 	var modes, <interactionView;
 	
 	*new { |name, bounds, parent|
-		^super.newCopyArgs(name, bounds ? Rect(100, 200, 500, 300)).makeWindow(parent)
+		^super.newCopyArgs(name, bounds ? Rect(100, 200, 400, 300)).makeWindow(parent)
 	}
 	
 	makeWindow { |argParent|
@@ -298,14 +285,14 @@ Plotter {
 					$+, {
 						this.setSpecs(*plotSpecs.collect(_.zoom(2/3)))
 					},
-					// x zoom out (doesn't work yet)
+					/*// x zoom out (doesn't work yet)
 					$*, {
 						this.setDomainSpecs(*plotDomainSpecs.collect(_.zoom(3/2)))
 					},
 					// x zoom in (doesn't work yet)
 					$_, {
 						this.setDomainSpecs(*plotDomainSpecs.collect(_.zoom(2/3)))
-					},
+					},*/
 					// neutral zoom
 					$=, {
 						this.calcSpecs;
@@ -346,7 +333,10 @@ Plotter {
 	setValue { |arrays, findSpecs = true, refresh = true|
 		data = arrays;
 		value = this.prReshape(arrays);
-		if(findSpecs) { this.calcSpecs };
+		if(findSpecs) { 
+				this.calcSpecs; 
+				this.calcDomainSpecs; 
+		};
 		this.updatePlotSpecs;
 		this.updatePlots;
 		if(refresh) { this.refresh };
@@ -464,6 +454,11 @@ Plotter {
 		plotSpecs = plotSpecs.collect { |spec, i|
 			spec.asSpec.calcRange(value.at(i).flat).roundRange;
 		};
+	}
+	
+	calcDomainSpecs { 
+		// for now, a simple version
+		plotDomainSpecs = [[0, value[0].size - 1, \lin, 1].asSpec];
 	}
 	
 	calcCommonSpec { |spec = \unipolar|
@@ -607,5 +602,3 @@ Plotter {
 	}
 	
 }
-
-
