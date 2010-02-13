@@ -25,7 +25,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
-#include <SC_Types.h>
+#include "SC_Types.h"
 
 namespace nova
 {

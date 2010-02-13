@@ -3,12 +3,17 @@ aux_source_directory(boost/libs/thread/src/ boost_thread )
 aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_posix )
 
 add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
+target_link_libraries(boost_thread pthread)
+
 
 aux_source_directory(boost/libs/program_options/src/ boost_program_options )
 add_library(boost_program_options STATIC ${boost_program_options})
 
 aux_source_directory(boost/libs/system/src/ boost_system )
 add_library(boost_system STATIC ${boost_system})
+
+aux_source_directory(boost/libs/filesystem/src boost_filesystem)
+add_library(boost_filesystem STATIC ${boost_filesystem})
 
 
 #oscpack

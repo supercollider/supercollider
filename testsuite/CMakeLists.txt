@@ -2,7 +2,6 @@ set(simple_tests
     approximation_test.cpp
     buffer_manager_test.cpp
     callback_interpreter_system.cpp
-    control_bus_test.cpp
     memory-pool_test.cpp
     osc_dispatcher_test.cpp
     osc_server_test.cpp
@@ -36,8 +35,12 @@ foreach(test ${simple_tests})
   target_link_libraries(${test_name} oscpack tlsf)
   target_link_libraries(${test_name} pthread)
   target_link_libraries(${test_name} sndfile)
-  target_link_libraries(${test_name} nova-server)
+  target_link_libraries(${test_name} libsupernova)
 
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)
+
+set_property(TARGET server_test
+             APPEND
+             PROPERTY COMPILE_DEFINITIONS JACK_BACKEND SUPERNOVA)
 

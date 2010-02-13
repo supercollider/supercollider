@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (nova-server)
+project (supernova)
 
 enable_testing()
 
@@ -14,6 +14,12 @@ include_directories(libs
                     libs/pri_queue
                     libs/tlsf/src
                     )
+
+include_directories(source/sc/supercollider/Headers/plugin_interface
+                    source/sc/supercollider/Headers/common
+                    source/sc/supercollider/Headers/server)
+
+
 
 if(CMAKE_COMPILER_IS_GNUCXX)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096 -Wnon-virtual-dtor -Wunused -Wunused -Wstrict-overflow")
