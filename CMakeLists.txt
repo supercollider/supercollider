@@ -3,6 +3,8 @@ project (nova-server)
 
 enable_testing()
 
+option(COMPACT_BUILD "Enable all-in-one compilation.")
+
 # preprocessor paths
 include_directories(source)
 include_directories(libs
@@ -20,6 +22,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math -frename-registers -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fomit-frame-pointer")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
 add_subdirectory (libs)
 add_subdirectory (source)
