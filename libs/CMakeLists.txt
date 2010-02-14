@@ -1,9 +1,15 @@
 #boost
 aux_source_directory(boost/libs/thread/src/ boost_thread )
-aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_posix )
 
-add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
-target_link_libraries(boost_thread pthread)
+find_library(PTHREAD NAMES pthread)
+if (PTHREAD)
+    aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_posix )
+    add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
+    target_link_libraries(boost_thread pthread)
+else()
+    message(SEND_ERROR "we need to implement boost_thread for non-posix systems")
+endif()
+
 
 
 aux_source_directory(boost/libs/program_options/src/ boost_program_options )
