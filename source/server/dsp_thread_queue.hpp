@@ -100,7 +100,7 @@ public:
     void reset_activation_count(void)
     {
         assert(activation_count == 0);
-        activation_count += activation_limit;
+        activation_count.store(activation_limit, boost::memory_order_release);
     }
 
     runnable const & get_job(void) const
@@ -133,7 +133,10 @@ private:
     /** \brief decrement reference count and possibly mark as runnable */
     inline void dec_ref_count(dsp_queue_interpreter & interpreter, std::auto_ptr<dsp_thread_queue_item> & ptr)
     {
-        if (activation_count-- == 1)
+        activation_limit_t current = activation_count--;
+        assert(current > 0);
+
+        if (current == 1)
         {
             if (ptr.get() == NULL)
                 ptr.reset(this);
@@ -144,7 +147,10 @@ private:
 
     inline void dec_ref_count(dsp_queue_interpreter & interpreter)
     {
-        if (activation_count-- == 1)
+        activation_limit_t current = activation_count--;
+        assert(current > 0);
+
+        if (current == 1)
             interpreter.mark_as_runnable(this);
     }
     /* @} */
@@ -246,7 +252,7 @@ public:
 
         /* reset node count */
         assert(node_count == 0);
-        node_count += queue->get_total_node_count(); /* this is definitely atomic! */
+        node_count.store(queue->get_total_node_count(), boost::memory_order_release);
 
         successor_list const & initially_runnable_items = queue->initially_runnable_items;
         for (size_t i = 0; i != initially_runnable_items.size(); ++i)
@@ -343,11 +349,18 @@ private:
 
                 /* wake other threads on end */
                 if (state == no_remaining_items)
-                    return;
+                    break;
             }
             else
-                return;
+                break;
         }
+        wait_for_end();
+    }
+
+    void wait_for_end(void)
+    {
+        while (node_count.load(boost::memory_order_acquire) != 0)
+        {} // busy-wait for helper threads to finish
     }
 
     int run_next_item(thread_count_t index)
