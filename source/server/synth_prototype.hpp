@@ -165,12 +165,15 @@ class synth_prototype:
     public intrusive_refcountable<synth_prototype_deleter>
 {
 public:
-    synth_prototype(std::string const & name):
-        name_(name)
-    {}
+    synth_prototype(std::string const & name)
+    {
+        name_ = strdup(name.c_str());
+    }
 
     virtual ~synth_prototype(void)
-    {}
+    {
+        free((char*)name_);
+    }
 
     virtual abstract_synth * create_instance(int node_id) = 0;
 
@@ -178,10 +181,10 @@ public:
     friend bool operator< (synth_prototype const & a,
                            synth_prototype const & b)
     {
-        return a.name_ < b.name_;
+        return strcmp(a.name_, b.name_) < 0;
     }
 
-    std::string const & name(void) const
+    const char * name(void) const
     {
         return name_;
     }
@@ -190,7 +193,7 @@ public:
     static inline synth_t * allocate(void);
 
 private:
-    const std::string name_;
+    const char * name_;
 };
 
 typedef boost::intrusive_ptr<synth_prototype> synth_prototype_ptr;

@@ -32,27 +32,15 @@ class synth_factory
     struct compare_prototype
     {
         bool operator()(synth_prototype const & lhs,
-                        std::string const & rhs) const
-        {
-            return lhs.name() < rhs;
-        }
-
-        bool operator()(std::string const & lhs,
-                        synth_prototype const & rhs) const
-        {
-            return lhs < rhs.name();
-        }
-
-        bool operator()(synth_prototype const & lhs,
                         const char * rhs) const
         {
-            return strcmp(lhs.name().c_str(), rhs) < 0;
+            return strcmp(lhs.name(), rhs) < 0;
         }
 
         bool operator()(const char * lhs,
                         synth_prototype const & rhs) const
         {
-            return strcmp(lhs, rhs.name().c_str()) < 0;
+            return strcmp(lhs, rhs.name()) < 0;
         }
     };
 
@@ -69,15 +57,6 @@ public:
 
         prototype_map.insert(*prototype.get());
         prototype->add_ref();
-    }
-
-    abstract_synth * create_instance(std::string const & name, int node_id)
-    {
-        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
-        if (it == prototype_map.end())
-            return 0;
-
-        return it->create_instance(node_id);
     }
 
     abstract_synth * create_instance(const char * name, int node_id)

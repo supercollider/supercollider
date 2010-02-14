@@ -132,7 +132,6 @@ private:
 public:
     /* @{ */
     /** graph handling */
-    abstract_synth * add_synth(std::string const & name, int id, node_position_constraint const & constraints);
     abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
 
     group * add_group(int id, node_position_constraint const & constraints);

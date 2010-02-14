@@ -49,6 +49,11 @@ public:
     }
 
 private:
+    const char * prototype_name(void) const
+    {
+        return class_ptr->name();
+    }
+
     synth_prototype_ptr class_ptr;
 };
 
