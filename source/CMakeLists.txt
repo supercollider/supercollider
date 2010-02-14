@@ -30,15 +30,39 @@ add_executable(supernova server/main.cpp)
 
 set_property(TARGET libsupernova supernova
              APPEND
-             PROPERTY COMPILE_DEFINITIONS JACK_BACKEND SUPERNOVA)
+             PROPERTY COMPILE_DEFINITIONS SUPERNOVA)
 
-if (UNIX)
-    set_property(TARGET libsupernova supernova
+find_library(DL NAMES dl)
+if (DL)
+    set_property(TARGET libsupernova
                  APPEND
                  PROPERTY COMPILE_DEFINITIONS DLOPEN)
-endif (UNIX)
+    target_link_libraries(libsupernova ${DL})
+endif()
 
-target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options rt jack sndfile)
+find_library(JACK NAMES jack)
+if (JACK)
+    set_property(TARGET libsupernova supernova
+                 APPEND
+                 PROPERTY COMPILE_DEFINITIONS JACK_BACKEND)
+    target_link_libraries(libsupernova ${JACK})
+endif()
+
+find_library(SNDFILE NAMES sndfile)
+if (NOT SNDFILE)
+    message(SEND_ERROR "Cannot find libsndfile")
+else()
+    target_link_libraries(libsupernova ${SNDFILE})
+endif()
+
+find_library(RT NAMES rt)
+if (NOT RT)
+    message(SEND_ERROR "Cannot find librt")
+else()
+    target_link_libraries(libsupernova ${RT})
+endif()
+
+target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options)
 target_link_libraries(supernova libsupernova)
 
 install(TARGETS supernova
