@@ -226,8 +226,10 @@ group::fill_queue_recursive(thread_queue & queue,
 
             if (successors.empty())
                 successors.push_back(q_item);
-            else
+            else {
                 successors[0] = q_item;
+                successors.resize(1);
+            }
 
             if (activation_limit == 0)
                 queue.add_initially_runnable(q_item);
