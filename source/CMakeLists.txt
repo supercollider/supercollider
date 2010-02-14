@@ -1,21 +1,32 @@
-add_library(libsupernova STATIC
-            sc/sc_plugin_interface.cpp
-            sc/sc_synth.cpp
-            sc/sc_synth_prototype.cpp
-            sc/sc_synthdef.cpp
-            sc/sc_ugen_factory.cpp
-            sc/supercollider/common/Source/server/Samp.cpp
-            server/buffer_manager.cpp
-            server/dsp_context.cpp
-            server/memory_pool.cpp
-            server/node_graph.cpp
-            server/server.cpp
-            server/sc_osc_handler.cpp
-            server/server_args.cpp
+add_subdirectory(sc)
+
+set(libsupernova_src
+    sc/sc_plugin_interface.cpp
+    sc/sc_synth.cpp
+    sc/sc_synth_prototype.cpp
+    sc/sc_synthdef.cpp
+    sc/sc_ugen_factory.cpp
+    sc/supercollider/common/Source/server/Samp.cpp
+    server/buffer_manager.cpp
+    server/dsp_context.cpp
+    server/memory_pool.cpp
+    server/node_graph.cpp
+    server/server.cpp
+    server/sc_osc_handler.cpp
+    server/server_args.cpp
 )
 
+if(COMPACT_BUILD)
+  CREATE_FINAL_FILE(libsupernova_final.cpp ${libsupernova_src})
+  add_library (libsupernova STATIC libsupernova_final.cpp)
+else()
+  add_library (libsupernova STATIC ${libsupernova_src})
+endif()
+
+set_property(TARGET libsupernova
+             PROPERTY OUTPUT_NAME supernova)
+
 add_executable(supernova server/main.cpp)
-add_subdirectory(sc)
 
 set_property(TARGET libsupernova supernova
              APPEND
