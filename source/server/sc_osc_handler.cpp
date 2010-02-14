@@ -21,7 +21,7 @@
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPrintReceivedElements.h"
 
-#include "sc/supercollider/Headers/plugin_interface/sc_msg_iter.h"
+#include "sc/supercollider/common/Headers/plugin_interface/sc_msg_iter.h"
 #include "sc_osc_handler.hpp"
 #include "server.hpp"
 #include "utilities/sized_array.hpp"

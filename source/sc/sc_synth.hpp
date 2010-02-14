@@ -20,11 +20,11 @@
 #ifndef SC_SYNTH_HPP
 #define SC_SYNTH_HPP
 
-#include "supercollider/Headers/plugin_interface/SC_Unit.h"
-#include "supercollider/Headers/plugin_interface/SC_Graph.h"
-#include "supercollider/Headers/plugin_interface/SC_Rate.h"
-#include "supercollider/Headers/plugin_interface/SC_RGen.h"
-#include "supercollider/Headers/plugin_interface/SC_Wire.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Unit.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Graph.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Rate.h"
+#include "supercollider/common/Headers/plugin_interface/SC_RGen.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Wire.h"
 
 #include "sc_synth_prototype.hpp"
 

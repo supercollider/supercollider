@@ -33,11 +33,11 @@
 #include "../utilities/malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
-#include "supercollider/Headers/server/SC_Samp.h"
-#include "supercollider/Headers/server/SC_Prototypes.h"
-#include "supercollider/Headers/server/SC_Errors.h"
-#include "supercollider/Headers/plugin_interface/clz.h"
-#include "supercollider/Headers/plugin_interface/sc_msg_iter.h"
+#include "supercollider/common/Headers/server/SC_Samp.h"
+#include "supercollider/common/Headers/server/SC_Prototypes.h"
+#include "supercollider/common/Headers/server/SC_Errors.h"
+#include "supercollider/common/Headers/plugin_interface/clz.h"
+#include "supercollider/common/Headers/plugin_interface/sc_msg_iter.h"
 
 namespace nova
 {

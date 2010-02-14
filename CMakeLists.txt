@@ -17,9 +17,9 @@ include_directories(libs
                     libs/tlsf/src
                     )
 
-include_directories(source/sc/supercollider/Headers/plugin_interface
-                    source/sc/supercollider/Headers/common
-                    source/sc/supercollider/Headers/server)
+include_directories(source/sc/supercollider/common/Headers/plugin_interface
+                    source/sc/supercollider/common/Headers/common
+                    source/sc/supercollider/common/Headers/server)
 
 
 

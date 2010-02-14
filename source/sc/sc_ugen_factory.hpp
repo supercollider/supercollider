@@ -26,8 +26,8 @@
 #include "sc_synth.hpp"
 #include "sc_plugin_interface.hpp"
 
-#include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
-#include "supercollider/Headers/plugin_interface/SC_Unit.h"
+#include "supercollider/common/Headers/plugin_interface/SC_InterfaceTable.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Unit.h"
 
 namespace nova
 {

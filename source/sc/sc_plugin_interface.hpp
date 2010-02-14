@@ -25,8 +25,8 @@
 #include "../server/node_types.hpp"
 #include "../server/memory_pool.hpp"
 
-#include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
-#include "supercollider/Headers/plugin_interface/SC_World.h"
+#include "supercollider/common/Headers/plugin_interface/SC_InterfaceTable.h"
+#include "supercollider/common/Headers/plugin_interface/SC_World.h"
 
 #include <boost/scoped_array.hpp>
 #include <boost/thread/pthread/mutex.hpp>

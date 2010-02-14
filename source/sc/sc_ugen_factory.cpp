@@ -27,9 +27,9 @@
 
 #include "sc_ugen_factory.hpp"
 
-#include "supercollider/Headers/plugin_interface/SC_InterfaceTable.h"
-#include "supercollider/Headers/plugin_interface/SC_World.h"
-#include "supercollider/Headers/plugin_interface/SC_Wire.h"
+#include "supercollider/common/Headers/plugin_interface/SC_InterfaceTable.h"
+#include "supercollider/common/Headers/plugin_interface/SC_World.h"
+#include "supercollider/common/Headers/plugin_interface/SC_Wire.h"
 
 namespace nova
 {

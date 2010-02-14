@@ -4,7 +4,7 @@ add_library(libsupernova STATIC
             sc/sc_synth_prototype.cpp
             sc/sc_synthdef.cpp
             sc/sc_ugen_factory.cpp
-            sc/supercollider/Source/server/Samp.cpp
+            sc/supercollider/common/Source/server/Samp.cpp
             server/buffer_manager.cpp
             server/dsp_context.cpp
             server/memory_pool.cpp
