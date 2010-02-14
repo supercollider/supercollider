@@ -123,7 +123,8 @@ Plot {
 	}
 	
 	resampledDomainSpec {
-		^domainSpec.copy.maxval_(this.resampledSize)
+		var offset = if(plotter.plotMode == \levels) { 0 } { 1 };
+		^domainSpec.copy.maxval_(this.resampledSize - offset)
 	}
 	
 	resampledSize {
@@ -186,23 +187,52 @@ Plot {
 		}
 	}
 	
+	plines { |x, y|
+		Pen.moveTo(x.first @ y.first);
+		y.size.do { |i|
+			var p = x[i] @ y[i];
+			Pen.lineTo(p);
+			Pen.addArc(p, 3, 0, 2pi);
+			Pen.moveTo(p);
+		}
+	}
+	
 	levels { |x, y|
 		Pen.setSmoothing(false);
 		y.size.do { |i|
 			Pen.moveTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { x[i] - x[i - 2] + x[i - 1] } @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 	
 	// editing
 	
+		
 	editData { |x, y|
-		var xpos = domainSpec.map((x - plotBounds.left) / plotBounds.width);
-		var index = xpos.round.asInteger;
-		var val = spec.map((plotBounds.bottom - y - (font.size * 1)) / plotBounds.height);
+		var index = this.getIndex(x);
+		var val = this.getRelativePositionY(y);
 		value.clipPut(index, val);
 		valueCache = nil;
 	}
+	
+	getRelativePositionX { |x|
+		^this.resampledDomainSpec.map((x - plotBounds.left) / plotBounds.width)
+	}
+	
+	getRelativePositionY { |y|
+		^spec.map((plotBounds.bottom - y - (font.size * 1)) / plotBounds.height)
+	}
+	
+	getIndex { |x|
+		var offset = if(plotter.plotMode == \levels) { 0.1 } { 0.0 }; // needs to be fixed.
+		^(this.getRelativePositionX(x) - offset).round.asInteger;
+	}
+
+	getDataPoint { |x|
+		var index = this.getIndex(x);
+		^[index, value.clipAt(index)]
+	}
+
 	
 	// private implementation	
 	
@@ -260,7 +290,7 @@ Plotter {
 			interactionView.drawFunc = { this.draw }
 		};
 		
-		modes = [\points, \levels, \lines].iter.loop;
+		modes = [\points, \levels, \lines, \plines].iter.loop;
 		
 		interactionView
 			.background_(Color.clear)
@@ -272,20 +302,16 @@ Plotter {
 				if(editMode && superpose.not) {
 					this.editData(x, y);
 					if(this.numFrames < 100) { this.refresh };
-				} {
-					if(modifiers.isAlt) { 
-						this.postCurrentValue(x, y) 
-					};
-				}
+				};
+				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
 				if(editMode && superpose.not) {
 					this.editData(x, y);
 					if(this.numFrames < 100) { this.refresh };
-				} {
-					if(modifiers.isAlt) { this.postCurrentValue(x, y) };
-				}
+				};
+				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseUpAction_({
 				cursorPos = nil;
@@ -491,19 +517,18 @@ Plotter {
 	}
 	
 	pointIsInWhichPlot { |point|
-		^plots.detectIndex { |plot|
+		var res = plots.detectIndex { |plot|
 			plot.bounds.containsPoint(point)
+		};
+		^res ?? { 
+				if(point.x < bounds.center.x) { 0 } { plots.size - 1 } 
 		}
 	}
 	
 	getDataPoint { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
-		var index, array;
 		^plotIndex !? {
-				array = value.at(plotIndex);
-				index = (x - bounds.left) / bounds.width * array.size;
-				index = index.round.asInteger;
-				[index, array.at(index)]
+				plots.at(plotIndex).getDataPoint(x)
 		}
 	}
 	
