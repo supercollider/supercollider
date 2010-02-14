@@ -977,7 +977,7 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
 
     if (node.is_synth()) {
         sc_synth const & scsynth = static_cast<sc_synth const&>(node);
-        p << scsynth.prototype_name().c_str();
+        p << scsynth.prototype_name();
 
         if (flag) {
             osc::int32 controls = scsynth.mNumControls;

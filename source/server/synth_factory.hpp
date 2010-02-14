@@ -29,38 +29,26 @@ namespace nova
 {
 class synth_factory
 {
-    struct compare_prototype
+    struct hash_prototype
     {
-        bool operator()(synth_prototype const & lhs,
-                        std::string const & rhs) const
+        std::size_t operator()(const char * lhs) const
         {
-            return lhs.name() < rhs;
+            return synth_prototype::hash(lhs);
         }
+    };
 
-        bool operator()(std::string const & lhs,
-                        synth_prototype const & rhs) const
+    struct equal_prototype
+    {
+        bool operator()(const char * lhs, synth_prototype const & rhs) const
         {
-            return lhs < rhs.name();
-        }
-
-        bool operator()(synth_prototype const & lhs,
-                        const char * rhs) const
-        {
-            return strcmp(lhs.name().c_str(), rhs) < 0;
-        }
-
-        bool operator()(const char * lhs,
-                        synth_prototype const & rhs) const
-        {
-            return strcmp(lhs, rhs.name().c_str()) < 0;
+            return strcmp(lhs, rhs.name()) == 0;
         }
     };
 
 public:
     void register_prototype(synth_prototype_ptr const & prototype)
     {
-        prototype_map_type::iterator it = prototype_map.find(prototype->name(),
-                                                             compare_prototype());
+        prototype_map_type::iterator it = prototype_map.find(*prototype);
         if (it != prototype_map.end())
         {
             prototype_map.erase(it);
@@ -71,18 +59,11 @@ public:
         prototype->add_ref();
     }
 
-    abstract_synth * create_instance(std::string const & name, int node_id)
-    {
-        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
-        if (it == prototype_map.end())
-            return 0;
-
-        return it->create_instance(node_id);
-    }
-
     abstract_synth * create_instance(const char * name, int node_id)
     {
-        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
+        prototype_map_type::iterator it = prototype_map.find(name,
+                                                             hash_prototype(),
+                                                             equal_prototype());
         if (it == prototype_map.end())
             return 0;
 
@@ -91,7 +72,9 @@ public:
 
     void remove_prototype(const char * name)
     {
-        prototype_map_type::iterator it = prototype_map.find(name, compare_prototype());
+        prototype_map_type::iterator it = prototype_map.find(name,
+                                                             hash_prototype(),
+                                                             equal_prototype());
         if (it == prototype_map.end())
             return;
 
@@ -104,6 +87,10 @@ public:
         return prototype_map.size();
     }
 
+    synth_factory(void):
+        prototype_map(prototype_map_type::bucket_traits(buckets, 1024))
+    {}
+
     ~synth_factory(void)
     {
         while(prototype_map.begin() != prototype_map.end()) {
@@ -114,8 +101,10 @@ public:
     }
 
 private:
-    typedef boost::intrusive::set<synth_prototype> prototype_map_type;
+    typedef boost::intrusive::unordered_set<synth_prototype> prototype_map_type;
+    prototype_map_type::bucket_type buckets[1024];
     prototype_map_type prototype_map;
+
 };
 
 } /* namespace nova */

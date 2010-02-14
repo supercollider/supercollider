@@ -24,6 +24,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/checked_delete.hpp>
 #include <boost/intrusive/set.hpp>
+#include <boost/intrusive/unordered_set.hpp>
 
 #include "utilities/exists.hpp"
 #include "utilities/utils.hpp"
@@ -161,27 +162,45 @@ struct synth_prototype_deleter
  * */
 class synth_prototype:
     public detail::slot_resolver,
-    public boost::intrusive::set_base_hook<>,
+    public boost::intrusive::unordered_set_base_hook<>,
     public intrusive_refcountable<synth_prototype_deleter>
 {
 public:
     synth_prototype(std::string const & name):
-        name_(name)
+        name_(strdup(name.c_str())), hash_(hash(name.c_str()))
     {}
 
+    static size_t hash(const char * str)
+    {
+        std::size_t ret = 0;
+
+        // sdbm hash ... later try another function!
+        int c;
+        while (c = *str++)
+            ret = c + (ret << 6) + (ret << 16) - ret;
+
+        return ret;
+    }
+
     virtual ~synth_prototype(void)
-    {}
+    {
+        free((char*)name_);
+    }
 
     virtual abstract_synth * create_instance(int node_id) = 0;
 
-    /* sort prototypes by name */
-    friend bool operator< (synth_prototype const & a,
+    friend bool operator == (synth_prototype const & a,
                            synth_prototype const & b)
     {
-        return a.name_ < b.name_;
+        return strcmp(a.name_, b.name_) == 0;
     }
 
-    std::string const & name(void) const
+    friend std::size_t hash_value(synth_prototype const & value)
+    {
+        return value.hash_;;
+    }
+
+    const char * name(void) const
     {
         return name_;
     }
@@ -190,7 +209,8 @@ public:
     static inline synth_t * allocate(void);
 
 private:
-    const std::string name_;
+    std::size_t hash_;
+    const char * name_;
 };
 
 typedef boost::intrusive_ptr<synth_prototype> synth_prototype_ptr;

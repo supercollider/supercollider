@@ -48,7 +48,7 @@ public:
         return class_ptr->resolve_slot(str);
     }
 
-    std::string const & prototype_name(void) const
+    const char * prototype_name(void) const
     {
         return class_ptr->name();
     }
