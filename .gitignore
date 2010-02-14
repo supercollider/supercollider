@@ -1,11 +1,9 @@
 *.pyc
 *.o
 *.os
-options.cache*
 config.log
 debug
 release
-.sconsign.dblite
-.sconf_temp
+build
 *~
 doxy
