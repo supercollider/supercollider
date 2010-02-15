@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_3 )
     n.add_node(s2);
 
     auto_ptr<node_graph::dsp_thread_queue> q2 = n.generate_dsp_queue();
-    BOOST_REQUIRE_EQUAL(q2->get_total_node_count(), 2u);
+    BOOST_REQUIRE_EQUAL(q2->get_total_node_count(), 1u);
 
     n.remove_node(s);
     n.remove_node(s2);
