@@ -6,6 +6,12 @@ if (PTHREAD)
     aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_posix )
     add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
     target_link_libraries(boost_thread pthread)
+
+    set_property(TARGET boost_thread
+                 APPEND
+                 PROPERTY COMPILE_FLAGS "-include assert.h"
+    )
+
 else()
     message(SEND_ERROR "we need to implement boost_thread for non-posix systems")
 endif()
