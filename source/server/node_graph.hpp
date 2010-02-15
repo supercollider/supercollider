@@ -37,8 +37,8 @@ private:
     group root_group_;
 
 public:
-    typedef nova::dsp_thread_queue_item<dsp_queue_node, rt_pool_allocator<void*> > dsp_thread_queue_item;
-    typedef nova::dsp_thread_queue<dsp_queue_node, rt_pool_allocator<void*> > dsp_thread_queue;
+    typedef thread_queue_item dsp_thread_queue_item;
+    typedef thread_queue dsp_thread_queue;
 
     /** \brief ctor
      *

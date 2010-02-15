@@ -53,10 +53,12 @@ public:
 
 private:
     synth_ptr node;
+    template <typename Alloc>
     friend class dsp_queue_node;
 };
 
 /* implements runnable concept */
+template <typename Alloc=std::allocator<queue_node_data> >
 class dsp_queue_node
 {
     typedef std::vector<queue_node_data> node_container;

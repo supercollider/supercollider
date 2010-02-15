@@ -212,7 +212,7 @@ group::fill_queue_recursive(thread_queue & queue,
         server_node & node = *it;
 
         if (node.is_synth()) {
-            dsp_queue_node q_node(children); // we reserve space for all children to avoid hitting the allocator too often
+            queue_node q_node(children); // we reserve space for all children to avoid hitting the allocator too often
             q_node.add_node(static_cast<synth*>(&node));
 
             server_node_list::reverse_iterator synth_it = it;
@@ -276,7 +276,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
         server_node & node = *it;
 
         if (node.is_synth()) {
-            dsp_queue_node q_node(1);
+            queue_node q_node(1);
             q_node.add_node(static_cast<synth*>(&node));
 
             thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);

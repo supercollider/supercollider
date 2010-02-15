@@ -24,14 +24,18 @@
 #include "memory_pool.hpp"
 #include "node_types.hpp"
 #include "utilities/exists.hpp"
+#include "dsp_thread_queue_node.hpp"
 
 namespace nova
 {
 
 class synth;
 
-typedef nova::dsp_thread_queue_item<dsp_queue_node, rt_pool_allocator<void*> > thread_queue_item;
-typedef nova::dsp_thread_queue<dsp_queue_node, rt_pool_allocator<void*> > thread_queue;
+typedef nova::dsp_queue_node<rt_pool_allocator<void*> > queue_node;
+typedef nova::dsp_thread_queue_item<dsp_queue_node<rt_pool_allocator<void*> >,
+                                    rt_pool_allocator<void*> > thread_queue_item;
+typedef nova::dsp_thread_queue<dsp_queue_node<rt_pool_allocator<void*> >,
+                               rt_pool_allocator<void*> > thread_queue;
 
 class abstract_group:
     public server_node
