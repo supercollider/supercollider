@@ -21,7 +21,7 @@
 
 #include <boost/detail/atomic_count.hpp>
 #include <boost/intrusive/list.hpp>
-#include <boost/intrusive/set.hpp>
+#include <boost/intrusive/unordered_set.hpp>
 #include <boost/intrusive_ptr.hpp>
 
 #include "synth_prototype.hpp"
@@ -43,7 +43,7 @@ server_node_list;
 
 class server_node:
     public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >, /* group member */
-    public bi::set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
+    public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
     server_node(int32_t node_id, bool type):
@@ -54,7 +54,6 @@ protected:
     {
         assert(parent_ == 0);
     }
-
 
     /* @{ */
     /** node id handling */
@@ -76,10 +75,21 @@ public:
 
     /* @{ */
     /** node_id mapping */
+    friend std::size_t hash_value(server_node const & that)
+    {
+        return hash(that.id());
+    }
+
+    static int32_t hash(int32_t id)
+    {
+        return id * 2654435761; // knuth hash, 32bit should be enough
+    }
+
     friend bool operator< (server_node const & lhs, server_node const & rhs)
     {
         return lhs.node_id < rhs.node_id;
     }
+
     friend bool operator== (server_node const & lhs, server_node const & rhs)
     {
         return lhs.node_id == rhs.node_id;
