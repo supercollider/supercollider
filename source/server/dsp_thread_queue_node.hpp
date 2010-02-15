@@ -65,9 +65,11 @@ class dsp_queue_node
     typedef boost::uint_fast8_t thread_count_type;
 
 public:
-    dsp_queue_node(void):
+    dsp_queue_node(std::size_t container_size):
         node_count(0)
-    {}
+    {
+        nodes.reserve(container_size);
+    }
 
     void operator()(thread_count_type thread_index)
     {
@@ -79,6 +81,11 @@ public:
     {
         nodes.push_back(queue_node_data(node));
         ++node_count;
+    }
+
+    node_count_type size(void) const
+    {
+        return node_count;
     }
 
 private:

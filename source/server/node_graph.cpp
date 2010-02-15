@@ -205,13 +205,14 @@ group::fill_queue_recursive(thread_queue & queue,
                             abstract_group::successor_container successors,
                             int previous_activation_limit)
 {
+    size_t children = child_count();
     for (server_node_list::reverse_iterator it = child_nodes.rbegin();
          it != child_nodes.rend(); ++it)
     {
         server_node & node = *it;
 
         if (node.is_synth()) {
-            dsp_queue_node q_node;
+            dsp_queue_node q_node(children); // we reserve space for all children to avoid hitting the allocator too often
             q_node.add_node(static_cast<synth*>(&node));
 
             server_node_list::reverse_iterator synth_it = it;
@@ -245,14 +246,17 @@ group::fill_queue_recursive(thread_queue & queue,
 
             if (activation_limit == 0)
                 queue.add_initially_runnable(q_item);
+            children -= q_node.size();
         }
         else {
             int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
 
             abstract_group & grp = static_cast<abstract_group&>(node);
             successors = grp.fill_queue_recursive(queue, successors, activation_limit);
+            children -= 1;
         }
     }
+    assert(children == 0);
     return successors;
 }
 
@@ -272,7 +276,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
         server_node & node = *it;
 
         if (node.is_synth()) {
-            dsp_queue_node q_node;
+            dsp_queue_node q_node(1);
             q_node.add_node(static_cast<synth*>(&node));
 
             thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);
