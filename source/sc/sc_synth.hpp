@@ -74,6 +74,20 @@ public:
      */
     void prepare(void);
 
+    inline void perform(void)
+    {
+        if (likely(trace == 0))
+        {
+            for (size_t i = 0; i != calc_units.size(); ++i)
+            {
+                Unit * unit = calc_units[i];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+            }
+        }
+        else
+            run_traced();
+    }
+
     void run(dsp_context const & context);
 
     void set(slot_index_t slot_index, sample val);

@@ -204,19 +204,9 @@ void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_in
     map_control_buses_audio(index, audio_bus_index, count);
 }
 
-
 void sc_synth::run(dsp_context const & context)
 {
-    if (likely(trace == 0))
-    {
-        for (size_t i = 0; i != calc_units.size(); ++i)
-        {
-            Unit * unit = calc_units[i];
-            (unit->mCalcFunc)(unit, unit->mBufLength);
-        }
-    }
-    else
-        run_traced();
+    perform();
 }
 
 void sc_synth::run_traced(void)
