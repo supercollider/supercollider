@@ -53,10 +53,12 @@ public:
 
 private:
     synth_ptr node;
+    template <typename Alloc>
     friend class dsp_queue_node;
 };
 
 /* implements runnable concept */
+template <typename Alloc=std::allocator<queue_node_data> >
 class dsp_queue_node
 {
     typedef std::vector<queue_node_data> node_container;
@@ -65,14 +67,75 @@ class dsp_queue_node
     typedef boost::uint_fast8_t thread_count_type;
 
 public:
-    dsp_queue_node(void):
-        node_count(0)
+    dsp_queue_node(synth * node, std::size_t container_size):
+        first(node), node_count(0)
+    {
+        nodes.reserve(container_size-1);
+    }
+
+    dsp_queue_node(synth * node):
+        first(node), node_count(0)
     {}
 
     void operator()(thread_count_type thread_index)
     {
-        for (node_count_type i = 0; i != node_count; ++i)
-            nodes[i](thread_index);
+        first(thread_index);
+
+        int remaining = node_count;
+        if (remaining == 0)
+            return; //fast-path
+
+        queue_node_data * data = nodes.data();
+
+        if (remaining & 1) {
+            (*data)(thread_index);
+
+            if (remaining == 1)
+                return;
+            remaining -= 1;
+            data += 1;
+        }
+
+        if (remaining & 2) {
+            (*data)(thread_index);
+            (*(data+1))(thread_index);
+
+            if (remaining == 2)
+                return;
+            remaining -= 2;
+            data += 2;
+        }
+
+        if (remaining & 4) {
+            (*data)(thread_index);
+            (*(data+1))(thread_index);
+            (*(data+2))(thread_index);
+            (*(data+3))(thread_index);
+
+            if (remaining == 4)
+                return;
+            remaining -= 4;
+            data += 4;
+        }
+
+        assert(remaining & 8);
+
+        for(;;)
+        {
+            (*data)(thread_index);
+            (*(data+1))(thread_index);
+            (*(data+2))(thread_index);
+            (*(data+3))(thread_index);
+            (*(data+4))(thread_index);
+            (*(data+5))(thread_index);
+            (*(data+6))(thread_index);
+            (*(data+7))(thread_index);
+
+            if (remaining == 8)
+                return;
+            remaining -= 8;
+            data += 8;
+        }
     }
 
     void add_node(synth * node)
@@ -81,7 +144,13 @@ public:
         ++node_count;
     }
 
+    node_count_type size(void) const
+    {
+        return node_count + 1;
+    }
+
 private:
+    queue_node_data first;
     node_container nodes;
     node_count_type node_count;
 };
