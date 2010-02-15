@@ -26,17 +26,19 @@
 
 #include "node_types.hpp"
 #include "synth.hpp"
+#include "../sc/sc_synth.hpp"
 
 namespace nova
 {
 
+/* optimized for sc_synth, since we don't support other types of synths for now */
 class queue_node_data
 {
     typedef boost::uint_fast8_t thread_count_type;
 
 public:
     queue_node_data(abstract_synth * node):
-        node(node)
+        node(static_cast<sc_synth*>(node))
     {}
 
     queue_node_data(queue_node_data const & rhs):
@@ -47,12 +49,11 @@ public:
     {
         if (unlikely(!node->is_running()))
             return;
-        dsp_context context;
-        node->run(context);
+        node->perform();
     }
 
 private:
-    synth_ptr node;
+    intrusive_ptr<sc_synth> node;
     template <typename Alloc>
     friend class dsp_queue_node;
 };
