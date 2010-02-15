@@ -1,5 +1,5 @@
 //  node types
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -226,7 +226,7 @@ inline void intrusive_ptr_release(server_node * p)
 }
 
 typedef boost::intrusive_ptr<server_node> server_node_ptr;
-typedef boost::intrusive_ptr<class synth> synth_ptr;
+typedef boost::intrusive_ptr<class abstract_synth> synth_ptr;
 typedef boost::intrusive_ptr<group> group_ptr;
 
 enum node_position

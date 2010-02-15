@@ -1,5 +1,5 @@
 //  synth
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -74,9 +74,9 @@ protected:
         server_node(node_id, true), prototype_instance(prototype)
     {}
 
+public:
     virtual void run(dsp_context const & context) = 0;
 
-public:
     /** set a slot */
     /* @{ */
     void set(const char * slot_str, sample val)

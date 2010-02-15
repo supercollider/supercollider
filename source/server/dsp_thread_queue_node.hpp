@@ -1,5 +1,5 @@
 //  dsp thread queue nodes
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class queue_node_data
     typedef boost::uint_fast8_t thread_count_type;
 
 public:
-    queue_node_data(synth * node):
+    queue_node_data(abstract_synth * node):
         node(node)
     {}
 
@@ -58,7 +58,7 @@ private:
 };
 
 /* implements runnable concept */
-template <typename Alloc=std::allocator<queue_node_data> >
+template <typename Alloc = std::allocator<queue_node_data> >
 class dsp_queue_node
 {
     typedef std::vector<queue_node_data> node_container;
@@ -67,13 +67,13 @@ class dsp_queue_node
     typedef boost::uint_fast8_t thread_count_type;
 
 public:
-    dsp_queue_node(synth * node, std::size_t container_size):
+    dsp_queue_node(abstract_synth * node, std::size_t container_size):
         first(node), node_count(0)
     {
         nodes.reserve(container_size-1);
     }
 
-    dsp_queue_node(synth * node):
+    dsp_queue_node(abstract_synth * node):
         first(node), node_count(0)
     {}
 
@@ -138,7 +138,7 @@ public:
         }
     }
 
-    void add_node(synth * node)
+    void add_node(abstract_synth * node)
     {
         nodes.push_back(queue_node_data(node));
         ++node_count;
