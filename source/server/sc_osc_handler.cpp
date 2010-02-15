@@ -329,9 +329,6 @@ struct cmd_dispatcher<false>
     }
 };
 
-
-
-
 } /* namespace */
 
 namespace detail
@@ -797,14 +794,25 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 }
 
 /* extract float or int32 as float from argument iterator */
-float extract_float_argument(osc::ReceivedMessageArgumentIterator const & it)
+inline float extract_float_argument(osc::ReceivedMessageArgumentIterator const & it)
 {
     if (it->IsFloat())
         return it->AsFloatUnchecked();
     if (it->IsInt32())
-        return it->AsInt32Unchecked();
-    return it->AsFloat();
+        return float(it->AsInt32Unchecked());
+    if (it->IsInt64())
+        return float(it->AsInt64Unchecked());
+
+    throw std::runtime_error("type cannot be converted to float");
 }
+
+inline void verify_argument(osc::ReceivedMessageArgumentIterator const & it,
+                            osc::ReceivedMessageArgumentIterator const & end)
+{
+    if (it == end)
+        throw std::runtime_error("unexpected end of argument list");
+}
+
 
 template <typename control_id_type>
 void set_control_array(server_node * node, control_id_type control, osc::ReceivedMessageArgumentIterator & it)
@@ -2280,37 +2288,38 @@ void handle_b_zero(received_message const & msg, nova_endpoint const & endpoint)
 
 void handle_b_set(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-    osc::int32 buffer_index;
-    args >> buffer_index;
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
 
-    while (!args.Eos()) {
-        osc::int32 index;
-        float value;
+    while (it != end) {
+        osc::int32 index = it->AsInt32(); ++it;
+        float value = extract_float_argument(it++);
 
-        args >> index >> value;
         data[index] = value;
     }
 }
 
 void handle_b_setn(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-    osc::int32 buffer_index;
-    args >> buffer_index;
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
 
-    while (!args.Eos()) {
-        osc::int32 index;
-        osc::int32 samples;
-        args >> index >> samples;
+    while (it != end) {
+        osc::int32 index = it->AsInt32(); ++it;
+        verify_argument(it, end);
+        osc::int32 samples = it->AsInt32(); ++it;
 
         for (int i = 0; i != samples; ++i) {
-            float value;
-            args >> value;
+            verify_argument(it, end);
+            float value = extract_float_argument(it++);
             data[index+i] = value;
         }
     }
@@ -2318,17 +2327,19 @@ void handle_b_setn(received_message const & msg)
 
 void handle_b_fill(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-    osc::int32 buffer_index;
-    args >> buffer_index;
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
 
-    while (!args.Eos()) {
-        osc::int32 index;
-        osc::int32 samples;
-        float value;
-        args >> index >> samples >> value;
+    while (it != end) {
+        osc::int32 index = it->AsInt32(); ++it;
+        verify_argument(it, end);
+        osc::int32 samples = it->AsInt32(); ++it;
+        verify_argument(it, end);
+        float value = extract_float_argument(it++);
 
         for (int i = 0; i != samples; ++i)
             data[index] = value;
