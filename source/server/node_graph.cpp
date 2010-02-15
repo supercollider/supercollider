@@ -1,5 +1,5 @@
 //  node graph, implementation
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -212,7 +212,7 @@ group::fill_queue_recursive(thread_queue & queue,
         server_node & node = *it;
 
         if (node.is_synth()) {
-            queue_node q_node(static_cast<synth*>(&node), children); // we reserve space for all children
+            queue_node q_node(static_cast<abstract_synth*>(&node), children); // we reserve space for all children
 
             server_node_list::reverse_iterator synth_it = it;
 
@@ -225,7 +225,7 @@ group::fill_queue_recursive(thread_queue & queue,
                 server_node & prev_node = *synth_it;
                 if (!prev_node.is_synth())
                     break; // we hit a child group, later we may want to add it's nodes, too?
-                q_node.add_node(static_cast<synth*>(&prev_node));
+                q_node.add_node(static_cast<abstract_synth*>(&prev_node));
 
                 it = synth_it; // now we consumed this node and can continue
             }
@@ -275,7 +275,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
         server_node & node = *it;
 
         if (node.is_synth()) {
-            queue_node q_node(static_cast<synth*>(&node));
+            queue_node q_node(static_cast<abstract_synth*>(&node));
             thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);
 
             queue.add_queue_item(q_item);
