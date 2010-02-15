@@ -58,9 +58,12 @@ int main(int argc, char * argv[])
     server_arguments::initialize(argc, argv);
     server_arguments const & args = server_arguments::instance();
 
-    uint32_t threads = std::min(uint(args.threads), boost::thread::hardware_concurrency());
-
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
+
+    std::cout << "Supernova booting" << std::endl;
+#ifndef NDEBUG
+    std::cout << "compiled for debugging" << std::endl;
+#endif
 
     sc_factory.initialize();
 #ifdef __linux__
@@ -68,6 +71,10 @@ int main(int argc, char * argv[])
     sc_factory.load_plugin_folder("/usr/lib/supernova/plugins");
 #else
 #error "Don't know how to locate plugins on this platform"
+#endif
+
+#ifndef NDEBUG
+    std::cout << "Unit Generators initialized" << std::endl;
 #endif
 
     nova_server server(args);
@@ -94,6 +101,11 @@ int main(int argc, char * argv[])
         register_synthdefs(server, sc_read_synthdefs_dir(synthdef_path));
     }
 
+#ifndef NDEBUG
+    std::cout << "SynthDefs loaded" << std::endl;
+#endif
+
+    std::cout << "Supernova ready" << std::endl;
     server.run();
 
 #if defined (JACK_BACKEND)
