@@ -92,3 +92,6 @@ endforeach(plugin)
 
 install(FILES supercollider/build/SCClassLibrary/Common/Control/PGroup.sc
         DESTINATION share/SuperCollider/SCClassLibrary/Common/Control)
+
+add_subdirectory(sc3-plugins/build)
+add_subdirectory(sc3-plugins/source)

@@ -22,3 +22,6 @@
 [submodule "libs/nova-dsp"]
 	path = libs/nova-dsp
 	url = git://klingt.org/nova-dsp.git
+[submodule "source/sc/sc3-plugins"]
+	path = source/sc/sc3-plugins
+	url = git://klingt.org/sc3-plugins
