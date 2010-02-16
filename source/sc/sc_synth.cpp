@@ -232,6 +232,7 @@ void sc_synth::run_traced(void)
             printf(" %g", unit->mOutBuf[j][0]);
         putchar('\n');
     }
+    std::cout << std::endl;
 
     trace = 0;
 }
