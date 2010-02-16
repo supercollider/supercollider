@@ -205,31 +205,40 @@ group::fill_queue_recursive(thread_queue & queue,
                             abstract_group::successor_container successors,
                             int previous_activation_limit)
 {
+    typedef server_node_list::reverse_iterator r_iterator;
+
     size_t children = child_count();
-    for (server_node_list::reverse_iterator it = child_nodes.rbegin();
+    for (r_iterator it = child_nodes.rbegin();
          it != child_nodes.rend(); ++it)
     {
         server_node & node = *it;
 
         if (node.is_synth()) {
-            queue_node q_node(static_cast<abstract_synth*>(&node), children); // we reserve space for all children
-
-            server_node_list::reverse_iterator synth_it = it;
+            r_iterator end_of_node = it;
+            --end_of_node; // one element behind the last
+            std::size_t node_count = 1;
 
             for(;;)
             {
-                ++synth_it;
-                if (synth_it == child_nodes.rend())
+                ++it;
+                if (it == child_nodes.rend())
                     break; // we found the beginning of this group
 
-                server_node & prev_node = *synth_it;
-                if (!prev_node.is_synth())
+                if (!it->is_synth())
                     break; // we hit a child group, later we may want to add it's nodes, too?
-                q_node.add_node(static_cast<abstract_synth*>(&prev_node));
-
-                it = synth_it; // now we consumed this node and can continue
+                ++node_count;
             }
 
+            --it; // we iterated one element too far, so we need to go back to the previous element
+            r_iterator forward_it = it;
+
+            queue_node q_node(static_cast<abstract_synth*>(&*forward_it--), node_count);
+
+            // now we can add all nodes sequentially
+            for(;forward_it != end_of_node; --forward_it)
+                q_node.add_node(static_cast<abstract_synth*>(&*forward_it));
+
+            assert(q_node.size() == node_count);
             int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
 
             thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);
@@ -245,7 +254,7 @@ group::fill_queue_recursive(thread_queue & queue,
 
             if (activation_limit == 0)
                 queue.add_initially_runnable(q_item);
-            children -= q_node.size();
+            children -= node_count;
         }
         else {
             int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
