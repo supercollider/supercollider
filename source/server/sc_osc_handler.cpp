@@ -1554,6 +1554,31 @@ void handle_s_noid(received_message const & msg)
     }
 }
 
+int32_t get_control_index(sc_synth * s, osc::ReceivedMessageArgumentIterator & it, osc::OutboundPacketStream & p)
+{
+    int32_t control;
+    if (it->IsInt32())
+    {
+        control = it->AsInt32Unchecked(); ++it;
+        p << control;
+    }
+    else if (it->IsString())
+    {
+        const char * control_str = it->AsStringUnchecked(); ++it;
+        control = s->resolve_slot(control_str);
+        p << control_str;
+    }
+    else if (it->IsSymbol())
+    {
+        const char * control_str = it->AsSymbolUnchecked(); ++it;
+        control = s->resolve_slot(control_str);
+        p << osc::Symbol(control_str);
+    }
+    else
+        throw std::runtime_error("wrong argument type");
+    return control;
+}
+
 template <bool realtime>
 void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
 {
@@ -1580,27 +1605,7 @@ void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
 
     while (it != msg.ArgumentsEnd())
     {
-        int32_t control;
-        if (it->IsInt32())
-        {
-            int32_t control = it->AsInt32Unchecked(); ++it;
-            p << control;
-        }
-        else if (it->IsString())
-        {
-            const char * control_str = it->AsStringUnchecked(); ++it;
-            control = s->resolve_slot(control_str);
-            p << control_str;
-        }
-        else if (it->IsSymbol())
-        {
-            const char * control_str = it->AsSymbolUnchecked(); ++it;
-            control = s->resolve_slot(control_str);
-            p << osc::Symbol(control_str);
-        }
-        else
-            throw std::runtime_error("wrong argument type");
-
+        int32_t control = get_control_index(s, it, p);
         p << s->get(control);
     }
     p << osc::EndMessage;
@@ -1647,28 +1652,11 @@ void handle_s_getn(received_message const & msg, nova_endpoint const & endpoint)
 
     while (it != msg.ArgumentsEnd())
     {
-        int32_t control;
-        if (it->IsInt32())
-        {
-            int32_t control = it->AsInt32Unchecked(); ++it;
-            p << control;
-        }
-        else if (it->IsString())
-        {
-            const char * control_str = it->AsStringUnchecked(); ++it;
-            control = s->resolve_slot(control_str);
-            p << control_str;
-        }
-        else if (it->IsSymbol())
-        {
-            const char * control_str = it->AsSymbolUnchecked(); ++it;
-            control = s->resolve_slot(control_str);
-            p << osc::Symbol(control_str);
-        }
-        else
-            throw std::runtime_error("wrong argument type");
+        int32_t control = get_control_index(s, it, p);
 
-        assert(it->IsInt32());
+        if (!it->IsInt32())
+            throw std::runtime_error("integer argument expected");
+
         int32_t control_count = it->AsInt32Unchecked(); ++it;
         if (control_count < 0)
             break;
