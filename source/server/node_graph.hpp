@@ -1,5 +1,5 @@
 //  node graph
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ class node_graph
 private:
     group root_group_;
 
+    static const std::size_t node_set_bucket_count = 2048;
+
 public:
     typedef thread_queue_item dsp_thread_queue_item;
     typedef thread_queue dsp_thread_queue;
@@ -44,7 +46,8 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(0), synth_count_(0), group_count_(1)
+        root_group_(0), synth_count_(0), group_count_(1),
+        node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
     {
         root_group_.add_ref();
         node_set.insert(root_group_);
@@ -85,7 +88,7 @@ public:
 
     server_node * find_node(int32_t node_id)
     {
-        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
         if (it == node_set.end())
             return NULL;
         return &(*it);
@@ -93,7 +96,7 @@ public:
 
     bool node_id_available(int32_t node_id)
     {
-        node_set_type::iterator it = node_set.find(node_id, compare_node());
+        node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
         return (it == node_set.end());
     }
 
@@ -138,27 +141,40 @@ public:
         return true;
     }
 
+
 private:
-    struct compare_node
+    struct equal_node
     {
         bool operator()(server_node const & lhs,
                         int32_t const & rhs) const
         {
-            return lhs.node_id < rhs;
+            return lhs.node_id == rhs;
         }
 
         bool operator()(int32_t const &lhs,
                         server_node const & rhs) const
         {
-            return lhs < rhs.node_id;
+            return lhs == rhs.node_id;
         }
     };
 
-    typedef boost::intrusive::set< server_node,
-                                   boost::intrusive::constant_time_size<false>
-                                   > node_set_type;
-    node_set_type node_set;
+    struct hash_node
+    {
+        std::size_t operator()(int32_t value)
+        {
+            return server_node::hash(value);
+        }
+    };
+
+    typedef boost::intrusive::unordered_set< server_node,
+                                             boost::intrusive::constant_time_size<false>,
+                                             boost::intrusive::power_2_buckets<true>
+                                           > node_set_type;
+
     uint32_t synth_count_, group_count_;
+
+    node_set_type::bucket_type node_buckets[node_set_bucket_count];
+    node_set_type node_set;
 };
 
 } /* namespace nova */

@@ -101,7 +101,7 @@ std::auto_ptr<node_graph::dsp_thread_queue> node_graph::generate_dsp_queue(void)
 
 void node_graph::synth_reassign_id(int32_t node_id)
 {
-    node_set_type::iterator it = node_set.find(node_id, compare_node());
+    node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
     if (it == node_set.end())
         throw std::runtime_error("node id not found");
     server_node * node = &(*it);

@@ -1,5 +1,5 @@
 //  synth factory
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -101,7 +101,9 @@ public:
     }
 
 private:
-    typedef boost::intrusive::unordered_set<synth_prototype> prototype_map_type;
+    typedef boost::intrusive::unordered_set<synth_prototype,
+                                            boost::intrusive::power_2_buckets<true>
+                                           > prototype_map_type;
     prototype_map_type::bucket_type buckets[1024];
     prototype_map_type prototype_map;
 
