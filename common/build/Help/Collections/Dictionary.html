@@ -150,6 +150,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Key doesn't exist: return <a href="../Core/Nil.html"><span class="s2">Nil</span></a></p>
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.at(<span class="s6">\monkey</span>);</p>
 <p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s10"><span class="Apple-tab-span">	</span></span><b>keys</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return a <a href="Set.html"><span class="s2">Set</span></a> of all keys.</p>
+<p class="p18"><br></p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (hello: 9, whello: <span class="s7">"world"</span>);</p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.keys;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>values</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return a <a href="List.html"><span class="s2">List</span></a> of all values.</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (hello: 9, whello: <span class="s7">"world"</span>);</p>
+<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.values;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>atAll(... keys)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Return an array of all values for the given keys.</p>
 <p class="p15"><br></p>
@@ -169,18 +181,6 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (robot: 99);</p>
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.associationAt(<span class="s6">\robot</span>);</p>
 <p class="p20"><br></p>
-<p class="p5"><span class="s10"><span class="Apple-tab-span">	</span></span><b>keys</b></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return a <a href="Set.html"><span class="s2">Set</span></a> of all keys.</p>
-<p class="p18"><br></p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (hello: 9, whello: <span class="s7">"world"</span>);</p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.keys;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>keys</b></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return a <a href="List.html"><span class="s2">List</span></a> of all values.</p>
-<p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (hello: 9, whello: <span class="s7">"world"</span>);</p>
-<p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.values;</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>findKeyForValue(argValue)</b></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Try to find a given value and return its key.</p>
 <p class="p18"><br></p>
