@@ -197,7 +197,7 @@ public:
 
     friend std::size_t hash_value(synth_prototype const & value)
     {
-        return value.hash_;;
+        return value.hash_;
     }
 
     const char * name(void) const
