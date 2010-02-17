@@ -9,3 +9,7 @@ install(FILES supercollider/build/SCClassLibrary/Common/Control/PGroup.sc
 
 add_subdirectory(sc3-plugins/build)
 add_subdirectory(sc3-plugins/source)
+
+set_property(DIRECTORY sc3-plugins/source
+             APPEND
+             PROPERTY COMPILE_DEFINITIONS SUPERNOVA)
