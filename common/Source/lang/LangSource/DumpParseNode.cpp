@@ -335,7 +335,7 @@ void slotString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "RawPointer %X", slotRawPtr(slot));
+			sprintf(str, "RawPointer %p", slotRawPtr(slot));
 			break;
 		default :
 		{
@@ -443,7 +443,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "ptr%08X", slotRawInt(slot));
+			sprintf(str, "ptr%p", slotRawPtr(slot));
 			break;
 		default :
 			sprintf(str, "%.14g", slotRawFloat(slot));
@@ -557,7 +557,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "%X", slotRawPtr(slot));
+			sprintf(str, "%p", slotRawPtr(slot));
 			break;
 		default :
 			sprintf(str, "%.14g", slotRawFloat(slot));
