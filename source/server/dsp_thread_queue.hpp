@@ -252,6 +252,7 @@ public:
 
         /* reset node count */
         assert(node_count == 0);
+        assert(fifo.empty());
         node_count.store(queue->get_total_node_count(), boost::memory_order_release);
 
         successor_list const & initially_runnable_items = queue->initially_runnable_items;
@@ -340,21 +341,9 @@ public:
 private:
     void run_item_master(void)
     {
-        for(;;)
-        {
-            if (node_count.load(boost::memory_order_acquire))
-            {
-                /* we still have some nodes to process */
-                int state = run_next_item(0);
-
-                /* wake other threads on end */
-                if (state == no_remaining_items)
-                    break;
-            }
-            else
-                break;
-        }
+        run_item(0);
         wait_for_end();
+        assert(fifo.empty());
     }
 
     void wait_for_end(void)
@@ -379,9 +368,11 @@ private:
             consumed += 1;
         } while (item != NULL);
 
-        node_count_t remaining = (node_count -= consumed);;
+        node_count_t remaining = node_count.fetch_sub(consumed, boost::memory_order_release);
 
-        if (remaining == 0)
+        assert (remaining >= consumed);
+
+        if (remaining == consumed)
             return no_remaining_items;
         else
             return remaining_items;
