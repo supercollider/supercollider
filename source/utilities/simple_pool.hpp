@@ -63,14 +63,11 @@ class simple_pool:
             pool(0)
         {}
 
-        data(std::size_t size)
-        {
-            init(size);
-        }
-
-        void init(std::size_t size)
+        void init(std::size_t size, bool lock)
         {
             pool = (char*) operator new(size);
+            mlock(pool, size);
+
             std::memset(pool, 0, size);
             init_memory_pool(size, pool);
         }
@@ -99,15 +96,7 @@ public:
     void init(std::size_t size, bool lock = false)
     {
         assert(size % sizeof(long) == 0);
-        data_.init(size);
-
-        if (lock)
-            lock_memory(size);
-    }
-
-    void lock_memory(std::size_t size)
-    {
-        mlock(data_.pool, size);
+        data_.init(size, lock);
     }
 
     ~simple_pool() throw()
