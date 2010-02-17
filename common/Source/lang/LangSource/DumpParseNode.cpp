@@ -557,7 +557,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "true");
 			break;
 		case tagPtr :
-			sprintf(str, "%X", slotRawInt(slot));
+			sprintf(str, "%X", slotRawPtr(slot));
 			break;
 		default :
 			sprintf(str, "%.14g", slotRawFloat(slot));
