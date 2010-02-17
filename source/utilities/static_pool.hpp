@@ -58,20 +58,22 @@ class static_pool:
         boost::array<long, poolsize> pool;
     };
 
+    void lock_memory(void)
+    {
+        mlock(data_.pool.begin(), bytes);
+    }
+
 public:
     static_pool(bool lock = false) throw()
     {
+        /* first lock, then assign */
+        if (lock)
+            lock_memory();
+
         data_.pool.assign(0);
         std::size_t status = init_memory_pool(bytes, data_.pool.begin());
         assert(status > 0);
 
-        if (lock)
-            lock_memory();
-    }
-
-    void lock_memory(void)
-    {
-        mlock(data_.pool.begin(), bytes);
     }
 
     ~static_pool() throw()
