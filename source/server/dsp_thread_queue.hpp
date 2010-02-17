@@ -27,6 +27,12 @@
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
 
+#ifdef DEBUG_DSP_THREADS
+#include <boost/foreach.hpp>
+#include <cstdio>
+#include <iostream>
+#endif
+
 #include <boost/lockfree/fifo.hpp>
 
 #include "nova-tt/semaphore.hpp"
@@ -108,6 +114,25 @@ public:
         return job;
     }
 
+#ifdef DEBUG_DSP_THREADS
+    void dump_item(void)
+    {
+        using namespace std;
+        printf("\titem %p\n", this);
+        printf("\tactivation limit %d\n", int(activation_limit));
+
+        if (!successors.empty())
+        {
+            printf("\tsuccessors:\n");
+            BOOST_FOREACH(dsp_thread_queue_item * item, successors)
+            {
+                printf("\t\t%p\n", item);
+            }
+        }
+        printf("\n");
+    }
+#endif
+
 private:
     /** \brief update all successors and possibly mark them as runnable */
     dsp_thread_queue_item * update_dependencies(dsp_queue_interpreter & interpreter)
@@ -170,6 +195,23 @@ class dsp_thread_queue
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
 
 public:
+#ifdef DEBUG_DSP_THREADS
+    void dump_queue(void)
+    {
+        using namespace std;
+
+        printf("queue %p\n items:\n", this);
+        BOOST_FOREACH(dsp_thread_queue_item * item, queue_items)
+            item->dump_item();
+        printf("\ninitial items:\n", this);
+        BOOST_FOREACH(dsp_thread_queue_item * item, initially_runnable_items)
+            item->dump_item();
+
+        printf("\n");
+        std::cout << std::endl;
+    }
+#endif
+
     dsp_thread_queue(void):
         total_node_count(0)
     {}
@@ -276,6 +318,10 @@ public:
             return ret;
 
         queue->reset_activation_counts();
+
+#ifdef DEBUG_DSP_THREADS
+        queue->dump_queue();
+#endif
 
         thread_count_t thread_number =
             std::min(thread_count_t(std::min(total_node_count(),
