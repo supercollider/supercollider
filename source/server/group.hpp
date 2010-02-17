@@ -89,6 +89,20 @@ public:
         return child_nodes.empty();
     }
 
+    /* returns true, if this or any of the child group has synth children */
+    bool has_synth_children(void) const
+    {
+        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
+        {
+            if (it->is_synth())
+                return true;
+            const abstract_group * group = static_cast<const abstract_group*>(&*it);
+            if (group->has_synth_children())
+                return true;
+        }
+        return false;
+    }
+
     /** number of direct children */
     std::size_t child_count(void) const
     {

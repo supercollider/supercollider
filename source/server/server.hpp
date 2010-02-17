@@ -223,7 +223,23 @@ public:
 #endif
 
 public:
-    void update_dsp_queue(void);
+    void operator()(void)
+    {
+        if (unlikely(dsp_queue_dirty))
+            rebuild_dsp_queue();
+
+        scheduler::operator()();
+    }
+
+    void rebuild_dsp_queue(void);
+
+private:
+    void update_dsp_queue(void)
+    {
+        dsp_queue_dirty = true;
+    }
+
+    bool dsp_queue_dirty;
 
 private:
     callback_interpreter<system_callback> system_interpreter;

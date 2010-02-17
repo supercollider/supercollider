@@ -145,10 +145,12 @@ void nova_server::register_prototype(synth_prototype_ptr const & prototype)
 }
 
 
-void nova_server::update_dsp_queue(void)
+void nova_server::rebuild_dsp_queue(void)
 {
+    assert(dsp_queue_dirty);
     std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
-    scheduler::reset_queue(new_queue);
+    scheduler::reset_queue_sync(new_queue);
+    dsp_queue_dirty = false;
 }
 
 void scheduler::operator()(void)

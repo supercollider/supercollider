@@ -127,7 +127,8 @@ void group::fill_queue(thread_queue & queue)
 {
     successor_container successors;
 
-    fill_queue_recursive(queue, successors, 0);
+    if (has_synth_children())
+        fill_queue_recursive(queue, successors, 0);
 }
 
 
@@ -242,6 +243,8 @@ group::fill_queue_recursive(thread_queue & queue,
                             abstract_group::successor_container successors,
                             int previous_activation_limit)
 {
+    assert (has_synth_children());
+
     typedef server_node_list::reverse_iterator r_iterator;
 
     size_t children = child_count();
@@ -294,10 +297,14 @@ group::fill_queue_recursive(thread_queue & queue,
             children -= node_count;
         }
         else {
-            int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
-
             abstract_group & grp = static_cast<abstract_group&>(node);
-            successors = grp.fill_queue_recursive(queue, successors, activation_limit);
+
+            if (grp.has_synth_children())
+            {
+                int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
+                successors = grp.fill_queue_recursive(queue, successors, activation_limit);
+            }
+
             children -= 1;
         }
     }
@@ -310,9 +317,7 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
                                      abstract_group::successor_container successors,
                                      int activation_limit)
 {
-    if (child_nodes.empty())
-        return successors;
-
+    assert (has_synth_children());
     successor_container ret;
 
     for (server_node_list::iterator it = child_nodes.begin();
@@ -333,11 +338,15 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
         }
         else {
             abstract_group & grp = static_cast<abstract_group&>(node);
-            successor_container group_successors =
-                grp.fill_queue_recursive(queue, successors, activation_limit);
 
-            for (unsigned int i = 0; i != group_successors.size(); ++i)
-                ret.push_back(group_successors[i]);
+            if (grp.has_synth_children())
+            {
+                successor_container group_successors =
+                    grp.fill_queue_recursive(queue, successors, activation_limit);
+
+                for (unsigned int i = 0; i != group_successors.size(); ++i)
+                    ret.push_back(group_successors[i]);
+            }
         }
     }
     return ret;

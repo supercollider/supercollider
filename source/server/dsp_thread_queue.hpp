@@ -27,6 +27,12 @@
 #include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
 
+#ifdef DEBUG_DSP_THREADS
+#include <boost/foreach.hpp>
+#include <cstdio>
+#include <iostream>
+#endif
+
 #include <boost/lockfree/fifo.hpp>
 
 #include "nova-tt/semaphore.hpp"
@@ -108,6 +114,25 @@ public:
         return job;
     }
 
+#ifdef DEBUG_DSP_THREADS
+    void dump_item(void)
+    {
+        using namespace std;
+        printf("\titem %p\n", this);
+        printf("\tactivation limit %d\n", int(activation_limit));
+
+        if (!successors.empty())
+        {
+            printf("\tsuccessors:\n");
+            BOOST_FOREACH(dsp_thread_queue_item * item, successors)
+            {
+                printf("\t\t%p\n", item);
+            }
+        }
+        printf("\n");
+    }
+#endif
+
 private:
     /** \brief update all successors and possibly mark them as runnable */
     dsp_thread_queue_item * update_dependencies(dsp_queue_interpreter & interpreter)
@@ -170,6 +195,23 @@ class dsp_thread_queue
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
 
 public:
+#ifdef DEBUG_DSP_THREADS
+    void dump_queue(void)
+    {
+        using namespace std;
+
+        printf("queue %p\n items:\n", this);
+        BOOST_FOREACH(dsp_thread_queue_item * item, queue_items)
+            item->dump_item();
+        printf("\ninitial items:\n", this);
+        BOOST_FOREACH(dsp_thread_queue_item * item, initially_runnable_items)
+            item->dump_item();
+
+        printf("\n");
+        std::cout << std::endl;
+    }
+#endif
+
     dsp_thread_queue(void):
         total_node_count(0)
     {}
@@ -252,6 +294,7 @@ public:
 
         /* reset node count */
         assert(node_count == 0);
+        assert(fifo.empty());
         node_count.store(queue->get_total_node_count(), boost::memory_order_release);
 
         successor_list const & initially_runnable_items = queue->initially_runnable_items;
@@ -275,6 +318,10 @@ public:
             return ret;
 
         queue->reset_activation_counts();
+
+#ifdef DEBUG_DSP_THREADS
+        queue->dump_queue();
+#endif
 
         thread_count_t thread_number =
             std::min(thread_count_t(std::min(total_node_count(),
@@ -340,21 +387,9 @@ public:
 private:
     void run_item_master(void)
     {
-        for(;;)
-        {
-            if (node_count.load(boost::memory_order_acquire))
-            {
-                /* we still have some nodes to process */
-                int state = run_next_item(0);
-
-                /* wake other threads on end */
-                if (state == no_remaining_items)
-                    break;
-            }
-            else
-                break;
-        }
+        run_item(0);
         wait_for_end();
+        assert(fifo.empty());
     }
 
     void wait_for_end(void)
@@ -379,9 +414,11 @@ private:
             consumed += 1;
         } while (item != NULL);
 
-        node_count_t remaining = (node_count -= consumed);;
+        node_count_t remaining = node_count.fetch_sub(consumed, boost::memory_order_release);
 
-        if (remaining == 0)
+        assert (remaining >= consumed);
+
+        if (remaining == consumed)
             return no_remaining_items;
         else
             return remaining_items;
