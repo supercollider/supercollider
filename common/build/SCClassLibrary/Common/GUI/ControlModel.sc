@@ -101,26 +101,37 @@ ControlSpec : Spec {
 		^numStep
 	}
 
-	calcRange { |data|
+	calcRange { |data, defaultRange = 1.0|
 		var newMin, newMax;
 		data = data.flat;
 		newMin = data.minItem;
 		newMax = data.maxItem;
+		if(newMin == newMax) { 
+			newMin = newMin - (defaultRange / 2);
+			newMax = newMax + (defaultRange / 2);
+		};
 		^this.copy.minval_(newMin).maxval_(newMax);
 	}
 	
-	roundRange {
+	normalize { |min, max|
+		if(min.isNil) { min = if(this.hasZeroCrossing) { -1.0 } { 0.0 } };		if(max.isNil) { max = 1.0 };
+		^this.copy.minval_(min).maxval_(max)
+	}
+	
+	roundRange { |base = 10|
 		var extent = absdif(minval, maxval);
-		var r = 10 ** (log10(extent).trunc - 1);
+		var r = 10 ** ((log10(extent) * log10(base)).trunc - 1);
 		var newMin = minval.round(r);
 		var newMax = maxval.roundUp(r);
 		^this.copy.minval_(newMin).maxval_(newMax)
 	}
 	
-	gridValues { |n = 20, base = 10|
+	gridValues { |n = 20, min, max, base = 10|
 		var val, exp;
+		var low = if(min.notNil) { this.unmap(min) } { 0.0 };
+		var high = if(max.notNil) { this.unmap(max) } { 1.0 };
 		if(n < 1) { ^[] };
-		val = this.map((0..n-1).normalize);
+		val = this.map((0..n-1).normalize(low, high));
 		exp = log10(this.map(0.5).abs) * log10(base);
 		val = val.round(base ** (exp.trunc - 1));
 		^val.as(Set).as(Array).sort

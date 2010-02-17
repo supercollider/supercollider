@@ -5,18 +5,21 @@ Plot {
 	var <bounds, <plotBounds;
 	var <>font, <>gridColorX, <>gridColorY, <>plotColor, <>backgroundColor;
 	var	<>gridLinePattern, <>gridLineSmoothing;
-	var <>gridOnX = true, <>gridOnY = true;
+	var <>gridOnX = true, <>gridOnY = true, <>labelX, <>labelY;
 	
 	var valueCache;
 	
 	*initClass {
 		GUI.skin.put(\plot, (
-			gridColorX: Color.grey(0.6),
-			gridColorY: Color.grey(0.6),
+			gridColorX: Color.grey(0.7),
+			gridColorY: Color.grey(0.7),
 			plotColor: Color.black,
-			background: Color.new255(240, 240, 240),
-			gridLinePattern: FloatArray[1, 5],
-			gridLineSmoothing: false
+			background: Color.new255(235, 235, 235),
+			//gridLinePattern: FloatArray[1, 5],
+			gridLinePattern: FloatArray[1, 0],
+			gridLineSmoothing: false,
+			labelX: "",
+			labelY: ""
 		));
 	}
 	
@@ -34,12 +37,15 @@ Plot {
 			backgroundColor = ~background;
 			gridLineSmoothing = ~gridLineSmoothing;
 			gridLinePattern = ~gridLinePattern.as(FloatArray);
+			labelX = ~labelX;
+			labelY = ~labelY;
 		};
 	}
 	
 	bounds_ { |rect|
+		var size = "\foo".bounds(font).height;
 		plotBounds = if(rect.height > 40) {
-			 rect.insetBy(font.size * 1.5, font.size * 1.5) 
+			 rect.insetBy(size * 1.5, size * 1.5) 
 		} { 
 			rect 
 		};
@@ -57,7 +63,9 @@ Plot {
 		this.drawBackground;
 		if(gridOnX) { this.drawGridX };
 		if(gridOnY) { this.drawGridY };
+		this.drawLabels;
 		this.drawData;
+		plotter.drawFunc.value(this); // additional elements
 	}
 	
 	drawBackground {
@@ -101,6 +109,7 @@ Plot {
 		var width = plotBounds.width;
 		var left = plotBounds.left;
 		var gridValues, n, xspec = this.resampledDomainSpec;
+		xspec = domainSpec; //-
 		n = (plotBounds.width / 64).round(2);
 		if(xspec.hasZeroCrossing) { n = n + 1 };
 		
@@ -120,6 +129,24 @@ Plot {
 		
 		gridColorX.set;
 		this.prStrokeGrid;
+		
+
+	}
+	
+	drawLabels {
+		var sbounds;
+		if(gridOnX and: { labelX.notNil }) { 
+			sbounds = labelX.bounds(font);
+			labelX.drawAtPoint(
+				plotBounds.right - sbounds.width @ plotBounds.bottom, font, gridColorY
+			)
+		};
+		if(gridOnY and: { labelY.notNil }) {
+			sbounds = labelY.bounds(font);
+			labelY.drawAtPoint(
+				plotBounds.left - sbounds.width @ plotBounds.top, font, gridColorY
+			) 
+		};
 	}
 	
 	resampledDomainSpec {
@@ -129,6 +156,11 @@ Plot {
 	
 	resampledSize {
 		^min(value.size, plotBounds.width / plotter.resolution)
+	}
+	
+	indexScale { // to be used later in domain scaling
+		var offset = if(plotter.plotMode == \levels) { 0 } { 1 };
+		^this.resampledSize - offset / (value.size - 1)
 	}
 	
 	domainCoordinates { |size|
@@ -220,11 +252,11 @@ Plot {
 	}
 	
 	getRelativePositionY { |y|
-		^spec.map((plotBounds.bottom - y - (font.size * 1)) / plotBounds.height)
+		^spec.map((plotBounds.bottom - y) / plotBounds.height)
 	}
 	
 	getIndex { |x|
-		var offset = if(plotter.plotMode == \levels) { 0.1 } { 0.0 }; // needs to be fixed.
+		var offset = if(plotter.plotMode == \levels) { 0.5 } { 0.0 }; // needs to be fixed.
 		^(this.getRelativePositionX(x) - offset).round.asInteger;
 	}
 
@@ -273,6 +305,8 @@ Plotter {
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
 	
+	var <>drawFunc;
+
 	*new { |name, bounds, parent|
 		^super.newCopyArgs(name, bounds ? Rect(100, 200, 400, 300)).makeWindow(parent)
 	}
@@ -342,6 +376,12 @@ Plotter {
 						this.updatePlotSpecs;
 						this.refresh;
 					},
+					$n, {
+						plotSpecs = plotSpecs.collect(_.normalize);
+						this.updatePlotSpecs;
+						this.refresh;
+					},
+					
 					// toggle grid
 					$g, {
 						plots.do { |x| x.gridOnY = x.gridOnY.not }
@@ -412,13 +452,13 @@ Plotter {
 				parent.view.bounds
 			} {
 				parent.bounds
-			}.insetBy(11, 10)
+			}.insetBy(9, 8)
 	}
 	
 	// subviews
 	
 	updatePlotBounds {
-		var deltaY = if(this.numChannels > 1 ) { 3.0 } { 0.0 };
+		var deltaY = if(this.numChannels > 1 ) { 4.0 } { 0.0 };
 		var distY = bounds.height / this.numChannels;
 		var height = max(20, distY - deltaY);
 		
@@ -463,6 +503,13 @@ Plotter {
 		}
 	}
 	
+	setProperties { |... pairs|
+		pairs.pairsDo { |selector, value| 
+			selector = selector.asSetter;
+			plots.do { |x| x.perform(selector, value) }
+		}	
+	}
+	
 	// specs
 	
 	setSpecs { |... specs|
@@ -501,7 +548,9 @@ Plotter {
 	
 	calcDomainSpecs { 
 		// for now, a simple version
-		plotDomainSpecs = [[0, value[0].size, \lin, 1].asSpec];
+		plotDomainSpecs = value.collect { |val|
+				[0, val.size - 1, \lin, 1].asSpec
+		}
 	}
 	
 	calcCommonSpec { |spec = \unipolar|
@@ -628,7 +677,9 @@ Plotter {
 			bounds, minval: minval, maxval: maxval
 		);
 		this.loadToFloatArray(action: { |array, buf| 
-			{ plotter.value = array.unlace(buf.numChannels) }.defer 
+			{ 
+				plotter.value = array.unlace(buf.numChannels);
+			}.defer 
 		});
 		^plotter
 	}
@@ -640,6 +691,7 @@ Plotter {
 		var plotter = this.asSignal(size)
 			.plot2("envelope plot", bounds, minval: minval, maxval: maxval);
 		plotter.setDomainSpecs(ControlSpec(0, this.times.sum, units: "s"));
+		plotter.setProperties(\labelX, "time");
 		^plotter
 	}
 	
