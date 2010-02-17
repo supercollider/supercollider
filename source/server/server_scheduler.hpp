@@ -76,6 +76,7 @@ class scheduler
         dsp_threads::dsp_thread_queue_ptr qptr;
     };
 
+protected:
     /* called from the driver callback */
     void reset_queue_sync(dsp_threads::dsp_thread_queue_ptr & qptr)
     {

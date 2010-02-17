@@ -171,7 +171,24 @@ private:
     /* initialize osc handles */
     void init_osc_handles(void);
 
-    void update_dsp_queue(void);
+public:
+    void operator()(void)
+    {
+        if (unlikely(dsp_queue_dirty))
+            rebuild_dsp_queue();
+
+        scheduler::operator()();
+    }
+
+    void rebuild_dsp_queue(void);
+
+private:
+    void update_dsp_queue(void)
+    {
+        dsp_queue_dirty = true;
+    }
+
+    bool dsp_queue_dirty;
 
     callback_interpreter<system_callback> system_interpreter;
 };
