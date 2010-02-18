@@ -334,6 +334,10 @@ std::string sc_synthdef::dump(void) const
     for (uint i = 0; i != graph.size(); ++i) {
         stream << "\t" << graph[i].name << ": rate " << graph[i].rate
                << endl;
+        stream << "\tinputs:" << endl;
+        for (uint j = 0; j != graph[i].input_specs.size(); ++j) {
+            stream << "\t\t" << graph[i].input_specs[j].source << " " << graph[i].input_specs[j].index << endl;
+        }
     }
 
     return stream.str();
