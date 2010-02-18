@@ -119,7 +119,8 @@ public:
             data += 4;
         }
 
-        assert(remaining & 8);
+        assert(remaining >= 8);
+        assert((remaining % 8) == 0);
 
         for(;;)
         {
