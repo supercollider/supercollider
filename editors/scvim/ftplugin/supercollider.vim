@@ -201,7 +201,11 @@ endfunction
 
 function SClangStart()
 	if !filewritable(s:sclangPipeAppPidLoc)
-		call system(s:sclangTerm . " " . s:sclangPipeApp . "&")
+                if $TERM[0:5] == "screen"
+                        call system("screen -D -R -X split; screen -D -R -X focus; screen -D -R -X screen " . s:sclangPipeApp . "; screen -D -R -X focus")
+                else
+                        call system(s:sclangTerm . " " . s:sclangPipeApp . "&")
+                endif
 	else
 		throw s:sclangPipeAppPidLoc . " exists, is " . s:sclangPipeApp . " running?  If not try deleting " . s:sclangPipeAppPidLoc
 	endif
