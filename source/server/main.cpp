@@ -23,6 +23,7 @@
 #include <string>
 
 #include <boost/filesystem/path.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "server.hpp"
 #include "server_args.hpp"
@@ -50,6 +51,48 @@ void register_handles(void)
 
     prev_fn = ::signal (SIGINT, terminate);
 }
+
+#ifdef JACK_BACKEND
+bool check_connection_string(string const & str)
+{
+    if (str.find(":") != string::npos) {
+        std::cerr << "connecting to individual ports not yet implemented" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+void connect_jack_ports(void)
+{
+    using namespace boost;
+    using namespace boost::algorithm;
+
+    string input_port(getenv("SC_JACK_DEFAULT_INPUTS"));
+
+    if (check_connection_string(input_port))
+        instance->connect_all_inputs(input_port.c_str());
+    else
+    {
+        vector<string> portnames;
+        boost::split(portnames, input_port, is_any_of(":"));
+        for (int i = 0; i != portnames.size(); ++i)
+            instance->connect_input(i, portnames[i].c_str());
+    }
+
+    string output_port(getenv("SC_JACK_DEFAULT_OUTPUTS"));
+
+    if (check_connection_string(output_port))
+        instance->connect_all_outputs(output_port.c_str());
+    else
+    {
+        vector<string> portnames;
+        boost::split(portnames, output_port, is_any_of(":"));
+        for (int i = 0; i != portnames.size(); ++i)
+            instance->connect_output(i, portnames[i].c_str());
+    }
+
+}
+#endif
 
 } /* namespace */
 
@@ -93,6 +136,9 @@ int main(int argc, char * argv[])
             server.deactivate_audio();
             return 1;
         }
+
+    connect_jack_ports();
+
 #endif
 
     if (args.load_synthdefs) {
