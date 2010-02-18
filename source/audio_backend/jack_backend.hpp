@@ -1,5 +1,5 @@
 //  native jack backend
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -147,6 +147,64 @@ public:
             return jack_cpu_load(client);
         else
             return 0.f;
+    }
+
+    int connect_input(int channel, const char * portname)
+    {
+        if (channel >= input_ports.size())
+            return -1;
+        return jack_connect(client, portname, jack_port_name(input_ports[channel]));
+    }
+
+    int connect_output(int channel, const char * portname)
+    {
+        if (channel >= output_ports.size())
+            return -1;
+        return jack_connect(client, jack_port_name(output_ports[channel]), portname);
+    }
+
+    int connect_all_inputs(const char * client_name)
+    {
+        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsOutput);
+
+        if (!ports)
+            return -1;
+
+        std::size_t i = 0;
+        while (ports[i]) {
+            if (i == input_ports.size())
+                break;
+
+            int err = jack_connect(client, ports[i], jack_port_name(input_ports[i]));
+            if (err)
+                return err;
+            ++i;
+        }
+
+        free(ports);
+        return 0;
+    }
+
+    int connect_all_outputs(const char * client_name)
+    {
+        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsInput);
+
+        if (!ports)
+            return -1;
+
+        std::size_t i = 0;
+        while (ports[i]) {
+            if (i == output_ports.size())
+                break;
+
+            int err = jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
+            if (err)
+                return err;
+            ++i;
+        }
+
+        free(ports);
+        return 0;
     }
 
 private:
