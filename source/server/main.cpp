@@ -67,30 +67,37 @@ void connect_jack_ports(void)
     using namespace boost;
     using namespace boost::algorithm;
 
-    string input_port(getenv("SC_JACK_DEFAULT_INPUTS"));
-
-    if (check_connection_string(input_port))
-        instance->connect_all_inputs(input_port.c_str());
-    else
+    const char * input_string = getenv("SC_JACK_DEFAULT_INPUTS");
+    if (input_string)
     {
-        vector<string> portnames;
-        boost::split(portnames, input_port, is_any_of(":"));
-        for (int i = 0; i != portnames.size(); ++i)
-            instance->connect_input(i, portnames[i].c_str());
+        string input_port(input_string);
+
+        if (check_connection_string(input_port))
+            instance->connect_all_inputs(input_port.c_str());
+        else
+        {
+            vector<string> portnames;
+            boost::split(portnames, input_port, is_any_of(":"));
+            for (int i = 0; i != portnames.size(); ++i)
+                instance->connect_input(i, portnames[i].c_str());
+        }
     }
 
-    string output_port(getenv("SC_JACK_DEFAULT_OUTPUTS"));
-
-    if (check_connection_string(output_port))
-        instance->connect_all_outputs(output_port.c_str());
-    else
+    const char * output_string = getenv("SC_JACK_DEFAULT_OUTPUTS");
+    if (output_string)
     {
-        vector<string> portnames;
-        boost::split(portnames, output_port, is_any_of(":"));
-        for (int i = 0; i != portnames.size(); ++i)
-            instance->connect_output(i, portnames[i].c_str());
-    }
+        string output_port(output_string);
 
+        if (check_connection_string(output_port))
+            instance->connect_all_outputs(output_port.c_str());
+        else
+        {
+            vector<string> portnames;
+            boost::split(portnames, output_port, is_any_of(":"));
+            for (int i = 0; i != portnames.size(); ++i)
+                instance->connect_output(i, portnames[i].c_str());
+        }
+    }
 }
 #endif
 
