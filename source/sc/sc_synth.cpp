@@ -28,6 +28,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory.world;
+    mNode.mWorld = &sc_factory.world;
     initialize_rate(full_rate, world.mSampleRate, world.mBufLength);
     initialize_rate(control_rate, world.mSampleRate/world.mBufLength, 1);
     rgen.init((uint32_t)(uint64_t)this);
@@ -138,7 +139,7 @@ void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
     }
     else if (uint32(control_bus_index) < world->mNumControlBusChannels) {
         mControlRates[slot_index] = 1;
-        mMapControls[slot_index] = world->mControlBus + slot_index;
+        mMapControls[slot_index] = world->mControlBus + control_bus_index;
     }
 }
 

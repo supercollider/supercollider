@@ -1273,7 +1273,6 @@ void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_ind
 
 void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
-    if (it->IsInt32()) {
         if (it->IsInt32()) {
             osc::int32 control_index = it->AsInt32Unchecked(); ++it;
             osc::int32 control_bus_index = it->AsInt32(); ++it;
@@ -1299,7 +1298,6 @@ void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<const char*>, _1,
                                                                               control_name, control_bus_index, count));
-        }
     }
 }
 
