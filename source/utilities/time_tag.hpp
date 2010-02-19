@@ -184,13 +184,20 @@ public:
 
         uint32 secs = diff.total_seconds() + ntp_offset;
 
-        double fraction = double(diff.fractional_seconds()) /
-            double (time_duration::ticks_per_second());
+        double fraction = double(diff.fractional_seconds());
 
-        const double units_per_fraction = double(fraction_steps) / double(time_duration::ticks_per_second());
+        if (diff.resolution() == boost::date_time::nano)
+            fraction /= 1000000000;
+        else if (diff.resolution() == boost::date_time::micro)
+            fraction /= 1000000;
+        else if (diff.resolution() == boost::date_time::milli)
+            fraction /= 1000;
+        else
+            assert(false);
 
-        uint32 fraction_units = fraction * units_per_fraction;
+        assert (fraction < 1.0 && fraction >= 0);
 
+        uint32 fraction_units = std::floor(fraction * double(std::numeric_limits<uint32>::max()));
         return time_tag(secs, fraction_units);
     }
 
