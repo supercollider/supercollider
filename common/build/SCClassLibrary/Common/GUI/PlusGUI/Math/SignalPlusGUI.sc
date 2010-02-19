@@ -155,6 +155,7 @@
 				val.dump;
 				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
 			};
+			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
 			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
 			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop:0);
