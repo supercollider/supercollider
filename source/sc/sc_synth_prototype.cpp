@@ -1,5 +1,5 @@
 //  prototype of a supercollider-synthdef-based synth prototype, implementation
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <boost/filesystem/operations.hpp>
 
 #include "sc_synth.hpp"
+#include "sc_ugen_factory.hpp"
 #include "sc_synth_prototype.hpp"
 
 #include "server/synth_factory.hpp"
@@ -87,6 +88,7 @@ abstract_synth * sc_synth_prototype::create_instance(int node_id)
 {
     sc_synth * synth = new sc_synth(node_id, this);
 
+    sc_factory.schedule_for_preparation(synth);
     return synth;
 }
 

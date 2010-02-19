@@ -1,5 +1,5 @@
 //  interface for supercollider plugins
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -971,5 +971,15 @@ void sc_plugin_interface::free_buffer(uint32_t index)
     sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
 }
 
+void sc_plugin_interface::initialize_synths_perform(void)
+{
+    for (std::size_t i = 0; i != uninitialized_synths.size(); ++i)
+    {
+        sc_synth * synth = static_cast<sc_synth*>(uninitialized_synths[i]);
+        synth->prepare();
+    }
+    synths_to_initialize = false;
+    uninitialized_synths.clear();
+}
 
 } /* namespace nova */

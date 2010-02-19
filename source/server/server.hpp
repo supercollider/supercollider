@@ -228,6 +228,7 @@ public:
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
 
+        sc_factory.initialize_synths();
         scheduler::operator()();
     }
 

@@ -79,7 +79,8 @@ class sc_plugin_interface:
 public:
     void initialize(void);
 
-    sc_plugin_interface(void)
+    sc_plugin_interface(void):
+        synths_to_initialize(false)
     {}
 
     ~sc_plugin_interface(void);
@@ -196,6 +197,29 @@ public:
             r_values[i] = world.mControlBus[i];
     }
     /* @}*/
+
+    /* @{ */
+    /** synth initialization. called in the beginning of each dsp tick */
+    void initialize_synths(void)
+    {
+        if (likely(!synths_to_initialize))
+            return; // fast-path
+
+        initialize_synths_perform();
+    }
+
+    void schedule_for_preparation(abstract_synth * synth)
+    {
+        synths_to_initialize = true;
+        uninitialized_synths.push_back(synth);
+    }
+
+private:
+    bool synths_to_initialize;
+
+    void initialize_synths_perform(void);
+    std::vector<abstract_synth*, rt_pool_allocator<synth_ptr> > uninitialized_synths;
+    /* @} */
 };
 
 } /* namespace nova */
