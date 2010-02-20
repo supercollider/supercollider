@@ -558,7 +558,7 @@ Plotter {
 	
 	maxval_ { |val|
 		val = val.asArray;
-		specs.do { |x, i| x.minval = val.wrapAt(i) };
+		specs.do { |x, i| x.maxval = val.wrapAt(i) };
 		this.updatePlotSpecs; 
 	}
 	
