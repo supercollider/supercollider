@@ -113,7 +113,7 @@ Plot {
 		var left = plotBounds.left;
 		var gridValues, n;
 		var xspec = domainSpec;
-		if(plotter.plotMode == \levels) {
+		if(this.steplikeDisplay) {
 			// special treatment of special case: lines need more space
 			xspec = xspec.copy.maxval_(xspec.maxval * value.size / (value.size - 1)) 
 		};
@@ -136,8 +136,7 @@ Plot {
 		
 		Pen.strokeColor = gridColorX;
 		this.prStrokeGrid;
-		
-
+	
 	}
 	
 	drawLabels {
@@ -172,7 +171,7 @@ Plot {
 	}
 	
 	resampledDomainSpec {
-		var offset = if(plotter.plotMode == \levels) { 0 } { 1 };
+		var offset = if(this.steplikeDisplay) { 0 } { 1 };
 		^domainSpec.copy.maxval_(this.resampledSize - offset)
 	}
 	
@@ -266,14 +265,18 @@ Plot {
 		^spec.map((plotBounds.bottom - y) / plotBounds.height)
 	}
 	
+	steplikeDisplay {
+		^#[\levels, \steps].includes(plotter.plotMode)
+	}
+	
 	getIndex { |x|
-		var offset = if(plotter.plotMode == \levels) { 0.5 } { 0.0 }; // needs to be fixed.
-		^(this.getRelativePositionX(x) - offset).round.asInteger;
+		var offset = if(this.steplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
+		^(this.getRelativePositionX(x) - offset).round.asInteger
 	}
 
 	getDataPoint { |x|
-		var index = this.getIndex(x);
-		^[index, value.clipAt(index)]
+		var index = this.getIndex(x).clip(0, value.size - 1);
+		^[index, value.at(index)]
 	}
 
 	
@@ -284,7 +287,7 @@ Plot {
 			value 
 		} { 
 			valueCache ?? { valueCache = value.resamp1(plotBounds.width / plotter.resolution) }
-		};
+		}
 	}
 	
 	prStrokeGrid {
@@ -446,8 +449,8 @@ Plotter {
 	}
 	
 	setValue { |arrays, findSpecs = true, refresh = true|
-		data = arrays;
-		value = this.prReshape(arrays);
+		value = arrays;
+		data = this.prReshape(arrays);
 		if(findSpecs) { 
 				this.calcSpecs; 
 				this.calcDomainSpecs; 
@@ -459,7 +462,7 @@ Plotter {
 	
 	superpose_ { |flag|
 		superpose = flag;
-		this.setValue(data, false, true);
+		this.setValue(value, false, true);
 	}
 	
 	numChannels {
@@ -476,7 +479,7 @@ Plotter {
 		this.updatePlotBounds;
 		Pen.use {
 			plots.do { |plot| plot.draw };
-		};
+		}
 	}
 	
 	drawBounds {
@@ -486,22 +489,22 @@ Plotter {
 	// subviews
 	
 	updatePlotBounds {
-		var deltaY = if(this.numChannels > 1 ) { 4.0 } { 0.0 };
-		var distY = bounds.height / this.numChannels;
+		var deltaY = if(data.size > 1 ) { 4.0 } { 0.0 };
+		var distY = bounds.height / data.size;
 		var height = max(20, distY - deltaY);
 		
 		plots.do { |plot, i|
 			plot.bounds_(
 				Rect(bounds.left, distY * i + bounds.top, bounds.width, height)
 			)
-		};
+		}
 	}
 	
 	makePlots {
 		var template = if(plots.isNil) { Plot(this) } { plots.last };
-		plots !? { plots = plots.keep(value.size.neg) };
-		plots = plots ++ template.dup(value.size - plots.size);
-		plots.do { |plot, i| plot.value = value.at(i) };
+		plots !? { plots = plots.keep(data.size.neg) };
+		plots = plots ++ template.dup(data.size - plots.size);
+		plots.do { |plot, i| plot.value = data.at(i) };
 		
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
@@ -509,13 +512,13 @@ Plotter {
 	}
 	
 	updatePlots {
-		if(plots.size != this.numChannels) {
+		if(plots.size != data.size) {
 			this.makePlots;
 		} {
 			plots.do { |plot, i|
-				plot.value = value.at(i)
+				plot.value = data.at(i)
 			}
-		};
+		}
 	}
 	
 	updatePlotSpecs {
@@ -541,12 +544,12 @@ Plotter {
 	// specs
 	
 	specs_ { |argSpecs|
-		specs = argSpecs.asArray.clipExtend(value.size).collect(_.asSpec);
+		specs = argSpecs.asArray.clipExtend(data.size).collect(_.asSpec);
 		this.updatePlotSpecs;
 	}
 	
 	domainSpecs_ { |argSpecs|
-		domainSpecs = argSpecs.asArray.clipExtend(value.size).collect(_.asSpec);
+		domainSpecs = argSpecs.asArray.clipExtend(data.size).collect(_.asSpec);
 		this.updatePlotSpecs;
 	}
 	
@@ -564,21 +567,21 @@ Plotter {
 	
 	
 	calcSpecs { |separately = true|
-		specs = (specs ? [\unipolar.asSpec]).clipExtend(value.size);
+		specs = (specs ? [\unipolar.asSpec]).clipExtend(data.size);
 		if(separately) {
 			this.specs = specs.collect { |spec, i|
-				var list = value.at(i);
+				var list = data.at(i);
 				list !? { spec = spec.calcRange(list.flat).roundRange };
 			}
 		} {
-			this.specs = specs.first.calcRange(value.flat).roundRange;
+			this.specs = specs.first.calcRange(data.flat).roundRange;
 		}
 	}
 	
 	
 	calcDomainSpecs { 
 		// for now, a simple version
-		domainSpecs = value.collect { |val|
+		domainSpecs = data.collect { |val|
 				[0, val.size - 1, \lin, 1].asSpec
 		}
 	}
@@ -644,7 +647,7 @@ Plotter {
 
 + ArrayedCollection {
 
-	plot2 { arg name, bounds, discrete=false, numChannels, minval, maxval;
+	plot2 { |name, bounds, discrete=false, numChannels, minval, maxval|
 		var array = this.as(Array), plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 		
@@ -663,7 +666,7 @@ Plotter {
 
 + Function {
 
-	plot2 { arg duration = 0.01, server, bounds, minval, maxval;
+	plot2 { |duration = 0.01, server, bounds, minval, maxval|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50) { name = "function plot" };
 		plotter = [0].plot2(name, bounds);
@@ -678,7 +681,7 @@ Plotter {
 					maxval !? { plotter.maxval = maxval };
 					plotter.refresh;
 					
-				}.defer;
+				}.defer
 			})
 		};
 		^plotter
@@ -688,21 +691,21 @@ Plotter {
 
 + Wavetable {
 
-	plot2 { arg name, bounds, minval, maxval;
-		^this.asSignal.plot2(name, bounds, minval: minval, maxval: maxval);
+	plot2 { |name, bounds, minval, maxval|
+		^this.asSignal.plot2(name, bounds, minval: minval, maxval: maxval)
 	}
 }
 
 + Buffer {
 
-	plot2 { arg name, bounds, minval = -1, maxval = 1;
+	plot2 { |name, bounds, minval, maxval|
 		var plotter = [0].plot2(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum), 
 			bounds, minval: minval, maxval: maxval
 		);
 		this.loadToFloatArray(action: { |array, buf| 
 			{ 
-				plotter.value = array.unlace(buf.numChannels);
+				plotter.value = array.unlace(buf.numChannels)
 			}.defer 
 		});
 		^plotter
@@ -711,7 +714,7 @@ Plotter {
 
 + Env {
 
-	plot2 { arg size = 400, bounds, minval, maxval;
+	plot2 { |size = 400, bounds, minval, maxval|
 		var plotter = this.asSignal(size)
 			.plot2("envelope plot", bounds, minval: minval, maxval: maxval);
 		plotter.domainSpecs = ControlSpec(0, this.times.sum, units: "s");
