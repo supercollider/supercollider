@@ -16,15 +16,14 @@ p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #737373}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #cd1612}
-p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #000000}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #737373}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #cd1612}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0b28c6}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #cd1612}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #737373}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #737373}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #1135f9}
@@ -36,9 +35,8 @@ span.s8 {color: #cd1612}
 span.s9 {color: #000000}
 span.s10 {color: #0b28c6}
 span.s11 {color: #00831b}
-span.s12 {font: 9.0px Monaco; color: #000000}
-span.s13 {color: #00831c}
-span.s14 {font: 12.0px Helvetica; color: #000000}
+span.s12 {color: #00831c}
+span.s13 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -69,14 +67,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span></b>something.<b>plot2(args)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p9"><span class="s7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span>(0..100).normalize(0, 8pi).sin.plot2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ (0..100).normalize(0, 15.0.rand).sin }.dup(3).plot2; <span class="s8">// multiple channels</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ (0..100).normalize(0, 15.0.rand).sin }.dup(3).plot2; <span class="s8">// multiple channels</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ <span class="s5">SinOsc</span>.ar([700, 357]) * <span class="s5">SinOsc</span>.ar([400, 476]) * 0.2 }.plot2;</p>
-<p class="p11"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s10">Buffer</span><span class="s9">.read(s, </span>"sounds/SinedPink.aiff"<span class="s9">).plot2;</span></p>
-<p class="p9"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">Env</span>.perc(0.4, 0.6).plot2;</p>
+<p class="p10"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s10">Buffer</span><span class="s9">.read(s, </span>"sounds/SinedPink.aiff"<span class="s9">).plot2;</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Env</span>.perc(0.4, 0.6).plot2;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><br></p>
-<p class="p12"><b>Keyboard shortcuts</b></p>
-<p class="p13"><br></p>
+<p class="p11"><b>Keyboard shortcuts</b></p>
+<p class="p12"><br></p>
 <p class="p6">When the plotter window has focus, the following keyboard shortcuts can be used to change the display:</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>+ / -<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>vertical zoom</b></p>
@@ -91,7 +89,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><br></p>
-<p class="p12"><b>Accessing Instance and Class Variables</b></p>
+<p class="p11"><b>Accessing Instance and Class Variables</b></p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>plotMode_(symbol)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>plotMode</b></p>
@@ -104,12 +102,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>\levels</b><span class="Apple-tab-span">	</span>horizontal lines</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>\steps</b><span class="Apple-tab-span">	</span>connecting data points with step interpolation</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = (0..20).scramble.plot2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\points</span>; a.refresh;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\plines</span>; a.refresh;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\levels</span>; a.refresh;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\steps</span>; a.refresh;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\linear</span>; a.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = (0..20).scramble.plot2;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\points</span>; a.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\plines</span>; a.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\levels</span>; a.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\steps</span>; a.refresh;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.plotMode = <span class="s11">\linear</span>; a.refresh;</p>
 <p class="p7"><br></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>editMode_(boolean)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>editMode</b></p>
@@ -117,7 +115,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If the edit mode is set to true, the data may be edited via cursor.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = (0..20).plot2;</p>
-<p class="p14"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editMode = </span><span class="s10">true</span><span class="s9">; </span>// now edit the data by clicking into the plot..</p>
+<p class="p13"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editMode = </span><span class="s10">true</span><span class="s9">; </span>// now edit the data by clicking into the plot..</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.value;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>resolution_(val)</b></p>
@@ -125,9 +123,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set the number of data points displayed maximally per pixel (default: 1)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = (0..200).scramble.plot2;</p>
-<p class="p14"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resolution = 8; a.refresh; </span>// resizing the window shows interpolation</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resolution = 1; a.refresh;</p>
+<p class="p9"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = (0..200).scramble.plot2;</p>
+<p class="p13"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resolution = 8; a.refresh; </span>// resizing the window shows interpolation</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resolution = 1; a.refresh;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>findSpecs_(boolean)</b></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>findSpecs</b></p>
@@ -139,8 +137,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If set to true, plotter displays channels on top of each other (keyboard shortcut: s)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = { (0..30).scramble }.dup(2).plot2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.superpose = <span class="s10">true</span>; a.refresh;</p>
+<p class="p9"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = { (0..30).scramble }.dup(2).plot2;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.superpose = <span class="s10">true</span>; a.refresh;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>value</b></p>
@@ -169,7 +167,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or get the spec for the y-axis (codomain).</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s12">(</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">(</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = { (40..3000).scramble }.dup(2).plot2;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.specs = \freq.asSpec; a.refresh;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
@@ -179,15 +177,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Set or get the spec for the x-axis (domain).</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = { (40..300).scramble }.dup(2).plot2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.domainSpecs = <span class="s11">\freq</span>.asSpec; a.refresh;</p>
+<p class="p9"><span class="s7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = { (40..300).scramble }.dup(2).plot2;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.domainSpecs = <span class="s11">\freq</span>.asSpec; a.refresh;</p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>editFunc</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>editFunc_(func)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Supply a function which is evaluated when editing data. The function is called with the arguments: plotter, plotIndex, index, val, x, y</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">(</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = { (0..10).scramble.normalize }.dup(2).plot2;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editMode = <span class="s10">true</span>;</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editFunc = { <span class="s10">|...args|</span> args.postln };</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// using plotter as a control interface</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = (0..10).scramble.normalize(300, 400).plot2;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.specs = <span class="s11">\freq</span>; a.plotMode = <span class="s11">\points</span>;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editMode = <span class="s10">true</span>;</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = { <span class="s10">SinOsc</span>.ar(<span class="s11">\freq</span>.kr(a.value)).mean * 0.1 }.play;</p>
+<p class="p15"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.editFunc = { </span>|plotter, plotIndex, i, val|</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.setn(<span class="s11">\freq</span>, a.value)</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.parent.onClose = { x.release };</p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span></p>
-<p class="p12"><b>Changing global defaults</b></p>
-<p class="p13"><br></p>
+<p class="p11"><b>Changing global defaults</b></p>
+<p class="p12"><br></p>
 <p class="p6">The default styles are kept (and may be overridden) in GUI.skin.at(\plot). See also <a href="GUI.html"><span class="s3">GUI</span></a> help.<span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
@@ -208,20 +228,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>GUI</span>.skin.plot.put(<span class="s13">\plotColor</span>, { <span class="s5">Color</span>.rand(0.0, 0.8) } ! 8);</p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>GUI</span>.skin.plot.put(<span class="s12">\plotColor</span>, { <span class="s5">Color</span>.rand(0.0, 0.8) } ! 8);</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[(0..100), (20..120), (40..140)].squared.flop.bubble.plot2;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p16"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// reset the defaults:</p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Plot</span>.initClass;</p>
+<p class="p16"><span class="s13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// reset the defaults:</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s10">Plot</span>.initClass;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p12"><b>More examples</b></p>
+<p class="p11"><b>More examples</b></p>
 <p class="p3"><br></p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
-<p class="p14">// embedding in another GUI</p>
+<p class="p13">// embedding in another GUI</p>
 <p class="p16">// number drawing is not perfect yet.</p>
 <p class="p8">(</p>
 <p class="p8">w = <span class="s5">Window</span>(<span class="s6">"plot panel"</span>, <span class="s5">Rect</span>(20, 30, 520, 250));</p>
@@ -242,17 +262,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p8">a.value = { <span class="s5">|i|</span> (0..90) % (i + 12) + ( (0..90) % (i + 2 * 1) ) }.dup(3);</p>
 <p class="p8">a.value = (0..12).squared;</p>
-<p class="p8">a.plotMode = <span class="s13">\points</span>; a.refresh;</p>
-<p class="p8">a.plotMode = <span class="s13">\levels</span>; a.refresh;</p>
-<p class="p8">a.plotMode = <span class="s13">\plines</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\points</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\levels</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\plines</span>; a.refresh;</p>
 <p class="p3"><br></p>
-<p class="p8">a.domainSpecs = [[0, 115, <span class="s13">\lin</span>, 1]]; a.refresh;</p>
+<p class="p8">a.domainSpecs = [[0, 115, <span class="s12">\lin</span>, 1]]; a.refresh;</p>
 <p class="p3"><br></p>
 <p class="p8">a.parent.close; <span class="s8">// close window</span></p>
 <p class="p16"><span class="s9">a.makeWindow;<span class="Apple-tab-span">	</span></span>// open it again</p>
 <p class="p3"><br></p>
 <p class="p8">a.value = { (0..70).scramble }.dup(3);</p>
-<p class="p8">a.plotMode = <span class="s13">\lines</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\lines</span>; a.refresh;</p>
 <p class="p8">a.value = { <span class="s5">|i|</span> (0..2000).normalize(0, 4pi + i).sin } ! 4; <span class="s8">// lots of values, test efficiency</span></p>
 <p class="p8">a.value = { <span class="s5">|i|</span> (0..10000).normalize(0, 8pi + i).sin } ! 3; <span class="s8">// lots of values, test efficiency</span></p>
 <p class="p8">a.value = { (0..140).scramble } ! 7;</p>
@@ -275,13 +295,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">// specs</p>
 <p class="p3"><br></p>
 <p class="p8">a.value = (50..90).midicps.scramble;</p>
-<p class="p8">a.specs = <span class="s13">\freq</span>; a.refresh;</p>
+<p class="p8">a.specs = <span class="s12">\freq</span>; a.refresh;</p>
 <p class="p8">a.value = (1..60).scramble.neg;</p>
-<p class="p8">a.specs = <span class="s13">\db</span>; a.refresh;</p>
+<p class="p8">a.specs = <span class="s12">\db</span>; a.refresh;</p>
 <p class="p3"><br></p>
 <p class="p8">a.value = { <span class="s5">|i|</span> { exprand(1e3, (10 ** (i + 8))) }.dup(90) }.dup(3);</p>
 <p class="p8">a.value = { { exprand(1e3, 1e9) }.dup(90) }.dup(3);</p>
-<p class="p8">a.specs = [[1e3, 1e10, <span class="s13">\exp</span>], [1e3, 1e20, <span class="s13">\exp</span>], [1e3, 1e30, <span class="s13">\exp</span>]]; a.refresh;</p>
+<p class="p8">a.specs = [[1e3, 1e10, <span class="s12">\exp</span>], [1e3, 1e20, <span class="s12">\exp</span>], [1e3, 1e30, <span class="s12">\exp</span>]]; a.refresh;</p>
 <p class="p8">a.domainSpecs = [[0, 5], [-8, 100], [-1, 1]]; a.refresh;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
@@ -296,12 +316,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16">// Array:plot</p>
 <p class="p8">(</p>
 <p class="p8">a = (4 ** (-5..0)).postln.plot2;</p>
-<p class="p8">a.specs = <span class="s13">\delay</span>; a.refresh;</p>
-<p class="p8">a.domainSpecs = [0, 10, <span class="s13">\lin</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
+<p class="p8">a.specs = <span class="s12">\delay</span>; a.refresh;</p>
+<p class="p8">a.domainSpecs = [0, 10, <span class="s12">\lin</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
 <p class="p8">);</p>
 <p class="p3"><br></p>
-<p class="p8">a.domainSpecs = [0.1, 10, <span class="s13">\exponential</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
-<p class="p8">a.domainSpecs = [-10, 10, <span class="s13">\lin</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
+<p class="p8">a.domainSpecs = [0.1, 10, <span class="s12">\exponential</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
+<p class="p8">a.domainSpecs = [-10, 10, <span class="s12">\lin</span>, 0, 0, <span class="s6">" Kg"</span>].asSpec; a.refresh;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p8">a = [(0..100) * 9, (200..1300) * 2, (200..1000)/ 5].plot2;</p>
@@ -315,10 +335,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p16">// Env:plot</p>
 <p class="p8"><span class="s5">Env</span>.perc(0.4, 0.6).plot2;</p>
-<p class="p8"><span class="s5">Env</span>.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, <span class="s13">\sin</span>).plot2;</p>
+<p class="p8"><span class="s5">Env</span>.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, <span class="s12">\sin</span>).plot2;</p>
 <p class="p3"><br></p>
 <p class="p16">// Buffer:plot</p>
-<p class="p18"><span class="s9">b = </span><span class="s5">Buffer</span><span class="s9">.read(s, </span>"sounds/SinedPink.aiff"<span class="s9">);</span></p>
+<p class="p17"><span class="s9">b = </span><span class="s5">Buffer</span><span class="s9">.read(s, </span>"sounds/SinedPink.aiff"<span class="s9">);</span></p>
 <p class="p16"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right</p>
 <p class="p8">b.plot2;</p>
 <p class="p8">b.free;</p>
@@ -326,12 +346,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p8">a.value = [[[1, 2], [4, 5]], [[4, 2], [1, 9]], [[3, 1], [2, 9]]];</p>
-<p class="p8">a.plotMode = <span class="s13">\levels</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\levels</span>; a.refresh;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p8">a = [[0, 1.2, 1.5], [0, 1.3, 1.5, 1.6], [0, 1.5, 1.8, 2, 6]].midiratio.plot2;</p>
-<p class="p8">a.plotMode = <span class="s13">\levels</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s12">\levels</span>; a.refresh;</p>
 <p class="p8">a.superpose = <span class="s5">false</span>;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>

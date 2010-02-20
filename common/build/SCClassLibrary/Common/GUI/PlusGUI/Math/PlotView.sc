@@ -250,9 +250,10 @@ Plot {
 	// editing
 	
 		
-	editData { |x, y|
+	editData { |x, y, plotIndex|
 		var index = this.getIndex(x);
 		var val = this.getRelativePositionY(y);
+		plotter.editFunc.value(plotter, plotIndex, index, val, x, y);
 		value.clipPut(index, val);
 		valueCache = nil;
 	}
@@ -319,7 +320,7 @@ Plotter {
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
 	
-	var <>drawFunc;
+	var <>drawFunc, <>editFunc;
 
 	*new { |name, bounds, parent|
 		^super.newCopyArgs(name, bounds).makeWindow(parent)
@@ -613,7 +614,7 @@ Plotter {
 	editData { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
 		plotIndex !? {
-				plots.at(plotIndex).editData(x, y)
+				plots.at(plotIndex).editData(x, y, plotIndex);
 		};
 	}
 	
