@@ -775,11 +775,10 @@ if PLATFORM == 'darwin':
     serverEnv.Append(
                 LINKFLAGS = [
                     '-framework', 'CoreServices'])
-                    #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'])
 elif PLATFORM == 'linux':
     serverEnv.Append(
                 CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')],
-                LINKFLAGS = '-Wl,-rpath,' + FINAL_PREFIX + '/lib')
+                LINKFLAGS = ['-Wl,-rpath,' + FINAL_PREFIX + '/lib',  '-Wl,-soname,libscsynth.so'])
 
 elif PLATFORM == 'freebsd':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
@@ -1009,11 +1008,11 @@ else:
 if PLATFORM == 'darwin':
     langEnv.Append(
                 LIBS = ['icucore'],
-                LINKFLAGS = ['-framework', 'CoreServices'], #'-dylib_install_name', FINAL_PREFIX + '/lib/libsclang.dylib'],
+                LINKFLAGS = ['-framework', 'CoreServices'],
                 CPPPATH = ['#include/icu/unicode'])
 elif PLATFORM == 'linux':
     langEnv.Append(
-        LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
+        LINKFLAGS = ['-Wl,-rpath,build', '-Wl,-rpath,' + FINAL_PREFIX + '/lib', '-Wl,-soname,libsclang.so'])
 
 
 elif PLATFORM == 'freebsd':
