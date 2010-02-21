@@ -1012,7 +1012,7 @@ if PLATFORM == 'darwin':
                 CPPPATH = ['#include/icu/unicode'])
 elif PLATFORM == 'linux':
     langEnv.Append(
-        LINKFLAGS = ['-Wl,-rpath,build', '-Wl,-rpath,' + FINAL_PREFIX + '/lib', '-Wl,-soname,libsclang.so'])
+        LINKFLAGS = ['-Wl,-rpath,build', '-Wl,-rpath,' + FINAL_PREFIX + '/lib'])
 
 
 elif PLATFORM == 'freebsd':
@@ -1036,6 +1036,9 @@ libsclangEnv = langEnv.Clone(
     PKGCONFIG_LIBS = ['-lsclang'],
     PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server']
     )
+if PLATFORM == 'linux':
+    libsclangEnv.Append(
+        LINKFLAGS = ['-Wl,-soname,libsclang.so'])
 
 # required libraries
 merge_lib_info(langEnv, libraries['sndfile'])
