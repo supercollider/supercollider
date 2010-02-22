@@ -67,6 +67,7 @@ SuperCollider-Source/common/include/libsndfile
 SuperCollider-Source/common/include/curl
 SuperCollider-Source/common/include/icu
 SuperCollider-Source/mac
+SuperCollider-Source/iphone
 SuperCollider-Source/Headers/app
 SuperCollider-Source/Source/app' >> LinuxExclusions.txt
     
