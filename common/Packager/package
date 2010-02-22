@@ -68,8 +68,8 @@ SuperCollider-Source/common/include/curl
 SuperCollider-Source/common/include/icu
 SuperCollider-Source/mac
 SuperCollider-Source/iphone
-SuperCollider-Source/Headers/app
-SuperCollider-Source/Source/app' >> LinuxExclusions.txt
+SuperCollider-Source/common/Headers/app
+SuperCollider-Source/common/Source/app' >> LinuxExclusions.txt
     
     tar cfz "$filename" SuperCollider-Source
     tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
