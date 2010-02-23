@@ -689,7 +689,7 @@
 		9493180C0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MyDocument.nib; sourceTree = "<group>"; };
 		9493180E0C192C120018AB50 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SCGraphView.nib; sourceTree = "<group>"; };
 		9493180F0C192C120018AB50 /* GoToLinePanel.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GoToLinePanel.nib; sourceTree = "<group>"; };
-		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		949318100C192C120018AB50 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
 		949318110C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		949318120C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/FindPanel.strings; sourceTree = "<group>"; };
 		949318130C192C120018AB50 /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/GetStringDlg.nib; sourceTree = "<group>"; };
@@ -1908,6 +1908,7 @@
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				ZERO_LINK = YES;
@@ -1932,7 +1933,10 @@
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DNDEBUG";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DNDEBUG",
+				);
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -1965,7 +1969,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
@@ -2009,9 +2013,8 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
-					"-DNDEBUG",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -2050,7 +2053,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = sclang;
 			};
 			name = Development;
@@ -2083,10 +2086,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
-				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
-					"-DNDEBUG",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = sclang;
 				SDKROOT = "";
 			};
@@ -2119,7 +2119,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
@@ -2163,9 +2163,8 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
-					"-DNDEBUG",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -2197,7 +2196,10 @@
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DNDEBUG";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DNDEBUG",
+				);
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2253,9 +2255,8 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
-					"-DNDEBUG",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -2297,10 +2298,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
-				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
-					"-DNDEBUG",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = sclang;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2336,9 +2334,8 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
+					"$(inherited)",
 					"-Wstrict-aliasing",
-					"-DNDEBUG",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",

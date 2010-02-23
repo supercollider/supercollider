@@ -1672,6 +1672,7 @@
 		37E291970E2CEBE400CB854E /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = KeyboardUGens;
 			};
 			name = Development;
@@ -1681,6 +1682,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = KeyboardUGens;
 				SDKROOT = "";
 			};
@@ -1689,6 +1691,7 @@
 		468DABE30CF1FE1800FA8C88 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MachineListening;
 			};
 			name = Development;
@@ -1698,6 +1701,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MachineListening;
 				SDKROOT = "";
 			};
@@ -1808,6 +1812,7 @@
 		949318AB0C192F540018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT_UGens;
 			};
 			name = Development;
@@ -1818,6 +1823,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT_UGens;
 				SDKROOT = "";
 			};
@@ -1826,6 +1832,7 @@
 		949318C20C1931070018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = BinaryOpUGens;
 			};
 			name = Development;
@@ -1836,6 +1843,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = 4.0;
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = BinaryOpUGens;
 				SDKROOT = "";
 			};
@@ -1844,6 +1852,7 @@
 		949318D80C19310F0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DelayUGens;
 			};
 			name = Development;
@@ -1854,6 +1863,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DelayUGens;
 				SDKROOT = "";
 			};
@@ -1869,6 +1879,7 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DiskIOUGens;
 			};
 			name = Development;
@@ -1886,6 +1897,7 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DiskIOUGens;
 				SDKROOT = "";
 			};
@@ -1894,6 +1906,7 @@
 		949318EE0C1931120018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FilterUGens;
 			};
 			name = Development;
@@ -1904,6 +1917,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FilterUGens;
 				SDKROOT = "";
 			};
@@ -1912,6 +1926,7 @@
 		949318F90C1931130018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = IOUGens;
 			};
 			name = Development;
@@ -1922,6 +1937,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = IOUGens;
 				SDKROOT = "";
 			};
@@ -1930,6 +1946,7 @@
 		949319040C1931150018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = LFUGens;
 			};
 			name = Development;
@@ -1940,6 +1957,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = LFUGens;
 				SDKROOT = "";
 			};
@@ -1948,6 +1966,7 @@
 		9493190F0C1931160018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MulAddUGens;
 			};
 			name = Development;
@@ -1958,6 +1977,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MulAddUGens;
 				SDKROOT = "";
 			};
@@ -1966,6 +1986,7 @@
 		9493191A0C1931180018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = NoiseUGens;
 			};
 			name = Development;
@@ -1976,6 +1997,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = NoiseUGens;
 				SDKROOT = "";
 			};
@@ -1984,6 +2006,7 @@
 		949319250C19311A0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = OSCUGens;
 			};
 			name = Development;
@@ -1994,6 +2017,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = OSCUGens;
 				SDKROOT = "";
 			};
@@ -2002,6 +2026,7 @@
 		949319300C19311C0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PanUGens;
 			};
 			name = Development;
@@ -2012,6 +2037,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PanUGens;
 				SDKROOT = "";
 			};
@@ -2020,6 +2046,7 @@
 		9493193B0C19311E0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TriggerUGens;
 			};
 			name = Development;
@@ -2029,6 +2056,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TriggerUGens;
 				SDKROOT = "";
 			};
@@ -2037,6 +2065,7 @@
 		949319460C1931260018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnaryOpUGens;
 			};
 			name = Development;
@@ -2046,6 +2075,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnaryOpUGens;
 				SDKROOT = "";
 			};
@@ -2054,6 +2084,7 @@
 		949319510C1931280018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MouseUGens;
 			};
 			name = Development;
@@ -2063,6 +2094,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MouseUGens;
 				SDKROOT = "";
 			};
@@ -2071,6 +2103,7 @@
 		9493197C0C1931A30018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GendynUGens;
 			};
 			name = Development;
@@ -2080,6 +2113,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GendynUGens;
 				SDKROOT = "";
 			};
@@ -2088,6 +2122,7 @@
 		949319870C1931A40018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PhysicalModellingUGens;
 			};
 			name = Development;
@@ -2097,6 +2132,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PhysicalModellingUGens;
 				SDKROOT = "";
 			};
@@ -2105,6 +2141,7 @@
 		949319920C1931A50018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT2_UGens;
 			};
 			name = Development;
@@ -2114,6 +2151,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT2_UGens;
 				SDKROOT = "";
 			};
@@ -2122,6 +2160,7 @@
 		9493199D0C1931A60018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DemandUGens;
 			};
 			name = Development;
@@ -2131,6 +2170,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DemandUGens;
 				SDKROOT = "";
 			};
@@ -2139,6 +2179,7 @@
 		949319A80C1931A70018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DynNoiseUGens;
 			};
 			name = Development;
@@ -2148,6 +2189,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DynNoiseUGens;
 				SDKROOT = "";
 			};
@@ -2156,6 +2198,7 @@
 		949319B30C1931A80018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ChaosUGens;
 			};
 			name = Development;
@@ -2165,6 +2208,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ChaosUGens;
 				SDKROOT = "";
 			};
@@ -2173,6 +2217,7 @@
 		DC43F08D0CB26A670020E8B7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnpackFFTUGens;
 			};
 			name = Development;
@@ -2182,6 +2227,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnpackFFTUGens;
 				SDKROOT = "";
 			};
@@ -2251,6 +2297,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = BinaryOpUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2262,6 +2309,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DelayUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2280,6 +2328,7 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DiskIOUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2291,6 +2340,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT_UGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2302,6 +2352,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FilterUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2313,6 +2364,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = IOUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2324,6 +2376,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = LFUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2335,6 +2388,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MulAddUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2346,6 +2400,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = NoiseUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2357,6 +2412,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = OSCUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2368,6 +2424,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_VERSION = "";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PanUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2378,6 +2435,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TriggerUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2388,6 +2446,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnaryOpUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2398,6 +2457,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MouseUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2408,6 +2468,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GendynUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2418,6 +2479,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PhysicalModellingUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2428,6 +2490,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT2_UGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2438,6 +2501,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DemandUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2448,6 +2512,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DynNoiseUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2458,6 +2523,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ChaosUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2468,6 +2534,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TestUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2478,6 +2545,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnpackFFTUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2488,6 +2556,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MachineListening;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2498,6 +2567,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GrainUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2508,6 +2578,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ReverbUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2518,6 +2589,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = KeyboardUGens;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2526,6 +2598,7 @@
 		F3F479160D03BCB0001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GrainUGens;
 			};
 			name = Development;
@@ -2535,6 +2608,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GrainUGens;
 				SDKROOT = "";
 			};
@@ -2543,6 +2617,7 @@
 		F3F479210D03BCDB001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ReverbUGens;
 			};
 			name = Development;
@@ -2552,6 +2627,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ReverbUGens;
 				SDKROOT = "";
 			};
@@ -2560,6 +2636,7 @@
 		FE2582C90C2C096A00307453 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TestUGens;
 			};
 			name = Development;
@@ -2569,6 +2646,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TestUGens;
 				SDKROOT = "";
 			};
