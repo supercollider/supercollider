@@ -171,7 +171,7 @@ static inline int MultiplyAlpha(const int a, const int r)
 
 #pragma mark -- Graphics Context Utilities
 // returns a new rgba bitmap context. you owns the returned context. should be released after
-static NSBitmapImageRep* CreateBitmapContextRGBA(const int width, const int height)
+NSBitmapImageRep* CreateBitmapContextRGBA(const int width, const int height)
 {
 	return
 		[[NSBitmapImageRep alloc]
@@ -192,7 +192,7 @@ static NSBitmapImageRep* CreateBitmapContextRGBA(const int width, const int heig
 
 // creates and return an autoreleased NSBitmapImageRep built from an CIImage or an NSImage
 // if image is nil then it will return a zero filled pixel NSBitmapImageRep
-static NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int height, id image)
+NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int height, id image)
 {
 	NSGraphicsContext *nsPrevCtx = NULL;
 	NSBitmapImageRep *bitmap = CreateBitmapContextRGBA(width, height);

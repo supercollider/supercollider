@@ -4121,92 +4121,126 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 	mClearOnRefresh = true;
 	mRelativeOrigin = false;
 	mDrawingEnabled = true;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	mCGLayer =  NULL;
-#endif
+	mNSImageForLayering =  nil;
+	mImageContext = nil;
 }
 
 SCUserView::~SCUserView()
 {
-	if(mCGLayer) CGLayerRelease(mCGLayer);
+	if( mNSImageForLayering ) 
+		[ mNSImageForLayering release ];
+	if( mImageContext )
+		[ mImageContext release ];
 }
+
+
+extern NSBitmapImageRep* CreateBitmapContextRGBA(const int width, const int height);
+extern NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int height, id image);
 
 void SCUserView::draw(SCRect inDamage)
 {
-
-	SCRect bounds = getDrawBounds();
+	NSGraphicsContext	*lGCtx = NULL;
+	CGContextRef		mainGC = NULL;
+	SCRect				bounds = getDrawBounds();
+	CGRect				cgBounds = SCtoCGRect( bounds );
+	
 	SCView::draw(bounds); // draw background
-	if(!mDrawingEnabled) return;
-	if(bounds.width <= 0 || bounds.height <= 0) return;
-	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-	CGContextRef lCGContext;
-	CGContextRef cgc;
-	NSGraphicsContext* lGCtx;
-	if(mRelativeOrigin){
-		CGSize size = CGSizeMake(bounds.width, bounds.height);
-//		post("bounds.width: %f, bounds.height: %f\n",bounds.width, bounds.height);
-		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-		if(!mCGLayer)
+	
+	lGCtx = [ NSGraphicsContext currentContext ];
+	
+	void *focusStack;
+	
+	if( !mDrawingEnabled ) 
+		return;
+	
+	if( bounds.width <= 0 || bounds.height <= 0) 
+		return;
+	
+	if( !mClearOnRefresh )
+	{
+		if(
+		   !mNSImageForLayering ||
+		   [ mNSImageForLayering size ].width != bounds.width ||
+		   [ mNSImageForLayering size ].height != bounds.height		   
+		) 
 		{
-			mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-			if(!mCGLayer)
-				return; // creation failed
-			CGLayerRetain(mCGLayer);
-		} else {
-			//check whether size has changed
-			CGSize layerSize = CGLayerGetSize(mCGLayer);
-			if(layerSize.width != size.width || layerSize.height != size.height){
-				CGLayerRelease(mCGLayer);
-				mCGLayer =  CGLayerCreateWithContext (cgc, size, NULL);
-				// CGLayerRetain(mCGLayer); // not needed
+			if( mNSImageForLayering )
+				[ mNSImageForLayering release ];
+			if( mImageContext )
+				[ mImageContext release ];
+		
+			mImageRep = CreateBitmapContextRGBA((int)bounds.width, (int)bounds.height);
+			
+			if( ! mImageRep )
+			{
+				NSLog(@"Failed creating valid NSBitmapImageRep for SCUserView");
+				return;
+			}	
+			
+			[mImageRep autorelease];
+			mNSImageForLayering = [[NSImage alloc]initWithSize: *(NSSize*)&cgBounds.size];
+			if( !mNSImageForLayering )
+			{
+				NSLog(@"Failed creating valid NSBitmapImageRep for SCUserView");
+				return;
 			}
+			
+			[ mNSImageForLayering addRepresentation: mImageRep];
+			mImageContext = [NSGraphicsContext graphicsContextWithBitmapImageRep: mImageRep ];
+			
+			if( !mImageContext )
+				return;
+			[ mImageContext retain ];
 		}
-		CGRect cgrect = CGRectMake(0, 0, bounds.width, bounds.height);
-		lGCtx = [NSGraphicsContext currentContext];
-		lCGContext = CGLayerGetContext(mCGLayer);
+		
+		[ NSGraphicsContext saveGraphicsState ];
+		
+		CGContextRef cgc = (CGContextRef)[ mImageContext graphicsPort ];
 
-		NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];
-		[NSGraphicsContext setCurrentContext: gclayer];
-		if(mClearOnRefresh){
-			CGContextClearRect(lCGContext,  cgrect);
-			CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
-			CGContextFillRect (lCGContext,  cgrect);
-		}
-		CGContextBeginTransparencyLayer(lCGContext, NULL);
+		NSGraphicsContext *gclayer = [ NSGraphicsContext graphicsContextWithGraphicsPort:cgc flipped:YES ];
+		[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:mImageRep]];
 	}
-	#endif
+	else
+	{
+		mainGC = (CGContextRef)[ lGCtx graphicsPort ];
+		CGContextSaveGState( mainGC );
+		CGContextClipToRect( mainGC, cgBounds );
+		
+		CGContextTranslateCTM(mainGC, bounds.x, bounds.y);
+		
+	}
+	
     sendMessage(s_draw, 0, 0, 0);
-	#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-	if(mRelativeOrigin){
-		CGContextEndTransparencyLayer(lCGContext);
-		CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
-		[NSGraphicsContext setCurrentContext: lGCtx];
+	
+	if( !mClearOnRefresh )
+	{	
+		//[mNSImageForLayering unlockFocus];
+		//CGContextEndTransparencyLayer( mNSImageForLayering );
+		[ NSGraphicsContext setCurrentContext: lGCtx ];
+		[ NSGraphicsContext restoreGraphicsState ];
+		//[ NSGraphicsContext setCurrentContext: lGCtx ];
+		
+		[ mNSImageForLayering drawAtPoint:*(NSPoint*)&cgBounds.origin fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.f ];
 	}
-	#endif
+	else
+	{
+		CGContextRestoreGState( mainGC );
+	}
 }
+
 void SCUserView::clearDrawing()
 {
-	if(!mCGLayer) return;
-	SCRect bounds = getDrawBounds();
-	CGContextRef lCGContext;
-	CGContextRef cgc;
-	NSGraphicsContext* lGCtx;
-	CGRect cgrect = CGRectMake(0,0, bounds.width, bounds.height);
-	cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	lGCtx = [NSGraphicsContext currentContext];
-	CGContextSaveGState(cgc);
+	if( !mNSImageForLayering ) 
+		return;
 
-	lCGContext = CGLayerGetContext(mCGLayer);
-	NSGraphicsContext *gclayer = [NSGraphicsContext graphicsContextWithGraphicsPort:lCGContext flipped:YES];
-//	[NSGraphicsContext setCurrentContext: gclayer];
-
-	CGContextClearRect(lCGContext,  cgrect);
-	CGContextSetRGBFillColor (lCGContext, 1, 1, 1, 0);
-	CGContextFillRect (lCGContext,  cgrect);
-	CGContextDrawLayerInRect(cgc, SCtoCGRect(bounds), mCGLayer);
-	CGContextRestoreGState(cgc);
-//	[NSGraphicsContext setCurrentContext: lGCtx];
-
+	//SCRect bounds = getDrawBounds();
+	//CGContextClearRect ( mNSImageForLayering ,  CGRectMake( 0, 0, bounds.width, bounds.height));
+	[ mNSImageForLayering lockFocus ];
+	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext]graphicsPort];
+	if(mClearOnRefresh) 
+		CGContextClearRect( cgc, CGRectMake( 0.f, 0.f, [mNSImageForLayering size].width, [mNSImageForLayering size].height ) );
+	[ mNSImageForLayering unlockFocus ];
+	
 }
 
 void SCUserView::mouseAction(PyrSymbol *method, SCPoint where, int modifiers)
@@ -4430,7 +4464,7 @@ SCAnimationView::SCAnimationView(SCContainerView *inParent, PyrObject* inObj, SC
 	mRelativeOrigin = false;
 	mDrawingEnabled = true;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	mCGLayer =  NULL;
+	mNSImageForLayering =  NULL;
 #endif
 	mShowInfo = false;
 	for(int i = 0; i<kLastTimes; i++) {
