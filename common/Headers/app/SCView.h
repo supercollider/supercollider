@@ -810,10 +810,10 @@ protected:
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
 	SCPoint mRealtiveMousePoint;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1040
-	CGLayerRef mCGLayer;
-#endif
 
+	NSImage* mNSImageForLayering; // offscreen image object 
+	NSGraphicsContext *mImageContext;
+	NSBitmapImageRep* mImageRep;
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
 };
 SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
