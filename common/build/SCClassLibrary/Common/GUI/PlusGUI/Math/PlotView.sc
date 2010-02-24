@@ -3,7 +3,7 @@ Plot {
 
 	var <>plotter, <value, <>spec, <>domainSpec;
 	var <bounds, <plotBounds;
-	var <>font, <>gridColorX, <>gridColorY, <>plotColor, <>backgroundColor;
+	var <>font, <>fontColor, <>gridColorX, <>gridColorY, <>plotColor, <>backgroundColor;
 	var	<>gridLinePattern, <>gridLineSmoothing;
 	var <>gridOnX = true, <>gridOnY = true, <>labelX, <>labelY;
 	
@@ -11,9 +11,10 @@ Plot {
 	
 	*initClass {
 		GUI.skin.put(\plot, (
-			plotFont: Font("Courier", 9),
+			gridFont: Font("Garamond", 9),
 			gridColorX: Color.grey(0.7),
 			gridColorY: Color.grey(0.7),
+			fontColor: Color.grey(0.3),
 			plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
 			background: Color.new255(235, 235, 235),
 			//gridLinePattern: FloatArray[1, 5],
@@ -33,10 +34,11 @@ Plot {
 		var skin = GUI.skin.at(\plot);
 		
 		skin.use {
-			font = ~plotFont;
+			font = ~gridFont;
 			gridColorX = ~gridColorX;
 			gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
+			fontColor = ~fontColor;
 			backgroundColor = ~background;
 			gridLineSmoothing = ~gridLineSmoothing;
 			gridLinePattern = ~gridLinePattern.as(FloatArray);
@@ -46,12 +48,8 @@ Plot {
 	}
 	
 	bounds_ { |rect|
-		var size = try { "\foo".bounds(font).height } ?? { font.size };
-		plotBounds = if(rect.height > 40) {
-			 rect.insetBy(size * 1.5, size * 1.5) 
-		} { 
-			rect 
-		};
+		var size = (try { "foo".bounds(font).height } ?? { font.size } * 1.5);
+		plotBounds = if(rect.height > 40) { rect.insetBy(size, size) } { rect };
 		bounds = rect;
 		valueCache = nil;
 	}
@@ -64,8 +62,8 @@ Plot {
 		
 	draw {
 		this.drawBackground;
-		if(gridOnX) { this.drawGridX };
-		if(gridOnY) { this.drawGridY };
+		if(gridOnX) { this.drawGridX; this.drawNumbersX; };
+		if(gridOnY) { this.drawGridY; this.drawNumbersY; };
 		this.drawLabels;
 		this.drawData;
 		plotter.drawFunc.value(this); // additional elements
@@ -76,44 +74,74 @@ Plot {
 		Pen.fillColor = backgroundColor;
 		Pen.fill;
 	}
-
-	drawGridY {
-	
-		var left = plotBounds.left;
-		var right = plotBounds.right;
-		var base = plotBounds.bottom;
-		var height = plotBounds.height;
-		var n, gridValues;
-		n = (plotBounds.height / 32).round(2);
-		if(spec.hasZeroCrossing) { n = n + 1 };
-		gridValues = spec.gridValues(n);
-		
-		
-		Pen.beginPath;
-		
-		gridValues.do { |val, i|
-			var vpos = base - (spec.unmap(val) * height); // measures from top left
-			var string = val.asStringPrec(5).asString ++ spec.units;
-			Pen.moveTo(left @ vpos);
-			Pen.lineTo(right @ vpos);
-			if(gridOnX.not or: { i > 0 }) {
-				string.drawAtPoint(left @ vpos, font, gridColorY);
-			}
-		};
-		Pen.strokeColor = gridColorY;
-		this.prStrokeGrid;
-
-	}
 	
 	drawGridX {
 	
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
+		
+		this.drawOnGridX { |hpos|
+			Pen.moveTo(hpos @ base);
+			Pen.lineTo(hpos @ top);
+		};
+		
+		Pen.strokeColor = gridColorX;
+		this.prStrokeGrid;
+	
+	}
+
+	drawGridY {
+	
+		var left = plotBounds.left;
+		var right = plotBounds.right;
+		
+		this.drawOnGridY { |vpos|
+			Pen.moveTo(left @ vpos);
+			Pen.lineTo(right @ vpos);
+		};
+		
+		Pen.strokeColor = gridColorY;
+		this.prStrokeGrid;
+
+	}
+	
+	drawNumbersX {
+		var top = plotBounds.top;
+		var base = plotBounds.bottom;
+		
+		this.drawOnGridX { |hpos, val, i|
+			var string = val.asStringPrec(5) ++ domainSpec.units;
+			string.drawAtPoint(hpos @ base, font, fontColor);
+		};
+		Pen.stroke;
+	
+	}
+	
+	drawNumbersY {
+	
+		var left = plotBounds.left;
+		var right = plotBounds.right;
+		
+		this.drawOnGridY { |vpos, val, i|
+			var string = val.asStringPrec(5).asString ++ spec.units;
+			if(gridOnX.not or: { i > 0 }) {
+				string.drawAtPoint(left @ vpos, font, fontColor);
+			}
+		};
+		
+		Pen.strokeColor = fontColor;
+		Pen.stroke;
+
+	}
+	
+	
+	drawOnGridX { |func|
+	
 		var width = plotBounds.width;
 		var left = plotBounds.left;
-		var gridValues, n;
+		var n, gridValues;
 		var xspec = domainSpec;
-		if(this.steplikeDisplay) {
+		if(this.hasSteplikeDisplay) {
 			// special treatment of special case: lines need more space
 			xspec = xspec.copy.maxval_(xspec.maxval * value.size / (value.size - 1)) 
 		};
@@ -123,41 +151,49 @@ Plot {
 		gridValues = xspec.gridValues(n);
 		if(gridOnY) { gridValues = gridValues.drop(1) };
 		gridValues = gridValues.drop(-1);
-
-		Pen.beginPath;
 		
-		gridValues.do { |x, i|
-			var hpos = left + (xspec.unmap(x) * width);
-			var string = x.asStringPrec(5) ++ xspec.units;
-			Pen.moveTo(hpos @ base);
-			Pen.lineTo(hpos @ top);
-			string.drawAtPoint(hpos @ base, font, gridColorX);
+		gridValues.do { |val, i|
+			var hpos = left + (xspec.unmap(val) * width);
+			func.value(hpos, val, i);
+		};
+	}
+	
+	drawOnGridY { |func|
+
+		var base = plotBounds.bottom;
+		var height = plotBounds.height.neg; // measures from top left
+		var n, gridValues;
+		
+		n = (plotBounds.height / 32).round(2);
+		if(spec.hasZeroCrossing) { n = n + 1 };
+		gridValues = spec.gridValues(n);
+				
+		gridValues.do { |val, i|
+			var vpos = base + (spec.unmap(val) * height); 
+			func.value(vpos, val, i);
 		};
 		
-		Pen.strokeColor = gridColorX;
-		this.prStrokeGrid;
-	
 	}
 	
 	drawLabels {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) { 
-			sbounds = labelX.bounds(font);
+			sbounds = try { labelX.bounds(font) } ? 0;
 			labelX.drawAtPoint(
-				plotBounds.right - sbounds.width @ plotBounds.bottom, font, gridColorY
+				plotBounds.right - sbounds.width @ plotBounds.bottom, font, fontColor
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
-			sbounds = labelY.bounds(font);
+			sbounds = try { labelY.bounds(font) } ? 0;
 			labelY.drawAtPoint(
-				plotBounds.left - sbounds.width @ plotBounds.top, font, gridColorY
+				plotBounds.left - sbounds.width - 3 @ plotBounds.top, font, fontColor
 			) 
 		};
 	}
 	
 	
 	domainCoordinates { |size|
-		var val = this.resampledDomainSpec.unmap((0..size-1));
+		var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
 		^plotBounds.left + (val * plotBounds.width);
 	}
 	
@@ -171,7 +207,7 @@ Plot {
 	}
 	
 	resampledDomainSpec {
-		var offset = if(this.steplikeDisplay) { 0 } { 1 };
+		var offset = if(this.hasSteplikeDisplay) { 0 } { 1 };
 		^domainSpec.copy.maxval_(this.resampledSize - offset)
 	}
 	
@@ -266,18 +302,25 @@ Plot {
 		^spec.map((plotBounds.bottom - y) / plotBounds.height)
 	}
 	
-	steplikeDisplay {
+	hasSteplikeDisplay {
 		^#[\levels, \steps].includes(plotter.plotMode)
 	}
 	
 	getIndex { |x|
-		var offset = if(this.steplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
+		var offset = if(this.hasSteplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
 		^(this.getRelativePositionX(x) - offset).round.asInteger
 	}
 
 	getDataPoint { |x|
 		var index = this.getIndex(x).clip(0, value.size - 1);
 		^[index, value.at(index)]
+	}
+	
+	// settings
+	
+	zoomFont { |val|
+		font = font.copy;
+		font.size = max(1, font.size + val);
 	}
 
 	
@@ -314,7 +357,7 @@ Plot {
 Plotter {
 	
 	var <>name, <>bounds, <>parent;
-	var <value, <data;
+	var <value, <data, <>domain;
 	var <plots, <specs, <domainSpecs;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
@@ -323,23 +366,27 @@ Plotter {
 	var <>drawFunc, <>editFunc;
 
 	*new { |name, bounds, parent|
-		^super.newCopyArgs(name, bounds).makeWindow(parent)
+		^super.newCopyArgs(name).makeWindow(parent, bounds)
 	}
 		
-	makeWindow { |argParent|
+	makeWindow { |argParent, argBounds|
 		parent = argParent ? parent;
+		bounds = argBounds ? bounds;
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
-			interactionView = UserView(parent, parent.view.bounds.insetBy(5, 0).moveBy(-5, 0));
+			bounds = parent.view.bounds.insetBy(5, 0).moveBy(-5, 0);
+			interactionView = UserView(parent, bounds);
 			if(GUI.skin.at(\plot).at(\expertMode).not) { this.makeButtons };
 			parent.drawHook = { this.draw };
 			parent.front;
 			parent.onClose = { parent = nil };
+			
 		} {
-			interactionView = UserView(parent, bounds ?? { parent.bounds.moveTo(0, 0) });
-			interactionView.drawFunc = { this.draw }
+			bounds = bounds ?? { parent.bounds.moveTo(0, 0) };
+			interactionView = UserView(parent, bounds);
+			interactionView.drawFunc = { this.draw };
+			
 		};
-		bounds = interactionView.bounds;
 		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
 		
 		interactionView
@@ -370,15 +417,23 @@ Plotter {
 			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
 				if(modifiers.isCmd.not) {
 					switch(char,
-						// y zoom out
+						// y zoom out / font zoom
 						$-, {
-							this.specs = specs.collect(_.zoom(3/2));
-							normalized = false;
+							if(modifiers.isCtrl) {
+								plots.do(_.zoomFont(-2));
+							} {
+								this.specs = specs.collect(_.zoom(3/2));
+								normalized = false;
+							}
 						},
-						// y zoom in
+						// y zoom in / font zoom
 						$+, {
-							this.specs = specs.collect(_.zoom(2/3));
-							normalized = false;
+							if(modifiers.isCtrl) {
+								plots.do(_.zoomFont(2));
+							} {
+								this.specs = specs.collect(_.zoom(2/3));
+								normalized = false;
+							}
 						},
 						// compare plots
 						$=, {
@@ -662,6 +717,19 @@ Plotter {
 		^plotter
 	}
 		
+}
+
++ Collection {
+	
+	plotHisto { arg steps = 100, min, max;
+			var histo = this.histo(steps, min, max);
+			var plotter = histo.plot2;
+			plotter.domainSpecs = [[min ?? { this.minItem }, max ?? { this.maxItem }].asSpec];
+			plotter.specs = [[0, histo.maxItem, \linear, 1].asSpec];
+			plotter.plotMode = \steps;
+			^plotter
+	}	
+	
 }
 
 
