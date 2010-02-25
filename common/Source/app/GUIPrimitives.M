@@ -1217,24 +1217,32 @@ extern NSFont *defaultFont;
 int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed);
 int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 {
-		 if (!g->canCallOS) return errCantCallOS;
-		PyrSlot *a = g->sp - 1;
-		PyrSlot *fontSlot = g->sp; //font
-		if (IsNil(fontSlot)) return errNone; // use default font
-		if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
+	NSFont *newDefault, *oldDefault;
+	if (!g->canCallOS) return errCantCallOS;
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *fontSlot = g->sp; //font
+	if (IsNil(fontSlot)) return errNone; // use default font
+	if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
 
-		PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
-		PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
-		float size;
-		int err = slotFloatVal(sizeSlot, &size);
-		if (err) return err;
+	PyrSlot *nameSlot = slotRawObject(fontSlot)->slots+0;
+	PyrSlot *sizeSlot = slotRawObject(fontSlot)->slots+1;
+	float size;
+	int err = slotFloatVal(sizeSlot, &size);
+	if (err) return err;
 
-		PyrString *pstring = slotRawString(nameSlot);
-		NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
-		if (!fontName) return errFailed;
-		defaultFont = [NSFont fontWithName: fontName size: size];
-		if (!defaultFont) return errFailed;
-		return errNone;
+	PyrString *pstring = slotRawString(nameSlot);
+	NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+	if (!fontName) return errFailed;
+	newDefault = [NSFont fontWithName: fontName size: size];
+	if (!newDefault) {
+		return errFailed;
+	} else {
+		oldDefault = defaultFont;
+		[newDefault retain];
+		defaultFont = newDefault;
+		[oldDefault release];
+	}
+	return errNone;
 
 }
 
@@ -2337,11 +2345,13 @@ int prPen_StrokeRect(struct VMGlobals *g, int numArgsPushed)
 
     CGRect rect;
     int err = slotGetCGRect(b, &rect);
-    if (err) return err;
-
-    //[NSBezierPath strokeRect: rect];
+    if (err) 
+		return err;
+	
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) return errFailed;
+	if (!gctx) 
+		return errFailed;
+	
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextBeginPath(cgc);
 	CGContextAddRect(cgc, rect);
@@ -2362,15 +2372,14 @@ int prPen_FillRect(struct VMGlobals *g, int numArgsPushed)
 
     CGRect rect;
     int err = slotGetCGRect(b, &rect);
-    if (err) return err;
+    if (err) 
+		return err;
 
-    //[NSBezierPath fillRect: rect];
-	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) return errFailed;
-    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
-    CGContextBeginPath(cgc);
-	CGContextAddRect(cgc, rect);
-    CGContextFillPath(cgc);
+    CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !ctx )
+		return errFailed;
+	
+	CGContextFillRect( ctx, rect );
 
     return errNone;
 }
@@ -2380,17 +2389,23 @@ int prPen_StrokeOval(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
+	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !ctx )
+		return errFailed;
+	
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
 
-    NSRect rect;
-    int err = slotGetNSRect(b, &rect);
-    if (err) return err;
+	CGRect rect;
+	int err = slotGetCGRect(b, &rect);
+    if (err) 
+		return err;
 
-    [[NSBezierPath bezierPathWithOvalInRect: rect] stroke];
-
+    CGContextAddEllipseInRect( ctx, rect );
+	CGContextStrokePath( ctx );
+	
     return errNone;
 }
 
@@ -2399,16 +2414,22 @@ int prPen_FillOval(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
+	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !ctx )
+		return errFailed;
+	
     //PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
-    if (!(isKindOfSlot(b, s_rect->u.classobj))) return errWrongType;
+    if (!(isKindOfSlot(b, s_rect->u.classobj))) 
+		return errWrongType;
 
     NSRect rect;
     int err = slotGetNSRect(b, &rect);
     if (err) return err;
 
-    [[NSBezierPath bezierPathWithOvalInRect: rect] fill];
+	CGContextAddEllipseInRect( ctx, *(CGRect*)&rect );
+	CGContextFillPath( ctx );
 
     return errNone;
 }
@@ -2418,6 +2439,10 @@ int prPen_StrokeLine(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS;
 
+	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !ctx )
+		return errFailed;
+	
     //PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
     PyrSlot *c = g->sp;
@@ -2430,9 +2455,10 @@ int prPen_StrokeLine(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     err = slotGetPoint(c, &p2);
     if (err) return err;
-
-    [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-
+		
+	CGContextMoveToPoint( ctx, p1.x, p2.x );
+	CGContextAddLineToPoint( ctx, p1.x, p2.x );
+	CGContextStrokePath( ctx );
     return errNone;
 }
 
@@ -2450,11 +2476,11 @@ int prPen_MoveTo(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetPoint(b, &p1);
     if (err) return err;
 
-	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) return errFailed;
-    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !cgc )
+		return errFailed;
+	
     CGContextMoveToPoint(cgc, p1.x, p1.y);
-
     return errNone;
 }
 
@@ -2472,9 +2498,10 @@ int prPen_LineTo(struct VMGlobals *g, int numArgsPushed)
     int err = slotGetPoint(b, &p1);
     if (err) return err;
 
-	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) return errFailed;
-    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
+    CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	if( !cgc ) 
+		return errFailed;
+	
     CGContextAddLineToPoint(cgc, p1.x, p1.y);
 
     return errNone;
@@ -2801,7 +2828,6 @@ int prPen_SetWidth(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx) return errFailed;
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
     CGContextSetLineWidth(cgc, width);
-    [NSBezierPath setDefaultLineWidth: width];
     return errNone;
 }
 
@@ -3014,9 +3040,7 @@ int prPen_AddBezierQuadCurve(struct VMGlobals *g, int numArgsPushed)
 	if (!gctx)
 		return errFailed;
 
-	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
-
-	CGContextAddQuadCurveToPoint(_ctx,
+	CGContextAddQuadCurveToPoint((CGContextRef)[gctx graphicsPort],
 		points[1].x, points[1].y,
 		points[0].x, points[0].y
 	);
@@ -3052,12 +3076,10 @@ int prPen_AddBezierCubicCurve(struct VMGlobals *g, int numArgsPushed)
 		return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx)
+	if ( !gctx )
 		return errFailed;
 
-    CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
-
-	CGContextAddCurveToPoint(_ctx,
+	CGContextAddCurveToPoint((CGContextRef)[gctx graphicsPort],
 		points[1].x, points[1].y,
 		points[2].x, points[2].y,
 		points[0].x, points[0].y
@@ -3091,11 +3113,10 @@ int prPen_AddArcToPoint(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx) return errFailed;
+	if ( !gctx ) 
+		return errFailed;
 
-	CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
-
-	CGContextAddArcToPoint(cgc, p1.x, p1.y, p2.x, p2.y, radius);
+	CGContextAddArcToPoint((CGContextRef)[gctx graphicsPort], p1.x, p1.y, p2.x, p2.y, radius);
 
 	return errNone;
 }
@@ -3115,12 +3136,10 @@ int prPen_ClearRect(struct VMGlobals *g, int numArgsPushed)
 
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx)
+	if ( !gctx )
 		return errFailed;
 
-    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
-
-    CGContextClearRect(cgc, rect);
+    CGContextClearRect((CGContextRef)[gctx graphicsPort], rect);
 
     return errNone;
 }
@@ -3133,16 +3152,19 @@ int prPen_DrawPath(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 	int err, mode=0;
 
-	if((err = slotIntVal(b, &mode)) != noErr)
+	if( (err = slotIntVal(b, &mode)) != noErr )
 		return err;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx)
+	if ( !gctx )
 		return errFailed;
 
     CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//kCGPathFill=0, kCGPathEOFill=1, kCGPathStroke=2, kCGPathFillStroke=3, or kCGPathEOFillStroke=4
-	CGContextDrawPath(cgc, (CGPathDrawingMode)sc_clip(mode,kCGPathFill,kCGPathEOFillStroke));
+	CGContextDrawPath( 
+					  (CGContextRef)[gctx graphicsPort], 
+					  (CGPathDrawingMode)sc_clip( mode, kCGPathFill, kCGPathEOFillStroke ) 
+					  );
 	return errNone;
 }
 
@@ -3221,7 +3243,10 @@ int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed)
 		return err;
 
 	//kCGLineJoinMiter=0, kCGLineJoinRound=1,kCGLineJoinBevel=2
-	CGContextSetLineJoin((CGContextRef)[gctx graphicsPort], (CGLineJoin)sc_clip(mode, kCGLineJoinMiter, kCGLineJoinBevel));
+	CGContextSetLineJoin(
+						 (CGContextRef)[gctx graphicsPort], 
+						 (CGLineJoin)sc_clip( mode, kCGLineJoinMiter, kCGLineJoinBevel )
+						 );
 
 	return errNone;
 }
@@ -3229,18 +3254,19 @@ int prPen_LineJoin(struct VMGlobals *g, int numArgsPushed)
 int prPen_LineDash(struct VMGlobals *g, int numArgsPushed);
 int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS)
+	if ( !g->canCallOS )
 		return errCantCallOS;
 
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx)
+	if ( !gctx )
 		return errFailed;
 
 	PyrSlot *a  = g->sp; // array of floats
 	PyrObject*	pyrarray = slotRawObject(a);
 	PyrClass*	pyrclass = pyrarray->classptr;
 
-	if(pyrclass == class_floatarray) { // float array only
+	if( pyrclass == class_floatarray )  // float array only
+	{
 		CGContextSetLineDash(
 			(CGContextRef)[gctx graphicsPort],
 			0,
@@ -3248,8 +3274,11 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 			pyrarray->size
 		);
 		return errNone;
-	}else
+	}
+	else
+	{
 		post("Pen line dash needs a FloatArray as argument !\n");
+	}
 
 	return errFailed;
 }
@@ -3257,20 +3286,23 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 int prPen_LineCap(struct VMGlobals *g, int numArgsPushed);
 int prPen_LineCap(struct VMGlobals *g, int numArgsPushed)
 {
-	if (!g->canCallOS)
+	if ( !g->canCallOS )
 		return errCantCallOS;
 
 	int err=noErr, mode = 0;
 	NSGraphicsContext *gctx = [NSGraphicsContext currentContext];
-	if (!gctx)
+	if ( !gctx )
 		return errFailed;
 
 	PyrSlot *b  = g->sp; // mode
-	if((err = slotIntVal(b, &mode)) != noErr)
+	if( (err = slotIntVal(b, &mode)) != noErr )
 		return err;
 
 	//kCGLineCapButt (default - 0), kCGLineCapRound - 1, or kCGLineCapSquare - 2
-	CGContextSetLineCap((CGContextRef)[gctx graphicsPort], (CGLineCap)sc_clip(mode, kCGLineCapButt, kCGLineCapSquare));
+	CGContextSetLineCap( 
+						(CGContextRef)[gctx graphicsPort], 
+						(CGLineCap)sc_clip(mode, kCGLineCapButt, kCGLineCapSquare)
+						);
 	return errNone;
 }
 
@@ -3841,6 +3873,7 @@ Point centerRectIn(Rect &a, Rect &b)
 	return newOrigin;
 }
 
+/*
 void stringBounds(char *s, int len, Rect &r);
 void stringBounds(char *s, int len, Rect &r)
 {
@@ -3854,6 +3887,7 @@ void stringBounds(char *s, int len, Rect &r)
 	r.right = width;
 	r.bottom = finfo.descent;
 }
+*/
 
 int prNewMenuItem(struct VMGlobals *g, int numArgsPushed);
 int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
@@ -4099,6 +4133,7 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *b = g->sp;
 
 	//#if SC_DARWIN
+	/*
 	RgnHandle rgn = GetGrayRgn();
 	Rect screenBounds;
 	GetRegionBounds(rgn, &screenBounds);
@@ -4108,6 +4143,8 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
 	GetGlobalMouse(&p);
 	float mouseX = (float)p.h * r_screenWidth;
 	float mouseY = (float)p.v * r_screenHeight;
+	*/
+	
 	//bool mouseButton = Button();
 	/*
 	#else
@@ -4129,10 +4166,12 @@ int prMouse_getCoords(struct VMGlobals *g, int numArgsPushed)
 	# else
 	# endif
 	*/
-
+	
+	NSPoint mouse_location = [NSEvent mouseLocation];
     PyrSlot *slots = slotRawObject(b)->slots;
-    SetFloat(slots+0, mouseX);
-    SetFloat(slots+1, mouseY);
+    SetFloat( slots+0, mouse_location.x );
+    SetFloat( slots+1, mouse_location.y );
+	
 	//SetBool(slots+2, mouseButton);
 
 
@@ -4200,8 +4239,6 @@ void initGUIPrimitives()
 			[doc setSCObject: nil];
 		}
 	}
-
-    [NSBezierPath setDefaultLineWidth: 1];
 
 	definePrimitive(base, index++, "_TextWindow_ToFront", prTextWindow_ToFront, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SelectedText", prTextWindow_SelectedText, 1, 0);
