@@ -54,13 +54,17 @@ extern bool compiledOK;
 bool docCreatedFromLang = false; //if this is true addDocument is not called
 bool defaultDocumentUseAutoInOutDent = true;
 
-NSFont *defaultFont = NULL;
+NSFont *defaultFont = nil;
 
 @implementation MyDocument
 
 - (id)init
 {
-	if(!defaultFont) defaultFont = [NSFont fontWithName: @"Monaco" size: 9];
+	NSLog(@"init");
+	if(!defaultFont) {
+		defaultFont = [NSFont fontWithName: @"Monaco" size: 9];
+		[defaultFont retain];
+	}
 	mWindowObj = nil;
     initTextView = nil;
     textView = nil;
@@ -78,6 +82,8 @@ NSFont *defaultFont = NULL;
     SCTextView* aTextView = [[SCTextView alloc] initWithFrame: NSMakeRect(0,0,612,512)];
 	isRichText = YES;
 	[self initialiseTextViewParams: aTextView];
+	NSLog(@"makeTextView");
+	NSLog(@"font: %@", defaultFont);
 	[aTextView setFont: defaultFont];
 	activeTextView = aTextView;
 	return aTextView;
