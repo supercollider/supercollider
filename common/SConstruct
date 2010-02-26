@@ -778,7 +778,7 @@ if PLATFORM == 'darwin':
 elif PLATFORM == 'linux':
     serverEnv.Append(
                 CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')],
-                LINKFLAGS = ['-Wl,-rpath,' + FINAL_PREFIX + '/lib',  '-Wl,-soname,libscsynth.so'])
+                LINKFLAGS = ['-Wl,-rpath,' + FINAL_PREFIX + '/lib'])
 
 elif PLATFORM == 'freebsd':
     serverEnv.Append(CPPDEFINES = [('SC_PLUGIN_LOAD_SYM', '\\"load\\"')])
