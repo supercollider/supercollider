@@ -783,6 +783,7 @@ SCView* NewSCEnvelopeView(SCContainerView *inParent, PyrObject* inObj, SCRect in
 
 //
 
+const char kFrameLastTimes = 10;
 class SCUserView : public SCView
 {
 public:
@@ -809,6 +810,9 @@ protected:
 	bool mDrawingEnabled;
 	bool mClearOnRefresh;
 	bool mRelativeOrigin;
+	double mFrameLastTimes[kFrameLastTimes];
+	float mFrameRate;
+	int mFrameCounter;
 	SCPoint mRealtiveMousePoint;
 
 	NSImage* mNSImageForLayering; // offscreen image object 
@@ -817,28 +821,6 @@ protected:
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
 };
 SCView* NewSCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-
-
-//
-
-const char kLastTimes = 10;
-class SCAnimationView : public SCUserView
-{
-public:
-	SCAnimationView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-	virtual ~SCAnimationView();
-	virtual void draw(SCRect inDamage);
-	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);;
-protected:
-	bool mShowInfo;
-	char mFontName[kFontNameSize];
-	float mFontSize;
-	SCColor mStringColor;
-	double mLastTimes[kLastTimes];
-	float mAverageRate;
-	char mCounter;
-};
-SCView* NewSCAnimationView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 
 //

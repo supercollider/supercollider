@@ -1376,6 +1376,18 @@ SCUserView : SCView {
 		this.setProperty(\relativeOrigin, bool);
 	}
 
+	animate_{|bool|
+		this.setProperty(\animate, bool);
+	}
+
+	frame {
+		^this.getProperty(\frame);
+	}
+
+	frameRate {
+		^this.getProperty(\frameRate);
+	}
+
 	drawingEnabled_{|bool|
 		drawingEnabled = bool;
 		this.setProperty(\drawingEnabled, bool);	}
@@ -1421,22 +1433,6 @@ SCUserView : SCView {
 
 }
 
-SCAnimationView : SCUserView {
-	var <>counter= 0;
-	var <showInfo= false;
-	showInfo_ {|bool|
-		showInfo= bool;
-		this.setProperty(\showInfo, bool);
-	}
-	draw {
-		counter= counter+1;
-		drawFunc.value(this, counter);
-	}
-	drawFunc_ {|func|
-		counter= 0;
-		drawFunc= func;
-	}
-}
 
 //
 //SCFuncUserView : SCUserView {
