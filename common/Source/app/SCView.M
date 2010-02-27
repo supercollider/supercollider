@@ -4123,6 +4123,11 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 	mDrawingEnabled = true;
 	mNSImageForLayering =  nil;
 	mImageContext = nil;
+	for(char i = 0; i<kFrameLastTimes; i++) {
+		mFrameLastTimes[i] = (float)i;
+	}
+	mFrameRate = 0.f;
+	mFrameCounter = 0;
 }
 
 SCUserView::~SCUserView()
@@ -4155,6 +4160,17 @@ void SCUserView::draw(SCRect inDamage)
 	
 	if( bounds.width <= 0 || bounds.height <= 0) 
 		return;
+	
+	mFrameRate = 0.f;
+	for(char i = 1; i<kFrameLastTimes; i++) {
+		mFrameRate = mFrameRate+(mFrameLastTimes[i]-mFrameLastTimes[i-1]);
+		mFrameLastTimes[i-1]= mFrameLastTimes[i];
+	}
+	mFrameRate = 1.f/(mFrameRate/(kFrameLastTimes-1));
+	mFrameCounter++;
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	mFrameLastTimes[kFrameLastTimes-1] = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 	
 	if( !mClearOnRefresh )
 	{
@@ -4416,6 +4432,15 @@ int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		mDrawingEnabled = IsTrue(slot);
 		return errNone;
 	}
+	if (strcmp(name, "animate")==0) {
+		if (IsTrue(slot)) {
+			startAnimation();
+		} else {
+			stopAnimation();
+		}
+		return errNone;
+	}
+	
     return SCView::setProperty(symbol, slot);
 }
 
@@ -4432,7 +4457,14 @@ int SCUserView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 		}
 		return errNone;
     }
-
+	if (strcmp(name, "frame")==0) {
+		SetInt(slot, mFrameCounter);
+		return errNone;
+	}
+	if (strcmp(name, "frameRate")==0) {
+		SetFloat(slot, mFrameRate);
+		return errNone;
+	}
 
     return SCView::getProperty(symbol, slot);
 }
@@ -4444,78 +4476,6 @@ void SCUserView::refreshInRect(SCRect b)
 		b.y += mLayout.bounds.y;
 	}
 	SCView::refreshInRect(b);
-}
-
-
-////////////////////////////////////////////////
-
-SCView* NewSCAnimationView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-{
-	return new SCAnimationView(inParent, inObj, inBounds);
-}
-
-SCAnimationView::SCAnimationView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-: SCUserView(inParent, inObj, inBounds)
-{
-	mStringColor = SCMakeColor(0,1,0,1);
-	strcpy(mFontName, "Helvetica");
-	mFontSize = 10.;
-	mClearOnRefresh = true;
-	mRelativeOrigin = false;
-	mDrawingEnabled = true;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	mNSImageForLayering =  NULL;
-#endif
-	mShowInfo = false;
-	for(int i = 0; i<kLastTimes; i++) {
-		mLastTimes[i] = 0.;
-	}
-	mAverageRate = 0.;
-	mCounter = 0;
-	startAnimation();
-}
-
-SCAnimationView::~SCAnimationView()
-{
-	stopAnimation();
-}
-
-void SCAnimationView::draw(SCRect inDamage)
-{
-	SCUserView::draw(inDamage);
-
-	if(mShowInfo && mDrawingEnabled) {
-		struct timeval tv;
-		gettimeofday(&tv, 0);
-		mLastTimes[mCounter] = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
-		if(mCounter%kLastTimes==(kLastTimes-1)) {
-			mCounter = 0;
-			mAverageRate = 0.;
-			for(int i = 0; i<(kLastTimes-1); i++) {
-				mAverageRate = mAverageRate+(mLastTimes[i+1]-mLastTimes[i]);
-			}
-			mAverageRate = 1./(mAverageRate/(kLastTimes-1));
-		} else {
-			mCounter++;
-		}
-		NSString* showInfoString = [NSString stringWithFormat: @"%f", mAverageRate];
-		NSSize size;
-		SCRect showInfoRect;
-		SCRect bounds = getDrawBounds();
-		showInfoRect = SCMakeRect(bounds.x+2, bounds.y+2, 30, 11);
-		nsStringDrawInRectAlign(showInfoString, showInfoRect, mFontName, mFontSize, mStringColor, kSCAlignLeft, -1, &size);
-	}
-}
-
-int SCAnimationView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
-{
-	char *name = symbol->name;
-
-	if(strcmp(name, "showInfo")==0) {
-		mShowInfo = IsTrue(slot);
-		return errNone;
-	}
-	return SCUserView::setProperty(symbol, slot);
 }
 
 
@@ -6709,7 +6669,6 @@ void registerSCViewClasses()
     new SCViewMaker("SCDragSink", NewSCDragSink);
     new SCViewMaker("SCDragBoth", NewSCDragBoth);
     new SCViewMaker("SCUserView", NewSCUserView);
-	new SCViewMaker("SCAnimationView", NewSCAnimationView);
     new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
     new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
     new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
