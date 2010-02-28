@@ -61,6 +61,21 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if SC_DARWIN
+# if (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > 1050)
+
+void* gstate_update_func(void* arg)
+{
+	KeyboardUGenGlobalState* gstate = &gKeyStateGlobals;
+	for (;;) {
+		Point p;
+		GetKeys((BigEndianUInt32*)gstate->keys);
+		usleep(17000);
+	}
+    
+	return 0;
+}
+
+#else
 
 void* gstate_update_func(void* arg)
 {
@@ -73,6 +88,8 @@ void* gstate_update_func(void* arg)
 
 	return 0;
 }
+
+#endif
 
 #elif defined(SC_WIN32)
 
