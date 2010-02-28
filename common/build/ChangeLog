@@ -29,6 +29,7 @@ Headlines:
 * 2010-01-24 enable GPL3 code by default - this 'upgrades' the overall binary license from GPL2+ to GPL3+, and allows supercollider to benefit from GPL3+ libraries such as libsimdmath and gnu readline  - ds
 * 2010-02-04 Improvements to SC.app editor: Split pane documents, AutoInOutdent - sw
 * 2010-02-18 scvim: now compatible with gnu screen, opens post window using screen, making it compatible with a pure-CLI environment - ds
+* 2010-02-xx - add the Deployment32-64 build style for building on OS X (10.5 and greater) jp
 
 Bugfixes:
 ---------
@@ -62,6 +63,7 @@ Bugfixes:
 * 2010-02-05 scsynth now respects the -D commandline option when running in NRT mode - ds
 * 2010-02-11 Fix for nowExecutingPath with Routines - sw
 * 2010-02-23 Performance fixes for SCUserView - sw
+* 2010-02-25 Fix interpolation / indexing problem in VDiskIn that caused slight pitch fluctuations - jp
 
 Other additions/improvements:
 -----------------------------
