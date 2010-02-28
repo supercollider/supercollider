@@ -98,7 +98,7 @@ SCTextField : SCStaticTextBase {
 
 }
 
-SCNumberBox2 : SCTextField {
+SCNumberBox : SCTextField {
 
 	//var <> keyString,
 	var <>step=1, <>scroll_step=1;

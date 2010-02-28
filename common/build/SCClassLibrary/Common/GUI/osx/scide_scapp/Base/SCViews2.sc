@@ -1,8 +1,8 @@
 
 
-SCTextFieldOld : SCNumberBox {
+SCTextFieldOld : SCNumberBoxOld {
 
-	*viewClass { ^SCNumberBox }
+	*viewClass { ^SCNumberBoxOld }
 
 	defaultKeyDownAction { arg key, modifiers, unicode;
 		if(unicode == 0,{ ^this });

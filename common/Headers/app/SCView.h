@@ -855,11 +855,11 @@ protected:
 };
 SCView* NewSCStaticText(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
-class SCNumberBox : public SCStaticText
+class SCNumberBoxOld : public SCStaticText
 {
 public:
-	SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-	virtual ~SCNumberBox();
+	SCNumberBoxOld(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+	virtual ~SCNumberBoxOld();
 
 	virtual void draw(SCRect inDamage);
 	virtual bool shouldDim();
@@ -873,7 +873,7 @@ public:
 	virtual bool canReceiveDrag();
 	virtual void receiveDrag();
 };
-SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+SCView* NewSCNumberBoxOld(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 class SCDragSource : public SCStaticText
 {
