@@ -53,7 +53,6 @@ CocoaGUI {
 	*numberBox { ^SCNumberBox }
 	*textField { ^SCTextField }
 	*userView { ^SCUserView }
-	*animationView { ^SCAnimationView }
 	*multiSliderView { ^SCMultiSliderView }
 	*envelopeView { ^SCEnvelopeView }
 	*tabletView { ^SCTabletView }
