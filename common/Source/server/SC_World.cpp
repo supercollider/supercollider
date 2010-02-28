@@ -254,7 +254,7 @@ void World_LoadGraphDefs(World* world)
 
 	if(getenv("SC_SYNTHDEF_PATH")){
 		if(world->mVerbosity > 0)
-			printf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
+			scprintf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
 		SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), SC_STRPARSE_PATHDELIMITER);
 		while (!sp.AtEnd()) {
 			GraphDef *list = 0;
@@ -270,7 +270,7 @@ void World_LoadGraphDefs(World* world)
 			sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
 		sc_AppendToPath(resourceDir, "synthdefs");
 		if(world->mVerbosity > 0)
-			printf("Loading synthdefs from default path: %s\n", resourceDir);
+			scprintf("Loading synthdefs from default path: %s\n", resourceDir);
 		list = GraphDef_LoadDir(world, resourceDir, list);
 		GraphDef_Define(world, list);
 	}
@@ -288,19 +288,19 @@ World* World_New(WorldOptions *inOptions)
 
 		int failure = getrlimit(RLIMIT_MEMLOCK, &limit);
 		if (failure)
-			printf("getrlimit failure\n");
+			scprintf("getrlimit failure\n");
 		else
 		{
 			if (limit.rlim_cur == RLIM_INFINITY and
 				limit.rlim_max == RLIM_INFINITY)
 				lock_memory = true;
 			else
-				printf("memory locking disabled due to resource limiting\n");
+				scprintf("memory locking disabled due to resource limiting\n");
 
 			if (lock_memory)
 			{
 				if (mlockall(MCL_FUTURE) != -1)
-					printf("memory locking enabled.\n");
+					scprintf("memory locking enabled.\n");
 			}
 		}
 	}

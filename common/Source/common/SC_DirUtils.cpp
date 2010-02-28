@@ -544,16 +544,16 @@ bool downloadToFp(FILE* fp, const char* mFilename){
 	char* errstr = (char*)malloc(CURL_ERROR_SIZE);
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
 	if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
-		printf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
+		scprintf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
 		success = false;
 	}
 	if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
-		printf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
+		scprintf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
 		success = false;
 	}
 	//printf("Loading remote file %s...\n", mFilename);
 	if((ret = curl_easy_perform(curl)) != 0){
-		printf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
+		scprintf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
 		success = false;
 	//}else{
 	//	printf("...done.\n");
