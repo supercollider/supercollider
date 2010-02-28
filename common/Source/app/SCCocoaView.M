@@ -2627,23 +2627,23 @@ void SCTextField::beginDrag(SCPoint where)
 }
 
 ////////////////////
-SCView* NewSCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
-	return new SCNumberBox2(inParent, inObj, inBounds);
+	return new SCNumberBox(inParent, inObj, inBounds);
 }
 
-SCNumberBox2::SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+SCNumberBox::SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 : SCTextField(inParent, inObj, inBounds)
 //: SCStaticText(inParent, inObj, inBounds)
 {
 	[mTextField addNumberFormatter];
 }
 
-SCNumberBox2::~SCNumberBox2()
+SCNumberBox::~SCNumberBox()
 {
 }
 
-int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	int err;
 	char *name = symbol->name;
@@ -2675,7 +2675,7 @@ int SCNumberBox2::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCTextField::setProperty(symbol, slot);
 }
 
-int SCNumberBox2::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+int SCNumberBox::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
 
@@ -2688,7 +2688,7 @@ int SCNumberBox2::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	return SCTextField::getProperty(symbol, slot);
 }
 
-void SCNumberBox2::keyDown(int character, int modifiers, unsigned short keycode)
+void SCNumberBox::keyDown(int character, int modifiers, unsigned short keycode)
 {
 	// test for arrows enter and return
 	if([mTextField editingInactive] && (character == 63232 || character == 63233 || character == 63234 || character == 63235 || character == 3 || character == 13)){

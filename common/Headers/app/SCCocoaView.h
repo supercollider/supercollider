@@ -186,11 +186,11 @@ protected:
 	SCColor mStringColor;
 };
 
-class SCNumberBox2 : public SCTextField
+class SCNumberBox : public SCTextField
 {
 public:
-	SCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-	virtual ~SCNumberBox2();
+	SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+	virtual ~SCNumberBox();
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void keyDown(int character, int modifiers, unsigned short keycode);

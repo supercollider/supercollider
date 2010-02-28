@@ -6302,12 +6302,12 @@ void SCEnvelopeView::receiveDrag()
 
 ////////////////////////////////////////////////
 
-SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+SCView* NewSCNumberBoxOld(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
-	return new SCNumberBox(inParent, inObj, inBounds);
+	return new SCNumberBoxOld(inParent, inObj, inBounds);
 }
 
-SCNumberBox::SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+SCNumberBoxOld::SCNumberBoxOld(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 	: SCStaticText(inParent, inObj, inBounds)
 {
         mBackground = new SolidColorBackground(SCMakeColor(1.0,1.0,1.0, 1.0)); // default is white
@@ -6315,16 +6315,16 @@ SCNumberBox::SCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inB
         mCanFocus = true;
 }
 
-SCNumberBox::~SCNumberBox()
+SCNumberBoxOld::~SCNumberBoxOld()
 {
 }
 
-bool SCNumberBox::shouldDim()
+bool SCNumberBoxOld::shouldDim()
 {
     return true;
 }
 
-void SCNumberBox::draw(SCRect inDamage)
+void SCNumberBoxOld::draw(SCRect inDamage)
 {
 	SCView::draw(inDamage);
    	SCRect bounds = getDrawBounds();
@@ -6345,7 +6345,7 @@ void SCNumberBox::draw(SCRect inDamage)
     drawString(sbounds);
 }
 
-//int SCNumberBox::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+//int SCNumberBoxOld::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 //{
 //	int err;
 //	char *name = symbol->name;
@@ -6358,14 +6358,14 @@ void SCNumberBox::draw(SCRect inDamage)
 //       return SCStaticText::setProperty(symbol, slot);
 //}
 
-void SCNumberBox::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+void SCNumberBoxOld::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 {
     if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     }
 }
 
-//int SCNumberBox::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+//int SCNumberBoxOld::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 //{
 //	char *name = symbol->name;
 // 	if (strcmp(name, "boxColor")==0) {
@@ -6374,14 +6374,14 @@ void SCNumberBox::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 //        return SCStaticText::getProperty(symbol, slot);
 //}
 
-bool SCNumberBox::canReceiveDrag()
+bool SCNumberBoxOld::canReceiveDrag()
 {
     PyrSlot result;
     sendMessage(s_canReceiveDrag, 0, 0, &result);
     return IsTrue(&result);
 }
 
-void SCNumberBox::receiveDrag()
+void SCNumberBoxOld::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
@@ -6646,7 +6646,7 @@ extern SCView* NewSCCocoaTextView(SCContainerView *inParent, PyrObject* inObj, S
 extern SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCQuartzComposerView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
-extern SCView* NewSCNumberBox2(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+extern SCView* NewSCNumberBox(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 extern SCView* NewSCLevelIndicator(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 void registerSCViewClasses()
@@ -6664,7 +6664,7 @@ void registerSCViewClasses()
     new SCViewMaker("SC2DTabletSlider", NewSC2DTabletSlider);
     new SCViewMaker("SCButton", NewSCButton);
     new SCViewMaker("SCStaticText", NewSCStaticText);
-    new SCViewMaker("SCNumberBox", NewSCNumberBox);
+    new SCViewMaker("SCNumberBoxOld", NewSCNumberBoxOld);
     new SCViewMaker("SCDragSource", NewSCDragSource);
     new SCViewMaker("SCDragSink", NewSCDragSink);
     new SCViewMaker("SCDragBoth", NewSCDragBoth);
@@ -6681,7 +6681,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCMovieView", NewSCMovieView);
 	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
     new SCViewMaker("SCTextField", NewSCTextField);
-	new SCViewMaker("SCNumberBox2", NewSCNumberBox2);
+	new SCViewMaker("SCNumberBox", NewSCNumberBox);
 	new SCViewMaker("SCScrollTopView", NewSCScrollTopView);
 	new SCViewMaker("SCScrollView", NewSCScrollView);
 	new SCViewMaker("SCLevelIndicator", NewSCLevelIndicator);

@@ -1074,7 +1074,7 @@ SCStaticText : SCStaticTextBase {
 }
 
 
-SCNumberBox : SCStaticTextBase {
+SCNumberBoxOld : SCStaticTextBase {
 	var <> keyString, <>step=1, <>scroll_step=1;
 	var <>typingColor, <>normalColor;
 	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true;
