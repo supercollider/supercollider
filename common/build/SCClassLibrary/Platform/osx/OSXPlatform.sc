@@ -51,5 +51,14 @@ OSXPlatform : UnixPlatform
 		_Cocoa_HelpFileForString_
 		^this.primitiveFailed
 	}
+	
+	getMouseCoords {
+		^this.prGetMouseCoords(Point.new);
+	}
+	
+	prGetMouseCoords {|point|
+		_Mouse_getCoords
+		^this.primitiveFailed
+	}
 }
 
