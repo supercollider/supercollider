@@ -132,8 +132,22 @@ protected:
 	double mSampleRate;
 
     // Driver interface methods, implemented by subclasses
+	/**
+	* DriverSetup() should init the driver and write the num of samples per callback
+	* and the sample rate into the two addresses supplied as arguments.
+	* The driver will have access to the "preferred" values of these two args 
+	* (mPreferredHardwareBufferFrameSize, mPreferredSampleRate) and ideally should follow them.
+	* This method should open the resources (and return true if successful), but shouldn't
+	* really start the streaming (this is the responsibility of DriverStart()).
+	*/
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) = 0;
+	/**
+	* Start the audio streaming. Return true iff successful.
+	*/
 	virtual bool DriverStart() = 0;
+	/**
+	* Stop the audio streaming. Return true iff successful.
+	*/
 	virtual bool DriverStop() = 0;
 
 public:
