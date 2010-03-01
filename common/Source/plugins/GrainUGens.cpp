@@ -1090,8 +1090,8 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 
 		if (!bufData) {
 			grain->counter -= inNumSamples;
-			GrainBuf_grain_cleanup(unit, grain);
-			++i;
+			if (!GrainBuf_grain_cleanup(unit, grain))
+                ++i;
 			continue;
 		}
 
@@ -1113,13 +1113,6 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 			GRAIN_BUF_PLAY_GRAIN(INTERNAL);
 		else
 			GRAIN_BUF_PLAY_GRAIN(CUSTOM);
-
-
-		if (grain->counter <= 0) {
-			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
-			continue;
-		}
-		++i;
 
 		if (GrainBuf_grain_cleanup(unit, grain))
 			continue;
