@@ -36,7 +36,8 @@ static InterfaceTable *ft;
 
 struct KeyboardUGenGlobalState {
 #if SC_DARWIN
-	uint8 keys[16];
+//	uint8 keys[16];
+	KeyMap keys;
 #else
 	uint8 keys[32];
 #endif
@@ -61,35 +62,18 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if SC_DARWIN
-# if (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > 1050)
 
 void* gstate_update_func(void* arg)
 {
 	KeyboardUGenGlobalState* gstate = &gKeyStateGlobals;
 	for (;;) {
 		Point p;
-		GetKeys((BigEndianUInt32*)gstate->keys);
+		GetKeys(gstate->keys);
 		usleep(17000);
 	}
     
 	return 0;
 }
-
-#else
-
-void* gstate_update_func(void* arg)
-{
-	KeyboardUGenGlobalState* gstate = &gKeyStateGlobals;
-	for (;;) {
-		Point p;
-		GetKeys((BigEndianLong*)gstate->keys);
-		usleep(17000);
-	}
-
-	return 0;
-}
-
-#endif
 
 #elif defined(SC_WIN32)
 
@@ -140,7 +124,7 @@ void* gstate_update_func(void* arg)
 void KeyState_next(KeyState *unit, int inNumSamples)
 {
 	// minval, maxval, warp, lag
-	uint8 *keys = unit->gstate->keys;
+	uint8 *keys = (uint8*)unit->gstate->keys;
 	int keynum = (int)ZIN0(0);
 #if SC_DARWIN
 	int byte = (keynum >> 3) & 15;
