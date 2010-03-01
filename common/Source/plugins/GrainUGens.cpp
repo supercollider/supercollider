@@ -101,7 +101,6 @@ struct GrainBuf : public Unit
 {
 	int mNumActive, m_channels, mMaxGrains;
 	float curtrig;
-	bool mFirst;
 	GrainBufG *mGrains;
 };
 
@@ -1189,15 +1188,9 @@ void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 	}
 }
 
-void GrainBuf_next_k(GrainBuf *unit, int inNumSamples)
+void GrainBuf_next_k(GrainBuf * unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
-	if(unit->mFirst){
-		unit->mFirst = false;
-		float maxGrains = IN0(8);
-		unit->mMaxGrains = (int)maxGrains;
-		unit->mGrains = (GrainBufG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainBufG));
-	}
 
 	GrainBuf_next_play_active(unit, inNumSamples);
 
@@ -1213,9 +1206,14 @@ void GrainBuf_Ctor(GrainBuf *unit)
 		SETCALC(GrainBuf_next_a);
 	else
 		SETCALC(GrainBuf_next_k);
+
 	unit->mNumActive = 0;
 	unit->curtrig = 0.f;
-	unit->mFirst = true;
+
+	float maxGrains = IN0(8);
+	unit->mMaxGrains = (int)maxGrains;
+	unit->mGrains = (GrainBufG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainBufG));
+
 	GrainBuf_next_k(unit, 1); // should be _k
 }
 
