@@ -999,6 +999,16 @@ void GrainFM_Dtor(GrainFM *unit)
 		out1[j] += outval * pan1; \
 		if(numOutputs > 1) out2[j] += outval * pan2; \
 
+static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
+{
+	if (grain->counter <= 0)
+	{
+		*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+		return true;
+	}
+	else
+		return false;
+}
 
 inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 {
@@ -1010,12 +1020,14 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 		uint32 bufnum = grain->bufnum;
 
 		GRAIN_BUF
-		CHECK_BUF
 
-		if (bufChannels != 1) {
-			 ++i;
-			 continue;
+		if (!bufData) {
+			grain->counter -= inNumSamples;
+			GrainBuf_grain_cleanup(unit, grain);
+			++i;
+			continue;
 		}
+
 		double loopMax = (double)bufFrames;
 		double rate = grain->rate;
 		double phase = grain->phase;
@@ -1049,14 +1061,13 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 			}
 		}
 
+		if (GrainBuf_grain_cleanup(unit, grain))
+			continue;
+		++i;
+
 		grain->phase = phase;
 
 		SAVE_GRAIN_AMP_PARAMS
-
-		if (grain->counter <= 0)
-			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
-		else
-			++i;
 	}
 }
 
@@ -1081,10 +1092,11 @@ inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int positi
 	grain->bufnum = bufnum;
 
 	GRAIN_BUF
-	CHECK_BUF
 
-	if (bufChannels != 1)
+	if ( (bufChannels != 1) || (!bufData) ) {
+		GrainBuf_grain_cleanup(unit, grain);
 		return;
+	}
 
 	float bufSampleRate = buf->samplerate;
 	float bufRateScale = bufSampleRate * SAMPLEDUR;
@@ -1135,8 +1147,7 @@ inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int positi
 
 	SAVE_GRAIN_AMP_PARAMS
 
-	if (grain->counter <= 0)
-		*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+	GrainBuf_grain_cleanup(unit, grain);
 }
 
 
