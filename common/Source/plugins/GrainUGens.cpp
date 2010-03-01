@@ -950,7 +950,7 @@ void GrainFM_Dtor(GrainFM *unit)
 	RTFree(unit->mWorld, unit->mGrains);
 }
 
-#define GRAIN_BUF_LOOP_BODY_4 \
+#define GRAIN_BUF_LOOP_BODY_4_MONO \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase; \
@@ -967,16 +967,19 @@ void GrainFM_Dtor(GrainFM *unit)
 				table3 -= bufSamples; \
 			} \
 		} \
-		double fracphase = phase - (double)iphase; \
+		float fracphase = phase - (double)iphase; \
 		float a = table0[0]; \
 		float b = table1[0]; \
 		float c = table2[0]; \
 		float d = table3[0]; \
 		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
 		out1[j] += outval * pan1; \
-		if(numOutputs > 1) out2[j] += outval * pan2; \
 
-#define GRAIN_BUF_LOOP_BODY_2 \
+#define GRAIN_BUF_LOOP_BODY_4_STEREO \
+		GRAIN_BUF_LOOP_BODY_4_MONO \
+		out2[j] += outval * pan2;
+
+#define GRAIN_BUF_LOOP_BODY_2_MONO \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase; \
@@ -984,20 +987,71 @@ void GrainFM_Dtor(GrainFM *unit)
 		if (iphase > guardFrame) { \
 			table2 -= bufSamples; \
 		} \
-		double fracphase = phase - (double)iphase; \
+		float fracphase = phase - (double)iphase; \
 		float b = table1[0]; \
 		float c = table2[0]; \
 		float outval = amp * (b + fracphase * (c - b)); \
 		out1[j] += outval * pan1; \
-		if(numOutputs > 1) out2[j] += outval * pan2; \
 
+#define GRAIN_BUF_LOOP_BODY_2_STEREO \
+		GRAIN_BUF_LOOP_BODY_2_MONO \
+		out2[j] += outval * pan2;
 
-#define GRAIN_BUF_LOOP_BODY_1 \
+#define GRAIN_BUF_LOOP_BODY_1_MONO \
 		phase = sc_gloop(phase, loopMax); \
 		int32 iphase = (int32)phase; \
 		float outval = amp * bufData[iphase]; \
-		out1[j] += outval * pan1; \
-		if(numOutputs > 1) out2[j] += outval * pan2; \
+		out1[j] += outval * pan1;
+
+#define GRAIN_BUF_LOOP_BODY_1_STEREO \
+		GRAIN_BUF_LOOP_BODY_1_MONO \
+		out2[j] += outval * pan2;
+
+
+#define GRAIN_BUF_PLAY_GRAIN \
+	int nsmps = sc_min(grain->counter, inNumSamples); \
+	if (numOutputs == 1) \
+	{ \
+		if (grain->interp >= 4) { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_4_MONO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} else if (grain->interp >= 2) { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_2_MONO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} else { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_1_MONO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} \
+	} else { \
+		if (grain->interp >= 4) { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_4_STEREO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} else if (grain->interp >= 2) { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_2_STEREO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} else { \
+			for (int j=0; j<nsmps; j++) { \
+				GRAIN_BUF_LOOP_BODY_1_STEREO \
+				CALC_NEXT_GRAIN_AMP \
+				phase += rate; \
+			} \
+		} \
+	} \
 
 static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
 {
@@ -1040,26 +1094,14 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 		float *out2;
 		GET_PAN_PARAMS
 		// end add //
-		int nsmps = sc_min(grain->counter, inNumSamples);
-		if (grain->interp >= 4) {
-			for (int j=0; j<nsmps; j++) {
-				GRAIN_BUF_LOOP_BODY_4
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
-		} else if (grain->interp >= 2) {
-			for (int j=0; j<nsmps; j++) {
-				GRAIN_BUF_LOOP_BODY_2
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
-		} else {
-			for (int j=0; j<nsmps; j++) {
-				GRAIN_BUF_LOOP_BODY_1
-				CALC_NEXT_GRAIN_AMP
-				phase += rate;
-			}
+		GRAIN_BUF_PLAY_GRAIN
+
+
+		if (grain->counter <= 0) {
+			*grain = unit->mGrains[--unit->mNumActive]; // remove grain
+			continue;
 		}
+		++i;
 
 		if (GrainBuf_grain_cleanup(unit, grain))
 			continue;
@@ -1122,26 +1164,8 @@ inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int positi
 	WRAP_CHAN(position)
 
 	// end add //
-	int nsmps = sc_min(grain->counter, inNumSamples - position);
-	if (grain->interp >= 4) {
-		for (int j=0; j<nsmps; ++j) {
-			GRAIN_BUF_LOOP_BODY_4
-			CALC_NEXT_GRAIN_AMP
-			phase += rate;
-		}
-	} else if (grain->interp >= 2) {
-		for (int j=0; j<nsmps; ++j) {
-			GRAIN_BUF_LOOP_BODY_2
-			CALC_NEXT_GRAIN_AMP
-			phase += rate;
-		}
-	} else {
-		for (int j=0; j<nsmps; ++j) {
-			GRAIN_BUF_LOOP_BODY_1
-			CALC_NEXT_GRAIN_AMP
-			phase += rate;
-		}
-	}
+
+	GRAIN_BUF_PLAY_GRAIN
 
 	grain->phase = phase;
 
