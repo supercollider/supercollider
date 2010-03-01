@@ -758,7 +758,7 @@ void PyrGC::Finalize(PyrObject *finalizer)
 	if (!IsPtr(finalizer->slots+0)) return;
 	if (!IsObj(finalizer->slots+1)) return;
 
-	ObjFuncPtr func = (ObjFuncPtr)slotRawInt(&finalizer->slots[0]);
+	ObjFuncPtr func = (ObjFuncPtr)slotRawPtr(&finalizer->slots[0]);
 	PyrObject *obj = slotRawObject(&finalizer->slots[1]);
 	//post("FINALIZE %s %p\n", slotRawSymbol(&obj->classptr->name)->name, obj);
 	(func)(mVMGlobals, obj);
