@@ -411,13 +411,16 @@ inline double sc_gloop(double in, double hi)
 		winInc = grain->winInc = (double)windowSamples / counter;	\
 	}
 
-#define CALC_NEXT_GRAIN_AMP										\
-	if(grain->winType < 0.){									\
-		y0 = b1 * y1 - y2;										\
-		y2 = y1;												\
-		y1 = y0;												\
-		amp = y1 * y1;											\
-	} else {													\
+#define CALC_NEXT_GRAIN_AMP_INTERNAL						\
+	do {													\
+		y0 = b1 * y1 - y2;									\
+		y2 = y1;											\
+		y1 = y0;											\
+		amp = y1 * y1;										\
+	} while(0)
+
+#define CALC_NEXT_GRAIN_AMP_CUSTOM								\
+	do {														\
 		winPos += winInc;										\
 		int iWinPos = (int)winPos;								\
 		double winFrac = winPos - (double)iWinPos;				\
@@ -428,7 +431,16 @@ inline double sc_gloop(double in, double hi)
 		if (winPos > windowGuardFrame)							\
 			winTable2 -= windowSamples;							\
 		amp = lininterp(winFrac, winTable1[0], winTable2[0]);	\
-	}
+	} while (0);												\
+	if (!windowData)											\
+		break;													\
+
+#define CALC_NEXT_GRAIN_AMP									\
+	if(grain->winType < 0.)									\
+		CALC_NEXT_GRAIN_AMP_INTERNAL;						\
+	else													\
+		CALC_NEXT_GRAIN_AMP_CUSTOM;
+
 
 #define GET_GRAIN_AMP_PARAMS					\
 	if(grain->winType < 0.){					\
@@ -1007,50 +1019,52 @@ void GrainFM_Dtor(GrainFM *unit)
 		out2[j] += outval * pan2;
 
 
-#define GRAIN_BUF_PLAY_GRAIN \
-	int nsmps = sc_min(grain->counter, inNumSamples); \
-	if (numOutputs == 1) \
-	{ \
-		if (grain->interp >= 4) { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_4_MONO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
-			} \
-		} else if (grain->interp >= 2) { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_2_MONO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
-			} \
-		} else { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_1_MONO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
-			} \
-		} \
-	} else { \
-		if (grain->interp >= 4) { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_4_STEREO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
-			} \
-		} else if (grain->interp >= 2) { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_2_STEREO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
+#define GRAIN_BUF_PLAY_GRAIN(WINDOW) \
+	do {\
+		if (numOutputs == 1) \
+		{ \
+			if (grain->interp >= 4) { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_4_MONO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
+			} else if (grain->interp >= 2) { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_2_MONO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
+			} else { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_1_MONO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
 			} \
 		} else { \
-			for (int j=0; j<nsmps; j++) { \
-				GRAIN_BUF_LOOP_BODY_1_STEREO \
-				CALC_NEXT_GRAIN_AMP \
-				phase += rate; \
+			if (grain->interp >= 4) { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_4_STEREO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
+			} else if (grain->interp >= 2) { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_2_STEREO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
+			} else { \
+				for (int j=0; j<nsmps; j++) { \
+					GRAIN_BUF_LOOP_BODY_1_STEREO \
+					CALC_NEXT_GRAIN_AMP_##WINDOW; \
+					phase += rate; \
+				} \
 			} \
 		} \
-	} \
+	} while (0)
+
 
 static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
 {
@@ -1093,7 +1107,12 @@ inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 		float *out2;
 		GET_PAN_PARAMS
 		// end add //
-		GRAIN_BUF_PLAY_GRAIN
+		int nsmps = sc_min(grain->counter, inNumSamples);
+
+		if (grain->winType < 0.)
+			GRAIN_BUF_PLAY_GRAIN(INTERNAL);
+		else
+			GRAIN_BUF_PLAY_GRAIN(CUSTOM);
 
 
 		if (grain->counter <= 0) {
@@ -1164,7 +1183,12 @@ inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int positi
 
 	// end add //
 
-	GRAIN_BUF_PLAY_GRAIN
+	int nsmps = sc_min(grain->counter, inNumSamples);
+
+	if (grain->winType < 0.)
+		GRAIN_BUF_PLAY_GRAIN(INTERNAL);
+	else
+		GRAIN_BUF_PLAY_GRAIN(CUSTOM);
 
 	grain->phase = phase;
 
