@@ -816,7 +816,6 @@ protected:
 	SCPoint mRealtiveMousePoint;
 
 	NSImage* mNSImageForLayering; // offscreen image object 
-	NSGraphicsContext *mImageContext;
 	NSBitmapImageRep* mImageRep;
 	void mouseAction(PyrSymbol *method, SCPoint where, int modifiers);
 };

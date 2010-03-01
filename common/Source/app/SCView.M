@@ -239,15 +239,15 @@ int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
 	if (!isKindOfSlot(slot, class_array)) return errWrongType;
 
 	PyrSlot *slots = slotRawObject(slot)->slots;
-	PyrClass *classobj = classOfSlot(slots);
+	PyrClass *classobj = classOfSlot(slots + 0);
 	char *classname = slotRawSymbol(&classobj->name)->name;
-	if (strcmp(classname, "SCImage") == 0) {
+	if( strcmp(classname, "SCImage") == 0 ) 
+	{
 		int err;
 		SCImage *scImage;
-		PyrObject *obj = slotRawObject(slot);
-		PyrSlot *slots = obj->slots;
-
-		scImage = (SCImage *)slotRawObject(slotRawObject(slots)->slots); // Instace of Cocoa SCImage
+		PyrObject *obj = slotRawObject(slots + 0);
+		scImage = (SCImage *)slotRawPtr(obj->slots + 0); // Instance of Cocoa SCImage
+		
 		int tileMode;
 		err = slotIntVal(slots+1, &tileMode);
 		if (err) return err;
@@ -4122,7 +4122,6 @@ SCUserView::SCUserView(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 	mRelativeOrigin = false;
 	mDrawingEnabled = true;
 	mNSImageForLayering =  nil;
-	mImageContext = nil;
 	for(char i = 0; i<kFrameLastTimes; i++) {
 		mFrameLastTimes[i] = (float)i;
 	}
@@ -4134,8 +4133,6 @@ SCUserView::~SCUserView()
 {
 	if( mNSImageForLayering ) 
 		[ mNSImageForLayering release ];
-	if( mImageContext )
-		[ mImageContext release ];
 }
 
 
@@ -4144,6 +4141,9 @@ extern NSBitmapImageRep* BitmapContextRGBAWithImage(const int width, const int h
 
 void SCUserView::draw(SCRect inDamage)
 {
+	
+#define USE_BITMAPREP		0
+	
 	NSGraphicsContext	*lGCtx = NULL;
 	CGContextRef		mainGC = NULL;
 	SCRect				bounds = getDrawBounds();
@@ -4151,27 +4151,30 @@ void SCUserView::draw(SCRect inDamage)
 	
 	SCView::draw(bounds); // draw background
 	
-	lGCtx = [ NSGraphicsContext currentContext ];
+	lGCtx = [NSGraphicsContext currentContext];
+	mainGC = (CGContextRef)[lGCtx graphicsPort];
 	
-	void *focusStack;
-	
-	if( !mDrawingEnabled ) 
+	if( !mDrawingEnabled || !mainGC )
 		return;
 	
 	if( bounds.width <= 0 || bounds.height <= 0) 
 		return;
 	
 	mFrameRate = 0.f;
-	for(char i = 1; i<kFrameLastTimes; i++) {
-		mFrameRate = mFrameRate+(mFrameLastTimes[i]-mFrameLastTimes[i-1]);
-		mFrameLastTimes[i-1]= mFrameLastTimes[i];
+	for( uint8_t i = 1; i < kFrameLastTimes; ++i ) 
+	{
+		mFrameRate = mFrameRate + ( mFrameLastTimes[i] - mFrameLastTimes[i-1] );
+		mFrameLastTimes[i-1] = mFrameLastTimes[i];
 	}
-	mFrameRate = 1.f/(mFrameRate/(kFrameLastTimes-1));
-	mFrameCounter++;
+	
+	mFrameRate = 1.f / ( mFrameRate / (kFrameLastTimes-1) );
+	++mFrameCounter;
+	
 	struct timeval tv;
 	gettimeofday(&tv, 0);
 	mFrameLastTimes[kFrameLastTimes-1] = (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
 	
+	CGContextSaveGState( mainGC );
 	if( !mClearOnRefresh )
 	{
 		if(
@@ -4182,66 +4185,49 @@ void SCUserView::draw(SCRect inDamage)
 		{
 			if( mNSImageForLayering )
 				[ mNSImageForLayering release ];
-			if( mImageContext )
-				[ mImageContext release ];
-		
-			mImageRep = CreateBitmapContextRGBA((int)bounds.width, (int)bounds.height);
 			
-			if( ! mImageRep )
-			{
-				NSLog(@"Failed creating valid NSBitmapImageRep for SCUserView");
-				return;
-			}	
-			
-			[mImageRep autorelease];
 			mNSImageForLayering = [[NSImage alloc]initWithSize: *(NSSize*)&cgBounds.size];
+			[mNSImageForLayering setFlipped:YES]; // important to provide compatibility with SC flipped view
 			if( !mNSImageForLayering )
 			{
-				NSLog(@"Failed creating valid NSBitmapImageRep for SCUserView");
+				post( "Error: Failed creating valid NSBitmapImageRep for SCUserView" );
 				return;
 			}
 			
-			[ mNSImageForLayering addRepresentation: mImageRep];
-			mImageContext = [NSGraphicsContext graphicsContextWithBitmapImageRep: mImageRep ];
-			
-			if( !mImageContext )
+#if USE_BITMAPREP
+			mImageRep = CreateBitmapContextRGBA((int)bounds.width, (int)bounds.height);
+			if( !mImageRep )
+			{
+				post( "Error: Failed creating valid NSBitmapImageRep for SCUserView" );
 				return;
-			[ mImageContext retain ];
+			}
+			[mNSImageForLayering addRepresentation: mImageRep];
+			[mImageRep release];
+#else
+			[mNSImageForLayering setCacheMode: NSImageCacheBySize]; // should be also bitmap based
+#endif
 		}
+		[mNSImageForLayering lockFocus];
 		
-		[ NSGraphicsContext saveGraphicsState ];
-		
-		CGContextRef cgc = (CGContextRef)[ mImageContext graphicsPort ];
-
-		NSGraphicsContext *gclayer = [ NSGraphicsContext graphicsContextWithGraphicsPort:cgc flipped:YES ];
-		[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:mImageRep]];
 	}
 	else
 	{
-		mainGC = (CGContextRef)[ lGCtx graphicsPort ];
-		CGContextSaveGState( mainGC );
 		CGContextClipToRect( mainGC, cgBounds );
-		
-		CGContextTranslateCTM(mainGC, bounds.x, bounds.y);
-		
+		CGContextTranslateCTM( mainGC, cgBounds.origin.x, cgBounds.origin.y );
 	}
 	
     sendMessage(s_draw, 0, 0, 0);
 	
 	if( !mClearOnRefresh )
 	{	
-		//[mNSImageForLayering unlockFocus];
-		//CGContextEndTransparencyLayer( mNSImageForLayering );
-		[ NSGraphicsContext setCurrentContext: lGCtx ];
-		[ NSGraphicsContext restoreGraphicsState ];
-		//[ NSGraphicsContext setCurrentContext: lGCtx ];
-		
-		[ mNSImageForLayering drawAtPoint:*(NSPoint*)&cgBounds.origin fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.f ];
+		[mNSImageForLayering unlockFocus];
+		NSAffineTransform* trs = [NSAffineTransform transform];
+		[trs translateXBy:cgBounds.origin.x yBy:cgBounds.origin.y + cgBounds.size.height];
+		[trs scaleXBy:1.0 yBy:-1.0];
+		[trs concat];
+		[mNSImageForLayering drawAtPoint:NSZeroPoint fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1.f];
 	}
-	else
-	{
-		CGContextRestoreGState( mainGC );
-	}
+	CGContextRestoreGState( mainGC );
 }
 
 void SCUserView::clearDrawing()
