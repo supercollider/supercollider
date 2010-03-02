@@ -711,7 +711,7 @@ extern bool compiledOK;
 					   isKindOfSlot(slot, slotRawSymbol(&s_nsObject->u.classobj->superclass)->u.classobj)
 					) {
 						//NSLog(@"Slot is a NSObject");
-						retval = (id)slotRawInt(slotRawObject(slot)->slots);
+						retval = (id)slotRawPtr(slotRawObject(slot)->slots);
 					}
 					else if(isKindOfSlot(slot, class_string) || IsSym(slot)) {
 						//NSLog(@"Slot is a string");
@@ -1093,7 +1093,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				post("wrong type (SCNSObject) at arg: %i expected %c \n", i, *cType);
 				return errWrongType;
 			}
-			id val = (id) slotRawInt(slotRawObject(slot)->slots);
+			id val = (id) slotRawPtr(slotRawObject(slot)->slots);
 			[anInvocation setArgument: &val atIndex: i+2];
 		}
 		else if(IsFalse(slot)) {
@@ -1371,7 +1371,7 @@ static int nsinvocationSetArguments(PyrSlot* args, NSInvocation *anInvocation)
 				for(int j=0;  j<slotRawObject(slot)->size; j++)
 				{
 					PyrSlot * nsslot = slotRawObject(slot)->slots+j;
-					nsObjects[j] = (id) slotRawInt(slotRawObject(nsslot)->slots);
+					nsObjects[j] = (id) slotRawPtr(slotRawObject(nsslot)->slots);
 				}
 				if(!nsObjects) return errFailed;
 				[anInvocation setArgument: &nsObjects atIndex: i+2];
@@ -1543,7 +1543,7 @@ int prObjcSetActionForControl(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
     PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-	id objc = (id) slotRawInt(slotRawObject(a)->slots);
+	id objc = (id) slotRawPtr(slotRawObject(a)->slots);
 	if(!objc) return errFailed;
 	NSString * actionname = nsStringFromPyrSlot(c);
 	if([actionname length] < 1){  return errFailed; }
@@ -1579,7 +1579,7 @@ int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *a = g->sp - 2;
-	id objc = (id) slotRawInt(slotRawObject(a)->slots);
+	id objc = (id) slotRawPtr(slotRawObject(a)->slots);
 	id delegate = nil;
 	if(!objc) return errFailed;
 
@@ -1597,7 +1597,7 @@ int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 			return errNone;
 		}
 		else
-			delegate = (id) slotRawInt(slotRawObject(&slotRawObject(a)->slots[3])->slots); // some objects do not respond to
+			delegate = (id) slotRawPtr(slotRawObject(&slotRawObject(a)->slots[3])->slots); // some objects do not respond to
 		// setDelegate but do post notifications...
 	}
 
@@ -1608,7 +1608,7 @@ int prObjcRegisterNotification(struct VMGlobals *g, int numArgsPushed)
 		objc = nil;
 		post("Listening to Notifications from any Object.\n");
 	} else
-		objc = (id) slotRawInt(slotRawObject(c)->slots);
+		objc = (id) slotRawPtr(slotRawObject(c)->slots);
 
 	[[NSNotificationCenter defaultCenter] addObserver:delegate
 		selector:@selector(notificationReceived:)
@@ -1623,7 +1623,7 @@ int prObjcSetDelegate(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
     PyrSlot *b  = g->sp;
-	id objc = (id) slotRawInt(slotRawObject(a)->slots);
+	id objc = (id) slotRawPtr(slotRawObject(a)->slots);
 	if(!objc) {
 #pragma mark __TEST_CUSTOM_DELEGATE_
 			SCCocoaToLangAction *action = [[SCCocoaToLangAction alloc] init];
@@ -1698,7 +1698,7 @@ int prObjcSendMessage(struct VMGlobals *g, int numArgsPushed)
 //	bool hasArg = NotNil(args);
 //	bool isCollection = isKindOfSlot(args, class_array);
 
-	id newThing = (id) slotRawInt(slotRawObject(receiver)->slots);
+	id newThing = (id) slotRawPtr(slotRawObject(receiver)->slots);
 	if (!newThing) return errFailed;
 
 	NSString * nsinitname = nsStringFromPyrSlot(msgname);
@@ -1767,7 +1767,7 @@ int prObjcGetClassName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 //	PyrSlot *b  = g->sp;
-	id objc = (id) slotRawInt(slotRawObject(a)->slots);
+	id objc = (id) slotRawPtr(slotRawObject(a)->slots + 0);
 	if(!objc) return errFailed;
 	PyrString *pyrPathString = newPyrString(g->gc, [[objc className] UTF8String], 0, true);
 	SetObject(a, pyrPathString);
@@ -1790,7 +1790,7 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 	if(!isCollection) return errFailed;
 
     // must defer in case of large loads and gui
-	id newThing = (id) slotRawInt(slotRawObject(receiver)->slots);
+	id newThing = (id) slotRawPtr(slotRawObject(receiver)->slots);
     if (!newThing) {
 		post("ERROR: no valid NSObject to defer Invocation to !\n");
 		return errFailed;
@@ -1877,10 +1877,10 @@ int prObjcDealloc(struct VMGlobals *g, int numArgsPushed)
 
 	//id nsobj = (id)dataptr->ui;
 	// check retain count and return in case
-	id nsobj = (id)slotRawInt(slotRawObject(receiver)->slots);
+	id nsobj = (id)slotRawPtr(slotRawObject(receiver)->slots);
 	if(nsobj) {
 		COCOABRIDGE_OBJ_RELEASE(nsobj);
-		SetInt(slotRawObject(receiver)->slots, nil);
+		SetPtr(slotRawObject(receiver)->slots, 0);
 	}else
 		post("SCNSObject object pointer is nil\n");
 
@@ -1909,7 +1909,7 @@ int prObjcBundleAllocPrincipalClass(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *receiver = g->sp;
 
     // have to put them in a specific pool so they can be released on command
-	id bundle = (id) slotRawInt(slotRawObject(receiver)->slots);
+	id bundle = (id) slotRawPtr(slotRawObject(receiver)->slots);
     if (!bundle) return errFailed;
 	Class principalClass = [bundle principalClass];
 	NSObject * _bundleObject = NULL;
@@ -1940,7 +1940,7 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 
 	//lazy load of a bundle and its principla class as desciped by apple
 	NSString * nsclassname = nsStringFromPyrSlot(name);
-	id bundle = (id) slotRawInt(slotRawObject(receiver)->slots);
+	id bundle = (id) slotRawPtr(slotRawObject(receiver)->slots);
 	if (!bundle) return errFailed;
 	Class nsclass = NULL;
 	NSObject * newThing = NULL;
@@ -2015,7 +2015,7 @@ int prObjcNSStringToPyrString(struct VMGlobals *g, int numArgsPushed);
 int prObjcNSStringToPyrString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a  = g->sp; // the scns_object
-	id nsstring = (id)slotRawInt(slotRawObject(a)->slots);
+	id nsstring = (id)slotRawPtr(slotRawObject(a)->slots);
 	PyrString * pyrString;
 	NSString* className = [nsstring className];
 	if(
@@ -2042,7 +2042,7 @@ int prObjcIsSubclassOfNSClass(struct VMGlobals *g, int numArgsPushed)
 
 	Class objcclass = NSClassFromString(nsstr);
 	if(objcclass != nil) {
-		id obj = (id)slotRawInt(slotRawObject(a)->slots);
+		id obj = (id)slotRawPtr(slotRawObject(a)->slots);
 		if([obj isKindOfClass:objcclass]) {
 			SetTrue(a);
 			return errNone;
