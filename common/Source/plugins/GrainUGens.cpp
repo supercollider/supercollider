@@ -436,10 +436,11 @@ inline double sc_gloop(double in, double hi)
 		break;													\
 
 #define CALC_NEXT_GRAIN_AMP									\
-	if(grain->winType < 0.)									\
+	if(grain->winType < 0.) {								\
 		CALC_NEXT_GRAIN_AMP_INTERNAL;						\
-	else													\
-		CALC_NEXT_GRAIN_AMP_CUSTOM;
+	} else {												\
+		CALC_NEXT_GRAIN_AMP_CUSTOM;							\
+	}
 
 
 #define GET_GRAIN_AMP_PARAMS					\
