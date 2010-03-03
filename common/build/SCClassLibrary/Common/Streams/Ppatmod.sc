@@ -40,9 +40,9 @@ PlazyEnvirN : PlazyEnvir {
 				patterns = if(passEvent) { genFunc.valueEnvir(inval) } { genFunc.valueEnvir };
 			};
 			if(patterns.size > 1) {
-						Ppar(patterns).embedInStream(inval)
+				Ppar(patterns).embedInStream(inval)
 			} {
-						patterns.unbubble.embedInStream(inval)
+				patterns.unbubble.embedInStream(inval)
 			}
 		}
 	}
@@ -76,7 +76,7 @@ Ppatmod : Pattern {
 	}
 	embedInStream { arg inval;
 		var localPat;
-		localPat = pattern.value.copy;
+		localPat = pattern.value(inval).copy;
 		repeats.do({ arg i;
 			inval = localPat.embedInStream(inval);
 			localPat = func.value(localPat, i);
@@ -94,7 +94,7 @@ Peventmod : Pattern {
 	}
 	embedInStream { arg inval;
 		var localEvent = event.copy ?? { Event.default };
-		repeats.value.do { arg i;
+		repeats.value(inval).do { arg i;
 			if(inval.isNil) { ^nil.yield };
 			localEvent.use { func.valueEnvir(inval, i) };
 			inval = localEvent.yield;

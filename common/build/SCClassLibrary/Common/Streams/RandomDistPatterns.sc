@@ -1,22 +1,25 @@
 
-Plprand : Pattern {
-	*new { arg lo = 0.0, hi = 1.0, length = inf;
-		var pat = Pwhite(lo, hi, length);
-		^min(pat, pat)
+Plprand : Pwhite {
+	embedInStream { |inval|
+		var	localLength = length.value(inval),
+			pat = Pwhite(lo, hi, localLength);
+		^min(pat, pat).embedInStream(inval)
 	}
 }
 
-Phprand : Pattern {
-	*new { arg lo = 0.0, hi = 1.0, length = inf;
-		var pat = Pwhite(lo, hi, length);
-		^max(pat, pat)
+Phprand : Pwhite {
+	embedInStream { |inval|
+		var	localLength = length.value(inval),
+			pat = Pwhite(lo, hi, localLength);
+		^max(pat, pat).embedInStream(inval)
 	}
 }
 
-Pmeanrand : Pattern {
-	*new { arg lo = 0.0, hi = 1.0, length = inf;
-		var pat = Pwhite(lo, hi, length);
-		^pat + pat * 0.5
+Pmeanrand : Pwhite {
+	embedInStream { |inval|
+		var	localLength = length.value(inval),
+			pat = Pwhite(lo, hi, localLength);
+		^((pat + pat) * 0.5).embedInStream(inval)
 	}
 }
 
@@ -36,7 +39,7 @@ Pbeta : Pattern {
 		var prob2Str = prob2.asStream;
 		var loVal, hiVal;
 
-		length.do({
+		length.value(inval).do({
 			var sum = 2, temp, rprob1, rprob2;
 			rprob1 = prob1Str.next(inval);
 			rprob2 = prob2Str.next(inval);
@@ -49,10 +52,10 @@ Pbeta : Pattern {
 
 			while ({
 				temp = 1.0.rand ** rprob1;
-				sum = temp + (1.0.rand ** rprob2);					sum > 1;
-				});
+				sum = temp + (1.0.rand ** rprob2);
+				sum > 1;
+			});
 			inval = (((temp/sum) * (hiVal - loVal)) + loVal).yield;
-
 		});
 		^inval;
 	}
@@ -71,7 +74,7 @@ Pcauchy : Pattern {
 		var meanStr = mean.asStream;
 		var spreadStr = spread.asStream;
 		var meanVal, spreadVal;
-		length.do({
+		length.value(inval).do({
 			var ran = 0.5;
 			meanVal = meanStr.next(inval);
 			spreadVal = spreadStr.next(inval);
@@ -79,9 +82,9 @@ Pcauchy : Pattern {
 			while({
 				ran = 1.0.rand;
 				ran == 0.5
-				});
-			inval = ((spreadVal * (ran * pi).tan) + meanVal).yield;
 			});
+			inval = ((spreadVal * (ran * pi).tan) + meanVal).yield;
+		});
 		^inval;
 	}
 }
@@ -99,12 +102,12 @@ Pgauss : Pattern {
 		var meanStr = mean.asStream;
 		var devStr = dev.asStream;
 		var devVal, meanVal;
-		length.do({
+		length.value(inval).do({
 			devVal = devStr.next(inval);
 			meanVal = meanStr.next(inval);
 			if(meanVal.isNil or: { devVal.isNil }) { ^inval };
 			inval = ((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * devVal) + meanVal).yield;
-			});
+		});
 		^inval;
 	}
 }
@@ -118,7 +121,7 @@ Ppoisson : Pattern {
 	storeArgs{ ^[mean, length] }
 	embedInStream{ arg inval;
 		var meanStr = mean.asStream;
-		length.do({
+		length.value(inval).do({
 			var inc, test, temp, meanVal = meanStr.next(inval);
 			if(meanVal.isNil) { ^inval };
 			inc = 0;
@@ -129,9 +132,9 @@ Ppoisson : Pattern {
 				}, {
 				inc = inc + 1;
 				test = test * 1.0.rand;
-				});
-			inval = inc.yield;
 			});
+			inval = inc.yield;
+		});
 		^inval;
 	}
 }
@@ -145,7 +148,7 @@ Pexprand : Pwhite {
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
-		length.value.do({
+		length.value(inval).do({
 			hiVal = hiStr.next(inval);
 			loVal = loStr.next(inval);
 			if(hiVal.isNil or: { loVal.isNil }) { ^inval };

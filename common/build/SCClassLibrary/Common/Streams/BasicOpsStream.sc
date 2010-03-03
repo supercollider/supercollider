@@ -101,7 +101,5 @@ NAryOpStream : Stream {
 	reset { a.reset; arglist.do({ arg item; item.reset }) }
 
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
-
-
 }
 

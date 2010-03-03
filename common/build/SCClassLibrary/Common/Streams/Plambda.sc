@@ -75,7 +75,7 @@ Pget : Pattern {
 	embedInStream { arg inval;
 			var scope = inval[\eventScope], outval;
 			if(scope.isNil) { Error("no scope defined in event").throw };
-			repeats.value.do {
+			repeats.value(inval).do {
 				outval = scope[key] ? default;
 				if(outval.isNil) { ^inval };
 				outval.yield

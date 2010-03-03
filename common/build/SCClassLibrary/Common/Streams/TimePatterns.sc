@@ -13,7 +13,7 @@ Pstep : Pattern {
 		// endBeat > beats only if Pfindur ended something early
 		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;
 
-		repeats.do { | i |
+		repeats.value(inval).do { | i |
 			stream = Ptuple([list, durs]).asStream;
 			while (
 				{ #val, dur = stream.next(inval) ? [nil, nil];
@@ -44,35 +44,35 @@ Pseg : Pstep {
 		var valStream, durStream, curveStream, startVal, val, dur, curve;
 		var env;
 		var startTime, curTime;
-		repeats.do {
+		repeats.value(inval).do {
 			valStream = list.asStream;
 			durStream = durs.asStream;
 			curveStream = curves.asStream;
 			val = valStream.next(inval) ?? {^inval};
 			thisThread.endBeat = thisThread.endBeat ? thisThread.beats min: thisThread.beats;
-			while ({
+			while {
 				startVal = val;
 				val = valStream.next(inval);
 				dur = durStream.next(inval);
 				curve = curveStream.next(inval);
 				
-				val.notNil && dur.notNil && curve.notNil
-			}, {
+				val.notNil and: { dur.notNil and: { curve.notNil } }
+			} {
 				startTime = thisThread.endBeat;
 				thisThread.endBeat = thisThread.endBeat + dur;
 				if (startVal.isArray) {
 					env = [startVal,val, dur, curve].flop.collect { | args |
 						Env([args[0], args[1]], [args[2]], args[3]) };
-					while(
-						{ thisThread.endBeat > curTime = thisThread.beats },
-						{ inval = yield(env.collect{ | e | e.at(curTime - startTime)}) })
+					while { thisThread.endBeat > curTime = thisThread.beats } {
+						inval = yield(env.collect{ | e | e.at(curTime - startTime)})
+					}
 				} {
 					env = Env([startVal, val], [dur], curve);
-					while(
-						{ thisThread.endBeat > curTime = thisThread.beats },
-						{ inval = yield(env.at(curTime - startTime) ) })
+					while { thisThread.endBeat > curTime = thisThread.beats } {
+						inval = yield(env.at(curTime - startTime))
+					}
 				}
-			})
+			}
 		}
 	}
 	storeArgs {

@@ -57,12 +57,8 @@ Spawner : Pattern {
 
 			if (outevent.isNil, {
 				nexttime = priorityQ.topPriority;
-//				if (nexttime.notNil && (genStream != stream), {
 				if (nexttime.notNil, {
 					// that child stream ended, so rest until next one
-//					outevent = event.copy;
-//					outevent.put(\freq, \rest);
-//					outevent.put(\delta, nexttime - now);
 					outevent = Event.silent(nexttime - now, event);
 					event = outevent.yield;
 					now = nexttime;
@@ -83,20 +79,15 @@ Spawner : Pattern {
 		});
 		^event;
 	}
-
 }
 
 Pspawner : Prout {
-
 	asStream {
 		^Routine({ | ev | this.embedInStream(ev) })
 	}
 	embedInStream { | inevent, cleanup |
-
 		^Spawner(routineFunc).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new });
-
 	}
-
 }
 
 Pspawn : FilterPattern {
@@ -104,7 +95,7 @@ Pspawn : FilterPattern {
 
 	*new { |pattern, spawnProtoEvent|
 		^super.new(pattern)
-			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default/*.put(\type, \spawn)*/ });
+			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default });
 	}
 
 	embedInStream { |inevent, cleanup|

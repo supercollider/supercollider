@@ -67,8 +67,6 @@ Pfx : FilterPattern {
 			}
 		}
 	}
-
-
 }
 
 Pfxb : Pfx {
@@ -104,9 +102,8 @@ Pgroup : FilterPattern {
 		inevent = event.yield;
 
 		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
-//		^this.class.embedLoop(inevent, pattern.asStream, groupID, ingroup, cleanup);
 		stream = pattern.asStream;
-		 loop {
+		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
 			lag = max(lag, clock.beats + event.use { ~sustain.value });
 			inevent = event.yield;
@@ -117,13 +114,12 @@ Pgroup : FilterPattern {
 	*embedLoop { arg inevent, stream, groupID, ingroup, cleanup;
 		var event, lag;
 		 loop {
-			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };			lag = event[\dur];
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
+			lag = event[\dur];
 			inevent = event.yield;
 			inevent.put(\group, groupID);
 		}
 	}
-
-
 }
 
 Pbus : FilterPattern {
@@ -187,26 +183,16 @@ Pbus : FilterPattern {
 		// doneAction = 3;
 		// remove and deallocate both this synth and the preceeding node
 		// (which is the group).
-
 		inevent = event.yield;
 
 
 		// now embed the pattern
-
 		stream = Pchain(pattern, (group: groupID, out: bus)).asStream;
-
-
 		loop {
-
-
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
 			cleanup.update(event);
 			inevent = event.yield;
-
-
 		}
 	}
-
-
 }
 

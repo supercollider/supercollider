@@ -7,7 +7,7 @@ Pindex : Pattern {
 	embedInStream { arg inval;
 		var indexStream, index, item, itemCount;
 		var listStream = listPat.asStream;
-		repeats.do {
+		repeats.value(inval).do {
 			var list = listStream.next(inval);
 			if (list.isNil) { ^inval };
 			indexStream = indexPat.asStream;
@@ -52,14 +52,14 @@ Pseq : ListPattern {
 		var item, offsetValue;
 		offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
-			repeats.value.do({ arg j;
+			repeats.value(inval).do({ arg j;
 				list.size.reverseDo({ arg i;
 					item = list.wrapAt(i + offsetValue);
 					inval = item.embedInStream(inval);
 				});
 			});
 		},{
-			repeats.value.do({ arg j;
+			repeats.value(inval).do({ arg j;
 				list.size.do({ arg i;
 					item = list.wrapAt(i + offsetValue);
 					inval = item.embedInStream(inval);
@@ -76,12 +76,12 @@ Pser : Pseq {
 		var item;
 		var offsetValue = offset.value;
 		if (inval.eventAt('reverse') == true, {
-			repeats.value.reverseDo({ arg i;
+			repeats.value(inval).reverseDo({ arg i;
 				item = list.wrapAt(i + offsetValue);
 				inval = item.embedInStream(inval);
 			});
 		},{
-			repeats.value.do({ arg i;
+			repeats.value(inval).do({ arg i;
 				item = list.wrapAt(i + offsetValue);
 				inval = item.embedInStream(inval);
 			});
@@ -93,9 +93,9 @@ Pser : Pseq {
 Pshuf : ListPattern {
 	embedInStream { arg inval;
 		var item, stream;
-
 		var localList = list.copy.scramble;
-		repeats.value.do({ arg j;
+
+		repeats.value(inval).do({ arg j;
 			localList.size.do({ arg i;
 				item = localList.wrapAt(i);
 				inval = item.embedInStream(inval);
@@ -109,7 +109,7 @@ Prand : ListPattern {
 	embedInStream { arg inval;
 		var item;
 
-		repeats.value.do({ arg i;
+		repeats.value(inval).do({ arg i;
 			item = list.at(list.size.rand);
 			inval = item.embedInStream(inval);
 		});
@@ -121,7 +121,7 @@ Pxrand : ListPattern {
 	embedInStream { arg inval;
 		var item, size;
 		var index = list.size.rand;
-		repeats.value.do({ arg i;
+		repeats.value(inval).do({ arg i;
 			size = list.size;
 			index = (index + (size - 1).rand + 1) % size;
 			item = list.at(index);
@@ -139,7 +139,7 @@ Pwrand : ListPattern {
 	embedInStream {  arg inval;
 		var item, wVal;
 		var wStr = weights.asStream;
-		repeats.value.do({ arg i;
+		repeats.value(inval).do({ arg i;
 			wVal = wStr.next(inval);
 			if(wVal.isNil) { ^inval };
 			item = list.at(wVal.windex);
@@ -155,7 +155,7 @@ Pfsm : ListPattern {
 	embedInStream {  arg inval;
 		var item, index=0;
 		var maxState = ((list.size - 1) div: 2) - 1;
-		repeats.value.do({
+		repeats.value(inval).do({
 			index = 0;
 			while({
 				index = list.at(index).choose.clip(0, maxState) * 2 + 2;
@@ -170,14 +170,16 @@ Pfsm : ListPattern {
 }
 
 Pdfsm : ListPattern {
-	var >startState;
+	var <>startState;
 	*new { arg list, startState=0, repeats=1;
-		^super.new( list, repeats ).startState_(startState)	}
+		^super.new( list, repeats ).startState_(startState)
+	}
+
 	embedInStream { arg inval;
 		var currState, sigStream;
 		var sig, state, stream;
 		var numStates = list.size - 1;
-		repeats.value.do({
+		repeats.value(inval).do({
 
 			currState = startState;
 			sigStream = list[0].asStream;
@@ -223,9 +225,9 @@ Pswitch : Pattern {
 Pswitch1 : Pswitch {
 	embedInStream { arg inval;
 		var index, outval;
-
 		var streamList = list.collect({ arg pattern; pattern.asStream; });
 		var indexStream = which.asStream;
+
 		loop {
 			if ((index = indexStream.next(inval)).isNil) { ^inval };
 			outval = streamList.wrapAt(index.asInteger).next(inval);
@@ -235,35 +237,11 @@ Pswitch1 : Pswitch {
 	}
 }
 
-//Pswitch1 : Pattern {
-//	var <>list, <>which=0;
-//	*new { arg list, which=0;
-//		^super.new.list_(list).which_(which)
-//	}
-//
-//	asStream {
-//		var streamList, indexStream;
-//
-//		streamList = list.collect({ arg pattern; pattern.asStream; });
-//		indexStream = which.asStream;
-//
-//		^FuncStream.new({ arg inval;
-//			var index;
-//			if ((index = indexStream.next).notNil, {
-//				streamList.wrapAt(index.asInteger).next(inval);
-//			});
-//		},{
-//			streamList.do({ arg stream; stream.reset; });
-//		});
-//	}
-//	storeArgs { ^[ list, which ]  }
-//}
-
 Ptuple : ListPattern {
 	embedInStream {  arg inval;
 		var item, streams, tuple, outval;
 
-		repeats.value.do({ arg j;
+		repeats.value(inval).do({ arg j;
 			var sawNil = false;
 			streams = list.collect({ arg item; item.asStream });
 
@@ -286,10 +264,10 @@ Ptuple : ListPattern {
 Place : Pseq {
 	embedInStream {  arg inval;
 		var item;
-
 		var offsetValue = offset.value;
+
 		if (inval.eventAt('reverse') == true, {
-			repeats.value.do({ arg j;
+			repeats.value(inval).do({ arg j;
 				list.size.reverseDo({ arg i;
 					item = list.wrapAt(i + offsetValue);
 					if (item.isSequenceableCollection, {
@@ -299,7 +277,7 @@ Place : Pseq {
 				});
 			});
 		},{
-			repeats.value.do({ arg j;
+			repeats.value(inval).do({ arg j;
 				list.size.do({ arg i;
 					item = list.wrapAt(i + offsetValue);
 					if (item.isSequenceableCollection, {
@@ -319,24 +297,26 @@ Ppatlace : Pseq {
 		var	consecutiveNils = 0, index, repeat, item;
 		var streamList = list.collect({ |item| item.asStream });
 		var offsetValue = offset.value;
+		var localRepeats = repeats.value(inval);
+
 		index = repeat = 0;
-		{ (repeat < repeats) and: { consecutiveNils < list.size } }.while({
-			(inval.eventAt(\reverse) == true).if({
+		while { (repeat < localRepeats) and: { consecutiveNils < list.size } } {
+			if(inval.eventAt(\reverse) == true) {
 				item = streamList.wrapAt(offsetValue - index - 1);
-			}, {
+			} {
 				item = streamList.wrapAt(offsetValue + index);
-			});
-			(item = item.next(inval)).notNil.if({
+			};
+			if((item = item.next(inval)).notNil) {
 				consecutiveNils = 0;
 				inval = item.embedInStream(inval);
-			}, {
+			} {
 				consecutiveNils = consecutiveNils + 1;
-			});
-			((index = index + 1) == list.size).if({
+			};
+			if((index = index + 1) == list.size) {
 				index = 0;
 				repeat = repeat + 1;
-			});
-		});
+			};
+		};
 		^inval;
 	}
 }
@@ -355,33 +335,33 @@ Pslide : ListPattern {
 			.wrapAtEnd_(wrapAtEnd);
     }
     embedInStream { arg inval;
-	    	var item;
-	    	var pos = start;
-	    	var stepStr = step.asStream, stepVal;
-	    	var lenghtStr = len.asStream, lengthVal;
+    	var item;
+    	var pos = start;
+    	var stepStr = step.asStream, stepVal;
+    	var lengthStr = len.asStream, lengthVal;
 
-	   	repeats.value.do {
-				lengthVal = lenghtStr.next(inval);
-		    		if(lengthVal.isNil) { ^inval };
-				if(wrapAtEnd) {
-					lengthVal.do { |j|
-						item = list.wrapAt(pos + j);
+	   	repeats.value(inval).do {
+			lengthVal = lengthStr.next(inval);
+	    		if(lengthVal.isNil) { ^inval };
+			if(wrapAtEnd) {
+				lengthVal.do { |j|
+					item = list.wrapAt(pos + j);
+					inval = item.embedInStream(inval);
+				}
+
+			} {
+				lengthVal.do { |j|
+					item = list.at(pos + j);
+					if(item.notNil) {
 						inval = item.embedInStream(inval);
-					}
-
-				} {
-					lengthVal.do { |j|
-						item = list.at(pos + j);
-						if(item.notNil) {
-							inval = item.embedInStream(inval);
-						} {
-							^inval
-						};
-					}
-				};
-		    		stepVal = stepStr.next(inval);
-		    		if(stepVal.isNil) { ^inval };
-		    		pos = pos + stepVal;
+					} {
+						^inval
+					};
+				}
+			};
+    		stepVal = stepStr.next(inval);
+    		if(stepVal.isNil) { ^inval };
+    		pos = pos + stepVal;
 		};
 
 	     ^inval;
