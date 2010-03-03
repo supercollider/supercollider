@@ -1,6 +1,5 @@
 
 Penv : Env {
-
 	embedInStream { arg inval;
 		var startTime;
 		startTime = thisThread.endBeat ? thisThread.beats;
@@ -10,6 +9,4 @@ Penv : Env {
 			{ inval = yield(this.at(thisThread.beats - startTime))};
 		^inval
 	}
-
-
 }

@@ -12,22 +12,16 @@ Pfpar : ListPattern {
 		var priorityQ = PriorityQueue.new;
 		cleanup ?? { cleanup = EventStreamCleanup.new };
 
-		repeats.value.do({ arg j;
+		repeats.value(inval).do({ arg j;
 			var outval, stream, nexttime, now = 0.0;
 
 			this.initStreams(priorityQ);
 
 			// if first event not at time zero
 			if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }, {
-				outval = inval.copy;
-				outval.put(\freq, \rest);
-				outval.put(\delta, nexttime);
-
-				inval = outval.yield;
+				inval = Event.silent(nexttime, inval).yield;
 				now = nexttime;
 			});
-
-			//inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 
 			while({
 				priorityQ.notEmpty
@@ -52,7 +46,6 @@ Pfpar : ListPattern {
 		});
 		^inval;
 	}
-
 }
 
 Pproto  : Pattern {

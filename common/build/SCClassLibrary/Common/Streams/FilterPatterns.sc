@@ -14,7 +14,7 @@ Pn : FilterPattern {
 	}
 	storeArgs { ^[pattern,repeats] }
 	embedInStream { arg event;
-		repeats.value.do { event = pattern.embedInStream(event) };
+		repeats.value(event).do { event = pattern.embedInStream(event) };
 		^event;
 	}
 }
@@ -177,8 +177,6 @@ Pset : FilterPattern {
 
 			this.filterEvent(inEvent, val);
 			event = inEvent.yield;
-
-
 		}
 	}
 }
@@ -291,18 +289,16 @@ Pstretchp : Pstretch {
 }
 
 
+// needs testing - hjh
 Pplayer : FilterPattern {
-	var <>playerPattern, <>subPattern;
-	// this is broken:
+	var <>subPattern;
 	*new { arg playerPattern, subPattern;
-	// super new copy args puts it in pattern, playerPattern
-	// -cx
 		^super.newCopyArgs(playerPattern, subPattern)
 	}
-	storeArgs { ^[ playerPattern, subPattern ] }
+	storeArgs { ^[ pattern, subPattern ] }
 	embedInStream { arg event;
 		var player, inevent;
-		var playerStream = playerPattern.asStream;
+		var playerStream = pattern.asStream;
 		var stream = subPattern.asStream;
 		loop{
 			inevent = stream.next(event);
@@ -313,6 +309,9 @@ Pplayer : FilterPattern {
 			event = yield(inevent);
 		}
 	}
+		// backward compatibility: unnecessary var playerPattern was removed
+	playerPattern { ^pattern }
+	playerPattern_ { |playerPattern| pattern = playerPattern }
 }
 
 
@@ -327,7 +326,7 @@ Pdrop : FilterPattern {
 		var inevent;
 		var stream = pattern.asStream;
 
-		count.value.do {
+		count.value(event).do {
 			inevent = stream.next(event);
 			if (inevent.isNil, { ^event });
 		};
@@ -351,7 +350,7 @@ Pfin : FilterPattern {
 		var inevent;
 		var stream = pattern.asStream;
 		cleanup ?? { cleanup = EventStreamCleanup.new };
-		count.value.do({
+		count.value(event).do({
 			inevent = stream.next(event) ?? { ^event };
 			cleanup.update(inevent);
 			event = inevent.yield;
@@ -364,13 +363,14 @@ Pfin : FilterPattern {
 
 // it is not correct to call stream.next(nil) on a value stream
 // but there is no good way to distinguish in Pfin so we need a subclass
+// might be ok to deprecate this now
 
 Pfinval : Pfin {
 	embedInStream { arg event;
 		var inevent;
 		var stream = pattern.asStream;
 
-		count.value.do({
+		count.value(event).do({
 			inevent = stream.next(event);
 			if (inevent.isNil, { ^event });
 			event = inevent.yield;
@@ -388,19 +388,20 @@ Pfindur : FilterPattern {
 	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
 
 	embedInStream { arg event, cleanup;
-		var item, delta, elapsed = 0.0, nextElapsed, inevent;
-
+		var item, delta, elapsed = 0.0, nextElapsed, inevent,
+			localdur = dur.value(event);
 		var stream = pattern.asStream;
+
 		cleanup ?? { cleanup = EventStreamCleanup.new };
 		loop {
 			inevent = stream.next(event) ?? { ^event };
 			cleanup.update(inevent);
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
-			if (nextElapsed.roundUp(tolerance) >= dur) {
+			if (nextElapsed.roundUp(tolerance) >= localdur) {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
-				inevent = inevent.copy.put(\delta, dur - elapsed).yield;
+				inevent = inevent.copy.put(\delta, localdur - elapsed).yield;
 				^cleanup.exit(inevent);
 			};
 
@@ -409,7 +410,6 @@ Pfindur : FilterPattern {
 
 		}
 	}
-
 }
 
 Psync : FilterPattern {
@@ -421,6 +421,7 @@ Psync : FilterPattern {
 
 	embedInStream { arg event;
 		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+		var	localquant = quant.value(event), localmaxdur = maxdur.value(event);
 		var cleanup = EventStreamCleanup.new;
 
 		stream = pattern.asStream;
@@ -428,8 +429,8 @@ Psync : FilterPattern {
 		loop {
 			inevent = stream.next(event);
 			if(inevent.isNil) {
-				if(quant.notNil) {
-					event = Event.silent(elapsed.roundUp(quant) - elapsed, event);
+				if(localquant.notNil) {
+					event = Event.silent(elapsed.roundUp(localquant) - elapsed, event);
 					^cleanup.exit(event).yield;
 				};
 			};
@@ -438,20 +439,17 @@ Psync : FilterPattern {
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 
-			if (maxdur.notNil and: { nextElapsed.round(tolerance) >= maxdur })
-			{
+			if (localmaxdur.notNil and: { nextElapsed.round(tolerance) >= localmaxdur }) {
 				inevent = inevent.copy;
-				inevent.put(\delta, maxdur - elapsed);
+				inevent.put(\delta, localmaxdur - elapsed);
 				event = inevent.yield;
 				^cleanup.exit(event);
-			}
-			{
+			} {
 				elapsed = nextElapsed;
 				event = inevent.yield;
 			};
 		};
 	}
-
 }
 
 
@@ -463,23 +461,23 @@ Pconst : FilterPattern {
 	storeArgs { ^[sum,pattern,tolerance] }
 
 	embedInStream { arg inval;
-			var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream,
-				localSum = sum.value(inval);
-			loop ({
-				delta = str.next(inval);
-				if(delta.isNil) {
-					(localSum - elapsed).yield;
-					^inval
-				};
-				nextElapsed = elapsed + delta;
-				if (nextElapsed.round(tolerance) >= localSum) {
-					(localSum - elapsed).yield;
-					^inval
-				}{
-					elapsed = nextElapsed;
-					inval = delta.yield;
-				};
-			});
+		var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream,
+			localSum = sum.value(inval);
+		loop ({
+			delta = str.next(inval);
+			if(delta.isNil) {
+				(localSum - elapsed).yield;
+				^inval
+			};
+			nextElapsed = elapsed + delta;
+			if (nextElapsed.round(tolerance) >= localSum) {
+				(localSum - elapsed).yield;
+				^inval
+			}{
+				elapsed = nextElapsed;
+				inval = delta.yield;
+			};
+		});
 	}
 }
 
@@ -494,9 +492,8 @@ Plag : FilterPattern {
 		var stream = pattern.asStream;
 		var inevent = event.copy;
 
-		inevent.put('freq', \rest);
-		inevent.put('dur', lag);
-		event = inevent.yield;
+		event = Event.silent(lag.value(event), event).yield;
+
 		loop {
 			inevent = stream.next(event);
 			if (inevent.isNil) { ^event};
@@ -622,7 +619,6 @@ Pclutch : FilterPattern {
 			clutch = clutchStream.next(inval);
 			clutch.notNil
 		} {
-
 			if(clutch === true or: { clutch == 1 }) {
 				outval = stream.next(inval);
 				if(outval.isNil) { ^inval };
@@ -631,15 +627,13 @@ Pclutch : FilterPattern {
 				outval ?? { outval = stream.next(inval) };
 				inval = outval.copy.yield;
 			};
-
-
 		}
 	}
 }
 
 Pwhile : FuncFilterPattern {
 	embedInStream {arg event;
-		while({ func.value },{
+		while({ func.value(event) },{
 			event = pattern.embedInStream(event);
 		});
 		^event;
@@ -702,9 +696,7 @@ Ptrace : FilterPattern {
 			}
 		};
 		^collected.embedInStream(inval)
-
 	}
-
 }
 
 Pclump : FilterPattern {
@@ -759,7 +751,6 @@ Pdiff : FilterPattern {
 	embedInStream { arg event;
 		var stream = pattern.asStream;
 		var next, prev = stream.next(event);
-		//prev !? { prev.yield };
 		while {
 			next = stream.next(event);
 			next.notNil;
@@ -829,9 +820,5 @@ Pavaroh : FilterPattern {
 			inval = me.degreeToKey(scale, stepVal).yield
 		};
 		^inval
-
 	}
-
 }
-
-

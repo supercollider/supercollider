@@ -11,44 +11,32 @@ Ppar : ListPattern {
 		var assn;
 		var priorityQ = PriorityQueue.new;
 
-		repeats.value.do({ arg j;
+		repeats.value(inval).do({ arg j;
 			var outval, stream, nexttime, now = 0.0;
 
 			this.initStreams(priorityQ);
 
 			// if first event not at time zero
-			if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }, {
-//				outval = inval.copy;
-//				outval.put(\freq, \rest);
-//				outval.put(\delta, nexttime);
-
+			if (priorityQ.notEmpty and: { (nexttime = priorityQ.topPriority) > 0.0 }) {
 				outval = Event.silent(nexttime, inval);
 				inval = outval.yield;
 				now = nexttime;
-			});
+			};
 
-			//inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
-
-			while({
-				priorityQ.notEmpty
-			},{
+			while { priorityQ.notEmpty } {
 				stream = priorityQ.pop;
 				outval = stream.next(inval);
-				if (outval.isNil, {
+				if (outval.isNil) {
 					nexttime = priorityQ.topPriority;
 					if (nexttime.notNil, {
 						// that child stream ended, so rest until next one
-//						outval = inval.copy;
-//						outval.put(\freq, \rest);
-//						outval.put(\delta, nexttime - now);
 						outval = Event.silent(nexttime - now, inval);
 						inval = outval.yield;
-						// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 						now = nexttime;
 					},{
 						priorityQ.clear;
 					});
-				},{
+				} {
 					// requeue stream
 					priorityQ.put(now + outval.delta, stream);
 					nexttime = priorityQ.topPriority;
@@ -57,17 +45,11 @@ Ppar : ListPattern {
 					inval = outval.yield;
 					// inval ?? { this.purgeQueue(priorityQ); ^nil.yield };
 					now = nexttime;
-				});
-			});
+				};
+			};
 		});
 		^inval;
 	}
-
-	/*
-	purgeQueue { arg priorityQ;
-		while { priorityQ.notEmpty } { priorityQ.pop }
-	}*/
-
 }
 
 Ptpar : Ppar {
@@ -78,34 +60,8 @@ Ptpar : Ppar {
 	}
 }
 
-//Ppar : ListPattern {
-//	initStreams { arg priorityQ;
-//		list.do({ arg pattern, i;
-//			priorityQ.put(0.0, pattern.asStream);
-//		});
-//	}
-//	asStream {
-//		^Routine({ arg inval;
-//			var count = 0, join, cond;
-//			join = list.size;
-//			cond = Condition({ count >= join });
-//			list.do({ arg func;
-//				Routine({ arg time;
-//					inval.
-//					pattern.embedInStream(inval.copy);
-//					count = count + 1;
-//					cond.signal;
-//				}).play;
-//			});
-//			cond.wait;
-//		});
-//	}
-//}
-
-
 
 Pgpar : Ppar {
-
 	embedInStream { arg inevent;
 		var	server, ids, patterns, event, ingroup, cleanup, stream;
 		var	lag = 0, clock = thisThread.clock,
@@ -125,8 +81,11 @@ Pgpar : Ppar {
 		inevent = event.yield.copy;
 		cleanup = EventStreamCleanup.new;
 		cleanup.addFunction(inevent, { | flag |
-			if (flag) { ( lag: lag - clock.beats + groupReleaseTime,
-				type: \kill, id: ids, server: server).play };
+			if (flag) {
+				( lag: lag - clock.beats + groupReleaseTime,
+					type: \kill, id: ids, server: server
+				).play
+			};
 		});
 
 		patterns = this.wrapPatterns(ids);
@@ -139,7 +98,6 @@ Pgpar : Ppar {
 			lag = max(lag, clock.beats + event.use { ~sustain.value });
 			inevent = event.yield;
 		}
-
 	}
 
 	numberOfGroups { ^list.size }

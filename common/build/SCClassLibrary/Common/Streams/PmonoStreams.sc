@@ -66,13 +66,13 @@ PmonoStream : Stream {
 					 server = argServer;
 					 schedBundleArray = ~schedBundleArray;
 					 schedBundle = ~schedBundle;
-					 
 				};
 				cleanup.addFunction(event, currentCleanupFunc = { | flag |
 					if (flag) { (id: id, server: server, type: \off, 
-									hasGate: hasGate,
-									schedBundleArray: schedBundleArray,
-									schedBundle: schedBundle).play }
+						hasGate: hasGate,
+						schedBundleArray: schedBundleArray,
+						schedBundle: schedBundle).play
+					}
 				}); 
 			}
 		};
@@ -133,5 +133,4 @@ PmonoArticStream : PmonoStream {
 			}
 		}
 	}
-	
 }

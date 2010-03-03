@@ -93,10 +93,8 @@ Pfunc : Pattern {
 	}
 	storeArgs { ^[nextFunc] ++ resetFunc }
 	asStream {
-//		^FuncStreamAsRoutine.new(nextFunc, resetFunc)
-	^FuncStream.new(nextFunc, resetFunc)
+		^FuncStream.new(nextFunc, resetFunc)
 	}
-//	embedInStream { arg inval; loop { inval = yield(nextFunc.value(inval)) }  }
 }
 
 Prout : Pattern {
@@ -125,7 +123,7 @@ Pfuncn : Pattern {
 	}
 	storeArgs { ^[func,repeats] }
 	embedInStream {  arg inval;
-		repeats.value.do({
+		repeats.value(inval).do({
 			inval = func.value(inval).yield;
 		});
 		^inval
@@ -153,8 +151,7 @@ Punop : Pattern {
 	}
 
 	asStream {
-		var stream = a.asStream;
-		^UnaryOpStream.new(operator, stream);
+		^UnaryOpStream.new(operator, a.asStream);
 	}
 }
 
@@ -171,13 +168,11 @@ Pbinop : Pattern {
 	}
 
 	asStream {
-		var streamA = a.asStream;
-		var streamB = b.asStream;
 		if (adverb.isNil) {
-			^BinaryOpStream.new(operator, streamA, streamB);
+			^BinaryOpStream.new(operator, a.asStream, b.asStream);
 		};
 		if (adverb == 'x') {
-			^BinaryOpXStream.new(operator, streamA, streamB);
+			^BinaryOpXStream.new(operator, a.asStream, b.asStream);
 		};
 		^nil
 	}
@@ -193,8 +188,10 @@ Pnaryop : Pattern {
 	embedInStream { arg inval;
 		var streamA, streamlist, vala, values, isNumeric;
 		streamA = a.asStream;
+			 // optimization
 		isNumeric = arglist.every { arg item;
-			item.isNumber or: {item.class === Symbol} }; // optimization
+			item.isNumber or: {item.class === Symbol}
+		};
 
 		if (isNumeric) {
 			loop {
@@ -218,9 +215,7 @@ Pnaryop : Pattern {
 	}
 
 	asStream {
-		var streamA = a.asStream;
-		var streamlist = arglist.collect({ arg item; item.asStream });
-		^NAryOpStream.new(operator, streamA, streamlist);
+		^NAryOpStream.new(operator, a.asStream, arglist.collect({ arg item; item.asStream }));
 	}
 }
 
@@ -361,8 +356,8 @@ Pseries : Pattern {	// arithmetic series
 
 	embedInStream { arg inval;
 		var outval, counter = 0;
-		var cur = start.value;
-		var len = length.value;
+		var cur = start.value(inval);
+		var len = length.value(inval);
 		var stepStr = step.asStream, stepVal;
 		while { counter < len } {
 			stepVal = stepStr.next(inval);
@@ -384,8 +379,8 @@ Pgeom : Pattern {	// geometric series
 	storeArgs { ^[start,grow,length] }
 	embedInStream { arg inval;
 		var outval, counter = 0;
-		var cur = start.value;
-		var len = length.value;
+		var cur = start.value(inval);
+		var len = length.value(inval);
 		var growStr = grow.asStream, growVal;
 
 		while { counter < len } {
@@ -422,7 +417,7 @@ Pbrown : Pattern {
 		cur = rrand(loVal, hiVal);
 		if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
 
-		length.value.do {
+		length.value(inval).do {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			stepVal = stepStr.next(inval);
@@ -455,7 +450,7 @@ Pwhite : Pattern {
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
-		length.value.do({
+		length.value(inval).do({
 			hiVal = hiStr.next(inval);
 			loVal = loStr.next(inval);
 			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
@@ -485,12 +480,12 @@ Pprob : Pattern {
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
 
-		length.value.do {
+		length.value(inval).do {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
-			inval = ((table.tableRand * (hiVal - loVal)) + loVal).yield;		};
-
+			inval = ((table.tableRand * (hiVal - loVal)) + loVal).yield;
+		};
 		^inval;
 	}
 }
@@ -562,19 +557,20 @@ PstepNfunc : Pattern {
 		var max = size - 1;
 		var streams = Array.newClear(size);
 		var vals = Array.newClear(size);
+			// this variable is needed because of recursion
 		var f = { arg inval, level=0;
-				var val;
-				streams[level] = patterns[level].asStream;
-				while{
-					vals[level] = val = streams[level].next(inval);
-					val.notNil;
+			var val;
+			streams[level] = patterns[level].asStream;
+			while{
+				vals[level] = val = streams[level].next(inval);
+				val.notNil;
+			}{
+				if(level < max) {
+					inval = f.value(inval, level + 1)
 				}{
-					if(level < max) {
-						inval = f.value(inval, level + 1)
-					}{
-						inval = yield(function.value(vals));
-					}
-				};
+					inval = yield(function.value(vals));
+				}
+			};
 			inval;
 		};
 		^f.value(inval);
@@ -599,7 +595,7 @@ Ptime : Pattern {
 	storeArgs { ^[repeats] }
 	embedInStream { arg inval;
 		var start = thisThread.beats;
-		repeats.value.do { inval = (thisThread.beats - start).yield };
+		repeats.value(inval).do { inval = (thisThread.beats - start).yield };
 		^inval
 	}
 }
@@ -653,15 +649,15 @@ Pif : Pattern {
 
 		^FuncStream({ |inval|
 			var test;
-			(test = condStream.next(inval)).isNil.if({
+			if((test = condStream.next(inval)).isNil) {
 				nil
-			}, {
-				test.if({
+			} {
+				if(test) {
 					trueStream.next(inval) ? default
-				}, {
+				} {
 					falseStream.next(inval) ? default
-				});
-			});
+				};
+			};
 		}, {		// reset func
 			condStream.reset;
 			trueStream.reset;

@@ -9,10 +9,11 @@
 		thisThread.endBeat = this.times.sum + startTime;
 		loop {
 			inval = yield(this.at(thisThread.beats - startTime));
-			}
+		}
 	}
+	
 	asStream {
-		^Routine({ arg inval; this.embedInStream(inval) })Ê
+		^Routine({ arg inval; this.embedInStream(inval) })
 	}
 
 	asSignal { arg length = 400;
@@ -25,6 +26,6 @@
 	}
 
 	plot { arg size = 400, bounds, minval, maxval, parent;
-		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent); }
-
+		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent);
+	}
 }
