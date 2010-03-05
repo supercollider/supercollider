@@ -81,6 +81,7 @@ Monitor {
 
 	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
 	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
+	var <usedPlayN; 
 
 	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			target, multi=false, volume, fadeTime=0.02, addAction |
@@ -96,7 +97,15 @@ Monitor {
 			toNumChannels, inGroup, multi, volume, fadeTime, addAction
 		);
 
-		server.listSendBundle(server.latency, bundle);
+		server.listSendBundle(server.latency, bundle); 
+
+			// or better, silently convert? 
+		if (usedPlayN == true) { 
+			warn("monitor switched from playN to play - channels may be wrong!\n" 
+				"\touts: % amps: % ins: % vol: !".format(outs, amps, ins, vol));
+		};
+		"ever gets here..?".postln;
+		usedPlayN = true; 
 	}
 
 	stop { | argFadeTime |
@@ -127,7 +136,12 @@ Monitor {
 
 		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction);
 		server.listSendBundle(server.latency, bundle);
-
+			// or better, silently convert? 
+		if (usedPlayN == false) { 
+			warn("monitor switched from play to playN - channels may be wrong!\n" 
+				"\touts: % amps: % ins: % vol: !".format(outs, amps, ins, vol));
+		};
+		usedPlayN = true;
 	}
 
 	// setting volume and output offset.
