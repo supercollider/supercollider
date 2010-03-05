@@ -377,7 +377,6 @@
 		F50D054802E69B6B01CA2799 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
 		F50D054902E69B6B01CA2799 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
 		F50D054A02E69B6B01CA2799 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
-		F50D054B02E69B6B01CA2799 /* SC_Dimension.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Dimension.h; sourceTree = "<group>"; };
 		F50D054C02E69B6B01CA2799 /* SC_FifoMsg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FifoMsg.h; sourceTree = "<group>"; };
 		F50D054D02E69B6B01CA2799 /* SC_Graph.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Graph.h; sourceTree = "<group>"; };
 		F50D054E02E69B6B01CA2799 /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
@@ -670,7 +669,6 @@
 				F50D054902E69B6B01CA2799 /* SC_BufGen.h */,
 				F50D054A02E69B6B01CA2799 /* SC_Constants.h */,
 				92ADA27B06266AA00093F2C8 /* SC_DemandUnit.h */,
-				F50D054B02E69B6B01CA2799 /* SC_Dimension.h */,
 				F50D054C02E69B6B01CA2799 /* SC_FifoMsg.h */,
 				F50D054D02E69B6B01CA2799 /* SC_Graph.h */,
 				F50D054E02E69B6B01CA2799 /* SC_InlineBinaryOp.h */,

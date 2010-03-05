@@ -51,7 +51,6 @@
 		94930B620C190FB10018AB50 /* SC_Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A400C190FB10018AB50 /* SC_Complex.cpp */; };
 		94930B630C190FB10018AB50 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A410C190FB10018AB50 /* SC_ComPort.cpp */; };
 		94930B640C190FB10018AB50 /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A420C190FB10018AB50 /* SC_CoreAudio.cpp */; };
-		94930B650C190FB10018AB50 /* SC_Dimension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A430C190FB10018AB50 /* SC_Dimension.cpp */; };
 		94930B660C190FB10018AB50 /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A440C190FB10018AB50 /* SC_Errors.cpp */; };
 		94930B670C190FB10018AB50 /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A450C190FB10018AB50 /* SC_Graph.cpp */; };
 		94930B680C190FB10018AB50 /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A460C190FB10018AB50 /* SC_GraphDef.cpp */; };
@@ -74,7 +73,6 @@
 		94F5FAF90C1E6BFB005CDF9F /* SC_BufGen.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BD80C190FB80018AB50 /* SC_BufGen.h */; };
 		94F5FAFA0C1E6BFB005CDF9F /* SC_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BD90C190FB80018AB50 /* SC_Constants.h */; };
 		94F5FAFB0C1E6BFB005CDF9F /* SC_DemandUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDA0C190FB80018AB50 /* SC_DemandUnit.h */; };
-		94F5FAFC0C1E6BFB005CDF9F /* SC_Dimension.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDB0C190FB80018AB50 /* SC_Dimension.h */; };
 		94F5FAFD0C1E6BFB005CDF9F /* SC_FifoMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDC0C190FB80018AB50 /* SC_FifoMsg.h */; };
 		94F5FAFE0C1E6BFB005CDF9F /* SC_Graph.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDD0C190FB80018AB50 /* SC_Graph.h */; };
 		94F5FAFF0C1E6BFB005CDF9F /* SC_InlineBinaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDE0C190FB80018AB50 /* SC_InlineBinaryOp.h */; };
@@ -114,7 +112,6 @@
 		94F5FB220C1E6C07005CDF9F /* SC_Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A400C190FB10018AB50 /* SC_Complex.cpp */; };
 		94F5FB230C1E6C07005CDF9F /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A410C190FB10018AB50 /* SC_ComPort.cpp */; };
 		94F5FB240C1E6C07005CDF9F /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A420C190FB10018AB50 /* SC_CoreAudio.cpp */; };
-		94F5FB250C1E6C07005CDF9F /* SC_Dimension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A430C190FB10018AB50 /* SC_Dimension.cpp */; };
 		94F5FB260C1E6C07005CDF9F /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A440C190FB10018AB50 /* SC_Errors.cpp */; };
 		94F5FB270C1E6C07005CDF9F /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A450C190FB10018AB50 /* SC_Graph.cpp */; };
 		94F5FB280C1E6C07005CDF9F /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A460C190FB10018AB50 /* SC_GraphDef.cpp */; };
@@ -240,7 +237,6 @@
 		D55DEBBB0EF32CC600968B95 /* SC_BufGen.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BD80C190FB80018AB50 /* SC_BufGen.h */; };
 		D55DEBBC0EF32CC600968B95 /* SC_Constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BD90C190FB80018AB50 /* SC_Constants.h */; };
 		D55DEBBD0EF32CC600968B95 /* SC_DemandUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDA0C190FB80018AB50 /* SC_DemandUnit.h */; };
-		D55DEBBE0EF32CC600968B95 /* SC_Dimension.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDB0C190FB80018AB50 /* SC_Dimension.h */; };
 		D55DEBBF0EF32CC600968B95 /* SC_FifoMsg.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDC0C190FB80018AB50 /* SC_FifoMsg.h */; };
 		D55DEBC00EF32CC600968B95 /* SC_Graph.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDD0C190FB80018AB50 /* SC_Graph.h */; };
 		D55DEBC10EF32CC600968B95 /* SC_InlineBinaryOp.h in Headers */ = {isa = PBXBuildFile; fileRef = 94930BDE0C190FB80018AB50 /* SC_InlineBinaryOp.h */; };
@@ -265,7 +261,6 @@
 		D55DEE1D0EF3301F00968B95 /* SC_Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A400C190FB10018AB50 /* SC_Complex.cpp */; };
 		D55DEE1E0EF3301F00968B95 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A410C190FB10018AB50 /* SC_ComPort.cpp */; };
 		D55DEE1F0EF3301F00968B95 /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A420C190FB10018AB50 /* SC_CoreAudio.cpp */; };
-		D55DEE200EF3301F00968B95 /* SC_Dimension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A430C190FB10018AB50 /* SC_Dimension.cpp */; };
 		D55DEE210EF3301F00968B95 /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A440C190FB10018AB50 /* SC_Errors.cpp */; };
 		D55DEE220EF3301F00968B95 /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A450C190FB10018AB50 /* SC_Graph.cpp */; };
 		D55DEE230EF3301F00968B95 /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94930A460C190FB10018AB50 /* SC_GraphDef.cpp */; };
@@ -358,7 +353,6 @@
 		94930A400C190FB10018AB50 /* SC_Complex.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Complex.cpp; sourceTree = "<group>"; };
 		94930A410C190FB10018AB50 /* SC_ComPort.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_ComPort.cpp; sourceTree = "<group>"; };
 		94930A420C190FB10018AB50 /* SC_CoreAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreAudio.cpp; sourceTree = "<group>"; };
-		94930A430C190FB10018AB50 /* SC_Dimension.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Dimension.cpp; sourceTree = "<group>"; };
 		94930A440C190FB10018AB50 /* SC_Errors.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Errors.cpp; sourceTree = "<group>"; };
 		94930A450C190FB10018AB50 /* SC_Graph.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Graph.cpp; sourceTree = "<group>"; };
 		94930A460C190FB10018AB50 /* SC_GraphDef.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_GraphDef.cpp; sourceTree = "<group>"; };
@@ -395,7 +389,6 @@
 		94930BD80C190FB80018AB50 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
 		94930BD90C190FB80018AB50 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
 		94930BDA0C190FB80018AB50 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
-		94930BDB0C190FB80018AB50 /* SC_Dimension.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Dimension.h; sourceTree = "<group>"; };
 		94930BDC0C190FB80018AB50 /* SC_FifoMsg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FifoMsg.h; sourceTree = "<group>"; };
 		94930BDD0C190FB80018AB50 /* SC_Graph.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Graph.h; sourceTree = "<group>"; };
 		94930BDE0C190FB80018AB50 /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
@@ -469,10 +462,10 @@
 		D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperColliderAUVersion.h; sourceTree = "<group>"; };
 		D55DEB5B0EF32A2E00968B95 /* SuperColliderAU.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperColliderAU.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55DEBD80EF32CE300968B95 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
-		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serverConfig.plist; sourceTree = "<group>"; };
-		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = version.plist; sourceTree = "<group>"; };
+		D55DEBD90EF32CE300968B95 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D55DEBDB0EF32CE300968B95 /* pluginSpec.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = pluginSpec.plist; sourceTree = "<group>"; };
+		D55DEBDC0EF32CE300968B95 /* serverConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = serverConfig.plist; sourceTree = "<group>"; };
+		D55DEBDE0EF32CE300968B95 /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
 		D55DEE3B0EF3304300968B95 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		D55DEE410EF3312900968B95 /* SC_AU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AU.cpp; sourceTree = "<group>"; };
 		D55DEE430EF3314200968B95 /* SC_AU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AU.h; sourceTree = "<group>"; };
@@ -575,7 +568,6 @@
 				94930A400C190FB10018AB50 /* SC_Complex.cpp */,
 				94930A410C190FB10018AB50 /* SC_ComPort.cpp */,
 				94930A420C190FB10018AB50 /* SC_CoreAudio.cpp */,
-				94930A430C190FB10018AB50 /* SC_Dimension.cpp */,
 				94930A440C190FB10018AB50 /* SC_Errors.cpp */,
 				94930A450C190FB10018AB50 /* SC_Graph.cpp */,
 				94930A460C190FB10018AB50 /* SC_GraphDef.cpp */,
@@ -639,7 +631,6 @@
 				94930BD80C190FB80018AB50 /* SC_BufGen.h */,
 				94930BD90C190FB80018AB50 /* SC_Constants.h */,
 				94930BDA0C190FB80018AB50 /* SC_DemandUnit.h */,
-				94930BDB0C190FB80018AB50 /* SC_Dimension.h */,
 				94930BDC0C190FB80018AB50 /* SC_FifoMsg.h */,
 				94930BDD0C190FB80018AB50 /* SC_Graph.h */,
 				94930BDE0C190FB80018AB50 /* SC_InlineBinaryOp.h */,
@@ -822,7 +813,6 @@
 				94F5FAF90C1E6BFB005CDF9F /* SC_BufGen.h in Headers */,
 				94F5FAFA0C1E6BFB005CDF9F /* SC_Constants.h in Headers */,
 				94F5FAFB0C1E6BFB005CDF9F /* SC_DemandUnit.h in Headers */,
-				94F5FAFC0C1E6BFB005CDF9F /* SC_Dimension.h in Headers */,
 				94F5FAFD0C1E6BFB005CDF9F /* SC_FifoMsg.h in Headers */,
 				94F5FAFE0C1E6BFB005CDF9F /* SC_Graph.h in Headers */,
 				94F5FAFF0C1E6BFB005CDF9F /* SC_InlineBinaryOp.h in Headers */,
@@ -934,7 +924,6 @@
 				D55DEBBB0EF32CC600968B95 /* SC_BufGen.h in Headers */,
 				D55DEBBC0EF32CC600968B95 /* SC_Constants.h in Headers */,
 				D55DEBBD0EF32CC600968B95 /* SC_DemandUnit.h in Headers */,
-				D55DEBBE0EF32CC600968B95 /* SC_Dimension.h in Headers */,
 				D55DEBBF0EF32CC600968B95 /* SC_FifoMsg.h in Headers */,
 				D55DEBC00EF32CC600968B95 /* SC_Graph.h in Headers */,
 				D55DEBC10EF32CC600968B95 /* SC_InlineBinaryOp.h in Headers */,
@@ -1099,7 +1088,6 @@
 				94930B620C190FB10018AB50 /* SC_Complex.cpp in Sources */,
 				94930B630C190FB10018AB50 /* SC_ComPort.cpp in Sources */,
 				94930B640C190FB10018AB50 /* SC_CoreAudio.cpp in Sources */,
-				94930B650C190FB10018AB50 /* SC_Dimension.cpp in Sources */,
 				94930B660C190FB10018AB50 /* SC_Errors.cpp in Sources */,
 				94930B670C190FB10018AB50 /* SC_Graph.cpp in Sources */,
 				94930B680C190FB10018AB50 /* SC_GraphDef.cpp in Sources */,
@@ -1130,7 +1118,6 @@
 				94F5FB220C1E6C07005CDF9F /* SC_Complex.cpp in Sources */,
 				94F5FB230C1E6C07005CDF9F /* SC_ComPort.cpp in Sources */,
 				94F5FB240C1E6C07005CDF9F /* SC_CoreAudio.cpp in Sources */,
-				94F5FB250C1E6C07005CDF9F /* SC_Dimension.cpp in Sources */,
 				94F5FB260C1E6C07005CDF9F /* SC_Errors.cpp in Sources */,
 				94F5FB270C1E6C07005CDF9F /* SC_Graph.cpp in Sources */,
 				94F5FB280C1E6C07005CDF9F /* SC_GraphDef.cpp in Sources */,
@@ -1170,7 +1157,6 @@
 				D55DEE1D0EF3301F00968B95 /* SC_Complex.cpp in Sources */,
 				D55DEE1E0EF3301F00968B95 /* SC_ComPort.cpp in Sources */,
 				D55DEE1F0EF3301F00968B95 /* SC_CoreAudio.cpp in Sources */,
-				D55DEE200EF3301F00968B95 /* SC_Dimension.cpp in Sources */,
 				D55DEE210EF3301F00968B95 /* SC_Errors.cpp in Sources */,
 				D55DEE220EF3301F00968B95 /* SC_Graph.cpp in Sources */,
 				D55DEE230EF3301F00968B95 /* SC_GraphDef.cpp in Sources */,
@@ -1306,9 +1292,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = (
-					"-DSC_DARWIN",
-				);
+				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
