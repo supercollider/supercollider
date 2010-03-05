@@ -167,9 +167,8 @@ public:
     void terminate_threads(void)
     {
         foreach(dsp_thread & thread, threads)
-        {
             thread.terminate();
-        }
+
         thread_group_.join_all();
     }
     /* @} */

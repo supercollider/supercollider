@@ -193,6 +193,7 @@ class dsp_thread_queue
     typedef boost::uint_fast16_t node_count_t;
 
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
+    typedef std::vector<dsp_thread_queue_item*, Alloc> item_vector_t;
 
 public:
 #ifdef DEBUG_DSP_THREADS
@@ -251,9 +252,8 @@ public:
 
 private:
     node_count_t total_node_count;      /* total number of nodes */
-
-    typename dsp_thread_queue_item::successor_list initially_runnable_items; /* nodes without precedessor */
-    std::vector<dsp_thread_queue_item*> queue_items;                         /* all nodes */
+    item_vector_t initially_runnable_items; /* nodes without precedessor */
+    item_vector_t queue_items;              /* all nodes */
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
 };
