@@ -137,48 +137,40 @@ private:
     /** \brief update all successors and possibly mark them as runnable */
     dsp_thread_queue_item * update_dependencies(dsp_queue_interpreter & interpreter)
     {
-        std::auto_ptr<dsp_thread_queue_item> ptr;
+        dsp_thread_queue_item * ptr;
         std::size_t i = 0;
         for (;;)
         {
             if (i == successors.size())
                 return NULL;
 
-            successors[i++]->dec_ref_count(interpreter, ptr);
-            if (ptr.get())
+            ptr = successors[i++]->dec_activation_count(interpreter);
+            if (ptr)
                 break; // no need to update the next item to run
         }
 
         while (i != successors.size())
-            successors[i++]->dec_ref_count(interpreter);
-        return ptr.release();
-    }
-
-    /* @{ */
-    /** \brief decrement reference count and possibly mark as runnable */
-    inline void dec_ref_count(dsp_queue_interpreter & interpreter, std::auto_ptr<dsp_thread_queue_item> & ptr)
-    {
-        activation_limit_t current = activation_count--;
-        assert(current > 0);
-
-        if (current == 1)
         {
-            if (ptr.get() == NULL)
-                ptr.reset(this);
-            else
+            dsp_thread_queue_item * next = successors[i++]->dec_activation_count(interpreter);
+            if (next)
                 interpreter.mark_as_runnable(this);
         }
+
+        return ptr;
     }
 
-    inline void dec_ref_count(dsp_queue_interpreter & interpreter)
+    /** \brief decrement activation count and return this, if it drops to zero
+     */
+    inline dsp_thread_queue_item * dec_activation_count(dsp_queue_interpreter & interpreter)
     {
         activation_limit_t current = activation_count--;
         assert(current > 0);
 
         if (current == 1)
-            interpreter.mark_as_runnable(this);
+            return this;
+        else
+            return NULL;
     }
-    /* @} */
 
     boost::atomic<activation_limit_t> activation_count; /**< current activation count */
 
@@ -193,6 +185,7 @@ class dsp_thread_queue
     typedef boost::uint_fast16_t node_count_t;
 
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
+    typedef std::vector<dsp_thread_queue_item*, Alloc> item_vector_t;
 
 public:
 #ifdef DEBUG_DSP_THREADS
@@ -251,9 +244,8 @@ public:
 
 private:
     node_count_t total_node_count;      /* total number of nodes */
-
-    typename dsp_thread_queue_item::successor_list initially_runnable_items; /* nodes without precedessor */
-    std::vector<dsp_thread_queue_item*> queue_items;                         /* all nodes */
+    item_vector_t initially_runnable_items; /* nodes without precedessor */
+    item_vector_t queue_items;              /* all nodes */
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
 };
