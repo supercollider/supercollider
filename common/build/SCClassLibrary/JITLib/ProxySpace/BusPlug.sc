@@ -252,12 +252,14 @@ BusPlug : AbstractFunction {
 				group, multi=false, vol, fadeTime, addAction |
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
+		monitor.usedPlayN = false;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group,
 			multi, vol, fadeTime, addAction);
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
 		this.newMonitorToBundle(bundle); // todo: numChannels
+		monitor.usedPlayN = true;
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
 
@@ -266,6 +268,7 @@ BusPlug : AbstractFunction {
 	newMonitorToBundle { | bundle, numChannels |
 		this.initBus(\audio, numChannels);
 		this.initMonitor;
+		
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 	

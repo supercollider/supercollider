@@ -78,11 +78,32 @@ XInFeedback {
 // plays out to various other indices.
 
 Monitor {
-
+	classvar <>warnPlayN = true; 
+	
 	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
 	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
-	var <usedPlayN; 
-
+	
+	var <usedPlayN;  // default case
+	
+	usedPlayN_ { |flag|
+		var old, new, states;
+		
+	//	[\noWarn, warnPlayN.not, \noInit, usedPlayN.isNil, \stays, usedPlayN == flag, \noOuts, outs.isNil].postln; 
+		
+			// normal case: init or stay the same
+		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } } /*or: { outs.isNil }*/) { 
+			usedPlayN = flag;
+			^nil 
+		}; 
+		
+		states = [\playN, \play];
+		#old, new = if (usedPlayN, states, { states.reverse });
+		warn("monitor switched from % to % - channels may be wrong!\n" 
+			"\touts: % amps: % ins: % vol: !".format(old, new, outs, amps, ins, vol)
+		);
+		usedPlayN = flag; 
+	}
+	
 	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			target, multi=false, volume, fadeTime=0.02, addAction |
 			
@@ -96,16 +117,8 @@ Monitor {
 			bundle, fromIndex, fromNumChannels, toIndex,
 			toNumChannels, inGroup, multi, volume, fadeTime, addAction
 		);
-
 		server.listSendBundle(server.latency, bundle); 
-
-			// or better, silently convert? 
-		if (usedPlayN == true) { 
-			warn("monitor switched from playN to play - channels may be wrong!\n" 
-				"\touts: % amps: % ins: % vol: !".format(outs, amps, ins, vol));
-		};
-		"ever gets here..?".postln;
-		usedPlayN = true; 
+		this.usedPlayN_(false);
 	}
 
 	stop { | argFadeTime |
@@ -136,12 +149,7 @@ Monitor {
 
 		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction);
 		server.listSendBundle(server.latency, bundle);
-			// or better, silently convert? 
-		if (usedPlayN == false) { 
-			warn("monitor switched from play to playN - channels may be wrong!\n" 
-				"\touts: % amps: % ins: % vol: !".format(outs, amps, ins, vol));
-		};
-		usedPlayN = true;
+		this.usedPlayN_(true);
 	}
 
 	// setting volume and output offset.
