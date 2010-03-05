@@ -901,7 +901,10 @@ Ndef : NodeProxy {
 		this.printOn(stream);
 	}
 	printOn { | stream |
-		stream << this.class.name << "(" <<< this.key << ")"
+		var serverString = if (server == Server.default) { "" } { 
+			" ->" + server.name.asCompileString;
+		};
+		stream << this.class.name << "(" <<< this.key << serverString << ")"
 	}
 	
 	
