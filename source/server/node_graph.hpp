@@ -21,6 +21,8 @@
 
 #include <memory>
 
+#include "boost/tuple/tuple.hpp"
+
 #include "dsp_thread_queue.hpp"
 #include "dsp_thread_queue_node.hpp"
 #include "group.hpp"
