@@ -33,7 +33,7 @@
 #include <iostream>
 #endif
 
-#include <boost/lockfree/fifo.hpp>
+#include <boost/lockfree/stack.hpp>
 
 #include "nova-tt/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
@@ -267,7 +267,7 @@ public:
     typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc):
-        fifo(1024), node_count(0)
+        runnable_set(1024), node_count(0)
     {
         set_thread_count(tc);
     }
@@ -286,7 +286,7 @@ public:
 
         /* reset node count */
         assert(node_count == 0);
-        assert(fifo.empty());
+        assert(runnable_set.empty());
         node_count.store(queue->get_total_node_count(), boost::memory_order_release);
 
         successor_list const & initially_runnable_items = queue->initially_runnable_items;
@@ -381,7 +381,7 @@ private:
     {
         run_item(0);
         wait_for_end();
-        assert(fifo.empty());
+        assert(runnable_set.empty());
     }
 
     void wait_for_end(void)
@@ -393,7 +393,7 @@ private:
     int run_next_item(thread_count_t index)
     {
         dsp_thread_queue_item * item;
-        bool success = fifo.dequeue(&item);
+        bool success = runnable_set.pop(&item);
 
         if (!success)
             return fifo_empty;
@@ -420,7 +420,7 @@ private:
 
     void mark_as_runnable(dsp_thread_queue_item * item)
     {
-        fifo.enqueue(item);
+        runnable_set.push(item);
     }
 
     friend class nova::dsp_thread_queue_item<runnable, Alloc>;
@@ -437,7 +437,7 @@ private:
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
-    boost::lockfree::fifo<dsp_thread_queue_item*> fifo;
+    boost::lockfree::stack<dsp_thread_queue_item*> runnable_set;
     boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
 };
 
