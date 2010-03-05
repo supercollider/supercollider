@@ -143,7 +143,6 @@ def build(bld):
         'Source/server/SC_Complex.cpp',
         'Source/server/SC_ComPort.cpp',
         'Source/server/SC_CoreAudio.cpp',
-        'Source/server/SC_Dimension.cpp',
         'Source/server/SC_Errors.cpp',
         'Source/server/SC_Graph.cpp',
         'Source/server/SC_GraphDef.cpp',
