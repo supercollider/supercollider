@@ -11,8 +11,7 @@ Plot {
 	
 	*initClass {
 		GUI.skin.put(\plot, (
-			plotFont: GUI.current !? { Font("Courier" , 9) },
-			gridFont: GUI.current !? { Font("Garamond", 9) },
+			gridFont: Font("Garamond", 9),
 			gridColorX: Color.grey(0.7),
 			gridColorY: Color.grey(0.7),
 			fontColor: Color.grey(0.3),
@@ -548,7 +547,7 @@ Plotter {
 	updatePlotBounds {
 		var deltaY = if(data.size > 1 ) { 4.0 } { 0.0 };
 		var distY = bounds.height / data.size;
-		var height = max(20, distY - deltaY);
+		var height = distY - deltaY;
 		
 		plots.do { |plot, i|
 			plot.bounds_(
