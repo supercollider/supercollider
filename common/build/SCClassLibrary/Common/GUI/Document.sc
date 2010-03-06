@@ -23,10 +23,12 @@ Document {
 	var <envir, savedEnvir;
 	var <editable;
 
+	  *initClass{
+		allDocuments = [];
+	  }
 
 	*startup {
 		var num, doc;
-		allDocuments = [];
 		num = this.numberOfOpen;
 		num.do { | i |
 			doc = this.newFromIndex(i);
