@@ -12,7 +12,7 @@ Plot {
 	*initClass {
 		StartUp.add( {
 			GUI.skin.put(\plot, (
-				gridFont: Font("Garamond", 9),
+				gridFont: GUI.current !? { Font("Garamond", 9) },
 				gridColorX: Color.grey(0.7),
 				gridColorY: Color.grey(0.7),
 				fontColor: Color.grey(0.3),
