@@ -496,7 +496,7 @@ void sc_osc_handler::handle_packet_nrt(const char * data, size_t length)
 }
 
 
-sc_osc_handler::received_packet::received_packet *
+sc_osc_handler::received_packet *
 sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
                                               nova_endpoint const & remote_endpoint)
 {
