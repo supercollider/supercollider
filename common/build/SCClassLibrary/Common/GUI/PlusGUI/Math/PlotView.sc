@@ -10,20 +10,22 @@ Plot {
 	var valueCache;
 	
 	*initClass {
-		GUI.skin.put(\plot, (
-			gridFont: Font("Garamond", 9),
-			gridColorX: Color.grey(0.7),
-			gridColorY: Color.grey(0.7),
-			fontColor: Color.grey(0.3),
-			plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
-			background: Color.new255(235, 235, 235),
-			//gridLinePattern: FloatArray[1, 5],
-			gridLinePattern: FloatArray[1, 0],
-			gridLineSmoothing: false,
-			labelX: "",
-			labelY: "",
-			expertMode: false
-		));
+		StartUp.add( {
+			GUI.skin.put(\plot, (
+				gridFont: Font("Garamond", 9),
+				gridColorX: Color.grey(0.7),
+				gridColorY: Color.grey(0.7),
+				fontColor: Color.grey(0.3),
+				plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
+				background: Color.new255(235, 235, 235),
+				//gridLinePattern: FloatArray[1, 5],
+				gridLinePattern: FloatArray[1, 0],
+				gridLineSmoothing: false,
+				labelX: "",
+				labelY: "",
+				expertMode: false
+			));
+		} );
 	}
 	
 	*new { |plotter|
