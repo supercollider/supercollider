@@ -1,13 +1,18 @@
 
 TaskProxyEditor {
 
-	var <>proxy, <>nVars, <win, <zone, <flow, <skipjack, <usesPlayN;
+	var <>proxy, <>nVars, <parent, <zone, <flow, <skipjack, <usesPlayN, <envirGui;
 	var <nameBut, <playBut, <pauseBut, <srcBut, <envBut, <varButs;
 	var <usedKeys, <oldStates = #[-1], oldProxy=0;
 
-	*new { |px, nVars=0, height=16, width = 30, w, makeWatcher=true|
+	win { 
+		warn("" ++ this.class ++ ":win is deprecated. use .parent instead.") 
+		^parent 
+	}
+	
+	*new { |px, nVars=0, height=16, width = 30, parent, makeWatcher=true|
 		^super.new.proxy_(px).nVars_(nVars)
-			.init(w, height, width, makeWatcher);
+			.init(parent, height, width, makeWatcher);
 	}
 
 	srcString {
@@ -44,18 +49,19 @@ TaskProxyEditor {
 		Document("edit me", strings.join ).bounds_(bounds ? Rect(0, 400, 400, 200));
 	}
 
-	init { |w, height, width, makeWatcher|
+	init { |inParent, height, width, makeWatcher|
 		var skin = GUI.skins.jit;
 		var font = Font(*skin.fontSpecs);
-
-		win = w ?? { Window("task px edit", Rect(0, 0, 190, 30)) };
-		zone = CompositeView(win, Rect(0, 0, 190, height));
-		zone.resize_(5);
+		var lineWidth = 70 + (width * 4); 
+	
+		parent = inParent ?? { Window(this.class.asString, Rect(0, 0, lineWidth + 20, (1 + nVars * height) + 15)) };
+		zone = CompositeView(parent, Rect(5, 5, lineWidth, height));
+		zone.resize_(2);
 		zone.background_(skin.foreground);
 
 		flow = FlowLayout(zone.bounds, 0@0, skin.gap);
 		zone.decorator = flow;
-		try { win.front };
+		try { parent.front };
 
 		nameBut = Button(zone, Rect(0,0, 70, height))
 			.font_(font)
@@ -148,16 +154,25 @@ TaskProxyEditor {
 				but.value_(proxy.hasEnvir.binaryValue)
 			});
 
-		this.updateAll;
+		if (nVars > 0) { this.makeEnvirGui(nVars) };
 
+		this.updateAll;
+		
 		if (makeWatcher) { this.makeWatcher };
 	}
-
+	
+	makeEnvirGui { 
+		envirGui = EnvirGui(try { this.proxy.envir }, zone, 
+			Rect(0, 20, zone.bounds.width + 12, nVars * 20), 
+			try { this.proxy.key } ? '-', nVars, false
+		);
+	}
+		
 	makeWatcher {
 		skipjack.stop;
 		skipjack = SkipJack({ this.updateAll },
 			0.5,
-			{ win.isClosed },
+			{ parent.isClosed },
 			this.observedClass.name.asString + try { proxy.key } { "blank" };
 		);
 		skipjack.start;
@@ -165,14 +180,15 @@ TaskProxyEditor {
 	updateAll {
 		var newState, guiStates;
 
-		if (win.isClosed) {skipjack.stop; ^this };
+		if (parent.isClosed) {skipjack.stop; ^this };
 
 			// blank out controls if no proxy there.
-		if (proxy.isNil) {
+		if (proxy.isNil) { 
+			
 			if (oldProxy.isNil) { ^this };	// do nothing if there was none.
 		//	"blank em out".postln;
-			[ nameBut, playBut, pauseBut, srcBut, envBut ].flat.do (_.visible_(false));
-			win.refresh;
+			zone.visible_(false);
+			parent.refresh;
 
 			oldStates = [-1];
 			oldProxy = proxy;
@@ -181,6 +197,7 @@ TaskProxyEditor {
 		};
 			// we have a proxy, and check if its state has changed
 		if (oldProxy.isNil) {
+			zone.visible_(true);
 			[ nameBut, playBut, srcBut, envBut ].flat.do (_.visible_(true));
 		};
 
@@ -236,6 +253,8 @@ TaskProxyEditor {
 
 		oldStates = guiStates;	// keep for next check
 		oldProxy = proxy;
+		
+		if (envirGui.notNil) { try { envirGui.envir = this.proxy.envir; envirGui.checkUpdate } }
 	}
 
 	clear { proxy = nil }
@@ -250,26 +269,35 @@ PdefEditor : TaskProxyEditor {
 }
 
 TaskProxyAllGui {
-	var <win, <filtBut, <filTextV, <edits, <scrolly, <names, <keysRotation=0;
+	var <parent, <filtBut, <filTextV, <edits, <scrolly, <names, <keysRotation=0;
 	var <>prefix="", <>filtering=false;
+	var <editor;
 
-	*new { |size=24, w|
-		^super.new.init(size, w);
+	win { 
+		warn("" ++ this.class ++ ":win is deprecated. use .parent instead.") 
+		^parent 
 	}
 
-	init { | size, w|
-		var zone, flow;
-		var name = "" ++ this.observedClass ++ "AllGui";
-		var height = 16 * size + 20 + 5;
-		win = w ?? { Window(name, Rect(0, 0, 210, height)) };
-		zone = CompositeView(win, Rect(0, 0, 210, height));
-//		zone.background_(skin.foreground);
-		zone.resize_(2);
+	*new { |size=24, parent, makeEdit = false|
+		^super.new.init(size, parent, makeEdit);
+	}
 
+	init { | size, inParent, makeEdit|
+		var zone, flow, editorZone;
+		var name = "" ++ this.observedClass ++ "AllGui";
+		var height = 16 * size + 20 + 10; 
+		var width = 200; 
+		if (makeEdit) { width = width + 200 };
+	
+		parent = inParent ?? { Window(name, Rect(0, 0, width + 20, height)) };
+		parent.addFlowLayout;
+		zone = CompositeView(parent, Rect(0, 0, 200, height));
+		zone.resize_(2);
+	
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow;
-		try { win.front };
-
+		try { parent.front };
+	
 		filtBut = Button(zone, Rect(0,0,60,20))
 			.canFocus_(false)
 			.states_([["all"], ["filt"]])
@@ -286,19 +314,26 @@ TaskProxyAllGui {
 				if (str == "") { str = nil };
 				this.prefix_(txvw.string);
 			});
-
-		edits = Array.fill(size, { this.editorClass.new(w: zone, makeWatcher: false) });
-
-		scrolly = EZScroller(win,
-			Rect(flow.bounds.right - 16, 2, 12, size * 16),
+		
+		edits = Array.fill(size, { this.editorClass.new(parent: zone, makeWatcher: false) });
+		
+		parent.view.decorator.shift(-12, 20);
+		
+		scrolly = EZScroller(parent,
+			Rect(0,0, 12, size * 16 - 2),
 			size, size,
-			{ |sc| keysRotation = sc.value.asInteger.max(0);
-
-			}
+			{ |sc| keysRotation = sc.value.asInteger.max(0) }
 		).visible_(false);
-		scrolly.slider
-			.resize_(3);
+		scrolly.slider.resize_(3);
 
+		parent.view.decorator.shift(0, -20);
+		
+		if (makeEdit) { 
+			zone.resize_(1);
+			scrolly.slider.resize_(1); 
+			editor = this.editorClass.new(nil, nVars: size, height: 18, parent: parent.view, makeWatcher: false); 
+		};
+		
 		SkipJack({
 			var overflow, tooMany;
 
@@ -321,8 +356,8 @@ TaskProxyAllGui {
 				scrolly.visible_(false);
 			};
 			edits.do { |edit, i| edit.proxy_(this.observedClass.all[names[i]]).updateAll };
-
-		}, 0.5, { win.isClosed }, name);
+			if (editor.notNil) { editor.updateAll };
+		}, 0.5, { parent.isClosed }, name);
 	}
 }
 

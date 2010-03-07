@@ -15,7 +15,7 @@ NodeProxyEditor {
 	var <>replaceKeys;		// a dict for slider names to be replaced
 	var 	<tooManyKeys = false, <keysRotation = 0;
 	var oldType = "_";
-	var ownWindow; 
+	var <ownWindow; 
 
 	*initClass {
 		StartUp.add{
