@@ -215,8 +215,9 @@
 					~group = { proxy.group.asNodeID };
 					~finish = {
 						finish.value;
-						~out = ~out.value;
+						proxy.nodeMap.addToEvent(currentEnvironment);
 						~group = ~group.value;
+						~out = ~out.value;
 					}
 				});
 				this
