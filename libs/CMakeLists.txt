@@ -7,10 +7,10 @@ if (PTHREAD)
     add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
     target_link_libraries(boost_thread pthread)
 
-    set_property(TARGET boost_thread
-                 APPEND
-                 PROPERTY COMPILE_FLAGS "-include assert.h"
-    )
+     set_property(TARGET boost_thread
+                  APPEND
+                  PROPERTY COMPILE_FLAGS "-include assert.h"
+     )
 
 else()
     message(SEND_ERROR "we need to implement boost_thread for non-posix systems")
@@ -35,3 +35,9 @@ add_library(oscpack STATIC "oscpack_build.cpp")
 add_library(tlsf STATIC "tlsf/src/tlsf.c")
 set_target_properties(tlsf
                       PROPERTIES COMPILE_DEFINITIONS TLSF_STATISTIC=1)
+
+if(LTO)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
+endif()
+

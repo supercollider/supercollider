@@ -43,4 +43,3 @@ endforeach(test)
 set_property(TARGET server_test
              APPEND
              PROPERTY COMPILE_DEFINITIONS JACK_BACKEND SUPERNOVA)
-
