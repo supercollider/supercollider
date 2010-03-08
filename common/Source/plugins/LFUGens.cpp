@@ -286,9 +286,6 @@ extern "C"
 	void T2A_next(T2A *unit, int inNumSamples);
 	void T2A_Ctor(T2A* unit);
 
-	void DC_next(DC *unit, int inNumSamples);
-	void DC_Ctor(DC* unit);
-
 	void Silent_next(Silent *unit, int inNumSamples);
 	void Silent_Ctor(Silent* unit);
 
@@ -1438,20 +1435,32 @@ void T2A_Ctor(T2A* unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void DC_next_nova(DC *unit, int inNumSamples)
+static void DC_next_nova(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd(OUT(0), val, inNumSamples);
 }
 
-void DC_next_nova_64(DC *unit, int inNumSamples)
+static void DC_next_nova_64(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd<64>(OUT(0), val);
 }
 #endif
 
-void DC_Ctor(DC* unit)
+static void DC_next(DC *unit, int inNumSamples)
+{
+	float val = unit->m_val;
+	float *out = ZOUT(0);
+	LOOP1(inNumSamples, ZXP(out) = val;)
+}
+
+static void DC_next_1(DC *unit, int inNumSamples)
+{
+	ZOUT0(0) = unit->m_val;
+}
+
+static void DC_Ctor(DC* unit)
 {
 	unit->m_val = IN0(0);
 #ifdef NOVA_SIMD
@@ -1461,16 +1470,13 @@ void DC_Ctor(DC* unit)
 		SETCALC(DC_next_nova);
 	else
 #endif
-	SETCALC(DC_next);
+	if (BUFLENGTH == 1)
+		SETCALC(DC_next_1);
+	else
+		SETCALC(DC_next);
 	ZOUT0(0) = unit->m_val;
 }
 
-void DC_next(DC *unit, int inNumSamples)
-{
-	float val = unit->m_val;
-	float *out = ZOUT(0);
-	LOOP1(inNumSamples, ZXP(out) = val;)
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
