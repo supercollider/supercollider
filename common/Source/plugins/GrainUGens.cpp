@@ -209,7 +209,8 @@ inline double sc_gloop(double in, double hi)
 
 
 #define DECLARE_WINDOW                                      \
-	double winPos, winInc, w, b1, y1, y2, y0, amp;          \
+	double winPos, winInc, w, b1, y1, y2, y0;               \
+	float amp;												\
 	winPos = winInc = w = b1 = y1 = y2 = y0 = amp = 0.;		\
 	SndBuf *window;											\
 	const float *windowData __attribute__((__unused__)) = 0;\
