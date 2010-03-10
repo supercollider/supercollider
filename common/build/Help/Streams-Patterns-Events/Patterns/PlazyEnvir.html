@@ -5,26 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
-span.s3 {color: #0000bf}
-span.s4 {color: #bf0000}
-span.s5 {color: #0000bf}
-span.s6 {color: #000000}
-span.s7 {color: #007300}
+span.s3 {color: #bf0000}
+span.s4 {color: #000000}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -44,12 +40,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p3">(</p>
-<p class="p3">a = <span class="s3">PlazyEnvir</span>({ <span class="s3">arg</span> a=0, b=1; <span class="s3">Pshuf</span>([a, a, b], 2) }); <span class="s4">// a, b default to 0,1</span></p>
-<p class="p3">x = <span class="s3">Pn</span>(a, <span class="s3">inf</span>).asStream;</p>
+<p class="p3">a = <span class="s2">PlazyEnvir</span>({ <span class="s2">arg</span> a=0, b=1; <span class="s2">Pshuf</span>([a, a, b], 2) }); <span class="s3">// a, b default to 0,1</span></p>
+<p class="p3">x = <span class="s2">Pn</span>(a, <span class="s2">inf</span>).asStream;</p>
 <p class="p4"><br></p>
-<p class="p3">10.do { x.next.postln }; <span class="s3">Post</span>.nl;</p>
+<p class="p3">10.do { x.next.postln }; <span class="s2">Post</span>.nl;</p>
 <p class="p3">e = (a:100);</p>
-<p class="p3">10.do { x.next(e).postln }; <span class="s3">Post</span>.nl;</p>
+<p class="p3">10.do { x.next(e).postln }; <span class="s2">Post</span>.nl;</p>
 <p class="p3">e = (a:100, b:200);</p>
 <p class="p3">10.do { x.next(e).postln };</p>
 <p class="p3">)</p>
@@ -58,37 +54,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">PlazyEnvir used to produce a Pbind:</p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p3">(</p>
-<p class="p5"><span class="s5">SynthDef</span><span class="s6">(</span>\help_sinegrain<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05, pan=0;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(freq, 0, env), pan))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}).store;</p>
-<p class="p7"><br></p>
-<p class="p6">a = <span class="s5">PlazyEnvir</span>({ <span class="s5">arg</span> g=0, h=0, dur=1;</p>
-<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span>postf(</span>"g: %, h: %, dur: %\n"<span class="s6">, g, h, dur);</span></p>
-<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span>Pbind<span class="s6">(</span></p>
-<p class="p5"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s6">, </span>\help_sinegrain<span class="s6">,</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\dur</span>, dur,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">\degree</span>, <span class="s5">Pseq</span>([g, g, h, g, h], 2)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>)</p>
-<p class="p6">});</p>
-<p class="p7"><br></p>
+<p class="p5"><span class="s2">SynthDef</span><span class="s4">(</span>\help_sinegrain<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s2">arg</span> out=0, freq=440, sustain=0.05, pan=0;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">Pan2</span>.ar(<span class="s2">SinOsc</span>.ar(freq, 0, env), pan))</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}).add;</p>
+<p class="p4"><br></p>
+<p class="p3">a = <span class="s2">PlazyEnvir</span>({ <span class="s2">arg</span> g=0, h=0, dur=1;</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span>postf(</span>"g: %, h: %, dur: %\n"<span class="s4">, g, h, dur);</span></p>
+<p class="p7"><span class="s4"><span class="Apple-tab-span">	</span></span>Pbind<span class="s4">(</span></p>
+<p class="p5"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s4">, </span>\help_sinegrain<span class="s4">,</span></p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, dur,</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s2">Pseq</span>([g, g, h, g, h], 2)</p>
+<p class="p3"><span class="Apple-tab-span">	</span>)</p>
+<p class="p3">});</p>
+<p class="p4"><br></p>
 <p class="p3">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
-<p class="p10">// different variants</p>
-<p class="p3">(a &lt;&gt; (g: 0, h: 3, dur:0.2)).play; <span class="s4">// single stream</span></p>
-<p class="p3">(a &lt;&gt; (g: [0, 4], h: [3, -1], dur:0.2)).play; <span class="s4">// same durations, two streams</span></p>
-<p class="p11"><br></p>
-<p class="p10">// for more about the composition operator &lt;&gt; see: Pchain</p>
+<p class="p8">// different variants</p>
+<p class="p3">(a &lt;&gt; (g: 0, h: 3, dur:0.2)).play; <span class="s3">// single stream</span></p>
+<p class="p3">(a &lt;&gt; (g: [0, 4], h: [3, -1], dur:0.2)).play; <span class="s3">// same durations, two streams</span></p>
+<p class="p9"><br></p>
+<p class="p8">// for more about the composition operator &lt;&gt; see: Pchain</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p1">Some parameters, like duration, cannot be used in the form of an array in the Pbind.<span class="Apple-converted-space"> </span></p>
 <p class="p1">For full parallel expansion see <a href="PlazyEnvirN.html"><span class="s2">PlazyEnvirN</span></a></p>
 <p class="p2"><br></p>
 <p class="p4"><br></p>
-<p class="p11"><br></p>
+<p class="p9"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 </body>

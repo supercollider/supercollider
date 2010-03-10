@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -16,11 +16,9 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
-span.s3 {color: #0000bf}
-span.s4 {color: #0000bf}
-span.s5 {color: #000000}
-span.s6 {color: #606060}
-span.s7 {color: #007300}
+span.s3 {color: #000000}
+span.s4 {color: #606060}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -38,13 +36,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>...</p>
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the nth when it comes by the nth time.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1">see also: <a href="Ppatlace.html"><span class="s3">Ppatlace</span></a></p>
+<p class="p1">see also: <a href="Ppatlace.html"><span class="s2">Ppatlace</span></a></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3"><span class="s4">var</span> a, b;</p>
-<p class="p3">a = <span class="s4">Place</span>(#[1, [2,5], [3, 6]], inf);</p>
+<p class="p3"><span class="s2">var</span> a, b;</p>
+<p class="p3">a = <span class="s2">Place</span>(#[1, [2,5], [3, 6]], inf);</p>
 <p class="p3">x = a.asStream;</p>
 <p class="p3">8.do({ x.next.postln; });</p>
 <p class="p3">)</p>
@@ -64,22 +62,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p5"><br></p>
 <p class="p3">(</p>
-<p class="p6"><span class="s4">SynthDef</span><span class="s5">(</span>"help-sinegrain"<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p3"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p6"><span class="s2">SynthDef</span><span class="s3">(</span>"help-sinegrain"<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s2">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p3">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3">(</p>
-<p class="p3">c = <span class="s4">Place</span>(#[0, 0, [0, 4, 7], [1, 5, 8], [2, 6, 9]], <span class="s4">inf</span>) + 67;</p>
+<p class="p3">c = <span class="s2">Place</span>(#[0, 0, [0, 4, 7], [1, 5, 8], [2, 6, 9]], <span class="s2">inf</span>) + 67;</p>
 <p class="p3">x = c.asStream;</p>
-<p class="p7">Routine<span class="s5">({</span></p>
+<p class="p7">Routine<span class="s3">({</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>(<span class="s6">"help-sinegrain"</span>, [<span class="s7">\freq</span>, x.next.midicps]);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s4">"help-sinegrain"</span>, [<span class="s5">\freq</span>, x.next.midicps]);</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.17.wait;</p>
 <p class="p3"><span class="Apple-tab-span">	</span>})</p>
 <p class="p3">}).play;</p>

@@ -5,16 +5,15 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
@@ -32,37 +31,37 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Note</b>: this is equivalent to<b> pattern.wrap(lo, hi)</b></p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s2">see also <a href="../../Math/SimpleNumber.html">SimpleNumber</a></span></p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6">(</p>
-<p class="p7"><span class="s4">SynthDef</span><span class="s2">(</span>\help_sinegrain<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p6">)</p>
-<p class="p5"><br></p>
-<p class="p6">(</p>
-<p class="p6">a = <span class="s4">Pn</span>(</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>Pwrap<span class="s2">(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pgeom</span>(200,1.07,96),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>200,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1000.0</p>
-<p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span></span>inf</p>
-<p class="p6">);</p>
-<p class="p6">x = a.asStream;</p>
-<p class="p5"><br></p>
-<p class="p8">Routine<span class="s2">({</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, x.next.debug,<span class="s5">\dur</span>,0.3]);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.12.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>})</p>
-<p class="p6">}).play;</p>
-<p class="p6">)</p>
-<p class="p5"><br></p>
-<p class="p6">- felix</p>
+<p class="p3"><span class="s2">see also <a href="../../Math/SimpleNumber.html"><span class="s3">SimpleNumber</span></a></span></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p6"><span class="s4">SynthDef</span><span class="s2">(</span>\help_sinegrain<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).add;</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">(</p>
+<p class="p5">a = <span class="s4">Pn</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>Pwrap<span class="s2">(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pgeom</span>(200,1.07,96),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>200,</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1000.0</p>
+<p class="p5"><span class="Apple-tab-span">	</span>),</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>inf</p>
+<p class="p5">);</p>
+<p class="p5">x = a.asStream;</p>
+<p class="p4"><br></p>
+<p class="p7">Routine<span class="s2">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, x.next.debug,<span class="s5">\dur</span>,0.3]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.12.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">}).play;</p>
+<p class="p5">)</p>
+<p class="p4"><br></p>
+<p class="p5">- felix</p>
 </body>
 </html>

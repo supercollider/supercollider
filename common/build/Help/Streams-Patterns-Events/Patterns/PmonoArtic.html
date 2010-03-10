@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -51,7 +51,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction:2)</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* amp;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, sig ! 2)</p>
-<p class="p4">}).memStore;</p>
+<p class="p4">}).add;</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p4">p = <span class="s2">PmonoArtic</span>(<span class="s4">\sawpulse</span>, <span class="s4">\dur</span>, 0.2, <span class="s4">\freq</span>, <span class="s2">Pwhite</span>(1,8) * 100, <span class="s4">\legato</span>, <span class="s2">Pwrand</span>(#[0.5, 1.0], #[0.1, 0.9], <span class="s2">inf</span>) ).play;</p>

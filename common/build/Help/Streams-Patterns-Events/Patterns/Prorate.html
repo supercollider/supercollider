@@ -5,24 +5,21 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {color: #000000}
-span.s4 {color: #0000bf}
+span.s4 {text-decoration: underline}
 span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -30,7 +27,7 @@ span.Apple-tab-span {white-space:pre}
 <body>
 <p class="p1"><span class="s1"><b>Prorate</b></span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>divide stream proportionally</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s3">superclass: <a href="FilterPattern.html">FilterPattern</a></span></p>
+<p class="p3"><span class="s3">superclass: <a href="FilterPattern.html"><span class="s4">FilterPattern</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>*new(proportions, pattern)</b></p>
@@ -46,7 +43,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p5">// divide 1 into various proportions</p>
 <p class="p7">(</p>
-<p class="p7">a = <span class="s4">Prorate</span>(<span class="s4">Pseq</span>([0.35, 0.5, 0.8]), 1);</p>
+<p class="p7">a = <span class="s5">Prorate</span>(<span class="s5">Pseq</span>([0.35, 0.5, 0.8]), 1);</p>
 <p class="p6"><br></p>
 <p class="p7">x = a.asStream;</p>
 <p class="p6"><br></p>
@@ -55,7 +52,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">// divide a pattern into various proportions</p>
 <p class="p7">(</p>
-<p class="p7">a = <span class="s4">Prorate</span>(<span class="s4">Pseq</span>([0.35, 0.5, 0.8]), <span class="s4">Prand</span>([20, 1], <span class="s4">inf</span>));</p>
+<p class="p7">a = <span class="s5">Prorate</span>(<span class="s5">Pseq</span>([0.35, 0.5, 0.8]), <span class="s5">Prand</span>([20, 1], <span class="s5">inf</span>));</p>
 <p class="p6"><br></p>
 <p class="p7">x = a.asStream;</p>
 <p class="p6"><br></p>
@@ -65,47 +62,47 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">// divide 1 into several parts</p>
 <p class="p7">(</p>
-<p class="p7">a = <span class="s4">Prorate</span>(<span class="s4">Pseq</span>([[1, 2], [5, 7], [4, 8, 9]]).collect(<span class="s4">_</span>.normalizeSum), 1);</p>
+<p class="p7">a = <span class="s5">Prorate</span>(<span class="s5">Pseq</span>([[1, 2], [5, 7], [4, 8, 9]]).collect(<span class="s5">_</span>.normalizeSum), 1);</p>
 <p class="p6"><br></p>
 <p class="p7">x = a.asStream;</p>
 <p class="p6"><br></p>
 <p class="p7">x.nextN(8)</p>
 <p class="p7">)</p>
 <p class="p6"><br></p>
-<p class="p8">// sound example</p>
-<p class="p9"><br></p>
-<p class="p10">(</p>
-<p class="p11"><span class="s5">SynthDef</span><span class="s3">(</span>\help_sinegrain<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p10"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p10"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p10">)</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p10">(</p>
-<p class="p10"><span class="s5">var</span> a, x;</p>
-<p class="p12"><span class="s3">a = </span>Prorate<span class="s3">(</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Prand</span>([2/3, 1/3, [0.3, 0.3, 0.4], [0.6, 0.4]], <span class="s5">inf</span>),</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>([1, 2, 1, 3, 12], <span class="s5">inf</span>)</p>
-<p class="p10">);</p>
-<p class="p9"><br></p>
-<p class="p10">3.do {</p>
-<p class="p10"><span class="Apple-tab-span">	</span>{</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s5">var</span> x = a.asStream;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s5">var</span> freq = rrand(72, 84).midicps;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p11"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">Synth</span><span class="s3">(</span>\help_sinegrain<span class="s3">, [</span>\freq<span class="s3">, freq]);</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0.25 * x.next).wait;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
-<p class="p10"><span class="Apple-tab-span">	</span>}.fork;</p>
-<p class="p10">};</p>
-<p class="p10">)</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
+<p class="p5">// sound example</p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p8"><span class="s5">SynthDef</span><span class="s3">(</span>\help_sinegrain<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).add;</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p7">(</p>
+<p class="p7"><span class="s5">var</span> a, x;</p>
+<p class="p9"><span class="s3">a = </span>Prorate<span class="s3">(</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Prand</span>([2/3, 1/3, [0.3, 0.3, 0.4], [0.6, 0.4]], <span class="s5">inf</span>),</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>([1, 2, 1, 3, 12], <span class="s5">inf</span>)</p>
+<p class="p7">);</p>
+<p class="p6"><br></p>
+<p class="p7">3.do {</p>
+<p class="p7"><span class="Apple-tab-span">	</span>{</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">var</span> x = a.asStream;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s5">var</span> freq = rrand(72, 84).midicps;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>loop {</p>
+<p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s5">Synth</span><span class="s3">(</span>\help_sinegrain<span class="s3">, [</span>\freq<span class="s3">, freq]);</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(0.25 * x.next).wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}.fork;</p>
+<p class="p7">};</p>
+<p class="p7">)</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
 </body>
 </html>

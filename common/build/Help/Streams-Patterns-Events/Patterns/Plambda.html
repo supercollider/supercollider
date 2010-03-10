@@ -5,11 +5,11 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
@@ -17,15 +17,16 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
-span.s3 {color: #007300}
-span.s4 {color: #0000bf}
+span.s3 {text-decoration: underline}
+span.s4 {color: #007300}
+span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><span class="s1"><b>Plambda<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>create a<span class="Apple-converted-space">  </span>scope (namespace) for enclosed streams</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s2"><b>superclass: </b><a href="FilterPattern.html">FilterPattern</a></span></p>
+<p class="p3"><span class="s2"><b>superclass: </b><a href="FilterPattern.html"><span class="s3">FilterPattern</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Plambda(pattern, scope)</b></p>
@@ -41,34 +42,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// Pget(key, default, repeats)</p>
 <p class="p4"><br></p>
 <p class="p6">(</p>
-<p class="p7">SynthDef<span class="s2">(</span><span class="s3">\sine</span><span class="s2">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05, pan=0, amp=0.1;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(<span class="s4">Rand</span>(0.001, 0.02), sustain, <span class="s4">AmpCompA</span>.kr(freq)*amp), doneAction:2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">Pan2</span>.ar(<span class="s4">SinOsc</span>.ar(freq), pan, env))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}).memStore;</p>
+<p class="p7">SynthDef<span class="s2">(</span><span class="s4">\sine</span><span class="s2">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s5">arg</span> out=0, freq=440, sustain=0.05, pan=0, amp=0.1;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">var</span> env;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.perc(<span class="s5">Rand</span>(0.001, 0.02), sustain, <span class="s5">AmpCompA</span>.kr(freq)*amp), doneAction:2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, <span class="s5">Pan2</span>.ar(<span class="s5">SinOsc</span>.ar(freq), pan, env))</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p6">(</p>
 <p class="p7"><span class="s2">a = </span>Plambda<span class="s2">(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pseq</span>([</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>([</p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>Pfindur<span class="s2">(5,</span></p>
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>Ppar<span class="s2">([</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pbind</span>(<span class="s3">\note</span>, <span class="s4">Plet</span>(<span class="s3">\x</span>, <span class="s4">Prand</span>([1, 5, 1, [10, 14]], <span class="s4">inf</span>)), <span class="s3">\dur</span>, 8/3, <span class="s3">\pan</span>, -1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pbind</span>(<span class="s3">\note</span>, <span class="s4">Plet</span>(<span class="s3">\y</span>, <span class="s4">Pseq</span>([5, 3, 2, 0, [0, 5, 6, 9]], <span class="s4">inf</span>)), <span class="s3">\dur</span>, 0.5, <span class="s3">\pan</span>,1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pbind</span>(<span class="s3">\note</span>, <span class="s4">Pseq</span>([<span class="s4">Pget</span>(<span class="s3">\x</span>), <span class="s4">Pget</span>(<span class="s3">\y</span>)], <span class="s4">inf</span>) + 12, <span class="s3">\pan</span>, 0, <span class="s3">\dur</span>, 2/3)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(<span class="s4">\note</span>, <span class="s5">Plet</span>(<span class="s4">\x</span>, <span class="s5">Prand</span>([1, 5, 1, [10, 14]], <span class="s5">inf</span>)), <span class="s4">\dur</span>, 8/3, <span class="s4">\pan</span>, -1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(<span class="s4">\note</span>, <span class="s5">Plet</span>(<span class="s4">\y</span>, <span class="s5">Pseq</span>([5, 3, 2, 0, [0, 5, 6, 9]], <span class="s5">inf</span>)), <span class="s4">\dur</span>, 0.5, <span class="s4">\pan</span>,1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(<span class="s4">\note</span>, <span class="s5">Pseq</span>([<span class="s5">Pget</span>(<span class="s4">\x</span>), <span class="s5">Pget</span>(<span class="s4">\y</span>)], <span class="s5">inf</span>) + 12, <span class="s4">\pan</span>, 0, <span class="s4">\dur</span>, 2/3)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>])</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pbind</span>(<span class="s3">\note</span>, <span class="s4">Pget</span>(<span class="s3">\x</span>, 0, 6) + [0, 5], <span class="s3">\dur</span>, <span class="s4">Pstutter</span>(<span class="s4">inf</span>, <span class="s4">Prand</span>([2/3, 1/6])))</p>
-<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>], </span><span class="s4">inf</span><span class="s2">).trace(</span><span class="s3">\eventScope</span><span class="s2">) </span>// internally, the values are shared via \eventScope</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pbind</span>(<span class="s4">\note</span>, <span class="s5">Pget</span>(<span class="s4">\x</span>, 0, 6) + [0, 5], <span class="s4">\dur</span>, <span class="s5">Pstutter</span>(<span class="s5">inf</span>, <span class="s5">Prand</span>([2/3, 1/6])))</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>], </span><span class="s5">inf</span><span class="s2">).trace(</span><span class="s4">\eventScope</span><span class="s2">) </span>// internally, the values are shared via \eventScope</p>
 <p class="p6"><span class="Apple-tab-span">	</span>);</p>
-<p class="p8"><span class="s2">b = </span><span class="s4">Pbindf</span><span class="s2">(a, </span>\instrument<span class="s2">, </span>\sine<span class="s2">, </span>\legato<span class="s2">, 0.1);</span></p>
+<p class="p8"><span class="s2">b = </span><span class="s5">Pbindf</span><span class="s2">(a, </span>\instrument<span class="s2">, </span>\sine<span class="s2">, </span>\legato<span class="s2">, 0.1);</span></p>
 <p class="p6">b.play</p>
 <p class="p6">)</p>
 <p class="p4"><br></p>
 <p class="p5">// this structure remains parallelizable</p>
 <p class="p4"><br></p>
-<p class="p6"><span class="s4">Ppar</span>([b, <span class="s4">Pbindf</span>(b, <span class="s3">\ctranspose</span>, 24, <span class="s3">\dur</span>, <span class="s4">Pkey</span>(<span class="s3">\dur</span>) * 0.25)]).play;</p>
+<p class="p6"><span class="s5">Ppar</span>([b, <span class="s5">Pbindf</span>(b, <span class="s4">\ctranspose</span>, 24, <span class="s4">\dur</span>, <span class="s5">Pkey</span>(<span class="s4">\dur</span>) * 0.25)]).play;</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
@@ -17,7 +17,6 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0010c4}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {color: #606060}
 span.s2 {color: #000000}
 span.s3 {color: #0010c4}
@@ -122,14 +121,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>s.sendMsg(<span class="s4">\s_new</span>, <span class="s4">\default</span>, n, 0, 0, <span class="s4">\freq</span>, 850);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s4">\default</span>, [<span class="s4">\freq</span>, 850]);</p>
 <p class="p4"><br></p>
-<p class="p3">Argument lists generally appear as alternating pairs, with the control identifier preceding the value. Usually the control identifier is a name, as above, but it could also be an integer index. (Using integers is slightly faster for the server, but it makes the code harder to read and can introduce bugs if the SynthDef structure changes.) One way to find out control indices is to .memStore or .store the SynthDef into a SynthDescLib, then get the list of all controls out of the SynthDesc.</p>
+<p class="p3">Argument lists generally appear as alternating pairs, with the control identifier preceding the value. Usually the control identifier is a name, as above, but it could also be an integer index. (Using integers is slightly faster for the server, but it makes the code harder to read and can introduce bugs if the SynthDef structure changes.) One way to find out control indices is to .add the SynthDef into a SynthDescLib, then get the list of all controls out of the SynthDesc.</p>
 <p class="p4"><br></p>
 <p class="p7">(</p>
 <p class="p9">SynthDef<span class="s2">(</span><span class="s4">\controlList</span><span class="s2">, { </span>|freq = 440, amp = 0.1, detune = #[0.999, 1.001], gate = 1, out = 0|</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">var</span><span class="Apple-tab-span">	</span>sig = <span class="s3">Mix</span>(<span class="s3">Saw</span>.ar(freq * (detune ++ [1]), amp)),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.adsr, gate, doneAction: 2);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0, (sig * env) ! 2);</p>
-<p class="p7">}).memStore;</p>
+<p class="p7">}).add;</p>
 <p class="p5"><br></p>
 <p class="p9">SynthDescLib<span class="s2">.global[</span><span class="s4">\controlList</span><span class="s2">]</span></p>
 <p class="p7">)</p>
@@ -161,7 +160,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3"><b>Object style</b> (the Node object automatically inserts $[ and $] for you):</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n = <span class="s3">Synth</span>(<span class="s4">\controlList</span>, [<span class="s4">\detune</span>, [0.95, 1.005], <span class="s4">\freq</span>, 220]);</p>
-<p class="p11"><span class="Apple-tab-span">	</span>n.set(<span class="s6">\detune</span>, [0.99, 1.01]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span>n.set(<span class="s6">\detune</span>, [0.99, 1.01]);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>n.release;</p>
 <p class="p4"><br></p>
 <p class="p3"><b>Event style:</b></p>
