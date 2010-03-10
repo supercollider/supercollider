@@ -698,6 +698,10 @@ Server : Model {
 			}
 		}
 	}
+	
+	*allRunningServers {
+		^this.all.select(_.serverRunning)
+	}
 
 	// bundling support
 
