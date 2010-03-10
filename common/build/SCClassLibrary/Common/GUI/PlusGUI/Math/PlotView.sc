@@ -113,7 +113,9 @@ Plot {
 		
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
-			string.drawAtPoint(hpos @ base, font, fontColor);
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint( string, hpos @ base);
 		};
 		Pen.stroke;
 	
@@ -127,7 +129,9 @@ Plot {
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
-				string.drawAtPoint(left @ vpos, font, fontColor);
+				Pen.font = font;
+				Pen.strokeColor = fontColor;
+				Pen.stringAtPoint( string, left @ vpos);
 			}
 		};
 		
@@ -181,15 +185,19 @@ Plot {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) { 
 			sbounds = try { labelX.bounds(font) } ? 0;
-			labelX.drawAtPoint(
-				plotBounds.right - sbounds.width @ plotBounds.bottom, font, fontColor
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint( labelX,
+				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
 			sbounds = try { labelY.bounds(font) } ? 0;
-			labelY.drawAtPoint(
-				plotBounds.left - sbounds.width - 3 @ plotBounds.top, font, fontColor
-			) 
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint( labelY,
+				plotBounds.left - sbounds.width - 3 @ plotBounds.top
+			)
 		};
 	}
 	
@@ -269,7 +277,7 @@ Plot {
 	}
 	
 	levels { |x, y|
-		Pen.setSmoothing(false);
+		Pen.smoothing_(false);
 		y.size.do { |i|
 			Pen.moveTo(x[i] @ y[i]);
 			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
@@ -277,7 +285,7 @@ Plot {
 	}
 	
 	steps { |x, y|
-		Pen.setSmoothing(false);
+		Pen.smoothing_(false);
 		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
 			Pen.lineTo(x[i] @ y[i]);
@@ -340,14 +348,14 @@ Plot {
 		Pen.width = 1;
 		
 		try {
-			Pen.setSmoothing(gridLineSmoothing);
+			Pen.smoothing_(gridLineSmoothing);
 			Pen.lineDash_(gridLinePattern);
 		};
 		
 		Pen.stroke;
 		
 		try { 
-			Pen.setSmoothing(true);
+			Pen.smoothing_(true);
 			Pen.lineDash_(FloatArray[1, 0]) 
 		};
 	}

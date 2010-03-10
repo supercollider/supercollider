@@ -325,7 +325,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18"><span class="s8">a.makeWindow;<span class="Apple-tab-span">	</span></span>// open it again</p>
 <p class="p3"><br></p>
 <p class="p8">a.value = { (0..70).scramble }.dup(3);</p>
-<p class="p8">a.plotMode = <span class="s14">\lines</span>; a.refresh;</p>
+<p class="p8">a.plotMode = <span class="s14">\linear</span>; a.refresh;</p>
 <p class="p8">a.value = { <span class="s5">|i|</span> (0..2000).normalize(0, 4pi + i).sin } ! 4; <span class="s12">// lots of values, test efficiency</span></p>
 <p class="p8">a.value = { <span class="s5">|i|</span> (0..10000).normalize(0, 8pi + i).sin } ! 3; <span class="s12">// lots of values, test efficiency</span></p>
 <p class="p8">a.value = { (0..140).scramble } ! 7;</p>
