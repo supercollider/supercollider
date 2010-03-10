@@ -457,7 +457,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ratio = height / width;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = <span class="s1">SCImage</span>(width@(height));</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.draw({<span class="s1">|bb|</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCPen</span>.setSmoothing(<span class="s1">false</span>);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">SCPen</span>.smoothing_(<span class="s1">false</span>);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.drawStringAtPoint(str, 0@0, font, color);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i.interpolation_(<span class="s13">\none</span>);</p>

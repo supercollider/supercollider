@@ -93,6 +93,7 @@ Other additions/improvements:
 * 2010-02-09 rearrangement of supercollider source code tree - ds
 * 2010-02-11 Server:default_ now assigns to s by default. Settable with flag - sw
 * 2010-02-27 removed SCAnimationView and added SCUserView:animate_ - fo
+* 2010-03-10 SCPen:setSmoothing changed to SCPen:smoothing_, harmonised change with swingosc - ds
 
 SuperCollider v3.3.1, released 2009-06-19
 =========================================

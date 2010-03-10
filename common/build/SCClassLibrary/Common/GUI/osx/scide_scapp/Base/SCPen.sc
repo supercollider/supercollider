@@ -160,6 +160,11 @@ classvar fnt, fillColor, strokeColor;
 	}
 
 	*setSmoothing { arg flag=true;
+		this.deprecated(thisMethod, Meta_SCPen.findRespondingMethodFor(\smoothing_));
+		this.smoothing = flag;
+	}
+
+	*smoothing_ { arg flag=true;
 		_Pen_SetSmoothing
 		^this.primitiveFailed
 	}
