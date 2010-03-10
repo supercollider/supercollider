@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -16,19 +16,14 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #bf0000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #bf0000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 span.s1 {color: #0000bf}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #bf0000}
-span.s5 {color: #007300}
-span.s6 {color: #007300}
-span.s7 {color: #0000bf}
-span.s8 {text-decoration: underline ; color: #0000bf}
-span.s9 {color: #0000bf}
-span.s10 {font: 12.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #bf0000}
+span.s4 {color: #007300}
+span.s5 {text-decoration: underline ; color: #0000ee}
+span.s6 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -47,14 +42,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">// Scale segments, in the sequence: up, up, down (repeat)</p>
 <p class="p6">(</p>
-<p class="p6"><span class="s2">TempoClock</span>.default.tempo = 1;</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>\degree<span class="s3">, </span><span class="s2">Pseq</span><span class="s3">([</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseries</span>({ rrand(0, 7) }, 1, { rrand(4, 8) }),<span class="Apple-tab-span">	</span><span class="s4">// up (step = 1)</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseries</span>({ rrand(0, 7) }, 1, { rrand(4, 8) }),<span class="Apple-tab-span">	</span><span class="s4">// up (step = 1)</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseries</span>({ rrand(7, 14) }, -1, { rrand(4, 8) })<span class="Apple-tab-span">	</span><span class="s4">// down (step = -1)</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>], <span class="s2">inf</span>),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.125</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 1;</p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>\degree<span class="s2">, </span><span class="s1">Pseq</span><span class="s2">([</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>({ rrand(0, 7) }, 1, { rrand(4, 8) }),<span class="Apple-tab-span">	</span><span class="s3">// up (step = 1)</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>({ rrand(0, 7) }, 1, { rrand(4, 8) }),<span class="Apple-tab-span">	</span><span class="s3">// up (step = 1)</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>({ rrand(7, 14) }, -1, { rrand(4, 8) })<span class="Apple-tab-span">	</span><span class="s3">// down (step = -1)</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>], <span class="s1">inf</span>),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.125</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -64,44 +59,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">But it gets even more fun -- list patterns don't care whether they're enclosing value patterns (as in the previous example) or event patterns. That means you can write a set of Pbind-style patterns, each one representing a phrase, and string them together. This next example is longer, but that's only because of a larger number of phrase patterns. The structure is very simple, though: <b>Pxrand([Pbind(), Pmono(), Pmono()...], inf)</b>. Some of the phrases are written with Pmono to slide between notes.</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p9">SynthDef<span class="s3">(</span><span class="s6">\bass</span><span class="s3">, { </span>|freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,</p>
+<p class="p9">SynthDef<span class="s2">(</span><span class="s4">\bass</span><span class="s2">, { </span>|freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>detune = 1.005, preamp = 4|</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s7">var</span><span class="Apple-tab-span">	</span>sig,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s7">Env</span>.adsr(0.01, 0.3, 0.4, 0.1);<span class="Apple-tab-span">	</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>freq = <span class="s7">Lag</span>.kr(freq, slideTime);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>sig = <span class="s7">Mix</span>(<span class="s7">VarSaw</span>.ar([freq, freq * detune], 0, width, preamp)).distort * amp</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s7">EnvGen</span>.kr(env, gate, doneAction: 2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>sig = <span class="s7">LPF</span>.ar(sig, ffreq);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s7">Out</span>.ar(0, sig ! 2)</p>
-<p class="p6">}).memStore;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s1">Env</span>.adsr(0.01, 0.3, 0.4, 0.1);<span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span>freq = <span class="s1">Lag</span>.kr(freq, slideTime);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>sig = <span class="s1">Mix</span>(<span class="s1">VarSaw</span>.ar([freq, freq * detune], 0, width, preamp)).distort * amp</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(env, gate, doneAction: 2);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>sig = <span class="s1">LPF</span>.ar(sig, ffreq);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, sig ! 2)</p>
+<p class="p6">}).add;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s7">TempoClock</span>.default.tempo = 132/60;</p>
-<p class="p6">p = <span class="s2">Pxrand</span>([</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">Pbind</span><span class="s3">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// repeated notes</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\bass<span class="s3">,</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\midinote<span class="s3">, 36,</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.75, 0.25, 0.25, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\legato</span>, <span class="s2">Pseq</span>([0.9, 0.3, 0.3, 0.3, 0.3], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 132/60;</p>
+<p class="p6">p = <span class="s1">Pxrand</span>([</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Pbind</span><span class="s2">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// repeated notes</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\bass<span class="s2">,</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\midinote<span class="s2">, 36,</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.75, 0.25, 0.25, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\legato</span>, <span class="s1">Pseq</span>([0.9, 0.3, 0.3, 0.3, 0.3], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">Pmono</span><span class="s3">(</span><span class="s5">\bass</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// octave jump</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 48, 36], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Pmono</span><span class="s2">(</span><span class="s4">\bass</span><span class="s2">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// octave jump</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 48, 36], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">Pmono</span><span class="s3">(</span><span class="s5">\bass</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// tritone jump</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 42, 41, 33], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.25, 0.25, 0.75], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Pmono</span><span class="s2">(</span><span class="s4">\bass</span><span class="s2">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// tritone jump</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 42, 41, 33], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.25, 0.25, 0.75], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">Pmono</span><span class="s3">(</span><span class="s5">\bass</span><span class="s3">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// diminished triad</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 39, 36, 42], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.5, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span></span><span class="s1">Pmono</span><span class="s2">(</span><span class="s4">\bass</span><span class="s2">,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// diminished triad</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 39, 36, 42], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.5, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
-<p class="p6">], <span class="s2">inf</span>).play(quant: 1);</p>
+<p class="p6">], <span class="s1">inf</span>).play(quant: 1);</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
 <p class="p6">p.stop;</p>
@@ -118,19 +113,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p5">// scale degree segments, every fifth choice is odd-numbered only (descending)</p>
 <p class="p6">(</p>
-<p class="p6"><span class="s2">var</span><span class="Apple-tab-span">	</span>n = 10,</p>
-<p class="p6"><span class="Apple-tab-span">	</span>scaleSegments = <span class="s2">Array</span>.fill(n, { <span class="s2">|i|</span></p>
+<p class="p6"><span class="s1">var</span><span class="Apple-tab-span">	</span>n = 10,</p>
+<p class="p6"><span class="Apple-tab-span">	</span>scaleSegments = <span class="s1">Array</span>.fill(n, { <span class="s1">|i|</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(i.odd) {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseries</span>(11, -1, rrand(5, 10))</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>(11, -1, rrand(5, 10))</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>} {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseries</span>(rrand(-4, 4), 1, i+2)</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pseries</span>(rrand(-4, 4), 1, i+2)</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p6"><span class="Apple-tab-span">	</span>});</p>
 <p class="p8"><br></p>
-<p class="p6"><span class="s2">TempoClock</span>.default.tempo = 1;</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s2">Pswitch</span>(scaleSegments, <span class="s2">Pseq</span>([<span class="s2">Pwhite</span>(0, n-1, 4), <span class="s2">Pwhite</span>(0, n-1, 1).select(<span class="s2">_</span>.odd)], <span class="s2">inf</span>)),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.125</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 1;</p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pswitch</span>(scaleSegments, <span class="s1">Pseq</span>([<span class="s1">Pwhite</span>(0, n-1, 4), <span class="s1">Pwhite</span>(0, n-1, 1).select(<span class="s1">_</span>.odd)], <span class="s1">inf</span>)),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.125</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -142,46 +137,46 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">The Pfsm help file includes very good examples of organizing single values and pattern phrases. Also see <a href="PG_Cookbook06_Phrase_Network.html"><span class="s1">PG_Cookbook06_Phrase_Network</span></a> for an application of Pfsm to generate a corny jazz solo.</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s8"><a href="../Patterns/Pdfsm.html">Pdfsm</a></span> stands for "deterministic finite state machine," where there is no random selection.</p>
+<p class="p3"><span class="s5"><a href="../Patterns/Pdfsm.html">Pdfsm</a></span> stands for "deterministic finite state machine," where there is no random selection.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Third-party extension alert:</b> A good Markov chain implementation for SuperCollider exists in the MathLib quark.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Library of named sub-patterns</b></p>
 <p class="p2"><br></p>
-<p class="p3">One very effective way to manage phrases is to make a library, or more precisely <a href="../../Collections/Dictionary.html"><span class="s9">Dictionary</span></a>, of sub-patterns, and then call them up one at a time. <a href="../../Libraries/JITLib/Patterns/Psym.html"><span class="s1">Psym</span></a> is the pattern to do this. The advantage here is that you can store the phrases in a separate place, while the pattern that you actually play is much simpler and describes the musical intent at a much higher level.</p>
+<p class="p3">One very effective way to manage phrases is to make a library, or more precisely <a href="../../Collections/Dictionary.html"><span class="s1">Dictionary</span></a>, of sub-patterns, and then call them up one at a time. <a href="../../Libraries/JITLib/Patterns/Psym.html"><span class="s1">Psym</span></a> is the pattern to do this. The advantage here is that you can store the phrases in a separate place, while the pattern that you actually play is much simpler and describes the musical intent at a much higher level.</p>
 <p class="p2"><br></p>
 <p class="p5">// Uses the bass SynthDef above</p>
 <p class="p6">(</p>
 <p class="p6">~phrases = (</p>
-<p class="p6"><span class="Apple-tab-span">	</span>repeated: <span class="s2">Pbind</span>(</p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\bass<span class="s3">,</span></p>
-<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\midinote<span class="s3">, 36,</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.75, 0.25, 0.25, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\legato</span>, <span class="s2">Pseq</span>([0.9, 0.3, 0.3, 0.3, 0.3], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p6"><span class="Apple-tab-span">	</span>repeated: <span class="s1">Pbind</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\bass<span class="s2">,</span></p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>\midinote<span class="s2">, 36,</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.75, 0.25, 0.25, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\legato</span>, <span class="s1">Pseq</span>([0.9, 0.3, 0.3, 0.3, 0.3], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p6"><span class="Apple-tab-span">	</span>octave: <span class="s2">Pmono</span>(<span class="s5">\bass</span>,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 48, 36], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p6"><span class="Apple-tab-span">	</span>octave: <span class="s1">Pmono</span>(<span class="s4">\bass</span>,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 48, 36], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p6"><span class="Apple-tab-span">	</span>tritone: <span class="s2">Pmono</span>(<span class="s5">\bass</span>,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 42, 41, 33], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.25, 0.25, 0.75], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p6"><span class="Apple-tab-span">	</span>tritone: <span class="s1">Pmono</span>(<span class="s4">\bass</span>,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 42, 41, 33], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.25, 0.25, 0.75], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>),</p>
-<p class="p6"><span class="Apple-tab-span">	</span>dim: <span class="s2">Pmono</span>(<span class="s5">\bass</span>,</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\midinote</span>, <span class="s2">Pseq</span>([36, 39, 36, 42], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, <span class="s2">Pseq</span>([0.25, 0.5, 0.25, 0.5], 1),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\amp</span>, 0.5, <span class="s5">\detune</span>, 1.005</p>
+<p class="p6"><span class="Apple-tab-span">	</span>dim: <span class="s1">Pmono</span>(<span class="s4">\bass</span>,</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\midinote</span>, <span class="s1">Pseq</span>([36, 39, 36, 42], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>([0.25, 0.5, 0.25, 0.5], 1),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\amp</span>, 0.5, <span class="s4">\detune</span>, 1.005</p>
 <p class="p6"><span class="Apple-tab-span">	</span>)</p>
 <p class="p6">);</p>
 <p class="p8"><br></p>
-<p class="p6"><span class="s2">TempoClock</span>.default.tempo = 128/60;</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 128/60;</p>
 <p class="p8"><br></p>
-<p class="p10">// the higher level control pattern is really simple now</p>
-<p class="p6">p = <span class="s2">Psym</span>(<span class="s2">Pxrand</span>(#[repeated, octave, tritone, dim], <span class="s2">inf</span>), ~phrases).play;</p>
+<p class="p5">// the higher level control pattern is really simple now</p>
+<p class="p6">p = <span class="s1">Psym</span>(<span class="s1">Pxrand</span>(#[repeated, octave, tritone, dim], <span class="s1">inf</span>), ~phrases).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
 <p class="p6">p.stop;</p>
@@ -196,7 +191,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><b>Psym</b>(**, (pattern1: <b>Pbind</b>(**))</p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>Pbind</b>(\someValue, <b>Pnsym</b>(**, (pattern1: Pwhite(**)))</p>
 <p class="p2"><br></p>
-<p class="p11"><b>Bad:</b></p>
+<p class="p10"><b>Bad:</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span><b>Pbind</b>(\someValue, <b>Psym</b>(**, (pattern1: Pwhite(**)))</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -207,10 +202,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">// random pitches in two distinct ranges; use a coin toss to decide which for this event</p>
 <p class="p5">// 70% low, 30% high</p>
 <p class="p6">(</p>
-<p class="p6"><span class="s2">TempoClock</span>.default.tempo = 1;</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s2">Pswitch1</span>([<span class="s2">Pwhite</span>(7, 14, <span class="s2">inf</span>), <span class="s2">Pwhite</span>(-7, 0, <span class="s2">inf</span>)], <span class="s2">Pfunc</span> { 0.7.coin.binaryValue }),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.25</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 1;</p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pswitch1</span>([<span class="s1">Pwhite</span>(7, 14, <span class="s1">inf</span>), <span class="s1">Pwhite</span>(-7, 0, <span class="s1">inf</span>)], <span class="s1">Pfunc</span> { 0.7.coin.binaryValue }),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -219,9 +214,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Compare to the following:</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s2">Pswitch</span>([<span class="s2">Pwhite</span>(7, 14, <span class="s2">inf</span>), <span class="s2">Pwhite</span>(-7, 0, <span class="s2">inf</span>)], <span class="s2">Pfunc</span> { 0.7.coin.binaryValue }),</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.25</p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pswitch</span>([<span class="s1">Pwhite</span>(7, 14, <span class="s1">inf</span>), <span class="s1">Pwhite</span>(-7, 0, <span class="s1">inf</span>)], <span class="s1">Pfunc</span> { 0.7.coin.binaryValue }),</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -233,14 +228,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>Related: Conditional patterns</b></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s8"><a href="../Patterns/Pif.html">Pif</a></span> supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B. Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss. This might be clearer to read. However, this works only when there are two alternatives. Pswitch1 and Psym1 allow any number of choices.</p>
+<p class="p3"><span class="s5"><a href="../Patterns/Pif.html">Pif</a></span> supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B. Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss. This might be clearer to read. However, this works only when there are two alternatives. Pswitch1 and Psym1 allow any number of choices.</p>
 <p class="p2"><br></p>
 <p class="p6">(</p>
-<p class="p6"><span class="s2">TempoClock</span>.default.tempo = 1;</p>
-<p class="p6">p = <span class="s2">Pbind</span>(</p>
-<p class="p5"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// translation: if(0.7.coin) { rrand(-7, 0) } { rrand(7, 14 }</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\degree</span>, <span class="s2">Pif</span>(<span class="s2">Pwhite</span>(0.0, 1.0, <span class="s2">inf</span>) &lt; 0.7, <span class="s2">Pwhite</span>(-7, 0, <span class="s2">inf</span>), <span class="s2">Pwhite</span>(7, 14, <span class="s2">inf</span>)),<span class="Apple-converted-space">   </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="s5">\dur</span>, 0.25</p>
+<p class="p6"><span class="s1">TempoClock</span>.default.tempo = 1;</p>
+<p class="p6">p = <span class="s1">Pbind</span>(</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// translation: if(0.7.coin) { rrand(-7, 0) } { rrand(7, 14 }</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pif</span>(<span class="s1">Pwhite</span>(0.0, 1.0, <span class="s1">inf</span>) &lt; 0.7, <span class="s1">Pwhite</span>(-7, 0, <span class="s1">inf</span>), <span class="s1">Pwhite</span>(7, 14, <span class="s1">inf</span>)),<span class="Apple-converted-space">   </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
 <p class="p6">).play;</p>
 <p class="p6">)</p>
 <p class="p8"><br></p>
@@ -249,7 +244,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">We will see in <a href="PG_06e_Language_Control.html"><span class="s1">PG_06e_Language_Control</span></a> that Pif can be used on values that were previously calculated in the Pbind. It adds considerably to the intelligence Pbind can manage, when its value streams are aware of other values in the event.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p12"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_03_What_Is_Pbind.html"><span class="s10">PG_03_What_Is_Pbind</span></a></span></p>
-<p class="p12"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_05_Math_on_Patterns.html"><span class="s10">PG_05_Math_on_Patterns</span></a></span></p>
+<p class="p11"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_03_What_Is_Pbind.html"><span class="s6">PG_03_What_Is_Pbind</span></a></span></p>
+<p class="p11"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_05_Math_on_Patterns.html"><span class="s6">PG_05_Math_on_Patterns</span></a></span></p>
 </body>
 </html>

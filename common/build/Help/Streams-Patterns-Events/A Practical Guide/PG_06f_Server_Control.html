@@ -5,26 +5,27 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016bd}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #ae1a19}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2b7000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #bf0000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #007300}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2b7000}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bec}
-span.s1 {color: #0016bd}
-span.s2 {color: #2b7000}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
+li.li3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+span.s1 {color: #0000bf}
+span.s2 {color: #007300}
 span.s3 {color: #000000}
 span.s4 {color: #606060}
-span.s5 {color: #ae1a19}
+span.s5 {color: #bf0000}
 span.s6 {text-decoration: underline}
 span.Apple-tab-span {white-space:pre}
 ul.ul1 {list-style-type: disc}
@@ -36,23 +37,23 @@ ul.ul1 {list-style-type: disc}
 <p class="p3">A handful of filter patterns can isolate signals on a private bus and/or group, and also apply effect synths. A nice feature is that resources allocated at the beginning of the pattern are removed at the end. This is especially useful for effects, where you don't want to have a lot of effect synths left over taking up CPU but not processing audio.</p>
 <p class="p2"><br></p>
 <ul class="ul1">
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pbus(pattern, dur, fadeTime, numChannels, rate):</b> Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pgroup(pattern):</b> Creates a private group (without private bus) for the pattern's synths.</li>
+<li class="li3"><b>Pbus(pattern, dur, fadeTime, numChannels, rate):</b> Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.</li>
+<li class="li3"><b>Pgroup(pattern):</b> Creates a private group (without private bus) for the pattern's synths.</li>
 </ul>
 <p class="p2"><br></p>
 <ul class="ul1">
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pfx(pattern, fxname, pairs)</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Pfxb(pattern, fxname, pairs):</b> Both of these patterns play an effect synth at the tail of the target group. This synth should read from the bus identified by the 'out' argument, and write the processed signal onto the same bus using either ReplaceOut or XOut. Pfx uses whatever bus and group are specified in the incoming event. Pfxb allocates a separate bus and group for the effect and the pattern.</li>
+<li class="li3"><b>Pfx(pattern, fxname, pairs)</b></li>
+<li class="li3"><b>Pfxb(pattern, fxname, pairs):</b> Both of these patterns play an effect synth at the tail of the target group. This synth should read from the bus identified by the 'out' argument, and write the processed signal onto the same bus using either ReplaceOut or XOut. Pfx uses whatever bus and group are specified in the incoming event. Pfxb allocates a separate bus and group for the effect and the pattern.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3">There are a lot of permutations when it comes to signal routing and effect management, too many to discuss in depth here. Some of the main scenarios are:</p>
 <p class="p2"><br></p>
 <ul class="ul1">
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Separate effects that should apply individually: the patterns and effects should be isolated on separate buses. <a href="../Patterns/Pfxb.html"><span class="s1">Pfxb</span></a> handles this isolation automatically: two patterns like <span class="s1">Pfxb</span>(<span class="s1">Pbind</span>(...), <span class="s2">\fxname</span>, <span class="s2">\effectargName</span>, value, <span class="s2">\name</span>, value...) will play on separate buses and their signals will not interfere with each other.</li>
+<li class="li3">Separate effects that should apply individually: the patterns and effects should be isolated on separate buses. <a href="../Patterns/Pfxb.html"><span class="s1">Pfxb</span></a> handles this isolation automatically: two patterns like <span class="s1">Pfxb</span>(<span class="s1">Pbind</span>(...), <span class="s2">\fxname</span>, <span class="s2">\effectargName</span>, value, <span class="s2">\name</span>, value...) will play on separate buses and their signals will not interfere with each other.</li>
 </ul>
 <p class="p2"><br></p>
 <ul class="ul1">
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use <a href="../Patterns/Pfx.html"><span class="s1">Pfx</span></a> to piggyback on the existing bus.</li>
+<li class="li3">Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use <a href="../Patterns/Pfx.html"><span class="s1">Pfx</span></a> to piggyback on the existing bus.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p4">Pfxb<span class="s3">(</span></p>
@@ -83,7 +84,7 @@ ul.ul1 {list-style-type: disc}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">In</span>.ar(out, 2) * amp;</p>
 <p class="p9"><span class="Apple-tab-span">	</span>sig = sig * <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>(#[1, 1, 0], #[1, 1], -3, releaseNode: 1), gate, doneAction: 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s1">ReplaceOut</span>.ar(out, sig)</p>
-<p class="p9">}).memStore;</p>
+<p class="p9">}).add;</p>
 <p class="p8"><br></p>
 <p class="p9">~vbus1 = <span class="s1">Bus</span>.control(s, 1).set(0.5);</p>
 <p class="p9">~vbus2 = <span class="s1">Bus</span>.control(s, 1).set(0.5);</p>
@@ -128,7 +129,7 @@ ul.ul1 {list-style-type: disc}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">PlayBuf</span>.ar(1, bufnum, <span class="s1">BufRateScale</span>.ir(bufnum), 0, start);</p>
 <p class="p9"><span class="Apple-tab-span">	</span>sig = sig * amp * <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.linen(0.01, dur, 0.01), doneAction: 2);</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, sig ! 2)</p>
-<p class="p9">}).memStore;</p>
+<p class="p9">}).add;</p>
 <p class="p9">)</p>
 <p class="p8"><br></p>
 <p class="p9">(</p>

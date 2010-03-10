@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -18,7 +18,7 @@ p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px Helvetica}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 span.s1 {color: #0000bf}
 span.s2 {color: #007300}
 span.s3 {color: #bf0000}
@@ -90,7 +90,7 @@ td.td6 {width: 276.0px; border-style: solid; border-width: 1.0px 1.0px 1.0px 1.0
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">PlayBuf</span>.ar(1, bufnum, <span class="s1">BufRateScale</span>.ir(bufnum), 0, start);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>sig = sig * amp * <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.linen(0.01, dur, 0.01), doneAction: 2);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, sig ! 2)</p>
-<p class="p5">}).memStore;</p>
+<p class="p5">}).add;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p5">(</p>
