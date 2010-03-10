@@ -41,8 +41,9 @@ span.s8 {font: 12.0px Helvetica}
 span.s9 {font: 9.0px Monaco}
 span.s10 {font: 9.0px Monaco; color: #007300}
 span.s11 {font: 12.0px Monaco}
-span.s12 {font: 14.0px Helvetica}
-span.s13 {font: 12.0px Helvetica; color: #000000}
+span.s12 {color: #1135f9}
+span.s13 {font: 14.0px Helvetica}
+span.s14 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -212,11 +213,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p16"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.matchAt(2)<span class="Apple-converted-space">  </span></span>// matches both 'fibonacci' and 'even', either may be returned</p>
 <p class="p11"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d.matchAt(4)</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.matchAt(<span class="s6">\abc</span>)</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>trueAt(key)</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns true if the item at the key is true, otherwise false.This method is also valid in <a href="../Core/Object.html"><span class="s12">Object</span></a><span class="s12">.</span></p>
+<p class="p12"><br></p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>falseAt(key)</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Returns false if the item at the key is not true, otherwise true. This method is inherited from <a href="../Core/Object.html"><span class="s12">Object</span></a>.</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><br></p>
 <p class="p12"><br></p>
 <p class="p17"><b>Iteration/Enumeration</b></p>
 <p class="p22"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
-<p class="p5"><span class="s12"><b><span class="Apple-tab-span">	</span></b></span>Most methods for iteration work analogously to Dictionary's superclasses, see e.g. <a href="Collection.html"><span class="s2">Collection</span></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="s13"><b><span class="Apple-tab-span">	</span></b></span>Most methods for iteration work analogously to Dictionary's superclasses, see e.g. <a href="Collection.html"><span class="s2">Collection</span></a>.<span class="Apple-converted-space"> </span></p>
 <p class="p15"><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><b>do(func)</b></p>
 <p class="p5"><b><span class="Apple-tab-span">	</span>collect(func)</b></p>
@@ -300,7 +308,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If the event is not nil, yields a copy, with all the elements of the receiver.</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>See also <a href="Event.html"><span class="s2">Event</span></a>.</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p16"><span class="s13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// write a generator for dictionaries</p>
+<p class="p16"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// write a generator for dictionaries</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d = (</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a: 5, b: 7, c: 1,</p>
