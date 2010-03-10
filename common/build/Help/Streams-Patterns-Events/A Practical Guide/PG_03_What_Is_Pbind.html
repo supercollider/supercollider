@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 20.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -17,17 +17,17 @@ p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #bf0000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
+li.li3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 span.s1 {color: #0000bf}
 span.s2 {color: #bf0000}
 span.s3 {color: #000000}
 span.s4 {color: #007300}
-span.s5 {color: #0000bf}
-span.s6 {color: #0000bf}
-span.s7 {color: #0000bf}
-span.s8 {text-decoration: line-through}
-span.s9 {font: 12.0px Helvetica}
+span.s5 {text-decoration: line-through}
+span.s6 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
+ul.ul1 {list-style-type: disc}
+ul.ul2 {list-style-type: circle}
 </style>
 </head>
 <body>
@@ -48,7 +48,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">e.freq = 220;</p>
 <p class="p5"><br></p>
 <p class="p6"><span class="s3">e.put(</span><span class="s4">\amp</span><span class="s3">, 0.6);<span class="Apple-tab-span">	</span></span>// Add a new value into the event</p>
-<p class="p6"><span class="s3">e.put(</span><span class="s4">\dur</span><span class="s3">, </span><span class="s5">nil</span><span class="s3">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Remove a value</p>
+<p class="p6"><span class="s3">e.put(</span><span class="s4">\dur</span><span class="s3">, </span><span class="s1">nil</span><span class="s3">);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Remove a value</p>
 <p class="p2"><br></p>
 <p class="p3">A Pbind is defined by a list of pairs: keys associated with the patterns that will supply the values for the events.</p>
 <p class="p2"><br></p>
@@ -59,13 +59,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">We can look at the return values from a Pbind by calling next on the stream. Note that it's necessary to pass an empty event into <i>next</i>, so that Pbind has somewhere to put the values.</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
-<p class="p4">p = <span class="s5">Pbind</span>(</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s5">Pseq</span>(#[0, 0, 4, 4, 5, 5, 4], 1),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s5">Pseq</span>(#[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1], 1)</p>
+<p class="p4">p = <span class="s1">Pbind</span>(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pseq</span>(#[0, 0, 4, 4, 5, 5, 4], 1),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s1">Pseq</span>(#[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1], 1)</p>
 <p class="p6"><span class="s3">).asStream;<span class="Apple-tab-span">	</span></span>// remember, you have to make a stream out of the pattern before using it</p>
 <p class="p4">)</p>
 <p class="p5"><br></p>
-<p class="p6"><span class="s3">p.next(</span><span class="s5">Event</span><span class="s3">.new);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// shorter: p.next(())</p>
+<p class="p6"><span class="s3">p.next(</span><span class="s1">Event</span><span class="s3">.new);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// shorter: p.next(())</p>
 <p class="p5"><br></p>
 <p class="p6">// Output:</p>
 <p class="p4">( 'degree': 0, 'dur': 0.5 )</p>
@@ -78,7 +78,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">For the first event, the first key is 'degree' and the value is 0. This is placed into the event before moving to the next pair: the event in transition contains ( 'degree': 0 ). Then the next key supplies 0.5 for 'dur', and since there are no more pairs, the event is complete: ( 'degree': 0, 'dur': 0.5 ).</p>
 <p class="p2"><br></p>
 <p class="p9">// User does:</p>
-<p class="p4">p.next(<span class="s5">Event</span>.new);</p>
+<p class="p4">p.next(<span class="s1">Event</span>.new);</p>
 <p class="p2"><br></p>
 <p class="p9">// SuperCollider processes:</p>
 <p class="p3">1. \degree stream returns 0</p>
@@ -111,10 +111,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Compare the sound of these patterns. Pbind produces an attack on every note, while Pmono glides from pitch to pitch.</p>
 <p class="p2"><br></p>
-<p class="p4">p = <span class="s5">Pbind</span>(<span class="s4">\degree</span>, <span class="s5">Pwhite</span>(0, 7, <span class="s5">inf</span>), <span class="s4">\dur</span>, 0.25, <span class="s4">\legato</span>, 1).play;</p>
+<p class="p4">p = <span class="s1">Pbind</span>(<span class="s4">\degree</span>, <span class="s1">Pwhite</span>(0, 7, <span class="s1">inf</span>), <span class="s4">\dur</span>, 0.25, <span class="s4">\legato</span>, 1).play;</p>
 <p class="p4">p.stop;</p>
 <p class="p5"><br></p>
-<p class="p4">p = <span class="s5">Pmono</span>(<span class="s4">\default</span>, <span class="s4">\degree</span>, <span class="s5">Pwhite</span>(0, 7, <span class="s5">inf</span>), <span class="s4">\dur</span>, 0.25).play;</p>
+<p class="p4">p = <span class="s1">Pmono</span>(<span class="s4">\default</span>, <span class="s4">\degree</span>, <span class="s1">Pwhite</span>(0, 7, <span class="s1">inf</span>), <span class="s4">\dur</span>, 0.25).play;</p>
 <p class="p4">p.stop;</p>
 <p class="p2"><br></p>
 <p class="p3">Articulating phrases is possible with Pmono by chaining several Pmono patterns together in a row, or by using <a href="../Patterns/PmonoArtic.html"><span class="s1">PmonoArtic</span></a>.</p>
@@ -124,13 +124,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">Most SynthDefs have <a href="../../UGens/Synth control/Control.html"><span class="s1">Control</span></a> inputs, usually defined by arguments to the UGen function. For example, the default SynthDef (declared in Event.sc) defines five inputs: out, freq, amp, pan and gate.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s5">SynthDef</span>(<span class="s4">\default</span>, { <span class="s5">arg</span> out=0, freq=440, amp=0.1, pan=0, gate=1;</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> z;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>z = <span class="s5">LPF</span>.ar(</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Mix</span>.new(<span class="s5">VarSaw</span>.ar(freq + [0, <span class="s5">Rand</span>(-0.4,0.0), <span class="s5">Rand</span>(0.0,0.4)], 0, 0.3)),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">XLine</span>.kr(<span class="s5">Rand</span>(4000,5000), <span class="s5">Rand</span>(2500,3200), 1)</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>) * <span class="s5">Linen</span>.kr(gate, 0.01, 0.7, 0.3, 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">OffsetOut</span>.ar(out, <span class="s5">Pan2</span>.ar(z, pan, amp));</p>
+<p class="p4"><span class="s1">SynthDef</span>(<span class="s4">\default</span>, { <span class="s1">arg</span> out=0, freq=440, amp=0.1, pan=0, gate=1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> z;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>z = <span class="s1">LPF</span>.ar(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Mix</span>.new(<span class="s1">VarSaw</span>.ar(freq + [0, <span class="s1">Rand</span>(-0.4,0.0), <span class="s1">Rand</span>(0.0,0.4)], 0, 0.3)),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">XLine</span>.kr(<span class="s1">Rand</span>(4000,5000), <span class="s1">Rand</span>(2500,3200), 1)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>) * <span class="s1">Linen</span>.kr(gate, 0.01, 0.7, 0.3, 2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">OffsetOut</span>.ar(out, <span class="s1">Pan2</span>.ar(z, pan, amp));</p>
 <p class="p4">}, [<span class="s4">\ir</span>]);</p>
 <p class="p2"><br></p>
 <p class="p3">When an event plays a synth, any values stored in the event under the same name as a SynthDef input will be passed to the new synth. Compare the following:</p>
@@ -146,56 +146,56 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">The SynthDef to play is named by the 'instrument' key. To play a pattern using a different Synth, simply name it in the pattern.</p>
 <p class="p2"><br></p>
 <p class="p10">SynthDef<span class="s3">(</span><span class="s4">\harpsi</span><span class="s3">, { </span>|outbus = 0, freq = 440, amp = 0.1, gate = 1|</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span> out;</p>
-<p class="p4"><span class="Apple-tab-span">	</span>out = <span class="s5">EnvGen</span>.ar(<span class="s5">Env</span>.adsr, gate, doneAction: 2) * amp *</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pulse</span>.ar(freq, 0.25, 0.75);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(outbus, out ! 2);</p>
-<p class="p6"><span class="s3">}).memStore;<span class="Apple-tab-span">	</span></span>// see below for more on .memStore</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span> out;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>out = <span class="s1">EnvGen</span>.ar(<span class="s1">Env</span>.adsr, gate, doneAction: 2) * amp *</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s1">Pulse</span>.ar(freq, 0.25, 0.75);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(outbus, out ! 2);</p>
+<p class="p6"><span class="s3">}).add;<span class="Apple-tab-span">	</span></span>// see below for more on .add</p>
 <p class="p5"><br></p>
-<p class="p4">p = <span class="s5">Pbind</span>(</p>
+<p class="p4">p = <span class="s1">Pbind</span>(</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Use \harpsi, not \default</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>\instrument<span class="s3">, </span>\harpsi<span class="s3">,</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s5">Pseries</span>(0, 1, 8),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\degree</span>, <span class="s1">Pseries</span>(0, 1, 8),</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.25</p>
 <p class="p4">).play;</p>
 <p class="p2"><br></p>
 <p class="p3">It's actually an oversimplification to say that the Pbind names should always match up to SynthDef arguments.</p>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">A Pbind can use some values in the event for intermediate calculations (see <a href="PG_06g_Data_Sharing.html"><span class="s6">PG_06g_Data_Sharing</span></a>). If these intermediate values have names not found in the SynthDef, they are not sent to the server. There is no requirement that every item in an Event must correspond to a SynthDef control.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">The default event prototype performs some automatic conversions. You might have noticed that the examples so far use 'degree' to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into 'freq', which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See <a href="PG_07_Value_Conversions.html"><span class="s1">PG_07_Value_Conversions</span></a> for an explanation of these automatic calculations.</li>
+<ul class="ul1">
+<li class="li3">A Pbind can use some values in the event for intermediate calculations (see <a href="PG_06g_Data_Sharing.html"><span class="s1">PG_06g_Data_Sharing</span></a>). If these intermediate values have names not found in the SynthDef, they are not sent to the server. There is no requirement that every item in an Event must correspond to a SynthDef control.</li>
+<li class="li3">The default event prototype performs some automatic conversions. You might have noticed that the examples so far use 'degree' to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into 'freq', which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See <a href="PG_07_Value_Conversions.html"><span class="s1">PG_07_Value_Conversions</span></a> for an explanation of these automatic calculations.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>Don't send or load SynthDefs; use .memStore or .store instead</b></p>
 <p class="p2"><br></p>
-<p class="p3">To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a <a href="../../ServerArchitecture/SynthDesc.html"><span class="s7">SynthDesc</span></a>, and the library is a <a href="../../ServerArchitecture/SynthDescLib.html"><span class="s7">SynthDescLib</span></a>. The normal methods -- .send(s), .load(s) -- to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that <i>store</i> the SynthDef into the library.</p>
+<p class="p3">To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a <a href="../../ServerArchitecture/SynthDesc.html"><span class="s1">SynthDesc</span></a>, and the library is a <a href="../../ServerArchitecture/SynthDescLib.html"><span class="s1">SynthDescLib</span></a>. The normal methods -- .send(s), .load(s) -- to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that <i>store</i> the SynthDef into the library.</p>
 <p class="p2"><br></p>
 <p class="p6">// Save into the library, write a .scsyndef file, and load it on the server</p>
-<p class="p4"><span class="s5">SynthDef</span>(...).store;</p>
+<p class="p4"><span class="s1">SynthDef</span>(...).store;</p>
 <p class="p5"><br></p>
 <p class="p6">// Save into the library and send the SynthDef to the server (no .scsyndef file)</p>
 <p class="p6">// Make sure the server is booted before doing this</p>
-<p class="p4"><span class="s5">SynthDef</span>(...).memStore;</p>
+<p class="p4"><span class="s1">SynthDef</span>(...).memStore;</p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s8">.load(s)</span><span class="Apple-tab-span">	</span>--&gt;<span class="Apple-tab-span">	</span>.store</p>
-<p class="p3"><span class="s8">.send(s)</span><span class="Apple-tab-span">	</span>--&gt;<span class="Apple-tab-span">	</span>.memStore</p>
+<p class="p3"><span class="s5">.load(s)</span><span class="Apple-tab-span">	</span>--&gt;<span class="Apple-tab-span">	</span>.store</p>
+<p class="p3"><span class="s5">.send(s)</span><span class="Apple-tab-span">	</span>--&gt;<span class="Apple-tab-span">	</span>.memStore</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p8"><b>“Rest” events</b></p>
 <p class="p2"><br></p>
-<p class="p3">The convention to include a rest in the middle of an event pattern is to set the \freq key to a Symbol. Commonly this is \rest, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquées" technique could be written this way (see <a href="PG_06e_Language_Control.html"><span class="s1">PG_06e_Language_Control</span></a> for an explanation of the conditional <a href="../Patterns/Pif.html"><span class="s7">Pif</span></a>):</p>
+<p class="p3">The convention to include a rest in the middle of an event pattern is to set the \freq key to a Symbol. Commonly this is \rest, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquées" technique could be written this way (see <a href="PG_06e_Language_Control.html"><span class="s1">PG_06e_Language_Control</span></a> for an explanation of the conditional <a href="../Patterns/Pif.html"><span class="s1">Pif</span></a>):</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p6">// first, pitches ascending by 1-3 semitones, until 2 octaves are reached</p>
-<p class="p4"><span class="s5">var</span><span class="Apple-tab-span">	</span>pitches = <span class="s5">Pseries</span>(0, <span class="s5">Pconst</span>(24, <span class="s5">Pwhite</span>(1, 3, <span class="s5">inf</span>)), <span class="s5">inf</span>).asStream.all,</p>
+<p class="p4"><span class="s1">var</span><span class="Apple-tab-span">	</span>pitches = <span class="s1">Pseries</span>(0, <span class="s1">Pconst</span>(24, <span class="s1">Pwhite</span>(1, 3, <span class="s1">inf</span>)), <span class="s1">inf</span>).asStream.all,</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// randomly block 1/3 of those</p>
 <p class="p4"><span class="Apple-tab-span">	</span>mask = pitches.scramble[0 .. pitches.size div: 3];</p>
 <p class="p5"><br></p>
-<p class="p4">p = <span class="s5">Pbind</span>(</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\arpeg</span>, <span class="s5">Pseq</span>(pitches[ .. pitches.size - 2] ++ pitches.reverse[ .. pitches.size - 2], <span class="s5">inf</span>),</p>
+<p class="p4">p = <span class="s1">Pbind</span>(</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\arpeg</span>, <span class="s1">Pseq</span>(pitches[ .. pitches.size - 2] ++ pitches.reverse[ .. pitches.size - 2], <span class="s1">inf</span>),</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// if the note is found in the mask array, replace it with \rest</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// then that note does not sound</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\note</span>, <span class="s5">Pif</span>(<span class="s5">Pfunc</span> { <span class="s5">|event|</span> mask.includes(event[<span class="s4">\arpeg</span>]) }, <span class="s4">\rest</span>, <span class="s5">Pkey</span>(<span class="s4">\arpeg</span>)),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\note</span>, <span class="s1">Pif</span>(<span class="s1">Pfunc</span> { <span class="s1">|event|</span> mask.includes(event[<span class="s4">\arpeg</span>]) }, <span class="s4">\rest</span>, <span class="s1">Pkey</span>(<span class="s4">\arpeg</span>)),</p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>\octave<span class="s3">, 4,</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, 0.125</p>
 <p class="p4">).play;</p>
@@ -216,32 +216,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">The default event prototype relies on the synth to remove itself from the server when it's finished. This can be done in several ways:</p>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">(Most typical) A gated envelope with a releasing doneAction ( &gt;= 2) in the envelope generator (see <a href="../../UGens/Synth control/Envelopes/UGen-doneActions.html"><span class="s1">UGen-doneActions</span></a> for a complete list). The \harpsi SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types: Env.asr, Env.adsr, Env.dadsr. The Env help file offers more detail on gated envelopes.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Linen.kr, which is a shortcut for EnvGen.kr(Env([0, susLevel, 0], [attackTime, releaseTime], \lin, releaseNode: 1), gate, doneAction: [2 or higher]). The default SynthDef uses this. The doneAction should be at least 2 to release the node.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Note:</b> If the release is controlled by a gate, the gate must be represented by the synth argument 'gate'; standard event prototypes expect to be able to control the synth's release using this argument. Also, make sure the gate's default value is greater than 0. Otherwise, the envelope will never start and you will both hear nothing and watch synths pile up on the server.</li>
+<ul class="ul1">
+<li class="li3">(Most typical) A gated envelope with a releasing doneAction ( &gt;= 2) in the envelope generator (see <a href="../../UGens/Synth control/Envelopes/UGen-doneActions.html"><span class="s1">UGen-doneActions</span></a> for a complete list). The \harpsi SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types: Env.asr, Env.adsr, Env.dadsr. The Env help file offers more detail on gated envelopes.</li>
+<li class="li3">Linen.kr, which is a shortcut for EnvGen.kr(Env([0, susLevel, 0], [attackTime, releaseTime], \lin, releaseNode: 1), gate, doneAction: [2 or higher]). The default SynthDef uses this. The doneAction should be at least 2 to release the node.</li>
+<ul class="ul2">
+<li class="li3"><b>Note:</b> If the release is controlled by a gate, the gate must be represented by the synth argument 'gate'; standard event prototypes expect to be able to control the synth's release using this argument. Also, make sure the gate's default value is greater than 0. Otherwise, the envelope will never start and you will both hear nothing and watch synths pile up on the server.</li>
 </ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Fixed-duration envelopes (no gate).</li>
+<li class="li3">Fixed-duration envelopes (no gate).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3"><b>Argument name prefixes</b></p>
 <p class="p2"><br></p>
-<p class="p3">One other subtle point about synth argument names. In a SynthDef, argument names can have the prefix <b>t_</b> to indicate a "trigger control," or <b>i_</b> for an "initial rate" control (meaning that it holds the value set when the Synth is first played). This is described in <a href="../../ServerArchitecture/SynthDef.html"><span class="s7">SynthDef</span></a> help. Pbind and its cousins should leave out the prefixes, e.g.:</p>
+<p class="p3">One other subtle point about synth argument names. In a SynthDef, argument names can have the prefix <b>t_</b> to indicate a "trigger control," or <b>i_</b> for an "initial rate" control (meaning that it holds the value set when the Synth is first played). This is described in <a href="../../ServerArchitecture/SynthDef.html"><span class="s1">SynthDef</span></a> help. Pbind and its cousins should leave out the prefixes, e.g.:</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
 <p class="p10">SynthDef<span class="s3">(</span><span class="s4">\trig_demo</span><span class="s3">, { </span>|freq, gate = 1, t_trig = 1|<span class="s3"><span class="Apple-tab-span">	</span></span><span class="s2">// t_trig here</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">var</span><span class="Apple-tab-span">	</span>env = <span class="s5">Decay2</span>.kr(t_trig, 0.01, 0.1),</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sig = <span class="s5">SinOsc</span>.ar(freq, 0, env)</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">Linen</span>.kr(gate, 0.01, 0.1, 0.1, doneAction: 2);</p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0, sig ! 2)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>env = <span class="s1">Decay2</span>.kr(t_trig, 0.01, 0.1),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>sig = <span class="s1">SinOsc</span>.ar(freq, 0, env)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">Linen</span>.kr(gate, 0.01, 0.1, 0.1, doneAction: 2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(0, sig ! 2)</p>
 <p class="p4">}).memStore;</p>
 <p class="p4">)</p>
 <p class="p5"><br></p>
 <p class="p4">(</p>
-<p class="p7"><span class="s3">p = </span><span class="s5">Pmono</span><span class="s3">(</span>\trig_demo<span class="s3">,</span></p>
-<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s5">Pexprand</span>(200, 800, <span class="s5">inf</span>),</p>
+<p class="p7"><span class="s3">p = </span><span class="s1">Pmono</span><span class="s3">(</span>\trig_demo<span class="s3">,</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s1">Pexprand</span>(200, 800, <span class="s1">inf</span>),</p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span><span class="s4">\trig</span><span class="s3">, 1,<span class="Apple-tab-span">	</span></span>// note that this is NOT t_trig -- just \trig</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s4">\delta</span>, 0.125</p>
 <p class="p4">).play;</p>
@@ -250,7 +250,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4">p.stop;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p11"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_02_Basic_Vocabulary.html"><span class="s9">PG_02_Basic_Vocabulary</span></a></span></p>
-<p class="p11"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_04_Words_to_Phrases.html"><span class="s9">PG_04_Words_to_Phrases</span></a></span></p>
+<p class="p11"><span class="s3">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_02_Basic_Vocabulary.html"><span class="s6">PG_02_Basic_Vocabulary</span></a></span></p>
+<p class="p11"><span class="s3">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_04_Words_to_Phrases.html"><span class="s6">PG_04_Words_to_Phrases</span></a></span></p>
 </body>
 </html>

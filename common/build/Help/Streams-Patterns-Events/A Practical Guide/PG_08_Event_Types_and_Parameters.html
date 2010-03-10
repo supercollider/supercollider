@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -16,21 +16,16 @@ p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
+li.li3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 span.s1 {color: #0000bf}
 span.s2 {color: #000000}
 span.s3 {color: #007300}
-span.s4 {color: #007300}
-span.s5 {color: #0000bf}
-span.s6 {color: #0000bf}
-span.s7 {color: #007300}
-span.s8 {color: #606060}
-span.s9 {font: 12.0px Helvetica}
+span.s4 {color: #606060}
+span.s5 {font: 12.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
+ul.ul1 {list-style-type: disc}
+ul.ul2 {list-style-type: circle}
 </style>
 </head>
 <body>
@@ -73,10 +68,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>rest:</b> As one would expect, a \rest does nothing except wait the required amount of time until the next event.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>note:</b> This is the default event type, used when \type is not specified. It plays one or more Synth nodes on the server, with an automatic release after \sustain beats if the SynthDef has a 'gate' argument.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing and Node control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>sendGate:</b> Override SynthDef behavior for the 'gate' argument. If the SynthDef as 'gate', setting sendGate = false prevents the release message from being sent. Rarely used.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>strum:</b> If multiple notes are produced (usually a chord, given by providing an array to one of the pitch parameters), \strum is the number of beats to delay each successive note onset. When using \strum, another key is active, <b>\strumEndsTogether</b>. If false (the default), each strummed node will play for its full duration and the releases will be staggered. If true, the releases will occur at the same time.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing and Node control arguments</b></li>
+<li class="li3"><b>sendGate:</b> Override SynthDef behavior for the 'gate' argument. If the SynthDef as 'gate', setting sendGate = false prevents the release message from being sent. Rarely used.</li>
+<li class="li3"><b>strum:</b> If multiple notes are produced (usually a chord, given by providing an array to one of the pitch parameters), \strum is the number of beats to delay each successive note onset. When using \strum, another key is active, <b>\strumEndsTogether</b>. If false (the default), each strummed node will play for its full duration and the releases will be staggered. If true, the releases will occur at the same time.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p5">p = <span class="s1">Pbind</span>(</p>
@@ -92,61 +87,61 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">p.stop;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>on:</b> Start a Synth node (or nodes) without releasing. The node ID(s) are in the event's ~id variable. Those IDs can be used with the off, set and kill event types.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing and Node control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>callback:</b> A function that will be executed after creating the nodes. Use this for bookkeeping, to keep track of the node IDs for later use. The function receives the finished event as its argument.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">(sendGate and strum parameters are not used)</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing and Node control arguments</b></li>
+<li class="li3"><b>callback:</b> A function that will be executed after creating the nodes. Use this for bookkeeping, to keep track of the node IDs for later use. The function receives the finished event as its argument.</li>
+<li class="li3">(sendGate and strum parameters are not used)</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>off:</b> Release server nodes nicely if possible. If the SynthDef has a 'gate' argument, the gate will be set to 0 or a user-specified value. Otherwise, the nodes are brutally killed with n_free.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>hasGate:</b> True or false, telling the event whether the SynthDef has a 'gate' argument or not. The default is assumed true.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> The node ID(s) must be given explicitly.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>gate:</b> By default, the gate will be set to 0. Negative values trigger a "forced release" in EnvGen. See the <a href="../../UGens/Synth control/Envelopes/EnvGen.html"><span class="s1">EnvGen</span></a> help file for details.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>hasGate:</b> True or false, telling the event whether the SynthDef has a 'gate' argument or not. The default is assumed true.</li>
+<li class="li3"><b>id:</b> The node ID(s) must be given explicitly.</li>
+<li class="li3"><b>gate:</b> By default, the gate will be set to 0. Negative values trigger a "forced release" in EnvGen. See the <a href="../../UGens/Synth control/Envelopes/EnvGen.html"><span class="s1">EnvGen</span></a> help file for details.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>kill:</b> Immediately remove nodes using n_free.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> The node ID(s) must be given explicitly.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>id:</b> The node ID(s) must be given explicitly.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>set:</b> Send new values to the control inputs of existing nodes.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> The node ID(s) must be given explicitly. This may be an integer ID or Synth/Group node object.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>id:</b> The node ID(s) must be given explicitly. This may be an integer ID or Synth/Group node object.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3">There are two ways to specify argument names: by <i>instrument</i> and by <i>argument array</i>.</p>
 <p class="p2"><br></p>
 <p class="p3"><i>By instrument:</i></p>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>instrument:</b> The SynthDef name should be given again, so that the event knows which event values are relevant for the nodes.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>args:</b> By default, the \args key contains the control names for the default synthdef. To take argument names from the instrument name, you must override this default with an empty array (or any non-collection object).</li>
+<ul class="ul1">
+<li class="li3"><b>instrument:</b> The SynthDef name should be given again, so that the event knows which event values are relevant for the nodes.</li>
+<li class="li3"><b>args:</b> By default, the \args key contains the control names for the default synthdef. To take argument names from the instrument name, you must override this default with an empty array (or any non-collection object).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p9">SynthDef<span class="s2">(</span><span class="s4">\event_set</span><span class="s2">, { </span>|freq = 440, gate = 1, amp = 0.1, lagTime = 0.1,</p>
+<p class="p9">SynthDef<span class="s2">(</span><span class="s3">\event_set</span><span class="s2">, { </span>|freq = 440, gate = 1, amp = 0.1, lagTime = 0.1,</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq = 2000, detune = 1.005, out = 0|</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">var</span><span class="Apple-tab-span">	</span>sig = <span class="s5">Saw</span>.ar(Lag.kr(freq, lagTime) * [1, detune]).sum * amp</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s5">EnvGen</span>.kr(<span class="s5">Env</span>.adsr, gate, doneAction: 2);</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, sig ! 2);</p>
-<p class="p5">}).memStore;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">var</span><span class="Apple-tab-span">	</span>sig = <span class="s1">Saw</span>.ar(Lag.kr(freq, lagTime) * [1, detune]).sum * amp</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* <span class="s1">EnvGen</span>.kr(<span class="s1">Env</span>.adsr, gate, doneAction: 2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s1">Out</span>.ar(out, sig ! 2);</p>
+<p class="p5">}).add;</p>
 <p class="p5">)</p>
 <p class="p8"><br></p>
-<p class="p10"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
+<p class="p7"><span class="s2">a = </span><span class="s1">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
 <p class="p8"><br></p>
 <p class="p5">(</p>
-<p class="p11">p = <span class="s6">Pbind</span>(</p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">\id</span>, a,</p>
-<p class="p12"><span class="s2"><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\event_set<span class="s2">,</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\args</span>, #[],</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\freq</span>, <span class="s6">Pexprand</span>(200, 600, <span class="s6">inf</span>),</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="s7">\dur</span>, <span class="s6">Pwhite</span>(1, 5, <span class="s6">inf</span>) * 0.125</p>
-<p class="p11">).play;</p>
+<p class="p5">p = <span class="s1">Pbind</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\id</span>, a,</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>\instrument<span class="s2">, </span>\event_set<span class="s2">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\args</span>, #[],</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\freq</span>, <span class="s1">Pexprand</span>(200, 600, <span class="s1">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pwhite</span>(1, 5, <span class="s1">inf</span>) * 0.125</p>
+<p class="p5">).play;</p>
 <p class="p5">)</p>
 <p class="p8"><br></p>
 <p class="p5">p.stop;</p>
@@ -154,19 +149,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><i>By argument names:</i></p>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>args:</b> Provide a list of the Synth argument names as an array here, e.g. [\freq, \amp, \pan]. There is no need to provide the instrument name this way.</li>
+<ul class="ul1">
+<li class="li3"><b>args:</b> Provide a list of the Synth argument names as an array here, e.g. [\freq, \amp, \pan]. There is no need to provide the instrument name this way.</li>
 </ul>
 <p class="p2"><br></p>
-<p class="p10"><span class="s2">a = </span><span class="s5">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
+<p class="p7"><span class="s2">a = </span><span class="s1">Synth</span><span class="s2">(</span>\event_set<span class="s2">);</span></p>
 <p class="p8"><br></p>
 <p class="p5">(</p>
-<p class="p5">p = <span class="s5">Pbind</span>(</p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s7">\id</span>, a,</p>
-<p class="p10"><span class="s2"><span class="Apple-tab-span">	</span></span>\args<span class="s2">, #[</span>\freq<span class="s2">],</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\freq</span>, <span class="s5">Pexprand</span>(200, 600, <span class="s5">inf</span>),</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="s4">\dur</span>, <span class="s5">Pwhite</span>(1, 5, <span class="s5">inf</span>) * 0.125</p>
+<p class="p5">p = <span class="s1">Pbind</span>(</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>\type<span class="s2">, </span>\set<span class="s2">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\id</span>, a,</p>
+<p class="p7"><span class="s2"><span class="Apple-tab-span">	</span></span>\args<span class="s2">, #[</span>\freq<span class="s2">],</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\freq</span>, <span class="s1">Pexprand</span>(200, 600, <span class="s1">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">\dur</span>, <span class="s1">Pwhite</span>(1, 5, <span class="s1">inf</span>) * 0.125</p>
 <p class="p5">).play;</p>
 <p class="p5">)</p>
 <p class="p8"><br></p>
@@ -181,18 +176,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>Server control</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>group:</b> Create a new group (or groups).</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing and Node control arguments</b></li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing and Node control arguments</b></li>
 </ul>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>id:</b> (Optional) IDs for the new groups. If not specified, the new ID (for one group only) can be found in the event after .play. To create multiple groups, you must provide an array of IDs.</li>
+<ul class="ul1">
+<li class="li3"><b>id:</b> (Optional) IDs for the new groups. If not specified, the new ID (for one group only) can be found in the event after .play. To create multiple groups, you must provide an array of IDs.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>bus:</b> Set the value of a control bus, or contiguous control buses. This assumes that you already have the bus index.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>array:</b> The value(s) to send to the bus(es). If it's only one value, it doesn't have to be an array.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>out:</b> The first bus index to be set. A Bus object can be used.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>array:</b> The value(s) to send to the bus(es). If it's only one value, it doesn't have to be an array.</li>
+<li class="li3"><b>out:</b> The first bus index to be set. A Bus object can be used.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -201,44 +196,44 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">All of these buffer event types expect the buffer number to be provided. They will not automatically get a buffer number from the server's buffer allocator. A Buffer object is allowed -- you could create the Buffer first using Buffer.alloc or Buffer.new and then use this object in the control events. See also "Event types with cleanup" below for other, user-friendlier Buffer control options.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>alloc:</b> Allocate memory for a buffer on the server. Only one buffer may be allocated per event.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufnum, numchannels, numframes:</b> See the <a href="../../ServerArchitecture/Buffer.html"><span class="s1">Buffer</span></a> help file.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>bufnum, numchannels, numframes:</b> See the <a href="../../ServerArchitecture/Buffer.html"><span class="s1">Buffer</span></a> help file.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>free:</b> Deallocate the buffer's memory on the server.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">bufnum: Buffer number to free (one only).</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3">bufnum: Buffer number to free (one only).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>gen:</b> Generate wavetable data in the buffer, using one of the server's b_gen plug-ins. The Buffer help file has more detail on the standard plug-ins.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufnum</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>gencmd:</b> The generator plug-in name: \sine1, \sine2, \sine3, \cheby.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>genflags:</b> Three flags, associated with numbers: normalize = 1, asWavetable = 2, clearFirst = 4. Add the numbers for the desired flags. Normally the flags are all true, adding up to 7.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>genarray:</b> Data parameters for the plug-in. See the <a href="../../ServerArchitecture/Server-Command-Reference.html"><span class="s1">Server-Command-Reference</span></a> help file for details on the format for each plug-in.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>bufnum</b></li>
+<li class="li3"><b>gencmd:</b> The generator plug-in name: \sine1, \sine2, \sine3, \cheby.</li>
+<li class="li3"><b>genflags:</b> Three flags, associated with numbers: normalize = 1, asWavetable = 2, clearFirst = 4. Add the numbers for the desired flags. Normally the flags are all true, adding up to 7.</li>
+<li class="li3"><b>genarray:</b> Data parameters for the plug-in. See the <a href="../../ServerArchitecture/Server-Command-Reference.html"><span class="s1">Server-Command-Reference</span></a> help file for details on the format for each plug-in.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>load:</b> Allocate buffer memory in the server and load a sound file into it, using b_allocRead.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufnum</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>filename:</b> Path to disk file.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>frame:</b> Starting frame to read (default 0).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numframes:</b> Number of frames to read (default 0, which loads the entire file).</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>bufnum</b></li>
+<li class="li3"><b>filename:</b> Path to disk file.</li>
+<li class="li3"><b>frame:</b> Starting frame to read (default 0).</li>
+<li class="li3"><b>numframes:</b> Number of frames to read (default 0, which loads the entire file).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>read:</b> Read a sound file into a buffer already allocated on the server. This event type is good to cue a sound file for use with DiskIn.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufnum</b></li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>filename:</b> Path to disk file.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>frame:</b> Starting soundfile frame to read (default 0).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numframes:</b> Number of frames to read (default 0, which loads the entire file).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufpos:</b> Starting buffer frame (default 0).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>leaveOpen:</b> 1 = leave the file open (for DiskIn use). 0 = close the disk file after reading. Default = 0.</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b></li>
+<li class="li3"><b>bufnum</b></li>
+<li class="li3"><b>filename:</b> Path to disk file.</li>
+<li class="li3"><b>frame:</b> Starting soundfile frame to read (default 0).</li>
+<li class="li3"><b>numframes:</b> Number of frames to read (default 0, which loads the entire file).</li>
+<li class="li3"><b>bufpos:</b> Starting buffer frame (default 0).</li>
+<li class="li3"><b>leaveOpen:</b> 1 = leave the file open (for DiskIn use). 0 = close the disk file after reading. Default = 0.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -247,85 +242,85 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">These event types uniquely have automatic cleanup event types associated with them. Playing one of these event types allocates a server resource. Later, the resource may be freed by changing the event type to the corresponding cleanup type and playing the event again. While the resource is active, the event can be used as a reference to the resource in other events or Synth messaging.</p>
 <p class="p2"><br></p>
 <p class="p6">// create a buffer</p>
-<p class="p5">b = (type: <span class="s3">\allocRead</span>, path: <span class="s8">"sounds/a11wlk01.wav"</span>).play;</p>
+<p class="p5">b = (type: <span class="s3">\allocRead</span>, path: <span class="s4">"sounds/a11wlk01.wav"</span>).play;</p>
 <p class="p8"><br></p>
 <p class="p5">a = { <span class="s1">PlayBuf</span>.ar(1, b, doneAction: 2) }.play;</p>
 <p class="p8"><br></p>
 <p class="p6">// remove buffer</p>
-<p class="p13">EventTypesWithCleanup<span class="s2">.cleanup(b);</span></p>
+<p class="p9">EventTypesWithCleanup<span class="s2">.cleanup(b);</span></p>
 <p class="p2"><br></p>
 <p class="p3">See the Pproto example in <a href="PG_06f_Server_Control.html"><span class="s1">PG_06f_Server_Control</span></a>, showing how these can be used to clean up server objects at the end of a pattern.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>audioBus:</b> Allocate an audio bus index from the server.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>channels:</b> Number of channels to allocate.</li>
+<ul class="ul1">
+<li class="li3"><b>channels:</b> Number of channels to allocate.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>controlBus:</b> Allocate a control bus index from the server.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>channels:</b> Number of channels to allocate.</li>
+<ul class="ul1">
+<li class="li3"><b>channels:</b> Number of channels to allocate.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>buffer:</b> Allocate a buffer number if not specified, and reserve the memory on the server.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numBufs:</b> Number of contiguous buffer numbers to reserve (default = 1).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numFrames:</b> Number of frames.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numChannels:</b> Number of channels.</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>numBufs:</b> Number of contiguous buffer numbers to reserve (default = 1).</li>
+<li class="li3"><b>numFrames:</b> Number of frames.</li>
+<li class="li3"><b>numChannels:</b> Number of channels.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>allocRead:</b> Read a disk file into server memory. The file is closed when finished.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>path:</b> Path to the sound file on disk.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>firstFileFrame:</b> Where to start reading in the file.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numFrames:</b> Number of frames. If not given, the whole file is read.</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>path:</b> Path to the sound file on disk.</li>
+<li class="li3"><b>firstFileFrame:</b> Where to start reading in the file.</li>
+<li class="li3"><b>numFrames:</b> Number of frames. If not given, the whole file is read.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>cue:</b> Cue a sound file (generally for use with DiskIn).</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>path:</b> Path to the sound file on disk.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>firstFileFrame:</b> Where to start reading in the file.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numFrames:</b> Number of frames. If not given, the whole file is read.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>firstBufferFrame:</b> Where in the buffer to start putting file data.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>leaveOpen:</b> 1 = leave the file open (for DiskIn use). 0 = close the disk file after reading. Default = 0.</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>path:</b> Path to the sound file on disk.</li>
+<li class="li3"><b>firstFileFrame:</b> Where to start reading in the file.</li>
+<li class="li3"><b>numFrames:</b> Number of frames. If not given, the whole file is read.</li>
+<li class="li3"><b>firstBufferFrame:</b> Where in the buffer to start putting file data.</li>
+<li class="li3"><b>leaveOpen:</b> 1 = leave the file open (for DiskIn use). 0 = close the disk file after reading. Default = 0.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>table:</b> Fill a buffer with preset data. This uses /b_setn to transfer the data, so all of the data must fit into one datagram. It may take some experimentation to find the upper limit.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>amps:</b> The values to put into the buffer. These should all be Floats.</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>amps:</b> The values to put into the buffer. These should all be Floats.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>cheby:</b> Generate a Chebyshev transfer function for waveshaping.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numFrames:</b> Number of frames, should be a power of 2.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numChannels:</b> Number of channels.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>genflags:</b> Three flags, associated with numbers: normalize = 1, asWavetable = 2, clearFirst = 4. Add the numbers for the desired flags. Normally the flags are all true, adding up to 7.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>amps:</b> The amplitude of each partial (i.e., polynomial coefficient).</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>numFrames:</b> Number of frames, should be a power of 2.</li>
+<li class="li3"><b>numChannels:</b> Number of channels.</li>
+<li class="li3"><b>genflags:</b> Three flags, associated with numbers: normalize = 1, asWavetable = 2, clearFirst = 4. Add the numbers for the desired flags. Normally the flags are all true, adding up to 7.</li>
+<li class="li3"><b>amps:</b> The amplitude of each partial (i.e., polynomial coefficient).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>sine1:</b> Mirrors the sine1 method for Buffer, generating a wavetable with an integer-multiple harmonic spectrum using the given partial amplitudes.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numFrames:</b> Number of frames, should be a power of 2.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>numChannels:</b> Number of channels.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>genflags:</b> See above.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>amps:</b> Array of amplitudes for each partial.</li>
+<ul class="ul1">
+<li class="li3"><b>bufNum:</b> (Optional) Buffer number. If not given, a free number will be obtained from the server.</li>
+<li class="li3"><b>numFrames:</b> Number of frames, should be a power of 2.</li>
+<li class="li3"><b>numChannels:</b> Number of channels.</li>
+<li class="li3"><b>genflags:</b> See above.</li>
+<li class="li3"><b>amps:</b> Array of amplitudes for each partial.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>sine2:</b> Like sine1, but the frequency ratio of each partial is also given.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Same arguments as sine1, plus:</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>freqs:</b> Array of frequencies for each partial. 1.0 is the fundamental frequency; its sine wave occupies the entire buffer duration.</li>
+<ul class="ul1">
+<li class="li3">Same arguments as sine1, plus:</li>
+<li class="li3"><b>freqs:</b> Array of frequencies for each partial. 1.0 is the fundamental frequency; its sine wave occupies the entire buffer duration.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>sine3:</b> Like sine2, but the phase of each partial may also be provided.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica">Same arguments as sine1, plus:</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>phases:</b> Array of phases for each partial, given in radians (0.0 - 2pi).</li>
+<ul class="ul1">
+<li class="li3">Same arguments as sine1, plus:</li>
+<li class="li3"><b>phases:</b> Array of phases for each partial, given in radians (0.0 - 2pi).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -333,102 +328,102 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><b>MIDI output</b></p>
 <p class="p2"><br></p>
 <p class="p3"><b>midi:</b> Sends one of several types of MIDI messages to a MIDIOut object.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Standard Timing control arguments</b> (except timingOffset, which is not used)</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>midicmd:</b> The type of MIDI message to send. This also determines other arguments that should be present in the event.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>midiout:</b> The MIDI out object, which connects to one of the MIDI devices listed in MIDIClient.destinations.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> The MIDI channel number (0-15) on the device that should receive the message. This applies to all midicmds except the global ones (smpte, songPtr, sysex).</li>
+<ul class="ul1">
+<li class="li3"><b>Standard Timing control arguments</b> (except timingOffset, which is not used)</li>
+<li class="li3"><b>midicmd:</b> The type of MIDI message to send. This also determines other arguments that should be present in the event.</li>
+<li class="li3"><b>midiout:</b> The MIDI out object, which connects to one of the MIDI devices listed in MIDIClient.destinations.</li>
+<li class="li3"><b>chan:</b> The MIDI channel number (0-15) on the device that should receive the message. This applies to all midicmds except the global ones (smpte, songPtr, sysex).</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p3"><b>Available midicmds</b></p>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>noteOn:</b> Starts a note, and optionally stops it. If multiple frequencies are given, one noteOn/noteOff pair is sent for each, and \strum is also supported.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>midinote:</b> Note number to trigger. This may be calculated from the standard pitch hierarchy described in <a href="PG_07_Value_Conversions.html"><span class="s1">PG_07_Value_Conversions</span></a> (with the exception that only 12TET can be supported).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>amp:</b> MIDI velocity = amp / 12.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>sustain:</b> How many beats to wait before sending the corresponding note off message. If not given directly, it's calculated as ~sustain = ~dur * ~legato * ~stretch (just like the standard \note event type).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>hasGate:</b> Normally true. If false, the note off message will not be sent.</li>
+<ul class="ul1">
+<li class="li3"><b>noteOn:</b> Starts a note, and optionally stops it. If multiple frequencies are given, one noteOn/noteOff pair is sent for each, and \strum is also supported.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>midinote:</b> Note number to trigger. This may be calculated from the standard pitch hierarchy described in <a href="PG_07_Value_Conversions.html"><span class="s1">PG_07_Value_Conversions</span></a> (with the exception that only 12TET can be supported).</li>
+<li class="li3"><b>amp:</b> MIDI velocity = amp / 12.</li>
+<li class="li3"><b>sustain:</b> How many beats to wait before sending the corresponding note off message. If not given directly, it's calculated as ~sustain = ~dur * ~legato * ~stretch (just like the standard \note event type).</li>
+<li class="li3"><b>hasGate:</b> Normally true. If false, the note off message will not be sent.</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>noteOff:</b> Send an explicit note off message (useful if hasGate is set false in the note on event).</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>midinote:</b> Note number.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>amp:</b> Release velocity (supported by some synthesizers).</li>
+<ul class="ul1">
+<li class="li3"><b>noteOff:</b> Send an explicit note off message (useful if hasGate is set false in the note on event).</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>midinote:</b> Note number.</li>
+<li class="li3"><b>amp:</b> Release velocity (supported by some synthesizers).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>allNotesOff:</b> "Panic" message, kills all notes on the channel.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
+<ul class="ul1">
+<li class="li3"><b>allNotesOff:</b> "Panic" message, kills all notes on the channel.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>control:</b> Continuous controller message.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>ctlNum:</b> Controller number to receive the new value.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>control:</b> New value (0-127).</li>
+<ul class="ul1">
+<li class="li3"><b>control:</b> Continuous controller message.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>ctlNum:</b> Controller number to receive the new value.</li>
+<li class="li3"><b>control:</b> New value (0-127).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>bend:</b> Pitch bend message.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>val:</b> New value (0-16383). 8191 is centered.</li>
+<ul class="ul1">
+<li class="li3"><b>bend:</b> Pitch bend message.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>val:</b> New value (0-16383). 8191 is centered.</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>touch:</b> Aftertouch message.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>val:</b> New value (0-127).</li>
+<ul class="ul1">
+<li class="li3"><b>touch:</b> Aftertouch message.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>val:</b> New value (0-127).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>polyTouch:</b> Poly aftertouch message (not supported by all synthesizers).</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>midinote:</b> Note number to get the new after touch value. As in note on, it may be calculated from the standard pitch hierarchy.</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>polyTouch:</b> New value (0-127).</li>
+<ul class="ul1">
+<li class="li3"><b>polyTouch:</b> Poly aftertouch message (not supported by all synthesizers).</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>midinote:</b> Note number to get the new after touch value. As in note on, it may be calculated from the standard pitch hierarchy.</li>
+<li class="li3"><b>polyTouch:</b> New value (0-127).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>program:</b> Program change message.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>chan:</b> MIDI channel (0-15).</li>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>progNum:</b> Program number (0-127).</li>
+<ul class="ul1">
+<li class="li3"><b>program:</b> Program change message.</li>
+<ul class="ul2">
+<li class="li3"><b>chan:</b> MIDI channel (0-15).</li>
+<li class="li3"><b>progNum:</b> Program number (0-127).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>smpte:</b> Send MIDI Time Code messages.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>Arguments:</b> frames, seconds, minutes, hours, frameRate</li>
+<ul class="ul1">
+<li class="li3"><b>smpte:</b> Send MIDI Time Code messages.</li>
+<ul class="ul2">
+<li class="li3"><b>Arguments:</b> frames, seconds, minutes, hours, frameRate</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>songPtr:</b> Song pointer message.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>songPtr:</b> Pointer value (0-16383).</li>
+<ul class="ul1">
+<li class="li3"><b>songPtr:</b> Song pointer message.</li>
+<ul class="ul2">
+<li class="li3"><b>songPtr:</b> Pointer value (0-16383).</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>sysex:</b> System exclusive messages.</li>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>array:</b> An Int8Array with the sysex bytes in order. <b>Very important:</b> Arrays normally multi-channel expand in patterns. So, you must wrap the Int8Array inside another array to prevent this. Write <span class="s3">[Int8Array[...]]</span>, not just Int8Array[...].</li>
+<ul class="ul1">
+<li class="li3"><b>sysex:</b> System exclusive messages.</li>
+<ul class="ul2">
+<li class="li3"><b>array:</b> An Int8Array with the sysex bytes in order. <b>Very important:</b> Arrays normally multi-channel expand in patterns. So, you must wrap the Int8Array inside another array to prevent this. Write <span class="s3">[Int8Array[...]]</span>, not just Int8Array[...].</li>
 </ul>
 </ul>
 <p class="p2"><br></p>
@@ -439,12 +434,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3"><b>setProperties:</b> Set variables belonging to a given object. One possible use is to control a GUI using a pattern.</p>
 <p class="p3">receiver: The object to be modified.</p>
-<ul>
-<li style="margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica"><b>args:</b> The list of variable names to set in the receiver. The receiver should have a setter method -- variableName_ -- for each of these. New values will be looked up in the event.</li>
+<ul class="ul1">
+<li class="li3"><b>args:</b> The list of variable names to set in the receiver. The receiver should have a setter method -- variableName_ -- for each of these. New values will be looked up in the event.</li>
 </ul>
 <p class="p2"><br></p>
 <p class="p6">// Visualize Brownian motion</p>
-<p class="p5">w = <span class="s1">Window</span>(<span class="s8">"Brownian motion"</span>, <span class="s1">Rect</span>(10, 100, 500, 50));</p>
+<p class="p5">w = <span class="s1">Window</span>(<span class="s4">"Brownian motion"</span>, <span class="s1">Rect</span>(10, 100, 500, 50));</p>
 <p class="p5">x = <span class="s1">Slider</span>(w, <span class="s1">Rect</span>(10, 15, 480, 20));</p>
 <p class="p5">w.front;</p>
 <p class="p8"><br></p>
@@ -461,7 +456,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">p.stop;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p14"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_07_Value_Conversions.html"><span class="s9">PG_07_Value_Conversions</span></a></span></p>
-<p class="p14"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s9">PG_Cookbook01_Basic_Sequencing</span></a></span></p>
+<p class="p10"><span class="s2">Previous:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_07_Value_Conversions.html"><span class="s5">PG_07_Value_Conversions</span></a></span></p>
+<p class="p10"><span class="s2">Next:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><a href="PG_Cookbook01_Basic_Sequencing.html"><span class="s5">PG_Cookbook01_Basic_Sequencing</span></a></span></p>
 </body>
 </html>
