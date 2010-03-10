@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -51,20 +51,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s2">Linen</span>.kr(gate, 0.05, 1, 0.1, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s2">In</span>.ar(out, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">XOut</span>.ar(out, env, <span class="s2">CombL</span>.ar(in * env, maxdtime, dtime, decay, 1, in));</p>
-<p class="p4">}, [<span class="s3">\ir</span>, <span class="s3">\ir</span>, 0.1, 0.1, 0]).store;</p>
+<p class="p4">}, [<span class="s3">\ir</span>, <span class="s3">\ir</span>, 0.1, 0.1, 0]).add;</p>
 <p class="p3"><br></p>
 <p class="p4"><span class="s2">SynthDef</span>(<span class="s3">\distort</span>, { <span class="s2">arg</span> out=0, pregain=40, amp=0.2, gate=1;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s2">Linen</span>.kr(gate, 0.05, 1, 0.1, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">XOut</span>.ar(out, env, (<span class="s2">In</span>.ar(out, 2) * pregain).distort * amp);</p>
-<p class="p4">}, [<span class="s3">\ir</span>, 0.1, 0.1, 0]).store;</p>
+<p class="p4">}, [<span class="s3">\ir</span>, 0.1, 0.1, 0]).add;</p>
 <p class="p3"><br></p>
 <p class="p4"><span class="s2">SynthDef</span>(<span class="s3">\wah</span>, { <span class="s2">arg</span> out=0, gate=1;</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> env, in;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s2">Linen</span>.kr(gate, 0.05, 1, 0.4, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s2">In</span>.ar(out, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">XOut</span>.ar(out, env, <span class="s2">RLPF</span>.ar(in, <span class="s2">LinExp</span>.kr(<span class="s2">LFNoise1</span>.kr(0.3), -1, 1, 200, 8000), 0.1).softclip * 0.8);</p>
-<p class="p4">}, [<span class="s3">\ir</span>, 0]).store;</p>
+<p class="p4">}, [<span class="s3">\ir</span>, 0]).add;</p>
 <p class="p4">)</p>
 <p class="p3"><br></p>
 <p class="p4">(</p>

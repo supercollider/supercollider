@@ -5,38 +5,38 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.54">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001bec}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ae1a19}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ae1a19; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #ae1a19}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #bf0000}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0016bd}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Helvetica; min-height: 11.0px}
 p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0016bd}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0016bd}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; color: #0000bf}
 span.s1 {color: #000000}
 span.s2 {text-decoration: underline}
-span.s3 {color: #0016bd}
+span.s3 {color: #0000bf}
 span.s4 {text-decoration: underline ; color: #001bec}
 span.s5 {color: #606060}
-span.s6 {font: 10.0px Monaco; color: #ae1a19}
-span.s7 {color: #ae1a19}
-span.s8 {color: #2b7000}
-span.s9 {font: 12.0px Helvetica}
-span.s10 {font: 10.0px Monaco; color: #0016bd}
-span.s11 {font: 10.0px Monaco}
+span.s6 {font: 10.0px Monaco; color: #bf0000}
+span.s7 {color: #bf0000}
+span.s8 {text-decoration: underline ; color: #0000ee}
+span.s9 {color: #007300}
+span.s10 {font: 12.0px Helvetica}
+span.s11 {font: 10.0px Monaco; color: #0000bf}
+span.s12 {font: 10.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -91,7 +91,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p5">In the above example, first a <a href="Main-GUI/Window.html"><span class="s3">Window</span></a> was created. A <a href="Main-GUI/Window.html"><span class="s3">Window</span></a> automatically has its own top level container, which is a subclass of <a href="Main-GUI/CompositeView.html"><span class="s3">CompositeView</span></a>. A <a href="Main-GUI/CompositeView.html"><span class="s3">CompositeView</span></a> can have a <b>decorator</b>, which automatically places the contents in a predetermined order. In this case it is a <a href="GUI-Tools/FlowLayout.html"><span class="s3">FlowLayout</span></a>, which is the only one that currently exists. This is optional however. Try commenting out the decorator in the example above.</p>
 <p class="p4"><br></p>
-<p class="p5"><span class="s4"><a href="Main-GUI/Window.html">Window</a></span> and <a href="Main-GUI/CompositeView.html"><span class="s3">CompositeView</span></a> both have addFlowLayout utility methods which assign an instance of FlowLayout to their view decorators and return the decorator.</p>
+<p class="p5"><span class="s8"><a href="Main-GUI/Window.html">Window</a></span> and <a href="Main-GUI/CompositeView.html"><span class="s3">CompositeView</span></a> both have addFlowLayout utility methods which assign an instance of FlowLayout to their view decorators and return the decorator.</p>
 <p class="p7"><br></p>
 <p class="p5">Most gui objects are subclasses of <a href="Main-GUI/View.html"><span class="s3">View</span></a>. All subclasses of View are created with the same beginning arguments, <b>parent </b>and <b>bounds</b>, for example, <a href="Main-GUI/Slider.html"><span class="s3">Slider</span></a>(<b>parent</b>, <b>bounds</b>).</p>
 <p class="p4"><br></p>
@@ -229,7 +229,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="Apple-tab-span">	</span><span class="s3">NumberBox</span>(w, <span class="s3">Rect</span>(200, 10, 100, 20));</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.value = 220;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {</span><span class="s3">arg</span><span class="s1"> numb; n.set(</span><span class="s8">\freq</span><span class="s1">, numb.value); }; </span>// set the action here to change the frequency.</p>
+<p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.action = {</span><span class="s3">arg</span><span class="s1"> numb; n.set(</span><span class="s9">\freq</span><span class="s1">, numb.value); }; </span>// set the action here to change the frequency.</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.addAction ( {w.view.background = <span class="s3">Color</span>.rand}); <span class="s7">// add another action here.</span></p>
 <p class="p2"><br></p>
@@ -258,9 +258,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b=<span class="s3">Bus</span>.new(<span class="s8">\control</span>,0,1);</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b=<span class="s3">Bus</span>.new(<span class="s9">\control</span>,0,1);</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q=<span class="s3">SynthDef</span>(<span class="s8">\Docs_FreqMonitor</span>, {<span class="s3">var</span> freq,snd;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>q=<span class="s3">SynthDef</span>(<span class="s9">\Docs_FreqMonitor</span>, {<span class="s3">var</span> freq,snd;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>freq=<span class="s3">LFNoise0</span>.ar(2, 400, 650);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>snd=<span class="s3">SinOsc</span>.ar(freq,0,0.2);</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(0,snd);</p>
@@ -307,7 +307,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// register to receive this message</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s3">OSCresponderNode</span>(s.addr, <span class="s8">'/tr'</span>,</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = <span class="s3">OSCresponderNode</span>(s.addr, <span class="s9">'/tr'</span>,</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{ {w.refresh}.defer }).add; <span class="s7">// you must use defer here</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.drawHook = {<span class="s3">|me|</span></p>
@@ -326,7 +326,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.onClose=({a.remove; x.free;});<span class="s7">// clean up</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p12"><span class="s9"><span class="Apple-tab-span">	</span></span>)</p>
+<p class="p12"><span class="s10"><span class="Apple-tab-span">	</span></span>)</p>
 <p class="p7"><br></p>
 <p class="p6"><b>Custom GUI: designing your own widgets using UserView</b></p>
 <p class="p7"><br></p>
@@ -403,10 +403,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span>s.waitForBoot({</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SynthDef</span>(<span class="s5">"test"</span>, { <span class="s3">arg</span> out, freq=330, amp=0.6;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq,0,amp))</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).memStore;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SynthDescLib</span>.global.at(<span class="s8">\test</span>).makeWindow;</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">SynthDescLib</span>.global.at(<span class="s9">\test</span>).makeWindow;</p>
 <p class="p12"><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
@@ -429,7 +429,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bounds<span class="Apple-tab-span">	</span>= <span class="s3">GUI</span>.stringBounds( text, font );</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rect.set( rect.right, rect.bottom, bounds.width + 4, bounds.height + 2 );</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">StaticText</span>.new( w, rect )</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_( font ).align_( <span class="s8">\center</span> ).string_( text ).background_( <span class="s3">Color</span>.white );</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_( font ).align_( <span class="s9">\center</span> ).string_( text ).background_( <span class="s3">Color</span>.white );</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>total<span class="Apple-tab-span">	</span>= total.union( rect );</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.bounds = total.moveTo( 200, 200 );</p>
@@ -439,7 +439,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p6"><b>Browsers and Inspectors</b></p>
 <p class="p4"><br></p>
-<p class="p5">These classes use the current GUI kit implementation as returned by <span class="s10">GUI</span><span class="s11">.current</span> . You usually do not instantiate them directly, but use one of the "Plus-GUI" methods described in the next paragraph.</p>
+<p class="p5">These classes use the current GUI kit implementation as returned by <span class="s11">GUI</span><span class="s12">.current</span> . You usually do not instantiate them directly, but use one of the "Plus-GUI" methods described in the next paragraph.</p>
 <p class="p4"><br></p>
 <p class="p5">ObjectInspector</p>
 <p class="p5">StringInspector</p>
@@ -452,7 +452,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">ClassBrowser</p>
 <p class="p4"><br></p>
 <p class="p7"><br></p>
-<p class="p5">"Plus-GUI" methods are methods added to other classes such as <a href="../Collections/String.html"><span class="s3">String</span></a> or <a href="../ServerArchitecture/Server.html"><span class="s3">Server</span></a> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s10">GUI</span><span class="s11">.current</span> .</p>
+<p class="p5">"Plus-GUI" methods are methods added to other classes such as <a href="../Collections/String.html"><span class="s3">String</span></a> or <a href="../ServerArchitecture/Server.html"><span class="s3">Server</span></a> that provide GUI functionality for those classes. These methods use the current GUI kit implementation as returned by <span class="s11">GUI</span><span class="s12">.current</span> .</p>
 <p class="p4"><br></p>
 <p class="p17">.inspect</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Inspectors:</p>
@@ -476,7 +476,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p18">.scope</p>
 <p class="p5"><span class="Apple-tab-span">	</span>Examples for Scoping</p>
-<p class="p19"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="../ServerArchitecture/Bus.html"><span class="s2">Bus</span></a>, <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s2">Server</span></a>, <a href="../UGens/UGen.html"><span class="s2">UGen</span></a></span>, <a href="Main-GUI/ScopeView.html"><span class="s4">ScopeView</span></a>, <a href="Main-GUI/Stethoscope.html"><span class="s4">Stethoscope</span></a></p>
+<p class="p3"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see <a href="../ServerArchitecture/Bus.html"><span class="s2">Bus</span></a>, <a href="../Core/Kernel/Function.html"><span class="s2">Function</span></a>, <a href="../ServerArchitecture/Server.html"><span class="s2">Server</span></a>, <a href="../UGens/UGen.html"><span class="s2">UGen</span></a></span><span class="s3">, <a href="Main-GUI/ScopeView.html"><span class="s4">ScopeView</span></a>, <a href="Main-GUI/Stethoscope.html"><span class="s4">Stethoscope</span></a></span></p>
 <p class="p4"><br></p>
 <p class="p7"><br></p>
 </body>

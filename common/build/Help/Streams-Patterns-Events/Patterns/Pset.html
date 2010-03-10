@@ -5,21 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
-span.s3 {color: #0000bf}
-span.s4 {color: #007300}
-span.s5 {color: #0000bf}
-span.s6 {color: #007300}
-span.s7 {color: #000000}
+span.s3 {color: #007300}
+span.s4 {color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,50 +30,50 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3"><span class="s3">var</span> a, b;</p>
-<p class="p3">a = <span class="s3">Pset</span>(\freq, 801, <span class="s3">Pbind</span>(<span class="s4">\dur</span>, 0.5));</p>
+<p class="p3"><span class="s2">var</span> a, b;</p>
+<p class="p3">a = <span class="s2">Pset</span>(\freq, 801, <span class="s2">Pbind</span>(<span class="s3">\dur</span>, 0.5));</p>
 <p class="p3">x = a.asStream;</p>
-<p class="p3">9.do({ x.next(<span class="s3">Event</span>.new).postln; });</p>
+<p class="p3">9.do({ x.next(<span class="s2">Event</span>.new).postln; });</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
 <p class="p1">Pset overrides incoming values:</p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3"><span class="s3">var</span> a, b;</p>
-<p class="p4">a = <span class="s5">Pset</span>(<span class="s6">\freq</span>, 801, <span class="s5">Pbind</span>(<span class="s6">\freq</span>, 108));</p>
+<p class="p3"><span class="s2">var</span> a, b;</p>
+<p class="p3">a = <span class="s2">Pset</span>(<span class="s3">\freq</span>, 801, <span class="s2">Pbind</span>(<span class="s3">\freq</span>, 108));</p>
 <p class="p3">x = a.asStream;</p>
-<p class="p3">9.do({ x.next(<span class="s3">Event</span>.new).postln; });</p>
+<p class="p3">9.do({ x.next(<span class="s2">Event</span>.new).postln; });</p>
 <p class="p3">)</p>
 <p class="p2"><br></p>
 <p class="p1"><b>value</b> can be a pattern or a stream. the resulting stream ends when that incoming stream ends</p>
 <p class="p2"><br></p>
 <p class="p3">(</p>
-<p class="p3"><span class="s3">var</span> a, b;</p>
-<p class="p3">a = <span class="s3">Pset</span>(<span class="s4">\freq</span>, <span class="s3">Pseq</span>([401, 801], 2), <span class="s3">Pbind</span>(<span class="s4">\dur</span>, 0.5));</p>
+<p class="p3"><span class="s2">var</span> a, b;</p>
+<p class="p3">a = <span class="s2">Pset</span>(<span class="s3">\freq</span>, <span class="s2">Pseq</span>([401, 801], 2), <span class="s2">Pbind</span>(<span class="s3">\dur</span>, 0.5));</p>
 <p class="p3">x = a.asStream;</p>
-<p class="p3">9.do({ x.next(<span class="s3">Event</span>.new).postln; });</p>
+<p class="p3">9.do({ x.next(<span class="s2">Event</span>.new).postln; });</p>
 <p class="p3">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p1">sound example</p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
 <p class="p3">(</p>
-<p class="p6"><span class="s3">SynthDef</span><span class="s7">(</span>\sinegrain<span class="s7">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.02;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.001, sustain), 1, doneAction:2);</p>
-<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env * 0.1))</p>
-<p class="p3"><span class="Apple-tab-span">	</span>}).memStore;</p>
+<p class="p5"><span class="s2">SynthDef</span><span class="s4">(</span>\sinegrain<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="Apple-tab-span">	</span>{ <span class="s2">arg</span> out=0, freq=440, sustain=0.02;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.001, sustain), 1, doneAction:2);</p>
+<p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">SinOsc</span>.ar(freq, 0, env * 0.1))</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p3">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 <p class="p3">(</p>
-<p class="p6"><span class="s7">a = </span><span class="s3">Pbind</span><span class="s7">(</span>\dur<span class="s7">, 0.5, </span>\instrument<span class="s7">, </span>\sinegrain<span class="s7">);</span></p>
-<p class="p3">a = <span class="s3">Pset</span>(<span class="s4">\freq</span>, <span class="s3">Pseq</span>([500, 600, 700], <span class="s3">inf</span>), a);</p>
-<p class="p3">a = <span class="s3">Pset</span>(<span class="s4">\legato</span>, <span class="s3">Pseq</span>([0.01, 1],<span class="s3">inf</span>), a);</p>
+<p class="p5"><span class="s4">a = </span><span class="s2">Pbind</span><span class="s4">(</span>\dur<span class="s4">, 0.5, </span>\instrument<span class="s4">, </span>\sinegrain<span class="s4">);</span></p>
+<p class="p3">a = <span class="s2">Pset</span>(<span class="s3">\freq</span>, <span class="s2">Pseq</span>([500, 600, 700], <span class="s2">inf</span>), a);</p>
+<p class="p3">a = <span class="s2">Pset</span>(<span class="s3">\legato</span>, <span class="s2">Pseq</span>([0.01, 1],<span class="s2">inf</span>), a);</p>
 <p class="p3">a.play;</p>
 <p class="p3">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
 </body>
 </html>

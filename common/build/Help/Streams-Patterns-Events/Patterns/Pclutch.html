@@ -5,25 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
-span.s3 {text-decoration: underline ; color: #0000bf}
-span.s4 {text-decoration: underline ; color: #0000bf}
-span.s5 {color: #0000bf}
-span.s6 {color: #0000bf}
-span.s7 {color: #000000}
-span.s8 {color: #007300}
+span.s3 {color: #000000}
+span.s4 {text-decoration: underline}
+span.s5 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -40,38 +37,38 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if true (or 1), the pattern plays as usual, if false (or 0), the previous value is kept.<span class="Apple-tab-span">	</span></p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
-<p class="p1"><b>see also</b>: <a href="../StreamClutch.html"><span class="s3">StreamClutch</span></a>, <a href="Pstutter.html"><span class="s4">Pstutter</span></a>, <a href="../../UGens/Synth control/Latch.html"><span class="s4">Latch</span></a></p>
-<p class="p4"><br></p>
+<p class="p4"><span class="s3"><b>see also</b>: <a href="../StreamClutch.html"><span class="s4">StreamClutch</span></a>, <a href="Pstutter.html"><span class="s4">Pstutter</span></a>, <a href="../../UGens/Synth control/Latch.html"><span class="s4">Latch</span></a></span></p>
+<p class="p5"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p5">// example:</p>
+<p class="p6">// example:</p>
 <p class="p3"><br></p>
-<p class="p6"><span class="s5">Pclutch</span>(<span class="s5">Pseq</span>([1, 2, 3, 4, 5], 3), <span class="s5">Pseq</span>([0, 0, 1, 0, 0, 0, 1, 1])).asStream.nextN(10);</p>
+<p class="p7"><span class="s2">Pclutch</span>(<span class="s2">Pseq</span>([1, 2, 3, 4, 5], 3), <span class="s2">Pseq</span>([0, 0, 1, 0, 0, 0, 1, 1])).asStream.nextN(10);</p>
 <p class="p3"><br></p>
-<p class="p7">// sound example</p>
-<p class="p6">(</p>
-<p class="p8"><span class="s6">SynthDef</span><span class="s7">(</span>\help_sinegrain<span class="s7">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span>{ <span class="s6">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">var</span> env;</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s6">EnvGen</span>.kr(<span class="s6">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out, <span class="s6">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}).send(s);</p>
-<p class="p6">)</p>
+<p class="p6">// sound example</p>
+<p class="p7">(</p>
+<p class="p8"><span class="s2">SynthDef</span><span class="s3">(</span>\help_sinegrain<span class="s3">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s2">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).add;</p>
+<p class="p7">)</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
-<p class="p6">(</p>
-<p class="p6"><span class="s6">var</span> a;</p>
-<p class="p9"><span class="s7">a = </span>Pclutch<span class="s7">(</span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Pseq</span>([1, 2, 3, 4, 5], <span class="s6">inf</span>),<span class="Apple-converted-space"> </span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Pseq</span>([0, 0, 1, 0, <span class="s6">Pn</span>(0, {30.rand}), 0, 1, 1], <span class="s6">inf</span>)</p>
-<p class="p6"><span class="Apple-tab-span">	</span>).asStream;</p>
-<p class="p6">{</p>
-<p class="p6"><span class="Apple-tab-span">	</span>loop {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s6">Synth</span>(<span class="s8">\help_sinegrain</span>, [<span class="s8">\freq</span>, a.next * 200 + 200]);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.02.wait;</p>
-<p class="p6"><span class="Apple-tab-span">	</span>}</p>
-<p class="p6">}.fork;</p>
-<p class="p6">)</p>
+<p class="p7">(</p>
+<p class="p7"><span class="s2">var</span> a;</p>
+<p class="p9"><span class="s3">a = </span>Pclutch<span class="s3">(</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseq</span>([1, 2, 3, 4, 5], <span class="s2">inf</span>),<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pseq</span>([0, 0, 1, 0, <span class="s2">Pn</span>(0, {30.rand}), 0, 1, 1], <span class="s2">inf</span>)</p>
+<p class="p7"><span class="Apple-tab-span">	</span>).asStream;</p>
+<p class="p7">{</p>
+<p class="p7"><span class="Apple-tab-span">	</span>loop {</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, a.next * 200 + 200]);</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.02.wait;</p>
+<p class="p7"><span class="Apple-tab-span">	</span>}</p>
+<p class="p7">}.fork;</p>
+<p class="p7">)</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>

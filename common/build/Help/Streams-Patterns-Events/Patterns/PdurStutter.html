@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,16 +14,11 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {color: #0000bf}
-span.s4 {color: #0000bf}
-span.s5 {color: #007300}
-span.s6 {color: #007300}
+span.s4 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -51,11 +46,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p4">(</p>
 <p class="p7"><span class="s3">SynthDef</span><span class="s2">(</span>\help_sinegrain<span class="s2">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p8"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p4">)</p>
 <p class="p4">(</p>
 <p class="p6"><br></p>
@@ -67,7 +62,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">Routine<span class="s2">({</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">Synth.grain</span><span class="s2">(</span>\help_sinegrain<span class="s2">, [</span><span class="s5">\freq</span><span class="s2">, 440]);</span></p>
+<p class="p8"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s3">Synth.grain</span><span class="s2">(</span>\help_sinegrain<span class="s2">, [</span><span class="s4">\freq</span><span class="s2">, 440]);</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.next.wait;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>})</p>
 <p class="p4">}).play(TempoClock.default);</p>
@@ -75,35 +70,35 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p4">(</p>
-<p class="p10"><br></p>
-<p class="p11"><span class="s2">a = </span>PdurStutter<span class="s2">(</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],<span class="s3">inf</span>),</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[0.5, 1, 2, 0.25,0.25],<span class="s3">inf</span>)</p>
-<p class="p8">);</p>
-<p class="p8">x = a.asStream;</p>
-<p class="p11">Routine<span class="s2">({</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>.grain(<span class="s6">\help_sinegrain</span>, [<span class="s6">\freq</span>, 440]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.next.wait;</p>
-<p class="p8"><span class="Apple-tab-span">	</span>})</p>
-<p class="p8">}).play(<span class="s3">TempoClock</span>.default);</p>
+<p class="p6"><br></p>
+<p class="p5"><span class="s2">a = </span>PdurStutter<span class="s2">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],<span class="s3">inf</span>),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[0.5, 1, 2, 0.25,0.25],<span class="s3">inf</span>)</p>
+<p class="p4">);</p>
+<p class="p4">x = a.asStream;</p>
+<p class="p5">Routine<span class="s2">({</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>.grain(<span class="s4">\help_sinegrain</span>, [<span class="s4">\freq</span>, 440]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.next.wait;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>})</p>
+<p class="p4">}).play(<span class="s3">TempoClock</span>.default);</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>
 <p class="p1">Frequencies like being divided too.</p>
 <p class="p2"><br></p>
 <p class="p4">(</p>
-<p class="p11"><span class="s2">a = </span>PdurStutter<span class="s2">(</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],<span class="s3">inf</span>),</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>((80 + [ 0, 2, 3, 5, 7, 9, 10 ]).midicps ,<span class="s3">inf</span>)</p>
-<p class="p8">);</p>
-<p class="p8">x = a.asStream;</p>
-<p class="p11">Routine<span class="s2">({</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>.grain(<span class="s6">\help_sinegrain</span>, [<span class="s6">\freq</span>, x.next.postln]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.25.wait</p>
-<p class="p8"><span class="Apple-tab-span">	</span>})</p>
-<p class="p8">}).play(<span class="s3">TempoClock</span>.default);</p>
+<p class="p5"><span class="s2">a = </span>PdurStutter<span class="s2">(</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[1,1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,0,4,4],<span class="s3">inf</span>),</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>((80 + [ 0, 2, 3, 5, 7, 9, 10 ]).midicps ,<span class="s3">inf</span>)</p>
+<p class="p4">);</p>
+<p class="p4">x = a.asStream;</p>
+<p class="p5">Routine<span class="s2">({</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>.grain(<span class="s4">\help_sinegrain</span>, [<span class="s4">\freq</span>, x.next.postln]);</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.25.wait</p>
+<p class="p4"><span class="Apple-tab-span">	</span>})</p>
+<p class="p4">}).play(<span class="s3">TempoClock</span>.default);</p>
 <p class="p4">)</p>
 <p class="p6"><br></p>
 <p class="p6"><br></p>

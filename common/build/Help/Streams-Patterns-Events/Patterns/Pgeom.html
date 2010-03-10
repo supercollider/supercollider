@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -13,10 +13,8 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0024f8}
 span.s3 {color: #001bb9}
@@ -53,34 +51,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p6">// sound example</p>
-<p class="p7">(</p>
-<p class="p8"><span class="s4">SynthDef</span><span class="s5">(</span>\help_sinegrain<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05, amp=0.1;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain, 0.2, amp), doneAction:2);</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}).store;</p>
-<p class="p7">)</p>
-<p class="p9"><br></p>
-<p class="p9"><br></p>
-<p class="p7">(</p>
-<p class="p7"><span class="s4">var</span> a;</p>
-<p class="p7">a = <span class="s4">Pgeom</span>(300, 1.03, 70).asStream;</p>
-<p class="p7">{</p>
-<p class="p7"><span class="Apple-tab-span">	</span>a.do { <span class="s4">|val|</span></p>
-<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">Synth</span><span class="s5">(</span>\help_sinegrain<span class="s5">, [</span>\freq<span class="s5">, val]);</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.02.wait;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}</p>
-<p class="p7">}.fork;</p>
-<p class="p7">)</p>
-<p class="p9"><br></p>
-<p class="p7">(</p>
-<p class="p10">Pbind<span class="s5">(</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, 0.01,</p>
-<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span></span>\instrument<span class="s5">, </span>\help_sinegrain<span class="s5">,</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s6">\freq</span>, <span class="s4">Pgeom</span>(800, <span class="s4">Pbrown</span>(0.99, 1.01, 0.01, <span class="s4">inf</span>), <span class="s4">inf</span>)</p>
-<p class="p7">).play;</p>
-<p class="p7">)</p>
-<p class="p9"><br></p>
+<p class="p5">(</p>
+<p class="p7"><span class="s4">SynthDef</span><span class="s5">(</span>\help_sinegrain<span class="s5">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s4">arg</span> out=0, freq=440, sustain=0.05, amp=0.1;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s4">EnvGen</span>.kr(<span class="s4">Env</span>.perc(0.01, sustain, 0.2, amp), doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Out</span>.ar(out, <span class="s4">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).add;</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p5">(</p>
+<p class="p5"><span class="s4">var</span> a;</p>
+<p class="p5">a = <span class="s4">Pgeom</span>(300, 1.03, 70).asStream;</p>
+<p class="p5">{</p>
+<p class="p5"><span class="Apple-tab-span">	</span>a.do { <span class="s4">|val|</span></p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">Synth</span><span class="s5">(</span>\help_sinegrain<span class="s5">, [</span>\freq<span class="s5">, val]);</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.02.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}</p>
+<p class="p5">}.fork;</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
+<p class="p5">(</p>
+<p class="p8">Pbind<span class="s5">(</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\dur</span>, 0.01,</p>
+<p class="p7"><span class="s5"><span class="Apple-tab-span">	</span></span>\instrument<span class="s5">, </span>\help_sinegrain<span class="s5">,</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s6">\freq</span>, <span class="s4">Pgeom</span>(800, <span class="s4">Pbrown</span>(0.99, 1.01, 0.01, <span class="s4">inf</span>), <span class="s4">inf</span>)</p>
+<p class="p5">).play;</p>
+<p class="p5">)</p>
+<p class="p3"><br></p>
 </body>
 </html>

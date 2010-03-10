@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
@@ -118,7 +118,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Mix</span>(<span class="s8">Saw</span>.ar(freq));</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>audio = <span class="s8">Pan2</span>.ar(audio * env, pan, amp);<span class="Apple-tab-span">	</span></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">OffsetOut</span>.ar(out, audio)</p>
-<p class="p4"><span class="Apple-tab-span">	</span>}).memStore;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p8"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span>( instrument: \multi, freq: [ [500, 501, 700] ], sustain: 2).play</p>
 <p class="p8"><br></p>

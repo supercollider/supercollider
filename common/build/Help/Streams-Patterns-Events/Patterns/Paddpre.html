@@ -5,19 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #007300}
 span.s4 {color: #000000}
-span.s5 {color: #0000bf}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -67,12 +65,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.001, sustain), 1, doneAction:2);</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">SinOsc</span>.ar(freq, 0, env * 0.1))</p>
-<p class="p3"><span class="Apple-tab-span">	</span>}).store;</p>
+<p class="p3"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p3">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3">(</p>
-<p class="p6"><span class="s4">a = </span><span class="s5">Pbind</span><span class="s4">(</span>\dur<span class="s4">, 0.5, </span>\instrument<span class="s4">, </span>\sinegrain<span class="s4">);</span></p>
+<p class="p5"><span class="s4">a = </span><span class="s2">Pbind</span><span class="s4">(</span>\dur<span class="s4">, 0.5, </span>\instrument<span class="s4">, </span>\sinegrain<span class="s4">);</span></p>
 <p class="p3">b = <span class="s2">Paddpre</span>(<span class="s3">\freq</span>, <span class="s2">Pseq</span>([10, 30, 100], <span class="s2">inf</span>), a);</p>
 <p class="p3">b.play;</p>
 <p class="p3">)</p>

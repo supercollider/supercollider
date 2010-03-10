@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,19 +14,12 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 20.0px Helvetica}
 span.s3 {color: #0000bf}
-span.s4 {color: #0000bf}
-span.s5 {color: #0000bf}
-span.s6 {color: #000000}
-span.s7 {color: #0000bf}
-span.s8 {color: #007300}
-span.s9 {color: #606060}
-span.s10 {color: #007300}
+span.s4 {color: #000000}
+span.s5 {color: #007300}
+span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -36,7 +29,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>superclass: </b><a href="Pseq.html"><span class="s3">Pseq</span></a></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1">Similar to <a href="Place.html"><span class="s4">Place</span></a>, but the list is an array of streams or patterns. The results of each stream will be output in turn.</p>
+<p class="p1">Similar to <a href="Place.html"><span class="s3">Place</span></a>, but the list is an array of streams or patterns. The results of each stream will be output in turn.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Ppatlace(list, repeats)</b></p>
@@ -44,15 +37,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">// example</p>
 <p class="p4"><br></p>
-<p class="p5">p = <span class="s5">Ppatlace</span>([<span class="s5">Pwhite</span>(1, 5, 5), <span class="s5">Pgeom</span>(10, 1.01, 10)], <span class="s5">inf</span>);</p>
+<p class="p5">p = <span class="s3">Ppatlace</span>([<span class="s3">Pwhite</span>(1, 5, 5), <span class="s3">Pgeom</span>(10, 1.01, 10)], <span class="s3">inf</span>);</p>
 <p class="p5">x = p.asStream;</p>
 <p class="p5">x.all;</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><span class="s6">5<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pwhite</p>
-<p class="p3"><span class="s6">10<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pgeom</p>
-<p class="p3"><span class="s6">4<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pwhite</p>
-<p class="p3"><span class="s6">10.1<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// etc....</p>
+<p class="p3"><span class="s4">5<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pwhite</p>
+<p class="p3"><span class="s4">10<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pgeom</p>
+<p class="p3"><span class="s4">4<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// from Pwhite</p>
+<p class="p3"><span class="s4">10.1<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// etc....</p>
 <p class="p5">5</p>
 <p class="p5">10.201</p>
 <p class="p5">4</p>
@@ -76,29 +69,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>Ppatlace as a sequence of pitches:</b></p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
-<p class="p7"><span class="s7">SynthDef</span><span class="s6">(</span>\help_sinegrain<span class="s6">,<span class="Apple-converted-space"> </span></span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>{ <span class="s7">arg</span> out=0, freq=440, sustain=0.05;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">var</span> env;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s7">EnvGen</span>.kr(<span class="s7">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Out</span>.ar(out, <span class="s7">SinOsc</span>.ar(freq, 0, env))</p>
-<p class="p8"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p7"><span class="s3">SynthDef</span><span class="s4">(</span>\help_sinegrain<span class="s4">,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s3">arg</span> out=0, freq=440, sustain=0.05;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">var</span> env;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>env = <span class="s3">EnvGen</span>.kr(<span class="s3">Env</span>.perc(0.01, sustain, 0.2), doneAction:2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Out</span>.ar(out, <span class="s3">SinOsc</span>.ar(freq, 0, env))</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
 <p class="p3">// interlace two streams</p>
 <p class="p5">(</p>
-<p class="p9">var<span class="s6"> c = </span>Ppatlace<span class="s6">([</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pseq</span>([0, 0, 0, 0, 8, 0, 8], <span class="s7">inf</span>),</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Pseries</span>(1, 1, 32)</p>
-<p class="p8"><span class="Apple-tab-span">	</span>], <span class="s7">inf</span>) + 67;</p>
-<p class="p8">x = c.asStream;</p>
-<p class="p10"><br></p>
-<p class="p9">Routine<span class="s6">({</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">Synth</span>(<span class="s8">\help_sinegrain</span>, [<span class="s8">\freq</span>, x.next.midicps, <span class="s8">\dur</span>, 0.2]);</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.17.wait;</p>
-<p class="p8"><span class="Apple-tab-span">	</span>})</p>
-<p class="p8">}).play;</p>
+<p class="p6">var<span class="s4"> c = </span>Ppatlace<span class="s4">([</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>([0, 0, 0, 0, 8, 0, 8], <span class="s3">inf</span>),</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pseries</span>(1, 1, 32)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>], <span class="s3">inf</span>) + 67;</p>
+<p class="p5">x = c.asStream;</p>
+<p class="p4"><br></p>
+<p class="p6">Routine<span class="s4">({</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s5">\help_sinegrain</span>, [<span class="s5">\freq</span>, x.next.midicps, <span class="s5">\dur</span>, 0.2]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.17.wait;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>})</p>
+<p class="p5">}).play;</p>
 <p class="p5">)</p>
 <p class="p4"><br></p>
 <p class="p4"><br></p>
@@ -106,19 +99,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><br></p>
 <p class="p3">// a more complicated example:</p>
 <p class="p5">(</p>
-<p class="p6"><span class="s6">c = </span>Ppatlace<span class="s6">([</span></p>
-<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span></span>Pxrand<span class="s6">([</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>(#[0, -2, -3, -5, -7], 1), <span class="s5">Pwhite</span>(-12, 4, 3), <span class="s5">Pshuf</span>(#[0, -2, -3, -5, -7], 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>], <span class="s5">inf</span>),</p>
-<p class="p6"><span class="s6"><span class="Apple-tab-span">	</span></span>Pxrand<span class="s6">([</span></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Pseq</span>(#[0, 2, 4, 5, 7], 1), <span class="s5">Pwhite</span>(-4, 12, 3), <span class="s5">Pshuf</span>(#[0, 2, 4, 5, 7], 1)</p>
-<p class="p5"><span class="Apple-tab-span">	</span>], <span class="s5">inf</span>)</p>
-<p class="p5">], <span class="s5">inf</span>) + 67;</p>
+<p class="p6"><span class="s4">c = </span>Ppatlace<span class="s4">([</span></p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>Pxrand<span class="s4">([</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[0, -2, -3, -5, -7], 1), <span class="s3">Pwhite</span>(-12, 4, 3), <span class="s3">Pshuf</span>(#[0, -2, -3, -5, -7], 1)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>], <span class="s3">inf</span>),</p>
+<p class="p6"><span class="s4"><span class="Apple-tab-span">	</span></span>Pxrand<span class="s4">([</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Pseq</span>(#[0, 2, 4, 5, 7], 1), <span class="s3">Pwhite</span>(-4, 12, 3), <span class="s3">Pshuf</span>(#[0, 2, 4, 5, 7], 1)</p>
+<p class="p5"><span class="Apple-tab-span">	</span>], <span class="s3">inf</span>)</p>
+<p class="p5">], <span class="s3">inf</span>) + 67;</p>
 <p class="p5">x = c.asStream;</p>
 <p class="p4"><br></p>
-<p class="p6">Routine<span class="s6">({</span></p>
+<p class="p6">Routine<span class="s4">({</span></p>
 <p class="p5"><span class="Apple-tab-span">	</span>loop({</p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">Synth</span>(<span class="s9">\help_sinegrain</span>, [<span class="s10">\freq</span>, x.next.midicps, <span class="s10">\dur</span>, 0.2]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">Synth</span>(<span class="s6">\help_sinegrain</span>, [<span class="s5">\freq</span>, x.next.midicps, <span class="s5">\dur</span>, 0.2]);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0.17.wait;</p>
 <p class="p5"><span class="Apple-tab-span">	</span>})</p>
 <p class="p5">}).play;</p>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -66,7 +66,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s2">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s2">In</span>.ar(out, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">XOut</span>.ar(out, env, <span class="s2">CombL</span>.ar(in * env, maxdtime, <span class="s2">Lag</span>.kr(dtime, 4), decay, 1, in));</p>
-<p class="p4">}, [<span class="s3">\ir</span>, <span class="s3">\ir</span>, 0.1, 0.1, 0]).memStore;</p>
+<p class="p4">}, [<span class="s3">\ir</span>, <span class="s3">\ir</span>, 0.1, 0.1, 0]).add;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p4"><span class="s2">SynthDef</span>(<span class="s3">\fm</span>, { <span class="s2">arg</span> out=0,<span class="Apple-converted-space">  </span>freq, index, decay=2, gate=1;</p>
@@ -74,7 +74,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>env = <span class="s2">Linen</span>.kr(gate, 0.05, 1, 5, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>in = <span class="s2">In</span>.ar(out, 2);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">XOut</span>.ar(out, env, <span class="s2">SinOsc</span>.ar(freq, in * index));</p>
-<p class="p4">}).memStore;</p>
+<p class="p4">}).add;</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p5">Pproto<span class="s4">({</span></p>
@@ -122,7 +122,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">EnvGen</span>.ar(<span class="s2">Env</span>.sine, 1, timeScale: sustain, doneAction: 2) * audio;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">Pan2</span>.ar(audio, pan, amp);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">OffsetOut</span>.ar(out, audio);</p>
-<p class="p4">}).memStore;</p>
+<p class="p4">}).add;</p>
 <p class="p3"><br></p>
 <p class="p4">a = <span class="s2">Pproto</span>({</p>
 <p class="p4"><span class="Apple-tab-span">	</span>~newgroup = (type:<span class="Apple-tab-span">	</span><span class="s3">\group</span>).yield;</p>
@@ -156,7 +156,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">EnvGen</span>.ar(<span class="s2">Env</span>.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: 2) * audio;</p>
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">Pan2</span>.ar(audio, pan, amp);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">OffsetOut</span>.ar(out, audio);</p>
-<p class="p4">}).memStore;</p>
+<p class="p4">}).add;</p>
 <p class="p3"><br></p>
 <p class="p4">b = <span class="s2">Pproto</span>({</p>
 <p class="p4"><span class="Apple-tab-span">	</span>~bufnum =<span class="Apple-tab-span">	</span>(type: <span class="s3">\sine1</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
@@ -196,7 +196,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">Shaper</span>.ar(bufnum, audio);</p>
 <p class="p4"><span class="Apple-tab-span">	</span>audio = <span class="s2">Pan2</span>.ar(audio, pan, amp);</p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="s2">OffsetOut</span>.ar(out, <span class="s2">LeakDC</span>.ar(audio));</p>
-<p class="p4">}).memStore;</p>
+<p class="p4">}).add;</p>
 <p class="p3"><br></p>
 <p class="p4">c = <span class="s2">Pproto</span>({</p>
 <p class="p4"><span class="Apple-tab-span">	</span>~bufnum = (type: <span class="s3">\cheby</span>, amps: 1.0/[1,2,3,4,5,6] ).yield;</p>
