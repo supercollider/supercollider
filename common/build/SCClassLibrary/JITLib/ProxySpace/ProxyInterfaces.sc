@@ -149,6 +149,11 @@ PatternControl : StreamControl {
 
 	stop { this.stopStreams(array.copy); array = nil; }
 
+	controlNames { arg nodeMap;
+		^nodeMap.settings
+			.select { |x| x.isMapped.not }
+			.collect { |x| ControlName(x.key) }
+	}
 }
 
 
