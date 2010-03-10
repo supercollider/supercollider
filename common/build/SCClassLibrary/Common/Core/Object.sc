@@ -231,6 +231,10 @@ Object  {
 	isFunction { ^false }
 
 	matchItem {|item| ^this === item }
+	trueAt { ^false }
+	falseAt { arg key;
+		^this.trueAt(key).not
+	}
 
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
