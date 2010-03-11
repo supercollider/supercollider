@@ -64,6 +64,7 @@ Bugfixes:
 * 2010-02-11 Fix for nowExecutingPath with Routines - sw
 * 2010-02-23 Performance fixes for SCUserView - sw
 * 2010-02-25 Fix interpolation / indexing problem in VDiskIn that caused slight pitch fluctuations - jp
+* 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
 
 Other additions/improvements:
 -----------------------------

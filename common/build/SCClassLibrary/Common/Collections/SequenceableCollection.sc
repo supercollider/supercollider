@@ -1104,6 +1104,7 @@ SequenceableCollection : Collection {
 	}
 	reduce { arg operator;
 		var once = true, result;
+		if(this.size==1){ ^this[0] };
 		this.doAdjacentPairs {|a, b|
 			if (once) {
 				once = false;
