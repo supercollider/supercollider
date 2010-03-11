@@ -150,7 +150,7 @@ PatternControl : StreamControl {
 	stop { this.stopStreams(array.copy); array = nil; }
 
 	controlNames { arg nodeMap;
-		^nodeMap.settings.collect { |x| ControlName(x.key) }
+		^nodeMap.settings.collect { |x| ControlName(x.key, nil, x.rate) }
 	}
 }
 
