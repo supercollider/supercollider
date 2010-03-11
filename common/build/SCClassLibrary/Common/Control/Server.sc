@@ -891,8 +891,16 @@ Server : Model {
 		stream << name;
 	}
 	storeOn { arg stream;
-		stream << "Server.fromName(" << name.asCompileString << ")"
+		var codeStr = this.switch (
+			thisProcess.interpreter.s, 	{ "s" }, 
+			Server.default, 			{ "Server.default" },
+			Server.local,				{ "Server.local" },
+			Server.internal,			{ "Server.internal" },
+			{ "Server.fromName(" + name.asCompileString + ")" }
+		);
+		stream << codeStr;
 	}
+	
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 
