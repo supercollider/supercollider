@@ -129,7 +129,7 @@ EZLists : EZGui{  // an abstract class
 
 		// init the views (handled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
-
+		
 		this.items=argItems ? [];
 
 		globalAction=argGlobalAction;
@@ -160,8 +160,9 @@ EZLists : EZGui{  // an abstract class
 
 	doAction {widget.doAction;}
 
-	items_{arg assocArray;
-		items=assocArray;
+	items_{ arg assocArray;
+		assocArray = assocArray.collect({ |it| if (it.isKindOf(Association), { it }, { it -> nil }) });
+		items=assocArray.postcs;
 		widget.items=assocArray.collect({|item| item.key});
 	}
 
