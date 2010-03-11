@@ -32,7 +32,7 @@ GUI.swing;	// use Java GUI
 	pen = GUI.pen;
 	w.drawHook = {
 		// set the Color
-		try { pen.setSmoothing(false) };
+		try { pen.smoothing_(false) };
 		pen.width = width;
 		z.do { |i|
 			pen.strokeColor = Color.rand.alpha_(i.linexp(0, z-1, 1.0, alph));
@@ -98,7 +98,7 @@ GUI.swing;	// use Java GUI
 		pen = GUI.pen;
 		w.drawHook = {
 			
-			try {Êpen.setSmoothing(false) };
+			try { pen.smoothing_(false) };
 			
 			pen.width = width; 
 			
