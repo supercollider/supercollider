@@ -99,8 +99,6 @@ SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames, double sample
 
 void Rate_Init(struct Rate *inRate, double inSampleRate, int inBufLength);
 
-void Dimension_Init(struct SC_Dimension *inDimension, int inWidth, int inHeight);
-
 ////////////////////////////////////////////////////////////////////////
 
 #define GRAPHDEF(inGraph) ((GraphDef*)((inGraph)->mNode.mDef))

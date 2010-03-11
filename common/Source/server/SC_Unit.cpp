@@ -70,7 +70,6 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 	Rate* rateInfo = unit->mRate = inUnitSpec->mRateInfo;
 	unit->mBufLength = rateInfo->mBufLength;
 
-	unit->mDimension = 0;
 	unit->mDone = false;
 
 	return unit;
