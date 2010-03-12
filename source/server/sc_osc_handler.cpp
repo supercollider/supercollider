@@ -2469,13 +2469,13 @@ void handle_b_getn(received_message const & msg, nova_endpoint const & endpoint)
         osc::int32 index, sample_count;
         args >> index >> sample_count;
 
-        if (index + sample_count < max_sample)
+        if (index + sample_count <= max_sample)
             return_data.push_back(getn_data(index, sample_count, data + index));
     }
 
     size_t alloc_size = 128;
     for (size_t i = 0; i != return_data.size(); ++i)
-        alloc_size += return_data[i].data_.size() * sizeof(float) + 2*sizeof(int);
+        alloc_size += return_data[i].data_.size() * (sizeof(float) + sizeof(int)) + 2*sizeof(int);
 
     sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
 
