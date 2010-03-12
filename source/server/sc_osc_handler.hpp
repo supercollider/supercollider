@@ -100,6 +100,8 @@ public:
     {
         notify("/n_move", node);
     }
+
+    void send_trigger(int32_t node_id, int32_t trigger_id, float value);
     /* @} */
 
     /** send notifications, should not be called from the real-time thread */

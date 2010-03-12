@@ -350,6 +350,21 @@ void sc_notify_observers::notify(const char * address_pattern, const server_node
     cmd_dispatcher<true>::fire_system_callback(boost::bind(fire_notification, message));
 }
 
+void fire_trigger(int32_t node_id, int32_t trigger_id, float value)
+{
+    char buffer[128]; // 128 byte should be enough
+    osc::OutboundPacketStream p(buffer, 128);
+    p << osc::BeginMessage("/tr") << osc::int32(node_id) << osc::int32(trigger_id) << value
+      << osc::EndMessage;
+
+    instance->send_notification(p.Data(), p.Size());
+}
+
+void sc_notify_observers::send_trigger(int32_t node_id, int32_t trigger_id, float value)
+{
+    fire_trigger(node_id, trigger_id, value);
+}
+
 void sc_notify_observers::send_notification(const char * data, size_t length)
 {
     for (size_t i = 0; i != observers.size(); ++i)

@@ -449,6 +449,11 @@ int buf_alloc(SndBuf * buf, int channels, int frames, double samplerate)
     return nova::sc_factory.allocate_buffer(buf, channels, frames, samplerate);
 }
 
+void send_trigger(Node * unit, int trigger_id, float value)
+{
+    nova::instance->send_trigger(unit->mID, trigger_id, value);
+}
+
 } /* extern "C" */
 
 namespace nova
@@ -493,6 +498,9 @@ void sc_plugin_interface::initialize(void)
 
     /* buffer functions */
     sc_interface.fBufAlloc = &buf_alloc;
+
+    /* trigger functions */
+    sc_interface.fSendTrigger = &send_trigger;
 
     /* initialize world */
     /* control busses */
