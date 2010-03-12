@@ -887,6 +887,8 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	[mFormatter setAlwaysShowsDecimalSeparator:NO];
 	[mFormatter setExponentSymbol:@"e"];
 	[mFormatter setMaximumFractionDigits:20];
+	[mFormatter setDecimalSeparator:@"."];
+	[mFormatter setUsesGroupingSeparator:NO];
 	[[self cell] setFormatter:mFormatter];
 }
 
