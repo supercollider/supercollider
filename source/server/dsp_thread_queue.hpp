@@ -153,7 +153,7 @@ private:
         {
             dsp_thread_queue_item * next = successors[i++]->dec_activation_count(interpreter);
             if (next)
-                interpreter.mark_as_runnable(this);
+                interpreter.mark_as_runnable(next);
         }
 
         return ptr;

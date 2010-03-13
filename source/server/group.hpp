@@ -243,8 +243,18 @@ private:
     {
         if (empty())
             return 0;
-        else
-            return 1;
+
+        for (server_node_list::const_reverse_iterator it = child_nodes.rbegin(); it != child_nodes.rend(); ++it)
+        {
+            const server_node * tail = &*it;
+
+            if (tail->is_synth())
+                return 1;
+            const abstract_group * tail_group = static_cast<const abstract_group*>(tail);
+            if (!tail_group->empty())
+                return tail_group->tail_nodes();
+        }
+        return 0;
     }
 };
 
