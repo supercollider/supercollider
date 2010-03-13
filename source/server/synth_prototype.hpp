@@ -163,7 +163,7 @@ struct synth_prototype_deleter
 class synth_prototype:
     public detail::slot_resolver,
     public boost::intrusive::unordered_set_base_hook<>,
-    public intrusive_refcountable<synth_prototype_deleter>
+    public intrusive_refcountable<>
 {
 public:
     synth_prototype(std::string const & name):
