@@ -1476,6 +1476,9 @@ void handle_n_order(received_message const & msg)
 
     server_node * target = find_node(target_id);
 
+    if (target == NULL)
+        return;
+
     abstract_group * target_parent;
     if (action == before ||
         action == after)
@@ -1492,6 +1495,9 @@ void handle_n_order(received_message const & msg)
         args >> node_id;
 
         server_node * node = find_node(node_id);
+        if (node == NULL)
+            continue;
+
         abstract_group * node_parent = node->get_parent();
 
         /** \todo this can be optimized if node_parent == target_parent */
@@ -1502,6 +1508,7 @@ void handle_n_order(received_message const & msg)
         else
             target_parent->add_child(node, node_position(action));
     }
+    instance->update_dsp_queue();
 }
 
 

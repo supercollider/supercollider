@@ -234,12 +234,12 @@ public:
 
     void rebuild_dsp_queue(void);
 
-private:
     void update_dsp_queue(void)
     {
         dsp_queue_dirty = true;
     }
 
+private:
     bool dsp_queue_dirty;
 
 private:
