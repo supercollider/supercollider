@@ -454,6 +454,16 @@ void send_trigger(Node * unit, int trigger_id, float value)
     nova::instance->send_trigger(unit->mID, trigger_id, value);
 }
 
+void world_lock(World *world)
+{
+    world->mNRTLock->Lock();
+}
+
+void world_unlock(World *world)
+{
+    world->mNRTLock->Unlock();
+}
+
 } /* extern "C" */
 
 namespace nova
@@ -501,6 +511,11 @@ void sc_plugin_interface::initialize(void)
 
     /* trigger functions */
     sc_interface.fSendTrigger = &send_trigger;
+
+    /* world locks */
+    sc_interface.fNRTLock = &world_lock;
+    sc_interface.fNRTUnlock = &world_unlock;
+    world.mNRTLock = new SC_Lock();
 
     /* initialize world */
     /* control busses */
@@ -568,6 +583,7 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mSndBufs;
     delete[] world.mSndBufsNonRealTimeMirror;
     delete[] world.mSndBufUpdates;
+    delete world.mNRTLock;
 }
 
 namespace
