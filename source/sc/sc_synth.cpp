@@ -115,6 +115,12 @@ void sc_synth::prepare(void)
 
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
+    if (slot_index >= mNumControls)
+    {
+        std::cerr << "argument number out of range" << std::endl;
+        return;
+    }
+
     mControlRates[slot_index] = 0;
     mMapControls[slot_index] = &mControls[slot_index];
     mControls[slot_index] = val;
@@ -122,7 +128,7 @@ void sc_synth::set(slot_index_t slot_index, sample val)
 
 void sc_synth::set(slot_index_t slot_index, size_t count, sample * val)
 {
-    if (slot_index >= mNumControls)
+    if (slot_index+count >= mNumControls)
         return;
     for (size_t i = 0; i != count; ++i)
         set(slot_index+i, val[i]);
