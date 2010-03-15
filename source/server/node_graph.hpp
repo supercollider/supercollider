@@ -49,7 +49,7 @@ public:
      * - initialize root node */
     node_graph(void):
         root_group_(0), synth_count_(0), group_count_(1),
-        node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
+        node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count)), generated_id(-2)
     {
         root_group_.add_ref();
         node_set.insert(root_group_);
@@ -104,6 +104,20 @@ public:
 
     void synth_reassign_id(int32_t node_id);
 
+    /** generate new hidden (negative) node id  */
+    int32_t generate_node_id(void)
+    {
+        boost::hash<int32_t> hasher;
+        do
+            generated_id = -std::abs<int32_t>(hasher(generated_id));
+        while (!node_id_available(generated_id));
+        return generated_id;
+    }
+    
+private:
+    int32_t generated_id;
+    
+public:
     abstract_group * find_group(int32_t node_id)
     {
         server_node * node = find_node(node_id);

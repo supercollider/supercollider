@@ -875,6 +875,9 @@ void handle_s_new(received_message const & msg)
     const char * def_name = args->AsString(); ++args;
     int32_t id = args->AsInt32(); ++args;
     
+    if (id == -1)
+        id = instance->generate_node_id();
+    
     int32_t action, target;
     
     if (args != msg.ArgumentsEnd()) {
@@ -907,9 +910,11 @@ void handle_s_new(received_message const & msg)
 
 void insert_group(int node_id, int action, int target_id)
 {
-    if (!check_node_id(node_id))
+    if (node_id == -1)
+        node_id = instance->generate_node_id();
+    else if (!check_node_id(node_id))
         return;
-
+    
     server_node * target = find_node(target_id);
 
     if (!target)
@@ -2831,7 +2836,9 @@ void handle_d_free(received_message const & msg)
 
 void insert_parallel_group(int node_id, int action, int target_id)
 {
-    if (!check_node_id(node_id))
+    if (node_id == -1)
+        node_id = instance->generate_node_id();
+    else if (!check_node_id(node_id))
         return;
 
     server_node * target = find_node(target_id);
