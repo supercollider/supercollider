@@ -874,9 +874,19 @@ void handle_s_new(received_message const & msg)
 
     const char * def_name = args->AsString(); ++args;
     int32_t id = args->AsInt32(); ++args;
-    int32_t action = args->AsInt32(); ++args;
-    int32_t target = args->AsInt32(); ++args;
-
+    
+    int32_t action, target;
+    
+    if (args != msg.ArgumentsEnd()) {
+        action = args->AsInt32(); ++args;
+    } else
+        action = 0;
+    
+    if (args != msg.ArgumentsEnd()) {
+        target = args->AsInt32(); ++args;
+    } else
+        target = 0;
+    
     sc_synth * synth = add_synth(def_name, id, action, target);
 
     if (synth == NULL)
