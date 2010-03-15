@@ -34,8 +34,14 @@ using namespace std;
 namespace
 {
 
+int32_t last_generated = 0;
+    
+    
 server_node * find_node(int32_t target_id)
 {
+    if (target_id == -1)
+        target_id = last_generated;
+    
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL)
@@ -45,6 +51,9 @@ server_node * find_node(int32_t target_id)
 
 abstract_group * find_group(int32_t target_id)
 {
+    if (target_id == -1)
+        target_id = last_generated;
+
     abstract_group * node = instance->find_group(target_id);
 
     if (node == NULL)
@@ -805,6 +814,7 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
     node_position_constraint pos = make_pair(target, node_position(action));
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
 
+    last_generated = node_id;
     return static_cast<sc_synth*>(synth);
 }
 
@@ -923,6 +933,7 @@ void insert_group(int node_id, int action, int target_id)
     node_position_constraint pos = make_pair(target, node_position(action));
 
     instance->add_group(node_id, pos);
+    last_generated = node_id;
 }
 
 void handle_g_new(received_message const & msg)
@@ -2848,6 +2859,7 @@ void insert_parallel_group(int node_id, int action, int target_id)
     node_position_constraint pos = make_pair(target, node_position(action));
 
     instance->add_parallel_group(node_id, pos);
+    last_generated = node_id;
 }
 
 void handle_p_new(received_message const & msg)
