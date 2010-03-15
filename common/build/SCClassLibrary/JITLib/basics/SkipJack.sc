@@ -1,7 +1,7 @@
 SkipJack {
 
 	classvar <>verbose = true, <all, <defaultClock;
-	var updateFunc, <>dt, <>stopTest, <name, <clock, <task, restartFunc;
+	var <updateFunc, <>dt, <>stopTest, <name, <clock, <task, restartFunc;
 
 	*new { arg updateFunc, dt = 0.2, stopTest = false, name = "anon", clock, autostart=true;
 		^super.newCopyArgs(updateFunc, dt, stopTest, name, clock).init( autostart );
